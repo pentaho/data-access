@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema name="test_file">
+  <Dimension name="test">
+    <Hierarchy hasAll="true">
+      <Table name="ORDERS"/>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="test_file">
+    <Table name="ORDERS"/>
+    <DimensionUsage name="test" source="test"/>
+  </Cube>
+</Schema>

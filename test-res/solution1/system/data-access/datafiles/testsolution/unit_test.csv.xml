@@ -1,0 +1,228 @@
+<modelInfo>
+  <changeSupport serialization="custom">
+    <java.beans.PropertyChangeSupport>
+      <default>
+        <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+        <source class="modelInfo" reference="../../../.."/>
+      </default>
+      <null/>
+    </java.beans.PropertyChangeSupport>
+  </changeSupport>
+  <fileInfo>
+    <changeSupport serialization="custom">
+      <java.beans.PropertyChangeSupport>
+        <default>
+          <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+          <source class="org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo" reference="../../../.."/>
+        </default>
+        <null/>
+      </java.beans.PropertyChangeSupport>
+    </changeSupport>
+    <delimiter>,</delimiter>
+    <enclosure>&quot;</enclosure>
+    <headerRows>1</headerRows>
+    <project>testsolution</project>
+    <tmpFilename>unit_test.csv</tmpFilename>
+    <currencySymbol></currencySymbol>
+    <decimalSymbol>.</decimalSymbol>
+    <groupSymbol>,</groupSymbol>
+    <ifNull>---</ifNull>
+    <nullStr></nullStr>
+  </fileInfo>
+  <stageTableName>UNIT_TESTS</stageTableName>
+  <columns>
+    <columnInfo>
+      <changeSupport serialization="custom">
+        <java.beans.PropertyChangeSupport>
+          <default>
+            <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+            <source class="columnInfo" reference="../../../.."/>
+          </default>
+          <null/>
+        </java.beans.PropertyChangeSupport>
+      </changeSupport>
+      <id>PC_0</id>
+      <title>REGIONC</title>
+      <dataType>NUMERIC</dataType>
+      <aggregateType>SUM</aggregateType>
+      <index>true</index>
+      <ignore>false</ignore>
+      <fieldType>both</fieldType>
+      <length>0</length>
+      <precision>0</precision>
+      <dateFieldBreakout>63</dateFieldBreakout>
+    </columnInfo>
+    <columnInfo>
+      <changeSupport serialization="custom">
+        <java.beans.PropertyChangeSupport>
+          <default>
+            <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+            <source class="columnInfo" reference="../../../.."/>
+          </default>
+          <null/>
+        </java.beans.PropertyChangeSupport>
+      </changeSupport>
+      <id>PC_1</id>
+      <title>NWEIGHT</title>
+      <dataType>NUMERIC</dataType>
+      <aggregateType>SUM</aggregateType>
+      <index>true</index>
+      <ignore>false</ignore>
+      <fieldType>both</fieldType>
+      <length>0</length>
+      <precision>5</precision>
+      <dateFieldBreakout>63</dateFieldBreakout>
+    </columnInfo>
+    <columnInfo>
+      <changeSupport serialization="custom">
+        <java.beans.PropertyChangeSupport>
+          <default>
+            <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+            <source class="columnInfo" reference="../../../.."/>
+          </default>
+          <null/>
+        </java.beans.PropertyChangeSupport>
+      </changeSupport>
+      <id>PC_2</id>
+      <title>Int</title>
+      <dataType>NUMERIC</dataType>
+      <aggregateType>SUM</aggregateType>
+      <index>false</index>
+      <ignore>false</ignore>
+      <fieldType>both</fieldType>
+      <length>0</length>
+      <precision>0</precision>
+      <dateFieldBreakout>63</dateFieldBreakout>
+    </columnInfo>
+    <columnInfo>
+      <changeSupport serialization="custom">
+        <java.beans.PropertyChangeSupport>
+          <default>
+            <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+            <source class="columnInfo" reference="../../../.."/>
+          </default>
+          <null/>
+        </java.beans.PropertyChangeSupport>
+      </changeSupport>
+      <id>PC_3</id>
+      <title>xdate</title>
+      <dataType>DATE</dataType>
+      <aggregateType>NONE</aggregateType>
+      <index>true</index>
+      <ignore>false</ignore>
+      <fieldType>dimension</fieldType>
+      <format>mm/dd/yy</format>
+      <length>0</length>
+      <precision>0</precision>
+      <dateFieldBreakout>63</dateFieldBreakout>
+    </columnInfo>
+    <columnInfo>
+      <changeSupport serialization="custom">
+        <java.beans.PropertyChangeSupport>
+          <default>
+            <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+            <source class="columnInfo" reference="../../../.."/>
+          </default>
+          <null/>
+        </java.beans.PropertyChangeSupport>
+      </changeSupport>
+      <id>PC_4</id>
+      <title></title>
+      <dataType>STRING</dataType>
+      <aggregateType>NONE</aggregateType>
+      <index>false</index>
+      <ignore>true</ignore>
+      <fieldType>dimension</fieldType>
+      <length>0</length>
+      <precision>0</precision>
+      <dateFieldBreakout>63</dateFieldBreakout>
+    </columnInfo>
+    <columnInfo>
+      <changeSupport serialization="custom">
+        <java.beans.PropertyChangeSupport>
+          <default>
+            <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+            <source class="columnInfo" reference="../../../.."/>
+          </default>
+          <null/>
+        </java.beans.PropertyChangeSupport>
+      </changeSupport>
+      <id>PC_5</id>
+      <title>Location</title>
+      <dataType>STRING</dataType>
+      <aggregateType>NONE</aggregateType>
+      <index>true</index>
+      <ignore>false</ignore>
+      <fieldType>dimension</fieldType>
+      <length>60</length>
+      <precision>0</precision>
+      <dateFieldBreakout>63</dateFieldBreakout>
+    </columnInfo>
+    <columnInfo>
+      <changeSupport serialization="custom">
+        <java.beans.PropertyChangeSupport>
+          <default>
+            <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+            <source class="columnInfo" reference="../../../.."/>
+          </default>
+          <null/>
+        </java.beans.PropertyChangeSupport>
+      </changeSupport>
+      <id>PC_6</id>
+      <title>charlen</title>
+      <dataType>NUMERIC</dataType>
+      <aggregateType>SUM</aggregateType>
+      <index>false</index>
+      <ignore>false</ignore>
+      <fieldType>both</fieldType>
+      <length>0</length>
+      <precision>0</precision>
+      <dateFieldBreakout>63</dateFieldBreakout>
+    </columnInfo>
+    <columnInfo>
+      <changeSupport serialization="custom">
+        <java.beans.PropertyChangeSupport>
+          <default>
+            <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+            <source class="columnInfo" reference="../../../.."/>
+          </default>
+          <null/>
+        </java.beans.PropertyChangeSupport>
+      </changeSupport>
+      <id>PC_7</id>
+      <title>xfactor</title>
+      <dataType>NUMERIC</dataType>
+      <aggregateType>SUM</aggregateType>
+      <index>false</index>
+      <ignore>false</ignore>
+      <fieldType>both</fieldType>
+      <length>0</length>
+      <precision>7</precision>
+      <dateFieldBreakout>63</dateFieldBreakout>
+    </columnInfo>
+    <columnInfo>
+      <changeSupport serialization="custom">
+        <java.beans.PropertyChangeSupport>
+          <default>
+            <propertyChangeSupportSerializedDataVersion>2</propertyChangeSupportSerializedDataVersion>
+            <source class="columnInfo" reference="../../../.."/>
+          </default>
+          <null/>
+        </java.beans.PropertyChangeSupport>
+      </changeSupport>
+      <id>PC_8</id>
+      <title>Flag</title>
+      <dataType>BOOLEAN</dataType>
+      <aggregateType>SUM</aggregateType>
+      <index>true</index>
+      <ignore>false</ignore>
+      <fieldType>both</fieldType>
+      <length>0</length>
+      <precision>0</precision>
+      <dateFieldBreakout>63</dateFieldBreakout>
+    </columnInfo>
+  </columns>
+  <validated>false</validated>
+  <csvInputErrors/>
+  <tableOutputErrors/>
+</modelInfo>
