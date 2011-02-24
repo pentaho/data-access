@@ -1,0 +1,330 @@
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:pen="http://www.pentaho.org/2008/xul">
+  <dialog id="modeler_dialog" width="800" height="500"
+          title="${modeler.title}" onload="modelerDialogController.onLoad()" resizable="false" padding="0" spacing="0"
+          buttons="accept,cancel"
+          ondialogaccept="modelerDialogController.onAccept()"
+          ondialogcancel='modelerDialogController.onCancel()'
+          buttonlabelaccept="${dialog.OK}"
+          buttonlabelcancel="${dialog.cancel}">
+    <hbox id="metadatastep" flex="1" padding="0" spacing="3" height="465">
+      <groupbox width="210" height="463">
+        <caption label="${available_fields}"/>
+
+        <toolbar mode="icons">
+          <toolbarspacer flex="1"/>
+
+          <toolbarbutton tooltiptext="${edit_source}" image="images/edit.png" onclick="modelerDialogController.onEditSource()"/>
+          <!--<toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="images/refresh.png" tooltiptext="${refresh}"/>-->
+
+          <toolbarseparator/>
+          <toolbarbutton id="autoPopulateButton" image="images/autogen_model.png"
+                         onclick="modeler.showAutopopulatePrompt()" tooltiptext="${autopopulate_model}"/>
+          <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.addField()"
+                         tooltiptext="${add}"/>
+        </toolbar>
+
+        <listbox id="fieldList" flex="1" seltype="multi"
+                 pen:binding="name" pen:ondrag="modeler.onFieldListDrag()"
+                 pen:drageffect="copy" width="200" height="413">
+          <listitem label="field"/>
+          <listitem label="field"/>
+          <listitem label="field"/>
+          <listitem label="field"/>
+          <listitem label="field"/>
+          <listitem label="field"/>
+        </listbox>
+      </groupbox>
+
+      <groupbox width="360" height="463" id="schema-toolbar-groupbox">
+        <caption label="${model}"/>
+        <toolbar id="schema-toolbar" mode="icons">
+          <toolbarspacer flex="1"/>
+          <toolbarbutton id="measureBtn" image="images/sm_measure_icon.png"
+                         onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}"/>
+          <toolbarbutton id="dimensionBtn" image="images/sm_dim_icon.png"
+                         onclick="modeler.showNewDimensionDialog()" disabled="true"
+                         tooltiptext="${add_dimension}"/>
+          <toolbarbutton id="hierarchyBtn" image="images/sm_hierarchy_icon.png"
+                         onclick="modeler.showNewHierarchyDialog()" disabled="true"
+                         tooltiptext="${add_hiearchy}"/>
+          <toolbarbutton id="levelBtn" image="images/sm_level_icon.png" onclick="modeler.showNewLevelDialog()"
+                         disabled="true" tooltiptext="${add_level}"/>
+          <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveFieldDown()"
+                         tooltiptext="${move_field_down}"/>
+          <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveFieldUp()"
+                         tooltiptext="${move_field_up}"/>
+          <toolbarseparator/>
+          <toolbarbutton image="images/remove.png" onclick="modeler.removeField()" tooltiptext="${remove_field}"/>
+          <toolbarbutton id="clearModel" image="images/clear_model.png" onclick="modeler.clearFields()"
+                         tooltiptext="${clearFields}"/>
+        </toolbar>
+        <tree id="dimensionTree" width="355" height="413" editable="false"
+              pen:ondrag="modeler.onDimensionTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
+              pen:ondrop="modeler.onDimensionTreeDrop()" hiddenrootnode="false" preserveselection="true">
+          <treecols>
+            <treecol width="355" label="" primary="true"
+                     pen:binding="displayName" pen:childrenbinding="children"
+                     pen:imagebinding="image" editable="false"
+                     pen:disabledbinding="editingDisabled"
+                     pen:tooltipbinding="validationMessagesString"
+                     pen:expandedbinding="expanded"/>
+          </treecols>
+          <treechildren>
+            <treeitem container="true" open="true">
+              <treerow>
+                <treecell label=""/>
+              </treerow>
+              <treechildren></treechildren>
+            </treeitem>
+          </treechildren>
+        </tree>
+      </groupbox>
+
+
+      <groupbox type="closable" width="222" height="463" id="propertiesPanel">
+        <caption label="${properties}"/>
+        <deck id="propertiesdeck">
+          <vbox/>
+          <vbox id="measuresprops" spacing="4" width="210">
+            <vbox bgcolor="#FFFFCC" id="messages2">
+              <grid spacing="3">
+                <columns>
+                  <column/>
+                  <column flex="1"/>
+                </columns>
+                <rows>
+                  <row flex="1">
+                    <image src="images/warning.png"/>
+                    <label id="messages2label" flex="1" multiline="true"
+                           value="${test_message}"/>
+                  </row>
+
+                </rows>
+              </grid>
+              <hbox flex="1">
+                <spacer flex="1"/>
+                <button id="fixMeasuresColumnsBtn" label="${missing_column}"
+                        onclick="modeler.resolveMissingColumn()" visible="true"/>
+                <spacer flex="1"/>
+              </hbox>
+            </vbox>
+            <groupbox>
+              <caption label="${source_column}"/>
+              <hbox flex="1">
+                <label id="measure_column_name" value="" flex="1"/>
+                <button image="images/edit.png"
+                        onclick="modeler.changeColumn()"/>
+
+              </hbox>
+            </groupbox>
+
+            <spacer height="5"/>
+
+            <groupbox>
+              <caption label="${details}"/>
+
+              <label value="${display_name}:"/>
+              <textbox id="displayname"/>
+              <label value="${aggregation}:"/>
+              <menulist id="aggregationtype">
+                <menupopup>
+                  <menuitem label="SUM"/>
+                  <menuitem label="AVERAGE"/>
+                  <menuitem label="MINIMUM"/>
+                  <menuitem label="MAXIMUM"/>
+ 				  <menuitem label="COUNT_DISTINCT"/>                  
+                </menupopup>
+              </menulist>
+              <label value="${format}:"/>
+              <menulist id="formatstring">
+                <menupopup>
+                  <menuitem label="NONE"/>
+                  <menuitem label="#,###;(#,###)"/>
+                  <menuitem label="#,###.00;(#,###.00)"/>
+                  <menuitem label="$ #,###;($ #,###)"/>
+                  <menuitem label="$ #,###.00;($ #,###.00)"/>
+                  <menuitem label="#.#%;(#.#%)"/>
+                </menupopup>
+              </menulist>
+            </groupbox>
+          </vbox>
+
+          <vbox id="dimensionprops" width="210">
+            <vbox bgcolor="#FFFFCC" id="dimension_message">
+              <grid spacing="3">
+                <columns>
+                  <column/>
+                  <column flex="1"/>
+                </columns>
+                <rows>
+                  <row flex="1">
+                    <image src="images/warning.png"/>
+                    <label id="dimension_message_label" flex="1" multiline="true"
+                           value="${test_message}"/>
+                  </row>
+
+                </rows>
+              </grid>
+            </vbox>
+            <groupbox>
+              <caption label="${details}"/>
+              <label value="${dimension_name}:"/>
+              <textbox id="dimension_name"/>
+            </groupbox>
+
+          </vbox>
+
+          <vbox id="mainprops">
+            <vbox bgcolor="#FFFFCC" id="main_message">
+              <grid spacing="3">
+                <columns>
+                  <column/>
+                  <column flex="1"/>
+                </columns>
+                <rows>
+                  <row>
+                    <image src="images/warning.png"/>
+                    <label id="mainnode_message_label" flex="1" multiline="true"
+                           value="${undefined_ds}"/>
+                  </row>
+                  <row flex="1">
+                    <label id="datasource_message_label" flex="1" multiline="true"
+                           value="${undefined_ds}"/>
+                    <spacer/>
+                  </row>
+
+                </rows>
+              </grid>
+            </vbox>
+            <groupbox>
+              <caption label="${details}"/>
+              <label value="${model_name}:"/>
+              <textbox id="main_name"/>
+              <label value="${source}:"/>
+              <label id="source_name" value="some source"/>
+              <hbox>
+                <button id="datasource_button" label="Select" onclick="modeler.editDataSource()"
+                        tooltiptext="${select_edit_ds}"/>
+                <spacer flex="1"/>
+              </hbox>
+            </groupbox>
+
+          </vbox>
+
+
+          <vbox id="hierarchyprops" width="210">
+            <vbox bgcolor="#FFFFCC" id="hierarchy_message">
+              <grid spacing="3">
+                <columns>
+                  <column/>
+                  <column flex="1"/>
+                </columns>
+                <rows>
+                  <row flex="1">
+                    <image src="images/warning.png"/>
+                    <label id="hierarchy_message_label" flex="1" multiline="true"
+                           value="${test_message}"/>
+                  </row>
+
+                </rows>
+              </grid>
+            </vbox>
+            <groupbox>
+              <caption label="${details}"/>
+              <label value="${hierarchy_name}:"/>
+              <textbox id="hierarchy_name"/>
+            </groupbox>
+
+          </vbox>
+
+          <vbox id="genericProps" width="210">
+            <vbox bgcolor="#FFFFCC" id="generic_message">
+              <grid spacing="3">
+                <columns>
+                  <column/>
+                  <column flex="1"/>
+                </columns>
+                <rows>
+                  <row flex="1">
+                    <image src="images/warning.png"/>
+                    <label id="generic_message_label" flex="1" multiline="true"
+                           value="${test_message}"/>
+                  </row>
+
+                </rows>
+              </grid>
+            </vbox>
+          </vbox>
+
+          <vbox id="levelprops" width="210">
+            <vbox bgcolor="#FFFFCC" id="level_message">
+              <grid spacing="3">
+                <columns>
+                  <column/>
+                  <column flex="1"/>
+                </columns>
+                <rows>
+                  <row flex="1">
+                    <image src="images/warning.png"/>
+                    <label id="level_message_label" flex="1" multiline="true"
+                           value="${test_message}"/>
+                  </row>
+
+                </rows>
+              </grid>
+              <hbox flex="1">
+                <spacer flex="1"/>
+                <button id="fixLevelColumnsBtn" label="${missing_column}"
+                        onclick="modeler.resolveMissingColumn()" visible="true"/>
+                <spacer flex="1"/>
+              </hbox>
+            </vbox>
+
+
+            <groupbox width="210">
+              <caption label="${source_column}"/>
+              <hbox flex="1">
+                <label id="level_source_col" value="" flex="1"/>
+                <button image="images/edit.png"
+                        onclick="modeler.changeColumn()"/>
+
+              </hbox>
+            </groupbox>
+
+            <spacer height="5"/>
+
+            <groupbox width="210">
+              <caption label="${details}"/>
+              <label value="${level_name}:"/>
+              <textbox id="level_name"/>
+            </groupbox>
+          </vbox>
+
+
+        </deck>
+      </groupbox>
+
+    </hbox>
+  </dialog>
+	<dialog id="waitingDialog" title="${waitingDialog.waiting}" width="220" height="40">
+		<hbox>
+      <image src="images/large-loading.gif" height="32" width="32" />
+			<label id="waitingDialogLabel" value="${waitingDialog.message}" flex="1"/>
+		</hbox>
+	</dialog>
+  <dialog id="errorDialog" title="${errorDialog.errorOccurred}" buttonlabelaccept="${errorDialog.OK}" buttons="accept"
+          ondialogaccept="modelerDialogController.closeErrorDialog()" width="300" height="100" buttonalign="center">
+    <label id="errorLabel" value="${errorDialog.errorOccurred}"/>
+  </dialog>
+
+
+  <dialog xmlns:pen="http://www.pentaho.org/2008/xul" width="300" height="400" id="resolveColumnsDialog" title="Resolve Missing Columns"
+    ondialogaccept="colResolver.done()" ondialogcancel="colResolver.cancel()" onload="colResolver.init()"  buttons="accept, cancel" buttonalign="right" buttonlabelaccept="${dialog.OK}" buttonlabelcancel="${dialog.cancel}">
+    <groupbox flex="1">
+    <caption label="Choose a column from the available list"/>
+      <listbox id="resolveColumnsList" height="280" pen:binding="name" command="colResolver.done()"/>
+    </groupbox>
+  </dialog>
+  
+</window>
