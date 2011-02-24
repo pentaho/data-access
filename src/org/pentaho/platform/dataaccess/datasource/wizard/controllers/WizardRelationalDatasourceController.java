@@ -327,6 +327,10 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
                 // Remove any existing children
                 List<XulComponent> previewResultsList = previewResultsTable.getChildNodes();
 
+                //  Show the dialog.  We do this here so browsers such as IE can render 
+                //  column sizes and provide column resizing 
+                previewResultsDialog.show();
+                
                 previewResultsTable.suppressLayout(true);
                 XulTreeChildren treeChildren = previewResultsTable.getRootChildren();
                 if (treeChildren != null) {
@@ -365,7 +369,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
                   previewResultsTable.suppressLayout(false);
                   previewResultsTable.update();
                   hideWaitingDialog();
-                  previewResultsDialog.show();
                 } catch (XulException e) {
                   // TODO: add logging
                   hideWaitingDialog();
