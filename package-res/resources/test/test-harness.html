@@ -27,93 +27,8 @@
 
 <button onclick="testAll()">Test All</button>
 
-<table border="0">
+<table id="testtable" border="0">
     <tbody>
-        <tr>
-            <td style="height:25px"><button onclick="test(1)">Test 1</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus1">---</td>
-            <td style="height:25px" id="testdesc1">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(2)">Test 2</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus2">---</td>
-            <td style="height:25px" id="testdesc2">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(3)">Test 3</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus3">---</td>
-            <td style="height:25px" id="testdesc3">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(4)">Test 4</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus4">---</td>
-            <td style="height:25px" id="testdesc4">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(5)">Test 5</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus5">---</td>
-            <td style="height:25px" id="testdesc5">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(6)">Test 6</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus6">---</td>
-            <td style="height:25px" id="testdesc6">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(7)">Test 7</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus7">---</td>
-            <td style="height:25px" id="testdesc7">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(8)">Test 8</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus8">---</td>
-            <td style="height:25px" id="testdesc8">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(9)">Test 9</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus9">---</td>
-            <td style="height:25px" id="testdesc9">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(10)">Test 10</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus10">---</td>
-            <td style="height:25px" id="testdesc10">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(11)">Test 11</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus11">---</td>
-            <td style="height:25px" id="testdesc11">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(12)">Test 12</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus12">---</td>
-            <td style="height:25px" id="testdesc12">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(13)">Test 13</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus13">---</td>
-            <td style="height:25px" id="testdesc13">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(14)">Test 14</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus14">---</td>
-            <td style="height:25px" id="testdesc14">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(15)">Test 15</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus15">---</td>
-            <td style="height:25px" id="testdesc15">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(16)">Test 16</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus16">---</td>
-            <td style="height:25px" id="testdesc16">---</td>
-        </tr>
-        <tr>
-            <td style="height:25px"><button onclick="test(17)">Test 17</button></td>
-            <td style="height:25px;background-color:#ffffff" id="teststatus17">---</td>
-            <td style="height:25px" id="testdesc17">---</td>
-        </tr>
     </tbody>
 </table>
 
@@ -146,7 +61,40 @@ function loadPage() {
 	};
 	var moduleArray = [da_mql];
 	pentaho.myapp.app.init(moduleArray);	
+    
+    // create the tests table
+    var table = document.getElementById('testtable');
+
+    var idx=1;
+    var running = true;
+    while( table.rows.length > 1 ) {
+        table.deleteRow(1);    
+    }
+    while(running) {
+        try {
+            eval('test'+idx);
+            row = table.insertRow(-1);
+            var html = '<td style="height:25px"><button onclick="test('+idx+')">Test '+idx+'</button></td>\n';
+            html += '<td style="height:25px;background-color:#ffffff" id="teststatus'+idx+'">---</td>\n';
+            html += '<td style="height:25px" id="testdesc'+idx+'">---</td>\n';
+            addTableCells( row, html );
+        } catch(e) {
+            running = false;
+        }
+        idx++;
+    }
+//    test18();
 }
+
+function addTableCells( rowObj, html ) {
+    var tmp = document.createElement("div");
+    tmp.innerHTML = '<table><tr>'+html+'</tr></table>';
+    tmp = tmp.childNodes[0].childNodes[0].childNodes[0].childNodes;
+    while(tmp.length > 0 ) {
+        rowObj.appendChild(tmp[0]);
+    }
+}
+
 
 function reset(idx) {
 
@@ -441,6 +389,204 @@ function test17() {
     
     var obj = model.submitQuery(query, 4);
     testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria'],['Belgium'],['Canada']],17);
+}
+
+// test a query with a condition 'country = Australia'
+function test18() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.EQUAL,["Australia"], pentaho.pda.Column.OPERATOR_TYPES.AND);
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia']],18);
+}
+
+// test a query with a condition 'country < B' in ascending order
+function test19() {query
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.LESS_THAN,["B"], pentaho.pda.Column.OPERATOR_TYPES.AND);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria']],19);
+}
+
+// test a query with a condition 'country < B' in descending order
+function test20() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.LESS_THAN,["B"], pentaho.pda.Column.OPERATOR_TYPES.AND);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.DESCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Austria'],['Australia']],20);
+}
+
+// test a query with a condition 'country = Australia or Belgium' in ascending order
+function test21() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.EQUAL,["Australia"], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.EQUAL,["Belgium"], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Belgium']],21);
+}
+
+// test a query with a condition 'country <= Belgium' in ascending order
+function test22() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.LESS_THAN_OR_EQUAL,["Belgium"], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria'],['Belgium']],22);
+}
+
+// test a query with a condition 'country > Switzerland' in ascending order
+function test23() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.MORE_THAN,["Switzerland"], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['UK'],['USA']],23);
+}
+
+// test a query with a condition 'country >= Switzerland' in ascending order
+function test24() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.MORE_THAN_OR_EQUAL,["Switzerland"], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Switzerland'],['UK'],['USA']],24);
+}
+
+// test a query with a condition 'country contains land' in ascending order
+function test25() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.CONTAINS,["land"], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Finland'],['Ireland'],['Netherlands'],['New Zealand'],['Poland'],['Switzerland']],25);
+}
+
+// test a query with a condition 'country does not contain "a"' in ascending order
+function test26() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.NOT_CONTAINS,["a"], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Belgium'],['Hong Kong'],['Philippines'],['Sweden'],['UK'],['USA']],26);
+}
+
+// test a query with a condition 'country beigns with "A"' in ascending order
+function test27() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.BEGINSWITH,["A"], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria']],27);
+}
+
+// test a query with a condition 'country ends with "ia"' in ascending order
+function test28() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.ENDSWITH,["ia"], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria'],['Russia']],28);
+}
+
+// test a query with a condition 'country is null' in ascending order
+function test29() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.IS_NULL,[""], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[],29);
+}
+
+// test a query with a condition 'country is not null' in ascending order
+function test30() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.NOT_NULL,[""], pentaho.pda.Column.OPERATOR_TYPES.OR);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria'],['Belgium'],['Canada'],['Denmark'],['Finland'],
+    ['France'],['Germany'],['Hong Kong'],['Ireland']
+    ,['Israel'],['Italy'],['Japan'],['Netherlands'],['New Zealand'],['Norway'],['Philippines'],['Poland'],['Portugal'],['Russia']
+    ,['Singapore'],['South Africa'],['Spain'],['Sweden'],['Switzerland'],['UK'],['USA']],30);
+}
+
+// test a query with a parameter 
+function test31() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.LESS_THAN,["Finland"], pentaho.pda.Column.OPERATOR_TYPES.AND);
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    query.addParameterById('BC_CUSTOMER_W_TER_COUNTRY',["Belgium"]);
+    
+    var obj = model.submitXmlQuery(query);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria']],31);
+}
+
+// test a query with a row limit 
+function test32() {
+
+    initModel();
+    var query = model.createQuery();
+    query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+    query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+    
+    var obj = model.submitQuery(query, 4);
+    testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria'],['Belgium'],['Canada']],32);
 }
 
 function initModel() {

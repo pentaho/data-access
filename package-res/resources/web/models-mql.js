@@ -304,6 +304,36 @@ pentaho.pda.model.mql.prototype.submitQuery = function( queryObject, rowLimit ) 
 //        alert( query.getXML() );
 
     }
+    
+    // get the results of the query by submiting XML
+pentaho.pda.model.mql.prototype.submitXmlQuery = function( queryObject, rowLimit ) {
+        var xml = queryObject.getXML(); 
+//        alert(json);
+        if (!rowLimit) {
+            rowLimit = -1;
+        }
+    
+        try {
+            // get the info about the models from the server
+            var hander = new pentaho.pda.MqlHandler();
+            var url = hander.METADATA_SERVICE_URL+'/doXmlQueryToCdaJson';
+            var query = 'xml='+escape(xml)+'&rowLimit='+rowLimit;
+
+            var resultXml = pentahoGet( url, query );
+            var result = parseXML( resultXml );
+            var nodes = result.getElementsByTagName('return');
+            resultJson = this.getText( nodes[0] );
+//            alert(resultJson);
+            var result = eval('('+resultJson+')');
+            return result;
+        } catch (e) {
+            alert(e.message);
+        }
+        return null;
+        
+//        alert( query.getXML() );
+
+    }
 
 // parse the results XML into a MetadataQuery.Results object
 pentaho.pda.model.mql.prototype.parseResultSetXml = function(xml) {
@@ -669,42 +699,60 @@ pentaho.pda.query.mql.prototype.getQueryStr = function() {
 pentaho.pda.query.mql.prototype.getXML = function() {
         var xml = '';
         xml += '<mql>\n<domain_type>relational</domain_type>\n';
-        xml += '<domain_id>'+model.domainId+'</domain_id>\n';
-        xml += '<model_id>'+model.modelId+'</model_id>\n';
+        xml += '<domain_id>'+this.model.domainId+'</domain_id>\n';
+        xml += '<model_id>'+this.model.modelId+'</model_id>\n';
         xml += "<options>\n";
-        xml += "<disable_distinct>" + this.disableDistinct + "</disable_distinct>\n";
+        xml += "<disable_distinct>" + this.state.disableDistinct + "</disable_distinct>\n";
         xml += "</options>\n";
 
+        xml += '<parameters>\n';
+        for( var idx=0; idx<this.state.parameters.length; idx++ ) {
+            xml += this.getParameterXML( this.state.parameters[idx] );
+        }
+        xml += '</parameters>\n';
         xml += '<selections>\n';
-        for( var idx=0; idx<this.selections.length; idx++ ) {
-            xml += this.getSelectionXML( this.selections[idx] );
+        for( var idx=0; idx<this.state.columns.length; idx++ ) {
+            xml += this.getSelectionXML( this.state.columns[idx] );
         }
         xml += '</selections>\n';
         xml += '<constraints>\n';
-        for( var idx=0; idx<this.filters.length; idx++ ) {
-            xml += this.getFilterXML( this.filters[idx] );
+        for( var idx=0; idx<this.state.conditions.length; idx++ ) {
+            xml += this.getFilterXML( this.state.conditions[idx], this.state.parameters );
         }
         xml += '</constraints>\n';
         xml += '<orders>\n';
-        for( var idx=0; idx<this.sorts.length; idx++ ) {
-            xml += this.getSortXML( this.sorts[idx] );
+        for( var idx=0; idx<this.state.orders.length; idx++ ) {
+            xml += this.getSortXML( this.state.orders[idx] );
         }
         xml += '</orders>\n';
         xml += '</mql>\n';
         return xml;
     }
 
-pentaho.pda.query.mql.prototype.getSelectionXML = function( selection ) {
-        if( selection && selection.column && selection.column.category ) {
+pentaho.pda.query.mql.prototype.getParameterXML = function( parameter ) {
         var xml = '';
-        xml += '<selection>\n';
-        xml += '<table>'+selection.column.category.categoryId+'</table>\n';
-        xml += '<column>'+selection.column.id+'</column>\n';
-        if( selection.aggType != pentaho.dataaccess.Column.AGG_TYPES.NONE ) {
-            xml += '<aggregation>'+selection.aggType+'</aggregation>';
+        xml += '<parameter defaultValue="';
+        if(parameter.value != null) {
+            xml += parameter.value;
+        } else {
+            xml += parameter.defulatValue;
         }
-        xml += '</selection>\n';
+        xml += '" name="'+parameter.column;
+        xml += '" type="'+parameter.type+'"/>';
         return xml;
+    }
+
+pentaho.pda.query.mql.prototype.getSelectionXML = function( selection ) {
+        if( selection && selection.id && selection.category ) {
+            var xml = '';
+            xml += '<selection>\n';
+            xml += '<table>'+selection.category+'</table>\n';
+            xml += '<column>'+selection.id+'</column>\n';
+            if( selection.selectedAggType != pentaho.pda.Column.AGG_TYPES.NONE ) {
+                xml += '<aggregation>'+selection.selectedAggType+'</aggregation>';
+            }
+            xml += '</selection>\n';
+            return xml;
         } else {
             return '';
         }
@@ -716,19 +764,95 @@ pentaho.pda.query.mql.prototype.getSortXML = function( sort ) {
         }
         var xml = '';
         xml += '<order>\n';
-        xml += '<direction>'+sort.direction+'</direction>\n';
-        xml += '<view_id>'+sort.column.category.categoryId+'</view_id>\n';
-        xml += '<column_id>'+sort.column.id+'</column_id>\n';
+        xml += '<direction>'+sort.orderType+'</direction>\n';
+        xml += '<view_id>'+sort.category+'</view_id>\n';
+        xml += '<column_id>'+sort.column+'</column_id>\n';
         xml += '</order>\n';
         return xml;
     }
 
-pentaho.pda.query.mql.prototype.getFilterXML = function( filter ) {
+pentaho.pda.query.mql.prototype.getFilterXML = function( filter, parameters ) {
         var xml = '';
         xml += '<constraint>\n';
-        xml += '<operator>'+filter.operator+'</operator>\n';
-        xml += '<condition><![CDATA['+filter.getConditionString()+']]></condition>\n';
+        xml += '<operator>'+filter.combinationType+'</operator>\n';
+        xml += '<condition><![CDATA['+this.getFilterConditionString( filter.column, filter.category, filter.operator, filter.value, parameters )+']]></condition>\n';
         xml += '</constraint>\n';
         return xml;
     }
 
+pentaho.pda.query.mql.prototype.getFilterConditionString = function( columnId, category, operator, value, parameters ) {
+        var column = this.model.getColumnById( columnId );
+        var isArrayValues = value.constructor.toString().indexOf("Array") != -1;
+        if( operator == pentaho.pda.Column.CONDITION_TYPES.LIKE ) {
+            return 'LIKE(['+category+'.'+columnId+']; "%'+this.getFilterValueString(column, value, parameters)+'%")'; 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.EQUAL && !isArrayValues) {
+            return '['+category+'.'+columnId+'] = '+this.getFilterValueString(column, value, parameters); 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.EQUAL && isArrayValues && value.length == 1) {
+            return '['+category+'.'+columnId+'] = '+this.getFilterValueString(column, value, parameters); 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.EQUAL && isArrayValues) {
+            return 'IN(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+")"; 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.LESS_THAN ) {
+            return '['+category+'.'+columnId+'] < '+this.getFilterValueString(column, value, parameters); 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.LESS_THAN_OR_EQUAL ) {
+            return '['+category+'.'+columnId+'] <= '+this.getFilterValueString(column, value, parameters); 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.MORE_THAN ) {
+            return '['+category+'.'+columnId+'] > '+this.getFilterValueString(column, value, parameters); 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.MORE_THAN_OR_EQUAL ) {
+            return '['+category+'.'+columnId+'] >= '+this.getFilterValueString(column, value, parameters); 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.CONTAINS) {
+            return 'CONTAINS(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+")"; 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.NOT_CONTAINS) {
+            return 'NOT(CONTAINS(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+"))"; 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.BEGINSWITH) {
+            return 'BEGINSWITH(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+")"; 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.ENDSWITH) {
+            return 'ENDSWITH(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+")"; 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.IS_NULL) {
+            return 'ISNA(['+category+'.'+columnId+'])'; 
+        }
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.NOT_NULL) {
+            return 'NOT(ISNA(['+category+'.'+columnId+']))'; 
+        }
+    }
+    
+pentaho.pda.query.mql.prototype.getFilterValueString = function( column, value, parameters ) {
+
+        // see if we have parameters
+        for(var idx=0; idx<parameters.length; idx++) {
+            if( parameters[idx].column == column.id ) {
+                // this has a parameter
+                return '[param:'+parameters[idx].column+']';
+            }
+        }
+        
+        if( value.constructor.toString().indexOf("Array") != -1 ) {
+            // we have an array of values
+            var str = '';
+            for( var idx=0; idx<value.length; idx++ ) {
+                if( idx > 0 ) {
+                    str += '; ';
+                }
+                str += this.getFilterValueString(column,value[idx], parameters);
+            }
+            return str;
+        }
+        if( column.dataType == pentaho.pda.Column.DATA_TYPES.NUMERIC ) {
+            return ''+value;
+        }
+        if( column.dataType == pentaho.pda.Column.DATA_TYPES.BOOLEAN ) {
+            return ''+value;
+        }
+        return '"'+value+'"';
+    }
