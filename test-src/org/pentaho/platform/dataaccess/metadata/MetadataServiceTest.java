@@ -904,14 +904,14 @@ public class MetadataServiceTest  extends BaseTest {
     
     ModelInfo[] models = svc.listBusinessModels(null);
     assertNotNull(models);
-    assertEquals("Wrong nuber of models returned",4,models.length);
+    assertTrue("Wrong nuber of models returned",models.length>2);
     boolean found = false;
     for(int idx=0; idx<models.length; idx++) {
-      if(models[idx].getDomainId().equals("steel-wheels/metadata.xmi") && models[1].getModelId().equals("BV_HUMAN_RESOURCES")) {
-        assertEquals("Wrong domain id","steel-wheels/metadata.xmi",models[1].getDomainId());
-        assertEquals("Wrong description","This model contains information about Employees.",models[1].getModelDescription());
-        assertEquals("Wrong model id","BV_HUMAN_RESOURCES",models[1].getModelId());
-        assertEquals("Wrong model name","Human Resources",models[1].getModelName());
+      if(models[idx].getDomainId().equals("steel-wheels/metadata.xmi") && models[idx].getModelId().equals("BV_HUMAN_RESOURCES")) {
+        assertEquals("Wrong domain id","steel-wheels/metadata.xmi",models[idx].getDomainId());
+        assertEquals("Wrong description","This model contains information about Employees.",models[idx].getModelDescription());
+        assertEquals("Wrong model id","BV_HUMAN_RESOURCES",models[idx].getModelId());
+        assertEquals("Wrong model name","Human Resources",models[idx].getModelName());
         found = true;
       }
     }
@@ -966,14 +966,14 @@ public class MetadataServiceTest  extends BaseTest {
     ModelInfo models[] = modelList.toArray( new ModelInfo[modelList.size()]);
     
     assertNotNull(models);
-    assertEquals("Wrong nuber of models returned",4,models.length);
+    assertTrue("Wrong nuber of models returned",models.length>2);
     boolean found = false;
     for(int idx=0; idx<models.length; idx++) {
-      if(models[idx].getDomainId().equals("steel-wheels/metadata.xmi") && models[1].getModelId().equals("BV_HUMAN_RESOURCES")) {
-        assertEquals("Wrong domain id","steel-wheels/metadata.xmi",models[1].getDomainId());
-        assertEquals("Wrong description","This model contains information about Employees.",models[1].getModelDescription());
-        assertEquals("Wrong model id","BV_HUMAN_RESOURCES",models[1].getModelId());
-        assertEquals("Wrong model name","Human Resources",models[1].getModelName());
+      if(models[idx].getDomainId().equals("steel-wheels/metadata.xmi") && models[idx].getModelId().equals("BV_HUMAN_RESOURCES")) {
+        assertEquals("Wrong domain id","steel-wheels/metadata.xmi",models[idx].getDomainId());
+        assertEquals("Wrong description","This model contains information about Employees.",models[idx].getModelDescription());
+        assertEquals("Wrong model id","BV_HUMAN_RESOURCES",models[idx].getModelId());
+        assertEquals("Wrong model name","Human Resources",models[idx].getModelName());
         found = true;
       }
     }

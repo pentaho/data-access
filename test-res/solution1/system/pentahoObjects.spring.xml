@@ -28,6 +28,8 @@ PentahoSystem which is initialized after Spring
   
   <bean id="PentahoNameGenerator" class="org.pentaho.reporting.platform.plugin.repository.TempDirectoryNameGenerator" scope="prototype" />
   
+  <bean id="IMondrianCatalogService" class="org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper" scope="singleton" />
+  
     <!--
     IDatasourceService - options are: 
     org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService
