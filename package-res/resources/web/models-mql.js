@@ -80,8 +80,7 @@ pentaho.pda.MqlHandler.prototype.getModelInfoFromNode = function getModelInfoFro
 }
 
 pentaho.pda.MqlHandler.prototype.addModelInfoFromNode = function addModelInfoFromNode( node ) {
-
-	return new pentaho.pda.model.mql(this.getModelInfoFromNode(node));
+	return new pentaho.pda.model.mql(this.getModelInfoFromNode(node), this);
 } //end addModelInfoFromNode
     
 pentaho.pda.MqlHandler.prototype.getModelFromNode = function( node, modelAccess, datasourceConfig ) {
@@ -168,7 +167,7 @@ pentaho.pda.MqlHandler.prototype.getText = function(node) {
                         pentaho.pda.model.mql
    ******************************************						
 */
-pentaho.pda.model.mql = function(obj) {
+pentaho.pda.model.mql = function(obj, handler) {
 	pentaho.pda.model.call(this, obj); //call parent object
 	
     this.categories = new Array();
@@ -176,6 +175,7 @@ pentaho.pda.model.mql = function(obj) {
     this.modelId = obj.modelId;
     this.modelName = obj.modelName || '';
     this.modelDescription = obj.modelDescription || '';
+    this.handler = handler;
 }
 
 inheritPrototype(pentaho.pda.model.mql, pentaho.pda.model); //borrow the parent's methods
@@ -183,8 +183,7 @@ inheritPrototype(pentaho.pda.model.mql, pentaho.pda.model); //borrow the parent'
 pentaho.pda.model.mql.prototype.discoverModelDetail = function() {
 
 	// get the info about the models from the server
-    var hander = new pentaho.pda.MqlHandler();
-	var url = hander.METADATA_SERVICE_URL+'/loadModel';
+	var url = this.handler.METADATA_SERVICE_URL+'/loadModel';
 	var query = 'domainId='+escape(this.domainId)+'&modelId='+escape(this.modelId);
 	var result = pentahoGet( url, query );
 	// parse the XML
@@ -285,8 +284,7 @@ pentaho.pda.model.mql.prototype.submitQuery = function( queryObject, rowLimit ) 
     
         try {
             // get the info about the models from the server
-            var hander = new pentaho.pda.MqlHandler();
-            var url = hander.METADATA_SERVICE_URL+'/doJsonQueryToCdaJson';
+            var url = this.handler.METADATA_SERVICE_URL+'/doJsonQueryToCdaJson';
             var query = 'json='+escape(json)+'&rowLimit='+rowLimit;
 
             var resultXml = pentahoGet( url, query );
@@ -315,8 +313,7 @@ pentaho.pda.model.mql.prototype.submitXmlQuery = function( queryObject, rowLimit
     
         try {
             // get the info about the models from the server
-            var hander = new pentaho.pda.MqlHandler();
-            var url = hander.METADATA_SERVICE_URL+'/doXmlQueryToCdaJson';
+            var url = this.handler.METADATA_SERVICE_URL+'/doXmlQueryToCdaJson';
             var query = 'xml='+escape(xml)+'&rowLimit='+rowLimit;
 
             var resultXml = pentahoGet( url, query );
