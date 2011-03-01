@@ -1,6 +1,3 @@
-dojo.require('dojo.i18n.common');
-dojo.require('dojo.string.extras');
-
 Messages = function()
 {
 };
@@ -9,7 +6,7 @@ Messages = function()
 	if (Messages.messageBundle === undefined) {
 	  Messages.messageBundle = new Array();
 		
-		Messages.addBundle("content.jimmylabs-r1-metadata.resources.web.metadata.messages", "message_strings");
+		Messages.addBundle('dataaccess','messages');
 	}
 };
 

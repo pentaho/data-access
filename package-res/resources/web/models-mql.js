@@ -188,6 +188,7 @@ pentaho.pda.model.mql.prototype.discoverModelDetail = function() {
 	var result = pentahoGet( url, query );
 	// parse the XML
 	var xml = parseXML( result );
+    
 	var nodes = xml.getElementsByTagName('return');
 	if( nodes && nodes.length> 0 ) {
 		//return this.getDetailFromNode( nodes[0], modelAccess, datasourceConfig );

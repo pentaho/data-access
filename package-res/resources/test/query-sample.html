@@ -4,7 +4,14 @@
 <title>Query Sample</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-<script language="javascript" src="../../../../js/dojo.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    var djConfig = { modulePaths: {
+                        dataaccess: "../../web/messages",
+                    }
+                };
+</script>
+<script language="javascript" src="../web/dojo/dojo.js" type="text/javascript"></script>
 <script language="javascript" src="../web/messages/Messages.js" type="text/javascript"></script>
 <script language="javascript" src="../web/pentaho-ajax.js" type="text/javascript"></script>
 <script language="javascript" src="../web/pentaho-thin-app.js" type="text/javascript"></script>
@@ -174,11 +181,15 @@ function changeColumn( selectId, valuesId ) {
 
     var select = document.getElementById(selectId);
     var valuesList = document.getElementById(valuesId);
+    valuesList.options.length = 0;
+    if(select.selectedIndex<1) {
+        selectionsChanged();
+        return;
+    }
     var columnId = select.value;
     var column = model.getColumnById( columnId );
     // get the values for the column
     var results = model.getAllValuesForColumn( column );
-    valuesList.options.length = 0;
     valuesList.options[0] = new Option('<ALL>');
     model.populateListFromResults( valuesList, results, 0 );
     valuesList.size = Math.min( results.resultset.length, 10 );
@@ -226,8 +237,10 @@ function selectionsChanged() {
     query.prepare();
     document.getElementById('querytext').value = query.getQueryStr();
     document.getElementById('data-title').innerHTML = 'Data (loading)';
-    clearDataDisplay()
-    
+    clearDataDisplay();
+    if( query.state.columns.length == 0 ) {
+        return;
+    }
     results = model.submitQuery( query );
     if( results == null ) {
         document.getElementById('data-title').innerHTML = 'Data (none)';
