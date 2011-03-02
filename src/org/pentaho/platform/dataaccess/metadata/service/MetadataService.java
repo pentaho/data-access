@@ -21,6 +21,7 @@ package org.pentaho.platform.dataaccess.metadata.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -36,6 +37,7 @@ import org.pentaho.platform.api.engine.ILogger;
 import org.pentaho.platform.dataaccess.metadata.messages.Messages;
 import org.pentaho.platform.dataaccess.metadata.model.impl.Model;
 import org.pentaho.platform.dataaccess.metadata.model.impl.ModelInfo;
+import org.pentaho.platform.dataaccess.metadata.model.impl.ModelInfoComparator;
 import org.pentaho.platform.dataaccess.metadata.model.impl.Query;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -93,6 +95,8 @@ public class MetadataService extends PentahoBase {
     } catch (Throwable t) {
       error(Messages.getErrorString("MetadataService.ERROR_0002_BAD_MODEL_LIST"), t); //$NON-NLS-1$
     }
+    
+    Collections.sort(models, new ModelInfoComparator());
     return models.toArray( new ModelInfo[models.size()]);
   }
   
