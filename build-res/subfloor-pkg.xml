@@ -107,10 +107,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <fileset dir="${lib.dir}" />
       <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
     </copy>
-    <copy todir="${approot.stage.dir}/lib">
-      <fileset dir="${lib.dir}" />
-      <fileset file="flexjson*.jar" />
-    </copy>
   </target>
 
   <target name="package"
