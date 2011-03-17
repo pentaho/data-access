@@ -28,7 +28,7 @@ public class SerializeServiceTest {
     if (!PentahoSystem.getInitializedOK()) {
       CsvDatasourceServiceHelper csvHelper = new CsvDatasourceServiceHelper();
       csvHelper.setUp();
-      System.setProperty("org.osjava.sj.root", "test-src/solution/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
+      System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
 

@@ -491,12 +491,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       asyncConstructorListener.asyncConstructorDone(this);
     }
 
-    
-    // -----------------------------------
-    if (!wizardController.isFinished()) {
-      return;
-    }
-
   }
 
   public DatasourceModel getDatasourceModel() {

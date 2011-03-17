@@ -39,5 +39,13 @@ PentahoSystem which is initialized after Spring
     org.pentaho.platform.engine.services.connection.datasource.dbcp.PooledOrJndiDatasourceService  (Default option)
   -->
   <bean id="IDatasourceService" class="org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService" scope="singleton" />
-  
+  <bean id="IAuditEntry" class="org.pentaho.platform.engine.core.audit.AuditFileEntry" scope="singleton" />
+  <bean id="IAclVoter" class="org.pentaho.platform.engine.security.acls.voter.PentahoAllowAllAclVoter" scope="singleton" />
+  <bean id="IPluginManager" class="org.pentaho.platform.plugin.services.pluginmgr.PluginManager" scope="singleton" />
+  <bean id="IPluginProvider" class="org.pentaho.platform.plugin.services.pluginmgr.SystemPathXmlPluginProvider" scope="singleton" />
+  <bean id="IPluginResourceLoader" class="org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader" scope="singleton" />
+  <bean id="IDatasourceMgmtService" class="org.pentaho.webservices.test.TestDatasourceMgmtService" scope="prototype" />
+
+  <bean id="ICwmSchemaFactory" class="org.pentaho.pms.factory.CwmSchemaFactory" scope="session"/>
+
 </beans>

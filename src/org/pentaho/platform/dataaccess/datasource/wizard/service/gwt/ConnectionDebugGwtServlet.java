@@ -51,7 +51,7 @@ public class ConnectionDebugGwtServlet extends RemoteServiceServlet implements I
         Connection connection = new Connection();
         connection.setDriverClass("org.hsqldb.jdbcDriver"); //$NON-NLS-1$
         connection.setName("SampleData");//$NON-NLS-1$
-        connection.setUrl("jdbc:hsqldb:file:test-src/solution/system/data/sampledata");//$NON-NLS-1$
+        connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");//$NON-NLS-1$
         connection.setUsername("pentaho_user");//$NON-NLS-1$
         connection.setPassword("password");//$NON-NLS-1$
         SERVICE.addConnection(connection);

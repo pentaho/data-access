@@ -49,7 +49,7 @@ public class DatasourceModelTest {
     connection.setDriverClass("org.hsqldb.jdbcDriver");
     connection.setName("SampleData");
     connection.setPassword("password");
-    connection.setUrl("jdbc:hsqldb:file:test-src/solution/system/data/sampledata");
+    connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
     connection.setUsername("pentaho_user");
     List<IConnection> connectionList = new ArrayList<IConnection>();
     connectionList.add(connection);
@@ -267,7 +267,7 @@ public class DatasourceModelTest {
     connection.setDriverClass("org.hsqldb.jdbcDriver");
     connection.setName("SampleData");
     connection.setPassword("password");
-    connection.setUrl("jdbc:hsqldb:file:test-src/solution/system/data/sampledata");
+    connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
     connection.setUsername("pentaho_user");
     datasourceModel2.getGuiStateModel().setConnections(Collections.singletonList(connection));
 

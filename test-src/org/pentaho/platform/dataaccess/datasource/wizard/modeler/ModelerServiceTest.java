@@ -31,7 +31,7 @@ public class ModelerServiceTest extends BaseTest {
 
   private static final String SOLUTION_PATH = "test-res/solution1/"; //$NON-NLS-1$
 
-  private static final String ALT_SOLUTION_PATH = "test-src/solution1"; //$NON-NLS-1$
+  private static final String ALT_SOLUTION_PATH = "test-res/solution11"; //$NON-NLS-1$
 
   private static final String PENTAHO_XML_PATH = "/system/pentaho.xml"; //$NON-NLS-1$
 
