@@ -70,7 +70,7 @@ public class TableInputTransformGenerator extends StagingTransformGenerator {
 
     inputMeta.setDatabaseMeta(sourceDatabaseMeta);
     inputMeta.setExecuteEachInputRow(false);
-    inputMeta.setRowLimit(new Integer(rowLimit).toString());
+    inputMeta.setRowLimit(Integer.toString(rowLimit));
     inputMeta.setSQL(sql);
     inputMeta.setVariableReplacementActive(false);
     inputMeta.setLazyConversionActive(false);

@@ -129,17 +129,9 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
   XulDialog sampleDataDialog = null;
 
-  CustomAggregateCellEditor aggregationCellEditor = null;
-
   CustomSampleDataCellEditor sampleDataCellEditor = null;
 
   CustomSampleDataCellRenderer sampleDataCellRenderer = null;
-
-  //private XulRows rows = null;
-  //private XulGrid grid = null;  
-  CustomAggregationCellRenderer aggregationCellRenderer = null;
-
-  private XulVbox relationalAggregationEditorVbox = null;
 
 
   public WizardRelationalDatasourceController() {
@@ -148,15 +140,9 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
   @Bindable
   public void init() {
-    //rows = (XulRows) document.getElementById("relationalSampleDataRows");//$NON-NLS-1$
-    //grid = (XulGrid) document.getElementById("relationalSampleDataGrid");//$NON-NLS-1$
-    relationalAggregationEditorVbox = (XulVbox) document.getElementById("relationalAggregationEditorVbox"); //$NON-NLS-1$
     sampleDataTree = (XulTree) document.getElementById("relationalSampleDataTable");
     aggregationEditorDialog = (XulDialog) document.getElementById("relationalAggregationEditorDialog");
-    aggregationCellEditor = new CustomAggregateCellEditor(aggregationEditorDialog, datasourceMessages, document, bf);
-    aggregationCellRenderer = new CustomAggregationCellRenderer();
     sampleDataDialog = (XulDialog) document.getElementById("relationalSampleDataDialog");
-    sampleDataCellEditor = new CustomSampleDataCellEditor(sampleDataDialog);
     sampleDataCellRenderer = new CustomSampleDataCellRenderer();
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById("errorLabel");//$NON-NLS-1$    
@@ -289,10 +275,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
   public String getName() {
     return "relationalDatasourceController";
-  }
-
-  public void editQuery() {
-
   }
 
   @Bindable
@@ -484,16 +466,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
   }
 
   @Bindable
-  public void closeAggregationEditorDialog() {
-    aggregationCellEditor.hide();
-  }
-
-  @Bindable
-  public void saveAggregationValues() {
-    aggregationCellEditor.notifyListeners();
-  }
-
-  @Bindable
   public void closeSampleDataDialog() {
     sampleDataCellEditor.hide();
   }
@@ -538,40 +510,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
     }
   }
 
-  private class CustomAggregationCellRenderer implements TreeCellRenderer {
-
-    public Object getNativeComponent() {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    public String getText(Object value) {
-      StringBuffer buffer = new StringBuffer();
-      if (value instanceof Aggregation) {
-        Aggregation aggregation = (Aggregation) value;
-        List<AggregationType> aggregationList = aggregation.getAggregationList();
-        for (int i = 0; i < aggregationList.size(); i++) {
-          if (buffer.length() + datasourceMessages.getString(aggregationList.get(i).getDescription()).length() < MAX_COL_SIZE) {
-            buffer.append(datasourceMessages.getString(aggregationList.get(i).getDescription()));
-            if ((i < aggregationList.size() - 1 && (buffer.length()
-                + datasourceMessages.getString(aggregationList.get(i + 1).getDescription()).length() + COMMA.length() < MAX_COL_SIZE))) {
-              buffer.append(COMMA);
-            }
-          } else {
-            break;
-          }
-        }
-      }
-      return buffer.toString();
-    }
-
-    public boolean supportsNativeComponent() {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-  }
-
   private class CustomSampleDataCellRenderer implements TreeCellRenderer {
 
     public Object getNativeComponent() {
@@ -609,30 +547,30 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
       return EMPTY_STRING;
     }
   }
-
-  public void initializeBusinessData(BusinessData businessData) {
-    datasourceModel.setDatasourceType(DatasourceType.SQL);
-
-    SqlPhysicalModel model = (SqlPhysicalModel) businessData.getDomain().getPhysicalModels().get(0);
-    String queryStr = model.getPhysicalTables().get(0).getTargetTable();
-    //    datasourceModel.setDatasourceType(DatasourceType.SQL);
-    datasourceModel.setDatasourceName(businessData.getDomain().getId());
-    datasourceModel.setQuery(queryStr);
-    for (IConnection conn : datasourceModel.getGuiStateModel().getConnections()) {
-      if (model.getDatasource().getDatabaseName().equals(conn.getName())) {
-        datasourceModel.setSelectedRelationalConnection(conn);
-        break;
-      }
-    }
-    datasourceModel.getGuiStateModel().setRelationalData(null);
-    query.setDisabled(false);
-    // Setting the editable property to true so that the table can be populated with correct cell types                    
-    columnNameTreeCol.setEditable(true);
-    columnTypeTreeCol.setEditable(true);
-    //columnFormatTreeCol.setEditable(true);
-    datasourceModel.getGuiStateModel().setRelationalData(businessData.getData());
-
-  }
+//
+//  public void initializeBusinessData(BusinessData businessData) {
+//    datasourceModel.setDatasourceType(DatasourceType.SQL);
+//
+//    SqlPhysicalModel model = (SqlPhysicalModel) businessData.getDomain().getPhysicalModels().get(0);
+//    String queryStr = model.getPhysicalTables().get(0).getTargetTable();
+//    //    datasourceModel.setDatasourceType(DatasourceType.SQL);
+//    datasourceModel.setDatasourceName(businessData.getDomain().getId());
+//    datasourceModel.setQuery(queryStr);
+//    for (IConnection conn : datasourceModel.getGuiStateModel().getConnections()) {
+//      if (model.getDatasource().getDatabaseName().equals(conn.getName())) {
+//        datasourceModel.setSelectedRelationalConnection(conn);
+//        break;
+//      }
+//    }
+//    datasourceModel.getGuiStateModel().setRelationalData(null);
+//    query.setDisabled(false);
+//    // Setting the editable property to true so that the table can be populated with correct cell types
+//    columnNameTreeCol.setEditable(true);
+//    columnTypeTreeCol.setEditable(true);
+//    //columnFormatTreeCol.setEditable(true);
+//    datasourceModel.getGuiStateModel().setRelationalData(businessData.getData());
+//
+//  }
 
   public boolean supportsBusinessData(BusinessData businessData) {
     return (businessData.getDomain().getPhysicalModels().get(0) instanceof SqlPhysicalModel);
@@ -655,14 +593,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 //    metaStep.updateDomain(datasourceModel.getRelationalModel()
 //          .getSelectedConnection().getName(), null, this.query.getValue());
     return true;
-  }
-
-  /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.wizard.controllers.IDatasourceTypeController#initializeBusinessData(org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel)
-   */
-  public void initializeBusinessData(DatasourceModel model) {
-    // TODO Auto-generated method stub
-    
   }
 
   /* (non-Javadoc)

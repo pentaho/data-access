@@ -46,7 +46,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
-import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileService;
+import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -93,7 +93,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
               "settings/data-access-permission-handler", "org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessPermissionHandler"); //$NON-NLS-1$ //$NON-NLS-2$
       Class<?> clazz = Class.forName(dataAccessClassName);
       Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
-      dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance(new Object[] {});
+      dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance();
     } catch (Exception e) {
       logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0007_DATAACCESS_PERMISSIONS_INIT_ERROR"), e); //$NON-NLS-1$
       // TODO: Unhardcode once this is an actual plugin
@@ -108,7 +108,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
               "settings/data-access-view-permission-handler", "org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessViewPermissionHandler"); //$NON-NLS-1$ //$NON-NLS-2$
       Class<?> clazz = Class.forName(dataAccessViewClassName);
       Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
-      dataAccessViewPermHandler = (IDataAccessViewPermissionHandler) defaultConstructor.newInstance(new Object[] {});
+      dataAccessViewPermHandler = (IDataAccessViewPermissionHandler) defaultConstructor.newInstance();
     } catch (Exception e) {
       logger.error(
           Messages.getErrorString("DatasourceServiceImpl.ERROR_0030_DATAACCESS_VIEW_PERMISSIONS_INIT_ERROR"), e); //$NON-NLS-1$
@@ -193,7 +193,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
       metadataDomainRepository.removeModel(domainId, modelName);
       if(datasource != null){
         String fileName = datasource.getCsvModelInfo().getFileInfo().getFileName();
-        FileService fileService = new FileService();
+        FileUtils fileService = new FileUtils();
         if(fileName != null) {
           fileService.deleteFile(fileName);
         }

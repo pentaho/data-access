@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
-import org.pentaho.gwt.widgets.client.buttons.RoundedButton;
 import org.pentaho.gwt.widgets.client.utils.i18n.IResourceBundleLoadCallback;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
@@ -36,7 +35,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.IWizardCont
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.LinearWizardController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardDatasourceController;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTOUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
@@ -259,7 +257,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     String modelState = (String) domain.getLogicalModels().get(0).getProperty("datasourceModel");
     datasourceService.deSerializeModelState(modelState, new XulServiceCallback<DatasourceDTO>() {
       public void success(DatasourceDTO datasourceDTO) {
-        DatasourceDTOUtil.populateModel(datasourceDTO, datasourceModel);
+        DatasourceDTO.populateModel(datasourceDTO, datasourceModel);
         dialog.show();
         datasourceModel.getGuiStateModel().setDirty(false);
         physicalStep.setFocus();        

@@ -3,7 +3,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 import java.io.File;
 import java.util.Arrays;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.gwt.widgets.client.utils.string.StringTokenizer;
 import org.pentaho.metadata.model.concept.types.DataType;
@@ -28,7 +27,7 @@ public class CsvModelServiceTest extends BaseTest {
 
   private static final String SOLUTION = "testsolution"; //$NON-NLS-1$
 
-  private CsvModelService service = null;
+  private CsvUtils service = null;
 
   private void init() {
     if (!PentahoSystem.getInitializedOK()) {
@@ -47,34 +46,11 @@ public class CsvModelServiceTest extends BaseTest {
       return ALT_SOLUTION_PATH;
     }
   }
-  
-  @Test
-  public void testSaveModelInfo() throws Exception {
-    ModelInfo modelInfo = CsvTransformGeneratorTest.createModel();
-    service = new CsvModelService();
-    service.saveModelInfo(modelInfo);
-
-    String project = modelInfo.getFileInfo().getProject() == null ? "" : modelInfo.getFileInfo().getProject();
-    
-    String filepath = AgileHelper.getFolderPath(project) + "/" + modelInfo.getFileInfo().getTmpFilename() + ".xml";
-    File f = new File(filepath);
-    assertTrue(f.exists());
-  }
-  
-  @Test
-  public void testGetModelInfo() throws Exception {
-    testSaveModelInfo();
-    ModelInfo expected = CsvTransformGeneratorTest.createModel();
-    service = new CsvModelService();
-    ModelInfo modelInfo = service.getModelInfo(SOLUTION, "unit_test.csv"); //$NON-NLS-1$
-    assertNotNull(modelInfo);
-    assertEquals(expected, modelInfo);
-  }
 
   @SuppressWarnings("nls")
   @Test
   public void testGetLines() throws Exception {
-    service = new CsvModelService();
+    service = new CsvUtils();
     ModelInfo modelInfo = CsvTransformGeneratorTest.createModel();
     String project = modelInfo.getFileInfo().getProject() == null ? "" : modelInfo.getFileInfo().getProject();
     String filepath = AgileHelper.getFolderPath(project) + "/" + modelInfo.getFileInfo().getTmpFilename();
@@ -88,7 +64,7 @@ public class CsvModelServiceTest extends BaseTest {
   
   @Test
   public void testAssumeColumnDetails_Numeric() {
-    service = new CsvModelService();
+    service = new CsvUtils();
     String[] samples = new String[] {"100.00", "100.00", "100.08", "100.00", "100.12", "100.02"};
     ColumnInfo ci = new ColumnInfo();
 
@@ -106,7 +82,7 @@ public class CsvModelServiceTest extends BaseTest {
   }
   @Test
   public void testAssumeColumnDetails_Currency() {
-    service = new CsvModelService();
+    service = new CsvUtils();
     String[] samples = new String[] {"$101.04", "$100.3", "$100.3000", "$100.1", "$11100.32", "$7,100.433", "($500.00)"};
     ColumnInfo ci = new ColumnInfo();
 
@@ -129,7 +105,7 @@ public class CsvModelServiceTest extends BaseTest {
 
   @Test
   public void testAssumeColumnDetails_Dates() {
-    service = new CsvModelService();
+    service = new CsvUtils();
     String[] samples = new String[] {"01/20/2000", "02/29/2000", "10/31/2000", "12/31/2000", "01/01/2000"};
     ColumnInfo ci = new ColumnInfo();
 

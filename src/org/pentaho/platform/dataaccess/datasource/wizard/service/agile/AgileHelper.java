@@ -15,7 +15,6 @@ public class AgileHelper {
 
   public static final String PLUGIN_NAME = "data-access"; //$NON-NLS-1$
   private static final String STAGING_SCHEMA = "data-access-staging-schema"; //$NON-NLS-1$
-  private static final String STAGING_DIALECT = "data-access-staging-dialect"; //$NON-NLS-1$
   private static final String STAGING_JNDI = "data-access-staging-jndi"; //$NON-NLS-1$
   private static final String FILES_PATH = "data-access-files-path"; //$NON-NLS-1$
   private static final String TEMP_FILES_PATH = "data-access-tmp-files-path"; //$NON-NLS-1$
@@ -27,13 +26,11 @@ public class AgileHelper {
   private static long contentLength = 0;
   
   public static String getSchemaName() {
-    String schema = PentahoSystem.getSystemSetting(SETTINGS_FILE, STAGING_SCHEMA, null); 
-    return schema;
+    return PentahoSystem.getSystemSetting(SETTINGS_FILE, STAGING_SCHEMA, null);
   }
   
   public static String getDatasourceSolutionStorage() {
-    String schema = PentahoSystem.getSystemSetting(SETTINGS_FILE, DATASOURCE_SOLUTION_STORAGE, "admin"); //$NON-NLS-1$  
-    return schema;
+    return PentahoSystem.getSystemSetting(SETTINGS_FILE, DATASOURCE_SOLUTION_STORAGE, "admin");
   }
 
   public static String getDialect(DatabaseMeta meta) {
@@ -54,14 +51,12 @@ public class AgileHelper {
   }
 
   public static String generateTableName( String filename ) {
-    String tableName = filename.replace('.', '_');
     // TODO add other replacements to guarantee a good table name
-    return tableName;
+    return filename.replace('.', '_');
   }
   
   public static String getJndiName() {
-    String jndi = PentahoSystem.getSystemSetting(SETTINGS_FILE, STAGING_JNDI, null);
-    return jndi;
+    return PentahoSystem.getSystemSetting(SETTINGS_FILE, STAGING_JNDI, null);
   }
 
   public static int getCsvSampleRowSize() {
@@ -117,16 +112,8 @@ public class AgileHelper {
   }
 
   public static String getProjectMetadataFolder( String project ) {
-    String folderPath = project+"/resources/metadata";
-    return folderPath;
+    return project+"/resources/metadata";
   }
 
-  public static long getContentLength() {
-    return contentLength;
-  }
 
-  public static synchronized void setContentLength(long contentLength) {
-    AgileHelper.contentLength = contentLength;
-  }
-  
 }

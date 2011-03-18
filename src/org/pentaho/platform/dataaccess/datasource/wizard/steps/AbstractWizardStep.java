@@ -157,7 +157,7 @@ public abstract class AbstractWizardStep<T extends IWizardModel> extends XulEven
   }
   
   public void setDisabled(boolean disabled) {
-    boolean oldDisabled = disabled;
+    boolean oldDisabled = this.disabled;
     this.disabled = disabled;
     if (stepLabel != null) {
       stepLabel.setDisabled(this.disabled);

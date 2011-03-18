@@ -26,7 +26,6 @@ import java.util.Locale;
 
 import mondrian.xmla.DataSourcesConfig.DataSource;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -53,7 +52,7 @@ import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository.ISolutionRepository;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileService;
+import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
@@ -218,7 +217,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
 		 **/  
 	    
 	    String relativePath = PentahoSystem.getSystemSetting(
-	        "file-upload-defaults/relative-path", String.valueOf(FileService.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$  
+	        "file-upload-defaults/relative-path", String.valueOf(FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$
 	    String path = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
 	    String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
 	    LogicalModel logicalModel = domain.getLogicalModels().get(0);
@@ -238,7 +237,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
 	    	  //  Move CSV temporary file to final destination.
 	    	  if(tmpFile.exists()) {
 		        File csvFile = new File(path + File.separatorChar + csvFileName);
-		        FileUtils.copyFile(tmpFile, csvFile);
+		        org.apache.commons.io.FileUtils.copyFile(tmpFile, csvFile);
 		      }
 	    	  
 	    	  // Cleanup logic when updating from SQL datasource to CSV datasource.
@@ -288,7 +287,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
     
     IMondrianCatalogService mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, "IMondrianCatalogService", session); //$NON-NLS-1$
     
-    String dsUrl = PentahoSystem.getApplicationContext().getBaseUrl();;
+    String dsUrl = PentahoSystem.getApplicationContext().getBaseUrl();
     if (!dsUrl.endsWith("/")) { //$NON-NLS-1$
       dsUrl += "/"; //$NON-NLS-1$
     }

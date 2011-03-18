@@ -28,7 +28,7 @@ import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
 public class DebugModelerService extends ModelerService {
 
   public String serializeModels(Domain domain, String name) throws Exception {
-    String domainId = null;
+    String domainId;
     initKettle();
     
     try {

@@ -63,8 +63,7 @@ public class DatasourceServiceHelper {
       IPentahoResultSet resultSet =  sqlConnection.executeQuery(query);
       logger.debug("ResultSet is not scrollable. Copying into memory");//$NON-NLS-1$
       if ( !resultSet.isScrollable()) {
-        IPentahoResultSet scrollable = convertToMemoryResultSet(resultSet);
-        resultSet = scrollable;
+        resultSet = convertToMemoryResultSet(resultSet);
       } 
       MarshallableResultSet marshallableResultSet = new MarshallableResultSet();
       marshallableResultSet.setResultSet(resultSet);
@@ -122,7 +121,7 @@ public class DatasourceServiceHelper {
       IPentahoMetaData meta = resultSet.getMetaData();
       Object columnHeaders[][] = meta.getColumnHeaders();
       MemoryMetaData cachedMetaData = new MemoryMetaData(columnHeaders, null);
-      String[] colTypesAsString = null;
+      String[] colTypesAsString;
       // If the IPentahoMetaData is an instanceof SQLMetaData then get the column types from the metadata
       if(meta instanceof SQLMetaData) {
         SQLMetaData sqlMeta = (SQLMetaData) meta;

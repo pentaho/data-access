@@ -28,6 +28,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
  */
 public interface IDatasourceTypeController {
   boolean supportsBusinessData(DatasourceModel model);
-  void initializeBusinessData(DatasourceModel model);
+
   boolean finishing();
 }

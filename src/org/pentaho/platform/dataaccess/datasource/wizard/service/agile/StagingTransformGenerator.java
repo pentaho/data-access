@@ -100,7 +100,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     this.targetDatabaseMeta = databaseMeta;
   }
 
-  private final static String getStackTraceAsString(Throwable aThrowable) {
+  private static String getStackTraceAsString(Throwable aThrowable) {
     final Writer result = new StringWriter();
     final PrintWriter printWriter = new PrintWriter(result);
     aThrowable.printStackTrace(printWriter);
@@ -414,11 +414,9 @@ public abstract class StagingTransformGenerator extends PentahoBase {
       createHop(lastStep, dummyStepMeta, transMeta);
     }
 
-    Trans trans = new Trans(transMeta);
-
     // trans.setLogLevel(LogLevel.DETAILED);
     // trans.setLog(logChannel);
-    return trans;
+    return new Trans(transMeta);
   }
 
   protected void executeSql(TableOutputMeta meta, StepMeta stepMeta, TransMeta transMeta) throws CsvTransformGeneratorException {
@@ -630,10 +628,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     // update the model
     ModelInfo info = getModelInfo();
     ColumnInfo columns[] = info.getColumns();
-    ColumnInfo newColumns[] = new ColumnInfo[columns.length+1];
-    System.arraycopy(columns, 0, newColumns, 0, columns.length);
     ColumnInfo column = new ColumnInfo();
-    newColumns[columns.length] = column;
     column.setAggregateType(AggregationType.NONE.toString());
     column.setDataType(DataType.NUMERIC);
     column.setFieldType(ColumnInfo.FIELD_TYPE_DIMENSION);

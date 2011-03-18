@@ -68,7 +68,6 @@ public class CsvFileInfoTest {
   @Test
   public void testFormatSampleContentsText() throws Exception {
     String formatted = csv.formatSampleContents();
-    String lf = "\n";
     String expected =
         "PRESIDENT          FROM  TO    ORDER  PARTY                  TERMS  VICE PRESIDENT                 SALARY       BIRTHDATE   \n" +
         "----------------------------------------------------------------------------------------------------------------------------\n" +
@@ -86,7 +85,6 @@ public class CsvFileInfoTest {
   public void testFormatSampleContentsText_NoHeaderRow() throws Exception {
     csv.setHeaderRows(0);
     String formatted = csv.formatSampleContents();
-    String lf = "\n";
     String expected =
         "Field_001          Field_002  Field_003  Field_004  Field_005              Field_006  Field_007                      Field_008    Field_009   \n" +
         "----------------------------------------------------------------------------------------------------------------------------------------------\n" +

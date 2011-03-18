@@ -46,8 +46,7 @@ public class GuiStateModel extends XulEventSourceAdapter {
   private List<List<String>> relationalData; // contains sample data
   private List<LogicalModel> logicalModels;
   private String localeCode;
-  
-  private List<IDataStagingCompleteListener> stagingListeners;
+
   private boolean dataStagingComplete;
   private FileInfo selectedCsvFile;
 
@@ -318,28 +317,10 @@ public class GuiStateModel extends XulEventSourceAdapter {
 
   public void setDataStagingComplete(boolean status) {
     dataStagingComplete = status;
-    if (dataStagingComplete) {
-      fireDataStagingComplete();
-    }
   }
   
   public boolean isDataStagingComplete() {
     return dataStagingComplete;
-  }
-
-  public void addDataStagingCompleteListener(IDataStagingCompleteListener listener) {
-    if (stagingListeners == null) {
-      stagingListeners = new ArrayList<IDataStagingCompleteListener>();
-    }
-    
-    stagingListeners.add(listener);
-    
-  }
-  
-  public void fireDataStagingComplete() {
-    for (IDataStagingCompleteListener listener : stagingListeners) {
-      listener.onStagingComplete();
-    }
   }
 
   public FileInfo getSelectedCsvFile() {

@@ -171,7 +171,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
     DatabaseConnection result = (DatabaseConnection) getResponseObject( DatabaseConnection.class, rootNode );
     String accessTypeValue = result.getAccessTypeValue();
     DatabaseAccessType accessType = result.getAccessType();
-    if( accessType == null || accessType.getValue() != accessTypeValue ) {
+    if( accessType == null || !accessType.getValue().equals(accessTypeValue)) {
       result.setAccessType(DatabaseAccessType.valueOf(accessTypeValue));
     }
     return result;
@@ -205,9 +205,8 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
     //get the root element (in this case the envelope)
     OMElement omElement =  builder.getDocumentElement();
     OMElement bodyElement = omElement.getFirstElement(); 
-    OMElement responseElement = bodyElement.getFirstElement(); 
-    Object results[] = BeanUtil.deserialize( responseElement, types, this );
-    return results;
+    OMElement responseElement = bodyElement.getFirstElement();
+    return BeanUtil.deserialize( responseElement, types, this );
   }
   
   public DatabaseConnection deserializeDatabaseConnection(Element rootNode) throws XMLStreamException, AxisFault {
@@ -354,8 +353,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
     Document resultDoc = getResultDocument( callMethod );
     
     try {
-      Object connectionArray[] = new Object[0];
-      connectionArray = getResponseArray(Connection.class, resultDoc.getRootElement() );
+      Object connectionArray[] = getResponseArray(Connection.class, resultDoc.getRootElement() );
       for( Object connection : connectionArray ) {
         connections.add( (Connection) connection );
       }

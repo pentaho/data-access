@@ -51,19 +51,17 @@ public class SimpleDataAccessPermissionHandler implements IDataAccessPermissionH
     if (roles == null) {
       roles = "Admin";
     }
-    
-    if (roles != null) {
-      String roleArr[] = roles.split(","); //$NON-NLS-1$
-  
-      for (String role : roleArr) {
-        for (GrantedAuthority userRole : auth.getAuthorities()) {
-          if (role != null && role.trim().equals(userRole.getAuthority())) {
-            return true;
-          }
+
+    String roleArr[] = roles.split(","); //$NON-NLS-1$
+
+    for (String role : roleArr) {
+      for (GrantedAuthority userRole : auth.getAuthorities()) {
+        if (role != null && role.trim().equals(userRole.getAuthority())) {
+          return true;
         }
       }
     }
-    
+
     if (users != null) {
       String userArr[] = users.split(","); //$NON-NLS-1$
       for (String user : userArr) {

@@ -3,22 +3,16 @@ package org.pentaho.platform.dataaccess.datasource.wizard;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import com.google.gwt.user.client.Window;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.PhysicalDatasourceController;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTOUtil;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
@@ -89,7 +83,7 @@ public class EmbeddedWizardFinishHandler implements PropertyChangeListener {
       wizard.getWizardController().setFinished(false);
       wizard.closeWaitingDialog();
       if (th instanceof CsvTransformGeneratorException) {
-        wizard.showErrorDetailsDialog(messages.getString("ERROR"), ((CsvTransformGeneratorException)th).getMessage(), ((CsvTransformGeneratorException)th).getCauseMessage() + ((CsvTransformGeneratorException)th).getCauseStackTrace());
+        wizard.showErrorDetailsDialog(messages.getString("ERROR"), th.getMessage(), ((CsvTransformGeneratorException)th).getCauseMessage() + ((CsvTransformGeneratorException)th).getCauseStackTrace());
       } else {
         wizard.showErrorDialog(messages.getString("ERROR"), th.getMessage());
       }
@@ -174,7 +168,7 @@ public class EmbeddedWizardFinishHandler implements PropertyChangeListener {
           datasourceModel.getModelInfo().getFileInfo().setFileName(tmpFileName);
         }  
         
-        datasourceService.serializeModelState(DatasourceDTOUtil.generateDTO(datasourceModel), new XulServiceCallback<String>(){
+        datasourceService.serializeModelState(DatasourceDTO.generateDTO(datasourceModel), new XulServiceCallback<String>(){
           public void success(String retVal) {
             domain.getLogicalModels().get(0).setProperty("datasourceModel", retVal);
             modelerWorkspace.setDomain(domain);

@@ -71,7 +71,7 @@ public  class ConnectionServiceHelper {
   }
   
   public static String encodePassword(String password) {
-    StringBuffer buffer = null;
+    StringBuffer buffer;
     if (password != null && password.length() > 0) {
       buffer = new StringBuffer(password.length());
       for (int i = 0; i < password.length(); i++) {

@@ -11,7 +11,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.CsvD
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.messages.LocaleHelper;
 
-public class FileService {
+public class FileUtils {
 
   public static final String DEFAULT_RELATIVE_UPLOAD_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "metadata" + File.separatorChar + "csvfiles" + File.separatorChar; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   
@@ -53,7 +53,7 @@ public class FileService {
   public Boolean deleteFile(String aFileName) {
     boolean result = false;
     String relativePath = PentahoSystem.getSystemSetting(
-        "file-upload-defaults/relative-path", String.valueOf(FileService.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$  
+        "file-upload-defaults/relative-path", String.valueOf(FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$
     String path = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
     File file = new File(path + File.separatorChar + aFileName);
 

@@ -1,7 +1,7 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,9 +14,7 @@ public class AggregationTest{
     final String VALUES = "NONE,SUM";
     Aggregation aggregation = new Aggregation();
     List<AggregationType> aggTypeList = new ArrayList<AggregationType>();
-    for(AggregationType aggType:AggregationType.values()) {
-      aggTypeList.add(aggType);
-    }
+    aggTypeList.addAll(Arrays.asList(AggregationType.values()));
     aggregation.setAggregationList(aggTypeList);
     aggregation.setDefaultAggregationType(AggregationType.AVERAGE);
     

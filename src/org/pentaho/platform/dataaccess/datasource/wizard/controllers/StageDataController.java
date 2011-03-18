@@ -78,16 +78,6 @@ public class StageDataController extends AbstractXulEventHandler implements IDat
     return true;
   }
 
-  public void initializeBusinessData(BusinessData businessData) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public boolean supportsBusinessData(BusinessData businessData) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
   @Bindable
   public DatasourceModel getDatasourceModel() {
     return model;
@@ -275,18 +265,10 @@ public class StageDataController extends AbstractXulEventHandler implements IDat
     }
     model.getModelInfo().validate();
   }
-  
-  /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.wizard.controllers.IDatasourceTypeController#initializeBusinessData(org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel)
-   */
-  public void initializeBusinessData(DatasourceModel model) {
-    // TODO Auto-generated method stub
-    
-  }
 
   /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.wizard.controllers.IDatasourceTypeController#supportsBusinessData(org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel)
-   */
+  * @see org.pentaho.platform.dataaccess.datasource.wizard.controllers.IDatasourceTypeController#supportsBusinessData(org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel)
+  */
   public boolean supportsBusinessData(DatasourceModel model) {
     // TODO Auto-generated method stub
     return false;

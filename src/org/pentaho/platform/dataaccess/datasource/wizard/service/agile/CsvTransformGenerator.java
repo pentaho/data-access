@@ -117,7 +117,7 @@ public class CsvTransformGenerator extends StagingTransformGenerator {
     CsvFileInfo fileInfo = getModelInfo().getFileInfo();
     
     String fileName = fileInfo.getTmpFilename();
-    String path = null;
+    String path;
     if(fileName.endsWith(".tmp")) { //$NON-NLS-1$  
       path = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
     } else {

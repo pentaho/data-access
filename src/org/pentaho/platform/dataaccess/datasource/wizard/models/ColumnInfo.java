@@ -13,8 +13,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   
-  public static final List<String> DATE_FORMATS = Arrays.asList(new String[] {
-      "MM-dd-yyyy",
+  public static final List<String> DATE_FORMATS = Arrays.asList("MM-dd-yyyy",
       "MM/dd/yyyy HH:mm:ss",
       "MM/dd/yyyy",
       "dd-MM-yyyy",
@@ -26,7 +25,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
       "MM/dd/yy",
       "dd-MM-yy",
       "dd/MM/yy"
-  });
+  );
 
   private static final long serialVersionUID = 2498345633158485182L;
 

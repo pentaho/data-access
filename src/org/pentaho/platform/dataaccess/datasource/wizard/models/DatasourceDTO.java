@@ -27,6 +27,24 @@ public class DatasourceDTO implements Serializable {
 
   }
 
+  public static DatasourceDTO generateDTO(DatasourceModel model){
+    DatasourceDTO dto = new DatasourceDTO();
+    dto.setDatasourceName(model.getDatasourceName());
+    dto.setCsvModelInfo(model.getModelInfo());
+    dto.setDatasourceType(model.getDatasourceType());
+    dto.setQuery(model.getQuery());
+    dto.setConnectionName(model.getSelectedRelationalConnection().getName());
+    return dto;
+  }
+
+  public static void populateModel(DatasourceDTO dto, DatasourceModel model){
+    model.setDatasourceName(dto.getDatasourceName());
+    model.setModelInfo(dto.getCsvModelInfo());
+    model.setDatasourceType(dto.getDatasourceType());
+    model.setQuery(dto.getQuery());
+    model.setSelectedRelationalConnection(model.getGuiStateModel().getConnectionByName(dto.getConnectionName()));
+  }
+
   public String getDatasourceName() {
     return datasourceName;
   }
@@ -89,7 +107,6 @@ public class DatasourceDTO implements Serializable {
   @Override
   public int hashCode() {
     int result;
-    long temp;
     result = datasourceName != null ? datasourceName.hashCode() : 0;
     result = 31 * result + (datasourceType != null ? datasourceType.hashCode() : 0);
     result = 31 * result + (csvModelInfo != null ? csvModelInfo.hashCode() : 0);

@@ -170,32 +170,6 @@ public class CsvTransformGeneratorTest extends BaseTest {
 
   }
 
-  /**
-   we are no longer failing an entire csv dataset if there are errors.  test is not valid
-  */
-  public void testBadCsvTransform() throws Exception {
-//    IPentahoSession session = new StandaloneSession("test");
-//    KettleSystemListener.environmentInit(session);
-//    ModelInfo info = createModel();
-//    info.setStageTableName("UNIT_TESTS_BAD");
-//    CsvTransformGenerator gen = new CsvTransformGenerator(info, getDatabaseMeta());
-//    info.getFileInfo().setTmpFilename("badDataTest.csv");
-//    String tableName = info.getStageTableName();
-//    DatabaseMeta dbMeta = getDatabaseMeta();
-//
-//    try {
-//      gen.execSqlStatement(getDropTableStatement(tableName), dbMeta, null);
-//    } catch (CsvTransformGeneratorException e) {
-//      // it is OK if the table doesn't exist previously
-//    }
-//
-//    gen.createOrModifyTable(session);
-//
-//    gen.loadTable(true, session, false);
-//    assertEquals("The CSV file was invalid, no rows should have been written", 0, getRowCount(tableName));
-//
-  }
-
   public void testCreateTable() throws Exception {
 
     IPentahoSession session = new StandaloneSession("test");
@@ -321,9 +295,9 @@ public class CsvTransformGeneratorTest extends BaseTest {
       assertTrue(ok);
   
       // test the values
-      assertEquals((long) 3, (long) sqlResult.getLong(1));
+      assertEquals((long) 3, sqlResult.getLong(1));
       assertEquals(25677.96525, sqlResult.getDouble(2));
-      assertEquals((long) 1231, (long) sqlResult.getLong(3));
+      assertEquals((long) 1231, sqlResult.getLong(3));
       assertEquals(testDate.getYear(), sqlResult.getDate(4).getYear());
       assertEquals(testDate.getMonth(), sqlResult.getDate(4).getMonth());
       assertEquals(testDate.getDate(), sqlResult.getDate(4).getDate());
@@ -559,8 +533,12 @@ public class CsvTransformGeneratorTest extends BaseTest {
       if (sqlResult != null) {
         sqlResult.close();
       }
-      stmt.close();
-      connection.close();
+      if (stmt != null) {
+        stmt.close();
+      }
+      if (connection != null) {
+        connection.close();
+      }
     }
   }
 

@@ -70,7 +70,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   public ConnectionServiceImpl() {
     IPentahoSession session = PentahoSessionHolder.getSession();
     datasourceMgmtSvc = PentahoSystem.get(IDatasourceMgmtService.class, session);
-    String dataAccessClassName = null;
+    String dataAccessClassName;
     try {
       //FIXME: we should be using an object factory of some kind here
       IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
@@ -78,7 +78,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
           "settings/data-access-permission-handler", SimpleDataAccessPermissionHandler.class.getName()); //$NON-NLS-1$ 
       Class<?> clazz = Class.forName(dataAccessClassName, true, getClass().getClassLoader());
       Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
-      dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance(new Object[] {});
+      dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance();
     } catch (Exception e) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0007_DATAACCESS_PERMISSIONS_INIT_ERROR", e //$NON-NLS-1$
           .getLocalizedMessage()), e);
@@ -223,7 +223,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       if (connection.getPassword() == null) { // Can have an empty password but not a null one
         connection.setPassword(""); //$NON-NLS-1$
       }
-      IPentahoConnection pentahoConnection = null;
+      IPentahoConnection pentahoConnection;
       pentahoConnection = PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, connection
           .getDriverClass(), connection.getUrl(), connection.getUsername(), ConnectionServiceHelper
           .getConnectionPassword(connection.getName(), connection.getPassword()), null, this);
@@ -274,7 +274,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       // make sure we don't attempt bad conversions
       return null;
     }
-    IDatasource returnDatasource = (IDatasource) PentahoSystem.get(IDatasource.class, null);
+    IDatasource returnDatasource = PentahoSystem.get(IDatasource.class, null);
     returnDatasource.setDriverClass(connection.getDriverClass());
     returnDatasource.setName(connection.getName());
     returnDatasource.setPassword(connection.getPassword());

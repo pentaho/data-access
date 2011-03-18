@@ -246,18 +246,6 @@ public class DatasourceModel extends XulEventSourceAdapter
       setValidated(true);
     }
   }
-
-  public void onCsvModelInValid() {
-    if(DatasourceType.CSV == getDatasourceType()) {
-      setValidated(false);
-    }
-  }
-
-  public void onCsvModelValid() {
-    if(DatasourceType.CSV == getDatasourceType()) {
-      setValidated(true);
-    }
-  }
   
   /**
    * This is a utility method that looks into an old domain for the same column ids, and then 

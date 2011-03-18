@@ -31,8 +31,8 @@ import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPentahoUrlFactory;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
-import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvModelService;
-import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileService;
+import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
+import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
@@ -61,7 +61,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
 	public String getEncoding(String fileName) {
 		String encoding = null;
 		try {
-			CsvModelService csvModelService = new CsvModelService();
+			CsvUtils csvModelService = new CsvUtils();
 			encoding = csvModelService.getEncoding(fileName);
 		} catch (Exception e) {
 			logger.error(e);
@@ -71,9 +71,9 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
 
   public ModelInfo stageFile(String fileName, String delimiter, String enclosure, boolean isFirstRowHeader, String encoding)
       throws Exception {
-    ModelInfo modelInfo = null;
+    ModelInfo modelInfo;
     try {
-      CsvModelService csvModelService = new CsvModelService();
+      CsvUtils csvModelService = new CsvUtils();
       int headerRows = isFirstRowHeader ? 1 : 0;
       modelInfo = csvModelService.generateFields("", fileName, AgileHelper.getCsvSampleRowSize(), delimiter, enclosure, headerRows, true, true, encoding); //$NON-NLS-1$
     } catch (Exception e) {
@@ -84,9 +84,9 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   }
 
   public FileInfo[] getStagedFiles() throws Exception {
-    FileInfo[] files = null;
+    FileInfo[] files;
     try {
-      FileService fileService = new FileService();
+      FileUtils fileService = new FileUtils();
       files = fileService.listFiles();
     } catch (Exception e) {
       logger.error(e);
@@ -132,7 +132,9 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       logger.error(e);
       throw e;
     } finally {
-      pentahoSession.destroy();
+      if (pentahoSession != null) {
+        pentahoSession.destroy();
+      }
     }
   }
 
@@ -152,7 +154,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception {
     List<String> previewRows = null;
     if(!StringUtils.isEmpty(filename)) {
-      CsvModelService service = new CsvModelService();
+      CsvUtils service = new CsvUtils();
       ModelInfo mi = service.getFileContents("", filename, ",", "\"", rows, isFirstRowHeader, encoding); //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$  
       previewRows = mi.getFileInfo().getContents();
     }

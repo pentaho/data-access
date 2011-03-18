@@ -96,11 +96,7 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
   private XulTreeCol csvColumnNameTreeCol = null;
   private XulTreeCol csvColumnTypeTreeCol = null;
   private XulDialog clearModelWarningDialog = null;
-  private XulDialog overwriteDialog = null;
-  
-  private BusinessData overwriteBusinessData = null;
-  private Domain overwriteDomain = null;
-  private DatasourceType overwriteDatasourceType = null;
+
   private DatasourceType tabValueSelected = null;
   private boolean clearModelWarningShown = false;
   private XulTabbox datasourceTabbox = null;
@@ -132,8 +128,6 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
     okButton = (XulButton) document.getElementById("datasourceDialog_accept"); //$NON-NLS-1$
     cancelButton = (XulButton) document.getElementById("datasourceDialog_cancel"); //$NON-NLS-1$
     datasourceTabbox = (XulTabbox) document.getElementById("datasourceDialogTabbox"); //$NON-NLS-1$
-    
-    overwriteDialog = (XulDialog)document.getElementById("overwriteDialog"); //$NON-NLS-1$
 
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(datasourceModel, "validated", okButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
@@ -182,8 +176,6 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
 
   public void initialize() {
     datasourceModel.clearModel();
-    /*buildRelationalEmptyTable();*/    
-    selectSql();
   }
 
   @Override
@@ -213,19 +205,6 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
   public String getName() {
     return "datasourceController"; //$NON-NLS-1$
   }
-
-  @Bindable
-  public void saveModel() {
-    try {
-      if (datasourceModel.getDatasourceType() == DatasourceType.SQL) {
-        saveRelationalModel();
-      } else if (datasourceModel.getDatasourceType() == DatasourceType.CSV) {
-        saveCsvModel();
-      }
-    } catch (Exception e) {
-      handleSaveError(datasourceModel, e);
-    }
-  }
   
   private void handleSaveError(DatasourceModel datasourceModel, Throwable xe) {
     String datasourceName = null;
@@ -236,142 +215,6 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
     }
     openErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages.getString("DatasourceController.ERROR_0003_UNABLE_TO_SAVE_MODEL",datasourceName,xe.getLocalizedMessage())); //$NON-NLS-1$ //$NON-NLS-2$
   }
-
-  @Bindable
-  private void saveCsvModel() throws DatasourceServiceException {
-//    List<CsvModelDataRow> dataRows = datasourceModel.getCsvModel().getDataRows();
-//      // Get the domain from the business data
-//      BusinessData businessData = datasourceModel.getCsvModel().getBusinessData();
-//      if (businessData != null) {
-//        Domain domain = businessData.getDomain();
-//        if (domain != null) {
-//          List<LogicalModel> logicalModels = domain.getLogicalModels();
-//          for (LogicalModel logicalModel : logicalModels) {
-//            List<Category> categories = logicalModel.getCategories();
-//            for (Category category : categories) {
-//              List<LogicalColumn> logicalColumns = category.getLogicalColumns();
-//              int i = 0;
-//              for (LogicalColumn logicalColumn : logicalColumns) {
-//                CsvModelDataRow row = dataRows.get(i++);
-//                logicalColumn.setDataType(row.getSelectedDataType());
-//                logicalColumn.setName(new LocalizedString(domain.getLocales().get(0).getCode(), row.getColumnName()));
-//                List<AggregationType> aggregationList = new ArrayList<AggregationType>();
-//                aggregationList.addAll(row.getAggregation().getAggregationList());
-//                logicalColumn.setAggregationList(aggregationList);                
-//                logicalColumn.setAggregationType(row.getAggregation().getDefaultAggregationType());                
-//              }
-//            }
-//          }
-//          saveCsvModel(domain, false);
-//        } else {
-//          throw new RuntimeException(datasourceMessages.getString("DatasourceController.ERROR_0002_NULL_MODEL")); //$NON-NLS-1$
-//        }
-//      } else {
-//        throw new RuntimeException(datasourceMessages.getString("DatasourceController.ERROR_0002_NULL_MODEL")); //$NON-NLS-1$
-//      }
-  }
-
-  private void saveRelationalModel() throws DatasourceServiceException {
-    List<ModelDataRow> dataRows = datasourceModel.getGuiStateModel().getDataRows();
-      // Get the domain from the business data
-      BusinessData businessData = new BusinessData();
-      businessData.setDomain(datasourceModel.getDomain());
-      businessData.setData(datasourceModel.getGuiStateModel().getRelationalData());
-      Domain domain = businessData.getDomain();
-      if (domain != null) {
-        List<LogicalModel> logicalModels = domain.getLogicalModels();
-        for (LogicalModel logicalModel : logicalModels) {
-          List<Category> categories = logicalModel.getCategories();
-          for (Category category : categories) {
-            List<LogicalColumn> logicalColumns = category.getLogicalColumns();
-            int i = 0;
-            for (LogicalColumn logicalColumn : logicalColumns) {
-              ModelDataRow row = dataRows.get(i++);
-              logicalColumn.setDataType(row.getSelectedDataType());
-              logicalColumn.setName(new LocalizedString(domain.getLocales().get(0).getCode(), row.getColumnName()));
-              List<AggregationType> aggregationList = new ArrayList<AggregationType>();
-              aggregationList.addAll(row.getAggregation().getAggregationList());
-              logicalColumn.setAggregationList(aggregationList);
-              logicalColumn.setAggregationType(row.getAggregation().getDefaultAggregationType());
-            }
-          }
-        }
-        saveRelationalModel(businessData, false);
-      } else {
-        throw new RuntimeException(datasourceMessages.getString("DatasourceController.ERROR_0002_NULL_MODEL")); //$NON-NLS-1$
-      }      
-  }
-
-  private void saveRelationalModel(final BusinessData businessData, final boolean overwrite) throws DatasourceServiceException {
-      // TODO setting value to false to always create a new one. Save as is not yet implemented
-      service.saveLogicalModel(businessData.getDomain(), overwrite, new XulServiceCallback<Boolean>() {
-        public void error(String message, Throwable error) {
-          // 0013 is an overwrite exception
-          if (error.getMessage().indexOf("0013") >= 0) { //$NON-NLS-1$
-            // prompt for overwrite
-            overwriteBusinessData = businessData;
-            overwriteDatasourceType = DatasourceType.SQL;
-            overwriteDialog.show();
-          } else {
-            handleSaveError(datasourceModel, error);
-          }
-        }
-
-        public void success(Boolean value) {
-          domainToBeSaved = datasourceModel.getDomain();
-          saveModelDone();
-        }
-      });
-  }
-
-  @Bindable
-  public void overwriteDialogAccept() {
-    try {
-      overwriteDialog.hide();
-      if (overwriteDatasourceType == DatasourceType.SQL) {
-        saveRelationalModel(overwriteBusinessData, true);
-        
-      } else if (overwriteDatasourceType == DatasourceType.CSV) {
-        saveCsvModel(overwriteDomain, true);
-        
-      }
-      
-      // flush overwrite state
-      overwriteBusinessData = null;
-      overwriteDomain = null;
-      overwriteDatasourceType = null;
-      
-    } catch (Exception e) {
-      handleSaveError(datasourceModel, e);
-    }
-  }
-  
-  @Bindable
-  public void overwriteDialogCancel() {
-    overwriteDialog.hide();
-  }
-  
-  private void saveCsvModel(final Domain domain, final boolean overwrite) throws DatasourceServiceException {
-      // TODO setting value to false to always create a new one. Save as is not yet implemented
-      service.saveLogicalModel(domain, overwrite, new XulServiceCallback<Boolean>() {
-        public void error(String message, Throwable error) {
-          if (error.getMessage().indexOf("0013") >= 0) { //$NON-NLS-1$
-            // prompt for overwrite
-            overwriteDomain = domain;
-            overwriteDatasourceType = DatasourceType.CSV;
-            overwriteDialog.show();
-          } else {
-            handleSaveError(datasourceModel, error);
-          }
-        }
-
-        public void success(Boolean value) {
-          domainToBeSaved = datasourceModel.getDomain();
-          saveModelDone();
-        }
-      });
-  }
-
 
   private void showClearModelWarningDialog(DatasourceType value) {
     tabValueSelected = value;
@@ -420,31 +263,6 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
     return true;
   }
 
-  @Bindable
-  public void selectCsv() {
-    csvDataTable.update();
-    datasourceModel.setDatasourceType(DatasourceType.CSV);
-  }
-
-  @Bindable
-  public void selectOlap() {
-
-  }
-  
-  @Bindable
-  public void selectSql() {
-    modelDataTable.update();
-    datasourceModel.setDatasourceType(DatasourceType.SQL);      
-  }
-
-  public void selectMql() {
-
-  }
-
-  public void selectXml() {
-
-  }
-
   public IXulAsyncDatasourceService getService() {
     return service;
   }
@@ -491,12 +309,7 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
     return domainToBeSaved;  
   }
 
-  @Override
-  @Bindable
-  public void onDialogAccept() {
-    saveModel(); 
-  }
-  
+
   @Bindable
   private void saveModelDone() {
     super.onDialogAccept();

@@ -32,7 +32,7 @@ import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.query.model.CombinationType;
 import org.pentaho.metadata.query.model.util.QueryXmlHelper;
 import org.pentaho.platform.api.engine.IApplicationContext;
-import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvModelService;
+import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.metadata.messages.Messages;
 import org.pentaho.platform.dataaccess.metadata.model.IColumn;
 import org.pentaho.platform.dataaccess.metadata.model.Operator;
@@ -70,7 +70,7 @@ public class MetadataServiceTest  extends BaseTest {
 
   private static final String SOLUTION = "testsolution"; //$NON-NLS-1$
 
-  private CsvModelService service = null;
+  private CsvUtils service = null;
 
   private void init() {
     if (!PentahoSystem.getInitializedOK()) {
@@ -401,7 +401,6 @@ public class MetadataServiceTest  extends BaseTest {
         
     assertTrue( model.equals(model) );
     assertFalse( model.equals(null) );
-    assertFalse( model.equals(this) );
     assertFalse( model.equals(svc.loadModel("steel-wheels/metadata.xmi", "BV_ORDERS") ) );
     
     Model model2 = new Model();
@@ -811,12 +810,12 @@ public class MetadataServiceTest  extends BaseTest {
     assertEquals("category name is wrong","Offices",category.getName());
 
     IColumn column = category.getColumns()[0];
-    assertEquals("column default agg type is wrong","NONE",column.getDefaultAggType().toString());
+    assertEquals("column default agg type is wrong","NONE", column.getDefaultAggType());
     assertEquals("column id is wrong","BC_OFFICES_TERRITORY",column.getId());
     assertEquals("column name is wrong","Territory",column.getName());
-    assertEquals("column selected agg type is wrong","NONE",column.getSelectedAggType().toString());
-    assertEquals("column type is wrong","STRING",column.getType().toString());
-    assertEquals("field type is wrong","DIMENSION",column.getFieldType().toString());
+    assertEquals("column selected agg type is wrong","NONE", column.getSelectedAggType());
+    assertEquals("column type is wrong","STRING", column.getType());
+    assertEquals("field type is wrong","DIMENSION", column.getFieldType());
     assertEquals("column agg types list is wrong size",1,column.getAggTypes().length);
   }
 

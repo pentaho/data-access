@@ -5,6 +5,8 @@ import java.io.PushbackInputStream;
 
 
 /**
+ * @deprecated use classes from the ICU project instead {@link com.ibm.icu.text.CharsetDetector#getReader(java.io.InputStream, String)} 
+ * 
  * The <code>UnicodeBOMInputStream</code> class wraps any
  * <code>InputStream</code> and detects the presence of any Unicode BOM
  * (Byte Order Mark) at its beginning, as defined by
@@ -26,6 +28,7 @@ import java.io.PushbackInputStream;
  * <p>Use the {@link #skipBOM()} method to remove the detected BOM from the
  * wrapped <code>InputStream</code> object.</p>
  */
+@Deprecated
 public class UnicodeBOMInputStream extends InputStream
 {
   /**

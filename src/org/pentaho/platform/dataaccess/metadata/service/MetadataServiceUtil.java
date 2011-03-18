@@ -98,8 +98,7 @@ public class MetadataServiceUtil extends PentahoBase {
    * @return
    */
   protected String getLocale(  ) {
-    String locale = LocaleHelper.getClosestLocale(LocaleHelper.getLocale().toString(), domain.getLocaleCodes());
-    return locale;
+    return LocaleHelper.getClosestLocale(LocaleHelper.getLocale().toString(), domain.getLocaleCodes());
   }
   
   /**
@@ -179,7 +178,7 @@ public class MetadataServiceUtil extends PentahoBase {
     if (c.getAggregationType() != null) {
       defaultAggType = c.getAggregationType();
     }
-    if (!aggTypes.contains(defaultAggType)) {
+    if (!aggTypes.contains(defaultAggType.toString())) {
       aggTypes.add(defaultAggType.name());
     }
     col.setAggTypes(aggTypes);

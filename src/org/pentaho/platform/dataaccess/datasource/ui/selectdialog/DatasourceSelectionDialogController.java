@@ -216,6 +216,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
       messagebox = (XulMessageBox) document.createElement("messagebox"); //$NON-NLS-1$
     } catch (XulException e) {
       e.printStackTrace();
+      return;
     }
     messagebox.setTitle(title);
     messagebox.setMessage(message);

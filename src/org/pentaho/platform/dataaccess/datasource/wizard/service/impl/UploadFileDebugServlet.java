@@ -108,7 +108,7 @@ public class UploadFileDebugServlet extends HttpServlet implements Servlet {
         isTemporary = Boolean.valueOf(temporary);
       }
 
-      File file = null;
+      File file;
       if(isTemporary) {
         file = PentahoSystem.getApplicationContext().createTempFile(session, "",".tmp", true); //$NON-NLS-1$
       } else {

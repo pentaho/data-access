@@ -28,9 +28,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   private String enclosure = ""; //$NON-NLS-1$
   
   private String encoding; //$NON-NLS-1$
-  
-  private String headers[][];
-  
+
   private int headerRows;
   
   private String project;
@@ -215,7 +213,6 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
     result = prime * result + ((tmpFilename == null) ? 0 : tmpFilename.hashCode());
     result = prime * result + ((groupSymbol == null) ? 0 : groupSymbol.hashCode());
     result = prime * result + headerRows;
-    result = prime * result + Arrays.hashCode(headers);
     result = prime * result + ((ifNull == null) ? 0 : ifNull.hashCode());
     result = prime * result + ((nullStr == null) ? 0 : nullStr.hashCode());
     result = prime * result + ((project == null) ? 0 : project.hashCode());
@@ -268,8 +265,6 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
       return false;
     if (headerRows != other.headerRows)
       return false;
-    if (!Arrays.equals(headers, other.headers))
-      return false;
     if (ifNull == null) {
       if (other.ifNull != null)
         return false;
@@ -297,7 +292,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
       delim = "~!@#$%";
     }
     List<List<String>> sample = new ArrayList<List<String>>();
-    CSVTokenizer csvTokenizer = null;
+    CSVTokenizer csvTokenizer;
     String enclosure = null;
     if (!"".equals(getEnclosure())) {
       enclosure = getEnclosure();
@@ -324,7 +319,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
     StringBuilder sb = new StringBuilder();
     String padding = "  ";
 
-    List<List<String>> parsed = null;
+    List<List<String>> parsed;
     try {
       parsed = parseSampleContents();
     } catch (IllegalStateException e) {

@@ -95,7 +95,6 @@
 
     	<dependency org="pentaho" name="pentaho-bi-platform-repository" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
     	<dependency org="pentaho" name="pentaho-bi-platform-web" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-        <dependency org="pentaho"        name="pentaho-mql-editor"       rev="${dependency.pentaho-mql-editor.revision}"  changing="true" transitive="false"/>
         <dependency org="pentaho" name="pentaho-actionsequence-dom" rev="${dependency.pentaho-actionsequence-dom.revision}" changing="true" />
 		<dependency org="pentaho" name="pentaho-bi-platform-test-foundation" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />
 

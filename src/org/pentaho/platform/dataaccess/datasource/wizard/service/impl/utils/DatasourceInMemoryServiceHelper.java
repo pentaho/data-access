@@ -70,7 +70,10 @@ public class DatasourceInMemoryServiceHelper {
     }
     Connection conn = null;
 
-    String driverClass = connection.getDriverClass();
+    String driverClass = null;
+    if (connection != null) {
+      driverClass = connection.getDriverClass();
+    }
     if (StringUtils.isEmpty(driverClass)) {
       logger.error(Messages.getErrorString("DatasourceInMemoryServiceHelper.ERROR_0001_CONNECTION_ATTEMPT_FAILED"));//$NON-NLS-1$
       throw new DatasourceServiceException(Messages.getErrorString("DatasourceInMemoryServiceHelper.ERROR_0001_CONNECTION_ATTEMPT_FAILED")); //$NON-NLS-1$
@@ -173,19 +176,21 @@ public class DatasourceInMemoryServiceHelper {
     }
     //read each line of text file
     try {
-      while((line = bufRdr.readLine()) != null && row < rowLimit)
-      {
-        StringTokenizer st = new StringTokenizer(line,delimiter);
-        List<String> rowData = new ArrayList<String>();
-        while (st.hasMoreTokens())
+      if (bufRdr != null) {
+        while((line = bufRdr.readLine()) != null && row < rowLimit)
         {
-          //get next token and store it in the list
-          rowData.add(st.nextToken());
+          StringTokenizer st = new StringTokenizer(line,delimiter);
+          List<String> rowData = new ArrayList<String>();
+          while (st.hasMoreTokens())
+          {
+            //get next token and store it in the list
+            rowData.add(st.nextToken());
+          }
+          if(headerPresent && row != 0 || !headerPresent) {
+            dataSample.add(rowData);
+          }
+          row++;
         }
-        if(headerPresent && row != 0 || !headerPresent) {
-          dataSample.add(rowData);  
-        }
-        row++;
       }
       //close the file
       bufRdr.close();

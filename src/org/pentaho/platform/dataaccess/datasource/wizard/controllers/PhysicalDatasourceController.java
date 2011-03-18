@@ -120,25 +120,25 @@ public class PhysicalDatasourceController extends AbstractXulEventHandler implem
       return moduleUrl + "CsvDatasourceService";//$NON-NLS-1$
   }
 
-  public void initializeBusinessData(BusinessData businessData) {
-    datasourceModel.setDatasourceType(DatasourceType.NONE);
-
-    SqlPhysicalModel model = (SqlPhysicalModel) businessData.getDomain().getPhysicalModels().get(0);
-    String queryStr = model.getPhysicalTables().get(0).getTargetTable();
-    //    datasourceModel.setDatasourceType(DatasourceType.SQL);
-    datasourceModel.setDatasourceName(businessData.getDomain().getId());
-    datasourceModel.setQuery(queryStr);
-    for (IConnection conn : datasourceModel.getGuiStateModel().getConnections()) {
-      if (model.getDatasource().getDatabaseName().equals(conn.getName())) {
-        datasourceModel.setSelectedRelationalConnection(conn);
-        break;
-      }
-    }
-    datasourceModel.getGuiStateModel().setRelationalData(null);
-    //columnFormatTreeCol.setEditable(true);
-    datasourceModel.getGuiStateModel().setRelationalData(businessData.getData());
-
-  }
+//  public void initializeBusinessData(BusinessData businessData) {
+//    datasourceModel.setDatasourceType(DatasourceType.NONE);
+//
+//    SqlPhysicalModel model = (SqlPhysicalModel) businessData.getDomain().getPhysicalModels().get(0);
+//    String queryStr = model.getPhysicalTables().get(0).getTargetTable();
+//    //    datasourceModel.setDatasourceType(DatasourceType.SQL);
+//    datasourceModel.setDatasourceName(businessData.getDomain().getId());
+//    datasourceModel.setQuery(queryStr);
+//    for (IConnection conn : datasourceModel.getGuiStateModel().getConnections()) {
+//      if (model.getDatasource().getDatabaseName().equals(conn.getName())) {
+//        datasourceModel.setSelectedRelationalConnection(conn);
+//        break;
+//      }
+//    }
+//    datasourceModel.getGuiStateModel().setRelationalData(null);
+//    //columnFormatTreeCol.setEditable(true);
+//    datasourceModel.getGuiStateModel().setRelationalData(businessData.getData());
+//
+//  }
 
   public boolean supportsBusinessData(BusinessData businessData) {
     return (businessData.getDomain().getPhysicalModels().get(0) instanceof SqlPhysicalModel);
@@ -146,10 +146,6 @@ public class PhysicalDatasourceController extends AbstractXulEventHandler implem
 
   public void setDatasourceMessages( DatasourceMessages datasourceMessages ) {
     this.messages = datasourceMessages;
-  }
-
-  public void setWaitingDialog( GwtWaitingDialog waitingDialog ) {
-//    this.waitingDialog = waitingDialog;
   }
 
   public void setDatasourceModel( DatasourceModel datasourceModel ) {
@@ -183,9 +179,9 @@ public class PhysicalDatasourceController extends AbstractXulEventHandler implem
   	String filename = datasourceModel.getModelInfo().getFileInfo().getFileName();
   	String tmpFilename  = datasourceModel.getModelInfo().getFileInfo().getTmpFilename();
   	
-  	if((filename == null) || (filename != null && !tmpFilename.startsWith(filename))) { //creating a brand new ds || editing a ds having uploaded a new file
+  	if((filename == null) || (!tmpFilename.startsWith(filename))) { //creating a brand new ds || editing a ds having uploaded a new file
   		filename = tmpFilename; 
-  	} else if(filename != null && tmpFilename.startsWith(filename)) { // editing a ds without uploading a new file
+  	} else if(tmpFilename.startsWith(filename)) { // editing a ds without uploading a new file
   		datasourceModel.getModelInfo().getFileInfo().setTmpFilename(filename);
   	} 
   
@@ -247,14 +243,6 @@ public class PhysicalDatasourceController extends AbstractXulEventHandler implem
     csvTextPreview.setValue(""); //$NON-NLS-1$
     CsvFileInfo fileInfo = datasourceModel.getModelInfo().getFileInfo();
     csvTextPreview.setValue(fileInfo.formatSampleContents());
-  }
-
-  /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.wizard.controllers.IDatasourceTypeController#initializeBusinessData(org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel)
-   */
-  public void initializeBusinessData(DatasourceModel model) {
-    // TODO Auto-generated method stub
-    
   }
 
   /* (non-Javadoc)

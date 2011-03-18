@@ -3,7 +3,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,35 +35,21 @@ import com.ibm.icu.text.CharsetMatch;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-public class CsvModelService extends PentahoBase {
+public class CsvUtils extends PentahoBase {
   
-  public static final List<String> NUMBER_FORMATS = Arrays.asList(new String[] {
-      "#",
+  public static final List<String> NUMBER_FORMATS = Arrays.asList("#",
       "#,##0.###"
-  });
+  );
 
   private static final long serialVersionUID = 2498165533158485182L;
 
-  private Log log = LogFactory.getLog(CsvModelService.class);
+  private Log log = LogFactory.getLog(CsvUtils.class);
   public static final String DEFAULT_RELATIVE_UPLOAD_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "metadata" + File.separatorChar + "csvfiles" + File.separatorChar; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   public static final String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar; //$NON-NLS-1$ //$NON-NLS-2$
-  
- /* public String getEncoding(String name) {
-	  String path = null;
-	  if(name.endsWith(".tmp")) { //$NON-NLS-1$  
-		  path = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
-	  } else {
-		  String relativePath = PentahoSystem.getSystemSetting("file-upload-defaults/relative-path", String.valueOf(DEFAULT_RELATIVE_UPLOAD_FILE_PATH));  //$NON-NLS-1$  
-	      path = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
-	  }
-	  String fileLocation = path + name;
-	  
-	  
-	  
-  }*/
+
   
   public ModelInfo getFileContents( String project, String name, String delimiter, String enclosure, int rows, boolean isFirstRowHeader, String encoding ) throws Exception {
-    String path = null;
+    String path;
     if(name.endsWith(".tmp")) { //$NON-NLS-1$  
       path = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
     } else {
@@ -90,7 +75,7 @@ public class CsvModelService extends PentahoBase {
   
   public ModelInfo generateFields( String project, String filename, int rowLimit, String delimiter, String enclosure, int headerRows, boolean doData, boolean doColumns, String encoding ) throws Exception {
 
-    String path = null;
+    String path;
     if(filename.endsWith(".tmp")) { //$NON-NLS-1$  
       path = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
     } else {
@@ -146,7 +131,7 @@ public class CsvModelService extends PentahoBase {
       FileInputStream fis = new FileInputStream(file);
       InputStreamReader isr = new InputStreamReader(fis, encoding);
       LineNumberReader reader = new LineNumberReader(isr);
-      String line = null;
+      String line;
       int lineNumber = 0;
       while ( (line = reader.readLine()) != null && lineNumber < rows) {
         lines.add(line);      
@@ -163,7 +148,7 @@ public class CsvModelService extends PentahoBase {
     File file = new File(fileLocation);
         
     // read one line, including all EOL characters
-    InputStream in = null;
+    InputStream in;
     InputStreamReader inr = null;
     StringBuilder line = new StringBuilder();
     int count = 0;
@@ -337,7 +322,7 @@ public class CsvModelService extends PentahoBase {
 
     int type = meta.getType();
     String mask = meta.getConversionMask();
-    int size = 0;
+    int size;
     int precision = meta.getPrecision();
 
     profile.setFormat(mask);
@@ -363,7 +348,7 @@ public class CsvModelService extends PentahoBase {
   
   public String getEncoding(String fileName) throws Exception {
 	  
-	  String path = null;
+	  String path;
 	  if(fileName.endsWith(".tmp")) { //$NON-NLS-1$  
 		  path = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
 	  } else {
@@ -372,7 +357,7 @@ public class CsvModelService extends PentahoBase {
 	  }
 	  String fileLocation = path + fileName;
 	  
-	  String encoding = null;
+	  String encoding;
 	  try {
 	      byte[] bytes = new byte[1024];
 	      InputStream inputStream = new FileInputStream(new File(fileLocation));
@@ -389,19 +374,6 @@ public class CsvModelService extends PentahoBase {
 	    return encoding;
   }
 
-  public void saveModelInfo(ModelInfo modelInfo) throws IOException {
-    XStream xstream = new XStream(new DomDriver("UTF-8")); //$NON-NLS-1$
-    xstream.alias("modelInfo", ModelInfo.class); //$NON-NLS-1$
-    xstream.alias("columnInfo", ColumnInfo.class); //$NON-NLS-1$
-    String project = modelInfo.getFileInfo().getProject() == null ? "" : modelInfo.getFileInfo().getProject();  //$NON-NLS-1$
-    
-    String filepath = AgileHelper.getFolderPath(project) + "/" + modelInfo.getFileInfo().getTmpFilename() + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
-    File f = new File(filepath);
-    f.createNewFile();
-    FileOutputStream fos = new FileOutputStream(filepath);
-    xstream.toXML(modelInfo, fos);
-  }
-  
   public ModelInfo getModelInfo(String project, String filename) throws FileNotFoundException {
     XStream xstream = new XStream(new DomDriver("UTF-8")); //$NON-NLS-1$
     xstream.alias("modelInfo", ModelInfo.class); //$NON-NLS-1$
@@ -410,8 +382,7 @@ public class CsvModelService extends PentahoBase {
     System.out.println(filepath);
     File f = new File(filepath);
     FileInputStream fis = new FileInputStream(f);
-    ModelInfo modelInfo = (ModelInfo) xstream.fromXML(fis);
-    return modelInfo;
+    return (ModelInfo) xstream.fromXML(fis);
   }
 
   private DataType convertDataType(int type) {
