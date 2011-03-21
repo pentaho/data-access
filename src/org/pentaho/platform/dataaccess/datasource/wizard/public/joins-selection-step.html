@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>XUL Library</title>
+    <style>
+      body,td,a,div,.p{font-family:Tahoma, Helvetica, Arial, sans-serif}
+      div,td{color:#000000}
+      a:link,.w,.w a:link{color:#0000cc}
+      a:visited{color:#551a8b}
+      a:active{color:#ff0000}
+      #existingPanel{
+        height:100%;
+        width: 100%;
+      }
+    </style>
+    <link rel='stylesheet' href='Mantle.css'>
+    <link rel='stylesheet' href='ScrollTable.css'>
+    <link rel='stylesheet' href='datasourceEditorDialog.css'>
+    <link rel='stylesheet' href='xul.css'>
+    <script language='javascript' src='DatasourceEditor.nocache.js'></script>
+  </head>
+
+  <body>
+    <div id="dragPanel">
+    <!-- OPTIONAL: include this if you want history support -->
+    <iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
+    <div id="root"></div>
+
+    <script type="text/javascript">
+
+      function showDatasourceEditor(){
+        showJoinSelectionStep(new function(){
+          this.onOk = function(json, mqlStr){
+            alert(json+"\n\n\n"+mqlStr);
+          }
+          this.onError = function(err){
+            alert(err);
+          }
+          this.onCancel = function(){
+            alert("Canceled");
+          }
+          this.onReady = function(){
+
+          }
+          this.onFinish = function(status) {
+
+          }
+          this.onFinish = function(status, transport) {
+
+          }
+        });
+      }
+
+      function initDataAccess(){}
+    </script>
+    <input type="button" onclick="showDatasourceEditor()" value="Go to Join Selection Step"/>
+  </body>
+</html>

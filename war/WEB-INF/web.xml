@@ -87,6 +87,12 @@
     <servlet-class>org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet
     </servlet-class>
   </servlet>
+  
+  <servlet>
+    <servlet-name>joinSelectionService</servlet-name>
+    <servlet-class>org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.JoinSelectionDebugGwtServlet
+    </servlet-class>
+  </servlet>
 
   <servlet>
     <servlet-name>gwtConnectionService</servlet-name>
@@ -108,6 +114,11 @@
   <servlet-mapping>
     <servlet-name>conectionService</servlet-name>
     <url-pattern>/DatasourceEditor/ConnectionService</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>joinSelectionService</servlet-name>
+    <url-pattern>/DatasourceEditor/JoinSelectionService</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
