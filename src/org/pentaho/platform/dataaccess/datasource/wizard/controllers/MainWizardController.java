@@ -20,7 +20,10 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.platform.dataaccess.datasource.DatasourceType;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardListener;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.steps.AbstractWizardStep;
@@ -31,6 +34,8 @@ import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.containers.XulExpandPanel;
+import org.pentaho.ui.xul.gwt.tags.GwtRadioGroup;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -48,7 +53,9 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
  *
  * @author William Seyler
  */
-public class LinearWizardController extends AbstractXulEventHandler implements IWizardController {
+public class MainWizardController extends AbstractXulEventHandler implements IWizardController {
+
+  private MessageHandler messageHandler;
 
   // Binding converters
   protected class BackButtonBindingConverter extends BindingConvertor<Integer, Boolean> {
@@ -87,12 +94,6 @@ public class LinearWizardController extends AbstractXulEventHandler implements I
 
   private int activeStep = -1; // bogus active step
 
-  private boolean canceled;
-
-  private boolean finished;
-
-  private XulDomContainer mainXULContainer;
-  
   private ICsvDatasourceServiceAsync csvDatasourceService;
 
   private BindingFactory bf;
@@ -105,7 +106,14 @@ public class LinearWizardController extends AbstractXulEventHandler implements I
   
   private DatasourceModel datasourceModel;
 
-  public LinearWizardController(final BindingFactory bf, final DatasourceModel datasourceModel) {
+  private List<IWizardListener> wizardListeners = new ArrayList<IWizardListener>();
+
+  private XulDialog wizardDialog;
+  
+  private XulDialog summaryDialog;
+
+  public MainWizardController(final BindingFactory bf, final DatasourceModel datasourceModel, MessageHandler messageHandler) {
+    this.messageHandler = messageHandler;
     this.steps = new ArrayList<IWizardStep>();
     this.bf = bf;
     this.notDisabledBindingConvertor = new NotDisabledBindingConvertor();
@@ -161,7 +169,7 @@ public class LinearWizardController extends AbstractXulEventHandler implements I
     }
 
     // update the controller panel
-    final XulDeck deck = (XulDeck) mainXULContainer.getDocumentRoot().getElementById(CONTENT_DECK_ELEMENT_ID);
+    final XulDeck deck = (XulDeck) document.getElementById(CONTENT_DECK_ELEMENT_ID);
     deck.setSelectedIndex(activeStep);
 
     this.firePropertyChange(ACTIVE_STEP_PROPERTY_NAME, oldActiveStep, this.activeStep);
@@ -171,7 +179,11 @@ public class LinearWizardController extends AbstractXulEventHandler implements I
     return activeStep;
   }
 
-  public void initialize() {
+  public void init() {
+    wizardDialog = (XulDialog) document.getElementById("main_wizard_window");
+
+    summaryDialog = (XulDialog) document.getElementById("summaryDialog");
+
     if (!steps.isEmpty()) {
       for (final IWizardStep wizardStep : steps) {
         wizardStep.setBindings();
@@ -182,8 +194,6 @@ public class LinearWizardController extends AbstractXulEventHandler implements I
       setActiveStep(0); // Fires the events to update the buttons
     }
 
-    setCancelled(false);
-    setFinished(false);
   }
 
   protected void updateBindings() {
@@ -210,34 +220,28 @@ public class LinearWizardController extends AbstractXulEventHandler implements I
   
   @Bindable
   public void cancel() {
-    setCancelled(true);
-    setFinished(false);
+    setCancelled();
   }
 
-  public void setCancelled(final boolean canceled) {
-    final boolean oldCanceled = this.canceled;
-    this.canceled = canceled;
-    this.firePropertyChange(CANCELLED_PROPERTY_NAME, oldCanceled, this.canceled);
-  }
-
-  public boolean isCancelled() {
-    return canceled;
+  private void setCancelled() {
+    for (IWizardListener wizardListener : wizardListeners) {
+      wizardListener.onCancel();
+    }
   }
 
   @Bindable
   public void finish() {
-	final String datasourceName = this.datasourceModel.getDatasourceName();  
+	final String datasourceName = this.datasourceModel.getDatasourceName();
 	csvDatasourceService.listDatasourceNames(new AsyncCallback<List<String>>() {
 		public void onSuccess(List<String> datasourceNames) {
 			boolean isEditing = datasourceModel.getGuiStateModel().isEditing();
 			if(datasourceNames.contains(datasourceName) && !isEditing) {
 				showWarningDialog();
 			} else {
-  			    setFinished(true);
-				setCancelled(false);
+  			setFinished();
 			}
 		}
-		
+
 		public void onFailure(Throwable e ) {
 			 warningDialog.hide();
 		}
@@ -247,23 +251,18 @@ public class LinearWizardController extends AbstractXulEventHandler implements I
   @Bindable
   public void overwriteDialogAccept() {
 	  warningDialog.hide();
-	  setFinished(true);
-	  setCancelled(false);
+	  setFinished();
   }
   
   @Bindable
   public void overwriteDialogCancel() {
 	  warningDialog.hide();
   }
-  
-  public boolean isFinished() {
-    return finished;
-  }
 
-  public void setFinished(final boolean finished) {
-    final boolean oldFinished = this.finished;
-    this.finished = finished;
-    this.firePropertyChange(FINISHED_PROPERTY_NAME, oldFinished, this.finished);
+  private void setFinished() {
+    for (IWizardListener wizardListener : wizardListeners) {
+      wizardListener.onFinish();
+    }
   }
   
   public void showWarningDialog() {
@@ -297,19 +296,7 @@ public class LinearWizardController extends AbstractXulEventHandler implements I
   // Stuff for XUL
   @Override
   public String getName() {
-    return "wizard_controller"; //$NON-NLS-1$
-  }
-
-  public void onLoad() {
-    initialize();
-  }
-
-  /**
-   * @param mainWizardContainer
-   */
-  public void registerMainXULContainer(final XulDomContainer mainWizardContainer) {
-    mainXULContainer = mainWizardContainer;
-    bf.setDocument(mainWizardContainer.getDocumentRoot());
+    return "wizardController"; //$NON-NLS-1$
   }
 
   public void setBindingFactory(final BindingFactory bf) {
@@ -331,5 +318,22 @@ public class LinearWizardController extends AbstractXulEventHandler implements I
       return Boolean.valueOf(!value.booleanValue());
     }
   }
+
+
+  public void addWizardListener(IWizardListener listener){
+    wizardListeners.add(listener);
+  }
+
+  public void removeWizardListener(IWizardListener listener){
+    wizardListeners.remove(listener);
+  }
+
+  @Bindable
+  public void editFieldSettings() {
+    setFinished();
+    summaryDialog.hide();
+    wizardDialog.show();
+  }
+
 
 }

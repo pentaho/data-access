@@ -55,9 +55,15 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
   private static ModelerDialog instance;
 
   private ModelerDialog(final AsyncConstructorListener<ModelerDialog> constructorListener){
+    this(null, constructorListener);
+  }
+
+  private ModelerDialog(EmbeddedWizard wizard, final AsyncConstructorListener<ModelerDialog> constructorListener){
+    this.wizard = wizard;
     this.constructorListener = constructorListener;
     AsyncXulLoader.loadXulFromUrl("modeler.xul", "modeler", this);
   }
+
 
   public static ModelerDialog getInstance(final AsyncConstructorListener<ModelerDialog> constructorListener){
     if(instance != null){
@@ -67,6 +73,17 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     instance = new ModelerDialog(constructorListener);
     return instance;
   }
+
+  public static ModelerDialog getInstance(EmbeddedWizard wizard, final AsyncConstructorListener<ModelerDialog> constructorListener){
+    if(instance != null){
+      constructorListener.asyncConstructorDone(instance);
+      return instance;
+    }
+    instance = new ModelerDialog(wizard, constructorListener);
+    return instance;
+  }
+
+
 
   @Override
   protected XulDialog getDialog() {
@@ -134,7 +151,9 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
 
     datasourceService = new DatasourceServiceGwtImpl();
     connectionService = new ConnectionServiceGwtImpl();
-    wizard = new EmbeddedWizard(datasourceService, connectionService, null, false);
+    if(wizard == null){
+      wizard = new EmbeddedWizard(datasourceService, connectionService, null, false);
+    }
 
     messages = new GwtModelerMessages((ResourceBundle) container.getResourceBundles().get(0));
     try{

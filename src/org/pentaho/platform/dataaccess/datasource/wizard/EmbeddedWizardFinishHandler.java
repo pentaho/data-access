@@ -11,55 +11,82 @@ import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.IWizardController;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MainWizardController;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.PhysicalDatasourceController;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.ui.xul.XulServiceCallback;
+import org.pentaho.ui.xul.components.XulLabel;
+import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.containers.XulExpandPanel;
+import org.pentaho.ui.xul.containers.XulVbox;
+import org.pentaho.ui.xul.gwt.tags.GwtRadioGroup;
+import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
-public class EmbeddedWizardFinishHandler implements PropertyChangeListener {
+public class EmbeddedWizardFinishHandler extends AbstractXulEventHandler implements IWizardListener {
 
-  private EmbeddedWizard wizard = null;
-  private DatasourceMessages messages = null;
   private DatasourceModel datasourceModel = null;
   private ModelerWorkspace modelerWorkspace = null;
   private IModelerServiceAsync modelerService = null;
-  private ICsvDatasourceServiceAsync csvModelService = null; 
+  private ICsvDatasourceServiceAsync csvModelService = null;
+  private MainWizardController mainController;
   private IXulAsyncDatasourceService datasourceService;
 //  private XulServiceCallback<Domain> editFinishedCallback;
   private FileTransformStats stats;
+  private MessageHandler messageHandler;
 
-  public EmbeddedWizardFinishHandler(EmbeddedWizard wizard, IXulAsyncDatasourceService datasourceService) {
-    this.wizard = wizard;
+  private XulDialog wizardDialog;
+
+  private GwtRadioGroup modelerDecision;
+
+  private XulExpandPanel errorLogExpander;
+
+  private XulDialog summaryDialog;
+  private XulLabel summaryDialogRowsLoaded;
+  private XulVbox showModelerCheckboxHider;
+  private XulLabel summaryDialogDetails;
+  private XulServiceCallback<Domain> editFinishedCallback;
+  private static final String MSG_OPENING_MODELER = "waiting.openingModeler";
+  private static final String MSG_GENERAL_WAIT = "waiting.generalWaiting";
+  private boolean showModeler;
+
+  public EmbeddedWizardFinishHandler(XulDialog wizardDialog, DatasourceModel datasourceModel, MessageHandler messageHandler, MainWizardController mainController, IXulAsyncDatasourceService datasourceService) {
+    this.wizardDialog = wizardDialog;
+    this.messageHandler = messageHandler;
+    this.mainController = mainController;
     this.datasourceService = datasourceService;
 
-    messages = wizard.getDatasourceMessages();
-    datasourceModel = wizard.getDatasourceModel();
+    this.datasourceModel = datasourceModel;
     modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
-    modelerService = new GwtModelerServiceImpl();    
+    modelerService = new GwtModelerServiceImpl();
     csvModelService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     ServiceDefTarget endpoint = (ServiceDefTarget) csvModelService;
     endpoint.setServiceEntryPoint(PhysicalDatasourceController.getDatasourceURL());
   }
 
-  public void propertyChange(final PropertyChangeEvent evt) {
-    if (wizard.getWizardController().isFinished()) {
-      wizard.hideDialog();
-      wizard.showWaitingDialog();
-      if (datasourceModel.getGuiStateModel().isRelationalValidated()) {
-        save();
-      } else if (datasourceModel.getModelInfo().isValidated()) {
-        stageData();
-      }      
-    }
+  public String getName(){
+    return "finishHandler";
   }
 
+  public void init(){
+
+    modelerDecision = (GwtRadioGroup) document.getElementById("modelerDecision");
+    errorLogExpander = (XulExpandPanel) document.getElementById("errorLogExpander");
+    showModelerCheckboxHider = (XulVbox) document.getElementById("showModelerCheckboxHider");
+
+    summaryDialog = (XulDialog) document.getElementById("summaryDialog");
+    summaryDialogRowsLoaded = (XulLabel) document.getElementById("summaryDialogRowsLoaded");
+    summaryDialogDetails = (XulLabel) document.getElementById("summaryDialogDetails");
+  }
   @Bindable
   public void stageData() {
     datasourceModel.getGuiStateModel().setDataStagingComplete(false);
@@ -77,15 +104,22 @@ public class EmbeddedWizardFinishHandler implements PropertyChangeListener {
     }
   }
 
+  public void setEditFinishedCallback(XulServiceCallback<Domain> editFinishedCallback) {
+    this.editFinishedCallback = editFinishedCallback;
+  }
+
+  public boolean isShowModeler() {
+    return showModeler;
+  }
+
   public class DataStagingCallback implements AsyncCallback<FileTransformStats> {
     
     public void onFailure(Throwable th) {
-      wizard.getWizardController().setFinished(false);
-      wizard.closeWaitingDialog();
+      messageHandler.closeWaitingDialog();
       if (th instanceof CsvTransformGeneratorException) {
-        wizard.showErrorDetailsDialog(messages.getString("ERROR"), th.getMessage(), ((CsvTransformGeneratorException)th).getCauseMessage() + ((CsvTransformGeneratorException)th).getCauseStackTrace());
+        messageHandler.showErrorDetailsDialog(messageHandler.messages.getString("ERROR"), th.getMessage(), ((CsvTransformGeneratorException)th).getCauseMessage() + ((CsvTransformGeneratorException)th).getCauseStackTrace());
       } else {
-        wizard.showErrorDialog(messages.getString("ERROR"), th.getMessage());
+        messageHandler.showErrorDialog(messageHandler.messages.getString("ERROR"), th.getMessage());
       }
       th.printStackTrace();
     }
@@ -100,16 +134,15 @@ public class EmbeddedWizardFinishHandler implements PropertyChangeListener {
     saveModels(new XulServiceCallback<String>(){
       public void success( String modelId ) {
         modelerWorkspace.getDomain().setId(modelId);
-        wizard.closeWaitingDialog();
-        wizard.showSummaryDialog();
+        messageHandler.closeWaitingDialog();
+        showSummaryDialog();
       }
 
       public void error( String s, Throwable throwable ) {
-        wizard.getWizardController().setFinished(false);
-        wizard.closeWaitingDialog();
+        messageHandler.closeWaitingDialog();
 
         throwable.printStackTrace();
-        wizard.showErrorDialog("Error saving models", "An error was encountered while saving the model files. Check your " +
+        messageHandler.showErrorDialog("Error saving models", "An error was encountered while saving the model files. Check your " +
             "server logs for details");
       }
     });
@@ -188,17 +221,15 @@ public class EmbeddedWizardFinishHandler implements PropertyChangeListener {
 
               modelerService.serializeModels(workspaceDomain, modelerWorkspace.getModelName(), callback);
             } catch (ModelerException e) {
-              wizard.closeWaitingDialog();
-              wizard.showErrorDialog("ModelerException", e.getMessage());
-              wizard.getWizardController().setFinished(false);
+              messageHandler.closeWaitingDialog();
+              messageHandler.showErrorDialog("ModelerException", e.getMessage());
               e.printStackTrace();
             }
           }
 
           public void error(String message, Throwable error) {
-            wizard.closeWaitingDialog();
-            wizard.showErrorDialog(message, error.getMessage());
-            wizard.getWizardController().setFinished(false);
+            messageHandler.closeWaitingDialog();
+            messageHandler.showErrorDialog(message, error.getMessage());
             error.printStackTrace();
           }
         });
@@ -206,9 +237,8 @@ public class EmbeddedWizardFinishHandler implements PropertyChangeListener {
       }
 
       public void error(String s, Throwable throwable ) {
-        wizard.closeWaitingDialog();
-        wizard.showErrorDialog(s, throwable.getMessage());
-        wizard.getWizardController().setFinished(false);
+        messageHandler.closeWaitingDialog();
+        messageHandler.showErrorDialog(s, throwable.getMessage());
         throwable.printStackTrace();
       }
     });
@@ -222,4 +252,89 @@ public class EmbeddedWizardFinishHandler implements PropertyChangeListener {
     return stats;
   }
 
+  @Override
+  public void onCancel() {
+
+  }
+
+  @Override
+  public void onFinish() {
+    wizardDialog.hide();
+    messageHandler.showWaitingDialog();
+    if (datasourceModel.getGuiStateModel().isRelationalValidated()) {
+      save();
+    } else if (datasourceModel.getModelInfo().isValidated()) {
+      stageData();
+    }
+  }
+
+  public void showSummaryDialog() {
+    FileTransformStats stats = getFileTransformStats();
+    showSummaryDialog(stats);
+  }
+
+
+  public void showSummaryDialog(FileTransformStats stats){
+
+    wizardDialog.hide();
+
+    errorLogExpander.setExpanded(false);
+    modelerDecision.setValue("DEFAULT");
+
+    // only show csv related stuff if it is a csv data source (it will have stats)
+    if (stats != null && datasourceModel.getDatasourceType() == DatasourceType.CSV) {
+      long errors = stats.getCsvInputErrorCount() + stats.getTableOutputErrorCount();
+      long total = stats.getRowsDone() > 0 ? stats.getRowsDone() : errors;
+
+      long successRows = total > errors ? total - errors : 0;
+
+      summaryDialogRowsLoaded.setValue(messageHandler.messages.getString("summaryDialog.rowsLoaded", String.valueOf(successRows), String.valueOf(total)));
+      String lf = "\n";
+      if (errors > 0) {
+        StringBuilder detailMsg = new StringBuilder();
+        for (String error : stats.getCsvInputErrors()) {
+          detailMsg.append(error);
+          detailMsg.append(lf);
+        }
+
+        for (String error : stats.getTableOutputErrors()) {
+          detailMsg.append(error);
+          detailMsg.append(lf);
+        }
+        summaryDialogDetails.setValue(detailMsg.toString());
+        errorLogExpander.setVisible(true);
+      } else {
+        summaryDialogDetails.setValue("");
+        errorLogExpander.setVisible(false);
+      }
+
+    } else {
+      summaryDialogRowsLoaded.setValue(messageHandler.messages.getString("summaryDialog.generalSuccess"));
+      errorLogExpander.setVisible(false);
+    }
+
+    showModelerCheckboxHider.setVisible(!datasourceModel.getGuiStateModel().isEditing());
+
+    summaryDialog.show();
+  }
+
+  @Bindable
+  public void closeSummaryDialog() {
+    summaryDialog.hide();
+    boolean editModeler = modelerDecision.getValue() != null && modelerDecision.getValue().equals("EDIT");
+    if (editModeler) {
+      messageHandler.showWaitingDialog(messageHandler.messages.getString(MSG_OPENING_MODELER));
+      showModeler = true;
+    } else {
+      messageHandler.showWaitingDialog(messageHandler.messages.getString(MSG_GENERAL_WAIT));
+      showModeler = false;
+    }
+
+    errorLogExpander.setExpanded(false);
+
+    if (editFinishedCallback != null) {
+      editFinishedCallback.success(getDomain());
+    }
+    datasourceModel.clearModel();
+  }
 }

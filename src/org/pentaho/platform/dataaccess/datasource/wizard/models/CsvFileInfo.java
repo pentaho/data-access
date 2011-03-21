@@ -23,20 +23,20 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   
   private List<String> contents;
   
-  private String delimiter = ""; //$NON-NLS-1$
+  private String delimiter = ","; //$NON-NLS-1$
   
-  private String enclosure = ""; //$NON-NLS-1$
+  private String enclosure = "\""; //$NON-NLS-1$
   
   private String encoding; //$NON-NLS-1$
 
-  private int headerRows;
+  private int headerRows = 1;
   
   private String project;
   
   private String tmpFilename;
   
   private String fileName;
-  
+ 
   private String currencySymbol = ""; //$NON-NLS-1$
   
   private String decimalSymbol = "."; //$NON-NLS-1$

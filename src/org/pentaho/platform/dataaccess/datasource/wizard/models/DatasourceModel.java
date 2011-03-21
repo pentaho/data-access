@@ -300,5 +300,4 @@ public class DatasourceModel extends XulEventSourceAdapter
 
   public void onCsvValid() {
   }
-
 }

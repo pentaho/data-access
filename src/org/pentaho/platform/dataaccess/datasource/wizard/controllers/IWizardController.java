@@ -29,10 +29,6 @@ public interface IWizardController {
   public static final String ACTIVE_STEP_PROPERTY_NAME = "activeStep"; //$NON-NLS-1$
 
   public static final String STEP_COUNT_PROPERTY_NAME = "stepCount"; //$NON-NLS-1$
-
-  public static final String CANCELLED_PROPERTY_NAME = "cancelled"; //$NON-NLS-1$
-
-  public static final String FINISHED_PROPERTY_NAME = "finished"; //$NON-NLS-1$
   
   public static final String FINISHABLE_PROPERTY_NAME = "finishable"; //$NON-NLS-1$
   
@@ -46,15 +42,11 @@ public interface IWizardController {
 
   public int getActiveStep();
 
-  public void initialize();
+  public void init();
 
   public void cancel();
 
   public void finish();
-
-  public boolean isFinished();
-
-  public boolean isCancelled();
 
   public void setBindingFactory(BindingFactory factory);
 

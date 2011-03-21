@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="datasourceEditorWindow" title="${datasourceEditorDialog.TITLE}" orient="vertical" height="600" width="800">
-	<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="800" height="500" title="${WIZARD_TITLE}" onload="wizard_controller.onLoad()" resizable="false" padding="0" spacing="0" buttons="">
+	<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="800" height="500" title="${WIZARD_TITLE}" onload="" resizable="false" padding="0" spacing="0" buttons="">
 		<hbox id="main_box" padding="0" spacing="0" width="800" height="500">
 			<vbox id="stepsPanel" width="150" height="500" padding="0" spacing="0">
 				<hbox flex="1" padding="0">
@@ -183,11 +183,11 @@
 		</hbox>
 		<hbox id="controller_panel">
 			<spacer flex="5"/>
-			<button id="back_btn" label="${BACK}" onclick="wizard_controller.back()"/>
-			<button id="next_btn" label="${NEXT}" onclick="wizard_controller.next()" style="{white-space: nowrap;}"/>
+			<button id="back_btn" label="${BACK}" onclick="wizardController.back()"/>
+			<button id="next_btn" label="${NEXT}" onclick="wizardController.next()" style="{white-space: nowrap;}"/>
 			<spacer flex="3"/>
-			<button id="finish_btn" label="${FINISH}" onclick="wizard_controller.finish()"/>
-			<button id="cancel_btn" label="${CANCEL}" onclick="wizard_controller.cancel()"/>
+			<button id="finish_btn" label="${FINISH}" onclick="wizardController.finish()"/>
+			<button id="cancel_btn" label="${CANCEL}" onclick="wizardController.cancel()"/>
 		</hbox>
 	</dialog>
 	<!--  ###############################################################################  -->
@@ -240,7 +240,7 @@
 	<!--  ###############################################################################   -->
 	<!--     ERROR DIALOG: Dialog to display error text                                     -->
 	<!--  ###############################################################################   -->
-	<dialog id="errorDialog" title="${errorDialog.errorOccurred}" buttonlabelaccept="${errorDialog.CLOSE}" buttons="accept" ondialogaccept="datasourceWizardController.closeErrorDialog()" width="400" height="100" buttonalign="right">
+	<dialog id="errorDialog" title="${errorDialog.errorOccurred}" buttonlabelaccept="${errorDialog.CLOSE}" buttons="accept" ondialogaccept="messageHandler.closeErrorDialog()" width="400" height="100" buttonalign="right">
 	  <vbox id="errorDialogContainer">
 		  <label id="errorLabel" value="${errorDialog.errorOccurred}"/>
 	  </vbox>
@@ -248,7 +248,7 @@
 	<!--  ###############################################################################   -->
 	<!--     ERROR DIALOG: Dialog to display error text + details                           -->
 	<!--  ###############################################################################   -->
-	<dialog id="errorDetailsDialog" title="${errorDialog.errorOccurred}" buttonlabelaccept="${errorDialog.CLOSE}" buttons="accept" ondialogaccept="datasourceWizardController.closeErrorDetailsDialog()" width="400" height="100" buttonalign="right">
+	<dialog id="errorDetailsDialog" title="${errorDialog.errorOccurred}" buttonlabelaccept="${errorDialog.CLOSE}" buttons="accept" ondialogaccept="messageHandler.closeErrorDetailsDialog()" width="400" height="100" buttonalign="right">
 	  <vbox id="errorDetailsDialogContainer">
       <label id="errorDetailsLabel" value="${errorDialog.errorOccurred}"/>
       <expandpanel id="errorDetailsExpander" expanded="false" header="${errorDialog.DETAILS}">
@@ -281,7 +281,7 @@
   <!--     SUMMARY DIALOG w/DETAILS: Dialog to display success + details message          -->
   <!--  ###############################################################################   -->
   <dialog id="summaryDialog" title="${summaryDialog.title}"
-          buttonlabelaccept="${summaryDialog.OK}" ondialogaccept="datasourceWizardController.closeSummaryDialog()"
+          buttonlabelaccept="${summaryDialog.OK}" ondialogaccept="finishHandler.closeSummaryDialog()"
           buttons="accept" buttonalign="right" width="475" height="150">
     <vbox id="summaryDialogContainer" height="150">
       <vbox id="csvSummaryContainer" height="20">
@@ -290,7 +290,7 @@
           <label id="summaryDialogDetails" height="300" width="435" multiline="true" pre="true"/>
           <hbox>
             <spacer flex="1"/>
-            <button id="editFieldSettingsButton" onclick="datasourceWizardController.editFieldSettings()" label="${summaryDialog.editFieldSettings}"/>
+            <button id="editFieldSettingsButton" onclick="wizardController.editFieldSettings()" label="${summaryDialog.editFieldSettings}"/>
           </hbox>
         </expandpanel>        
       </vbox>
@@ -370,7 +370,7 @@
 	<!--     OVERWRITE CONFIRMATION DIALOG: Dialog to display the confirmation              -->
 	<!--     message to the user before the model with the new one in the repository        -->
 	<!--  ###############################################################################   -->
-	<dialog id="overwriteDialog" buttonlabelaccept="${dialog.OK}" buttonlabelcancel="${dialog.CANCEL}" ondialogaccept="wizard_controller.overwriteDialogAccept()" ondialogcancel="wizard_controller.overwriteDialogCancel()" buttons="accept, cancel" buttonalign="right" title="${overwrite.title}" height="120" width="300">
+	<dialog id="overwriteDialog" buttonlabelaccept="${dialog.OK}" buttonlabelcancel="${dialog.CANCEL}" ondialogaccept="wizardController.overwriteDialogAccept()" ondialogcancel="wizardController.overwriteDialogCancel()" buttons="accept, cancel" buttonalign="right" title="${overwrite.title}" height="120" width="300">
 		<vbox>
 			<label value="${overwriteDialog.warningMessage}"/>
 		</vbox>
