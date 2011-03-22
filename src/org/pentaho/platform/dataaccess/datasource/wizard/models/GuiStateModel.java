@@ -40,10 +40,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
   private boolean relationalPreviewValidated;
   private boolean relationalApplyValidated;
   private List<IConnection> connections = new ArrayList<IConnection>();
-  private List<ModelDataRow> dataRows = new ArrayList<ModelDataRow>();
   private String previewLimit = "10"; //$NON-NLS-1$
   private ConnectionEditType editType = ConnectionEditType.ADD;
-  private List<List<String>> relationalData; // contains sample data
   private List<LogicalModel> logicalModels;
   private String localeCode;
 
@@ -170,52 +168,6 @@ public class GuiStateModel extends XulEventSourceAdapter {
     setRelationalValidated(false);
     fireRelationalModelInValid();
   }
-  @Bindable
-  public List<List<String>> getRelationalData() {
-    return relationalData;
-  }
-
-  @Bindable
-  public void setRelationalData(List<List<String>> value) {
-    this.relationalData = value;
-    if (value != null) {
-      int columnNumber = 0;
-      for (LogicalModel logicalModel : logicalModels) {
-        List<Category> categories = logicalModel.getCategories();
-        for (Category category : categories) {
-          List<LogicalColumn> logicalColumns = category.getLogicalColumns();
-          for (LogicalColumn logicalColumn : logicalColumns) {
-            addModelDataRow(logicalColumn, getColumnData(columnNumber++, value), localeCode);
-          }
-        }
-      }
-      firePropertyChange("dataRows", null, dataRows);
-    } else {
-      if (this.dataRows != null) {
-        this.dataRows.removeAll(dataRows);
-        List<ModelDataRow> previousValue = this.dataRows;
-        firePropertyChange("dataRows", previousValue, null);
-      }
-    }
-  }
-
-  private void addModelDataRow(LogicalColumn column, List<String> columnData, String locale) {
-    if (dataRows == null) {
-      dataRows = new ArrayList<ModelDataRow>();
-    }
-    this.dataRows.add(new ModelDataRow(column, columnData, locale));
-  }
-
-  @Bindable
-  public List<ModelDataRow> getDataRows() {
-    return dataRows;
-  }
-
-  @Bindable
-  public void setDataRows(List<ModelDataRow> value) {
-    this.dataRows = value;
-    firePropertyChange("dataRows", null, dataRows);
-  }
 
   private List<String> getColumnData(int columnNumber, List<List<String>> data) {
     List<String> column = new ArrayList<String>();
@@ -232,8 +184,6 @@ public class GuiStateModel extends XulEventSourceAdapter {
    */
   @Bindable
   public void clearModel() {
-    setRelationalData(null);
-    setDataRows(null);
     setPreviewLimit("10");
     setSelectedCsvFile(null);
   }

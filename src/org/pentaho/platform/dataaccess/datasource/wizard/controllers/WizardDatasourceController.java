@@ -20,25 +20,13 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.concept.types.AggregationType;
-import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelDataRow;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;

@@ -80,7 +80,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   
   private WizardDatasourceController datasourceController;
 
-  private ConnectionController connectionController = new ConnectionController();
+  private ConnectionController connectionController;
 
   private IXulAsyncConnectionService connectionService;
 
@@ -223,11 +223,11 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     if (datasourceModel.getGuiStateModel().getConnections() == null
         || datasourceModel.getGuiStateModel().getConnections().size() <= 0) {
       checkInitialized();
-      reloadConnections();
+      connectionController.reloadConnections();
     }
     editing = true;
     datasourceModel.getGuiStateModel().setEditing(true);
-    wizardController.setActiveStep(0);
+    wizardController.reset();
 
     String modelState = (String) domain.getLogicalModels().get(0).getProperty("datasourceModel");
     datasourceService.deSerializeModelState(modelState, new XulServiceCallback<DatasourceDTO>() {
@@ -243,27 +243,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
               "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
       }
     });
-
-  }
-
-  private void reloadConnections() {
-    if (connectionService != null) {
-      connectionService.getConnections(new XulServiceCallback<List<IConnection>>() {
-
-        public void error(String message, Throwable error) {
-          messageHandler.showErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages.getString(
-              "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", error.getLocalizedMessage()));
-        }
-
-        public void success(List<IConnection> connections) {
-          datasourceModel.getGuiStateModel().setConnections(connections);
-        }
-
-      });
-    } else {
-      messageHandler.showErrorDialog(datasourceMessages.getString("ERROR"),
-          "DatasourceEditor.ERROR_0004_CONNECTION_SERVICE_NULL");
-    }
 
   }
 
@@ -288,8 +267,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   private void setConnectionService(IXulAsyncConnectionService service) {
     this.connectionService = service;
-    connectionController.setService(service);
-    reloadConnections();
+    if(connectionController != null){
+      connectionController.setService(service);
+      connectionController.reloadConnections();
+    }
   }
 
   public IXulAsyncConnectionService getConnectionService() {
@@ -324,6 +305,8 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     datasourceMessages.setMessageBundle(resBundle);
 
     messageHandler = new MessageHandler(dialog, datasourceMessages);
+    connectionController = new ConnectionController(messageHandler);
+    connectionController.setService(connectionService);
     wizardController = new MainWizardController(bf, datasourceModel, messageHandler);
     mainWizardContainer.addEventHandler(wizardController);
 
@@ -334,7 +317,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     datasourceController.setDatasourceMessages(datasourceMessages);
     mainWizardContainer.addEventHandler(datasourceController);
 
-    mainWizardContainer.addEventHandler(this);
     mainWizardContainer.addEventHandler(messageHandler);
 
     // add the steps ..

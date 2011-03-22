@@ -196,6 +196,10 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   }
 
+  public void reset(){
+    setActiveStep(0);
+
+  }
   protected void updateBindings() {
     // Destroy any old bindings
     if (nextButtonBinding != null) {

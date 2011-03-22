@@ -60,16 +60,6 @@ public class DatasourceModelTest {
     aggTypeList.add(AggregationType.AVERAGE);
     logColumn.setAggregationList(aggTypeList);
     logColumn.setName(new LocalizedString("En", "Column1"));
-    List<ModelDataRow> dataRows = new ArrayList<ModelDataRow>();
-    List<String> data = new ArrayList<String>();
-    data.add("Sample1");
-    data.add("Sample2");
-    data.add("Sample3");
-    data.add("Sample4");
-    data.add("Sample5");
-    ModelDataRow row = new ModelDataRow(logColumn, data, "En");
-    dataRows.add(row);
-    guiStateModel.setDataRows(dataRows);
     BusinessData businessData = new BusinessData();
     List<List<String>> dataSample = new ArrayList<List<String>>();
     List<String> rowData = new ArrayList<String>();
@@ -131,7 +121,6 @@ public class DatasourceModelTest {
     businessData.setDomain(domain);
     guiStateModel.setLocaleCode("en");
     guiStateModel.setLogicalModels(domain.getLogicalModels());
-    guiStateModel.setRelationalData(businessData.getData());
     guiStateModel.validateRelational();
     return guiStateModel;
   }

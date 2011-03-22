@@ -22,20 +22,15 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.pentaho.metadata.model.SqlPhysicalModel;
-import org.pentaho.metadata.model.concept.types.AggregationType;
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.WaitingDialog;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.Aggregation;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelDataRow;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -54,12 +49,8 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeChildren;
 import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.containers.XulTreeRow;
-import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.util.TreeCellEditor;
-import org.pentaho.ui.xul.util.TreeCellEditorCallback;
-import org.pentaho.ui.xul.util.TreeCellRenderer;
 
 public class WizardRelationalDatasourceController extends AbstractXulEventHandler implements IDatasourceTypeController {
   public static final int MAX_SAMPLE_DATA_ROWS = 5;
@@ -129,10 +120,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
   XulDialog sampleDataDialog = null;
 
-  CustomSampleDataCellEditor sampleDataCellEditor = null;
-
-  CustomSampleDataCellRenderer sampleDataCellRenderer = null;
-
 
   public WizardRelationalDatasourceController() {
 
@@ -143,7 +130,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
     sampleDataTree = (XulTree) document.getElementById("relationalSampleDataTable");
     aggregationEditorDialog = (XulDialog) document.getElementById("relationalAggregationEditorDialog");
     sampleDataDialog = (XulDialog) document.getElementById("relationalSampleDataDialog");
-    sampleDataCellRenderer = new CustomSampleDataCellRenderer();
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById("errorLabel");//$NON-NLS-1$    
     applyQueryConfirmationDialog = (XulDialog) document.getElementById("applyQueryConfirmationDialog"); //$NON-NLS-1$
@@ -465,112 +451,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
     this.waitingDialogBox = waitingDialog;
   }
 
-  @Bindable
-  public void closeSampleDataDialog() {
-    sampleDataCellEditor.hide();
-  }
-
-  private class CustomSampleDataCellEditor implements TreeCellEditor {
-    XulDialog dialog = null;
-
-    TreeCellEditorCallback callback = null;
-
-    public CustomSampleDataCellEditor(XulDialog dialog) {
-      super();
-      this.dialog = dialog;
-    }
-
-    public Object getValue() {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    public void hide() {
-      dialog.hide();
-    }
-
-    public void setValue(Object val) {
-
-    }
-
-    public void show(int row, int col, Object boundObj, String columnBinding, TreeCellEditorCallback callback) {
-      this.callback = callback;
-      ModelDataRow modelDataRow = (ModelDataRow) boundObj;
-      XulTreeCol column = sampleDataTree.getColumns().getColumn(0);
-      column.setLabel(modelDataRow.getColumnName());
-      List<String> values = modelDataRow.getSampleDataList();
-      List<String> sampleDataList = new ArrayList<String>();
-      for (int i = 0; i < MAX_SAMPLE_DATA_ROWS && i < modelDataRow.getSampleDataList().size(); i++) {
-        sampleDataList.add(values.get(i));
-      }
-      sampleDataTree.setElements(sampleDataList);
-      sampleDataTree.update();
-      dialog.setTitle(datasourceMessages.getString("DatasourceController.SAMPLE_DATA"));
-      dialog.show();
-    }
-  }
-
-  private class CustomSampleDataCellRenderer implements TreeCellRenderer {
-
-    public Object getNativeComponent() {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    public String getText(Object value) {
-      if (value instanceof String) {
-        return getSampleData((String) value);
-      } else if (value instanceof Vector) {
-        Vector<String> vectorValue = (Vector<String>) value;
-        StringBuffer sampleDataBuffer = new StringBuffer();
-        for (int i = 0; i < vectorValue.size(); i++) {
-          sampleDataBuffer.append(vectorValue.get(i));
-        }
-        return getSampleData(sampleDataBuffer.toString());
-      }
-      return EMPTY_STRING;
-    }
-
-    public boolean supportsNativeComponent() {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    private String getSampleData(String sampleData) {
-      if (sampleData != null && sampleData.length() > 0) {
-        if (sampleData.length() <= MAX_COL_SIZE) {
-          return sampleData;
-        } else {
-          return sampleData.substring(0, MAX_COL_SIZE);
-        }
-      }
-      return EMPTY_STRING;
-    }
-  }
-//
-//  public void initializeBusinessData(BusinessData businessData) {
-//    datasourceModel.setDatasourceType(DatasourceType.SQL);
-//
-//    SqlPhysicalModel model = (SqlPhysicalModel) businessData.getDomain().getPhysicalModels().get(0);
-//    String queryStr = model.getPhysicalTables().get(0).getTargetTable();
-//    //    datasourceModel.setDatasourceType(DatasourceType.SQL);
-//    datasourceModel.setDatasourceName(businessData.getDomain().getId());
-//    datasourceModel.setQuery(queryStr);
-//    for (IConnection conn : datasourceModel.getGuiStateModel().getConnections()) {
-//      if (model.getDatasource().getDatabaseName().equals(conn.getName())) {
-//        datasourceModel.setSelectedRelationalConnection(conn);
-//        break;
-//      }
-//    }
-//    datasourceModel.getGuiStateModel().setRelationalData(null);
-//    query.setDisabled(false);
-//    // Setting the editable property to true so that the table can be populated with correct cell types
-//    columnNameTreeCol.setEditable(true);
-//    columnTypeTreeCol.setEditable(true);
-//    //columnFormatTreeCol.setEditable(true);
-//    datasourceModel.getGuiStateModel().setRelationalData(businessData.getData());
-//
-//  }
 
   public boolean supportsBusinessData(BusinessData businessData) {
     return (businessData.getDomain().getPhysicalModels().get(0) instanceof SqlPhysicalModel);

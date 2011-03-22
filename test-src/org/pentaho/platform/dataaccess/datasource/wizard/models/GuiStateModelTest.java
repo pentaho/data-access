@@ -33,9 +33,7 @@ public class GuiStateModelTest {
   @Test
   public void test() {
     GuiStateModel guiStateModel = new GuiStateModel();
-    Assert.assertNotNull(guiStateModel.getDataRows());
     Assert.assertEquals(0, guiStateModel.getConnections().size());
-    Assert.assertEquals(0,guiStateModel.getDataRows().size());
     Assert.assertEquals(ConnectionEditType.ADD,guiStateModel.getEditType());
     Assert.assertEquals(false, guiStateModel.isRelationalValidated());
     IConnection connection = new Connection();
@@ -57,16 +55,6 @@ public class GuiStateModelTest {
     aggTypeList.add(AggregationType.AVERAGE);
     logColumn.setAggregationList(aggTypeList);
     logColumn.setName(new LocalizedString("En", "Column1"));
-    List<ModelDataRow> dataRows = new ArrayList<ModelDataRow>();
-    List<String> data = new ArrayList<String>();
-    data.add("Sample1");
-    data.add("Sample2");
-    data.add("Sample3");
-    data.add("Sample4");
-    data.add("Sample5");
-    ModelDataRow row = new ModelDataRow(logColumn, data, "En");
-    dataRows.add(row);
-    guiStateModel.setDataRows(dataRows);
     BusinessData businessData = new BusinessData();
     List<List<String>> dataSample = new ArrayList<List<String>>();
     List<String> rowData = new ArrayList<String>();
@@ -128,7 +116,6 @@ public class GuiStateModelTest {
     businessData.setDomain(domain);
     guiStateModel.setLogicalModels(domain.getLogicalModels());
     guiStateModel.setLocaleCode("en");
-    guiStateModel.setRelationalData(businessData.getData());
     Assert.assertEquals(true, guiStateModel.isRelationalValidated()); 
   }
 }
