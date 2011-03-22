@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="datasourceEditorWindow" title="" orient="vertical" width="550" height="350">
-  <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="550" height="350" title="" onload="" resizable="false" padding="0" spacing="0" buttons="">
+  <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="joinSelectionWindow" width="550" height="350" title="" onload="" resizable="false" padding="0" spacing="0" buttons="">
     <vbox>
       <hbox>
         <vbox>
@@ -24,5 +24,43 @@
         </vbox>
       </hbox>
     </vbox>
+    <button id="nextButton" label="Next" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.next()" disabled="false"/>
   </dialog>
+  
+  <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="joinDefinitionWindow" width="550" height="350" title="" onload="" resizable="false" padding="0" spacing="0" buttons="">
+  	<vbox>
+      <hbox>
+        <vbox>
+          <label value="Define the Join..." tooltiptext=""/>
+        </vbox>
+      </hbox>
+      <hbox>
+        <vbox>
+          <label value="Left Table:" tooltiptext=""/>
+          <listbox id="leftTables" pen:binding="name" disabled="false" height="200" width="300"/>
+          <label value="Key Field:" tooltiptext=""/>
+          <menulist id="leftKeyField" editable="false" width="300">
+		    <menupopup>
+			  <menuitem label="Col 1"/>
+			</menupopup>
+		  </menulist>          
+        </vbox>
+        <vbox>
+          <label value="Right Table:" tooltiptext=""/>
+          <listbox id="rightTables" pen:binding="name" disabled="false" height="200" width="300"/>
+          <label value="Key Field:" tooltiptext=""/>
+          <menulist id="rightKeyField" editable="false" width="300">
+		    <menupopup>
+			  <menuitem label="Col 2"/>
+			</menupopup>
+		  </menulist>   
+		  <hbox>
+		    <spacer width="215"/>
+		    <button id="createJoinButton" label="Create Join" pen:disabledimage="" tooltiptext="" onclick="" disabled="false"/>
+		  </hbox>
+        </vbox>
+      </hbox>
+    </vbox>
+  </dialog>
+  
 </window>

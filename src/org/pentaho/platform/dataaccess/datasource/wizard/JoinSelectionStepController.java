@@ -42,7 +42,7 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 
 	protected static final String JOIN_STEP_PANEL = "joinSelection.xul";
 	protected static final String JOIN_STEP_PANEL_PACKAGE = "joinSelection";
-	protected static final String MAIN_DIALOG_ID = "main_wizard_window";
+	protected static final String JOIN_STEP_PANEL_ID = "joinSelectionWindow";
 
 	private IConnection selectedConnection;
 	private XulDialog tablesSelectionDialog;
@@ -50,11 +50,13 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
 	private JoinSelectionStepModel joinModel;
+	private JoinDefinitionStepController definitionStepController;
 
 	public JoinSelectionStepController(IConnection selectedConnection) {
 		this.selectedConnection = selectedConnection;
 		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
 		this.joinModel = new JoinSelectionStepModel();
+		this.definitionStepController = new JoinDefinitionStepController(this.joinModel);
 		this.getAvailableTables();
 	}
 
@@ -71,7 +73,10 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 		XulDomContainer mainContainer = runner.getXulDomContainers().get(0);
 		Document rootDocument = mainContainer.getDocumentRoot();
 		mainContainer.addEventHandler(this);
-		this.tablesSelectionDialog = (XulDialog) rootDocument.getElementById(MAIN_DIALOG_ID);
+        mainContainer.addEventHandler(this.definitionStepController);
+        this.definitionStepController.init();
+		
+		this.tablesSelectionDialog = (XulDialog) rootDocument.getElementById(JOIN_STEP_PANEL_ID);
 		this.availableTables = (XulListbox) rootDocument.getElementById("availableTables");
 		this.selectedTables = (XulListbox) rootDocument.getElementById("selectedTables");
 		BindingFactory bf = new GwtBindingFactory(rootDocument);
