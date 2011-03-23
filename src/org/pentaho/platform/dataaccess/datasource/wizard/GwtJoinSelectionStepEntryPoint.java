@@ -12,11 +12,9 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright 2008 - 2009 Pentaho Corporation.  All rights reserved.
- *
- *
- * Created April 21, 2009
- * @author rmansoor
+ * Copyright (c) 2011 Pentaho Corporation..  All rights reserved.
+ * 
+ * @author Ezequiel Cuellar
  */
 package org.pentaho.platform.dataaccess.datasource.wizard;
 

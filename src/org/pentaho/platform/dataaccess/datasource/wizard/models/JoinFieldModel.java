@@ -19,21 +19,13 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.util.AbstractModelList;
 
-public class JoinTableModel extends XulEventSourceAdapter {
+public class JoinFieldModel extends XulEventSourceAdapter {
 
 	private String name;
-	private AbstractModelList<JoinFieldModel> fields;
-	
-	public JoinTableModel() {
-		this.fields = new AbstractModelList<JoinFieldModel>();
-	}
+	private JoinTableModel parentTable;
 
 	@Bindable
 	public String getName() {
@@ -46,27 +38,12 @@ public class JoinTableModel extends XulEventSourceAdapter {
 	}
 
 	@Bindable
-	public AbstractModelList<JoinFieldModel> getFields() {
-		return this.fields;
+	public JoinTableModel getParentTable() {
+		return this.parentTable;
 	}
 
 	@Bindable
-	public void setFields(AbstractModelList<JoinFieldModel> fields) {
-		if(fields != null) {
-			this.fields.clear();
-			this.fields.addAll(fields);
-		}
-	}
-	
-	public List<JoinFieldModel> processTableFields(List<String> fields) {
-
-		List<JoinFieldModel> fieldModels = new ArrayList<JoinFieldModel>();
-		for(String field : fields) {
-			JoinFieldModel fieldModel = new JoinFieldModel();
-			fieldModel.setName(field);
-			fieldModel.setParentTable(this);
-			fieldModels.add(fieldModel);
-		}
-		return fieldModels;
+	public void setParentTable(JoinTableModel parentTable) {
+		this.parentTable = parentTable;
 	}
 }

@@ -12,7 +12,9 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2009 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2011 Pentaho Corporation..  All rights reserved.
+ * 
+ * @author Ezequiel Cuellar
  */
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
@@ -20,7 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard;
 import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinSelectionStepModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -49,14 +51,14 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
-	private JoinSelectionStepModel joinModel;
+	private JoinGuiModel joinGuiModel;
 	private JoinDefinitionStepController definitionStepController;
 
 	public JoinSelectionStepController(IConnection selectedConnection) {
 		this.selectedConnection = selectedConnection;
 		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
-		this.joinModel = new JoinSelectionStepModel();
-		this.definitionStepController = new JoinDefinitionStepController(this.joinModel);
+		this.joinGuiModel = new JoinGuiModel();
+		this.definitionStepController = new JoinDefinitionStepController(this.joinGuiModel, this.joinSelectionServiceGwtImpl, this.selectedConnection);
 		this.getAvailableTables();
 	}
 
@@ -81,8 +83,8 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 		this.selectedTables = (XulListbox) rootDocument.getElementById("selectedTables");
 		BindingFactory bf = new GwtBindingFactory(rootDocument);
 
-		Binding availableTablesBinding = bf.createBinding(this.joinModel.getAvailableTables(), "children", this.availableTables, "elements");
-		Binding selectedTablesBinding = bf.createBinding(this.joinModel.getSelectedTables(), "children", this.selectedTables, "elements");
+		Binding availableTablesBinding = bf.createBinding(this.joinGuiModel.getAvailableTables(), "children", this.availableTables, "elements");
+		Binding selectedTablesBinding = bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.selectedTables, "elements");
 
 		try {
 			availableTablesBinding.fireSourceChanged();
@@ -99,7 +101,7 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 			}
 
 			public void success(List tables) {
-				joinModel.processAvailableTables(tables);
+				joinGuiModel.processAvailableTables(tables);
 				AsyncXulLoader.loadXulFromUrl(JOIN_STEP_PANEL, JOIN_STEP_PANEL_PACKAGE, JoinSelectionStepController.this);
 			}
 		});
@@ -108,14 +110,14 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 	@Bindable
 	public void addSelectedTable() {
 		if (this.availableTables.getSelectedItem() != null) {
-			this.joinModel.addSelectedTable((JoinTableModel) this.availableTables.getSelectedItem());
+			this.joinGuiModel.addSelectedTable((JoinTableModel) this.availableTables.getSelectedItem());
 		}
 	}
 
 	@Bindable
 	public void removeSelectedTable() {
 		if (this.selectedTables.getSelectedItem() != null) {
-			this.joinModel.removeSelectedTable((JoinTableModel) this.selectedTables.getSelectedItem());
+			this.joinGuiModel.removeSelectedTable((JoinTableModel) this.selectedTables.getSelectedItem());
 		}
 	}
 

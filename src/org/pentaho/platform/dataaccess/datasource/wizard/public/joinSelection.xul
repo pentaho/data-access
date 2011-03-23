@@ -39,20 +39,16 @@
           <label value="Left Table:" tooltiptext=""/>
           <listbox id="leftTables" pen:binding="name" disabled="false" height="200" width="300"/>
           <label value="Key Field:" tooltiptext=""/>
-          <menulist id="leftKeyField" editable="false" width="300">
-		    <menupopup>
-			  <menuitem label="Col 1"/>
-			</menupopup>
+          <menulist id="leftKeyField" pen:binding="name" editable="false" width="300">
+		    <menupopup/>
 		  </menulist>          
         </vbox>
         <vbox>
           <label value="Right Table:" tooltiptext=""/>
           <listbox id="rightTables" pen:binding="name" disabled="false" height="200" width="300"/>
           <label value="Key Field:" tooltiptext=""/>
-          <menulist id="rightKeyField" editable="false" width="300">
-		    <menupopup>
-			  <menuitem label="Col 2"/>
-			</menupopup>
+          <menulist id="rightKeyField" pen:binding="name" editable="false" width="300">
+		    <menupopup/>
 		  </menulist>   
 		  <hbox>
 		    <spacer width="215"/>

@@ -1,3 +1,22 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2011 Pentaho Corporation..  All rights reserved.
+ * 
+ * @author Ezequiel Cuellar
+ */
+
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 import java.util.ArrayList;
@@ -7,14 +26,18 @@ import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
-public class JoinSelectionStepModel extends XulEventSourceAdapter {
+public class JoinGuiModel extends XulEventSourceAdapter {
 
 	private AbstractModelList<JoinTableModel> availableTables;
 	private AbstractModelList<JoinTableModel> selectedTables;
+	private JoinTableModel leftJoinTable;
+	private JoinTableModel rightJoinTable;
 
-	public JoinSelectionStepModel() {
+	public JoinGuiModel() {
 		this.availableTables = new AbstractModelList<JoinTableModel>();
 		this.selectedTables = new AbstractModelList<JoinTableModel>();
+		this.leftJoinTable = new JoinTableModel();
+		this.rightJoinTable = new JoinTableModel();
 	}
 
 	@Bindable
@@ -35,6 +58,26 @@ public class JoinSelectionStepModel extends XulEventSourceAdapter {
 	@Bindable
 	public void setSelectedTables(AbstractModelList<JoinTableModel> selectedTables) {
 		this.selectedTables = selectedTables;
+	}
+
+	@Bindable
+	public JoinTableModel getLeftJoinTable() {
+		return this.leftJoinTable;
+	}
+
+	@Bindable
+	public void setLeftJoinTable(JoinTableModel leftJoinTable) {
+		this.leftJoinTable = leftJoinTable;
+	}
+
+	@Bindable
+	public JoinTableModel getRightJoinTable() {
+		return this.rightJoinTable;
+	}
+
+	@Bindable
+	public void setRightJoinTable(JoinTableModel rightJoinTable) {
+		this.rightJoinTable = rightJoinTable;
 	}
 
 	public void addSelectedTable(JoinTableModel table) {

@@ -1,22 +1,20 @@
 /*
- * This program is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software 
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
  * Foundation.
  *
- * You should have received a copy of the GNU Lesser General Public License along with this 
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html 
- * or from the Free Software Foundation, Inc., 
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright 2008 - 2009 Pentaho Corporation.  All rights reserved.
- *
- *
- * Created April 21, 2009
- * @author rmansoor
+ * Copyright (c) 2011 Pentaho Corporation..  All rights reserved.
+ * 
+ * @author Ezequiel Cuellar
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
@@ -71,10 +69,6 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 		return moduleUrl + "JoinSelectionService";//$NON-NLS-1$
 	}
 
-	/**
-	 * Override the service entry point (use only if you know what you are
-	 * doing)
-	 */
 	public static void setServiceEntryPoint(String serviceEntryPointBase) {
 		ServiceDefTarget endpoint = (ServiceDefTarget) SERVICE;
 		endpoint.setServiceEntryPoint(serviceEntryPointBase + "gwtrpc/joinSelectionService");
@@ -89,6 +83,23 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
 			public void execute(AsyncCallback callback) {
 				SERVICE.getDatabaseTables(connection, callback);
+			}
+		}, new AsyncCallback<List>() {
+			public void onFailure(Throwable arg0) {
+				xulCallback.error(arg0.getLocalizedMessage(), arg0);
+			}
+
+			public void onSuccess(List arg0) {
+				xulCallback.success(arg0);
+			}
+		});
+	}
+	
+	public void getTableFields(final String table, final IConnection connection, final XulServiceCallback<List> xulCallback) {
+
+		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+			public void execute(AsyncCallback callback) {
+				SERVICE.getTableFields(table, connection, callback);
 			}
 		}, new AsyncCallback<List>() {
 			public void onFailure(Throwable arg0) {
