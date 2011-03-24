@@ -48,11 +48,11 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 
 	private IConnection selectedConnection;
 	private XulDialog tablesSelectionDialog;
-	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
 	private JoinGuiModel joinGuiModel;
 	private JoinDefinitionStepController definitionStepController;
+	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;	
 
 	public JoinSelectionStepController(IConnection selectedConnection) {
 		this.selectedConnection = selectedConnection;

@@ -46,4 +46,19 @@ public class JoinModel extends XulEventSourceAdapter {
 	public void setRightKeyFieldModel(JoinFieldModel rightKeyFieldModel) {
 		this.rightKeyFieldModel = rightKeyFieldModel;
 	}
+
+	@Bindable
+	public String getName() {
+		String leftTable = this.leftKeyFieldModel.getParentTable().getName();
+		String rightTable = this.rightKeyFieldModel.getParentTable().getName();
+		StringBuffer joinName = new StringBuffer();
+		joinName.append(leftTable);
+		joinName.append(".");
+		joinName.append(this.leftKeyFieldModel.getName());
+		joinName.append(" - INNER JOIN - ");
+		joinName.append(rightTable);
+		joinName.append(".");
+		joinName.append(this.rightKeyFieldModel.getName());
+		return joinName.toString();
+	}
 }

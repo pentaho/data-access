@@ -52,6 +52,7 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 	private JoinGuiModel joinGuiModel;
 	private XulListbox leftTables;
 	private XulListbox rightTables;
+	private XulListbox joins;
 	private XulMenuList<JoinFieldModel> leftKeyFieldList;
 	private XulMenuList<JoinFieldModel> rightKeyFieldList;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
@@ -71,6 +72,7 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 		this.joinDefinitionDialog = (XulDialog) rootDocument.getElementById(JOIN_DEFINITION_PANEL_ID);
 		this.leftTables = (XulListbox) rootDocument.getElementById("leftTables");
 		this.rightTables = (XulListbox) rootDocument.getElementById("rightTables");
+		this.joins = (XulListbox) rootDocument.getElementById("joins");
 		this.leftKeyFieldList = (XulMenuList<JoinFieldModel>) rootDocument.getElementById("leftKeyField");
 		this.rightKeyFieldList = (XulMenuList<JoinFieldModel>) rootDocument.getElementById("rightKeyField");
 
@@ -84,6 +86,9 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 
 		Binding leftTableSelectionBinding = bf.createBinding(this.leftTables, "selectedItem", this.joinGuiModel, "leftJoinTable");
 		Binding rightTableSelectionBinding = bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
+		Binding joinsBinding = bf.createBinding(this.joinGuiModel.getJoins(), "children", this.joins, "elements");
+		
+		Binding joinBinding = bf.createBinding(this.joins, "selectedItem", this.joinGuiModel, "selectedJoin");
 
 		Binding leftKeyFieldBinding = bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
 
@@ -124,6 +129,8 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 			rightTableSelectionBinding.fireSourceChanged();
 			leftKeyFieldBinding.fireSourceChanged();
 			rightKeyFieldBinding.fireSourceChanged();
+			joinsBinding.fireSourceChanged();
+			joinBinding.fireSourceChanged();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -166,6 +173,11 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 		JoinModel join = new JoinModel();
 		join.setLeftKeyFieldModel(this.joinGuiModel.getLeftKeyField());
 		join.setRightKeyFieldModel(this.joinGuiModel.getRightKeyField());
+		this.joinGuiModel.addJoin(join);
 	}
-
+	
+	@Bindable
+	public void deleteJoin() {
+		this.joinGuiModel.removeSelectedJoin();
+	}
 }

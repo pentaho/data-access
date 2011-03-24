@@ -51,8 +51,18 @@
 		    <menupopup/>
 		  </menulist>   
 		  <hbox>
-		    <spacer width="215"/>
+		    <spacer width="217"/>
 		    <button id="createJoinButton" label="Create Join" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
+		  </hbox>
+        </vbox>
+      </hbox>
+      <hbox>
+        <vbox>
+          <label value="Join(s):" tooltiptext=""/>
+          <listbox id="joins" pen:binding="name" disabled="false" height="150" width="610"/>
+          <hbox>
+		    <spacer width="530"/>
+		    <button id="deleteJoinButton" label="Delete Join" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.deleteJoin()" disabled="false"/>
 		  </hbox>
         </vbox>
       </hbox>
