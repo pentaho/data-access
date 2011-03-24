@@ -85,10 +85,13 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 		Binding leftTableSelectionBinding = bf.createBinding(this.leftTables, "selectedItem", this.joinGuiModel, "leftJoinTable");
 		Binding rightTableSelectionBinding = bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
 
-		Binding binding1 = bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftJoinField", new BindingConvertor<Integer, JoinFieldModel>() {
+		Binding leftKeyFieldBinding = bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
 
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
+				if(index == -1) {
+					return null;
+				}
 				return joinGuiModel.getLeftJoinTable().getFields().get(index);
 			}
 
@@ -98,10 +101,13 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 			}
 		});
 
-		Binding binding2 = bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightJoinField", new BindingConvertor<Integer, JoinFieldModel>() {
+		Binding rightKeyFieldBinding = bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
 
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
+				if(index == -1) {
+					return null;
+				}
 				return joinGuiModel.getRightJoinTable().getFields().get(index);
 			}
 
@@ -116,8 +122,8 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 			rightTablesBinding.fireSourceChanged();
 			leftTableSelectionBinding.fireSourceChanged();
 			rightTableSelectionBinding.fireSourceChanged();
-			binding1.fireSourceChanged();
-			binding2.fireSourceChanged();
+			leftKeyFieldBinding.fireSourceChanged();
+			rightKeyFieldBinding.fireSourceChanged();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -158,8 +164,8 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 	@Bindable
 	public void createJoin() {
 		JoinModel join = new JoinModel();
-		join.setLeftKeyFieldModel(this.joinGuiModel.getLeftJoinField());
-		join.setRightKeyFieldModel(this.joinGuiModel.getRightJoinField());
+		join.setLeftKeyFieldModel(this.joinGuiModel.getLeftKeyField());
+		join.setRightKeyFieldModel(this.joinGuiModel.getRightKeyField());
 	}
 
 }
