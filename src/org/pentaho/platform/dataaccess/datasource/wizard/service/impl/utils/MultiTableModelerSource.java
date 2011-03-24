@@ -26,15 +26,15 @@ import org.pentaho.agilebi.modeler.util.ISpoonModelerSource;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
+import org.pentaho.metadata.model.LogicalRelationship;
 
 public class MultiTableModelerSource implements ISpoonModelerSource {
 
 	public static final String SOURCE_TYPE = MultiTableModelerSource.class.getSimpleName();
 	private DatabaseMeta databaseMeta;
-	private List<JoinModel> joins;
+	private List<LogicalRelationship> joins;
 
-	public MultiTableModelerSource(DatabaseMeta databaseMeta, List<JoinModel> joins) {
+	public MultiTableModelerSource(DatabaseMeta databaseMeta, List<LogicalRelationship> joins) {
 		this.databaseMeta = databaseMeta;
 		this.joins = joins;
 	}

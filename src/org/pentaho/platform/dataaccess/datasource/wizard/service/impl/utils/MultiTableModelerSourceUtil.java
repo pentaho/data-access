@@ -31,7 +31,6 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 
 public class MultiTableModelerSourceUtil {
@@ -42,7 +41,7 @@ public class MultiTableModelerSourceUtil {
 		this.generator = new ModelGenerator();
 	}
 
-	public Domain generateDomain(DatabaseMeta databaseMeta, List<JoinModel> joins) {
+	public Domain generateDomain(DatabaseMeta databaseMeta, List<LogicalRelationship> joins) {
 
 		Domain domain = null;
 
@@ -54,9 +53,9 @@ public class MultiTableModelerSourceUtil {
 
 			List<SchemaTable> schemas = new ArrayList<SchemaTable>();
 
-			for (JoinModel join : joins) {
-				schemas.add(new SchemaTable("", join.getLeftKeyFieldModel().getParentTable().getName()));
-				schemas.add(new SchemaTable("", join.getRightKeyFieldModel().getParentTable().getName()));
+			for (LogicalRelationship join : joins) {
+				schemas.add(new SchemaTable("", join.getFromTable().getName(locale)));
+				schemas.add(new SchemaTable("", join.getToTable().getName(locale)));
 
 			}
 			SchemaTable tableNames[] = new SchemaTable[schemas.size()];
@@ -68,10 +67,10 @@ public class MultiTableModelerSourceUtil {
 
 			LogicalModel logicalModel = domain.getLogicalModels().get(0);
 
-			for (JoinModel join : joins) {
+			for (LogicalRelationship join : joins) {
 
-				String lTable = join.getLeftKeyFieldModel().getParentTable().getName();
-				String rTable = join.getRightKeyFieldModel().getParentTable().getName();
+				String lTable = join.getFromTable().getName(locale);
+				String rTable = join.getToTable().getName(locale);
 
 				LogicalTable fromTable = null;
 				LogicalColumn fromColumn = null;
@@ -83,7 +82,7 @@ public class MultiTableModelerSourceUtil {
 						fromTable = logicalTable;
 
 						for (LogicalColumn logicalColumn : fromTable.getLogicalColumns()) {
-							if (logicalColumn.getName(locale).equals(join.getLeftKeyFieldModel().getName())) {
+							if (logicalColumn.getName(locale).equals(join.getFromColumn().getName(locale))) {
 								fromColumn = logicalColumn;
 							}
 						}
@@ -93,7 +92,7 @@ public class MultiTableModelerSourceUtil {
 						toTable = logicalTable;
 
 						for (LogicalColumn logicalColumn : toTable.getLogicalColumns()) {
-							if (logicalColumn.getName(locale).equals(join.getRightKeyFieldModel().getName())) {
+							if (logicalColumn.getName(locale).equals(join.getToColumn().getName(locale))) {
 								toColumn = logicalColumn;
 							}
 						}

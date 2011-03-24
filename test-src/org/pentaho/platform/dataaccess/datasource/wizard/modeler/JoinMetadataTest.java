@@ -27,6 +27,10 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalRelationship;
+import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
@@ -56,7 +60,32 @@ public class JoinMetadataTest {
 	public JoinMetadataTest() {
 
 		try {
-			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), this.getJoinModel());
+			String locale = LocalizedString.DEFAULT_LOCALE;
+
+			List<LogicalRelationship> logicalRelationships = new ArrayList<LogicalRelationship>();
+			List<JoinModel> joins = getJoinModel();
+			for (JoinModel join : joins) {
+				LogicalTable fromTable = new LogicalTable();
+				fromTable.setName(new LocalizedString(locale, join.getLeftKeyFieldModel().getParentTable().getName()));
+
+				LogicalTable toTable = new LogicalTable();
+				toTable.setName(new LocalizedString(locale, join.getRightKeyFieldModel().getParentTable().getName()));
+
+				LogicalColumn fromColumn = new LogicalColumn();
+				fromColumn.setName(new LocalizedString(locale, join.getLeftKeyFieldModel().getName()));
+
+				LogicalColumn toColumn = new LogicalColumn();
+				toColumn.setName(new LocalizedString(locale, join.getRightKeyFieldModel().getName()));
+				
+				LogicalRelationship logicalRelationship = new LogicalRelationship();
+				logicalRelationship.setFromTable(fromTable);
+				logicalRelationship.setToTable(toTable);
+				logicalRelationship.setFromColumn(fromColumn);
+				logicalRelationship.setToColumn(toColumn);
+				logicalRelationships.add(logicalRelationship);
+			}
+
+			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), logicalRelationships);
 			multiTable.generateDomain();
 		} catch (ModelerException e) {
 			e.printStackTrace();
