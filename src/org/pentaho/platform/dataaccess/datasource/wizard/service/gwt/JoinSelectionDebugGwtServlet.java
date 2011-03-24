@@ -28,7 +28,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryConnectionServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.CsvDatasourceServiceHelper;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
@@ -36,7 +35,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implements IGwtJoinSelectionService {
 	private static final long serialVersionUID = -6800729673421568704L;
-	public static InMemoryConnectionServiceImpl SERVICE;
 
 	static {
 		if (!PentahoSystem.getInitializedOK()) {
