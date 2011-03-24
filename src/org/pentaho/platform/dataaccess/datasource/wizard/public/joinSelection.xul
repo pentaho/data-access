@@ -52,7 +52,7 @@
 		  </menulist>   
 		  <hbox>
 		    <spacer width="215"/>
-		    <button id="createJoinButton" label="Create Join" pen:disabledimage="" tooltiptext="" onclick="" disabled="false"/>
+		    <button id="createJoinButton" label="Create Join" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
 		  </hbox>
         </vbox>
       </hbox>

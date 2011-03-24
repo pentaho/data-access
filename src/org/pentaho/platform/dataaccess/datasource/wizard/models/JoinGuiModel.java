@@ -32,6 +32,8 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 	private AbstractModelList<JoinTableModel> selectedTables;
 	private JoinTableModel leftJoinTable;
 	private JoinTableModel rightJoinTable;
+	private JoinFieldModel leftJoinField;
+	private JoinFieldModel rightJoinField;
 
 	public JoinGuiModel() {
 		this.availableTables = new AbstractModelList<JoinTableModel>();
@@ -78,6 +80,26 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 	@Bindable
 	public void setRightJoinTable(JoinTableModel rightJoinTable) {
 		this.rightJoinTable = rightJoinTable;
+	}
+
+	@Bindable
+	public JoinFieldModel getLeftJoinField() {
+		return this.leftJoinField;
+	}
+
+	@Bindable
+	public void setLeftJoinField(JoinFieldModel leftJoinField) {
+		this.leftJoinField = leftJoinField;
+	}
+
+	@Bindable
+	public JoinFieldModel getRightJoinField() {
+		return this.rightJoinField;
+	}
+
+	@Bindable
+	public void setRightJoinField(JoinFieldModel rightJoinField) {
+		this.rightJoinField = rightJoinField;
 	}
 
 	public void addSelectedTable(JoinTableModel table) {
