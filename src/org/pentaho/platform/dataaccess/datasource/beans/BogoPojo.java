@@ -20,31 +20,17 @@
  */
 package org.pentaho.platform.dataaccess.datasource.beans;
 
-import java.io.Serializable;
-
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.security.RowLevelSecurity;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
-import org.pentaho.metadata.model.concept.types.AggregationType;
-import org.pentaho.metadata.model.concept.types.Alignment;
-import org.pentaho.metadata.model.concept.types.Color;
-import org.pentaho.metadata.model.concept.types.ColumnWidth;
-import org.pentaho.metadata.model.concept.types.DataType;
-import org.pentaho.metadata.model.concept.types.FieldType;
-import org.pentaho.metadata.model.concept.types.Font;
-import org.pentaho.metadata.model.concept.types.JoinType;
-import org.pentaho.metadata.model.concept.types.LocaleType;
-import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.metadata.model.concept.types.RelationshipType;
-import org.pentaho.metadata.model.concept.types.TableType;
-import org.pentaho.metadata.model.concept.types.TargetColumnType;
-import org.pentaho.metadata.model.concept.types.TargetTableType;
+import org.pentaho.metadata.model.concept.types.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvParseException;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.LogicalTable;
 
-import java.lang.Boolean;
+import java.io.Serializable;
 /*
  * This class is a workaround for GWT. GWT is not able to compile these classes are they have been used in a map
  * http://code.google.com/p/google-web-toolkit/issues/detail?id=3521
@@ -73,7 +59,16 @@ public class BogoPojo implements Serializable{
   CsvParseException csvParseException;
   LogicalTable lTable;
   LogicalModel lModel;
+  LogicalColumn lColumn;
   ModelerException modelerException;
+
+  public LogicalColumn getlColumn() {
+    return lColumn;
+  }
+
+  public void setlColumn(LogicalColumn lColumn) {
+    this.lColumn = lColumn;
+  }
 
   public LogicalModel getlModel() {
     return lModel;

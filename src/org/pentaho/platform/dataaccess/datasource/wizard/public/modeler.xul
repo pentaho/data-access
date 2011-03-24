@@ -24,6 +24,13 @@
                          tooltiptext="${add}"/>
         </toolbar>
 
+        <!-- TODO: REMOVE THESE BUTTONS -->
+<!--
+        <hbox spacing="0" padding="0">
+          <button id="showReportingOnlyButton" label="reporting only" onclick="modeler.showReportingOnlyMode()" />
+          <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
+        </hbox>
+-->
         <listbox id="fieldList" flex="1" seltype="multi"
                  pen:binding="name" pen:ondrag="modeler.onFieldListDrag()"
                  pen:drageffect="copy" width="200" height="413">
@@ -36,6 +43,7 @@
         </listbox>
       </groupbox>
 
+<!--
       <groupbox width="360" height="463" id="schema-toolbar-groupbox">
         <caption label="${model}"/>
         <toolbar id="schema-toolbar" mode="icons">
@@ -80,6 +88,93 @@
           </treechildren>
         </tree>
       </groupbox>
+-->
+      <deck id="modelDeck" width="360" height="463">
+
+        <tabbox id="modelTabbox" flex="1" >
+          <tabs>
+            <tab id="analysisTab" label="analysis" onclick="modeler.setModelerPerspective('ANALYSIS')"></tab>
+            <tab id="reportingTab" label="reporting" onclick="modeler.setModelerPerspective('REPORTING')"></tab>
+          </tabs>
+          <tabpanels>
+            <tabpanel id="analysisTabPanel">
+
+              <vbox id="analyzerModelPanel" flex="1" spacing="0" padding="0">
+                <toolbar id="schema-toolbar" mode="icons">
+                  <toolbarspacer flex="1"/>
+                  <toolbarbutton id="measureBtn" image="images/sm_measure_icon.png" onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}"/>
+                  <toolbarbutton id="dimensionBtn" image="images/sm_dim_icon.png" onclick="modeler.showNewDimensionDialog()" disabled="true" tooltiptext="${add_dimension}"/>
+                  <toolbarbutton id="hierarchyBtn" image="images/sm_hierarchy_icon.png" onclick="modeler.showNewHierarchyDialog()" disabled="true" tooltiptext="${add_hiearchy}"/>
+                  <toolbarbutton id="levelBtn" image="images/sm_level_icon.png" onclick="modeler.showNewLevelDialog()" disabled="true" tooltiptext="${add_level}"/>
+                  <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveFieldDown()" tooltiptext="${move_field_down}"/>
+                  <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveFieldUp()" tooltiptext="${move_field_up}"/>
+                  <toolbarbutton image="images/remove.png" onclick="modeler.removeField()" tooltiptext="${remove_field}"/>
+                  <toolbarbutton id="clearModel" image="images/clear_model.png" onclick="modeler.clearFields()"
+                                 tooltiptext="${clearFields}"/>
+                </toolbar>
+                <tree id="dimensionTree" width="355" height="413" editable="false"
+                  ondrag="modeler.onDimensionTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
+                  ondrop="modeler.onDimensionTreeDrop()" hiddenrootnode="false" preserveselection="true">
+                  <treecols>
+                    <treecol width="355" label="" primary="true"
+                      pen:binding="displayName" pen:childrenbinding="children"
+                      pen:imagebinding="image" editable="false"
+                       pen:disabledbinding="editingDisabled"
+                      pen:tooltipbinding="validationMessagesString"
+                      pen:expandedbinding="expanded"/>
+                  </treecols>
+                  <treechildren>
+                    <treeitem container="true" open="true">
+                      <treerow>
+                        <treecell label="" />
+                      </treerow>
+                      <treechildren></treechildren>
+                    </treeitem>
+                  </treechildren>
+                </tree>
+              </vbox>
+            </tabpanel>
+            <tabpanel id="reportingTabPanel">
+              <vbox id="reportingModelPanel" flex="1" spacing="0" padding="0">
+                <toolbar id="categories-toolbar" mode="icons">
+                  <toolbarspacer flex="1"/>
+                  <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveRelationalFieldDown()" tooltiptext="${move_field_down}"/>
+                  <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveRelationalFieldUp()" tooltiptext="${move_field_up}"/>
+                  <toolbarbutton id="categoryBtn" image="images/sm_folder_icon.png" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}"/>
+                  <toolbarbutton id="fieldBtn" image="images/fields.png" onclick="modeler.showNewFieldDialog()" disabled="true" tooltiptext="${new_field}"/>
+                  <toolbarbutton image="images/remove.png" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
+                  <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
+                </toolbar>
+                <tree id="categoriesTree" width="355" height="413" editable="false">
+                  <treecols>
+                    <treecol width="355" label="" primary="true"
+                      pen:binding="displayName" pen:childrenbinding="children"
+                      pen:imagebinding="image" editable="false"
+                      pen:disabledbinding="editingDisabled"
+                      pen:tooltipbinding="validationMessagesString"
+                      pen:expandedbinding="expanded"/>
+                  </treecols>
+                  <treechildren>
+                    <treeitem container="true" open="true">
+                      <treerow>
+                        <treecell label="" />
+                      </treerow>
+                      <treechildren></treechildren>
+                    </treeitem>
+                  </treechildren>
+                </tree>
+              </vbox>
+            </tabpanel>
+          </tabpanels>
+        </tabbox>
+
+        <groupbox width="360" height="463" id="schema-toolbar-groupbox">
+          <caption label="${model}" />
+          <hbox id="modelPanel" flex="1" spacing="0" padding="0">
+
+          </hbox>
+        </groupbox>
+      </deck>
 
 
       <groupbox type="closable" width="222" height="463" id="propertiesPanel">
