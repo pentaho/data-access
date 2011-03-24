@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -35,7 +36,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.CsvDatasourceServiceHelper;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.MultiTableModelerSource;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class JoinMetadataTest {
