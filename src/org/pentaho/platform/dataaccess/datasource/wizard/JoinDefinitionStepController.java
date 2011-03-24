@@ -26,11 +26,13 @@ import java.util.List;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -83,11 +85,39 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 		Binding leftTableSelectionBinding = bf.createBinding(this.leftTables, "selectedItem", this.joinGuiModel, "leftJoinTable");
 		Binding rightTableSelectionBinding = bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
 
+		Binding binding1 = bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftJoinField", new BindingConvertor<Integer, JoinFieldModel>() {
+
+			@Override
+			public JoinFieldModel sourceToTarget(final Integer index) {
+				return joinGuiModel.getLeftJoinTable().getFields().get(index);
+			}
+
+			@Override
+			public Integer targetToSource(final JoinFieldModel value) {
+				return null;
+			}
+		});
+
+		Binding binding2 = bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightJoinField", new BindingConvertor<Integer, JoinFieldModel>() {
+
+			@Override
+			public JoinFieldModel sourceToTarget(final Integer index) {
+				return joinGuiModel.getRightJoinTable().getFields().get(index);
+			}
+
+			@Override
+			public Integer targetToSource(final JoinFieldModel value) {
+				return null;
+			}
+		});
+
 		try {
 			leftTablesBinding.fireSourceChanged();
 			rightTablesBinding.fireSourceChanged();
 			leftTableSelectionBinding.fireSourceChanged();
 			rightTableSelectionBinding.fireSourceChanged();
+			binding1.fireSourceChanged();
+			binding2.fireSourceChanged();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -123,6 +153,13 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 	@Bindable
 	public void next() {
 		this.joinDefinitionDialog.show();
+	}
+
+	@Bindable
+	public void createJoin() {
+		JoinModel join = new JoinModel();
+		join.setLeftKeyFieldModel(this.joinGuiModel.getLeftJoinField());
+		join.setRightKeyFieldModel(this.joinGuiModel.getRightJoinField());
 	}
 
 }
