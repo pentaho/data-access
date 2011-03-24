@@ -52,10 +52,11 @@ public class JoinTableModel extends XulEventSourceAdapter {
 
 	@Bindable
 	public void setFields(AbstractModelList<JoinFieldModel> fields) {
-		if(fields != null) {
+		/*if(fields != null) {
 			this.fields.clear();
 			this.fields.addAll(fields);
-		}
+		}*/
+		this.fields = fields;
 	}
 	
 	public List<JoinFieldModel> processTableFields(List<String> fields) {

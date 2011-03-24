@@ -75,9 +75,9 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 		XulDomContainer mainContainer = runner.getXulDomContainers().get(0);
 		Document rootDocument = mainContainer.getDocumentRoot();
 		mainContainer.addEventHandler(this);
-        mainContainer.addEventHandler(this.definitionStepController);
-        this.definitionStepController.init();
-		
+		mainContainer.addEventHandler(this.definitionStepController);
+		this.definitionStepController.init();
+
 		this.tablesSelectionDialog = (XulDialog) rootDocument.getElementById(JOIN_STEP_PANEL_ID);
 		this.availableTables = (XulListbox) rootDocument.getElementById("availableTables");
 		this.selectedTables = (XulListbox) rootDocument.getElementById("selectedTables");

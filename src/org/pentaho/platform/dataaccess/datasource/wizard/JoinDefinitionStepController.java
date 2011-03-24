@@ -19,6 +19,8 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
@@ -29,7 +31,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelect
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
-import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -41,7 +42,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
 @SuppressWarnings("unchecked")
-public class JoinDefinitionStepController extends AbstractXulEventHandler {
+public class JoinDefinitionStepController extends AbstractXulEventHandler implements PropertyChangeListener {
 
 	protected static final String JOIN_DEFINITION_PANEL_ID = "joinDefinitionWindow";
 
@@ -71,6 +72,9 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler {
 		this.leftKeyFieldList = (XulMenuList<JoinFieldModel>) rootDocument.getElementById("leftKeyField");
 		this.rightKeyFieldList = (XulMenuList<JoinFieldModel>) rootDocument.getElementById("rightKeyField");
 
+		this.leftTables.addPropertyChangeListener(this);
+		this.rightTables.addPropertyChangeListener(this);
+
 		BindingFactory bf = new GwtBindingFactory(rootDocument);
 
 		Binding leftTablesBinding = bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.leftTables, "elements");
@@ -79,35 +83,20 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler {
 		Binding leftTableSelectionBinding = bf.createBinding(this.leftTables, "selectedItem", this.joinGuiModel, "leftJoinTable");
 		Binding rightTableSelectionBinding = bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
 
-		Binding leftTableFieldsBinding = bf.createBinding(this.joinGuiModel.getLeftJoinTable().getFields(), "children", this.leftKeyFieldList, "elements");
-		Binding rightTableFieldsBinding = bf.createBinding(this.joinGuiModel.getRightJoinTable().getFields(), "children", this.rightKeyFieldList, "elements");
-
-		Binding leftTableSelectedItemBinding = bf.createBinding(this.leftTables, "selectedItem", this.joinGuiModel.getLeftJoinTable(), "fields", new TableFieldsConvertor());
-		Binding rightTableSelectedItemBinding = bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel.getRightJoinTable(), "fields", new TableFieldsConvertor());
-
 		try {
 			leftTablesBinding.fireSourceChanged();
 			rightTablesBinding.fireSourceChanged();
 			leftTableSelectionBinding.fireSourceChanged();
 			rightTableSelectionBinding.fireSourceChanged();
-			leftTableFieldsBinding.fireSourceChanged();
-			rightTableFieldsBinding.fireSourceChanged();
-			leftTableSelectedItemBinding.fireSourceChanged();
-			rightTableSelectedItemBinding.fireSourceChanged();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	class TableFieldsConvertor extends BindingConvertor<Object, AbstractModelList<JoinFieldModel>> {
-
-		private AbstractModelList<JoinFieldModel> tableFields = null;
-
-		@Override
-		public AbstractModelList<JoinFieldModel> sourceToTarget(final Object object) {
-
-			final JoinTableModel table = (JoinTableModel) object;
-
+	public void propertyChange(PropertyChangeEvent evt) {
+		final XulListbox xulListbox = (XulListbox) evt.getSource();
+		final JoinTableModel table = (JoinTableModel) xulListbox.getSelectedItem();
+		if (table != null) {
 			joinSelectionServiceGwtImpl.getTableFields(table.getName(), selectedConnection, new XulServiceCallback<List>() {
 				public void error(String message, Throwable error) {
 					error.printStackTrace();
@@ -115,15 +104,15 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler {
 
 				public void success(List fields) {
 					List<JoinFieldModel> fieldModels = table.processTableFields(fields);
-					tableFields = new AbstractModelList<JoinFieldModel>(fieldModels);
+					table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
+					if (xulListbox.equals(leftTables)) {
+						leftKeyFieldList.setElements(fields);
+					}
+					if (xulListbox.equals(rightTables)) {
+						rightKeyFieldList.setElements(fields);
+					}
 				}
 			});
-			return tableFields;
-		}
-
-		@Override
-		public Object targetToSource(final AbstractModelList<JoinFieldModel> value) {
-			return null;
 		}
 	}
 
