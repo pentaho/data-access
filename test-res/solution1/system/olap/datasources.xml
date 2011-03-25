@@ -9,14 +9,7 @@
     <ProviderType>MDP</ProviderType>
     <AuthenticationMode>Unauthenticated</AuthenticationMode>
     <Catalogs>
-        <Catalog name="SteelWheels">
-            <DataSourceInfo>Provider=mondrian;DataSource=SampleData</DataSourceInfo>
-			<Definition>solution:steel-wheels/analysis/steelwheels.mondrian.xml</Definition>
-		</Catalog>
-        <Catalog name="SampleData">
-            <DataSourceInfo>Provider=mondrian;DataSource=SampleData</DataSourceInfo>
-            <Definition>solution:steel-wheels/analysis/SampleData.mondrian.xml</Definition>
-        </Catalog>
+        
     </Catalogs>
   </DataSource>
 </DataSources>
