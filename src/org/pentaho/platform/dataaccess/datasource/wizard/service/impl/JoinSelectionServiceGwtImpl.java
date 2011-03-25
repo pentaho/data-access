@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
+import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncJoinSelectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionServiceAsync;
@@ -94,7 +95,7 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 			}
 		});
 	}
-	
+
 	public void getTableFields(final String table, final IConnection connection, final XulServiceCallback<List> xulCallback) {
 
 		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
@@ -107,6 +108,23 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 			}
 
 			public void onSuccess(List arg0) {
+				xulCallback.success(arg0);
+			}
+		});
+	}
+
+	public void serializeJoins(final List<LogicalRelationship> joins, final XulServiceCallback<Void> xulCallback) {
+
+		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+			public void execute(AsyncCallback callback) {
+				SERVICE.serializeJoins(joins, callback);
+			}
+		}, new AsyncCallback<Void>() {
+			public void onFailure(Throwable arg0) {
+				xulCallback.error(arg0.getLocalizedMessage(), arg0);
+			}
+
+			public void onSuccess(Void arg0) {
 				xulCallback.success(arg0);
 			}
 		});

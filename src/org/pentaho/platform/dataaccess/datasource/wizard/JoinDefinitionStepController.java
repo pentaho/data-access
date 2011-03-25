@@ -23,6 +23,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
+import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
@@ -68,33 +69,31 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 
 		XulDomContainer mainContainer = getXulDomContainer();
 		Document rootDocument = mainContainer.getDocumentRoot();
+		BindingFactory bf = new GwtBindingFactory(rootDocument);
 		mainContainer.addEventHandler(this);
 		this.joinDefinitionDialog = (XulDialog) rootDocument.getElementById(JOIN_DEFINITION_PANEL_ID);
-		this.leftTables = (XulListbox) rootDocument.getElementById("leftTables");
-		this.rightTables = (XulListbox) rootDocument.getElementById("rightTables");
 		this.joins = (XulListbox) rootDocument.getElementById("joins");
 		this.leftKeyFieldList = (XulMenuList<JoinFieldModel>) rootDocument.getElementById("leftKeyField");
 		this.rightKeyFieldList = (XulMenuList<JoinFieldModel>) rootDocument.getElementById("rightKeyField");
 
+		this.leftTables = (XulListbox) rootDocument.getElementById("leftTables");
 		this.leftTables.addPropertyChangeListener(this);
-		this.rightTables.addPropertyChangeListener(this);
 
-		BindingFactory bf = new GwtBindingFactory(rootDocument);
+		this.rightTables = (XulListbox) rootDocument.getElementById("rightTables");
+		this.rightTables.addPropertyChangeListener(this);
 
 		Binding leftTablesBinding = bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.leftTables, "elements");
 		Binding rightTablesBinding = bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.rightTables, "elements");
-
 		Binding leftTableSelectionBinding = bf.createBinding(this.leftTables, "selectedItem", this.joinGuiModel, "leftJoinTable");
 		Binding rightTableSelectionBinding = bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
 		Binding joinsBinding = bf.createBinding(this.joinGuiModel.getJoins(), "children", this.joins, "elements");
-		
 		Binding joinBinding = bf.createBinding(this.joins, "selectedItem", this.joinGuiModel, "selectedJoin");
 
 		Binding leftKeyFieldBinding = bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
 
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
-				if(index == -1) {
+				if (index == -1) {
 					return null;
 				}
 				return joinGuiModel.getLeftJoinTable().getFields().get(index);
@@ -110,7 +109,7 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
-				if(index == -1) {
+				if (index == -1) {
 					return null;
 				}
 				return joinGuiModel.getRightJoinTable().getFields().get(index);
@@ -175,9 +174,23 @@ public class JoinDefinitionStepController extends AbstractXulEventHandler implem
 		join.setRightKeyFieldModel(this.joinGuiModel.getRightKeyField());
 		this.joinGuiModel.addJoin(join);
 	}
-	
+
 	@Bindable
 	public void deleteJoin() {
 		this.joinGuiModel.removeSelectedJoin();
+	}
+
+	@Bindable
+	public void finish() {
+		List<LogicalRelationship> joins = this.joinGuiModel.generateLogicalRelationships(this.joinGuiModel.getJoins());
+		joinSelectionServiceGwtImpl.serializeJoins(joins, new XulServiceCallback<Void>() {
+			public void error(String message, Throwable error) {
+				error.printStackTrace();
+			}
+
+			public void success(Void value) {
+				//TODO
+			}
+		});
 	}
 }

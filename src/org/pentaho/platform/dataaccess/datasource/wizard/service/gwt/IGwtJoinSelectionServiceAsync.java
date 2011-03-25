@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
 import java.util.List;
 
+import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -27,5 +28,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface IGwtJoinSelectionServiceAsync {
 
 	void getDatabaseTables(IConnection connection, AsyncCallback<List> callback);
+
 	void getTableFields(String table, IConnection connection, AsyncCallback<List> callback);
+
+	void serializeJoins(List<LogicalRelationship> joins, AsyncCallback<Void> callback);
 }

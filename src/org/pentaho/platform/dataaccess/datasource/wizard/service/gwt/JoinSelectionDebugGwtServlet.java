@@ -26,6 +26,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.CsvDatasourceServiceHelper;
@@ -71,6 +72,10 @@ public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implement
 		List<String> tables = Arrays.asList(tableNames);
 		database.disconnect();
 		return tables;
+	}
+
+	public void serializeJoins(List<LogicalRelationship> joins) throws Exception {
+		//TODO
 	}
 
 	public List<String> getTableFields(String table, IConnection connection) throws Exception {

@@ -67,7 +67,6 @@ public class SerializeMultiTableServiceTest {
 	MultiTableModelerSource multiTable = new MultiTableModelerSource(database, logicalRelationships);
 	Domain domain = multiTable.generateDomain();
     
-    
     List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
 	OlapDimension dimension = new OlapDimension();
 	dimension.setName("test");//$NON-NLS-1$
@@ -88,11 +87,11 @@ public class SerializeMultiTableServiceTest {
     assertTrue(mondrianFile.exists());
 
     if (xmiFile.exists()) {
-      //xmiFile.delete();
+      xmiFile.delete();
     }
 
     if (mondrianFile.exists()) {
-      //mondrianFile.delete();
+      mondrianFile.delete();
     }
 
     //Restores datasources.xml to its original content.
