@@ -22,6 +22,10 @@ package org.pentaho.platform.dataaccess.datasource.wizard.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalRelationship;
+import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
@@ -153,5 +157,31 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 			joinTables.add(joinTable);
 		}
 		setAvailableTables(new AbstractModelList<JoinTableModel>(joinTables));
+	}
+
+	public List<LogicalRelationship> generateLogicalRelationships(List<JoinModel> joins) {
+		String locale = LocalizedString.DEFAULT_LOCALE;
+		List<LogicalRelationship> logicalRelationships = new ArrayList<LogicalRelationship>();
+		for (JoinModel join : joins) {
+			LogicalTable fromTable = new LogicalTable();
+			fromTable.setName(new LocalizedString(locale, join.getLeftKeyFieldModel().getParentTable().getName()));
+
+			LogicalTable toTable = new LogicalTable();
+			toTable.setName(new LocalizedString(locale, join.getRightKeyFieldModel().getParentTable().getName()));
+
+			LogicalColumn fromColumn = new LogicalColumn();
+			fromColumn.setName(new LocalizedString(locale, join.getLeftKeyFieldModel().getName()));
+
+			LogicalColumn toColumn = new LogicalColumn();
+			toColumn.setName(new LocalizedString(locale, join.getRightKeyFieldModel().getName()));
+
+			LogicalRelationship logicalRelationship = new LogicalRelationship();
+			logicalRelationship.setFromTable(fromTable);
+			logicalRelationship.setToTable(toTable);
+			logicalRelationship.setFromColumn(fromColumn);
+			logicalRelationship.setToColumn(toColumn);
+			logicalRelationships.add(logicalRelationship);
+		}
+		return logicalRelationships;
 	}
 }
