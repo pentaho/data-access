@@ -28,6 +28,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
@@ -37,8 +38,9 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.CsvDatasourceServiceHelper;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.test.platform.engine.core.BaseTest;
 
-public class JoinMetadataTest {
+public class JoinMetadataTest extends BaseTest {
 
 	static {
 		if (!PentahoSystem.getInitializedOK()) {
@@ -53,11 +55,7 @@ public class JoinMetadataTest {
 		}
 	}
 
-	public static void main(String args[]) {
-		new JoinMetadataTest();
-	}
-
-	public JoinMetadataTest() {
+	public void testGenerateDomain() {
 
 		try {
 			String locale = LocalizedString.DEFAULT_LOCALE;
@@ -76,7 +74,7 @@ public class JoinMetadataTest {
 
 				LogicalColumn toColumn = new LogicalColumn();
 				toColumn.setName(new LocalizedString(locale, join.getRightKeyFieldModel().getName()));
-				
+
 				LogicalRelationship logicalRelationship = new LogicalRelationship();
 				logicalRelationship.setFromTable(fromTable);
 				logicalRelationship.setToTable(toTable);
@@ -86,7 +84,8 @@ public class JoinMetadataTest {
 			}
 
 			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), logicalRelationships);
-			multiTable.generateDomain();
+			Domain domain = multiTable.generateDomain();
+			assertNotNull(domain);
 		} catch (ModelerException e) {
 			e.printStackTrace();
 		}
@@ -113,7 +112,6 @@ public class JoinMetadataTest {
 		join1.setRightKeyFieldModel(rField1);
 
 		joins.add(join1);
-
 		return joins;
 	}
 
