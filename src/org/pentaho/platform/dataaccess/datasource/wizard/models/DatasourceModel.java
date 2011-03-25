@@ -26,11 +26,15 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatasourceModel extends XulEventSourceAdapter 
-    implements IWizardModel, IRelationalModelValidationListener, IModelInfoValidationListener {
+    implements IRelationalModelValidationListener, IModelInfoValidationListener {
   
   private boolean validated;
   private DatasourceType datasourceType = DatasourceType.NONE;
@@ -40,6 +44,11 @@ public class DatasourceModel extends XulEventSourceAdapter
   private String datasourceName;
   private IConnection selectedRelationalConnection;
   private String query;
+
+  private List<IWizardDatasource> datasources = new ArrayList<IWizardDatasource>();
+
+  private IWizardDatasource selectedDatasource;
+  private boolean editMode;
 
   public DatasourceModel() {
     guiStateModel = new GuiStateModel();
@@ -79,6 +88,8 @@ public class DatasourceModel extends XulEventSourceAdapter
       String localeCode = domain.getLocales().get(0).getCode();
       model.getName().setString(localeCode, datasourceName);
     }
+
+    this.getModelInfo().setStageTableName(generateTableName());
    
     this.firePropertyChange("datasourceName", previousVal, datasourceName); //$NON-NLS-1$
     validate();
@@ -299,5 +310,39 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   public void onCsvValid() {
+  }
+
+  @Bindable
+  public List<IWizardDatasource> getDatasources() {
+    return datasources;
+  }
+
+  public void setDatasources(List<IWizardDatasource> datasources) {
+    this.datasources = datasources;
+    firePropertyChange("datasources", null, datasources);
+  }
+
+  public void addDatasource(IWizardDatasource datasource){
+    datasources.add(datasource);
+    firePropertyChange("datasources", null, datasources);
+  }
+
+  @Bindable
+  public IWizardDatasource getSelectedDatasource() {
+    return selectedDatasource != null ? selectedDatasource : datasources.get(0);
+  }
+
+  @Bindable
+  public void setSelectedDatasource(IWizardDatasource selectedDatasource) {
+    IWizardDatasource prevVal = this.selectedDatasource;
+    this.selectedDatasource = selectedDatasource;
+    firePropertyChange("selectedDatasource", prevVal, selectedDatasource );
+  }
+
+  public boolean isEditing() {
+    return editMode;
+  }
+  public void setEditing(boolean editing){
+    this.editMode = editing;
   }
 }

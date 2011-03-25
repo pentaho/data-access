@@ -9,7 +9,6 @@ import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel.ConnectionEditType;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorTest;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDatasourceServiceImpl;
 
@@ -51,7 +50,6 @@ public class DatasourceModelTest {
     List<IConnection> connectionList = new ArrayList<IConnection>();
     connectionList.add(connection);
     guiStateModel.setConnections(connectionList);
-    guiStateModel.setEditType(ConnectionEditType.EDIT);
     guiStateModel.setPreviewLimit("10");
     guiStateModel.validateRelational();
     LogicalColumn logColumn = new LogicalColumn();

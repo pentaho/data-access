@@ -17,7 +17,8 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.steps;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
@@ -36,7 +37,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  *
  * @author William Seyler
  */
-public abstract class AbstractWizardStep<T extends IWizardModel> extends XulEventSourceAdapter implements IWizardStep {
+public abstract class AbstractWizardStep extends XulEventSourceAdapter implements IWizardStep {
 
   public static final String VALID_PROPERTY_NAME = "valid"; //$NON-NLS-1$
   public static final String PREVIEWABLE_PROPERTY_NAME = "previewable"; //$NON-NLS-1$
@@ -58,13 +59,15 @@ public abstract class AbstractWizardStep<T extends IWizardModel> extends XulEven
   private boolean disabled = false;
   private boolean valid;
   private boolean finishable;
-  private BindingFactory bf;
-  private Document document;
+  protected BindingFactory bf;
+  protected Document document;
   private XulImage stepImage;
   private XulLabel stepLabel;
+  private XulRow stepRow;
+  protected DatasourceModel datasourceModel;
+  private XulDomContainer xulDomContainer;
+  private boolean activated;
 
-  private T model;
-  
   protected AbstractWizardStep() {
     super();
     setFinishable(false);
@@ -121,34 +124,54 @@ public abstract class AbstractWizardStep<T extends IWizardModel> extends XulEven
     this.document = document;
   }
 
+
   /**
    * @throws XulException  
    */
-  public void createPresentationComponent(final XulDomContainer mainWizardContainer) throws XulException {
-    mainContainer = (GwtXulDomContainer) mainWizardContainer; 
+  public void init(final XulDomContainer mainWizardContainer) throws XulException {
+    xulDomContainer = mainWizardContainer;
+    this.setBindings();
+  }
+
+  @Override
+  public void activating() throws XulException {
+
+    //TODO: clean this initialization stuff up.
+    if(activated){
+      return;
+    }
 
     // get the grid itself so we can update it later
-    final XulGrid stepGrid = (XulGrid) mainContainer.getDocumentRoot().getElementById(STEP_GRID_ID);
-    
+    final XulGrid stepGrid = (XulGrid) document.getElementById(STEP_GRID_ID);
+
     // grab the rows and add a new row to it
-    final XulRows stepRows = (XulRows) mainContainer.getDocumentRoot().getElementById(STEP_ROWS_ID);
-    final XulRow stepRow = (XulRow) mainContainer.getDocumentRoot().createElement(XUL_ROW_TYPE);
+    final XulRows stepRows = (XulRows) document.getElementById(STEP_ROWS_ID);
+    stepRow = (XulRow) document.createElement(XUL_ROW_TYPE);
     stepRows.addChild(stepRow);
-    
+
     // Create and add the activeImage to the row (goes in the first column)
-    stepImage = (XulImage) mainContainer.getDocumentRoot().createElement(XUL_IMAGE_TYPE);
+    stepImage = (XulImage) document.createElement(XUL_IMAGE_TYPE);
     stepImage.setSrc(STEP_IMAGE_SRC);
     stepImage.setId(this.getStepName());
     stepImage.setVisible(false);
     stepRow.addChild(stepImage);
-    
+
     // Create and add the text label to the row (goes in the second column)
-    stepLabel = (XulLabel) mainContainer.getDocumentRoot().createElement(XUL_LABEL_TYPE);
+    stepLabel = (XulLabel) document.createElement(XUL_LABEL_TYPE);
     stepLabel.setValue(this.getStepName());
     stepLabel.setFlex(1);
     stepRow.addChild(stepLabel);
-    
-    
+
+
+    stepGrid.update();
+    activated = true;
+  }
+
+  public void deactivate(){
+
+    XulGrid stepGrid = (XulGrid) document.getElementById(STEP_GRID_ID);
+    XulRows stepRows = (XulRows) document.getElementById(STEP_ROWS_ID);
+    stepRows.removeChild(stepRow);
     stepGrid.update();
   }
   
@@ -191,7 +214,9 @@ public abstract class AbstractWizardStep<T extends IWizardModel> extends XulEven
   }
   
   public void setStepImageVisible(boolean visible) {
-    stepImage.setVisible(visible);
+    if(stepImage != null){
+      stepImage.setVisible(visible);
+    }
   }
   
   /* (non-Javadoc)
@@ -201,12 +226,11 @@ public abstract class AbstractWizardStep<T extends IWizardModel> extends XulEven
     return stepDeactivatingForward();
   }
 
-  public T getModel() {
-    return model;
+  public DatasourceModel getDatasourceModel() {
+    return datasourceModel;
   }
 
-  public void setModel(T model) {
-    this.model = model;
+  public void setDatasourceModel(DatasourceModel model) {
+    this.datasourceModel = model;
   }
-  
 }

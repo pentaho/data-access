@@ -15,9 +15,9 @@
  * Copyright (c) 2009 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
+package org.pentaho.platform.dataaccess.datasource.wizard;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.steps.IWizardStep;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.ui.xul.binding.BindingFactory;
 
 /**

@@ -1,65 +1,63 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.steps;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.PhysicalDatasourceController;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.StageDataController;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.StageDataController;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvParseException;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IModelInfoValidationListener;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
+import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.binding.BindingFactory;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
-public class StageDataStep extends AbstractWizardStep<DatasourceModel> implements IModelInfoValidationListener {
+public class StageDataStep extends AbstractWizardStep implements IModelInfoValidationListener {
 
-  private DatasourceMessages datasourceMessages = null;
-  private StageDataController stageDataController = null;
-  private ICsvDatasourceServiceAsync csvDatasourceService = null;
+
+  private StageDataController stageDataController = new StageDataController();
+  private ICsvDatasourceServiceAsync csvDatasourceService;
   
-  public StageDataStep(BindingFactory bf, DatasourceMessages messages) {   
+  public StageDataStep(ICsvDatasourceServiceAsync csvDatasourceService ) {
+    this.csvDatasourceService = csvDatasourceService;
     setFinishable(true);
-    datasourceMessages = messages;
-    setBindingFactory(bf);    
-    csvDatasourceService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
-    ServiceDefTarget endpoint = (ServiceDefTarget) csvDatasourceService;
-    endpoint.setServiceEntryPoint(PhysicalDatasourceController.getDatasourceURL());    
   }
   
   public String getStepName() {
-    return datasourceMessages.getString("wizardStepName.STAGE"); //$NON-NLS-1$
+    return MessageHandler.getInstance().messages.getString("wizardStepName.STAGE"); //$NON-NLS-1$
   }
 
   public void setBindings() {
   }
 
   @Override
-  public void createPresentationComponent(XulDomContainer mainWizardContainer) throws XulException {
-    super.createPresentationComponent(mainWizardContainer);
-    setDocument(mainContainer.getDocumentRoot());
-       
-    stageDataController = new StageDataController();
-    stageDataController.setDatasourceMessages(datasourceMessages);
+  public XulComponent getUIComponent() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
+  public void init(XulDomContainer mainWizardContainer) throws XulException {
+    super.init(mainWizardContainer);
+    setDocument(mainWizardContainer.getDocumentRoot());
+
     stageDataController.setXulDomContainer(mainWizardContainer);
     stageDataController.setBindingFactory(getBindingFactory());
-    stageDataController.setDatasourceModel(getModel());    
+    stageDataController.setDatasourceModel(getDatasourceModel());
     stageDataController.init();
     mainWizardContainer.addEventHandler(stageDataController);
 
-    getModel().getModelInfo().addModelInfoValidationListener(this);
+    getDatasourceModel().getModelInfo().addModelInfoValidationListener(this);
   }
 
   @Override
   public void stepActivatingForward() {
     setStepImageVisible(true);
     stageDataController.showWaitingFileStageDialog();
-    loadColumnData(getModel().getModelInfo().getFileInfo().getTmpFilename());
+    loadColumnData(getDatasourceModel().getModelInfo().getFileInfo().getTmpFilename());
   }
 
   @Override
@@ -68,7 +66,7 @@ public class StageDataStep extends AbstractWizardStep<DatasourceModel> implement
   }
   
   private void loadColumnData(String selectedFile){
-	String encoding = getModel().getModelInfo().getFileInfo().getEncoding();
+	String encoding = getDatasourceModel().getModelInfo().getFileInfo().getEncoding();
     try {
       stageDataController.clearColumnGrid();
     } catch (XulException e) {
@@ -76,12 +74,12 @@ public class StageDataStep extends AbstractWizardStep<DatasourceModel> implement
       e.printStackTrace();
     }
 
-    if (getModel().getGuiStateModel().isDirty()) {
+    if (getDatasourceModel().getGuiStateModel().isDirty()) {
 
       csvDatasourceService.stageFile(selectedFile,
-          getModel().getModelInfo().getFileInfo().getDelimiter(),
-          getModel().getModelInfo().getFileInfo().getEnclosure(),
-          getModel().getModelInfo().getFileInfo().getHeaderRows() > 0,
+          getDatasourceModel().getModelInfo().getFileInfo().getDelimiter(),
+          getDatasourceModel().getModelInfo().getFileInfo().getEnclosure(),
+          getDatasourceModel().getModelInfo().getFileInfo().getHeaderRows() > 0,
           encoding,
           new StageFileCallback());
     } else {
@@ -108,9 +106,9 @@ public class StageDataStep extends AbstractWizardStep<DatasourceModel> implement
   public class StageFileCallback implements AsyncCallback<ModelInfo> {
 
     public void onSuccess(ModelInfo aModelInfo) {      
-      getModel().getModelInfo().setColumns(aModelInfo.getColumns());
-      getModel().getModelInfo().setData(aModelInfo.getData());
-      getModel().getModelInfo().getFileInfo().setEncoding(aModelInfo.getFileInfo().getEncoding());
+      getDatasourceModel().getModelInfo().setColumns(aModelInfo.getColumns());
+      getDatasourceModel().getModelInfo().setData(aModelInfo.getData());
+      getDatasourceModel().getModelInfo().getFileInfo().setEncoding(aModelInfo.getFileInfo().getEncoding());
       stageDataController.refreshColumnGrid();
       stageDataController.closeWaitingDialog();
     }
@@ -119,7 +117,7 @@ public class StageDataStep extends AbstractWizardStep<DatasourceModel> implement
       stageDataController.closeWaitingDialog();
       if (caught instanceof CsvParseException) {
         CsvParseException e = (CsvParseException) caught;
-        stageDataController.showErrorDialog(datasourceMessages.getString(caught.getMessage(), String.valueOf(e.getLineNumber()), e.getOffendingLine()));        
+        stageDataController.showErrorDialog(MessageHandler.getInstance().messages.getString(caught.getMessage(), String.valueOf(e.getLineNumber()), e.getOffendingLine()));
       } else {
         stageDataController.showErrorDialog(caught.getMessage());
       }
@@ -136,5 +134,5 @@ public class StageDataStep extends AbstractWizardStep<DatasourceModel> implement
     setStepImageVisible(false);
     return true;
   }
-  
+
 }

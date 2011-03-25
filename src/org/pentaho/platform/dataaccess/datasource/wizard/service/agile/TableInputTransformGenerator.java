@@ -27,7 +27,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 
 public class TableInputTransformGenerator extends StagingTransformGenerator {
 
@@ -90,7 +90,7 @@ public class TableInputTransformGenerator extends StagingTransformGenerator {
           sb.append(", ");
         }
         sb.append("\r\n");
-        stats.getCsvInputErrors().add(sb.toString() + errorDescriptions);
+        stats.getErrors().add(sb.toString() + errorDescriptions);
         super.addErrorRowData(row, startIndex, nrErrors, errorDescriptions, fieldNames, errorCodes);
       }
     };

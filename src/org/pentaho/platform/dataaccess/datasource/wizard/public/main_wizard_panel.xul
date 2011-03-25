@@ -26,11 +26,8 @@
 							<label value="${datasourceDialog.DatasourceName}" tooltiptext="${datasourceDialog.DatasourceNameToolTip}"/>
 							<textbox id="datasourceName" width="200" multiline="false"/>
 							<label value="${physicalDatasourceDialog.SOURCE}" tooltiptext="Select the source type"/>
-							<menulist id="datatypeMenuList" editable="false" width="204">
+							<menulist id="datatypeMenuList" editable="false" width="204" pen:binding="name">
 								<menupopup>
-									<menuitem label="${datasourceDialog.SelectDatabaseType}"/>
-									<menuitem label="${datasourceDialog.Database}"/>
-									<menuitem label="${datasourceDialog.Csv}"/>
 								</menupopup>
 							</menulist>
 						</vbox>

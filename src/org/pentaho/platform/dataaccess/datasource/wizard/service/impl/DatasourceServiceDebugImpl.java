@@ -20,6 +20,7 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.metadata.model.Domain;
@@ -107,6 +108,11 @@ public class DatasourceServiceDebugImpl implements IXulAsyncDatasourceService{
     } catch (DatasourceServiceException e){
       callback.error(e.getLocalizedMessage(), e);
     }
+  }
+
+  @Override
+  public void listDatasourceNames(XulServiceCallback<List<String>> callback) {
+    callback.success(new ArrayList<String>());
   }
 }
 

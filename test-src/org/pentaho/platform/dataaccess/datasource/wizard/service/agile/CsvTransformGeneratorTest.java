@@ -24,17 +24,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.junit.Ignore;
-import org.pentaho.di.core.Result;
-import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.HypersonicDatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.platform.api.engine.IApplicationContext;
@@ -43,15 +36,13 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DataRow;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.test.platform.engine.core.BaseTest;
-
-import junit.framework.TestCase;
 
 @SuppressWarnings( { "all" })
 public class CsvTransformGeneratorTest extends BaseTest {

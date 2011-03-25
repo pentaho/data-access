@@ -31,7 +31,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListene
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel.ConnectionEditType;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
@@ -73,10 +72,8 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
   IConnection currentConnection;
   private IXulAsyncConnectionService connectionService;
-  private MessageHandler messageHandler;
 
-  public ConnectionController(MessageHandler messageHandler) {
-    this.messageHandler = messageHandler;
+  public ConnectionController() {
   }
 
   @Bindable
@@ -172,10 +169,10 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
         public void success(Boolean value) {
           try {
             if (value) {
-              openSuccesDialog(messageHandler.messages.getString("SUCCESS"), messageHandler.messages//$NON-NLS-1$
+              openSuccesDialog(MessageHandler.getInstance().messages.getString("SUCCESS"), MessageHandler.getInstance().messages//$NON-NLS-1$
                   .getString("ConnectionController.CONNECTION_TEST_SUCCESS"));//$NON-NLS-1$
             } else {
-              openErrorDialog(messageHandler.messages.getString("ERROR"), messageHandler.messages//$NON-NLS-1$
+              openErrorDialog(MessageHandler.getInstance().messages.getString("ERROR"), MessageHandler.getInstance().messages//$NON-NLS-1$
                   .getString("ConnectionController.ERROR_0003_CONNECTION_TEST_FAILED"));//$NON-NLS-1$
             }
 
@@ -202,7 +199,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
           public void success(Boolean value) {
             try {
               if (value) {
-                openSuccesDialog(messageHandler.messages.getString("SUCCESS"), messageHandler.messages//$NON-NLS-1$
+                openSuccesDialog(MessageHandler.getInstance().messages.getString("SUCCESS"), MessageHandler.getInstance().messages//$NON-NLS-1$
                     .getString("ConnectionController.CONNECTION_DELETED"));//$NON-NLS-1$
                 datasourceModel.getGuiStateModel().deleteConnection(
                     datasourceModel.getSelectedRelationalConnection().getName());
@@ -214,7 +211,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
                 }
 
               } else {
-                openErrorDialog(messageHandler.messages.getString("ERROR"), messageHandler.messages//$NON-NLS-1$
+                openErrorDialog(MessageHandler.getInstance().messages.getString("ERROR"), MessageHandler.getInstance().messages//$NON-NLS-1$
                     .getString("ConnectionController.ERROR_0002_UNABLE_TO_DELETE_CONNECTION"));//$NON-NLS-1$
               }
 
@@ -231,7 +228,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
       saveConnectionConfirmationDialog.hide();
     }
 
-    if (GuiStateModel.ConnectionEditType.ADD.equals(datasourceModel.getGuiStateModel().getEditType())) {
+    if (datasourceModel.isEditing() == false) {
         service.addConnection(currentConnection, new XulServiceCallback<Boolean>() {
           public void error(String message, Throwable error) {
             displayErrorMessage(error);
@@ -243,7 +240,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
                 datasourceModel.getGuiStateModel().addConnection(currentConnection);
                 datasourceModel.setSelectedRelationalConnection(currentConnection);
               } else {
-                openErrorDialog(messageHandler.messages.getString("ERROR"), messageHandler.messages//$NON-NLS-1$
+                openErrorDialog(MessageHandler.getInstance().messages.getString("ERROR"), MessageHandler.getInstance().messages//$NON-NLS-1$
                     .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
               }
 
@@ -262,12 +259,12 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
         public void success(Boolean value) {
           try {
             if (value) {
-              openSuccesDialog(messageHandler.messages.getString("SUCCESS"), messageHandler.messages//$NON-NLS-1$
+              openSuccesDialog(MessageHandler.getInstance().messages.getString("SUCCESS"), MessageHandler.getInstance().messages//$NON-NLS-1$
                   .getString("ConnectionController.CONNECTION_UPDATED"));//$NON-NLS-1$
               datasourceModel.getGuiStateModel().updateConnection(currentConnection);
               datasourceModel.setSelectedRelationalConnection(currentConnection);
             } else {
-              openErrorDialog(messageHandler.messages.getString("ERROR"), messageHandler.messages//$NON-NLS-1$
+              openErrorDialog(MessageHandler.getInstance().messages.getString("ERROR"), MessageHandler.getInstance().messages//$NON-NLS-1$
                   .getString("ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION"));//$NON-NLS-1$
             }
 
@@ -299,8 +296,8 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
   }
 
   public void displayErrorMessage(Throwable th) {
-    errorDialog.setTitle(ExceptionParser.getErrorHeader(th, messageHandler.messages.getString("DatasourceEditor.USER_ERROR_TITLE")));//$NON-NLS-1$
-    errorLabel.setValue(ExceptionParser.getErrorMessage(th, messageHandler.messages.getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED")));//$NON-NLS-1$
+    errorDialog.setTitle(ExceptionParser.getErrorHeader(th, MessageHandler.getInstance().messages.getString("DatasourceEditor.USER_ERROR_TITLE")));//$NON-NLS-1$
+    errorLabel.setValue(ExceptionParser.getErrorMessage(th, MessageHandler.getInstance().messages.getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED")));//$NON-NLS-1$
     errorDialog.show();
   }
 
@@ -324,7 +321,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
   @Bindable
   public void onDialogReady() {
-    if (datasourceModel.getGuiStateModel().getEditType().equals(ConnectionEditType.ADD)) {
+    if (datasourceModel.isEditing() == false) {
       showAddConnectionDialog();
     } else {
       showEditConnectionDialog();
@@ -333,7 +330,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
   @Bindable
   public void showAddConnectionDialog() {
-    datasourceModel.getGuiStateModel().setEditType(ConnectionEditType.ADD);
+    datasourceModel.setEditing(false);
     if(databaseDialog != null){
       databaseDialog.setDatabaseConnection(null);
       databaseDialog.show();
@@ -345,7 +342,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
   @Bindable
   public void showEditConnectionDialog() {
-    datasourceModel.getGuiStateModel().setEditType(ConnectionEditType.EDIT);
+    datasourceModel.setEditing(true);
     if(databaseDialog != null){
       IConnection connection = datasourceModel.getSelectedRelationalConnection();
       service.convertFromConnection(connection, new XulServiceCallback<IDatabaseConnection>() {
@@ -381,7 +378,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
       connectionService.getConnections(new XulServiceCallback<List<IConnection>>() {
 
         public void error(String message, Throwable error) {
-          messageHandler.showErrorDialog(messageHandler.messages.getString("ERROR"), messageHandler.messages.getString(
+          MessageHandler.getInstance().showErrorDialog(MessageHandler.getInstance().messages.getString("ERROR"), MessageHandler.getInstance().messages.getString(
               "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", error.getLocalizedMessage()));
         }
 
@@ -391,7 +388,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
       });
     } else {
-      messageHandler.showErrorDialog(messageHandler.messages.getString("ERROR"),
+      MessageHandler.getInstance().showErrorDialog(MessageHandler.getInstance().messages.getString("ERROR"),
           "DatasourceEditor.ERROR_0004_CONNECTION_SERVICE_NULL");
     }
   }

@@ -35,7 +35,7 @@ import java.io.Serializable;
  * This class is a workaround for GWT. GWT is not able to compile these classes are they have been used in a map
  * http://code.google.com/p/google-web-toolkit/issues/detail?id=3521
  */
-public class BogoPojo implements Serializable{
+public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implements Serializable{
 
   private static final long serialVersionUID = 7542132543385685472L;
   TargetTableType targetTableType;
@@ -210,4 +210,5 @@ public class BogoPojo implements Serializable{
   public void setModelerException(ModelerException modelerException) {
     this.modelerException = modelerException;
   }
+
 }

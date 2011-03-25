@@ -20,12 +20,12 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.dom4j.Document;
+import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -37,11 +37,11 @@ public interface ICsvDatasourceServiceAsync {
 
   public void getStagedFiles(AsyncCallback<FileInfo[]> aCallback);
 
-  public void stageData(ModelInfo modelInfo, boolean truncateTable, AsyncCallback<FileTransformStats> callback);
+  public void generateDomain(ModelInfo modelInfo, AsyncCallback<IDatasourceSummary> callback);
 
   public void getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding, AsyncCallback<List<String>> callback) throws Exception;
   
   public void getEncoding(String fileName, AsyncCallback<String> callback);
-  
-  public void listDatasourceNames(AsyncCallback<List<String>> callback);
+
+  public void gwtWorkaround(BogoPojo pojo, AsyncCallback<BogoPojo> callback);
 }

@@ -110,6 +110,8 @@ public class ModelerService extends PentahoBase implements IModelerService {
     }
   }
 
+  //TODO: remove this method in favor so specific calls
+  @Deprecated
   public Domain generateDomain(String connectionName, String tableName, String dbType, String query, String datasourceName) throws Exception {
     initKettle();
     try{
@@ -120,6 +122,19 @@ public class ModelerService extends PentahoBase implements IModelerService {
       } else {
         source = new InlineSqlModelerSource(connectionName, dbType, query, datasourceName);
       }
+      return source.generateDomain();
+    } catch(Exception e){
+      logger.error(e);
+      throw new Exception(e.getLocalizedMessage());
+    }
+  }
+
+
+  public Domain generateCSVDomain(String tableName, String datasourceName) throws Exception {
+    initKettle();
+    try{
+      DatabaseMeta database = AgileHelper.getDatabaseMeta();
+      IModelerSource source = new TableModelerSource(database, tableName, null, datasourceName);
       return source.generateDomain();
     } catch(Exception e){
       logger.error(e);
@@ -203,6 +218,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
       addCatalog(catName, catConnectStr, catDef, session);
 
     } catch (Exception e) {
+      e.printStackTrace();
       logger.error(e);
       throw e;
     }

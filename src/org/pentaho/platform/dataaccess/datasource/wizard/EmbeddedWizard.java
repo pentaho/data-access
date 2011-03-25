@@ -17,42 +17,30 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
-
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.gwt.widgets.client.utils.i18n.IResourceBundleLoadCallback;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.steps.PhysicalStep;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.RelationalPhysicalStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.steps.StageDataStep;
-import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulFileUpload;
-import org.pentaho.ui.xul.components.XulLabel;
-import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.containers.XulExpandPanel;
-import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.gwt.GwtXulRunner;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
-import org.pentaho.ui.xul.gwt.tags.GwtRadioGroup;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
 import org.pentaho.ui.xul.gwt.util.IXulLoaderCallback;
@@ -80,6 +68,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   
   private WizardDatasourceController datasourceController;
 
+  //TODO: need to move this to the relational data source
   private ConnectionController connectionController;
 
   private IXulAsyncConnectionService connectionService;
@@ -90,23 +79,23 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   private boolean initialized;
 
-  private PhysicalStep physicalStep = null;
+  private RelationalPhysicalStep physicalStep = null;
 
   private StageDataStep stageDataStep;
   
   private AsyncConstructorListener asyncConstructorListener;
   
-  private EmbeddedWizardFinishHandler embeddedWizardFinishHandler;
 
-  private MessageHandler messageHandler;
   
   private Boolean editing;
   
   private ResourceBundle bundle;
 
-  private ModelerDialog modeler;
   private XulServiceCallback<Domain> editFinishedCallback;
+  private IDatasourceSummary summary;
+  private ModelerDialog modeler;
 
+  /**
   /**
    * @param datasourceService
    * @param connectionService
@@ -122,7 +111,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     if (checkHasAccess) {
       datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
         public void error(String message, Throwable error) {
-          messageHandler.showErrorDialog(datasourceMessages.getString("DatasourceEditor.ERROR"), //$NON-NLS-1$
+          MessageHandler.getInstance().showErrorDialog(datasourceMessages.getString("DatasourceEditor.ERROR"), //$NON-NLS-1$
               datasourceMessages.getString(
                   "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", error.getLocalizedMessage())); //$NON-NLS-1$
         }
@@ -170,8 +159,11 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   }
 
   @Override
-  public void onFinish() {
-    // handled by the finishHandler
+  public void onFinish(IDatasourceSummary summary) {
+    this.summary = summary;
+    if(editFinishedCallback != null){
+      editFinishedCallback.success(summary.getDomain());
+    }
   }
 
   private void checkInitialized() {
@@ -239,8 +231,8 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       }
 
       public void error(String s, Throwable throwable) {
-        messageHandler.showErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages.getString(
-              "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
+        MessageHandler.getInstance().showErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages.getString(
+            "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
       }
     });
 
@@ -304,36 +296,31 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     datasourceMessages = new GwtDatasourceMessages();
     datasourceMessages.setMessageBundle(resBundle);
 
-    messageHandler = new MessageHandler(dialog, datasourceMessages);
-    connectionController = new ConnectionController(messageHandler);
+    MessageHandler.getInstance().setMessages(datasourceMessages);
+    connectionController = new ConnectionController();
     connectionController.setService(connectionService);
-    wizardController = new MainWizardController(bf, datasourceModel, messageHandler);
+
+    datasourceModel.addDatasource(new DummyDatasource());
+    datasourceModel.addDatasource(new CsvDatasource(datasourceModel));
+
+    wizardController = new MainWizardController(bf, datasourceModel, datasourceService);
     mainWizardContainer.addEventHandler(wizardController);
 
     dialog = (XulDialog) rootDocument.getElementById(WIZARD_DIALOG_ID);
+    MessageHandler.getInstance().setWizardDialog(dialog);
 
     datasourceController = new WizardDatasourceController();
     datasourceController.setBindingFactory(bf);
     datasourceController.setDatasourceMessages(datasourceMessages);
     mainWizardContainer.addEventHandler(datasourceController);
 
-    mainWizardContainer.addEventHandler(messageHandler);
+    mainWizardContainer.addEventHandler(MessageHandler.getInstance());
 
     // add the steps ..
-    physicalStep = new PhysicalStep(datasourceService, connectionService, datasourceMessages, this);
-    physicalStep.setModel(datasourceModel);
-    stageDataStep = new StageDataStep(bf, datasourceMessages);
-    stageDataStep.setModel(datasourceModel);
+//    physicalStep = new RelationalPhysicalStep(datasourceService, connectionService, datasourceMessages, this);
 
-    wizardController.addStep(physicalStep);
-    wizardController.addStep(stageDataStep);
-    
-    embeddedWizardFinishHandler = new EmbeddedWizardFinishHandler(dialog, datasourceModel, messageHandler, wizardController, datasourceService);
-    embeddedWizardFinishHandler.setEditFinishedCallback(this);
-    mainWizardContainer.addEventHandler(embeddedWizardFinishHandler);
 
     wizardController.addWizardListener(this);
-    wizardController.addWizardListener(embeddedWizardFinishHandler);
 
 
     // Controller for the File Import functionality
@@ -342,12 +329,12 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
     // init other controllers
     fileImportController.init();
-    messageHandler.init();
-    embeddedWizardFinishHandler.init();
+    MessageHandler.getInstance().init();
+
 
     // Create the gui
     try {
-      new WizardContentPanel(wizardController).addContent(mainWizardContainer);
+      //new WizardContentPanel(wizardController).addContent(mainWizardContainer);
       wizardController.init();
       initialized = true;
     } catch (Exception throwable) {
@@ -387,7 +374,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
    */
   @Override
   protected Domain getDialogResult() {
-    return embeddedWizardFinishHandler.getDomain();
+    return summary.getDomain();
   }
 
   public DatasourceMessages getDatasourceMessages() {
@@ -422,12 +409,12 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       public void onDialogReady() {
       }
     };
-    final Domain domain = embeddedWizardFinishHandler.getDomain();
+    final Domain domain = summary.getDomain();
   
     modeler = ModelerDialog.getInstance(this, new AsyncConstructorListener<ModelerDialog>(){
       public void asyncConstructorDone(ModelerDialog dialog) {
         dialog.addDialogListener(listener);
-        messageHandler.closeWaitingDialog();
+        MessageHandler.getInstance().closeWaitingDialog();
         dialog.showDialog(domain);
       }
     });
@@ -443,8 +430,8 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     if(editFinishedCallback != null){
       editFinishedCallback.success(domain);
     }
-    messageHandler.closeWaitingDialog();
-    if(embeddedWizardFinishHandler.isShowModeler()){
+    MessageHandler.getInstance().closeWaitingDialog();
+    if(summary.isShowModeler()){
       showModelEditor();
     } else {
       onDialogAccept();

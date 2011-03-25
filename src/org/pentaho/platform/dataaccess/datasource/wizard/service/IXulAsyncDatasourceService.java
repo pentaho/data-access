@@ -39,6 +39,8 @@ public interface IXulAsyncDatasourceService {
   void loadBusinessData(String domainId, String modelId, XulServiceCallback<BusinessData> callback);
   void serializeModelState(DatasourceDTO dto, XulServiceCallback<String> callback);
   void deSerializeModelState(String dtoStr, XulServiceCallback<DatasourceDTO> callback);
+
+  public void listDatasourceNames(XulServiceCallback<List<String>> callback);
 }
 
   

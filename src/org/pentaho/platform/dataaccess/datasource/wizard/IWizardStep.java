@@ -15,8 +15,10 @@
  * Copyright (c) 2009 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.steps;
+package org.pentaho.platform.dataaccess.datasource.wizard;
 
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -96,16 +98,20 @@ public interface IWizardStep {
    * @param mainWizardContainer
    * @throws XulException
    * 
-   * Creates the presentation layer associated with this IWizardStep.  This is usually
-   * done by loading an overlay into the main_wzard_panel.xul
+   * Initializes the step. This is where bindings should be created and UI references obtained.
    */
-  public void createPresentationComponent(XulDomContainer mainWizardContainer) throws XulException;
+  public void init(XulDomContainer mainWizardContainer) throws XulException;
 
+  public XulComponent getUIComponent();
+
+  public void activating() throws XulException;
   
   public void setBindingFactory(BindingFactory bindingFactory);
   
   public void setDocument(Document document);
 
+  public void setDatasourceModel(DatasourceModel model);
+  
   /**
    * @return a string (must be localized) that describes this step
    */
@@ -130,4 +136,5 @@ public interface IWizardStep {
    */
   public void setDisabled(boolean disabled);
 
+  void deactivate();
 }

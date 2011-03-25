@@ -32,7 +32,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListene
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel.ConnectionEditType;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
@@ -82,6 +81,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   IConnection currentConnection;
   
   ConnectionSetter connectionSetter = new ConnectionSetter();
+
 
   public WizardConnectionController(Document document) {
     this.document = document;
@@ -281,7 +281,8 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       saveConnectionConfirmationDialog.hide();
     }
 
-    if (GuiStateModel.ConnectionEditType.ADD.equals(datasourceModel.getGuiStateModel().getEditType())) {
+    //TODO: manage connection editing state better
+    if (true /*adding*/) {
         connectionService.addConnection(currentConnection, new XulServiceCallback<Boolean>() {
           public void error(String message, Throwable error) {
             displayErrorMessage(error);
@@ -326,14 +327,6 @@ public class WizardConnectionController extends AbstractXulEventHandler {
         }
       });
     }
-  }
-
-  public IXulAsyncConnectionService getConnectionService() {
-    return connectionService;
-  }
-
-  public void setConnectionService(IXulAsyncConnectionService connectionService) {
-    this.connectionService = connectionService;
   }
 
   public void addConnectionDialogListener(ConnectionDialogListener listener) {
@@ -387,16 +380,16 @@ public class WizardConnectionController extends AbstractXulEventHandler {
 
   @Bindable
   public void onDialogReady() {
-    if (datasourceModel.getGuiStateModel().getEditType().equals(ConnectionEditType.ADD)) {
-      showAddConnectionDialog();  
-    } else {
+    if (datasourceModel.isEditing()) {
       showEditConnectionDialog();
+    } else {
+      showAddConnectionDialog();
     }
   }
 
   @Bindable
   public void showAddConnectionDialog() {
-    datasourceModel.getGuiStateModel().setEditType(ConnectionEditType.ADD);
+    datasourceModel.setEditing(false);
     if(databaseDialog != null){
       databaseDialog.setDatabaseConnection(null);
       databaseDialog.show();
@@ -408,7 +401,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
 
   @Bindable
   public void showEditConnectionDialog() {
-    datasourceModel.getGuiStateModel().setEditType(ConnectionEditType.EDIT);
+    datasourceModel.setEditing(true);
     if(databaseDialog != null){
       IConnection connection = datasourceModel.getSelectedRelationalConnection();
       connectionService.convertFromConnection(connection, new XulServiceCallback<IDatabaseConnection>() {
@@ -466,7 +459,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
      * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogReady()
      */
     public void onDialogReady() {
-      if (datasourceModel.getGuiStateModel().getEditType().equals(ConnectionEditType.ADD)) {
+      if (datasourceModel.isEditing() == false) {
         showAddConnectionDialog();  
       } else {
         showEditConnectionDialog();

@@ -1,4 +1,4 @@
-package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
+package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -10,6 +10,7 @@ import java.util.Vector;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
@@ -32,7 +33,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class StageDataController extends AbstractXulEventHandler implements IDatasourceTypeController {
+public class StageDataController extends AbstractXulEventHandler {
 
   private static final String MSG_STAGING_DATA = "physicalDatasourceDialog.STAGING_DATA"; //$NON-NLS-1$
   private static final String MSG_ROWS_STAGED = "physicalDatasourceDialog.ROWS_STAGED"; //$NON-NLS-1$
@@ -111,12 +112,10 @@ public class StageDataController extends AbstractXulEventHandler implements IDat
     waitingDialog.hide();
   }
   public void showWaitingDataStageDialog() {
-    waitingLabel.setValue(messages.getString(MSG_STAGING_DATA));    
-    waitingDialog.show();
+    MessageHandler.getInstance().showWaitingDialog(MessageHandler.getInstance().messages.getString(MSG_STAGING_DATA));
   }
   public void showWaitingFileStageDialog() {
-    waitingLabel.setValue(messages.getString(MSG_STAGING_FILE));    
-    waitingDialog.show();
+    MessageHandler.getInstance().showWaitingDialog(MessageHandler.getInstance().messages.getString(MSG_STAGING_FILE));
   }
 
   @Bindable
@@ -266,12 +265,5 @@ public class StageDataController extends AbstractXulEventHandler implements IDat
     model.getModelInfo().validate();
   }
 
-  /* (non-Javadoc)
-  * @see org.pentaho.platform.dataaccess.datasource.wizard.controllers.IDatasourceTypeController#supportsBusinessData(org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel)
-  */
-  public boolean supportsBusinessData(DatasourceModel model) {
-    // TODO Auto-generated method stub
-    return false;
-  }
 
 }

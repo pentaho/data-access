@@ -23,9 +23,9 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 import java.io.IOException;
 import java.util.List;
 
-import org.dom4j.Document;
+import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -37,11 +37,11 @@ public interface ICsvDatasourceService extends RemoteService {
 
   public FileInfo[] getStagedFiles() throws Exception;
 
-  public FileTransformStats stageData(ModelInfo modelInfo, boolean truncateTable) throws Exception;
+  public FileTransformStats generateDomain(ModelInfo modelInfo) throws Exception;
 
   public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception;
   
   public String getEncoding(String fileName) throws Exception;
-  
-  public List<String> listDatasourceNames() throws IOException;
+
+  public BogoPojo gwtWorkaround(BogoPojo pojo);
 }

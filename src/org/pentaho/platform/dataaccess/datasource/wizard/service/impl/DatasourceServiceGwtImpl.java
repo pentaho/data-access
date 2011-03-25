@@ -252,4 +252,21 @@ public class DatasourceServiceGwtImpl implements IXulAsyncDatasourceService {
       }
     });
   }
+
+  @Override
+  public void listDatasourceNames(final XulServiceCallback<List<String>> callback) {
+    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+      public void execute(AsyncCallback callback) {
+        SERVICE.listDatasourceNames(callback);
+      }
+    },new AsyncCallback<List<String>>() {
+      public void onFailure(Throwable arg0) {
+        callback.error(arg0.getLocalizedMessage(), arg0); //$NON-NLS-1$
+      }
+
+      public void onSuccess(List<String> arg0) {
+        callback.success(arg0);
+      }
+    });
+  }
 }

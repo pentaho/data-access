@@ -1,15 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<DataSources>
-  <DataSource>
-    <DataSourceName>Provider=Mondrian;DataSource=Pentaho</DataSourceName>
-    <DataSourceDescription>Pentaho BI Platform Datasources</DataSourceDescription>
-    <URL>http://localhost:8080/pentaho/Xmla?userid=joe&amp;password=password</URL>
-    <DataSourceInfo>Provider=mondrian</DataSourceInfo>
-    <ProviderName>PentahoXMLA</ProviderName>
-    <ProviderType>MDP</ProviderType>
-    <AuthenticationMode>Unauthenticated</AuthenticationMode>
-    <Catalogs>
-        
-    </Catalogs>
-  </DataSource>
+
+<DataSources> 
+  <DataSource> 
+    <DataSourceName>Provider=Mondrian;DataSource=Pentaho</DataSourceName>  
+    <DataSourceDescription>Pentaho BI Platform Datasources</DataSourceDescription>  
+    <URL>http://localhost:8080/pentaho/Xmla?userid=joe&amp;password=password</URL>  
+    <DataSourceInfo>Provider=mondrian</DataSourceInfo>  
+    <ProviderName>PentahoXMLA</ProviderName>  
+    <ProviderType>MDP</ProviderType>  
+    <AuthenticationMode>Unauthenticated</AuthenticationMode>  
+    <Catalogs> 
+      <Catalog name="sdf"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=pentaho_staging_H2</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/sdf.mondrian.xml</Definition> 
+      </Catalog>  
+      <Catalog name="kkkn"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=pentaho_staging_H2</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/kkkn.mondrian.xml</Definition> 
+      </Catalog>  
+      <Catalog name="lklk"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=pentaho_staging_H2</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/lklk.mondrian.xml</Definition> 
+      </Catalog>  
+      <Catalog name="cxcxv"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=pentaho_staging_H2</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/cxcxv.mondrian.xml</Definition> 
+      </Catalog>  
+      <Catalog name="sddsf"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=pentaho_staging_H2</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/sddsf.mondrian.xml</Definition> 
+      </Catalog>  
+      <Catalog name="sdfsdf"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=pentaho_staging_H2</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/sdfsdf.mondrian.xml</Definition> 
+      </Catalog>  
+      <Catalog name="ddsds"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=pentaho_staging_H2</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/ddsds.mondrian.xml</Definition> 
+      </Catalog> 
+    </Catalogs> 
+  </DataSource> 
 </DataSources>

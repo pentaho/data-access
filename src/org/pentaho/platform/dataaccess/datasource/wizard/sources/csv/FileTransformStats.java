@@ -17,30 +17,34 @@
  * Created Sep, 2010
  * @author jdixon
  */
-package org.pentaho.platform.dataaccess.datasource.wizard.models;
+package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
+
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DataRow;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class FileTransformStats implements Serializable {
+public class FileTransformStats implements Serializable, IDatasourceSummary {
 
   private static final long serialVersionUID = 4741799513666255014L;
 
   private boolean rowsFinished = false;
   private boolean rowsStarted = false;
-  private long rowsDone = 0;
+  private long totalRecords = 0;
   private long rowsRejected = 0;
   private int indexCount = 0;
   private boolean indexStarted = false;
   private boolean indexFinished = false;
   private int indexDone = 0;
-  private int errors = 0;
+  private ArrayList<String> errors = new ArrayList<String>();
   private transient DataRow[] rows = null;
-  
-  private ArrayList<String> csvInputErrors = new ArrayList<String>();
-  private ArrayList<String> tableOutputErrors = new ArrayList<String>();
-  private long csvInputErrorCount = 0;
+  private long errorCount = 0;
   private long tableOutputErrorCount = 0;
+  private String serializedModel;
+  private Domain domain;
+  private boolean showModeler;
 
   public FileTransformStats() {
   }
@@ -57,11 +61,11 @@ public class FileTransformStats implements Serializable {
   public void setRowsStarted(boolean rowsStarted) {
     this.rowsStarted = rowsStarted;
   }
-  public long getRowsDone() {
-    return rowsDone;
+  public long getTotalRecords() {
+    return totalRecords;
   }
-  public void setRowsDone(long rowsDone) {
-    this.rowsDone = rowsDone;
+  public void setTotalRecords(long totalRecords) {
+    this.totalRecords = totalRecords;
   }
   public long getRowsRejected() {
     return rowsRejected;
@@ -94,43 +98,19 @@ public class FileTransformStats implements Serializable {
     this.indexDone = indexDone;
   }
 
-  public int getErrors() {
+  public void setErrors(ArrayList<String> errors) {
+    this.errors = errors;
+  }
+  public ArrayList<String> getErrors() {
     return errors;
   }
 
-  public void setErrors(int errors) {
-    this.errors = errors;
-  }
-  public ArrayList<String> getCsvInputErrors() {
-    return csvInputErrors;
-  }
-  
-  public void setCsvInputErrors(ArrayList<String> csvInputErrors) {
-    this.csvInputErrors = csvInputErrors;
-  }
-  
-  public ArrayList<String> getTableOutputErrors() {
-    return tableOutputErrors;
-  }
-  
-  public void setTableOutputErrors(ArrayList<String> tableOutputErrors) {
-    this.tableOutputErrors = tableOutputErrors;
-  }  
-
-  public long getCsvInputErrorCount() {
-    return csvInputErrorCount;
+  public long getErrorCount() {
+    return errorCount;
   }
 
-  public void setCsvInputErrorCount(long csvInputErrorCount) {
-    this.csvInputErrorCount = csvInputErrorCount;
-  }
-
-  public long getTableOutputErrorCount() {
-    return tableOutputErrorCount;
-  }
-
-  public void setTableOutputErrorCount(long tableOutputErrorCount) {
-    this.tableOutputErrorCount = tableOutputErrorCount;
+  public void setErrorCount(long errorCount) {
+    this.errorCount = errorCount;
   }
 
   public DataRow[] getDataRows() {
@@ -141,4 +121,29 @@ public class FileTransformStats implements Serializable {
     this.rows = rows;
   }
 
+  @Override
+  public Domain getDomain() {
+    return domain;
+  }
+
+  public void setDomain(Domain domain){
+    this.domain = domain;
+  }
+
+  public void setSerializedDomain(String serializedModel) {
+    this.serializedModel = serializedModel;
+  }
+
+  public String getSerializedModel() {
+    return serializedModel;
+  }
+
+  @Override
+  public void setShowModeler(boolean b) {
+    this.showModeler = b;
+  }
+
+  public boolean isShowModeler() {
+    return showModeler;
+  }
 }

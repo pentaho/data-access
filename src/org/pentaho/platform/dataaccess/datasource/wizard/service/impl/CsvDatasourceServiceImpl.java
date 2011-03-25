@@ -27,15 +27,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.tree.DefaultElement;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPentahoUrlFactory;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
+import org.pentaho.platform.dataaccess.datasource.DatasourceType;
+import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
@@ -46,6 +53,7 @@ import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.platform.uifoundation.component.xml.PMDUIComponent;
 import org.pentaho.platform.util.web.SimpleUrlFactory;
 import org.pentaho.reporting.libraries.base.util.StringUtils;
+import org.pentaho.ui.xul.XulServiceCallback;
 
 @SuppressWarnings("unchecked")
 public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasourceService {
@@ -53,6 +61,16 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   private static final long serialVersionUID = 2498165533158485182L;
 
   private Log logger = LogFactory.getLog(CsvDatasourceServiceImpl.class);
+
+  private ModelerService modelerService = new ModelerService();
+
+  private ModelerWorkspace modelerWorkspace;
+
+  public CsvDatasourceServiceImpl(){
+    super();
+    modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+    modelerService = new ModelerService();
+  }
 
   public Log getLogger() {
     return logger;
@@ -95,7 +113,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
     return files;
   }
 
-  public FileTransformStats stageData(ModelInfo modelInfo, boolean truncateTable) throws Exception {
+  public FileTransformStats generateDomain(ModelInfo modelInfo) throws Exception {
     IPentahoSession pentahoSession = null;
     try {
       pentahoSession = getSession();
@@ -120,15 +138,29 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       // no longer need to truncate the table since we dropped it a few lines up, so just pass false
       csvTransformGenerator.loadTable(false, pentahoSession, true);
 
-      stats.setCsvInputErrors(modelInfo.getCsvInputErrors());
-      stats.setTableOutputErrors(modelInfo.getTableOutputErrors());
+      ArrayList<String> combinedErrors = new ArrayList<String>(modelInfo.getCsvInputErrors());
+      combinedErrors.addAll(modelInfo.getTableOutputErrors());
+      stats.setErrors(combinedErrors);
       
       // wait until it it done
       while (!stats.isRowsFinished()) {
         Thread.sleep(200);
       }
+
+      modelerWorkspace.setDomain(modelerService.generateCSVDomain(modelInfo.getStageTableName(), modelInfo.getDatasourceName()));
+
+      modelerWorkspace.getWorkspaceHelper().autoModelFlat(modelerWorkspace);
+      modelerWorkspace.setModelName(modelInfo.getDatasourceName());
+      modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
+      Domain workspaceDomain = modelerWorkspace.getDomain();
+
+      String serializedModel = modelerService.serializeModels(workspaceDomain, modelerWorkspace.getModelName());
+      stats.setSerializedDomain(serializedModel);
+      stats.setDomain(modelerWorkspace.getDomain());
+
       return stats;
     } catch (Exception e) {
+      e.printStackTrace();
       logger.error(e);
       throw e;
     } finally {
@@ -160,19 +192,9 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
     }
     return previewRows;
   }
-  
-  public List<String> listDatasourceNames() throws IOException {
-	  IPentahoUrlFactory urlFactory = new SimpleUrlFactory(""); //$NON-NLS-1$
-	  PMDUIComponent component = new PMDUIComponent(urlFactory, new ArrayList());
-	  component.validate(getSession(), null);
-	  component.setAction(PMDUIComponent.ACTION_LIST_MODELS);
-	  Document document = component.getXmlContent();
-	  List<DefaultElement> modelElements = document.selectNodes("//model_name"); //$NON-NLS-1$
-	  
-	  ArrayList<String> datasourceNames = new ArrayList<String>();
-	  for(DefaultElement element : modelElements) {
-		  datasourceNames.add(element.getText());
-	  }
-	  return datasourceNames;
+
+  @Override
+  public BogoPojo gwtWorkaround(BogoPojo pojo) {
+    return pojo;
   }
 }

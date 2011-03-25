@@ -6,6 +6,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard;
  */
 public interface IWizardListener {
 
-  void onFinish();
+  void onFinish(IDatasourceSummary summary);
   void onCancel();
 }

@@ -51,7 +51,7 @@ import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 
@@ -185,7 +185,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     if( transformStats != null ) {
       transformStats.setRowsFinished(false);
       transformStats.setRowsStarted(true);
-      transformStats.setRowsDone(0);
+      transformStats.setTotalRecords(0);
       transformStats.setRowsRejected(0);
     }
     Trans trans = createTransform(true);
@@ -333,11 +333,11 @@ public abstract class StagingTransformGenerator extends PentahoBase {
             }
             sb.append("\r\n");
             if( transformStats != null ) {
-              transformStats.getTableOutputErrors().add(sb.toString() + errorDescriptions);
+              transformStats.getErrors().add(sb.toString() + errorDescriptions);
             }
           }
           errorRowCount++;
-          transformStats.setTableOutputErrorCount(errorRowCount);
+          transformStats.setErrorCount(errorRowCount);
           super.addErrorRowData(row, startIndex, nrErrors, errorDescriptions, fieldNames, errorCodes);
         }
       };

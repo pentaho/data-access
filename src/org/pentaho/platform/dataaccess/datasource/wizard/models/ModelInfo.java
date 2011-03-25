@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -53,6 +54,9 @@ public class ModelInfo extends XulEventSourceAdapter implements Serializable {
   private ArrayList<String> tableOutputErrors = new ArrayList<String>();
 
   private transient FileTransformStats transformStats = new FileTransformStats();
+
+
+  private String datasourceName;
   
   public ModelInfo () {
     columnCollection.addPropertyChangeListener("selectedCount", new PropertyChangeListener() {
@@ -245,23 +249,15 @@ public class ModelInfo extends XulEventSourceAdapter implements Serializable {
     }
   }
 
-  public long getTableOutputErrorCount() {
-    return transformStats.getTableOutputErrorCount();
-  }
-
-  public void setTableOutputErrorCount(long tableOutputErrorCount) {
-    transformStats.setTableOutputErrorCount( tableOutputErrorCount );
-  }
-
-  public long getCsvInputErrorCount() {
-    return transformStats.getCsvInputErrorCount();
-  }
-
-  public void setCsvInputErrorCount(long csvInputErrorCount) {
-    transformStats.setCsvInputErrorCount( csvInputErrorCount );
-  }
-
   public FileTransformStats getTransformStats() {
     return transformStats;
-  }  
+  }
+
+  public String getDatasourceName() {
+    return datasourceName;
+  }
+
+  public void setDatasourceName(String datasourceName) {
+    this.datasourceName = datasourceName;
+  }
 }

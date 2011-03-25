@@ -20,28 +20,22 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.wizard.IWizardListener;
+import org.pentaho.platform.dataaccess.datasource.wizard.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
-import org.pentaho.platform.dataaccess.datasource.wizard.steps.AbstractWizardStep;
-import org.pentaho.platform.dataaccess.datasource.wizard.steps.IWizardStep;
-import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.SelectDatasourceStep;
+import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.containers.XulExpandPanel;
-import org.pentaho.ui.xul.gwt.tags.GwtRadioGroup;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
 
 /**
  * The wizard-controler manages the navigation between the wizard-panes. All panes are organized as a list, where
@@ -55,7 +49,11 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
  */
 public class MainWizardController extends AbstractXulEventHandler implements IWizardController {
 
-  private MessageHandler messageHandler;
+  private IXulAsyncDatasourceService datasourceService;
+  private SelectDatasourceStep datasourceStep;
+  private IWizardDatasource selectedDatasource;
+  private XulDeck datasourceDeck;
+  private XulTextbox datasourceName;
 
   // Binding converters
   protected class BackButtonBindingConverter extends BindingConvertor<Integer, Boolean> {
@@ -94,8 +92,6 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   private int activeStep = -1; // bogus active step
 
-  private ICsvDatasourceServiceAsync csvDatasourceService;
-
   private BindingFactory bf;
 
   private XulDialog warningDialog;
@@ -112,27 +108,16 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   
   private XulDialog summaryDialog;
 
-  public MainWizardController(final BindingFactory bf, final DatasourceModel datasourceModel, MessageHandler messageHandler) {
-    this.messageHandler = messageHandler;
+  private XulMenuList datatypeMenuList;
+
+  public MainWizardController(final BindingFactory bf, final DatasourceModel datasourceModel, IXulAsyncDatasourceService datasourceService) {
+    this.datasourceService = datasourceService;
     this.steps = new ArrayList<IWizardStep>();
     this.bf = bf;
     this.notDisabledBindingConvertor = new NotDisabledBindingConvertor();
     this.datasourceModel = datasourceModel;
-    
-    this.csvDatasourceService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
-    ServiceDefTarget endpoint = (ServiceDefTarget) this.csvDatasourceService;
-    endpoint.setServiceEntryPoint(PhysicalDatasourceController.getDatasourceURL());
-  }
 
-  public void addStep(final AbstractWizardStep step) {
-    if (step == null) {
-      throw new NullPointerException();
-    }
-    steps.add(step);
-  }
 
-  public void removeStep(final IWizardStep step) {
-    steps.remove(step);
   }
 
   public IWizardStep getStep(final int step) {
@@ -144,35 +129,42 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   }
 
   public void setActiveStep(final int step) {
-    final int oldActiveStep = this.activeStep;
-    if (oldActiveStep >= 0) {
-      final IWizardStep deactivatingWizardStep = steps.get(oldActiveStep);
-      if (step > oldActiveStep) {
-        if (!deactivatingWizardStep.stepDeactivatingForward()) {
-          return;
-        } 
-      } else {
-        if (!deactivatingWizardStep.stepDeactivatingReverse()) {
-          return;
+    try{
+      if(this.steps == null || steps.isEmpty()){
+        return;
+      }
+      final int oldActiveStep = this.activeStep;
+      if (oldActiveStep >= 0) {
+        final IWizardStep deactivatingWizardStep = steps.get(oldActiveStep);
+        if (step > oldActiveStep) {
+          if (!deactivatingWizardStep.stepDeactivatingForward()) {
+            return;
+          }
+        } else {
+          if (!deactivatingWizardStep.stepDeactivatingReverse()) {
+            return;
+          }
         }
       }
+
+      this.activeStep = step;
+      final IWizardStep activatingWizardStep = steps.get(activeStep);
+      updateBindings();
+
+      if (activeStep > oldActiveStep) {
+        activatingWizardStep.stepActivatingForward();
+      } else {
+        activatingWizardStep.stepActivatingReverse();
+      }
+
+      // update the controller panel
+      final XulDeck deck = (XulDeck) document.getElementById(CONTENT_DECK_ELEMENT_ID);
+      deck.setSelectedIndex(activeStep);
+
+      this.firePropertyChange(ACTIVE_STEP_PROPERTY_NAME, oldActiveStep, this.activeStep);
+    } catch(Exception e){
+      e.printStackTrace();
     }
-
-    this.activeStep = step;
-    final IWizardStep activatingWizardStep = steps.get(activeStep);
-    updateBindings();
-    
-    if (activeStep > oldActiveStep) {
-      activatingWizardStep.stepActivatingForward();
-    } else {
-      activatingWizardStep.stepActivatingReverse();
-    }
-
-    // update the controller panel
-    final XulDeck deck = (XulDeck) document.getElementById(CONTENT_DECK_ELEMENT_ID);
-    deck.setSelectedIndex(activeStep);
-
-    this.firePropertyChange(ACTIVE_STEP_PROPERTY_NAME, oldActiveStep, this.activeStep);
   }
 
   public int getActiveStep() {
@@ -180,20 +172,62 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   }
 
   public void init() {
+
     wizardDialog = (XulDialog) document.getElementById("main_wizard_window");
 
     summaryDialog = (XulDialog) document.getElementById("summaryDialog");
 
-    if (!steps.isEmpty()) {
-      for (final IWizardStep wizardStep : steps) {
-        wizardStep.setBindings();
-      }
-      bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(this, ACTIVE_STEP_PROPERTY_NAME, BACK_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, new BackButtonBindingConverter());
+    datasourceDeck = (XulDeck) document.getElementById("datasourceDialogDeck");
 
-      setActiveStep(0); // Fires the events to update the buttons
+    datasourceName = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
+    bf.createBinding(datasourceName, "value", datasourceModel, "datasourceName");
+
+    bf.setBindingType(Binding.Type.ONE_WAY);
+    bf.createBinding(this, ACTIVE_STEP_PROPERTY_NAME, BACK_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, new BackButtonBindingConverter());
+
+    bf.createBinding(datasourceModel, "selectedDatasource", this,"selectedDatasource");
+
+    for(IWizardDatasource datasource : this.datasourceModel.getDatasources()){
+      try {
+        datasource.setDatasourceModel(datasourceModel);
+        datasource.setXulDomContainer(getXulDomContainer());
+        datasource.setBindingFactory(bf);
+
+        datasource.init();
+      } catch (XulException e) {
+        MessageHandler.getInstance().showErrorDialog("Error", e.getMessage());
+        e.printStackTrace();
+      } 
     }
 
+    setSelectedDatasource(datasourceModel.getSelectedDatasource());
+
+  }
+
+  @Bindable
+  public void setSelectedDatasource(IWizardDatasource datasource){
+    IWizardDatasource prevSelection = selectedDatasource;
+    selectedDatasource = datasource;
+    try {
+
+      datasource.setBindingFactory(bf);
+      datasource.setDatasourceModel(datasourceModel);
+      datasource.setXulDomContainer(getXulDomContainer()); //TODO: remove once an event handler
+      datasource.activating();
+      if(prevSelection != null){
+        steps.removeAll(prevSelection.getSteps());
+        prevSelection.deactivating();
+      }
+      steps.addAll(datasource.getSteps());
+      datasource.getSteps().get(0).activating();
+      activeStep = 0;
+
+      this.datasourceDeck.setSelectedIndex(datasourceDeck.getChildNodes().indexOf(datasource.getSteps().get(0).getUIComponent()));
+      updateBindings();
+
+    } catch (XulException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
   }
 
   public void reset(){
@@ -234,22 +268,27 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   }
 
   @Bindable
+  // TODO: migrate to CSV datasource
   public void finish() {
-	final String datasourceName = this.datasourceModel.getDatasourceName();
-	csvDatasourceService.listDatasourceNames(new AsyncCallback<List<String>>() {
-		public void onSuccess(List<String> datasourceNames) {
-			boolean isEditing = datasourceModel.getGuiStateModel().isEditing();
-			if(datasourceNames.contains(datasourceName) && !isEditing) {
-				showWarningDialog();
-			} else {
-  			setFinished();
-			}
-		}
+    final String datasourceName = this.datasourceModel.getDatasourceName();
+    datasourceService.listDatasourceNames(new XulServiceCallback<List<String>>() {
 
-		public void onFailure(Throwable e ) {
-			 warningDialog.hide();
-		}
-	});
+      @Override
+      public void success(List<String> datasourceNames) {
+        boolean isEditing = datasourceModel.getGuiStateModel().isEditing();
+        if(datasourceNames.contains(datasourceName) && !isEditing) {
+          showWarningDialog();
+        } else {
+          setFinished();
+        }
+      }
+
+      @Override
+      public void error(String s, Throwable throwable) {
+        throwable.printStackTrace();
+        MessageHandler.getInstance().showErrorDialog(throwable.getMessage());
+      }
+    });
   }
 
   @Bindable
@@ -264,9 +303,27 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   }
 
   private void setFinished() {
-    for (IWizardListener wizardListener : wizardListeners) {
-      wizardListener.onFinish();
-    }
+
+    wizardDialog.hide();
+    MessageHandler.getInstance().showWaitingDialog();
+    datasourceModel.getSelectedDatasource().onFinish(new XulServiceCallback<IDatasourceSummary>() {
+      @Override
+      public void success(IDatasourceSummary iDatasourceSummary) {
+
+        iDatasourceSummary.getDomain().getLogicalModels().get(0).setProperty("DatasourceType", datasourceModel.getSelectedDatasource().getId());
+        for (IWizardListener wizardListener : wizardListeners) {
+          wizardListener.onFinish(iDatasourceSummary);
+        }
+      }
+
+      @Override
+      public void error(String s, Throwable throwable) {
+        //TODO: improve error messaging
+        MessageHandler.getInstance().closeWaitingDialog();
+        MessageHandler.getInstance().showErrorDialog(s, s);
+      }
+    });
+
   }
   
   public void showWarningDialog() {
@@ -338,6 +395,5 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     summaryDialog.hide();
     wizardDialog.show();
   }
-
 
 }

@@ -3,7 +3,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransListener;
 import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 
 public class PdiTransListener implements TransListener, Runnable {
 
@@ -36,7 +36,7 @@ public class PdiTransListener implements TransListener, Runnable {
     while( !finished && !trans.isFinished() ) {
       try {
         rowsDone = step.getLinesOutput();
-        transformStats.setRowsDone(rowsDone);
+        transformStats.setTotalRecords(rowsDone);
         Thread.sleep(250);
       } catch (InterruptedException e) {
         // swallow this
@@ -52,8 +52,8 @@ public class PdiTransListener implements TransListener, Runnable {
     } catch (Exception e) {
     }
     transformStats.setRowsFinished(true);
-    transformStats.setRowsDone(step.getLinesOutput());
-    transformStats.setErrors(errorCount);
+    transformStats.setTotalRecords(step.getLinesOutput());
+    transformStats.setErrorCount(errorCount);
 
     finished = true;
   }

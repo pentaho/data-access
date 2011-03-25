@@ -52,7 +52,7 @@ import org.pentaho.ui.xul.containers.XulTreeRow;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-public class WizardRelationalDatasourceController extends AbstractXulEventHandler implements IDatasourceTypeController {
+public class WizardRelationalDatasourceController extends AbstractXulEventHandler {
   public static final int MAX_SAMPLE_DATA_ROWS = 5;
 
   public static final int MAX_COL_SIZE = 13;
@@ -473,14 +473,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 //    metaStep.updateDomain(datasourceModel.getRelationalModel()
 //          .getSelectedConnection().getName(), null, this.query.getValue());
     return true;
-  }
-
-  /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.wizard.controllers.IDatasourceTypeController#supportsBusinessData(org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel)
-   */
-  public boolean supportsBusinessData(DatasourceModel model) {
-    // TODO Auto-generated method stub
-    return false;
   }
 
 }

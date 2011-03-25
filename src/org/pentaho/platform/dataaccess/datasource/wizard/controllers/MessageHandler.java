@@ -1,15 +1,9 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.containers.XulExpandPanel;
-import org.pentaho.ui.xul.containers.XulVbox;
-import org.pentaho.ui.xul.gwt.tags.GwtRadioGroup;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -31,14 +25,13 @@ public class MessageHandler extends AbstractXulEventHandler {
 
   private XulDialog wizardDialog;
 
-  private static final String MSG_OPENING_MODELER = "waiting.openingModeler";
-  private static final String MSG_GENERAL_WAIT = "waiting.generalWaiting";
-  private static final String MSG_STAGING_DATA = "physicalDatasourceDialog.STAGING_DATA"; //$NON-NLS-1$
-  private static final String MSG_CREATING_DATA_SOURCE = "waiting.creatingDataSource"; //$NON-NLS-1$
+  public static final String MSG_OPENING_MODELER = "waiting.openingModeler";
+  public static final String MSG_GENERAL_WAIT = "waiting.generalWaiting";
+  public static final String MSG_STAGING_DATA = "physicalDatasourceDialog.STAGING_DATA"; //$NON-NLS-1$
+  public static final String MSG_CREATING_DATA_SOURCE = "waiting.creatingDataSource"; //$NON-NLS-1$
+  private static MessageHandler INSTANCE = new MessageHandler();
 
-  public MessageHandler(XulDialog wizardDialog, DatasourceMessages messages){
-    this.messages = messages;
-    this.wizardDialog = wizardDialog;
+  private MessageHandler(){
   }
 
   @Override
@@ -55,6 +48,11 @@ public class MessageHandler extends AbstractXulEventHandler {
 
     successDialog = (XulDialog) document.getElementById("successDialog"); //$NON-NLS-1$
     successLabel = (XulLabel) document.getElementById("successLabel"); //$NON-NLS-1$
+  }
+
+
+  public void showErrorDialog(String message) {
+    showErrorDialog(messages.getString("error"), message);
   }
 
   public void showErrorDialog(String title, String message) {
@@ -139,4 +137,15 @@ public class MessageHandler extends AbstractXulEventHandler {
   }
 
 
+  public void setMessages(DatasourceMessages messages) {
+    this.messages = messages;
+  }
+
+  public void setWizardDialog(XulDialog wizardDialog) {
+    this.wizardDialog = wizardDialog;
+  }
+
+  public static MessageHandler getInstance() {
+    return INSTANCE;
+  }
 }

@@ -35,7 +35,7 @@ import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
@@ -186,10 +186,10 @@ public class CsvTransformGenerator extends StagingTransformGenerator {
           	sb.append(", ");
         	}
         	sb.append("\r\n");
-        	stats.getCsvInputErrors().add(sb.toString() + errorDescriptions);
+        	stats.getErrors().add(sb.toString() + errorDescriptions);
         }
         csvErrorRowCount++;
-        stats.setCsvInputErrorCount(csvErrorRowCount);        
+        stats.setErrorCount(csvErrorRowCount);
         super.addErrorRowData(row, startIndex, nrErrors, errorDescriptions, fieldNames, errorCodes);
       }
     };

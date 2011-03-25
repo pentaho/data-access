@@ -32,16 +32,14 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  * @author wseyler
  *
  */
+//TODO: move this to the Relational Datasource
 public class GuiStateModel extends XulEventSourceAdapter {
-  public static enum ConnectionEditType {ADD, EDIT}
 
-  private RelationalModelValidationListenerCollection relationalModelValidationListeners;
   private boolean relationalValidated;
   private boolean relationalPreviewValidated;
   private boolean relationalApplyValidated;
   private List<IConnection> connections = new ArrayList<IConnection>();
   private String previewLimit = "10"; //$NON-NLS-1$
-  private ConnectionEditType editType = ConnectionEditType.ADD;
   private List<LogicalModel> logicalModels;
   private String localeCode;
 
@@ -50,20 +48,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
 
   private boolean editing;
   private boolean dirty = true;
+  private RelationalModelValidationListenerCollection relationalModelValidationListeners;
 
-
-  private IXulAsyncConnectionService connectionService;
-
-  @Bindable
-  public ConnectionEditType getEditType() {
-    return editType;
-  }
-
-  @Bindable
-  public void setEditType(ConnectionEditType value) {
-    this.editType = value;
-  }
-  
   @Bindable
   public List<IConnection> getConnections() {
     return connections;
@@ -169,16 +155,6 @@ public class GuiStateModel extends XulEventSourceAdapter {
     fireRelationalModelInValid();
   }
 
-  private List<String> getColumnData(int columnNumber, List<List<String>> data) {
-    List<String> column = new ArrayList<String>();
-    for (List<String> row : data) {
-      if (columnNumber < row.size()) {
-        column.add(row.get(columnNumber));
-      }
-    }
-    return column;
-  }
-
   /*
    * Clears out the model
    */
@@ -255,14 +231,6 @@ public class GuiStateModel extends XulEventSourceAdapter {
 
   public void setLocaleCode(String localeCode) {
     this.localeCode = localeCode;
-  }
-
-  public IXulAsyncConnectionService getConnectionService() {
-    return connectionService;
-  }
-
-  public void setConnectionService(IXulAsyncConnectionService connectionService) {
-    this.connectionService = connectionService;
   }
 
   public void setDataStagingComplete(boolean status) {

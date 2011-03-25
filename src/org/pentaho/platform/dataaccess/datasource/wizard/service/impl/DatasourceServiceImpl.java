@@ -20,6 +20,7 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,6 +29,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
+import org.dom4j.tree.DefaultElement;
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.metadata.model.Domain;
@@ -41,7 +44,7 @@ import org.pentaho.metadata.repository.DomainStorageException;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
-import org.pentaho.platform.api.engine.IPluginResourceLoader;
+import org.pentaho.platform.api.engine.*;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
@@ -63,10 +66,12 @@ import org.pentaho.platform.engine.services.connection.PentahoConnectionFactory;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServiceException;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
+import org.pentaho.platform.uifoundation.component.xml.PMDUIComponent;
 import org.pentaho.platform.util.logging.SimpleLogger;
 import org.pentaho.platform.util.messages.LocaleHelper;
 
 import com.thoughtworks.xstream.XStream;
+import org.pentaho.platform.util.web.SimpleUrlFactory;
 
 public class DatasourceServiceImpl implements IDatasourceService {
 
@@ -436,5 +441,34 @@ public class DatasourceServiceImpl implements IDatasourceService {
   public DatasourceDTO deSerializeModelState(String dtoStr) throws DatasourceServiceException {
     XStream xs = new XStream();
     return (DatasourceDTO) xs.fromXML(dtoStr);
+  }
+
+
+  private IPentahoSession getSession() {
+    IPentahoSession session = null;
+    IPentahoObjectFactory pentahoObjectFactory = PentahoSystem.getObjectFactory();
+    if (pentahoObjectFactory != null) {
+      try {
+        session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
+      } catch (ObjectFactoryException e) {
+        logger.error(e);
+      }
+    }
+    return session;
+  }
+  
+  public List<String> listDatasourceNames() throws IOException {
+	  IPentahoUrlFactory urlFactory = new SimpleUrlFactory(""); //$NON-NLS-1$
+	  PMDUIComponent component = new PMDUIComponent(urlFactory, new ArrayList());
+	  component.validate(getSession(), null);
+	  component.setAction(PMDUIComponent.ACTION_LIST_MODELS);
+	  Document document = component.getXmlContent();
+	  List<DefaultElement> modelElements = document.selectNodes("//model_name"); //$NON-NLS-1$
+
+	  ArrayList<String> datasourceNames = new ArrayList<String>();
+	  for(DefaultElement element : modelElements) {
+		  datasourceNames.add(element.getText());
+	  }
+	  return datasourceNames;
   }
 }

@@ -42,6 +42,8 @@ public interface IGwtDatasourceServiceAsync {
   void loadBusinessData(String domainId, String modelId, AsyncCallback<BusinessData> callback);
   void serializeModelState(DatasourceDTO dto, AsyncCallback<String> callback);
   void deSerializeModelState(String dtoStr, AsyncCallback<DatasourceDTO> callback);
+
+  public void listDatasourceNames(AsyncCallback<List<String>> callback);
 }
 
   

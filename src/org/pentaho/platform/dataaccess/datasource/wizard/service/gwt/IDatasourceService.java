@@ -20,6 +20,7 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.pentaho.metadata.model.Domain;
@@ -118,6 +119,7 @@ public interface IDatasourceService {
    */
   DatasourceDTO deSerializeModelState(String dto) throws DatasourceServiceException;
 
+  public List<String> listDatasourceNames() throws IOException;
 }
 
  

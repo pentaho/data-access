@@ -28,6 +28,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -320,5 +321,9 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
     XStream xs = new XStream();
     return (DatasourceDTO) xs.fromXML(dtoStr);
   }
-  
+
+  @Override
+  public List<String> listDatasourceNames() throws IOException {
+    return new ArrayList<String>();
+  }
 }

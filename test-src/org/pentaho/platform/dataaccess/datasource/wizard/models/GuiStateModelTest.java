@@ -24,7 +24,6 @@ import org.pentaho.metadata.model.concept.types.TargetTableType;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel.ConnectionEditType;
 
 
 @SuppressWarnings("nls")
@@ -34,7 +33,6 @@ public class GuiStateModelTest {
   public void test() {
     GuiStateModel guiStateModel = new GuiStateModel();
     Assert.assertEquals(0, guiStateModel.getConnections().size());
-    Assert.assertEquals(ConnectionEditType.ADD,guiStateModel.getEditType());
     Assert.assertEquals(false, guiStateModel.isRelationalValidated());
     IConnection connection = new Connection();
     connection.setDriverClass("org.hsqldb.jdbcDriver");

@@ -35,7 +35,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class UploadFile implements EntryPoint {
+public class UploadFileEntryPoint implements EntryPoint {
 
   public void onModuleLoad() {
     // Create a FormPanel and point it at a service.
