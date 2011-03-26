@@ -197,4 +197,5 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   public BogoPojo gwtWorkaround(BogoPojo pojo) {
     return pojo;
   }
+
 }

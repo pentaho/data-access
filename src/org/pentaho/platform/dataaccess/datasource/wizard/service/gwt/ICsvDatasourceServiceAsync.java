@@ -22,6 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
 import java.util.List;
 
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
@@ -44,4 +45,5 @@ public interface ICsvDatasourceServiceAsync {
   public void getEncoding(String fileName, AsyncCallback<String> callback);
 
   public void gwtWorkaround(BogoPojo pojo, AsyncCallback<BogoPojo> callback);
+
 }

@@ -94,6 +94,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   private XulServiceCallback<Domain> editFinishedCallback;
   private IDatasourceSummary summary;
   private ModelerDialog modeler;
+  private SummaryDialogController summaryDialogController = new SummaryDialogController();
 
   /**
   /**
@@ -159,11 +160,24 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   }
 
   @Override
-  public void onFinish(IDatasourceSummary summary) {
+  public void onFinish(final IDatasourceSummary summary) {
     this.summary = summary;
-    if(editFinishedCallback != null){
-      editFinishedCallback.success(summary.getDomain());
-    }
+    summaryDialogController.showSummaryDialog(summary, new XulServiceCallback<IDatasourceSummary>(){
+      @Override
+      public void error(String s, Throwable throwable) {
+        MessageHandler.getInstance().showErrorDialog(s, throwable.getMessage());
+      }
+
+      @Override
+      public void success(IDatasourceSummary iDatasourceSummary) {
+        if(iDatasourceSummary.isShowModeler()){
+          showModelEditor();
+        } else if(editFinishedCallback != null){
+          editFinishedCallback.success(summary.getDomain());
+          MessageHandler.getInstance().closeWaitingDialog();
+        }
+      }
+    });
   }
 
   private void checkInitialized() {
@@ -300,6 +314,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     connectionController = new ConnectionController();
     connectionController.setService(connectionService);
 
+    summaryDialogController.setBindingFactory(bf);
+    mainWizardContainer.addEventHandler(summaryDialogController);
+
     datasourceModel.addDatasource(new DummyDatasource());
     datasourceModel.addDatasource(new CsvDatasource(datasourceModel));
 
@@ -330,6 +347,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     // init other controllers
     fileImportController.init();
     MessageHandler.getInstance().init();
+    summaryDialogController.init();
 
 
     // Create the gui

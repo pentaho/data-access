@@ -27,6 +27,7 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;

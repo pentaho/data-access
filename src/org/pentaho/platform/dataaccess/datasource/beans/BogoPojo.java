@@ -21,6 +21,7 @@
 package org.pentaho.platform.dataaccess.datasource.beans;
 
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
@@ -61,6 +62,15 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
   LogicalModel lModel;
   LogicalColumn lColumn;
   ModelerException modelerException;
+  Domain domain;
+
+  public Domain getDomain() {
+    return domain;
+  }
+
+  public void setDomain(Domain domain) {
+    this.domain = domain;
+  }
 
   public LogicalColumn getlColumn() {
     return lColumn;

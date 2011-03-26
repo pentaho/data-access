@@ -23,6 +23,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 import java.io.IOException;
 import java.util.List;
 
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;

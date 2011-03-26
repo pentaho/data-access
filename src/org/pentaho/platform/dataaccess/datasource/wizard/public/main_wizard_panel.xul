@@ -278,7 +278,7 @@
   <!--     SUMMARY DIALOG w/DETAILS: Dialog to display success + details message          -->
   <!--  ###############################################################################   -->
   <dialog id="summaryDialog" title="${summaryDialog.title}"
-          buttonlabelaccept="${summaryDialog.OK}" ondialogaccept="finishHandler.closeSummaryDialog()"
+          buttonlabelaccept="${summaryDialog.OK}" ondialogaccept="summaryDialog.closeSummaryDialog()"
           buttons="accept" buttonalign="right" width="475" height="150">
     <vbox id="summaryDialogContainer" height="150">
       <vbox id="csvSummaryContainer" height="20">
