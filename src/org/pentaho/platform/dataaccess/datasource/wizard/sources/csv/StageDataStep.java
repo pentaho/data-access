@@ -11,6 +11,7 @@ import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.FactoryBasedBindingProvider;
 import org.pentaho.ui.xul.components.XulLabel;
@@ -196,6 +197,7 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
     XulTree tree = (XulTree) document.getElementById("csvModelDataTable"); //$NON-NLS-1$
     tree.setRows(datasourceModel.getModelInfo().getColumns().length);
 
+    bf.setBindingType(Binding.Type.ONE_WAY);
     tree.setBindingProvider(new FactoryBasedBindingProvider(bf) {
       @Override
       public BindingConvertor getConvertor(XulEventSource source, String prop1, XulEventSource target, String prop2) {
