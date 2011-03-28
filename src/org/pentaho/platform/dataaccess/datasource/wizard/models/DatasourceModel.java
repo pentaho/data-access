@@ -45,9 +45,6 @@ public class DatasourceModel extends XulEventSourceAdapter
   private IConnection selectedRelationalConnection;
   private String query;
 
-  private List<IWizardDatasource> datasources = new ArrayList<IWizardDatasource>();
-
-  private IWizardDatasource selectedDatasource;
   private boolean editMode;
 
   public DatasourceModel() {
@@ -310,33 +307,6 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   public void onCsvValid() {
-  }
-
-  @Bindable
-  public List<IWizardDatasource> getDatasources() {
-    return datasources;
-  }
-
-  public void setDatasources(List<IWizardDatasource> datasources) {
-    this.datasources = datasources;
-    firePropertyChange("datasources", null, datasources);
-  }
-
-  public void addDatasource(IWizardDatasource datasource){
-    datasources.add(datasource);
-    firePropertyChange("datasources", null, datasources);
-  }
-
-  @Bindable
-  public IWizardDatasource getSelectedDatasource() {
-    return selectedDatasource != null ? selectedDatasource : datasources.get(0);
-  }
-
-  @Bindable
-  public void setSelectedDatasource(IWizardDatasource selectedDatasource) {
-    IWizardDatasource prevVal = this.selectedDatasource;
-    this.selectedDatasource = selectedDatasource;
-    firePropertyChange("selectedDatasource", prevVal, selectedDatasource );
   }
 
   public boolean isEditing() {

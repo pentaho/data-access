@@ -23,12 +23,9 @@ import java.util.List;
  */
 public class DummyDatasource extends AbstractXulEventHandler implements IWizardDatasource{
   SelectDatasourceStep datasourceStep;
-  private XulDomContainer container;
-  private BindingFactory bindingFactory;
-  private DatasourceModel datasourceModel;
 
   public DummyDatasource(){
-    datasourceStep = new SelectDatasourceStep();
+    datasourceStep = new SelectDatasourceStep(this);
 
   }
 
@@ -52,10 +49,9 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
   }
 
   @Override
-  public void init(DatasourceModel datasourceModel, XulDomContainer container) throws XulException {
+  public void init(XulDomContainer container) throws XulException {
     container.addEventHandler(datasourceStep);
-    datasourceStep.init(datasourceModel);
-    this.datasourceModel = datasourceModel;
+    datasourceStep.init();
   }
 
   @Override
@@ -68,4 +64,13 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
     return "dummy";
   }
 
+  @Override
+  public boolean isFinishable() {
+    return false;
+  }
+
+  @Override
+  public void setFinishable(boolean isFinishable) {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
 }

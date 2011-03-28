@@ -29,7 +29,7 @@ import java.util.Vector;
 
 public class StageDataStep extends AbstractWizardStep implements IModelInfoValidationListener {
 
-
+  private DatasourceModel datasourceModel;
   private ICsvDatasourceServiceAsync csvDatasourceService;
   
   private static final String MSG_STAGING_DATA = "physicalDatasourceDialog.STAGING_DATA"; //$NON-NLS-1$
@@ -55,9 +55,10 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
   private XulLabel previewLabel = null;
 
   
-  public StageDataStep(ICsvDatasourceServiceAsync csvDatasourceService ) {
+  public StageDataStep(DatasourceModel datasourceModel, CsvDatasource parentDatasource, ICsvDatasourceServiceAsync csvDatasourceService ) {
+    super(parentDatasource);
+    this.datasourceModel = datasourceModel;
     this.csvDatasourceService = csvDatasourceService;
-    setFinishable(true);
   }
   
   public String getStepName() {
@@ -73,8 +74,8 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
   }
 
   @Override
-  public void init(DatasourceModel model) throws XulException {
-    super.init(model);
+  public void init() throws XulException {
+    super.init();
     
     
     waitingDialog = (XulDialog) document.getElementById("waitingDialog"); //$NON-NLS-1$
@@ -132,11 +133,11 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
   }
 
   public void onModelInfoValid() {
-    setFinishable(true);
+    parentDatasource.setFinishable(true);
   }
 
   public void onModelInfoInvalid() {
-    setFinishable(false);
+    parentDatasource.setFinishable(false);
   }
 
   public class StageFileCallback implements AsyncCallback<ModelInfo> {
@@ -147,10 +148,12 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
       datasourceModel.getModelInfo().getFileInfo().setEncoding(aModelInfo.getFileInfo().getEncoding());
       refreshColumnGrid();
       closeWaitingDialog();
+      parentDatasource.setFinishable(true);
     }
 
     public void onFailure(Throwable caught) {
       closeWaitingDialog();
+      parentDatasource.setFinishable(false);
       if (caught instanceof CsvParseException) {
         CsvParseException e = (CsvParseException) caught;
         showErrorDialog(MessageHandler.getString(caught.getMessage(), String.valueOf(e.getLineNumber()), e.getOffendingLine()));

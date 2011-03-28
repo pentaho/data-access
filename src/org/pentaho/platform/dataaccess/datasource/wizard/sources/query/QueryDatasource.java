@@ -19,6 +19,8 @@ import java.util.List;
  * Date: 3/26/11
  */
 public class QueryDatasource extends AbstractXulEventHandler implements IWizardDatasource {
+  private boolean finishable;
+
   @Override
   public void activating() throws XulException {
     //To change body of implemented methods use File | Settings | File Templates.
@@ -40,7 +42,7 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
   }
 
   @Override
-  public void init(DatasourceModel datasourceModel, XulDomContainer container) throws XulException {
+  public void init(XulDomContainer container) throws XulException {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 
@@ -52,5 +54,15 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
   @Override
   public String getId() {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
+  public boolean isFinishable() {
+    return finishable;
+  }
+
+  @Override
+  public void setFinishable(boolean isFinishable) {
+    //To change body of implemented methods use File | Settings | File Templates.
   }
 }

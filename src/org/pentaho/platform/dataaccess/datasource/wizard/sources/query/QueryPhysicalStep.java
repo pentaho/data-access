@@ -47,6 +47,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class QueryPhysicalStep extends AbstractWizardStep {
 
   public static final int DEFAULT_RELATIONAL_TABLE_ROW_COUNT = 5;
+  private DatasourceModel datasourceModel;
   private IXulAsyncDatasourceService datasourceService;
   XulTextbox datasourceNameTextBox = null;
   XulButton okButton = null;
@@ -56,7 +57,9 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
   private IXulAsyncConnectionService connectionService;
 
-  public QueryPhysicalStep(IXulAsyncDatasourceService datasourceService, IXulAsyncConnectionService connectionService) {
+  public QueryPhysicalStep(DatasourceModel datasourceModel, QueryDatasource parentDatasource, IXulAsyncDatasourceService datasourceService, IXulAsyncConnectionService connectionService) {
+    super(parentDatasource);
+    this.datasourceModel = datasourceModel;
     this.datasourceService = datasourceService;
     this.connectionService = connectionService;
   }
@@ -72,8 +75,8 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   }
 
   @Bindable
-  public void init(DatasourceModel datasourceModel) throws XulException {
-    super.init(datasourceModel);
+  public void init() throws XulException {
+    super.init();
     datasourceNameTextBox = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
     
     GwtWaitingDialog waitingDialog = new GwtWaitingDialog(MessageHandler.getString("waitingDialog.previewLoading"),MessageHandler.getString("waitingDialog.generatingPreview"));
@@ -96,16 +99,6 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
   public void initialize() {
     datasourceModel.clearModel();
-  }
-
-  @Bindable
-  public void setDatasourceModel(DatasourceModel model) {
-    setDatasourceModel(model);
-  }
-
-  @Bindable
-  public DatasourceModel getDatasourceModel() {
-    return this.datasourceModel;
   }
 
   public IXulAsyncConnectionService getConnectionService() {
@@ -178,7 +171,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     public void propertyChange(PropertyChangeEvent evt) {
       String newValue = (String) evt.getNewValue();
       if(newValue == null || newValue.trim().length() == 0) {
-        setFinishable(false);
+        parentDatasource.setFinishable(false);
       }
     }
   }

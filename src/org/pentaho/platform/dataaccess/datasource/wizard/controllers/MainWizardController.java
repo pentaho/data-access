@@ -17,13 +17,13 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.SelectDatasourceStep;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -51,9 +51,10 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   private IXulAsyncDatasourceService datasourceService;
   private SelectDatasourceStep datasourceStep;
-  private IWizardDatasource selectedDatasource;
   private XulDeck datasourceDeck;
   private XulTextbox datasourceName;
+  private List<IWizardDatasource> datasources = new ArrayList<IWizardDatasource>();
+  private IWizardDatasource selectedDatasource;
 
   // Binding converters
   protected class BackButtonBindingConverter extends BindingConvertor<Integer, Boolean> {
@@ -183,27 +184,66 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     bf.createBinding(datasourceName, "value", datasourceModel, "datasourceName");
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(this, ACTIVE_STEP_PROPERTY_NAME, BACK_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, new BackButtonBindingConverter());
 
-    bf.createBinding(datasourceModel, "selectedDatasource", this,"selectedDatasource");
+    datatypeMenuList = (XulMenuList) document.getElementById("datatypeMenuList");
 
-    for(IWizardDatasource datasource : this.datasourceModel.getDatasources()){
-      try {
-        datasource.init(datasourceModel, getXulDomContainer());
-      } catch (XulException e) {
-        MessageHandler.getInstance().showErrorDialog("Error", e.getMessage());
-        e.printStackTrace();
-      } 
+
+    Binding datasourceBinding = bf.createBinding(this, "datasources", datatypeMenuList, "elements");
+    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
+    bf.createBinding(datatypeMenuList, "selectedItem", this, "selectedDatasource");
+
+
+    bf.setBindingType(Binding.Type.ONE_WAY);
+
+    try {
+    } catch (Exception e) {
+      MessageHandler.getInstance().showErrorDialog(e.getMessage());
+      e.printStackTrace();
     }
 
-    setSelectedDatasource(datasourceModel.getSelectedDatasource());
+    bf.createBinding(this, ACTIVE_STEP_PROPERTY_NAME, BACK_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, new BackButtonBindingConverter());
 
+    try {
+      for(IWizardDatasource datasource : this.getDatasources()){
+          datasource.init(getXulDomContainer());
+      }
+      datasourceBinding.fireSourceChanged();
+    } catch (XulException e) {
+      MessageHandler.getInstance().showErrorDialog("Error", e.getMessage());
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      MessageHandler.getInstance().showErrorDialog("Error", e.getMessage());
+      e.printStackTrace();
+    }
+
+  }
+
+  @Bindable
+  public List<IWizardDatasource> getDatasources(){
+    return datasources;
+  }
+
+  public void addDatasource(IWizardDatasource datasource){
+    boolean reallyAdded = this.datasources.add(datasource);
+    if(reallyAdded)
+      firePropertyChange("datasources", null, datasources);
+    if(selectedDatasource == null){
+      selectedDatasource = datasources.get(0);
+    }
+  }
+  public void removeDatasource(IWizardDatasource datasource){
+    boolean reallyRemoved = this.datasources.remove(datasource);
+    if(reallyRemoved)
+      firePropertyChange("datasources", null, datasources);
   }
 
   @Bindable
   public void setSelectedDatasource(IWizardDatasource datasource){
     IWizardDatasource prevSelection = selectedDatasource;
     selectedDatasource = datasource;
+    if(datasource == null){
+      return;
+    }
     try {
       datasource.activating();
       if(prevSelection != null){
@@ -222,6 +262,13 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     }
   }
 
+  public IWizardDatasource getSelectedDatasource(){
+    if(selectedDatasource == null && datasources.isEmpty() == false){
+      selectedDatasource = datasources.get(0);
+    }
+    return selectedDatasource;
+  }
+
   public void reset(){
     setActiveStep(0);
 
@@ -238,7 +285,8 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     // Create new binding to the current wizard panel
     bf.setBindingType(Binding.Type.ONE_WAY);
     nextButtonBinding = bf.createBinding(getStep(getActiveStep()), VALID_PROPERTY_NAME, NEXT_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, notDisabledBindingConvertor);
-    finishedButtonBinding = bf.createBinding(getStep(getActiveStep()), FINISHABLE_PROPERTY_NAME, FINISH_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, notDisabledBindingConvertor);
+
+    finishedButtonBinding = bf.createBinding(selectedDatasource, FINISHABLE_PROPERTY_NAME, FINISH_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, notDisabledBindingConvertor);
 
     try {
       nextButtonBinding.fireSourceChanged();
@@ -298,11 +346,11 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
     wizardDialog.hide();
     MessageHandler.getInstance().showWaitingDialog();
-    datasourceModel.getSelectedDatasource().onFinish(new XulServiceCallback<IDatasourceSummary>() {
+    getSelectedDatasource().onFinish(new XulServiceCallback<IDatasourceSummary>() {
       @Override
       public void success(IDatasourceSummary iDatasourceSummary) {
 
-        iDatasourceSummary.getDomain().getLogicalModels().get(0).setProperty("DatasourceType", datasourceModel.getSelectedDatasource().getId());
+        iDatasourceSummary.getDomain().getLogicalModels().get(0).setProperty("DatasourceType", getSelectedDatasource().getId());
         for (IWizardListener wizardListener : wizardListeners) {
           wizardListener.onFinish(iDatasourceSummary);
         }

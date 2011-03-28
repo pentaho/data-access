@@ -29,6 +29,19 @@ public interface IWizardDatasource extends XulEventSource {
    */
   List<IWizardStep> getSteps();
 
+
+  /**
+   * @return a boolean that determines if the "Finish" button should be enabled.
+   */
+  public boolean isFinishable();
+
+
+   /**
+   * Flags a datasource as finishable. This needs to be fired as a propertyChangeEvent from the implementing Datasource
+   * So the Main Controller will pickup the change.
+   */
+    public void setFinishable(boolean isFinishable);
+    
   /**
    * Called when the Wizard is finished.
    * @param callback gets called with a summary of the results.
@@ -44,7 +57,7 @@ public interface IWizardDatasource extends XulEventSource {
   /**
    * Step controllers should be initialized with bindings created at this time.
    */
-  void init(DatasourceModel datasourceModel, XulDomContainer container) throws XulException;
+  void init(XulDomContainer container) throws XulException;
 
 
   /**

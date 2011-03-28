@@ -79,10 +79,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   private boolean initialized;
 
-  private QueryPhysicalStep physicalStep = null;
-
-  private StageDataStep stageDataStep;
-  
   private AsyncConstructorListener asyncConstructorListener;
   
 
@@ -219,7 +215,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     /* end of work around */
     
     dialog.show();
-    physicalStep.setFocus();
   }
 
   public void showEditDialog(final Domain domain, final XulServiceCallback<Domain> editFinishedCallback) {
@@ -241,7 +236,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
         DatasourceDTO.populateModel(datasourceDTO, datasourceModel);
         dialog.show();
         datasourceModel.getGuiStateModel().setDirty(false);
-        physicalStep.setFocus();        
       }
 
       public void error(String s, Throwable throwable) {
@@ -317,11 +311,12 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     summaryDialogController.setBindingFactory(bf);
     mainWizardContainer.addEventHandler(summaryDialogController);
 
-    datasourceModel.addDatasource(new DummyDatasource());
-    datasourceModel.addDatasource(new CsvDatasource());
-
     wizardController = new MainWizardController(bf, datasourceModel, datasourceService);
     mainWizardContainer.addEventHandler(wizardController);
+
+    wizardController.addDatasource(new DummyDatasource());
+    wizardController.addDatasource(new CsvDatasource(datasourceModel));
+
 
     dialog = (XulDialog) rootDocument.getElementById(WIZARD_DIALOG_ID);
     MessageHandler.getInstance().setWizardDialog(dialog);

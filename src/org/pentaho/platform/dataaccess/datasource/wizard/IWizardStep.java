@@ -82,17 +82,12 @@ public interface IWizardStep extends XulEventHandler {
   public boolean stepDeactivatingReverse();
   
   /**
-   * @return a boolean that determines if the "Finish" button should be enabled.
-   */
-  public boolean isFinishable();
-  
-  /**
    * @param mainWizardContainer
    * @throws XulException
    * 
    * Initializes the step. This is where bindings should be created and UI references obtained.
    */
-  public void init(DatasourceModel model) throws XulException;
+  public void init() throws XulException;
 
   public XulComponent getUIComponent();
 

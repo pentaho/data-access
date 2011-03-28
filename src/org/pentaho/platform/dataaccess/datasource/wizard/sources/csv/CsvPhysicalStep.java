@@ -14,9 +14,13 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
+import org.pentaho.ui.xul.components.XulImage;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.containers.XulGrid;
+import org.pentaho.ui.xul.containers.XulRow;
+import org.pentaho.ui.xul.containers.XulRows;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -39,26 +43,34 @@ public class CsvPhysicalStep extends AbstractWizardStep {
   private XulTree csvDataTable;
   private XulLabel csvTextPreview;
 
+  private DatasourceModel datasourceModel;
   private ICsvDatasourceServiceAsync csvDatasourceService;
 
-  public CsvPhysicalStep(ICsvDatasourceServiceAsync csvDatasourceService){
+  public CsvPhysicalStep(DatasourceModel datasourceModel, CsvDatasource parentDatasource, ICsvDatasourceServiceAsync csvDatasourceService){
+    super(parentDatasource);
+    this.datasourceModel = datasourceModel;
 
     this.csvDatasourceService = csvDatasourceService;
   }
-  @Override
-  public void init(DatasourceModel model) throws XulException {
-    super.init(model);
-  }
-
+  
   @Override
   public void activating() {
-    //To change body of implemented methods use File | Settings | File Templates.
+    parentDatasource.setFinishable(false);
+    // This step takes the place of the first. We'll grab references to it's elements added to the left
+
+    stepRow = (XulRow) document.getElementById(STEP_ROWS_ID).getFirstChild();
+
+    stepImage = (XulImage) stepRow.getFirstChild();
+    stepLabel = (XulLabel) stepRow.getChildNodes().get(1);
+    
   }
 
   @Override
   public void deactivate() {
     
   }
+
+
 
   @Override
   public XulComponent getUIComponent() {
@@ -205,7 +217,15 @@ public class CsvPhysicalStep extends AbstractWizardStep {
     datasourceModel.getModelInfo().getFileInfo().addPropertyChangeListener(CsvFileInfo.ENCODING, new RefreshPreviewPropertyChangeListener());
   }
 
-    /**
+  @Override
+  public void stepActivatingReverse() {
+    super.stepActivatingReverse();
+    parentDatasource.setFinishable(false);
+
+  }
+
+
+  /**
    * Executes when refresh of preview is required (also effective when dirty flag should be set)
    */
   private class RefreshPreviewPropertyChangeListener implements PropertyChangeListener {
@@ -238,7 +258,7 @@ public class CsvPhysicalStep extends AbstractWizardStep {
     	  GWT.log(e.toString());
       }
       datasourceModel.getModelInfo().validate();
-      firePropertyChange("valid", !isValidated(), isValidated());
+      setValid(isValidated());
 
     }
   }

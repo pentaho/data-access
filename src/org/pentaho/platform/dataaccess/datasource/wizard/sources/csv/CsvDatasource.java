@@ -42,14 +42,16 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   private DatasourceModel model;
   private BindingFactory bindingFactory;
   private XulDomContainer container;
+  private boolean finishable;
 
-  public CsvDatasource(){
+  public CsvDatasource(DatasourceModel datasourceModel){
+    this.datasourceModel = datasourceModel;
 
     this.csvDatasourceService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     ServiceDefTarget endpoint = (ServiceDefTarget) this.csvDatasourceService;
     endpoint.setServiceEntryPoint(getDatasourceURL());
-    csvStep = new CsvPhysicalStep(csvDatasourceService);
-    stageStep = new StageDataStep(csvDatasourceService);
+    csvStep = new CsvPhysicalStep(datasourceModel, this, csvDatasourceService);
+    stageStep = new StageDataStep(datasourceModel, this, csvDatasourceService);
 
     csvDatasourceService.gwtWorkaround(new BogoPojo(), new AsyncCallback<BogoPojo>(){
 
@@ -95,13 +97,13 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   }
 
   @Override
-  public void init(DatasourceModel datasourceModel, XulDomContainer container) throws XulException {
+  public void init(XulDomContainer container) throws XulException {
     this.datasourceModel = datasourceModel;
     bindingFactory = new GwtBindingFactory(document);
     container.addEventHandler(csvStep);
     container.addEventHandler(stageStep);
-    csvStep.init(datasourceModel);
-    stageStep.init(datasourceModel);
+    csvStep.init();
+    stageStep.init();
   }
 
   @Override
@@ -166,4 +168,14 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
     return "CSV";
   }
 
+  @Override
+  public boolean isFinishable() {
+    return finishable;
+  }
+
+  public void setFinishable(boolean finishable){
+    boolean prevFinishable = this.finishable;
+    this.finishable = finishable;
+    firePropertyChange("finishable", prevFinishable, finishable);
+  }
 }

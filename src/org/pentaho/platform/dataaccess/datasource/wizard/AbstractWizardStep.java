@@ -18,7 +18,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
@@ -63,15 +62,15 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
   private boolean valid;
   private boolean finishable;
   protected BindingFactory bf;
-  private XulImage stepImage;
-  private XulLabel stepLabel;
-  private XulRow stepRow;
-  protected DatasourceModel datasourceModel;
+  protected XulImage stepImage;
+  protected XulLabel stepLabel;
+  protected XulRow stepRow;
   private boolean activated;
+  protected IWizardDatasource parentDatasource;
 
-  protected AbstractWizardStep() {
+  protected AbstractWizardStep(IWizardDatasource parentDatasource) {
     super();
-    setFinishable(false);
+    this.parentDatasource = parentDatasource;
   }
 
 
@@ -93,24 +92,10 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
     this.firePropertyChange(VALID_PROPERTY_NAME, oldValid, this.valid);
   }
 
-  @Bindable
-  public void setFinishable(final boolean finishable) {
-    final boolean oldValue = this.finishable;
-    this.finishable = finishable;
-
-    this.firePropertyChange(FINISHABLE_PROPERTY_NAME, oldValue, this.finishable);
-  }
-
-  @Bindable
-  public boolean isFinishable() {
-    return finishable;
-  }
-
   /**
    * @throws XulException  
    */
-  public void init(DatasourceModel datasourceModel) throws XulException {
-    this.datasourceModel = datasourceModel;
+  public void init() throws XulException {
     bf = new GwtBindingFactory(document);
     this.setBindings();
   }

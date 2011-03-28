@@ -2,6 +2,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulMenuList;
@@ -14,23 +15,12 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class SelectDatasourceStep extends AbstractWizardStep {
   private XulMenuList datatypeMenuList;
 
+  public SelectDatasourceStep( DummyDatasource parentDatasource){
+    super(parentDatasource);
+  }
+
   @Override
   public void setBindings() {
-
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    datatypeMenuList = (XulMenuList) document.getElementById("datatypeMenuList");
-
-    Binding datasourceBinding = bf.createBinding(datasourceModel, "datasources", datatypeMenuList, "elements");
-    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    bf.createBinding(datatypeMenuList, "selectedItem", datasourceModel, "selectedDatasource");
-
-
-    try {
-      datasourceBinding.fireSourceChanged();
-    } catch (Exception e) {
-      MessageHandler.getInstance().showErrorDialog(e.getMessage());
-      e.printStackTrace();
-    }
 
   }
 
@@ -38,10 +28,11 @@ public class SelectDatasourceStep extends AbstractWizardStep {
   public XulComponent getUIComponent() {
     return document.getElementById("NoopDatasource");
   }
-
+  
   @Override
   @Bindable
   public String getStepName() {
     return MessageHandler.getString("datasourceDialog.SelectDatabaseType");
   }
+
 }
