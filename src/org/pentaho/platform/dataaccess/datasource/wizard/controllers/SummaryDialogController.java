@@ -64,7 +64,7 @@ public class SummaryDialogController extends AbstractXulEventHandler {
 
       long successRows = total > errors ? total - errors : 0;
 
-      summaryDialogRowsLoaded.setValue(MessageHandler.getInstance().messages.getString("summaryDialog.rowsLoaded", String.valueOf(successRows), String.valueOf(total)));
+      summaryDialogRowsLoaded.setValue(MessageHandler.getString("summaryDialog.rowsLoaded", String.valueOf(successRows), String.valueOf(total)));
       String lf = "\n";
       if (errors > 0) {
         StringBuilder detailMsg = new StringBuilder();
@@ -80,7 +80,7 @@ public class SummaryDialogController extends AbstractXulEventHandler {
       }
 
     } else {
-      summaryDialogRowsLoaded.setValue(MessageHandler.getInstance().messages.getString("summaryDialog.generalSuccess"));
+      summaryDialogRowsLoaded.setValue(MessageHandler.getString("summaryDialog.generalSuccess"));
       errorLogExpander.setVisible(false);
     }
 
@@ -95,10 +95,10 @@ public class SummaryDialogController extends AbstractXulEventHandler {
     summaryDialog.hide();
     boolean editModeler = modelerDecision.getValue() != null && modelerDecision.getValue().equals("EDIT");
     if (editModeler) {
-      MessageHandler.getInstance().showWaitingDialog(MessageHandler.getInstance().messages.getString(MessageHandler.MSG_OPENING_MODELER));
+      MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString(MessageHandler.MSG_OPENING_MODELER));
       summary.setShowModeler(true);
     } else {
-      MessageHandler.getInstance().showWaitingDialog(MessageHandler.getInstance().messages.getString(MessageHandler.MSG_GENERAL_WAIT));
+      MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString(MessageHandler.MSG_GENERAL_WAIT));
       summary.setShowModeler(false);
     }
 

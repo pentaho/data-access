@@ -32,7 +32,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//TODO: this class is a mixture of CSV and Relational model code... break it up!
 public class DatasourceModel extends XulEventSourceAdapter 
     implements IRelationalModelValidationListener, IModelInfoValidationListener {
   

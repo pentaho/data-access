@@ -44,7 +44,7 @@ public interface IWizardDatasource extends XulEventSource {
   /**
    * Step controllers should be initialized with bindings created at this time.
    */
-  void init() throws XulException;
+  void init(DatasourceModel datasourceModel, XulDomContainer container) throws XulException;
 
 
   /**
@@ -53,13 +53,6 @@ public interface IWizardDatasource extends XulEventSource {
    */
   void deactivating();
 
-  void setMessageHandler(MessageHandler handler);
-
   String getId();
 
-  void setDatasourceModel(DatasourceModel model);
-
-  void setXulDomContainer(XulDomContainer container);
-
-  void setBindingFactory(BindingFactory bindingFactory);
 }

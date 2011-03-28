@@ -17,7 +17,7 @@ public class MessageHandler extends AbstractXulEventHandler {
   private XulLabel waitingLabel = null;
   private XulDialog errorDialog;
   private XulDialog errorDetailsDialog;
-  public DatasourceMessages messages;
+  private DatasourceMessages messages;
 
   private XulDialog successDialog = null;
 
@@ -147,5 +147,13 @@ public class MessageHandler extends AbstractXulEventHandler {
 
   public static MessageHandler getInstance() {
     return INSTANCE;
+  }
+
+  public static String getString(String key){
+    return getInstance().messages.getString(key);
+  }
+
+  public static String getString(String key, String... params){
+    return getInstance().messages.getString(key, params);
   }
 }

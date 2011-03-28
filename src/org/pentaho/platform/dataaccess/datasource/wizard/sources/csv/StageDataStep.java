@@ -1,25 +1,17 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-
 import org.pentaho.metadata.model.concept.types.DataType;
-import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
-import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
+import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.binding.Binding;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pentaho.ui.xul.binding.BindingConvertor;
-import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.FactoryBasedBindingProvider;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTreeCell;
@@ -27,43 +19,63 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeItem;
 import org.pentaho.ui.xul.containers.XulTreeRow;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
 
-public class StageDataController extends AbstractXulEventHandler {
+public class StageDataStep extends AbstractWizardStep implements IModelInfoValidationListener {
 
+
+  private ICsvDatasourceServiceAsync csvDatasourceService;
+  
   private static final String MSG_STAGING_DATA = "physicalDatasourceDialog.STAGING_DATA"; //$NON-NLS-1$
   private static final String MSG_ROWS_STAGED = "physicalDatasourceDialog.ROWS_STAGED"; //$NON-NLS-1$
   private static final String MSG_STAGING_FILE = "physicalDatasourceDialog.STAGING_FILE"; //$NON-NLS-1$
   private static final String MSG_STAGING_ERRORS = "physicalDatasourceDialog.STAGING_ERRORS"; //$NON-NLS-1$
-  
-  private DatasourceMessages messages ;
+
 
   private XulDialog errorDialog = null;
-  
+
   private XulLabel errorLabel = null;
 
   private XulDialog waitingDialog = null;
-  
+
   private XulLabel waitingLabel = null;
 
   private XulDialog successDialog = null;
-  
-  private XulLabel successLabel = null;
 
-  private DatasourceModel model;
+  private XulLabel successLabel = null;
 
   private XulDialog previewDialog = null;
 
-  private BindingFactory bf = null;
-
   private XulLabel previewLabel = null;
 
-  @Bindable
-  public void init() {
+  
+  public StageDataStep(ICsvDatasourceServiceAsync csvDatasourceService ) {
+    this.csvDatasourceService = csvDatasourceService;
+    setFinishable(true);
+  }
+  
+  public String getStepName() {
+    return MessageHandler.getString("wizardStepName.STAGE"); //$NON-NLS-1$
+  }
+
+  public void setBindings() {
+  }
+
+  @Override
+  public XulComponent getUIComponent() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
+  public void init(DatasourceModel model) throws XulException {
+    super.init(model);
+    
+    
     waitingDialog = (XulDialog) document.getElementById("waitingDialog"); //$NON-NLS-1$
     waitingLabel = (XulLabel) document.getElementById("waitingDialogLabel"); //$NON-NLS-1$
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
@@ -72,82 +84,100 @@ public class StageDataController extends AbstractXulEventHandler {
     successLabel = (XulLabel) document.getElementById("successLabel"); //$NON-NLS-1$
     previewDialog = (XulDialog) document.getElementById("csvPreviewDialog"); //$NON-NLS-1$
     previewLabel = (XulLabel) document.getElementById("csvTextPreviewLabel"); //$NON-NLS-1$
-  }
-  
-  public boolean finishing() {
-//    stageData();
-    return true;
-  }
 
-  @Bindable
-  public DatasourceModel getDatasourceModel() {
-    return model;
-  }
-
-  @Bindable
-  public void setDatasourceModel(DatasourceModel datasourceModel) {
-    this.model = datasourceModel;
-  }
-  
-  @Bindable
-  public ModelInfo getModelInfo() {
-    return model.getModelInfo();
-  }
-
-  @Bindable
-  public void setModelInfo(ModelInfo modelInfo) {
-    model.setModelInfo(modelInfo);
-  }
-  
-  @Bindable
-  public void closeErrorDialog() {
-	  errorDialog.hide();
-  }
-  public void showErrorDialog(String message) {
-    errorLabel.setValue(message);
-    errorDialog.show();
-  }
-
-  public void closeWaitingDialog() {
-    waitingDialog.hide();
-  }
-  public void showWaitingDataStageDialog() {
-    MessageHandler.getInstance().showWaitingDialog(MessageHandler.getInstance().messages.getString(MSG_STAGING_DATA));
-  }
-  public void showWaitingFileStageDialog() {
-    MessageHandler.getInstance().showWaitingDialog(MessageHandler.getInstance().messages.getString(MSG_STAGING_FILE));
-  }
-
-  @Bindable
-  public void closeSuccessDialog() {
-    successDialog.hide();
-  }
-  public void showSuccessDialog(String message) {
-    successLabel.setValue(message);
-    successDialog.show();
-  }
-
-  public void setDatasourceMessages( DatasourceMessages datasourceMessages ) {
-    this.messages = datasourceMessages;
-  }
-
-  public void setBindingFactory( BindingFactory bindingFactory ) {
-    this.bf = bindingFactory;
+    datasourceModel.getModelInfo().addModelInfoValidationListener(this);
   }
 
   @Override
-  public String getName() {
-    return "stageDataController";
+  public void stepActivatingForward() {
+    setStepImageVisible(true);
+    showWaitingFileStageDialog();
+    loadColumnData(datasourceModel.getModelInfo().getFileInfo().getTmpFilename());
+  }
+
+  @Override
+  public void stepActivatingReverse() {
+    setStepImageVisible(true);
   }
   
-  @Bindable
+  private void loadColumnData(String selectedFile){
+	String encoding = datasourceModel.getModelInfo().getFileInfo().getEncoding();
+    try {
+      clearColumnGrid();
+    } catch (XulException e) {
+      // couldn't clear the tree out
+      e.printStackTrace();
+    }
+
+    if (datasourceModel.getGuiStateModel().isDirty()) {
+
+      csvDatasourceService.stageFile(selectedFile,
+          datasourceModel.getModelInfo().getFileInfo().getDelimiter(),
+          datasourceModel.getModelInfo().getFileInfo().getEnclosure(),
+          datasourceModel.getModelInfo().getFileInfo().getHeaderRows() > 0,
+          encoding,
+          new StageFileCallback());
+    } else {
+      refreshColumnGrid();
+      closeWaitingDialog();
+    }
+  }
+
+  public void onCsvValid() {
+    //don't care about csv on this step
+  }
+  public void onCsvInValid() {
+    //don't care about csv on this step
+  }
+
+  public void onModelInfoValid() {
+    setFinishable(true);
+  }
+
+  public void onModelInfoInvalid() {
+    setFinishable(false);
+  }
+
+  public class StageFileCallback implements AsyncCallback<ModelInfo> {
+
+    public void onSuccess(ModelInfo aModelInfo) {      
+      datasourceModel.getModelInfo().setColumns(aModelInfo.getColumns());
+      datasourceModel.getModelInfo().setData(aModelInfo.getData());
+      datasourceModel.getModelInfo().getFileInfo().setEncoding(aModelInfo.getFileInfo().getEncoding());
+      refreshColumnGrid();
+      closeWaitingDialog();
+    }
+
+    public void onFailure(Throwable caught) {
+      closeWaitingDialog();
+      if (caught instanceof CsvParseException) {
+        CsvParseException e = (CsvParseException) caught;
+        showErrorDialog(MessageHandler.getString(caught.getMessage(), String.valueOf(e.getLineNumber()), e.getOffendingLine()));
+      } else {
+        showErrorDialog(caught.getMessage());
+      }
+    }
+  }
+
+  @Override
+  public boolean stepDeactivatingForward() {
+    super.stepDeactivatingForward();
+    return true;
+  }
+  @Override
+  public boolean stepDeactivatingReverse() {
+    setStepImageVisible(false);
+    return true;
+  }
+
+    @Bindable
   public void closePreviewDialog() {
     previewDialog.hide();
   }
   
   @Bindable
   public void showPreviewDialog() throws Exception {
-    previewLabel.setValue(getModelInfo().getFileInfo().formatSampleContents());
+    previewLabel.setValue(datasourceModel.getModelInfo().getFileInfo().formatSampleContents());
     previewDialog.show();
   }
 
@@ -164,7 +194,7 @@ public class StageDataController extends AbstractXulEventHandler {
   
   private void generateDataTypeDisplay_horizontal() {
     XulTree tree = (XulTree) document.getElementById("csvModelDataTable"); //$NON-NLS-1$
-    tree.setRows(model.getModelInfo().getColumns().length);
+    tree.setRows(datasourceModel.getModelInfo().getColumns().length);
 
     tree.setBindingProvider(new FactoryBasedBindingProvider(bf) {
       @Override
@@ -230,8 +260,8 @@ public class StageDataController extends AbstractXulEventHandler {
       }
     });
 
-    tree.setElements(Arrays.asList(model.getModelInfo().getColumns()));
-    if(model.getModelInfo().getColumns().length > 0){
+    tree.setElements(Arrays.asList(datasourceModel.getModelInfo().getColumns()));
+    if(datasourceModel.getModelInfo().getColumns().length > 0){
       tree.setSelectedRows(new int[]{0});
     }
     tree.update();
@@ -248,7 +278,7 @@ public class StageDataController extends AbstractXulEventHandler {
         cell.setValue(true);
       }
     }
-    model.getModelInfo().validate();
+    datasourceModel.getModelInfo().validate();
   }
   
   @Bindable
@@ -262,8 +292,35 @@ public class StageDataController extends AbstractXulEventHandler {
         cell.setValue(false);
       }
     }
-    model.getModelInfo().validate();
+    datasourceModel.getModelInfo().validate();
+  }
+  
+  @Bindable
+  public void closeErrorDialog() {
+	  errorDialog.hide();
+  }
+  public void showErrorDialog(String message) {
+    errorLabel.setValue(message);
+    errorDialog.show();
   }
 
+  public void closeWaitingDialog() {
+    waitingDialog.hide();
+  }
+  public void showWaitingDataStageDialog() {
+    MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString(MSG_STAGING_DATA));
+  }
+  public void showWaitingFileStageDialog() {
+    MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString(MSG_STAGING_FILE));
+  }
 
+  @Bindable
+  public void closeSuccessDialog() {
+    successDialog.hide();
+  }
+  public void showSuccessDialog(String message) {
+    successLabel.setValue(message);
+    successDialog.show();
+  }
+  
 }

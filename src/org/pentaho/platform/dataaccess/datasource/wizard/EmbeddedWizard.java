@@ -29,9 +29,9 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.StageDataStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.RelationalPhysicalStep;
-import org.pentaho.platform.dataaccess.datasource.wizard.steps.StageDataStep;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -79,7 +79,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   private boolean initialized;
 
-  private RelationalPhysicalStep physicalStep = null;
+  private QueryPhysicalStep physicalStep = null;
 
   private StageDataStep stageDataStep;
   
@@ -318,7 +318,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     mainWizardContainer.addEventHandler(summaryDialogController);
 
     datasourceModel.addDatasource(new DummyDatasource());
-    datasourceModel.addDatasource(new CsvDatasource(datasourceModel));
+    datasourceModel.addDatasource(new CsvDatasource());
 
     wizardController = new MainWizardController(bf, datasourceModel, datasourceService);
     mainWizardContainer.addEventHandler(wizardController);

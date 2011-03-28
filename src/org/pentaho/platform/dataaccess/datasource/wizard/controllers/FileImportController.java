@@ -39,6 +39,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 import com.google.gwt.core.client.GWT;
 
+//TODO: move to the CSV datasource package
 public class FileImportController extends AbstractXulEventHandler  {
 
   private XulDialog datasourceDialog;

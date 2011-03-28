@@ -189,11 +189,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
     for(IWizardDatasource datasource : this.datasourceModel.getDatasources()){
       try {
-        datasource.setDatasourceModel(datasourceModel);
-        datasource.setXulDomContainer(getXulDomContainer());
-        datasource.setBindingFactory(bf);
-
-        datasource.init();
+        datasource.init(datasourceModel, getXulDomContainer());
       } catch (XulException e) {
         MessageHandler.getInstance().showErrorDialog("Error", e.getMessage());
         e.printStackTrace();
@@ -209,10 +205,6 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     IWizardDatasource prevSelection = selectedDatasource;
     selectedDatasource = datasource;
     try {
-
-      datasource.setBindingFactory(bf);
-      datasource.setDatasourceModel(datasourceModel);
-      datasource.setXulDomContainer(getXulDomContainer()); //TODO: remove once an event handler
       datasource.activating();
       if(prevSelection != null){
         steps.removeAll(prevSelection.getSteps());

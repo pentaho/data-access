@@ -23,6 +23,7 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.dom.Document;
+import org.pentaho.ui.xul.impl.XulEventHandler;
 
 /**
  * A single step in the wizard. The architecture assumes that the wizard-ui keeps synchronized with
@@ -32,7 +33,7 @@ import org.pentaho.ui.xul.dom.Document;
  *
  * @author Thomas Morgner
  */
-public interface IWizardStep {
+public interface IWizardStep extends XulEventHandler {
   
   
   /**
@@ -81,15 +82,6 @@ public interface IWizardStep {
   public boolean stepDeactivatingReverse();
   
   /**
-   * setFinishable()
-   * @param finishable
-   * 
-   * sets the flag that determines if the "Finish" button should be enabled for this
-   * wizard panel.
-   */
-  public void setFinishable(boolean finishable);
-  
-  /**
    * @return a boolean that determines if the "Finish" button should be enabled.
    */
   public boolean isFinishable();
@@ -100,17 +92,11 @@ public interface IWizardStep {
    * 
    * Initializes the step. This is where bindings should be created and UI references obtained.
    */
-  public void init(XulDomContainer mainWizardContainer) throws XulException;
+  public void init(DatasourceModel model) throws XulException;
 
   public XulComponent getUIComponent();
 
   public void activating() throws XulException;
-  
-  public void setBindingFactory(BindingFactory bindingFactory);
-  
-  public void setDocument(Document document);
-
-  public void setDatasourceModel(DatasourceModel model);
   
   /**
    * @return a string (must be localized) that describes this step
@@ -127,14 +113,5 @@ public interface IWizardStep {
    */
   public boolean isDisabled();
   
-  /**
-   * setDisabled(boolean disable);
-   * 
-   * @param enable boolean that indicates if this step should be enabled in the current chain
-   * 
-   * Note: it is an error to call this method on a step that is currently being displayed.
-   */
-  public void setDisabled(boolean disabled);
-
   void deactivate();
 }

@@ -64,8 +64,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
   private DatasourceMessages datasourceMessages;
 
   private XulDialog connectionDialog;
-
-  private WaitingDialog waitingDialogBox;
   
   private XulDialog waitingDialog = null;
 
@@ -126,7 +124,8 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
   }
 
   @Bindable
-  public void init() {
+  public void init(final DatasourceModel datasourceModel) {
+    this.datasourceModel = datasourceModel;
     sampleDataTree = (XulTree) document.getElementById("relationalSampleDataTable");
     aggregationEditorDialog = (XulDialog) document.getElementById("relationalAggregationEditorDialog");
     sampleDataDialog = (XulDialog) document.getElementById("relationalSampleDataDialog");
@@ -243,20 +242,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
       }
     }
     
-  }
-
-  public void setBindingFactory(BindingFactory bf) {
-    this.bf = bf;
-  }
-
-  @Bindable
-  public void setDatasourceModel(DatasourceModel model) {
-    this.datasourceModel = model;
-  }
-
-  @Bindable
-  public DatasourceModel getDatasourceModel() {
-    return this.datasourceModel;
   }
 
   public String getName() {
@@ -418,39 +403,10 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
   }
 
   public void displayErrorMessage(Throwable th) {
-    errorDialog.setTitle(ExceptionParser.getErrorHeader(th, getDatasourceMessages().getString("DatasourceEditor.USER_ERROR_TITLE")));
-    errorLabel.setValue(ExceptionParser.getErrorMessage(th, getDatasourceMessages().getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED")));
+    errorDialog.setTitle(ExceptionParser.getErrorHeader(th, MessageHandler.getString("DatasourceEditor.USER_ERROR_TITLE")));
+    errorLabel.setValue(ExceptionParser.getErrorMessage(th, MessageHandler.getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED")));
     errorDialog.show();
   }
-
-  /**
-   * @param datasourceMessages the datasourceMessages to set
-   */
-  public void setDatasourceMessages(DatasourceMessages datasourceMessages) {
-    this.datasourceMessages = datasourceMessages;
-  }
-
-  /**
-   * @return the datasourceMessages
-   */
-  public DatasourceMessages getDatasourceMessages() {
-    return datasourceMessages;
-  }
-
-  /**
-   * @return the waitingDialog
-   */
-  public WaitingDialog getWaitingDialog() {
-    return this.waitingDialogBox;
-  }
-
-  /**
-   * @param waitingDialog the waitingDialog to set
-   */
-  public void setWaitingDialog(WaitingDialog waitingDialog) {
-    this.waitingDialogBox = waitingDialog;
-  }
-
 
   public boolean supportsBusinessData(BusinessData businessData) {
     return (businessData.getDomain().getPhysicalModels().get(0) instanceof SqlPhysicalModel);

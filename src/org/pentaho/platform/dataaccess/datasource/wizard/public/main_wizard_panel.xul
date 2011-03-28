@@ -35,7 +35,7 @@
 							<hbox id="NoopDatasource" flex="1">
 								<!-- Empty panel for select Database type menu item. -->
 							</hbox>
-							<hbox flex="1" height="400">
+							<hbox flex="1" height="400" id="queryDeckPanel">
 								<vbox flex="3" height="400">
 									<hbox>
 										<label value="${datasourceDialog.Connection}" tooltiptext="${datasourceDialog.ConnectionToolTip}"/>

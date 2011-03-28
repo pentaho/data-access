@@ -3,8 +3,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
@@ -12,16 +10,16 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
-import org.pentaho.platform.dataaccess.datasource.wizard.steps.StageDataStep;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
+import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ import java.util.List;
  * User: nbaker
  * Date: 3/22/11
  */
-public class CsvDatasource extends XulEventSourceAdapter implements IWizardDatasource {
+public class CsvDatasource extends AbstractXulEventHandler implements IWizardDatasource {
 
 
   private ICsvDatasourceServiceAsync csvDatasourceService;
@@ -45,8 +43,7 @@ public class CsvDatasource extends XulEventSourceAdapter implements IWizardDatas
   private BindingFactory bindingFactory;
   private XulDomContainer container;
 
-  public CsvDatasource(DatasourceModel datasourceModel){
-    this.datasourceModel = datasourceModel;
+  public CsvDatasource(){
 
     this.csvDatasourceService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     ServiceDefTarget endpoint = (ServiceDefTarget) this.csvDatasourceService;
@@ -98,16 +95,13 @@ public class CsvDatasource extends XulEventSourceAdapter implements IWizardDatas
   }
 
   @Override
-  public void init() throws XulException {
-    //TODO: fix this initialization craziness
-
-    csvStep.setBindingFactory(bindingFactory);
-    csvStep.setDocument(container.getDocumentRoot());
-    csvStep.init(container);
-
-    stageStep.setBindingFactory(bindingFactory);
-    stageStep.setDocument(container.getDocumentRoot());
-    stageStep.init(container);
+  public void init(DatasourceModel datasourceModel, XulDomContainer container) throws XulException {
+    this.datasourceModel = datasourceModel;
+    bindingFactory = new GwtBindingFactory(document);
+    container.addEventHandler(csvStep);
+    container.addEventHandler(stageStep);
+    csvStep.init(datasourceModel);
+    stageStep.init(datasourceModel);
   }
 
   @Override
@@ -145,9 +139,9 @@ public class CsvDatasource extends XulEventSourceAdapter implements IWizardDatas
       public void onFailure(Throwable th) {
         MessageHandler.getInstance().closeWaitingDialog();
         if (th instanceof CsvTransformGeneratorException) {
-          MessageHandler.getInstance().showErrorDetailsDialog(MessageHandler.getInstance().messages.getString("ERROR"), th.getMessage(), ((CsvTransformGeneratorException)th).getCauseMessage() + ((CsvTransformGeneratorException)th).getCauseStackTrace());
+          MessageHandler.getInstance().showErrorDetailsDialog(MessageHandler.getString("ERROR"), th.getMessage(), ((CsvTransformGeneratorException)th).getCauseMessage() + ((CsvTransformGeneratorException)th).getCauseStackTrace());
         } else {
-          MessageHandler.getInstance().showErrorDialog(MessageHandler.getInstance().messages.getString("ERROR"), th.getMessage());
+          MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), th.getMessage());
         }
         th.printStackTrace();
       }
@@ -166,61 +160,10 @@ public class CsvDatasource extends XulEventSourceAdapter implements IWizardDatas
     }
   }
 
-  @Override
-  public void setMessageHandler(MessageHandler handler) {
-    this.handler = handler;
-  }
-
-
-//  private void generateDomain(String connectionName, String tableName, String query, final XulServiceCallback<String> callback){
-//    modelerService.generateDomain(connectionName, tableName, dbType, query, datasourceModel.getDatasourceName(), new XulServiceCallback<Domain>(){
-//      public void success( final Domain domain) {
-//
-//
-//
-//        datasourceService.serializeModelState(DatasourceDTO.generateDTO(datasourceModel), new XulServiceCallback<String>(){
-//          public void success(String retVal) {
-//            domain.getLogicalModels().get(0).setProperty("datasourceModel", retVal);
-//
-//          }
-//
-//          public void error(String message, Throwable error) {
-//            MessageHandler.getInstance().closeWaitingDialog();
-//            MessageHandler.getInstance().showErrorDialog(message, error.getMessage());
-//            error.printStackTrace();
-//          }
-//        });
-//
-//      }
-//
-//      public void error(String s, Throwable throwable ) {
-//        MessageHandler.getInstance().closeWaitingDialog();
-//        MessageHandler.getInstance().showErrorDialog(s, throwable.getMessage());
-//        throwable.printStackTrace();
-//      }
-//    });
-//  }
-
 
   @Override
   public String getId() {
     return "CSV";
   }
 
-  @Override
-  public void setDatasourceModel(DatasourceModel model) {
-    this.model = model;
-    this.csvStep.setDatasourceModel(model);
-    this.stageStep.setDatasourceModel(model);
-  }
-
-  @Override
-  public void setBindingFactory(BindingFactory bindingFactory) {
-    this.bindingFactory = bindingFactory;
-  }
-
-  @Override
-  public void setXulDomContainer(XulDomContainer container) {
-    this.container = container;
-  }
 }

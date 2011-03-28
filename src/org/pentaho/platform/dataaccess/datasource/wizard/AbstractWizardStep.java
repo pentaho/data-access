@@ -15,7 +15,7 @@
  * Copyright (c) 2009 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.steps;
+package org.pentaho.platform.dataaccess.datasource.wizard;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
@@ -30,6 +30,9 @@ import org.pentaho.ui.xul.containers.XulRow;
 import org.pentaho.ui.xul.containers.XulRows;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
+import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
+import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
@@ -37,7 +40,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  *
  * @author William Seyler
  */
-public abstract class AbstractWizardStep extends XulEventSourceAdapter implements IWizardStep {
+public abstract class AbstractWizardStep extends AbstractXulEventHandler implements IWizardStep {
 
   public static final String VALID_PROPERTY_NAME = "valid"; //$NON-NLS-1$
   public static final String PREVIEWABLE_PROPERTY_NAME = "previewable"; //$NON-NLS-1$
@@ -60,12 +63,10 @@ public abstract class AbstractWizardStep extends XulEventSourceAdapter implement
   private boolean valid;
   private boolean finishable;
   protected BindingFactory bf;
-  protected Document document;
   private XulImage stepImage;
   private XulLabel stepLabel;
   private XulRow stepRow;
   protected DatasourceModel datasourceModel;
-  private XulDomContainer xulDomContainer;
   private boolean activated;
 
   protected AbstractWizardStep() {
@@ -105,31 +106,12 @@ public abstract class AbstractWizardStep extends XulEventSourceAdapter implement
     return finishable;
   }
 
-  /* (non-Javadoc)
-   * @see org.pentaho.reporting.engine.classic.wizard.ui.xul.components.WizardStep#setBindingFactory(org.pentaho.ui.xul.binding.BindingFactory)
-   */
-  public void setBindingFactory(final BindingFactory bf) {
-    this.bf = bf;
-  }
-
-  public BindingFactory getBindingFactory() {
-    return bf;
-  }
-
-  public Document getDocument() {
-    return document;
-  }
-
-  public void setDocument(final Document document) {
-    this.document = document;
-  }
-
-
   /**
    * @throws XulException  
    */
-  public void init(final XulDomContainer mainWizardContainer) throws XulException {
-    xulDomContainer = mainWizardContainer;
+  public void init(DatasourceModel datasourceModel) throws XulException {
+    this.datasourceModel = datasourceModel;
+    bf = new GwtBindingFactory(document);
     this.setBindings();
   }
 
@@ -225,12 +207,5 @@ public abstract class AbstractWizardStep extends XulEventSourceAdapter implement
   public boolean stepDeactivatingReverse() {
     return stepDeactivatingForward();
   }
-
-  public DatasourceModel getDatasourceModel() {
-    return datasourceModel;
-  }
-
-  public void setDatasourceModel(DatasourceModel model) {
-    this.datasourceModel = model;
-  }
+  
 }
