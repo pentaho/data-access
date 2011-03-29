@@ -175,8 +175,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
           showModelEditor();
         } else if(editFinishedCallback != null){
           editFinishedCallback.success(summary.getDomain());
-          MessageHandler.getInstance().closeWaitingDialog();
         }
+        onDialogAccept();
+        MessageHandler.getInstance().closeWaitingDialog();
       }
     });
   }
