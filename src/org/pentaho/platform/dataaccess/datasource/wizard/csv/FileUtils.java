@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.CsvDatasourceServiceHelper;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.messages.LocaleHelper;
 
@@ -16,10 +16,7 @@ public class FileUtils {
   public static final String DEFAULT_RELATIVE_UPLOAD_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "metadata" + File.separatorChar + "csvfiles" + File.separatorChar; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   
   static {
-    if (!PentahoSystem.getInitializedOK()) {
-      CsvDatasourceServiceHelper csvHelper = new CsvDatasourceServiceHelper();
-      csvHelper.setUp();
-    }
+    PentahoSystemHelper.init();
   }
   
   public FileInfo[] listFiles() {

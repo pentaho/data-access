@@ -15,11 +15,17 @@ import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.platform.api.engine.IApplicationContext;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.api.repository.ISolutionRepository;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.platform.engine.core.solution.ActionInfo;
+import org.pentaho.platform.engine.core.system.PathBasedSystemSettings;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
+import org.pentaho.platform.engine.core.system.objfac.StandaloneSpringPentahoObjectFactory;
 import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
+import org.springframework.context.ApplicationContext;
 
 /**
  * User: nbaker
@@ -27,8 +33,22 @@ import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
  */
 public class DebugModelerService extends ModelerService {
 
+  private IPentahoSession getSession() {
+    IPentahoSession session = null;
+    IPentahoObjectFactory pentahoObjectFactory = PentahoSystem.getObjectFactory();
+    if (pentahoObjectFactory != null) {
+      try {
+        session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
+      } catch (ObjectFactoryException e) {
+        e.printStackTrace();
+      }
+    }
+    return session;
+  }
+
   public String serializeModels(Domain domain, String name) throws Exception {
     String domainId;
+    PentahoSystemHelper.init();
     initKettle();
     
     try {
@@ -52,8 +72,7 @@ public class DebugModelerService extends ModelerService {
         pathDir.mkdirs();
       }
 
-      IPentahoObjectFactory pentahoObjectFactory = PentahoSystem.getObjectFactory();
-      IPentahoSession session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
+      IPentahoSession session = getSession();
 
       ISolutionRepository repository = PentahoSystem.get(ISolutionRepository.class, session);
 

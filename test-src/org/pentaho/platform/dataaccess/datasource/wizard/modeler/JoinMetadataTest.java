@@ -34,8 +34,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.CsvDatasourceServiceHelper;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.test.platform.engine.core.BaseTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +44,7 @@ public class JoinMetadataTest extends BaseTest {
 	private static Logger logger = LoggerFactory.getLogger(JoinMetadataTest.class);
 
 	static {
-		if (!PentahoSystem.getInitializedOK()) {
-			CsvDatasourceServiceHelper csvHelper = new CsvDatasourceServiceHelper();
-			csvHelper.setUp();
-		}
+		PentahoSystemHelper.init();
 		try {
 			KettleEnvironment.init();
 			Props.init(Props.TYPE_PROPERTIES_EMPTY);

@@ -24,15 +24,14 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.CsvDatasourceServiceHelper;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class SerializeMultiTableServiceTest {
 	
   static {
     if (!PentahoSystem.getInitializedOK()) {
-      CsvDatasourceServiceHelper csvHelper = new CsvDatasourceServiceHelper();
-      csvHelper.setUp();
+      PentahoSystemHelper.init();
       System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }

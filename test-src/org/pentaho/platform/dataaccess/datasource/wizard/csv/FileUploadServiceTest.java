@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSessionContext;
 
 import org.junit.Test;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.UploadFileDebugServlet;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.CsvDatasourceServiceHelper;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.UUIDUtil;
 import org.safehaus.uuid.UUID;
@@ -37,8 +37,7 @@ public class FileUploadServiceTest {
   @Test
   public void testUpload() throws Exception {
 
-    CsvDatasourceServiceHelper csvHelper = new CsvDatasourceServiceHelper();
-    csvHelper.setUp();
+    PentahoSystemHelper.init();
 
     UUID uuid = UUIDUtil.getUUID();
     String fileName = uuid.toString();

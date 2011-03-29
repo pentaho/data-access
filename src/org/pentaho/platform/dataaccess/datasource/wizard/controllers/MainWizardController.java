@@ -160,7 +160,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
       // update the controller panel
       final XulDeck deck = (XulDeck) document.getElementById(CONTENT_DECK_ELEMENT_ID);
-      deck.setSelectedIndex(activeStep);
+      deck.setSelectedIndex(deck.getChildNodes().indexOf(activatingWizardStep.getUIComponent()));
 
       this.firePropertyChange(ACTIVE_STEP_PROPERTY_NAME, oldActiveStep, this.activeStep);
     } catch(Exception e){
