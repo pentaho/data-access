@@ -25,73 +25,37 @@ import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
-import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.MultiTableDatasource;
+import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
-import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
-import org.pentaho.ui.xul.dom.Document;
-import org.pentaho.ui.xul.gwt.GwtXulRunner;
+import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
-import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
-import org.pentaho.ui.xul.gwt.util.IXulLoaderCallback;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 @SuppressWarnings("unchecked")
-public class JoinSelectionStepController extends AbstractXulEventHandler implements IXulLoaderCallback {
+public class JoinSelectionStepController extends AbstractWizardStep {
 
-	protected static final String JOIN_STEP_PANEL = "joinSelection.xul";
-	protected static final String JOIN_STEP_PANEL_PACKAGE = "joinSelection";
 	protected static final String JOIN_STEP_PANEL_ID = "joinSelectionWindow";
 
 	private IConnection selectedConnection;
-	private XulDialog tablesSelectionDialog;
+	private XulVbox tablesSelectionDialog;
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
 	private JoinGuiModel joinGuiModel;
-	private JoinDefinitionStepController definitionStepController;
-	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;	
+	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 
-	public JoinSelectionStepController(IConnection selectedConnection) {
+	public JoinSelectionStepController(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
+		super(parentDatasource);
+		this.joinGuiModel = joinGuiModel;
+		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
 		this.selectedConnection = selectedConnection;
-		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
-		this.joinGuiModel = new JoinGuiModel();
-		this.definitionStepController = new JoinDefinitionStepController(this.joinGuiModel, this.joinSelectionServiceGwtImpl, this.selectedConnection);
-		this.getAvailableTables();
 	}
 
 	public String getName() {
 		return "joinSelectionStepController";
-	}
-
-	public void show() {
-		this.tablesSelectionDialog.show();
-	}
-
-	public void xulLoaded(GwtXulRunner runner) {
-
-		XulDomContainer mainContainer = runner.getXulDomContainers().get(0);
-		Document rootDocument = mainContainer.getDocumentRoot();
-		mainContainer.addEventHandler(this);
-		mainContainer.addEventHandler(this.definitionStepController);
-		this.definitionStepController.init();
-
-		this.tablesSelectionDialog = (XulDialog) rootDocument.getElementById(JOIN_STEP_PANEL_ID);
-		this.availableTables = (XulListbox) rootDocument.getElementById("availableTables");
-		this.selectedTables = (XulListbox) rootDocument.getElementById("selectedTables");
-		BindingFactory bf = new GwtBindingFactory(rootDocument);
-
-		Binding availableTablesBinding = bf.createBinding(this.joinGuiModel.getAvailableTables(), "children", this.availableTables, "elements");
-		Binding selectedTablesBinding = bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.selectedTables, "elements");
-
-		try {
-			availableTablesBinding.fireSourceChanged();
-			selectedTablesBinding.fireSourceChanged();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private void getAvailableTables() {
@@ -102,7 +66,7 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 
 			public void success(List tables) {
 				joinGuiModel.processAvailableTables(tables);
-				AsyncXulLoader.loadXulFromUrl(JOIN_STEP_PANEL, JOIN_STEP_PANEL_PACKAGE, JoinSelectionStepController.this);
+				setValid(true);
 			}
 		});
 	}
@@ -121,9 +85,28 @@ public class JoinSelectionStepController extends AbstractXulEventHandler impleme
 		}
 	}
 
-	public void overlayLoaded() {
+	@Override
+	public void init() throws XulException {
+		this.tablesSelectionDialog = (XulVbox) document.getElementById(JOIN_STEP_PANEL_ID);
+		this.availableTables = (XulListbox) document.getElementById("availableTables");
+		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
+
+		super.init();
 	}
 
-	public void overlayRemoved() {
+	public void setBindings() {
+
+		BindingFactory bf = new GwtBindingFactory(document);
+		bf.createBinding(this.joinGuiModel.getAvailableTables(), "children", this.availableTables, "elements");
+		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.selectedTables, "elements");
+		this.getAvailableTables();
+	}
+
+	public String getStepName() {
+		return "Select Tables";
+	}
+
+	public XulComponent getUIComponent() {
+		return this.tablesSelectionDialog;
 	}
 }

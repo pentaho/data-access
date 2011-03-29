@@ -57,7 +57,7 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 
 	@Bindable
 	public void setAvailableTables(AbstractModelList<JoinTableModel> availableTables) {
-		this.availableTables = availableTables;
+		this.availableTables.setChildren(availableTables);
 	}
 
 	@Bindable

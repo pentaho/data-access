@@ -143,6 +143,32 @@
                   <label multiline="true" id="csvTextPreview" height="160" width="630" pre="true" />
                 </groupbox>
               </vbox>
+              
+              <!--Multi-table STEP 1-->
+              <vbox id="joinSelectionWindow">
+			      <hbox>
+			        <vbox>
+			          <label value="Select from available tables to define join" tooltiptext=""/>
+			        </vbox>
+			      </hbox>
+			      <hbox>
+			        <vbox>
+			          <label value="Available:" tooltiptext=""/>
+			          <listbox id="availableTables" pen:binding="name" disabled="false" height="200" width="295"/>
+			        </vbox>
+			        <vbox>
+			          <spacer height="90"/>
+			          <button id="addButton" image="images/forward.gif" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false"/>
+			          <button id="removeButton" image="images/accum_remove.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"/>
+			        </vbox>
+			        <vbox>
+			          <label value="Selected tables and columns:" tooltiptext=""/>
+			          <listbox id="selectedTables" pen:binding="name" disabled="false" height="200" width="295"/>
+			        </vbox>
+			      </hbox>
+			    </vbox>
+              <!--Multi-table STEP 1-->
+              
 						</deck>
 					</vbox>
 
@@ -175,6 +201,49 @@
             </hbox>
 					</vbox>
 				</vbox>
+
+				<!-- Multi-table step 2 -->
+				<vbox id="joinDefinitionWindow">
+				      <hbox>
+				        <vbox>
+				          <label value="Define the Join..." tooltiptext=""/>
+				        </vbox>
+				      </hbox>
+				      <hbox>
+				        <vbox>
+				          <label value="Left Table:" tooltiptext=""/>
+				          <listbox id="leftTables" pen:binding="name" disabled="false" height="150" width="300"/>
+				          <label value="Key Field:" tooltiptext=""/>
+				          <menulist id="leftKeyField" pen:binding="name" editable="false" width="300">
+						    <menupopup/>
+						  </menulist>          
+				        </vbox>
+				        <vbox>
+				          <label value="Right Table:" tooltiptext=""/>
+				          <listbox id="rightTables" pen:binding="name" disabled="false" height="150" width="300"/>
+				          <label value="Key Field:" tooltiptext=""/>
+				          <menulist id="rightKeyField" pen:binding="name" editable="false" width="300">
+						    <menupopup/>
+						  </menulist>   
+						  <hbox>
+						    <spacer width="217"/>
+						    <button id="createJoinButton" label="Create Join" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
+						  </hbox>
+				        </vbox>
+				      </hbox>
+				      <hbox>
+				        <vbox>
+				          <label value="Join(s):" tooltiptext=""/>
+				          <listbox id="joins" pen:binding="name" disabled="false" height="100" width="610"/>
+				          <hbox>
+				            <button id="finishButton" label="Finish" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.finish()" disabled="false"/>
+						    <spacer width="480"/>
+						    <button id="deleteJoinButton" label="Delete Join" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.deleteJoin()" disabled="false"/>
+						  </hbox>
+				        </vbox>
+				      </hbox>
+				    </vbox>
+				<!-- End Multi-table -->
 
 			</deck>
 		</hbox>
@@ -399,7 +468,5 @@
           onclick="fileImportController.close()" />
       </hbox>
     </vbox>
-
-
   </dialog>
 </window>

@@ -23,16 +23,20 @@ import org.pentaho.gwt.widgets.client.utils.i18n.IResourceBundleLoadCallback;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.*;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.FileImportController;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MainWizardController;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.SummaryDialogController;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardDatasourceController;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.StageDataStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.MultiTableDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasource;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -318,7 +322,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     wizardController.addDatasource(new DummyDatasource());
     wizardController.addDatasource(new CsvDatasource(datasourceModel));
     wizardController.addDatasource(new QueryDatasource(datasourceModel));
-
+    wizardController.addDatasource(new MultiTableDatasource(datasourceModel));
 
     dialog = (XulDialog) rootDocument.getElementById(WIZARD_DIALOG_ID);
     MessageHandler.getInstance().setWizardDialog(dialog);

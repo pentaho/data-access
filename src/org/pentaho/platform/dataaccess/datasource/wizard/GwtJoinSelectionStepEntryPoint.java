@@ -54,7 +54,7 @@ public class GwtJoinSelectionStepEntryPoint implements EntryPoint {
               public void error(String message, Throwable error) {
               }
               public void success(IConnection iConnection) {
-            	joinSelectionStepController = new JoinSelectionStepController(iConnection);
+            	//joinSelectionStepController = new JoinSelectionStepController(iConnection);
               }
             });
           setupNativeHooks(GwtJoinSelectionStepEntryPoint.this);
@@ -92,7 +92,7 @@ public class GwtJoinSelectionStepEntryPoint implements EntryPoint {
         notifyCallbackReady(callback);
       }
     };
-    joinSelectionStepController.show();
+    //joinSelectionStepController.show();
   }
   
   private native void notifyCallbackSuccess(JavaScriptObject callback, Boolean value, WAQRTransport transport)/*-{
