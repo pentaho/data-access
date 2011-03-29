@@ -24,6 +24,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.security.RowLevelSecurity;
 import org.pentaho.metadata.model.concept.security.Security;
@@ -61,6 +62,7 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
   LogicalTable lTable;
   LogicalModel lModel;
   LogicalColumn lColumn;
+  LogicalRelationship lRelationship;
   ModelerException modelerException;
   Domain domain;
 
@@ -221,4 +223,11 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
     this.modelerException = modelerException;
   }
 
+  public LogicalRelationship getlRelationship() {
+	return lRelationship;
+  }
+
+  public void setlRelationship(LogicalRelationship lRelationship) {
+	this.lRelationship = lRelationship;
+  }
 }
