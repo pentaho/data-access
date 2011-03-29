@@ -32,12 +32,14 @@ import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDatasourceServiceImpl;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -95,5 +97,14 @@ public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements I
   @Override
   public List<String> listDatasourceNames() throws IOException {
     return SERVICE.listDatasourceNames();
+  }
+
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+    try {
+      return SERVICE.generateQueryDomain(name, query, connectionName, datasourceDTO);
+    } catch (DatasourceServiceException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      throw e;
+    }
   }
 }

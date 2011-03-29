@@ -28,6 +28,7 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtDatasourceServiceAsync;
@@ -265,6 +266,23 @@ public class DatasourceServiceGwtImpl implements IXulAsyncDatasourceService {
       }
 
       public void onSuccess(List<String> arg0) {
+        callback.success(arg0);
+      }
+    });
+  }
+
+  @Override
+  public void generateQueryDomain(final String name, final String query, final String connectionName, final DatasourceDTO datasourceDTO, final XulServiceCallback<IDatasourceSummary> callback) {
+    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+      public void execute(AsyncCallback callback) {
+        SERVICE.generateQueryDomain(name, query, connectionName, datasourceDTO, callback);
+      }
+    },new AsyncCallback<IDatasourceSummary>() {
+      public void onFailure(Throwable arg0) {
+        callback.error(arg0.getLocalizedMessage(), arg0); //$NON-NLS-1$
+      }
+
+      public void onSuccess(IDatasourceSummary arg0) {
         callback.success(arg0);
       }
     });

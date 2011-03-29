@@ -31,6 +31,7 @@ import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
 import org.pentaho.metadata.model.concept.types.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvParseException;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 
 import java.io.Serializable;
 /*
@@ -65,6 +66,8 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
   LogicalRelationship lRelationship;
   ModelerException modelerException;
   Domain domain;
+  QueryDatasourceSummary querySummary;
+
 
   public Domain getDomain() {
     return domain;
@@ -229,5 +232,13 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
 
   public void setlRelationship(LogicalRelationship lRelationship) {
 	this.lRelationship = lRelationship;
+  }
+  
+  public QueryDatasourceSummary getQuerySummary() {
+    return querySummary;
+  }
+
+  public void setQuerySummary(QueryDatasourceSummary querySummary) {
+    this.querySummary = querySummary;
   }
 }

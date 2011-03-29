@@ -358,6 +358,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
       @Override
       public void error(String s, Throwable throwable) {
+        throwable.printStackTrace();
         //TODO: improve error messaging
         MessageHandler.getInstance().closeWaitingDialog();
         MessageHandler.getInstance().showErrorDialog(s, s);

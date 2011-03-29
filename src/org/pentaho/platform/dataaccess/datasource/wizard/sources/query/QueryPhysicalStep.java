@@ -22,21 +22,27 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.query;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
+import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtWaitingDialog;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardRelationalDatasourceController;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -57,11 +63,11 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
   private IXulAsyncConnectionService connectionService;
 
-  public QueryPhysicalStep(DatasourceModel datasourceModel, QueryDatasource parentDatasource, IXulAsyncDatasourceService datasourceService, IXulAsyncConnectionService connectionService) {
+  public QueryPhysicalStep(DatasourceModel datasourceModel, QueryDatasource parentDatasource) {
     super(parentDatasource);
     this.datasourceModel = datasourceModel;
-    this.datasourceService = datasourceService;
-    this.connectionService = connectionService;
+    this.datasourceService = new DatasourceServiceGwtImpl();
+    this.connectionService = new ConnectionServiceGwtImpl();
   }
 
   @Override
@@ -76,29 +82,34 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
   @Bindable
   public void init() throws XulException {
-    super.init();
     datasourceNameTextBox = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
-    
-    GwtWaitingDialog waitingDialog = new GwtWaitingDialog(MessageHandler.getString("waitingDialog.previewLoading"),MessageHandler.getString("waitingDialog.generatingPreview"));
     
     connectionController = new WizardConnectionController(document);
     connectionController.setDatasourceModel(datasourceModel);
     getXulDomContainer().addEventHandler(connectionController);
+    connectionController.init();
+
+    ConnectionController databaseConnectionController = new ConnectionController();
+    getXulDomContainer().addEventHandler(databaseConnectionController);
+    databaseConnectionController.setDatasourceModel(datasourceModel);
+    databaseConnectionController.setService(connectionService);
+    databaseConnectionController.init();
+    databaseConnectionController.reloadConnections();
 
     WizardRelationalDatasourceController relationalDatasourceController = new WizardRelationalDatasourceController();
 
     relationalDatasourceController.setService(datasourceService);
-    relationalDatasourceController.init(datasourceModel);
-    
     getXulDomContainer().addEventHandler(relationalDatasourceController);
+    relationalDatasourceController.init(datasourceModel);
 
-    connectionController.setDatasourceModel(datasourceModel);
 
     initialize();
+
+    datasourceModel.clearModel();
+    super.init();
   }
 
   public void initialize() {
-    datasourceModel.clearModel();
   }
 
   public IXulAsyncConnectionService getConnectionService() {
@@ -172,6 +183,8 @@ public class QueryPhysicalStep extends AbstractWizardStep {
       String newValue = (String) evt.getNewValue();
       if(newValue == null || newValue.trim().length() == 0) {
         parentDatasource.setFinishable(false);
+      } else {
+        parentDatasource.setFinishable(true);
       }
     }
   }

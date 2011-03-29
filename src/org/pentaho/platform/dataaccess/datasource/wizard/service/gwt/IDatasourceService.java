@@ -28,9 +28,11 @@ import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
-     
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
+
 public interface IDatasourceService {
   /**
    * Returns the list of Logical Models. This method is used by the client app to display list of models
@@ -120,6 +122,8 @@ public interface IDatasourceService {
   DatasourceDTO deSerializeModelState(String dto) throws DatasourceServiceException;
 
   public List<String> listDatasourceNames() throws IOException;
+
+  QueryDatasourceSummary generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO) throws DatasourceServiceException;
 }
 
  

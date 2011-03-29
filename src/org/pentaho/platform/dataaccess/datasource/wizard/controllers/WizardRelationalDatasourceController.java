@@ -49,6 +49,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeChildren;
 import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.containers.XulTreeRow;
+import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -126,6 +127,7 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
   @Bindable
   public void init(final DatasourceModel datasourceModel) {
     this.datasourceModel = datasourceModel;
+    bf = new GwtBindingFactory(document);
     sampleDataTree = (XulTree) document.getElementById("relationalSampleDataTable");
     aggregationEditorDialog = (XulDialog) document.getElementById("relationalAggregationEditorDialog");
     sampleDataDialog = (XulDialog) document.getElementById("relationalSampleDataDialog");

@@ -26,6 +26,7 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.ui.xul.XulServiceCallback;
 
@@ -41,6 +42,8 @@ public interface IXulAsyncDatasourceService {
   void deSerializeModelState(String dtoStr, XulServiceCallback<DatasourceDTO> callback);
 
   public void listDatasourceNames(XulServiceCallback<List<String>> callback);
+
+  void generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO, XulServiceCallback<IDatasourceSummary> callback);
 }
 
   

@@ -31,6 +31,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.tree.DefaultElement;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.metadata.model.Domain;
@@ -49,6 +52,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
@@ -57,8 +61,10 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidation
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceInMemoryServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.security.SecurityHelper;
@@ -470,5 +476,53 @@ public class DatasourceServiceImpl implements IDatasourceService {
 		  datasourceNames.add(element.getText());
 	  }
 	  return datasourceNames;
+  }
+
+  @Override
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+
+    ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+    ModelerService modelerService = new ModelerService();
+    modelerWorkspace.setModelName(name);
+
+    try {
+      executeQuery(connectionName, query, "10");
+
+      Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
+          || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
+      SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connectionName, query,
+          10, PentahoSessionHolder.getSession());
+      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connectionName, null, resultSet.getColumnTypes(), resultSet.getColumns(), query,
+          securityEnabled, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
+              .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
+      Domain domain = sqlModelGenerator.generate();
+      modelerWorkspace.setDomain(domain);
+
+
+      modelerWorkspace.getWorkspaceHelper().autoModelFlat(modelerWorkspace);
+      modelerWorkspace.setModelName(datasourceDTO.getDatasourceName());
+      modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
+      domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(datasourceDTO));
+
+      QueryDatasourceSummary summary = new QueryDatasourceSummary();
+      summary.setDomain(domain);
+      return summary;
+    } catch (SQLModelGeneratorException smge) {
+      logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
+          smge.getLocalizedMessage()), smge);
+      throw new DatasourceServiceException(Messages
+          .getErrorString("InMemoryDatasourceServiceImpl.ERROR_0015_UNABLE_TO_GENERATE_MODEL"), smge); //$NON-NLS-1$
+    } catch (QueryValidationException e) {
+      logger.error(Messages.getErrorString(
+          "InMemoryDatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
+      throw new DatasourceServiceException(Messages.getErrorString(
+          "InMemoryDatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e); //$NON-NLS-1$
+    } catch (ModelerException e) {
+      logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
+          e.getLocalizedMessage()), e);
+      throw new DatasourceServiceException(Messages
+          .getErrorString("InMemoryDatasourceServiceImpl.ERROR_0015_UNABLE_TO_GENERATE_MODEL"), e); //$NON-NLS-1$
+    }
+
   }
 }

@@ -29,7 +29,9 @@ import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 
 public interface IGwtDatasourceServiceAsync {
   void getLogicalModels(AsyncCallback<List<LogicalModelSummary>> callback);
@@ -44,6 +46,7 @@ public interface IGwtDatasourceServiceAsync {
   void deSerializeModelState(String dtoStr, AsyncCallback<DatasourceDTO> callback);
 
   public void listDatasourceNames(AsyncCallback<List<String>> callback);
+  void generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO, AsyncCallback<QueryDatasourceSummary> callback);
 }
 
   

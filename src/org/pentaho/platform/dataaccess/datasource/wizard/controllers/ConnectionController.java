@@ -72,7 +72,6 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
   DatabaseTypeHelper databaseTypeHelper;
 
   IConnection currentConnection;
-  private IXulAsyncConnectionService connectionService;
 
   public ConnectionController() {
   }
@@ -375,8 +374,8 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
 
   public void reloadConnections(){
-    if (connectionService != null) {
-      connectionService.getConnections(new XulServiceCallback<List<IConnection>>() {
+    if (service != null) {
+      service.getConnections(new XulServiceCallback<List<IConnection>>() {
 
         public void error(String message, Throwable error) {
           MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString(

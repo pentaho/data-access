@@ -31,6 +31,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDataso
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.StageDataStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -316,6 +317,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
     wizardController.addDatasource(new DummyDatasource());
     wizardController.addDatasource(new CsvDatasource(datasourceModel));
+    wizardController.addDatasource(new QueryDatasource(datasourceModel));
 
 
     dialog = (XulDialog) rootDocument.getElementById(WIZARD_DIALOG_ID);
