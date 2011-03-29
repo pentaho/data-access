@@ -70,7 +70,7 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
 
   @Override
   public XulComponent getUIComponent() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return document.getElementById("stagedatastep");
   }
 
   @Override
