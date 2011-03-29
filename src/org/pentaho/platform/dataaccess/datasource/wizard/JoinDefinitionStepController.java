@@ -108,7 +108,7 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 	@Bindable
 	public void finish() {
 		List<LogicalRelationship> joins = this.joinGuiModel.generateLogicalRelationships(this.joinGuiModel.getJoins());
-		joinSelectionServiceGwtImpl.serializeJoins(joins, new XulServiceCallback<Void>() {
+		joinSelectionServiceGwtImpl.serializeJoins(joins, this.selectedConnection, new XulServiceCallback<Void>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
 			}

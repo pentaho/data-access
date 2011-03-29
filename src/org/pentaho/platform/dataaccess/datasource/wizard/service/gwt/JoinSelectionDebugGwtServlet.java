@@ -18,17 +18,15 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
-import java.util.Arrays;
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultitableDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -46,46 +44,22 @@ public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implement
 		}
 	}
 
-	public JoinSelectionDebugGwtServlet() {
-	}
-
-	private DatabaseMeta getDatabaseMeta(IConnection connection) {
-		DatabaseMeta databaseMeta = new DatabaseMeta();
-		databaseMeta.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-		databaseMeta.setDatabaseType(AgileHelper.getDialect(databaseMeta));
-		databaseMeta.setDBName(connection.getName());
-		databaseMeta.setName(connection.getName());
-		return databaseMeta;
-	}
-
 	public List<String> getDatabaseTables(IConnection connection) throws Exception {
-
-		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		Database database = new Database(null, databaseMeta);
-		database.connect();
-
-		String[] tableNames = database.getTablenames();
-		List<String> tables = Arrays.asList(tableNames);
-		database.disconnect();
-		return tables;
+		MultitableDatasourceService service = new MultitableDatasourceService();
+		return service.getDatabaseTables(connection);
 	}
 
-	public void serializeJoins(List<LogicalRelationship> joins) throws Exception {
-		//TODO
+	public void serializeJoins(List<LogicalRelationship> joins, IConnection connection) throws Exception {
+		MultitableDatasourceService service = new MultitableDatasourceService();
+		service.serializeJoins(joins, connection);
 	}
 
 	public List<String> getTableFields(String table, IConnection connection) throws Exception {
+		MultitableDatasourceService service = new MultitableDatasourceService();
+		return service.getTableFields(table, connection);
+	}
 
-		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		Database database = new Database(null, databaseMeta);
-		database.connect();
-
-		String query = databaseMeta.getSQLQueryFields(table);
-		database.getRows(query, 1);
-		String[] tableFields = database.getReturnRowMeta().getFieldNames();
-
-		List<String> fields = Arrays.asList(tableFields);
-		database.disconnect();
-		return fields;
+	public BogoPojo gwtWorkaround(BogoPojo pojo) {
+		return pojo;
 	}
 }

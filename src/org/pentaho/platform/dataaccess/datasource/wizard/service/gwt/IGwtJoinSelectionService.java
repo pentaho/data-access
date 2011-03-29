@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 
@@ -31,5 +32,7 @@ public interface IGwtJoinSelectionService extends RemoteService {
 
 	List<String> getTableFields(String table, IConnection connection) throws Exception;
 
-	void serializeJoins(List<LogicalRelationship> joins) throws Exception;
+	void serializeJoins(List<LogicalRelationship> joins, IConnection connection) throws Exception;
+	
+	BogoPojo gwtWorkaround(BogoPojo pojo);
 }

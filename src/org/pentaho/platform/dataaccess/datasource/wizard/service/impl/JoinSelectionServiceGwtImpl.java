@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
 import org.pentaho.metadata.model.LogicalRelationship;
@@ -37,13 +38,11 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 	static IGwtJoinSelectionServiceAsync SERVICE;
 
 	static {
-
 		SERVICE = (org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionServiceAsync) GWT.create(org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionService.class);
 		ServiceDefTarget endpoint = (ServiceDefTarget) SERVICE;
 		endpoint.setServiceEntryPoint(getBaseUrl());
-
 	}
-
+	
 	/**
 	 * Returns the context-aware URL to the rpc service
 	 */
@@ -113,11 +112,11 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 		});
 	}
 
-	public void serializeJoins(final List<LogicalRelationship> joins, final XulServiceCallback<Void> xulCallback) {
+	public void serializeJoins(final List<LogicalRelationship> joins, final IConnection selectedConnection, final XulServiceCallback<Void> xulCallback) {
 
 		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
 			public void execute(AsyncCallback callback) {
-				SERVICE.serializeJoins(joins, callback);
+				SERVICE.serializeJoins(joins, selectedConnection, callback);
 			}
 		}, new AsyncCallback<Void>() {
 			public void onFailure(Throwable arg0) {
@@ -125,6 +124,23 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 			}
 
 			public void onSuccess(Void arg0) {
+				xulCallback.success(arg0);
+			}
+		});
+	}
+	
+	public void gwtWorkaround(final BogoPojo pojofinal, final XulServiceCallback<BogoPojo> xulCallback) {
+
+		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+			public void execute(AsyncCallback callback) {
+				SERVICE.gwtWorkaround(pojofinal, callback);
+			}
+		}, new AsyncCallback<BogoPojo>() {
+			public void onFailure(Throwable arg0) {
+				xulCallback.error(arg0.getLocalizedMessage(), arg0);
+			}
+
+			public void onSuccess(BogoPojo arg0) {
 				xulCallback.success(arg0);
 			}
 		});

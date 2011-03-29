@@ -20,29 +20,26 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface ICsvDatasourceService extends RemoteService {
 
-  public ModelInfo stageFile(String name, String delimiter, String enclosure, boolean isFirstRowHeader, String encoding)
-      throws Exception;
+	public ModelInfo stageFile(String name, String delimiter, String enclosure, boolean isFirstRowHeader, String encoding) throws Exception;
 
-  public FileInfo[] getStagedFiles() throws Exception;
+	public FileInfo[] getStagedFiles() throws Exception;
 
-  public FileTransformStats generateDomain(ModelInfo modelInfo) throws Exception;
+	public FileTransformStats generateDomain(ModelInfo modelInfo) throws Exception;
 
-  public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception;
-  
-  public String getEncoding(String fileName) throws Exception;
+	public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception;
 
-  public BogoPojo gwtWorkaround(BogoPojo pojo);
+	public String getEncoding(String fileName) throws Exception;
+
+	public BogoPojo gwtWorkaround(BogoPojo pojo);
 }
