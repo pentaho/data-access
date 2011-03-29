@@ -35,7 +35,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnec
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.MultiTableDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasource;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulServiceCallback;

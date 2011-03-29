@@ -25,7 +25,7 @@ import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.MultiTableDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;

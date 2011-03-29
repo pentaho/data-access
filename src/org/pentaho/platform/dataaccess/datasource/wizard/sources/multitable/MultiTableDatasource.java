@@ -17,11 +17,12 @@
  * @author Ezequiel Cuellar
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.sources.query;
+package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
@@ -54,6 +55,17 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		this.datasourceModel = datasourceModel;
 		this.joinGuiModel = new JoinGuiModel();
 		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
+		
+		this.joinSelectionServiceGwtImpl.gwtWorkaround(new BogoPojo(), new XulServiceCallback<BogoPojo>() {
+
+			public void error(String message, Throwable error) {
+				error.printStackTrace();
+			}
+
+			public void success(BogoPojo bogoPojo) {
+				bogoPojo.getlRelationship();
+			}
+		});
 
 		
 		//GOOD DO NOT REMOVE

@@ -62,9 +62,6 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, joins);
 		Domain domain = multiTable.generateDomain();
 		//TODO 
-		
-		System.out.println("asdfasfdsf");
-		
 	}
 
 	public List<String> getTableFields(String table, IConnection connection) throws Exception {
