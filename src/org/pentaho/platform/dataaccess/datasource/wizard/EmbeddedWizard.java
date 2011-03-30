@@ -322,7 +322,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     wizardController = new MainWizardController(bf, datasourceModel, datasourceService);
     mainWizardContainer.addEventHandler(wizardController);
 
-    wizardController.addDatasource(new DummyDatasource());
     wizardController.addDatasource(new CsvDatasource(datasourceModel));
     wizardController.addDatasource(new QueryDatasource(datasourceModel));
     wizardController.addDatasource(new MultiTableDatasource(datasourceModel));
@@ -451,6 +450,17 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       onDialogAccept();
     }
 
+  }
+
+  /**
+   * Upload path is by necessity relative. as such it will differ where the module is based.
+   * @param path
+   */
+  public void setUploadPath(String path){
+
+    Document rootDocument = mainWizardContainer.getDocumentRoot();
+    XulFileUpload upload = (XulFileUpload) rootDocument.getElementById("fileUpload"); //$NON-NLS-1$
+    upload.setAction(path);
   }
 
 }
