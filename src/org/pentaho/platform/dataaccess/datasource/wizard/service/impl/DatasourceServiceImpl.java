@@ -52,7 +52,6 @@ import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
-import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
@@ -61,7 +60,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidation
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceInMemoryServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
@@ -203,7 +201,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
 
       metadataDomainRepository.removeModel(domainId, modelName);
       if(datasource != null){
-        String fileName = datasource.getCsvModelInfo().getFileInfo().getFileName();
+        String fileName = datasource.getCsvModelInfo().getFileInfo().getFilename();
         FileUtils fileService = new FileUtils();
         if(fileName != null) {
           fileService.deleteFile(fileName);
@@ -486,8 +484,6 @@ public class DatasourceServiceImpl implements IDatasourceService {
     modelerWorkspace.setModelName(name);
 
     try {
-      executeQuery(connectionName, query, "10");
-
       Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
           || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connectionName, query,
@@ -505,7 +501,10 @@ public class DatasourceServiceImpl implements IDatasourceService {
       domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(datasourceDTO));
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
+
+      modelerService.serializeModels(domain, modelerWorkspace.getModelName());
       summary.setDomain(domain);
+
       return summary;
     } catch (SQLModelGeneratorException smge) {
       logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
@@ -518,6 +517,11 @@ public class DatasourceServiceImpl implements IDatasourceService {
       throw new DatasourceServiceException(Messages.getErrorString(
           "InMemoryDatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e); //$NON-NLS-1$
     } catch (ModelerException e) {
+      logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
+          e.getLocalizedMessage()), e);
+      throw new DatasourceServiceException(Messages
+          .getErrorString("InMemoryDatasourceServiceImpl.ERROR_0015_UNABLE_TO_GENERATE_MODEL"), e); //$NON-NLS-1$
+    } catch (Exception e) {
       logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
           e.getLocalizedMessage()), e);
       throw new DatasourceServiceException(Messages
