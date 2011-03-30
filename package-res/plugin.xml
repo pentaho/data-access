@@ -13,10 +13,15 @@
 
    <bean id="csvDatasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
 
-   <webservice
+  <webservice
     id="DatasourceService"
     type="xml,gwt"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceImpl"/>
+    
+  <webservice
+    id="joinSelectionService"
+    type="xml,gwt"
+    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultitableDatasourceService"/>
 
   <webservice
     id="connectionService"

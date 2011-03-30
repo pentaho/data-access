@@ -21,8 +21,9 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
-import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -32,7 +33,9 @@ public interface IGwtJoinSelectionServiceAsync {
 
 	void getTableFields(String table, IConnection connection, AsyncCallback<List> callback);
 
-	void serializeJoins(List<LogicalRelationship> joins, IConnection connection, AsyncCallback<Void> callback);
+	void serializeJoins(MultiTableDatasourceDTO dto, IConnection connection, AsyncCallback<IDatasourceSummary> callback);
+	
+	void deSerializeModelState(String source, AsyncCallback<MultiTableDatasourceDTO> callback);
 	
 	void gwtWorkaround(BogoPojo pojo, AsyncCallback<BogoPojo> callback);
 }

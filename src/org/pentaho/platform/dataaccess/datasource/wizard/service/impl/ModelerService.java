@@ -20,7 +20,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -51,13 +50,7 @@ import org.pentaho.platform.api.engine.IApplicationContext;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository.ISolutionRepository;
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.InlineSqlModelerSource;
 import org.pentaho.platform.engine.core.solution.ActionInfo;
 import org.pentaho.platform.engine.core.system.PentahoBase;
@@ -70,8 +63,6 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCube;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianDataSource;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianSchema;
-
-import com.thoughtworks.xstream.XStream;
 
 /**
  * User: nbaker
@@ -180,10 +171,11 @@ public class ModelerService extends PentahoBase implements IModelerService {
       // Keep a reference to the mondrian catalog
       model.getWorkspaceHelper().populateDomain(model);
       
-      prepareForSerialization(domain);
-      
       LogicalModel lModel = domain.getLogicalModels().get(0);
       String catName = lModel.getName(Locale.getDefault().toString());
+
+      cleanseExistingCatalog(catName);
+      
       lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
       XmiParser parser = new XmiParser();
       String reportXML =  parser.generateXmi(model.getDomain());
@@ -225,79 +217,18 @@ public class ModelerService extends PentahoBase implements IModelerService {
     return domainId;
   }
   
-  protected void prepareForSerialization(Domain domain) throws IOException {
+  private void cleanseExistingCatalog(String catName) {
 	  
-		/*
-		 * This method is responsible for cleaning up legacy information when changing datasource types  
-		 * and also manages CSV files for CSV based datasources. 
-		 **/  
-	    
-	    String relativePath = PentahoSystem.getSystemSetting(
-	        "file-upload-defaults/relative-path", String.valueOf(FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$
-	    String path = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
-	    String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
-	    LogicalModel logicalModel = domain.getLogicalModels().get(0);
-	    String modelState = (String) logicalModel.getProperty("datasourceModel"); //$NON-NLS-1$
-
-	    if(modelState != null) {
-	    	
-	      XStream xs = new XStream();	
-	      DatasourceDTO datasource = (DatasourceDTO) xs.fromXML(modelState);
-	      CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
-	      String tmpFileName = csvFileInfo.getTmpFilename();
-	      String csvFileName = csvFileInfo.getFilename();
-	      File tmpFile = new File(sysTmpDir + File.separatorChar + tmpFileName);
-	    
-	      if(datasource.getDatasourceType().equals(DatasourceType.CSV)) {
-		      
-	    	  //  Move CSV temporary file to final destination.
-	    	  if(tmpFile.exists()) {
-		        File csvFile = new File(path + File.separatorChar + csvFileName);
-		        org.apache.commons.io.FileUtils.copyFile(tmpFile, csvFile);
-		      }
-	    	  
-	    	  // Cleanup logic when updating from SQL datasource to CSV datasource.
-		      datasource.setQuery(null);
-		      
-	      } else if(datasource.getDatasourceType().equals(DatasourceType.SQL)) {
-	    	  
-	    	  if(csvFileName != null) { 
-	    		  
-	    		  // Cleanup logic when updating from CSV datasource to SQL datasource.
-	    		  csvFileInfo.setFilename(null);
-	    		  csvFileInfo.setTmpFilename(null);
-	    		  csvFileInfo.setFriendlyFilename(null);
-	    		  csvFileInfo.setContents(null);
-	    		  csvFileInfo.setEncoding(null);
-	    		  
-	    		  // Delete CSV file.
-	    		  File csvFile = new File(path + File.separatorChar + csvFileName);
-	    		  if(csvFile.exists()) {
-	    			  csvFile.delete();
-	    		  }
-	    		  
-	  			  // Delete STAGING database table.
-				  CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta());
-				  try {
-					  csvTransformGenerator.dropTable(datasource.getCsvModelInfo().getStageTableName());
-				  } catch (CsvTransformGeneratorException e) {
-					getLogger().error(e);
-				  }
-	    	  }
+	  // If mondrian catalog exists delete it to avoid duplicates and orphan entries in the datasources.xml registry.
+	  IPentahoSession session = PentahoSessionHolder.getSession();
+	  if(session != null) {
+		  IMondrianCatalogService service = PentahoSystem.get(IMondrianCatalogService.class, null);
+	      MondrianCatalog catalog = service.getCatalog(catName, session);
+	      if(catalog != null) {
+	      	  service.removeCatalog(catName, session);
 	      }
-	      
-	      // If mondrian catalog exists delete it to avoid duplicates and orphan entries in the datasources.xml registry.
-	      IMondrianCatalogService service = PentahoSystem.get(IMondrianCatalogService.class, null);
-          String catName = logicalModel.getName(Locale.getDefault().toString());
-          MondrianCatalog catalog = service.getCatalog(catName, PentahoSessionHolder.getSession());
-          if(catalog != null) {
-        	  service.removeCatalog(catName, PentahoSessionHolder.getSession());
-          }
-	     	      
-	      modelState = xs.toXML(datasource);
-	      logicalModel.setProperty("datasourceModel", modelState);
-	    }
 	  }
+  }
   
   private void addCatalog(String catName, String catConnectStr, String catDef, IPentahoSession session) {
     

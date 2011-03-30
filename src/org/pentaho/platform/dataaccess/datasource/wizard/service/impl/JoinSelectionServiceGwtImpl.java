@@ -25,6 +25,7 @@ import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncJoinSelectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionServiceAsync;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -112,18 +113,35 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 		});
 	}
 
-	public void serializeJoins(final List<LogicalRelationship> joins, final IConnection selectedConnection, final XulServiceCallback<Void> xulCallback) {
+	public void serializeJoins(final MultiTableDatasourceDTO dto, final IConnection selectedConnection, final XulServiceCallback<IDatasourceSummary> xulCallback) {
 
 		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
 			public void execute(AsyncCallback callback) {
-				SERVICE.serializeJoins(joins, selectedConnection, callback);
+				SERVICE.serializeJoins(dto, selectedConnection, callback);
 			}
-		}, new AsyncCallback<Void>() {
+		}, new AsyncCallback<IDatasourceSummary>() {
 			public void onFailure(Throwable arg0) {
 				xulCallback.error(arg0.getLocalizedMessage(), arg0);
 			}
 
-			public void onSuccess(Void arg0) {
+			public void onSuccess(IDatasourceSummary arg0) {
+				xulCallback.success(arg0);
+			}
+		});
+	}
+	
+	public void deSerializeModelState(final String source, final XulServiceCallback<MultiTableDatasourceDTO> xulCallback) {
+
+		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+			public void execute(AsyncCallback callback) {
+				SERVICE.deSerializeModelState(source, callback);
+			}
+		}, new AsyncCallback<MultiTableDatasourceDTO>() {
+			public void onFailure(Throwable arg0) {
+				xulCallback.error(arg0.getLocalizedMessage(), arg0);
+			}
+
+			public void onSuccess(MultiTableDatasourceDTO arg0) {
 				xulCallback.success(arg0);
 			}
 		});

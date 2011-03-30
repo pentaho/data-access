@@ -30,7 +30,7 @@ public class JoinTableModel extends XulEventSourceAdapter {
 
 	private String name;
 	private AbstractModelList<JoinFieldModel> fields;
-	
+
 	public JoinTableModel() {
 		this.fields = new AbstractModelList<JoinFieldModel>();
 	}
@@ -52,17 +52,13 @@ public class JoinTableModel extends XulEventSourceAdapter {
 
 	@Bindable
 	public void setFields(AbstractModelList<JoinFieldModel> fields) {
-		/*if(fields != null) {
-			this.fields.clear();
-			this.fields.addAll(fields);
-		}*/
 		this.fields = fields;
 	}
-	
+
 	public List<JoinFieldModel> processTableFields(List<String> fields) {
 
 		List<JoinFieldModel> fieldModels = new ArrayList<JoinFieldModel>();
-		for(String field : fields) {
+		for (String field : fields) {
 			JoinFieldModel fieldModel = new JoinFieldModel();
 			fieldModel.setName(field);
 			fieldModel.setParentTable(this);

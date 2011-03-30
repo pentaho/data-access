@@ -20,6 +20,7 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
@@ -48,11 +49,13 @@ import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
 import org.pentaho.platform.api.engine.*;
+import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -501,7 +504,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
       domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(datasourceDTO));
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
-
+      prepareForSerializaton(domain);
       modelerService.serializeModels(domain, modelerWorkspace.getModelName());
       summary.setDomain(domain);
 
@@ -529,4 +532,52 @@ public class DatasourceServiceImpl implements IDatasourceService {
     }
 
   }
+  
+  public void prepareForSerializaton(Domain domain) {
+		/*
+		 * This method is responsible for cleaning up legacy information when
+		 * changing datasource types and also manages CSV files for CSV based
+		 * datasources.
+		 */
+
+		String relativePath = PentahoSystem.getSystemSetting("file-upload-defaults/relative-path", String.valueOf(FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$
+		String path = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
+		LogicalModel logicalModel = domain.getLogicalModels().get(0);
+		String modelState = (String) logicalModel.getProperty("datasourceModel"); 
+
+		if (modelState != null) {
+			XStream xs = new XStream();
+			DatasourceDTO datasource = (DatasourceDTO) xs.fromXML(modelState);
+			CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
+			String csvFileName = csvFileInfo.getFilename();
+
+			if (csvFileName != null) {
+
+				// Cleanup logic when updating from CSV datasource to SQL
+				// datasource.
+				csvFileInfo.setFilename(null);
+				csvFileInfo.setTmpFilename(null);
+				csvFileInfo.setFriendlyFilename(null);
+				csvFileInfo.setContents(null);
+				csvFileInfo.setEncoding(null);
+
+				// Delete CSV file.
+				File csvFile = new File(path + File.separatorChar + csvFileName);
+				if (csvFile.exists()) {
+					csvFile.delete();
+				}
+
+				// Delete STAGING database table.
+				CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta());
+				try {
+					csvTransformGenerator.dropTable(datasource.getCsvModelInfo().getStageTableName());
+				} catch (CsvTransformGeneratorException e) {
+					logger.error(e);
+				}
+			}
+			// Update datasourceModel with the new modelState
+			modelState = xs.toXML(datasource);
+		    logicalModel.setProperty("datasourceModel", modelState);
+		}
+	}
 }

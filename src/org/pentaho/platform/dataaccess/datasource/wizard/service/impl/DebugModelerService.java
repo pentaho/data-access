@@ -79,8 +79,6 @@ public class DebugModelerService extends ModelerService {
       // Keep a reference to the mondrian catalog
       model.getWorkspaceHelper().populateDomain(model);
 
-      prepareForSerialization(domain);
-      
       LogicalModel lModel = domain.getLogicalModels().get(0);
       String catName = lModel.getName(LocalizedString.DEFAULT_LOCALE);
       lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$

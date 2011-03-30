@@ -26,15 +26,17 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class JoinGuiModel extends XulEventSourceAdapter {
 
-	private AbstractModelList<JoinTableModel> availableTables;
-	private AbstractModelList<JoinTableModel> selectedTables;
 	private AbstractModelList<JoinModel> joins;
+	private AbstractModelList<JoinTableModel> selectedTables;
+
+	private AbstractModelList<JoinTableModel> availableTables;
 	private JoinTableModel leftJoinTable;
 	private JoinTableModel rightJoinTable;
 	private JoinFieldModel leftKeyField;
@@ -145,6 +147,7 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 
 	public void removeSelectedTable(JoinTableModel table) {
 		this.selectedTables.remove(table);
+
 		this.availableTables.add(table);
 	}
 
@@ -183,5 +186,69 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 			logicalRelationships.add(logicalRelationship);
 		}
 		return logicalRelationships;
+	}
+
+	public MultiTableDatasourceDTO createMultiTableDatasourceDTO(String dsName) {
+		MultiTableDatasourceDTO dto = new MultiTableDatasourceDTO();
+		dto.setDatasourceName(dsName);
+		dto.setLogicalRelationships(this.generateLogicalRelationships(this.getJoins()));
+		return dto;
+	}
+
+	public void populateJoinGuiModel(MultiTableDatasourceDTO dto) {
+
+		// Populate "selectedTables" from availableTables using
+		// logicalRelationships.
+		AbstractModelList<JoinTableModel> selectedTablesList = new AbstractModelList<JoinTableModel>();
+		List<LogicalRelationship> logicalRelationships = dto.getLogicalRelationships();
+		for (LogicalRelationship logicalRelationship : logicalRelationships) {
+			this.selectTable(logicalRelationship.getFromTable(), selectedTablesList);
+			this.selectTable(logicalRelationship.getToTable(), selectedTablesList);
+		}
+		this.selectedTables.addAll(selectedTablesList);
+
+		// Populate "joins" from availableTables using logicalRelationships.
+		AbstractModelList<JoinModel> joinsList = new AbstractModelList<JoinModel>();
+		for (LogicalRelationship logicalRelationship : logicalRelationships) {
+			this.populateJoin(logicalRelationship, joinsList);
+		}
+		this.joins.addAll(joinsList);
+
+	}
+
+	private void populateJoin(LogicalRelationship logicalRelationship, AbstractModelList<JoinModel> joinsList) {
+
+		JoinModel join = new JoinModel();
+		String locale = LocalizedString.DEFAULT_LOCALE;
+
+		for (JoinTableModel table : this.selectedTables) {
+			if (table.getName().equals(logicalRelationship.getFromTable().getName(locale))) {
+				for (JoinFieldModel field : table.getFields()) {
+					if (field.getName().equals(logicalRelationship.getFromColumn().getName(locale))) {
+						join.setLeftKeyFieldModel(field);
+					}
+				}
+			}
+
+			if (table.getName().equals(logicalRelationship.getToTable().getName(locale))) {
+				for (JoinFieldModel field : table.getFields()) {
+					if (field.getName().equals(logicalRelationship.getToColumn().getName(locale))) {
+						join.setRightKeyFieldModel(field);
+					}
+				}
+			}
+		}
+		joinsList.add(join);
+	}
+
+	private void selectTable(LogicalTable logicalTable, AbstractModelList<JoinTableModel> selectedTablesList) {
+		String locale = LocalizedString.DEFAULT_LOCALE;
+		for (JoinTableModel table : this.availableTables) {
+			if (table.getName().equals(logicalTable.getName(locale))) {
+				if (!selectedTablesList.contains(table)) {
+					selectedTablesList.add(table);
+				}
+			}
+		}
 	}
 }

@@ -24,8 +24,9 @@ import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultitableDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 
@@ -49,14 +50,19 @@ public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implement
 		return service.getDatabaseTables(connection);
 	}
 
-	public void serializeJoins(List<LogicalRelationship> joins, IConnection connection) throws Exception {
+	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IConnection connection) throws Exception {
 		MultitableDatasourceService service = new MultitableDatasourceService();
-		service.serializeJoins(joins, connection);
+		return service.serializeJoins(dto, connection);
 	}
 
 	public List<String> getTableFields(String table, IConnection connection) throws Exception {
 		MultitableDatasourceService service = new MultitableDatasourceService();
 		return service.getTableFields(table, connection);
+	}
+	
+	public MultiTableDatasourceDTO deSerializeModelState(String source) throws Exception {
+		MultitableDatasourceService service = new MultitableDatasourceService();
+		return service.deSerializeModelState(source);
 	}
 
 	public BogoPojo gwtWorkaround(BogoPojo pojo) {

@@ -22,8 +22,9 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
-import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 public interface IXulAsyncJoinSelectionService {
@@ -32,7 +33,9 @@ public interface IXulAsyncJoinSelectionService {
 
 	void getTableFields(String table, IConnection connection, XulServiceCallback<List> callback);
 
-	void serializeJoins(List<LogicalRelationship> joins, IConnection connection, XulServiceCallback<Void> callback);
+	void serializeJoins(MultiTableDatasourceDTO dto, IConnection connection, XulServiceCallback<IDatasourceSummary> callback);
+	
+	void deSerializeModelState(String source, XulServiceCallback<MultiTableDatasourceDTO> callback);
 
 	void gwtWorkaround(BogoPojo pojo, XulServiceCallback<BogoPojo> callback);
 }

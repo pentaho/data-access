@@ -18,6 +18,7 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,11 +28,16 @@ import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalRelationship;
+import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionService;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoBase;
+
+import com.thoughtworks.xstream.XStream;
 
 public class MultitableDatasourceService extends PentahoBase implements IGwtJoinSelectionService {
 
@@ -56,12 +62,44 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		return tables;
 	}
 
-	public void serializeJoins(List<LogicalRelationship> joins, IConnection connection) throws Exception {
-		
+	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IConnection connection) throws Exception {
+
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, joins);
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getLogicalRelationships());
 		Domain domain = multiTable.generateDomain();
-		//TODO 
+
+		// /////////////////////////////////////////
+		List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
+		OlapDimension dimension = new OlapDimension();
+		dimension.setName("test");
+		dimension.setTimeDimension(false);
+		olapDimensions.add(dimension);
+		domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);
+		// /////////////////////////////////////////
+
+		domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(dto));
+
+		ModelerService modelerService = new ModelerService();
+		modelerService.serializeModels(domain, dto.getDatasourceName());
+
+		QueryDatasourceSummary summary = new QueryDatasourceSummary();
+		summary.setDomain(domain);
+		return summary;
+	}
+
+	private String serializeModelState(MultiTableDatasourceDTO dto) throws DatasourceServiceException {
+		XStream xs = new XStream();
+		return xs.toXML(dto);
+	}
+
+	public MultiTableDatasourceDTO deSerializeModelState(String dtoStr) throws DatasourceServiceException {
+		try {
+			XStream xs = new XStream();
+			return (MultiTableDatasourceDTO) xs.fromXML(dtoStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new DatasourceServiceException(e);
+		}
 	}
 
 	public List<String> getTableFields(String table, IConnection connection) throws Exception {
@@ -78,10 +116,10 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		database.disconnect();
 		return fields;
 	}
-	
+
 	public BogoPojo gwtWorkaround(BogoPojo pojo) {
 		return pojo;
-    }
+	}
 
 	@Override
 	public Log getLogger() {

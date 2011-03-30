@@ -19,9 +19,11 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +34,7 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPentahoUrlFactory;
@@ -40,7 +43,9 @@ import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
@@ -48,12 +53,17 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelp
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoBase;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.uifoundation.component.xml.PMDUIComponent;
 import org.pentaho.platform.util.web.SimpleUrlFactory;
 import org.pentaho.reporting.libraries.base.util.StringUtils;
 import org.pentaho.ui.xul.XulServiceCallback;
+
+import com.thoughtworks.xstream.XStream;
 
 @SuppressWarnings("unchecked")
 public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasourceService {
@@ -154,8 +164,6 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
       Domain workspaceDomain = modelerWorkspace.getDomain();
 
-      // Handle my CSV file Shit
-
       modelerService.serializeModels(workspaceDomain, modelerWorkspace.getModelName());
       stats.setDomain(modelerWorkspace.getDomain());
 
@@ -170,6 +178,45 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       }
     }
   }
+  
+  protected void prepareForSerialization(Domain domain) throws IOException {
+
+		/*
+		 * This method is responsible for cleaning up legacy information when
+		 * changing datasource types and also manages CSV files for CSV based
+		 * datasources.
+		 */
+
+		String relativePath = PentahoSystem.getSystemSetting("file-upload-defaults/relative-path", String.valueOf(FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$
+		String path = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
+		String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
+		String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
+		LogicalModel logicalModel = domain.getLogicalModels().get(0);
+		String modelState = (String) logicalModel.getProperty("datasourceModel"); //$NON-NLS-1$
+
+		if (modelState != null) {
+
+			XStream xs = new XStream();
+			DatasourceDTO datasource = (DatasourceDTO) xs.fromXML(modelState);
+			CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
+			String tmpFileName = csvFileInfo.getTmpFilename();
+			String csvFileName = csvFileInfo.getFilename();
+			File tmpFile = new File(sysTmpDir + File.separatorChar + tmpFileName);
+
+			// Move CSV temporary file to final destination.
+			if (tmpFile.exists()) {
+				File csvFile = new File(path + File.separatorChar + csvFileName);
+				org.apache.commons.io.FileUtils.copyFile(tmpFile, csvFile);
+			}
+
+			// Cleanup logic when updating from SQL datasource to CSV
+			// datasource.
+			datasource.setQuery(null);
+			// Update datasourceModel with the new modelState
+			modelState = xs.toXML(datasource);
+		    logicalModel.setProperty("datasourceModel", modelState);
+		}
+	}
 
   private IPentahoSession getSession() {
     IPentahoSession session = null;

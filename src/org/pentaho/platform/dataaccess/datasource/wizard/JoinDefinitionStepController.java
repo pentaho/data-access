@@ -63,6 +63,7 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
 		this.selectedConnection = selectedConnection;
+		setValid(true);
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -103,20 +104,6 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 	@Bindable
 	public void deleteJoin() {
 		this.joinGuiModel.removeSelectedJoin();
-	}
-
-	@Bindable
-	public void finish() {
-		List<LogicalRelationship> joins = this.joinGuiModel.generateLogicalRelationships(this.joinGuiModel.getJoins());
-		joinSelectionServiceGwtImpl.serializeJoins(joins, this.selectedConnection, new XulServiceCallback<Void>() {
-			public void error(String message, Throwable error) {
-				error.printStackTrace();
-			}
-
-			public void success(Void value) {
-				// TODO
-			}
-		});
 	}
 
 	@Override
