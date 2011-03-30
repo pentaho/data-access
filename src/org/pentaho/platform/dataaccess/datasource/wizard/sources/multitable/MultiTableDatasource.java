@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
@@ -55,7 +56,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		this.datasourceModel = datasourceModel;
 		this.joinGuiModel = new JoinGuiModel();
 		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
-		
+
 		this.joinSelectionServiceGwtImpl.gwtWorkaround(new BogoPojo(), new XulServiceCallback<BogoPojo>() {
 
 			public void error(String message, Throwable error) {
@@ -67,7 +68,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 			}
 		});
 
-		
+
 		//GOOD DO NOT REMOVE
 		//this.joinSelectionStepController = new JoinSelectionStepController(this.joinGuiModel, joinSelectionServiceGwtImpl, this.datasourceModel.getSelectedRelationalConnection(), this);
 		//this.joinDefinitionStepController = new JoinDefinitionStepController(this.joinGuiModel, joinSelectionServiceGwtImpl, this.datasourceModel.getSelectedRelationalConnection(), this);
@@ -152,4 +153,9 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		this.finishable = finishable;
 		firePropertyChange("finishable", prevFinishable, finishable);
 	}
+
+  @Override
+  public void restoreSavedDatasource(Domain previousDomain, XulServiceCallback<Void> callback) {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
 }

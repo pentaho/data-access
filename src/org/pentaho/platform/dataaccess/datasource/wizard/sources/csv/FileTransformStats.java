@@ -41,8 +41,6 @@ public class FileTransformStats implements Serializable, IDatasourceSummary {
   private ArrayList<String> errors = new ArrayList<String>();
   private transient DataRow[] rows = null;
   private long errorCount = 0;
-  private long tableOutputErrorCount = 0;
-  private String serializedModel;
   private Domain domain;
   private boolean showModeler;
 
@@ -128,14 +126,6 @@ public class FileTransformStats implements Serializable, IDatasourceSummary {
 
   public void setDomain(Domain domain){
     this.domain = domain;
-  }
-
-  public void setSerializedDomain(String serializedModel) {
-    this.serializedModel = serializedModel;
-  }
-
-  public String getSerializedModel() {
-    return serializedModel;
   }
 
   @Override

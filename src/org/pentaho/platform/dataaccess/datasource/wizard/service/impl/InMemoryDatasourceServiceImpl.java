@@ -324,8 +324,13 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
   }
 
   public DatasourceDTO deSerializeModelState(String dtoStr) throws DatasourceServiceException {
-    XStream xs = new XStream();
-    return (DatasourceDTO) xs.fromXML(dtoStr);
+    try{
+      XStream xs = new XStream();
+      return (DatasourceDTO) xs.fromXML(dtoStr);
+    } catch(Exception e){
+      e.printStackTrace();
+      throw new DatasourceServiceException(e);
+    }
   }
 
   @Override
@@ -341,7 +346,6 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
     modelerWorkspace.setModelName(name);
 
     try {
-      executeQuery(connectionName, query, "10");
 
       Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
           || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
@@ -360,6 +364,7 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
       domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(datasourceDTO));
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
+      modelerService.serializeModels(domain, modelerWorkspace.getModelName());
       summary.setDomain(domain);
       return summary;
     } catch (SQLModelGeneratorException smge) {
@@ -373,6 +378,11 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
       throw new DatasourceServiceException(Messages.getErrorString(
           "InMemoryDatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e); //$NON-NLS-1$
     } catch (ModelerException e) {
+      logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
+          e.getLocalizedMessage()), e);
+      throw new DatasourceServiceException(Messages
+          .getErrorString("InMemoryDatasourceServiceImpl.ERROR_0015_UNABLE_TO_GENERATE_MODEL"), e); //$NON-NLS-1$
+    } catch (Exception e) {
       logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
           e.getLocalizedMessage()), e);
       throw new DatasourceServiceException(Messages

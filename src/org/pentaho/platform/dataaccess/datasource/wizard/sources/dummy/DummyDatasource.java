@@ -1,5 +1,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy;
 
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
@@ -71,6 +72,11 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
 
   @Override
   public void setFinishable(boolean isFinishable) {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
+  public void restoreSavedDatasource(Domain previousDomain, XulServiceCallback<Void> callback) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 }

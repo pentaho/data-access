@@ -3,7 +3,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.models;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.reporting.libraries.base.util.CSVTokenizer;
@@ -35,7 +34,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   
   private String tmpFilename;
   
-  private String fileName;
+  private String filename;
  
   private String currencySymbol = ""; //$NON-NLS-1$
   
@@ -138,12 +137,12 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
     firePropertyChange(TMP_FILENAME_ATTRIBUTE, previousVal, filename);
   }
   
-  public String getFileName() {
-	  return this.fileName;
+  public String getFilename() {
+	  return this.filename;
   }
   
-  public void setFileName(String file) {
-	  this.fileName = file;
+  public void setFilename(String file) {
+	  this.filename = file;
   }
 
   @Bindable
@@ -436,7 +435,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
     setEnclosure("\"");
     setEncoding("");
     setTmpFilename(null);
-    setFileName(null);
+    setFilename(null);
     setFriendlyFilename(null);
     setGroupSymbol(",");
     setCurrencySymbol("");

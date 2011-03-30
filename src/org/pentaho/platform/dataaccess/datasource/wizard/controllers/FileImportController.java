@@ -154,7 +154,7 @@ public class FileImportController extends AbstractXulEventHandler  {
       }
     }
 
-    if(selectedFile.endsWith(".csv") || selectedFile.endsWith(".txt") 
+  if(selectedFile.endsWith(".csv") || selectedFile.endsWith(".txt")
         || selectedFile.endsWith(".zip") || selectedFile.endsWith(".tgz") || selectedFile.endsWith(".tar")) {
 		datasourceModel.getModelInfo().getFileInfo().setTmpFilename(uploadedFile);
 		datasourceModel.getModelInfo().getFileInfo().setFriendlyFilename(selectedFile);

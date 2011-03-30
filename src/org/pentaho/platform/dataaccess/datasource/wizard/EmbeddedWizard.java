@@ -85,11 +85,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   private boolean initialized;
 
   private AsyncConstructorListener asyncConstructorListener;
-  
 
-  
-  private Boolean editing;
-  
   private ResourceBundle bundle;
 
   private XulServiceCallback<Domain> editFinishedCallback;
@@ -208,7 +204,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       checkInitialized();
     }
     this.editFinishedCallback = null; // if previously have edited, clear-out old listener
-    editing = false;
     datasourceModel.getGuiStateModel().setEditing(false);
     wizardController.setActiveStep(0);
     
@@ -224,31 +219,38 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   }
 
   public void showEditDialog(final Domain domain, final XulServiceCallback<Domain> editFinishedCallback) {
+    checkInitialized();
     this.editFinishedCallback = editFinishedCallback;
 
-    // initialize connections
-    if (datasourceModel.getGuiStateModel().getConnections() == null
-        || datasourceModel.getGuiStateModel().getConnections().size() <= 0) {
-      checkInitialized();
-      connectionController.reloadConnections();
+    String datasourceType = (String) domain.getLogicalModels().get(0).getProperty("DatasourceType");
+    IWizardDatasource selectedDatasource = null;
+    for(IWizardDatasource datasource: wizardController.getDatasources()){
+      if(datasource.getId().equals(datasourceType)){
+        selectedDatasource = datasource;
+        break;
+      }
     }
-    editing = true;
-    datasourceModel.getGuiStateModel().setEditing(true);
-    wizardController.reset();
+    if(selectedDatasource == null){
+      MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN_TITLE"), MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"));
+      editFinishedCallback.error(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"), new IllegalStateException(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN")));
+      return;
+    }
 
-    String modelState = (String) domain.getLogicalModels().get(0).getProperty("datasourceModel");
-    datasourceService.deSerializeModelState(modelState, new XulServiceCallback<DatasourceDTO>() {
-      public void success(DatasourceDTO datasourceDTO) {
-        DatasourceDTO.populateModel(datasourceDTO, datasourceModel);
-        dialog.show();
-        datasourceModel.getGuiStateModel().setDirty(false);
+    wizardController.setSelectedDatasource(selectedDatasource);
+    wizardController.reset();
+    selectedDatasource.restoreSavedDatasource(domain, new XulServiceCallback<Void>(){
+      @Override
+      public void error(String s, Throwable throwable) {
+        MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"), throwable.getMessage());
+        editFinishedCallback.error(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"), throwable);
       }
 
-      public void error(String s, Throwable throwable) {
-        MessageHandler.getInstance().showErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages.getString(
-            "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
+      @Override
+      public void success(Void aVoid) {
+        dialog.show();
       }
     });
+
 
   }
 
@@ -409,14 +411,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     this.wizardController = wizardController;
   }
   
-  public Boolean getEditing() {
-    return editing;
-  }
-
-  public void setEditing(Boolean editing) {
-    this.editing = editing;
-  }
-
   @Bindable
   public void showModelEditor() {
     // open up the modeler

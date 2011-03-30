@@ -1,5 +1,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
@@ -66,6 +67,12 @@ public interface IWizardDatasource extends XulEventSource {
    */
   void deactivating();
 
+  /**
+   * Returns the unique ID for this type of datasource. This ID will be stored in the final Domain for retrieval on edit.
+   * @return
+   */
   String getId();
+
+  void restoreSavedDatasource(Domain previousDomain, XulServiceCallback<Void> callback);
 
 }

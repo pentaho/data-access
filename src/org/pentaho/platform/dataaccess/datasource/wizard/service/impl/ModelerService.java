@@ -245,7 +245,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
 	      DatasourceDTO datasource = (DatasourceDTO) xs.fromXML(modelState);
 	      CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
 	      String tmpFileName = csvFileInfo.getTmpFilename();
-	      String csvFileName = csvFileInfo.getFileName();
+	      String csvFileName = csvFileInfo.getFilename();
 	      File tmpFile = new File(sysTmpDir + File.separatorChar + tmpFileName);
 	    
 	      if(datasource.getDatasourceType().equals(DatasourceType.CSV)) {
@@ -264,7 +264,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
 	    	  if(csvFileName != null) { 
 	    		  
 	    		  // Cleanup logic when updating from CSV datasource to SQL datasource.
-	    		  csvFileInfo.setFileName(null);
+	    		  csvFileInfo.setFilename(null);
 	    		  csvFileInfo.setTmpFilename(null);
 	    		  csvFileInfo.setFriendlyFilename(null);
 	    		  csvFileInfo.setContents(null);

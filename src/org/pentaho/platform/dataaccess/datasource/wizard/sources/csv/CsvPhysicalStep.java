@@ -8,19 +8,16 @@ import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IModelInfoValidationListener;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.ui.xul.XulComponent;
-import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.components.XulImage;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
-import org.pentaho.ui.xul.containers.XulGrid;
 import org.pentaho.ui.xul.containers.XulRow;
-import org.pentaho.ui.xul.containers.XulRows;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -188,6 +185,7 @@ public class CsvPhysicalStep extends AbstractWizardStep {
     });
 
 
+    bf.setBindingType(Binding.Type.ONE_WAY);
     // binding to set the first-row-is-header checkbox's enabled property based on the selectedItem in the filesList
     bf.createBinding(uploadedFileTextBox, "value", "isHeaderCheckBox", "!disabled", BindingConvertor.object2Boolean());
     // binding to set the delimiters enabled property based on the selectedItem in the filesList
@@ -195,7 +193,6 @@ public class CsvPhysicalStep extends AbstractWizardStep {
     // binding to set the enclosures enabled property based on the selectedItem in the filesList
     bf.createBinding(uploadedFileTextBox, "value", "enclosureRadioGroup", "!disabled", BindingConvertor.object2Boolean());
 
-    bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(datasourceModel.getModelInfo().getFileInfo(), "friendlyFilename", uploadedFileTextBox, "value"); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding(uploadedFileTextBox, "value", "encodingTypeMenuList", "!disabled", BindingConvertor.object2Boolean());
 
@@ -205,7 +202,7 @@ public class CsvPhysicalStep extends AbstractWizardStep {
         }
         public String targetToSource(String target) {
         	Collection<String> encodings = encodingTypeMenuList.getElements();
-        	if(!encodings.contains(target)) {
+        	if(target != null && !encodings.contains(target)) {
         		encodings.add(target);
         		encodingTypeMenuList.setElements(encodings);
         	}
@@ -258,7 +255,24 @@ public class CsvPhysicalStep extends AbstractWizardStep {
     	  GWT.log(e.toString());
       }
       datasourceModel.getModelInfo().validate();
-      setValid(isValidated());
+      datasourceModel.getModelInfo().addModelInfoValidationListener(new IModelInfoValidationListener(){
+        @Override
+        public void onCsvInValid() {
+          setValid(isValidated());
+        }
+        @Override
+        public void onCsvValid() {
+          setValid(isValidated());
+        }
+        @Override
+        public void onModelInfoValid() {
+          setValid(isValidated());
+        }
+        @Override
+        public void onModelInfoInvalid() {
+          setValid(isValidated());
+        }
+      });
 
     }
   }
@@ -275,12 +289,12 @@ public class CsvPhysicalStep extends AbstractWizardStep {
   }
 
   public void syncModelInfo() {
-  	String filename = datasourceModel.getModelInfo().getFileInfo().getFileName();
+  	String filename = datasourceModel.getModelInfo().getFileInfo().getFilename();
   	String tmpFilename  = datasourceModel.getModelInfo().getFileInfo().getTmpFilename();
 
-  	if((filename == null) || (!tmpFilename.startsWith(filename))) { //creating a brand new ds || editing a ds having uploaded a new file
+  	if((filename == null) || (tmpFilename != null && !tmpFilename.startsWith(filename))) { //creating a brand new ds || editing a ds having uploaded a new file
   		filename = tmpFilename;
-  	} else if(tmpFilename.startsWith(filename)) { // editing a ds without uploading a new file
+  	} else if(tmpFilename == null || tmpFilename.startsWith(filename)) { // editing a ds without uploading a new file
   		datasourceModel.getModelInfo().getFileInfo().setTmpFilename(filename);
   	}
 

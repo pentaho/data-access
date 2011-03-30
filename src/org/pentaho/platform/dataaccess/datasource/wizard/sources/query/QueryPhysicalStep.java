@@ -59,8 +59,8 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   XulButton okButton = null;
   XulButton cancelButton = null;
   private XulTree csvDataTable = null;
-  private WizardConnectionController connectionController = null;
-
+  private WizardConnectionController connectionController;
+  private ConnectionController databaseConnectionController;
   private IXulAsyncConnectionService connectionService;
 
   public QueryPhysicalStep(DatasourceModel datasourceModel, QueryDatasource parentDatasource) {
@@ -89,7 +89,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     getXulDomContainer().addEventHandler(connectionController);
     connectionController.init();
 
-    ConnectionController databaseConnectionController = new ConnectionController();
+    databaseConnectionController = new ConnectionController();
     getXulDomContainer().addEventHandler(databaseConnectionController);
     databaseConnectionController.setDatasourceModel(datasourceModel);
     databaseConnectionController.setService(connectionService);
@@ -177,7 +177,11 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     datasourceNameTextBox.setFocus();
     setStepImageVisible(true);
   }
-  
+
+  public void reloadConnections() {
+    databaseConnectionController.reloadConnections();
+  }
+
   private class QueryAndDatasourceNamePropertyChangeListener implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
       String newValue = (String) evt.getNewValue();
@@ -194,5 +198,11 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     return super.stepDeactivatingForward();
   }
 
+  public WizardConnectionController getConnectionController() {
+    return connectionController;
+  }
 
+  public void setConnectionController(WizardConnectionController connectionController) {
+    this.connectionController = connectionController;
+  }
 }

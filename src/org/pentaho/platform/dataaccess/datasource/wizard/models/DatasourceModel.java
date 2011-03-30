@@ -26,12 +26,9 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.util.ArrayList;
-import java.util.List;
 //TODO: this class is a mixture of CSV and Relational model code... break it up!
 public class DatasourceModel extends XulEventSourceAdapter 
     implements IRelationalModelValidationListener, IModelInfoValidationListener {
@@ -151,7 +148,7 @@ public class DatasourceModel extends XulEventSourceAdapter
     this.modelInfo.getFileInfo().setCurrencySymbol(modelInfo.getFileInfo().getCurrencySymbol());
     this.modelInfo.getFileInfo().setEnclosure(modelInfo.getFileInfo().getEnclosure());
     this.modelInfo.getFileInfo().setEncoding(modelInfo.getFileInfo().getEncoding());
-    this.modelInfo.getFileInfo().setFileName(modelInfo.getFileInfo().getFileName());
+    this.modelInfo.getFileInfo().setFilename(modelInfo.getFileInfo().getFilename());
     this.modelInfo.getFileInfo().setTmpFilename(modelInfo.getFileInfo().getTmpFilename());
     this.modelInfo.getFileInfo().setGroupSymbol(modelInfo.getFileInfo().getGroupSymbol());
     this.modelInfo.getFileInfo().setHeaderRows(modelInfo.getFileInfo().getHeaderRows());

@@ -3,6 +3,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
@@ -10,11 +11,13 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -44,8 +47,11 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   private XulDomContainer container;
   private boolean finishable;
 
+  private IXulAsyncDatasourceService datasourceService;
+
   public CsvDatasource(DatasourceModel datasourceModel){
     this.datasourceModel = datasourceModel;
+    datasourceService = new DatasourceServiceGwtImpl();
 
     this.csvDatasourceService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     ServiceDefTarget endpoint = (ServiceDefTarget) this.csvDatasourceService;
@@ -130,10 +136,10 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
     // set the modelInfo.stageTableName to the database table name generated from the datasourceName
     datasourceModel.getModelInfo().setStageTableName(datasourceModel.generateTableName());
     String tmpFileName = datasourceModel.getModelInfo().getFileInfo().getTmpFilename();
-    String fileName = datasourceModel.getModelInfo().getFileInfo().getFileName();
+    String fileName = datasourceModel.getModelInfo().getFileInfo().getFilename();
     if(fileName == null && tmpFileName != null && tmpFileName.endsWith(".tmp")) {
       tmpFileName = tmpFileName.substring(0, tmpFileName.lastIndexOf(".tmp"));
-      datasourceModel.getModelInfo().getFileInfo().setFileName(tmpFileName);
+      datasourceModel.getModelInfo().getFileInfo().setFilename(tmpFileName);
     }
 
     datasourceModel.getModelInfo().setDatasourceName(datasourceModel.getDatasourceName());
@@ -177,5 +183,28 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
     boolean prevFinishable = this.finishable;
     this.finishable = finishable;
     firePropertyChange("finishable", prevFinishable, finishable);
+  }
+
+  @Override
+  public void restoreSavedDatasource(Domain previousDomain, final XulServiceCallback<Void> callback) {
+
+    String serializedDatasource = (String) previousDomain.getLogicalModels().get(0).getProperty("datasourceModel");
+    
+    datasourceService.deSerializeModelState(serializedDatasource, new XulServiceCallback<DatasourceDTO>() {
+      public void success(DatasourceDTO datasourceDTO) {
+        DatasourceDTO.populateModel(datasourceDTO, datasourceModel);
+        datasourceModel.getGuiStateModel().setDirty(false);
+        datasourceModel.getGuiStateModel().setEditing(true);
+
+        callback.success(null);
+      }
+
+      public void error(String s, Throwable throwable) {
+        MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString(
+            "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
+
+        callback.error(s, throwable);
+      }
+    });
   }
 }
