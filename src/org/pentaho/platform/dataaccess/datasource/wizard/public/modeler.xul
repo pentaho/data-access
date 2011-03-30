@@ -93,8 +93,8 @@
 
         <tabbox id="modelTabbox" flex="1" >
           <tabs>
-            <tab id="analysisTab" label="analysis" onclick="modeler.setModelerPerspective('ANALYSIS')"></tab>
-            <tab id="reportingTab" label="reporting" onclick="modeler.setModelerPerspective('REPORTING')"></tab>
+            <tab id="analysisTab" label="${analysisTabLabel}" onclick="modeler.setModelerPerspective('ANALYSIS')"></tab>
+            <tab id="reportingTab" label="${reportingTabLabel}" onclick="modeler.setModelerPerspective('REPORTING')"></tab>
           </tabs>
           <tabpanels>
             <tabpanel id="analysisTabPanel">
@@ -138,14 +138,14 @@
               <vbox id="reportingModelPanel" flex="1" spacing="0" padding="0">
                 <toolbar id="categories-toolbar" mode="icons">
                   <toolbarspacer flex="1"/>
-                  <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveRelationalFieldDown()" tooltiptext="${move_field_down}"/>
-                  <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveRelationalFieldUp()" tooltiptext="${move_field_up}"/>
                   <toolbarbutton id="categoryBtn" image="images/sm_folder_icon.png" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}"/>
                   <toolbarbutton id="fieldBtn" image="images/fields.png" onclick="modeler.showNewFieldDialog()" disabled="true" tooltiptext="${new_field}"/>
+                  <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveRelationalFieldDown()" tooltiptext="${move_field_down}"/>
+                  <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveRelationalFieldUp()" tooltiptext="${move_field_up}"/>
                   <toolbarbutton image="images/remove.png" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
                   <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
                 </toolbar>
-                <tree id="categoriesTree" width="355" height="413" editable="false">
+                <tree id="categoriesTree" width="355" height="413" editable="false" hiddenrootnode="false" preserveselection="true">
                   <treecols>
                     <treecol width="355" label="" primary="true"
                       pen:binding="displayName" pen:childrenbinding="children"
@@ -396,6 +396,118 @@
             </groupbox>
           </vbox>
 
+          <vbox id="relationalmodelprops">
+            <vbox bgcolor="#FFFFCC" id="relational_message">
+              <grid spacing="3">
+                <columns>
+                  <column/>
+                  <column flex="1"/>
+                </columns>
+                <rows>
+                  <row >
+                    <image src="images/warning.png" />
+                            <label id="relational_message_label" flex="1" multiline="true"
+                            value="${undefined_ds}" />
+                  </row>
+               </rows>
+              </grid>
+            </vbox>
+            <groupbox>
+              <caption label="${details}"/>
+              <label value="${model_name}:" />
+              <textbox id="relational_name" />
+            </groupbox>
+
+          </vbox>
+
+          <vbox id="categoryprops">
+            <vbox bgcolor="#FFFFCC" id="category_message">
+              <grid spacing="3">
+                <columns>
+                  <column/>
+                  <column flex="1"/>
+                </columns>
+                <rows>
+                  <row flex="1">
+                    <image src="images/warning.png" />
+                    <label id="category_message_label" flex="1" multiline="true"
+                      value="This is a test to see how a warning message will appear." />
+                  </row>
+
+               </rows>
+              </grid>
+            </vbox>
+            <groupbox>
+              <caption label="${details}"/>
+              <label value="${category_name}:" />
+              <textbox id="category_name" />
+            </groupbox>
+
+          </vbox>
+
+          <vbox id="fieldprops" flex="1" spacing="4">
+            <vbox bgcolor="#FFFFCC" id="fieldmessages">
+              <grid spacing="3">
+                <columns>
+                  <column/>
+                  <column flex="1"/>
+                </columns>
+                <rows>
+                  <row flex="1">
+                    <image src="images/warning.png" />
+                    <label id="fieldmessageslabel" flex="1" multiline="true"
+                      value="This is a test to see how a warning message will appear." />
+                  </row>
+
+               </rows>
+              </grid>
+                <hbox flex="1">
+                <spacer flex="1"/>
+                  <button id="fixFieldColumnsBtn" label="${missing_column}"
+                    onclick="modeler.resolveMissingColumn()" visible="true" />
+                <spacer flex="1"/>
+                </hbox>
+              </vbox>
+              <groupbox>
+                <caption label="${source_column}"/>
+                <hbox flex="1">
+                  <label id="field_column_name" value="" flex="1"/>
+                  <button image="images/edit.png"
+                      onclick="modeler.changeColumn()"  />
+
+                </hbox>
+              </groupbox>
+
+              <spacer height="5"/>
+
+              <groupbox>
+                <caption label="${details}"/>
+
+                <label value="${display_name}:" />
+                <textbox id="fielddisplayname" />
+                <label value="${aggregation}:" />
+                <menulist id="fieldaggregationtype">
+                  <menupopup>
+                    <menuitem label="SUM" />
+                    <menuitem label="AVERAGE" />
+                    <menuitem label="MINIMUM" />
+                    <menuitem label="MAXIMUM" />
+                    <menuitem label="COUNT_DISTINCT" />
+                  </menupopup>
+                </menulist>
+                <label value="${format}:" />
+                <menulist id="fieldformatstring">
+                  <menupopup>
+                    <menuitem label="NONE" />
+                    <menuitem label="#,###;(#,###)" />
+                    <menuitem label="#,###.00;(#,###.00)" />
+                    <menuitem label="$ #,###;($ #,###)" />
+                    <menuitem label="$ #,###.00;($ #,###.00)" />
+                    <menuitem label="#.#%;(#.#%)" />
+                  </menupopup>
+                </menulist>
+              </groupbox>
+            </vbox>
 
         </deck>
       </groupbox>

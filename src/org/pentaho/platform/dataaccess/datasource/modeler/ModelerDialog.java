@@ -1,15 +1,13 @@
 package org.pentaho.platform.dataaccess.datasource.modeler;
 
-import com.google.gwt.user.client.Window;
 import org.pentaho.agilebi.modeler.*;
-import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
+import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.propforms.*;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
-import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
@@ -224,6 +222,24 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
 
 
     propController = new GenericPropertiesForm();
+    container.addEventHandler(propController);
+    controller.addPropertyForm(propController);
+    propController.setBindingFactory(bf);
+    propController.init();
+
+    propController = new CategoryPropertiesForm();
+    container.addEventHandler(propController);
+    controller.addPropertyForm(propController);
+    propController.setBindingFactory(bf);
+    propController.init();
+
+    propController = new FieldsPropertiesForm(workspacehelper.getLocale());
+    container.addEventHandler(propController);
+    controller.addPropertyForm(propController);
+    propController.setBindingFactory(bf);
+    propController.init();
+
+    propController = new RelationalModelNodePropertiesForm();
     container.addEventHandler(propController);
     controller.addPropertyForm(propController);
     propController.setBindingFactory(bf);
