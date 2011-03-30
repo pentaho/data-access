@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.dom.Document;
@@ -33,7 +34,7 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
  *
  * @author Thomas Morgner
  */
-public interface IWizardStep extends XulEventHandler {
+public interface IWizardStep extends XulEventHandler, XulEventSource {
   
   
   /**

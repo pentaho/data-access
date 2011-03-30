@@ -24,6 +24,7 @@ import java.util.List;
 import org.pentaho.platform.dataaccess.datasource.wizard.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.SelectDatasourceStep;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -51,7 +52,6 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   private IXulAsyncDatasourceService datasourceService;
   private SelectDatasourceStep datasourceStep;
-  private XulDeck datasourceDeck;
   private XulTextbox datasourceName;
   private List<IWizardDatasource> datasources = new ArrayList<IWizardDatasource>();
   private IWizardDatasource selectedDatasource;
@@ -111,6 +111,9 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   private XulMenuList datatypeMenuList;
 
+  private DummyDatasource dummyDatasource = new DummyDatasource();
+  private SelectDatasourceStep selectDatasourceStep;
+
   public MainWizardController(final BindingFactory bf, final DatasourceModel datasourceModel, IXulAsyncDatasourceService datasourceService) {
     this.datasourceService = datasourceService;
     this.steps = new ArrayList<IWizardStep>();
@@ -118,7 +121,8 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     this.notDisabledBindingConvertor = new NotDisabledBindingConvertor();
     this.datasourceModel = datasourceModel;
 
-
+    addDatasource(dummyDatasource);
+    selectDatasourceStep = dummyDatasource.getSelectDatasourceStep();
   }
 
   public IWizardStep getStep(final int step) {
@@ -174,11 +178,12 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   public void init() {
 
+    // We need the SelectDatasourceStep at all times, add it now
+
     wizardDialog = (XulDialog) document.getElementById("main_wizard_window");
 
     summaryDialog = (XulDialog) document.getElementById("summaryDialog");
 
-    datasourceDeck = (XulDeck) document.getElementById("datasourceDialogDeck");
 
     datasourceName = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
     bf.createBinding(datasourceName, "value", datasourceModel, "datasourceName");
@@ -195,19 +200,17 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
     bf.setBindingType(Binding.Type.ONE_WAY);
 
-    try {
-    } catch (Exception e) {
-      MessageHandler.getInstance().showErrorDialog(e.getMessage());
-      e.printStackTrace();
-    }
-
     bf.createBinding(this, ACTIVE_STEP_PROPERTY_NAME, BACK_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, new BackButtonBindingConverter());
 
     try {
       for(IWizardDatasource datasource : this.getDatasources()){
           datasource.init(getXulDomContainer());
-      }
+      } 
+      steps.add(selectDatasourceStep);
+      selectDatasourceStep.activating();
+      setActiveStep(0);
       datasourceBinding.fireSourceChanged();
+      setSelectedDatasource(dummyDatasource);
     } catch (XulException e) {
       MessageHandler.getInstance().showErrorDialog("Error", e.getMessage());
       e.printStackTrace();
@@ -215,6 +218,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       MessageHandler.getInstance().showErrorDialog("Error", e.getMessage());
       e.printStackTrace();
     }
+
 
   }
 
@@ -250,11 +254,14 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
         steps.removeAll(prevSelection.getSteps());
         prevSelection.deactivating();
       }
+
+      for(int i=1; i<datasource.getSteps().size(); i++){
+        steps.add(datasource.getSteps().get(i));
+      }
       steps.addAll(datasource.getSteps());
-      datasource.getSteps().get(0).activating();
+      selectDatasourceStep.setSelectedDatasource(datasource);
       activeStep = 0;
 
-      this.datasourceDeck.setSelectedIndex(datasourceDeck.getChildNodes().indexOf(datasource.getSteps().get(0).getUIComponent()));
       updateBindings();
 
     } catch (XulException e) {

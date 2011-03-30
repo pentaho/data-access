@@ -42,7 +42,7 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
 
   @Override
   public List<IWizardStep> getSteps() {
-    return Collections.singletonList((IWizardStep) datasourceStep);
+    return Collections.emptyList();
   }
 
   @Override
@@ -66,11 +66,13 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
   }
 
   @Override
+  @Bindable
   public boolean isFinishable() {
     return false;
   }
 
   @Override
+  @Bindable
   public void setFinishable(boolean isFinishable) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
@@ -78,5 +80,9 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
   @Override
   public void restoreSavedDatasource(Domain previousDomain, XulServiceCallback<Void> callback) {
     //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public SelectDatasourceStep getSelectDatasourceStep() {
+    return this.datasourceStep;
   }
 }

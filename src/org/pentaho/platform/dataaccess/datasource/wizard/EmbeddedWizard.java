@@ -457,7 +457,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
    * @param path
    */
   public void setUploadPath(String path){
-
     Document rootDocument = mainWizardContainer.getDocumentRoot();
     XulFileUpload upload = (XulFileUpload) rootDocument.getElementById("fileUpload"); //$NON-NLS-1$
     upload.setAction(path);
