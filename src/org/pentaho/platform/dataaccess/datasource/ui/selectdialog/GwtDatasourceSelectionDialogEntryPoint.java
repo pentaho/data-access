@@ -21,6 +21,7 @@
 package org.pentaho.platform.dataaccess.datasource.ui.selectdialog;
 
 
+import com.google.gwt.core.client.GWT;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPane;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPaneNativeListener;
 import org.pentaho.metadata.model.Domain;
@@ -29,6 +30,8 @@ import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
@@ -48,12 +51,14 @@ public class GwtDatasourceSelectionDialogEntryPoint implements EntryPoint {
   private IXulAsyncDatasourceService datasourceService;
 
   private IXulAsyncConnectionService connectionService;
+  private ICsvDatasourceServiceAsync csvService;
 
   private boolean asyncConstructorDone = false;
   
   public void onModuleLoad() {
     datasourceService = new DatasourceServiceGwtImpl();
     connectionService = new ConnectionServiceGwtImpl();
+    csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     setupNativeHooks(this);
   }
 
@@ -111,7 +116,11 @@ public class GwtDatasourceSelectionDialogEntryPoint implements EntryPoint {
     };
 
     if(editor == null){
-      editor = new EmbeddedWizard(datasourceService, connectionService, false);
+      editor = new EmbeddedWizard(false);
+
+      editor.setDatasourceService(datasourceService);
+      editor.setConnectionService(connectionService);
+      editor.setCsvDatasourceService(csvService);
       editor.init(new AsyncConstructorListener<EmbeddedWizard>() {
         public void asyncConstructorDone(EmbeddedWizard source) {
           source.addDialogListener(wizardListener);

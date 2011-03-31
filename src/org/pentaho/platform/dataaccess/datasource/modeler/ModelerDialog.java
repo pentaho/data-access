@@ -1,5 +1,6 @@
 package org.pentaho.platform.dataaccess.datasource.modeler;
 
+import com.google.gwt.core.client.GWT;
 import org.pentaho.agilebi.modeler.*;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
@@ -12,6 +13,8 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -49,6 +52,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
   private ModelerDialog modeler;
   private IXulAsyncConnectionService connectionService;
   private IXulAsyncDatasourceService datasourceService;
+  private ICsvDatasourceServiceAsync csvService;
   private AsyncConstructorListener constructorListener;
   private static ModelerDialog instance;
 
@@ -149,8 +153,14 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
 
     datasourceService = new DatasourceServiceGwtImpl();
     connectionService = new ConnectionServiceGwtImpl();
+    csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
+    
     if(wizard == null){
-      wizard = new EmbeddedWizard(datasourceService, connectionService, false);
+      wizard = new EmbeddedWizard(false);
+
+      wizard.setDatasourceService(datasourceService);
+      wizard.setConnectionService(connectionService);
+      wizard.setCsvDatasourceService(csvService);
       wizard.init(null);
     }
 

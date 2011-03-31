@@ -21,6 +21,7 @@
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
@@ -33,7 +34,10 @@ import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -56,6 +60,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private ModelerDialog modeler;
   private IXulAsyncDatasourceService datasourceService;
   private IXulAsyncConnectionService connectionService;
+  private ICsvDatasourceServiceAsync csvService;
 
   public void onModuleLoad() {
 
@@ -68,7 +73,11 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       public void success(Boolean retVal) {
         if (retVal) {
           connectionService = new ConnectionServiceGwtImpl();
-          wizard = new EmbeddedWizard(datasourceService, connectionService, false);
+          csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
+          wizard = new EmbeddedWizard(false);
+          wizard.setDatasourceService(datasourceService);
+          wizard.setConnectionService(connectionService);
+          wizard.setCsvDatasourceService(csvService);
           wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
             @Override
             public void asyncConstructorDone(EmbeddedWizard source) {

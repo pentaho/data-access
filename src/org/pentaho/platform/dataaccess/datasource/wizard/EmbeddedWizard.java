@@ -97,6 +97,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   private ModelerDialog modeler;
   private SummaryDialogController summaryDialogController = new SummaryDialogController();
   private IWizardModel wizardModel = new WizardModel();
+
   private ICsvDatasourceServiceAsync csvDatasourceService;
 
   /**
@@ -105,10 +106,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
    * @param connectionService
    * @param checkHasAccess
    */
-  public EmbeddedWizard(final IXulAsyncDatasourceService datasourceService,
-      final IXulAsyncConnectionService connectionService, boolean checkHasAccess) {
-    this.datasourceService = datasourceService;
-    this.connectionService = connectionService;
+  public EmbeddedWizard(boolean checkHasAccess) {
     this.checkHasAccess = checkHasAccess;
 
   }
@@ -273,7 +271,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     return mainWizardContainer;
   }
 
-  private void setConnectionService(IXulAsyncConnectionService service) {
+  public void setConnectionService(IXulAsyncConnectionService service) {
     this.connectionService = service;
     if(connectionController != null){
       connectionController.setService(service);
@@ -469,5 +467,13 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   public void setWizardModel(IWizardModel wizardModel) {
     this.wizardModel = wizardModel;
+  }
+
+  public ICsvDatasourceServiceAsync getCsvDatasourceService() {
+    return csvDatasourceService;
+  }
+
+  public void setCsvDatasourceService(ICsvDatasourceServiceAsync csvDatasourceService) {
+    this.csvDatasourceService = csvDatasourceService;
   }
 }
