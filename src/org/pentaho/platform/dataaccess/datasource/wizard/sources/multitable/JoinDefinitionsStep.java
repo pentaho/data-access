@@ -37,7 +37,9 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
@@ -49,6 +51,8 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	protected static final String JOIN_DEFINITION_PANEL_ID = "joinDefinitionWindow";
 
+	private XulDialog errorDialog;
+	private XulLabel errorLabel;
 	private XulVbox joinDefinitionDialog;
 	private JoinGuiModel joinGuiModel;
 	private XulListbox leftTables;
@@ -102,31 +106,57 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		// validate against duplicate joins.
 		// and
 		// validate against joining to the same table.
-		if (notDuplicate(join) && notSelfJoin(join)) {
+		// and
+		// validate against circular joins
+		StringBuffer errors = new StringBuffer();
+		if (notDuplicate(join, errors) && notSelfJoin(join, errors) && notCircularJoins(join, errors)) {
 			this.joinGuiModel.addJoin(join);
+		} else {
+
+			this.displayErrors(errors.toString());
 		}
 
-		// validate all tables have been used.
 		parentDatasource.setFinishable(this.isFinishable());
 	}
 
-	private boolean notDuplicate(JoinModel newJoin) {
-		boolean joinExists = true;
+	private boolean notDuplicate(JoinModel newJoin, StringBuffer errors) {
+		boolean notDuplicate = true;
 		for (JoinModel join : this.joinGuiModel.getJoins()) {
 			if (newJoin.equals(join)) {
-				joinExists = false;
+				notDuplicate = false;
+				errors.append("Duplicate Join Detected\n");  // TODO: i18n
 				break;
 			}
 		}
-		return joinExists;
+		return notDuplicate;
+	}
+
+	private boolean notSelfJoin(JoinModel newJoin, StringBuffer errors) {
+		boolean notSelfJoin = !newJoin.getLeftKeyFieldModel().getParentTable().equals(newJoin.getRightKeyFieldModel().getParentTable());
+		if (!notSelfJoin) {
+			errors.append("Self Join Detected\n");  // TODO: i18n
+		}
+		return notSelfJoin;
+	}
+
+	private boolean notCircularJoins(JoinModel newJoin, StringBuffer errors) {
+		//TODO pending
+		boolean notCircularJoin = true;
+		/*JoinTableModel targetTable = newJoin.getRightKeyFieldModel().getParentTable();
+		for (JoinModel join : this.joinGuiModel.getJoins()) {
+			JoinTableModel sourceTable = join.getLeftKeyFieldModel().getParentTable();
+			if (targetTable.equals(sourceTable)) {
+				notCircularJoin = false;
+				errors.append("Circular Join Detected\n");  // TODO: i18n
+				break;
+			}
+		}*/
+		return notCircularJoin;
 	}
 
 	private boolean isFinishable() {
+		//Can only finish if all the tables are joined and datasource name is present.
 		return allTablesJoined() && !StringUtils.isEmpty(wizardModel.getDatasourceName());
-	}
-
-	private boolean notSelfJoin(JoinModel newJoin) {
-		return !newJoin.getLeftKeyFieldModel().getParentTable().equals(newJoin.getRightKeyFieldModel().getParentTable());
 	}
 
 	private boolean allTablesJoined() {
@@ -164,6 +194,10 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.leftTables.addPropertyChangeListener(this);
 
 		this.rightTables = (XulListbox) document.getElementById("rightTables");
+
+		this.errorDialog = (XulDialog) document.getElementById("errorDialog");
+		this.errorLabel = (XulLabel) document.getElementById("errorLabel");
+
 		this.rightTables.addPropertyChangeListener(this);
 
 		super.init(wizardModel);
@@ -209,7 +243,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 				return null;
 			}
 		});
-		
+
 		bf.createBinding(wizardModel, "datasourceName", this, "finishable", new BindingConvertor<String, Boolean>() {
 
 			@Override
@@ -229,6 +263,11 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		if (this.joins.getElements() != null) {
 			parentDatasource.setFinishable(this.isFinishable());
 		}
+	}
+
+	public void displayErrors(String error) {
+		this.errorLabel.setValue(error);
+		this.errorDialog.show();
 	}
 
 	public String getStepName() {
