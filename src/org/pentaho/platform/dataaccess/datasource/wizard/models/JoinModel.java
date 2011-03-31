@@ -61,4 +61,8 @@ public class JoinModel extends XulEventSourceAdapter {
 		joinName.append(this.rightKeyFieldModel.getName());
 		return joinName.toString();
 	}
+	
+	public boolean equals(JoinModel join) {
+		return this.getName().equals(join.getName());
+	}
 }

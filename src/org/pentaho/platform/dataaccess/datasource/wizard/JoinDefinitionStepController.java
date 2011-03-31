@@ -93,16 +93,56 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 		JoinModel join = new JoinModel();
 		join.setLeftKeyFieldModel(this.joinGuiModel.getLeftKeyField());
 		join.setRightKeyFieldModel(this.joinGuiModel.getRightKeyField());
-		this.joinGuiModel.addJoin(join);
 
-		//TODO this must be triggered after validating if the join is good.
-		parentDatasource.setFinishable(true);
+		// validate against duplicate joins.
+		// and
+		// validate against joining to the same table.
+		if (notDuplicate(join) && notSelfJoin(join)) {
+			this.joinGuiModel.addJoin(join);
+		}
+
+		// validate all tables have been used.
+		if (allTablesJoined()) {
+			parentDatasource.setFinishable(true);
+		}
+	}
+
+	private boolean notDuplicate(JoinModel newJoin) {
+		boolean joinExists = true;
+		for (JoinModel join : this.joinGuiModel.getJoins()) {
+			if (newJoin.equals(join)) {
+				joinExists = false;
+				break;
+			}
+		}
+		return joinExists;
+	}
+
+	private boolean notSelfJoin(JoinModel newJoin) {
+		return !newJoin.getLeftKeyFieldModel().getParentTable().equals(newJoin.getRightKeyFieldModel().getParentTable());
+	}
+
+	private boolean allTablesJoined() {
+
+		boolean allTablesJoined = true;
+		next: for (JoinTableModel table : this.joinGuiModel.getSelectedTables()) {
+			for (JoinModel join : this.joinGuiModel.getJoins()) {
+				JoinTableModel table1 = join.getLeftKeyFieldModel().getParentTable();
+				JoinTableModel table2 = join.getRightKeyFieldModel().getParentTable();
+				if (table.equals(table1) || table.equals(table2)) {
+					continue next;
+				}
+			}
+			allTablesJoined = false;
+			break;
+		}
+		return allTablesJoined;
 	}
 
 	@Bindable
 	public void deleteJoin() {
 		this.joinGuiModel.removeSelectedJoin();
-		parentDatasource.setFinishable(!this.joins.getElements().isEmpty());
+		parentDatasource.setFinishable(this.allTablesJoined());
 	}
 
 	@Override
@@ -163,11 +203,11 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 			}
 		});
 	}
-	
+
 	@Override
 	public void stepActivatingForward() {
-		if(this.joins.getElements() != null) {
-			parentDatasource.setFinishable(!this.joins.getElements().isEmpty());
+		if (this.joins.getElements() != null) {
+			parentDatasource.setFinishable(this.allTablesJoined());
 		}
 	}
 
