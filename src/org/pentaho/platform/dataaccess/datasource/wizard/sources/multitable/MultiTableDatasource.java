@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
@@ -174,7 +175,8 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	public boolean isFinishable() {
 		return finishable;
 	}
-
+	
+    @Bindable
 	public void setFinishable(boolean finishable) {
 		boolean prevFinishable = this.finishable;
 		this.finishable = finishable;

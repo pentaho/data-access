@@ -23,8 +23,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
 import org.pentaho.ui.xul.XulComponent;
@@ -102,9 +107,7 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 		}
 
 		// validate all tables have been used.
-		if (allTablesJoined()) {
-			parentDatasource.setFinishable(true);
-		}
+		parentDatasource.setFinishable(this.isFinishable());
 	}
 
 	private boolean notDuplicate(JoinModel newJoin) {
@@ -116,6 +119,10 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 			}
 		}
 		return joinExists;
+	}
+
+	private boolean isFinishable() {
+		return allTablesJoined() && !StringUtils.isEmpty(wizardModel.getDatasourceName());
 	}
 
 	private boolean notSelfJoin(JoinModel newJoin) {
@@ -142,7 +149,7 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 	@Bindable
 	public void deleteJoin() {
 		this.joinGuiModel.removeSelectedJoin();
-		parentDatasource.setFinishable(this.allTablesJoined());
+		parentDatasource.setFinishable(this.isFinishable());
 	}
 
 	@Override
@@ -202,12 +209,25 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 				return null;
 			}
 		});
+		
+		bf.createBinding(wizardModel, "datasourceName", this, "finishable", new BindingConvertor<String, Boolean>() {
+
+			@Override
+			public Boolean sourceToTarget(final String datasourceName) {
+				return !StringUtils.isEmpty(datasourceName);
+			}
+
+			@Override
+			public String targetToSource(final Boolean value) {
+				return null;
+			}
+		});
 	}
 
 	@Override
 	public void stepActivatingForward() {
 		if (this.joins.getElements() != null) {
-			parentDatasource.setFinishable(this.allTablesJoined());
+			parentDatasource.setFinishable(this.isFinishable());
 		}
 	}
 
