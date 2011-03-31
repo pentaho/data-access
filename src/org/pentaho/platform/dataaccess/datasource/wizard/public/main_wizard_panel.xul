@@ -236,7 +236,7 @@
 				          <label value="Join(s):" tooltiptext=""/>
 				          <listbox id="joins" pen:binding="name" disabled="false" height="100" width="610"/>
 				          <hbox>
-						    <spacer width="480"/>
+						    <spacer width="530"/>
 						    <button id="deleteJoinButton" label="Delete Join" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.deleteJoin()" disabled="false"/>
 						  </hbox>
 				        </vbox>
