@@ -9,10 +9,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
@@ -48,12 +45,13 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   private boolean finishable;
 
   private IXulAsyncDatasourceService datasourceService;
+  private IWizardModel wizardModel;
 
-  public CsvDatasource(DatasourceModel datasourceModel){
+  public CsvDatasource(DatasourceModel datasourceModel, IXulAsyncDatasourceService datasourceService, ICsvDatasourceServiceAsync csvDatasourceService){
     this.datasourceModel = datasourceModel;
-    datasourceService = new DatasourceServiceGwtImpl();
+    this.datasourceService = datasourceService;
+    this.csvDatasourceService = csvDatasourceService;
 
-    this.csvDatasourceService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     ServiceDefTarget endpoint = (ServiceDefTarget) this.csvDatasourceService;
     endpoint.setServiceEntryPoint(getDatasourceURL());
     csvStep = new CsvPhysicalStep(datasourceModel, this, csvDatasourceService);
@@ -103,13 +101,13 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   }
 
   @Override
-  public void init(XulDomContainer container) throws XulException {
-    this.datasourceModel = datasourceModel;
+  public void init(XulDomContainer container, IWizardModel wizardModel) throws XulException {
+    this.wizardModel = wizardModel;
     bindingFactory = new GwtBindingFactory(document);
     container.addEventHandler(csvStep);
     container.addEventHandler(stageStep);
-    csvStep.init();
-    stageStep.init();
+    csvStep.init(wizardModel);
+    stageStep.init(wizardModel);
   }
 
   @Override
@@ -194,7 +192,7 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
       public void success(DatasourceDTO datasourceDTO) {
         DatasourceDTO.populateModel(datasourceDTO, datasourceModel);
         datasourceModel.getGuiStateModel().setDirty(false);
-        datasourceModel.getGuiStateModel().setEditing(true);
+        wizardModel.setEditing(true);
 
         callback.success(null);
       }

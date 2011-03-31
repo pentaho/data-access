@@ -23,6 +23,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 import java.util.List;
 
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
@@ -46,7 +47,7 @@ public interface IGwtDatasourceServiceAsync {
   void deSerializeModelState(String dtoStr, AsyncCallback<DatasourceDTO> callback);
 
   public void listDatasourceNames(AsyncCallback<List<String>> callback);
-  void generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO, AsyncCallback<QueryDatasourceSummary> callback);
+  void generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO, AsyncCallback<QueryDatasourceSummary> callback);
 }
 
   

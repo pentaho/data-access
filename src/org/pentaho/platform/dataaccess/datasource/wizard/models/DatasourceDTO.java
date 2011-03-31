@@ -12,6 +12,7 @@ import java.io.Serializable;
  * User: nbaker
  * Date: Aug 12, 2010
  */
+@Deprecated
 public class DatasourceDTO implements Serializable {
 
   private static final long serialVersionUID = 2498165523678485182L;

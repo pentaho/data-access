@@ -6,7 +6,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.ui.xul.XulComponent;
-import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
 
@@ -74,8 +73,8 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
   }
 
   @Override
-  public void init() throws XulException {
-    super.init();
+  public void init(IWizardModel wizardModel) throws XulException {
+    super.init(wizardModel);
     
     
     waitingDialog = (XulDialog) document.getElementById("waitingDialog"); //$NON-NLS-1$

@@ -32,6 +32,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.JoinDefinitionStepContr
 import org.pentaho.platform.dataaccess.datasource.wizard.JoinSelectionStepController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
@@ -56,8 +57,9 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	private JoinDefinitionStepController joinDefinitionStepController;
 	private IConnection selectedConnection;
 	private BindingFactory bf;
+  private IWizardModel wizardModel;
 
-	public MultiTableDatasource(DatasourceModel datasourceModel) {
+  public MultiTableDatasource(DatasourceModel datasourceModel) {
 		this.datasourceModel = datasourceModel;
 		this.joinGuiModel = new JoinGuiModel();
 		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
@@ -91,8 +93,13 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	}
 
 	@Override
-	public void init(final XulDomContainer container) throws XulException {
-		// HARCODING SAMPLE DATA FOR NOW
+	  public void init(final XulDomContainer container, final IWizardModel wizardModel) throws XulException {
+	  this.wizardModel = wizardModel;
+    bf = new GwtBindingFactory(document);
+
+	    
+	    
+	    //HARCODING SAMPLE DATA FOR NOW
 		ConnectionServiceGwtImpl connectionService = new ConnectionServiceGwtImpl();
 		connectionService.getConnectionByName("SampleData", new XulServiceCallback<IConnection>() {
 			public void error(String message, Throwable error) {
@@ -108,8 +115,8 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 					// THIS BELONGS HERE IN THE INIT METHOD.
 					container.addEventHandler(joinSelectionStepController);
 					container.addEventHandler(joinDefinitionStepController);
-					joinSelectionStepController.init();
-					joinDefinitionStepController.init();
+					joinSelectionStepController.init(wizardModel);
+					joinDefinitionStepController.init(wizardModel);
 				} catch (XulException e) {
 					e.printStackTrace();
 				}

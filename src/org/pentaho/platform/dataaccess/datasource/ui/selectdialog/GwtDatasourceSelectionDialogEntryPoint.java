@@ -111,12 +111,13 @@ public class GwtDatasourceSelectionDialogEntryPoint implements EntryPoint {
     };
 
     if(editor == null){
-      editor = new EmbeddedWizard(datasourceService, connectionService, new AsyncConstructorListener<EmbeddedWizard>() {
+      editor = new EmbeddedWizard(datasourceService, connectionService, false);
+      editor.init(new AsyncConstructorListener<EmbeddedWizard>() {
         public void asyncConstructorDone(EmbeddedWizard source) {
           source.addDialogListener(wizardListener);
           showDialog(selectDs, listener);
         }
-      }, false);
+      });
     } else {
       editor.addDialogListener(wizardListener);
       showDialog(selectDs, listener);

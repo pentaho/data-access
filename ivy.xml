@@ -99,6 +99,7 @@
 		<dependency org="pentaho" name="pentaho-bi-platform-test-foundation" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />
 
         <!--  Testing dependencies -->
+        <dependency org="org.jmock" name="jmock-junit4" rev="2.5.1" conf="test->default" />
         <dependency org="junit" name="junit" rev="4.3.1" transitive="false" conf="test->default"/>
         <dependency org="commons-codec"      name="commons-codec"      rev="1.3" transitive="false" conf="test->default"/>
 		<dependency org="org.springframework" name="spring"              rev="2.5.6"   transitive="false"/>

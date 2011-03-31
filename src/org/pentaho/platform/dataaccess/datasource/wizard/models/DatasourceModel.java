@@ -30,6 +30,7 @@ import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 //TODO: this class is a mixture of CSV and Relational model code... break it up!
+@Deprecated
 public class DatasourceModel extends XulEventSourceAdapter 
     implements IRelationalModelValidationListener, IModelInfoValidationListener {
   

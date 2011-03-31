@@ -46,7 +46,6 @@ public class GuiStateModel extends XulEventSourceAdapter {
   private boolean dataStagingComplete;
   private FileInfo selectedCsvFile;
 
-  private boolean editing;
   private boolean dirty = true;
   private RelationalModelValidationListenerCollection relationalModelValidationListeners;
 
@@ -247,17 +246,6 @@ public class GuiStateModel extends XulEventSourceAdapter {
 
   public void setSelectedCsvFile(FileInfo selectedCsvFile) {
     this.selectedCsvFile = selectedCsvFile;
-  }
-
-  @Bindable
-  public boolean isEditing() {
-    return editing;
-  }
-
-  @Bindable
-  public void setEditing(boolean editing) {
-    this.editing = editing;
-    firePropertyChange("editing", null, editing);
   }
 
   @Bindable

@@ -5,13 +5,10 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
-import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -24,6 +21,7 @@ import java.util.List;
  */
 public class DummyDatasource extends AbstractXulEventHandler implements IWizardDatasource{
   SelectDatasourceStep datasourceStep;
+  private IWizardModel wizardModel;
 
   public DummyDatasource(){
     datasourceStep = new SelectDatasourceStep(this);
@@ -50,9 +48,10 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
   }
 
   @Override
-  public void init(XulDomContainer container) throws XulException {
+  public void init(XulDomContainer container, IWizardModel wizardModel) throws XulException {
+    this.wizardModel = wizardModel;
     container.addEventHandler(datasourceStep);
-    datasourceStep.init();
+    datasourceStep.init(wizardModel);
   }
 
   @Override

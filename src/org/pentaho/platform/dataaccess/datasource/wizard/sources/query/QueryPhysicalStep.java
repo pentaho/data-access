@@ -22,27 +22,21 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.query;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
-import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
-import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
-import org.pentaho.platform.dataaccess.datasource.wizard.GwtWaitingDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardRelationalDatasourceController;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
-import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -81,7 +75,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   }
 
   @Bindable
-  public void init() throws XulException {
+  public void init(IWizardModel wizardModel) throws XulException {
     datasourceNameTextBox = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
     
     connectionController = new WizardConnectionController(document);
@@ -106,7 +100,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     initialize();
 
     datasourceModel.clearModel();
-    super.init();
+    super.init(wizardModel);
   }
 
   public void initialize() {
@@ -169,7 +163,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(datasourceModel, "datasourceName", datasourceModel.getModelInfo(), "stageTableName");
 
-    bf.createBinding(datasourceModel.getGuiStateModel(), "editing", datasourceNameTextBox, "disabled");
+    bf.createBinding(wizardModel, "editing", datasourceNameTextBox, "disabled");
     
   }
 

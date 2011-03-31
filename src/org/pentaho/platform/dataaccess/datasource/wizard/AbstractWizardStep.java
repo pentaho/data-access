@@ -17,9 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
-import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulImage;
@@ -27,11 +25,9 @@ import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulGrid;
 import org.pentaho.ui.xul.containers.XulRow;
 import org.pentaho.ui.xul.containers.XulRows;
-import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
-import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
@@ -67,6 +63,7 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
   protected XulRow stepRow;
   private boolean activated;
   protected IWizardDatasource parentDatasource;
+  protected IWizardModel wizardModel;
 
   protected AbstractWizardStep(IWizardDatasource parentDatasource) {
     super();
@@ -94,7 +91,8 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
   /**
    * @throws XulException  
    */
-  public void init() throws XulException {
+  public void init(IWizardModel wizardModel) throws XulException {
+    this.wizardModel = wizardModel;
     bf = new GwtBindingFactory(document);
     this.setBindings();
   }

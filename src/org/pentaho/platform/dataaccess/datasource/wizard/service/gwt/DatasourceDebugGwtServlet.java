@@ -21,27 +21,20 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.SerializationException;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.server.rpc.SerializationPolicy;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
-import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDatasourceServiceImpl;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements IGwtDatasourceService {
 
@@ -99,9 +92,9 @@ public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements I
     return SERVICE.listDatasourceNames();
   }
 
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
     try {
-      return SERVICE.generateQueryDomain(name, query, connectionName, datasourceDTO);
+      return SERVICE.generateQueryDomain(name, query, connection, datasourceDTO);
     } catch (DatasourceServiceException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       throw e;

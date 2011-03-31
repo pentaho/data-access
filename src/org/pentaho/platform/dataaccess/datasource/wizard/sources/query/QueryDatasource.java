@@ -5,16 +5,12 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTOUtil;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
-import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -30,9 +26,11 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
   private QueryPhysicalStep queryStep;
   private DatasourceModel datasourceModel;
   private IXulAsyncDatasourceService datasourceService;
-  public QueryDatasource(DatasourceModel datasourceModel){
+  private IWizardModel wizardModel;
+
+  public QueryDatasource(IXulAsyncDatasourceService datasourceService, DatasourceModel datasourceModel){
     this.datasourceModel = datasourceModel;
-    datasourceService = new DatasourceServiceGwtImpl();
+    this.datasourceService = datasourceService;
   }
   @Override
   public void activating() throws XulException {
@@ -60,16 +58,17 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
 
     String name = datasourceModel.getDatasourceName().replace(".", "_").replace(" ", "_");
     String query = datasourceModel.getQuery();
-    String connectionName = datasourceModel.getSelectedRelationalConnection().getName();
+
        
-    datasourceService.generateQueryDomain(name, query, connectionName, DatasourceDTOUtil.generateDTO(datasourceModel), callback);
+    datasourceService.generateQueryDomain(name, query, datasourceModel.getSelectedRelationalConnection(), DatasourceDTOUtil.generateDTO(datasourceModel), callback);
   }
 
   @Override
-  public void init(XulDomContainer container) throws XulException {
+  public void init(XulDomContainer container, IWizardModel wizardModel) throws XulException {
+    this.wizardModel = wizardModel;
     queryStep = new QueryPhysicalStep(datasourceModel, this);
     container.addEventHandler(queryStep);
-    queryStep.init();
+    queryStep.init(wizardModel);
   }
 
 
@@ -104,7 +103,7 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
             || datasourceModel.getGuiStateModel().getConnections().size() <= 0) {
           queryStep.reloadConnections();
         }
-        datasourceModel.getGuiStateModel().setEditing(true);
+        wizardModel.setEditing(true);
 
         callback.success(null);
       }

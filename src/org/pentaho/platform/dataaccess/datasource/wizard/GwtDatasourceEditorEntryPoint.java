@@ -68,7 +68,13 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       public void success(Boolean retVal) {
         if (retVal) {
           connectionService = new ConnectionServiceGwtImpl();
-          wizard = new EmbeddedWizard(datasourceService, connectionService, null, false);
+          wizard = new EmbeddedWizard(datasourceService, connectionService, false);
+          wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
+            @Override
+            public void asyncConstructorDone(EmbeddedWizard source) {
+              //To change body of implemented methods use File | Settings | File Templates.
+            }
+          });
           setupNativeHooks(GwtDatasourceEditorEntryPoint.this);
         }
         initDashboardButtons(retVal);

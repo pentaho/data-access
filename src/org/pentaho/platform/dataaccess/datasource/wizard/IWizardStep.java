@@ -17,13 +17,10 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.ui.xul.XulComponent;
-import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 /**
@@ -83,12 +80,12 @@ public interface IWizardStep extends XulEventHandler, XulEventSource {
   public boolean stepDeactivatingReverse();
   
   /**
-   * @param mainWizardContainer
+   * @param IWizardModel
    * @throws XulException
    * 
    * Initializes the step. This is where bindings should be created and UI references obtained.
    */
-  public void init() throws XulException;
+  public void init(IWizardModel wizardModel) throws XulException;
 
   public XulComponent getUIComponent();
 

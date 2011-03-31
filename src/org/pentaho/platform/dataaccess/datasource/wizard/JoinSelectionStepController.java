@@ -22,6 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard;
 import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
@@ -47,7 +48,7 @@ public class JoinSelectionStepController extends AbstractWizardStep {
 	private JoinGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 
-	public JoinSelectionStepController(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
+  public JoinSelectionStepController(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
@@ -87,12 +88,12 @@ public class JoinSelectionStepController extends AbstractWizardStep {
 	}
 
 	@Override
-	public void init() throws XulException {
-		this.tablesSelectionDialog = (XulVbox) document.getElementById(JOIN_STEP_PANEL_ID);
+	public void init(IWizardModel wizardModel) throws XulException {
+    this.tablesSelectionDialog = (XulVbox) document.getElementById(JOIN_STEP_PANEL_ID);
 		this.availableTables = (XulListbox) document.getElementById("availableTables");
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
 
-		super.init();
+		super.init(wizardModel);
 	}
 
 	public void setBindings() {

@@ -29,12 +29,13 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MainWizardC
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.SummaryDialogController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardDatasourceController;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.WizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasource;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -53,6 +54,9 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
 import com.google.gwt.core.client.GWT;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 @SuppressWarnings("unchecked")
@@ -77,6 +81,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   private ConnectionController connectionController;
 
   private IXulAsyncConnectionService connectionService;
+  private boolean checkHasAccess;
 
   private IXulAsyncDatasourceService datasourceService;
 
@@ -88,48 +93,26 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   private ResourceBundle bundle;
 
-  private XulServiceCallback<Domain> editFinishedCallback;
   private IDatasourceSummary summary;
   private ModelerDialog modeler;
   private SummaryDialogController summaryDialogController = new SummaryDialogController();
+  private IWizardModel wizardModel = new WizardModel();
+  private ICsvDatasourceServiceAsync csvDatasourceService;
 
   /**
   /**
    * @param datasourceService
    * @param connectionService
-   * @param constructorListener
    * @param checkHasAccess
    */
   public EmbeddedWizard(final IXulAsyncDatasourceService datasourceService,
-      final IXulAsyncConnectionService connectionService, final AsyncConstructorListener<EmbeddedWizard> constructorListener,
-      boolean checkHasAccess) {
-    
-    asyncConstructorListener = constructorListener;
-    
-    if (checkHasAccess) {
-      datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
-        public void error(String message, Throwable error) {
-          MessageHandler.getInstance().showErrorDialog(datasourceMessages.getString("DatasourceEditor.ERROR"), //$NON-NLS-1$
-              datasourceMessages.getString(
-                  "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", error.getLocalizedMessage())); //$NON-NLS-1$
-        }
+      final IXulAsyncConnectionService connectionService, boolean checkHasAccess) {
+    this.datasourceService = datasourceService;
+    this.connectionService = connectionService;
+    this.checkHasAccess = checkHasAccess;
 
-        public void success(Boolean retVal) {
-          if (retVal) {
-            init(datasourceService, connectionService);
-          } else {
-            if (constructorListener != null) {
-              constructorListener.asyncConstructorDone(EmbeddedWizard.this);
-            }
-            onDialogReady();
-          }
-        }
-      });
-    } else {
-      init(datasourceService, connectionService);
-    }
   }
-
+  
   public void bundleLoaded(String bundleName) {
     try{
       ModelerMessagesHolder.setMessages(new GwtModelerMessages(bundle));
@@ -139,14 +122,39 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   }
 
 
-  private void init(final IXulAsyncDatasourceService datasourceService,
-      final IXulAsyncConnectionService connectionService) {
+  public void init(final AsyncConstructorListener<EmbeddedWizard> constructorListener) {
+    asyncConstructorListener = constructorListener;
     setConnectionService(connectionService);
     setDatasourceService(datasourceService);
 
+    wizardModel.addDatasource(new CsvDatasource(datasourceModel, datasourceService, csvDatasourceService));
+    wizardModel.addDatasource(new QueryDatasource(datasourceService, datasourceModel));
+    wizardModel.addDatasource(new MultiTableDatasource(datasourceModel));
+
+    if (checkHasAccess) {
+      datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
+        public void error(String message, Throwable error) {
+          MessageHandler.getInstance().showErrorDialog(datasourceMessages.getString("DatasourceEditor.ERROR"), //$NON-NLS-1$
+              datasourceMessages.getString(
+                  "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", error.getLocalizedMessage())); //$NON-NLS-1$
+        }
+
+        public void success(Boolean retVal) {
+          loadXul();
+          onDialogReady();
+        }
+      });
+    } else {
+      loadXul();
+    }
+
+  }
+
+  private void loadXul(){
     bundle = new ResourceBundle("", "modeler", true, this);
 
     AsyncXulLoader.loadXulFromUrl(MAIN_WIZARD_PANEL, MAIN_WIZARD_PANEL_PACKAGE, EmbeddedWizard.this);
+
   }
 
 
@@ -169,10 +177,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       public void success(IDatasourceSummary iDatasourceSummary) {
         if(iDatasourceSummary.isShowModeler()){
           showModelEditor();
-        } else if(editFinishedCallback != null){
-          editFinishedCallback.success(summary.getDomain());
         }
-        onDialogAccept();
         MessageHandler.getInstance().closeWaitingDialog();
       }
     });
@@ -203,8 +208,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
         || datasourceModel.getGuiStateModel().getConnections().size() <= 0) {
       checkInitialized();
     }
-    this.editFinishedCallback = null; // if previously have edited, clear-out old listener
-    datasourceModel.getGuiStateModel().setEditing(false);
+    wizardModel.setEditing(false);
     wizardController.setActiveStep(0);
     
     /* BISERVER-5153: Work around where XulGwtButton is getting its disabled state and style
@@ -218,13 +222,13 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     dialog.show();
   }
 
-  public void showEditDialog(final Domain domain, final XulServiceCallback<Domain> editFinishedCallback) {
+  public void showEditDialog(final Domain domain, DialogListener<Domain> listener) {
     checkInitialized();
-    this.editFinishedCallback = editFinishedCallback;
+    addDialogListener(listener);
 
     String datasourceType = (String) domain.getLogicalModels().get(0).getProperty("DatasourceType");
     IWizardDatasource selectedDatasource = null;
-    for(IWizardDatasource datasource: wizardController.getDatasources()){
+    for(IWizardDatasource datasource: wizardModel.getDatasources()){
       if(datasource.getId().equals(datasourceType)){
         selectedDatasource = datasource;
         break;
@@ -232,17 +236,15 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     }
     if(selectedDatasource == null){
       MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN_TITLE"), MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"));
-      editFinishedCallback.error(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"), new IllegalStateException(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN")));
       return;
     }
 
-    wizardController.setSelectedDatasource(selectedDatasource);
+    wizardModel.setSelectedDatasource(selectedDatasource);
     wizardController.reset();
     selectedDatasource.restoreSavedDatasource(domain, new XulServiceCallback<Void>(){
       @Override
       public void error(String s, Throwable throwable) {
         MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"), throwable.getMessage());
-        editFinishedCallback.error(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"), throwable);
       }
 
       @Override
@@ -250,8 +252,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
         dialog.show();
       }
     });
-
-
   }
 
   /* (non-Javadoc)
@@ -319,12 +319,8 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     summaryDialogController.setBindingFactory(bf);
     mainWizardContainer.addEventHandler(summaryDialogController);
 
-    wizardController = new MainWizardController(bf, datasourceModel, datasourceService);
+    wizardController = new MainWizardController(bf, wizardModel, datasourceService);
     mainWizardContainer.addEventHandler(wizardController);
-
-    wizardController.addDatasource(new CsvDatasource(datasourceModel));
-    wizardController.addDatasource(new QueryDatasource(datasourceModel));
-    wizardController.addDatasource(new MultiTableDatasource(datasourceModel));
 
     dialog = (XulDialog) rootDocument.getElementById(WIZARD_DIALOG_ID);
     MessageHandler.getInstance().setWizardDialog(dialog);
@@ -440,9 +436,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   @Override
   public void success(Domain domain) {
-    if(editFinishedCallback != null){
-      editFinishedCallback.success(domain);
-    }
     MessageHandler.getInstance().closeWaitingDialog();
     if(summary.isShowModeler()){
       showModelEditor();
@@ -462,4 +455,19 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     upload.setAction(path);
   }
 
+  public void addDatasource(IWizardDatasource datasource) {
+    wizardModel.addDatasource(datasource);
+  }
+
+  public void removeDatasourceOfType(Class<? extends IWizardDatasource> datasource){
+    wizardModel.removeDatasourceByType(datasource);
+  }
+
+  public IWizardModel getWizardModel() {
+    return wizardModel;
+  }
+
+  public void setWizardModel(IWizardModel wizardModel) {
+    this.wizardModel = wizardModel;
+  }
 }

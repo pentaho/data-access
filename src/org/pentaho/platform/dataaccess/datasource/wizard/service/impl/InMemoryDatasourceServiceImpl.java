@@ -28,7 +28,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -39,8 +38,6 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.commons.connection.IPentahoResultSet;
-import org.pentaho.commons.connection.marshal.MarshallableResultSet;
-import org.pentaho.commons.connection.marshal.MarshallableRow;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.InlineEtlPhysicalModel;
 import org.pentaho.metadata.model.LogicalModel;
@@ -50,22 +47,19 @@ import org.pentaho.metadata.repository.DomainIdNullException;
 import org.pentaho.metadata.repository.DomainStorageException;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.repository.InMemoryMetadataDomainRepository;
-import org.pentaho.metadata.util.InlineEtlModelGenerator;
 import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
-import org.pentaho.platform.api.engine.PentahoSystemException;
+import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
-import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidationException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceInMemoryServiceHelper;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -93,8 +87,14 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
 
 
   private IMetadataDomainRepository metadataDomainRepository;
+  private IConnectionService connectionService;
+
 
   public InMemoryDatasourceServiceImpl() {
+    this(new InMemoryConnectionServiceImpl());
+  }
+  public InMemoryDatasourceServiceImpl(IConnectionService connectionService) {
+    this.connectionService = connectionService;
     // this needs to share the same one as MQL editor...
     metadataDomainRepository = METADATA_DOMAIN_REPO;
   }
@@ -339,7 +339,7 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
   }
 
   @Override
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
 
     ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
     ModelerService modelerService = new ModelerService();
@@ -349,9 +349,9 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
 
       Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
           || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
-      SerializedResultSet resultSet = DatasourceInMemoryServiceHelper.getSerializeableResultSet(connectionName, query,
+      SerializedResultSet resultSet = DatasourceInMemoryServiceHelper.getSerializeableResultSet(connection.getName(), query,
           Integer.parseInt("10"), null);
-      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connectionName, null,
+      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connectionService.convertFromConnection(connection).getDatabaseType().getShortName(),
            resultSet.getColumnTypes(), resultSet.getColumns(),query, securityEnabled,
           getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), "joe");
       Domain domain = sqlModelGenerator.generate();

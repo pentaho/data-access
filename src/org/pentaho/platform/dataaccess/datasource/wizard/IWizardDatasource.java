@@ -1,14 +1,11 @@
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
-import org.pentaho.ui.xul.binding.BindingFactory;
 
 import java.util.List;
 
@@ -58,7 +55,7 @@ public interface IWizardDatasource extends XulEventSource {
   /**
    * Step controllers should be initialized with bindings created at this time.
    */
-  void init(XulDomContainer container) throws XulException;
+  void init(XulDomContainer container, IWizardModel wizardModel) throws XulException;
 
 
   /**

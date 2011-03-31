@@ -4,10 +4,9 @@ import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -39,16 +38,18 @@ public class SelectDatasourceStep extends AbstractWizardStep {
       parentDatasource.setFinishable(datasource.isFinishable());
     }
   };
+  private IWizardModel wizardModel;
 
   public SelectDatasourceStep( DummyDatasource parentDatasource){
     super(parentDatasource);
   }
 
   @Override
-  public void init() throws XulException {
+  public void init(IWizardModel wizardModel) throws XulException {
+    this.wizardModel = wizardModel;
 
     datasourceDeck = (XulDeck) document.getElementById("datasourceDialogDeck");
-    super.init();
+    super.init(wizardModel);
   }
 
   @Override

@@ -24,10 +24,7 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
 import org.pentaho.ui.xul.XulComponent;
@@ -109,7 +106,7 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 	}
 
 	@Override
-	public void init() throws XulException {
+	public void init(IWizardModel wizardModel) throws XulException {
 
 		this.joinDefinitionDialog = (XulVbox) document.getElementById(JOIN_DEFINITION_PANEL_ID);
 		this.joins = (XulListbox) document.getElementById("joins");
@@ -122,7 +119,7 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 		this.rightTables = (XulListbox) document.getElementById("rightTables");
 		this.rightTables.addPropertyChangeListener(this);
 
-		super.init();
+		super.init(wizardModel);
 	}
 
 	public void setBindings() {

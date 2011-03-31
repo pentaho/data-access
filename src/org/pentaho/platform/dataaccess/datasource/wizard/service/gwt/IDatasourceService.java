@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
@@ -123,7 +124,7 @@ public interface IDatasourceService {
 
   public List<String> listDatasourceNames() throws IOException;
 
-  QueryDatasourceSummary generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO) throws DatasourceServiceException;
+  QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException;
 }
 
  

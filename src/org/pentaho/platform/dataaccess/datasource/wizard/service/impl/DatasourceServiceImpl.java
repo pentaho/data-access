@@ -49,7 +49,7 @@ import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
 import org.pentaho.platform.api.engine.*;
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
+import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
@@ -62,6 +62,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidationException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
@@ -94,7 +95,13 @@ public class DatasourceServiceImpl implements IDatasourceService {
 
   private static final String AFTER_QUERY = ") tbl"; //$NON-NLS-1$
 
+  private IConnectionService connectionService;
+
   public DatasourceServiceImpl() {
+    this(new ConnectionServiceImpl());
+  }
+  public DatasourceServiceImpl(IConnectionService connectionService) {
+    this.connectionService = connectionService;
     metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, null);
     String dataAccessClassName = null;
     try {
@@ -480,7 +487,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
   }
 
   @Override
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, String connectionName, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
 
     ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
     ModelerService modelerService = new ModelerService();
@@ -489,9 +496,9 @@ public class DatasourceServiceImpl implements IDatasourceService {
     try {
       Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
           || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
-      SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connectionName, query,
+      SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connection.getName(), query,
           10, PentahoSessionHolder.getSession());
-      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connectionName, null, resultSet.getColumnTypes(), resultSet.getColumns(), query,
+      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connectionService.convertFromConnection(connection).getDatabaseType().getShortName(), resultSet.getColumnTypes(), resultSet.getColumns(), query,
           securityEnabled, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
               .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
       Domain domain = sqlModelGenerator.generate();

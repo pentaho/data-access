@@ -150,7 +150,8 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     datasourceService = new DatasourceServiceGwtImpl();
     connectionService = new ConnectionServiceGwtImpl();
     if(wizard == null){
-      wizard = new EmbeddedWizard(datasourceService, connectionService, null, false);
+      wizard = new EmbeddedWizard(datasourceService, connectionService, false);
+      wizard.init(null);
     }
 
     messages = new GwtModelerMessages((ResourceBundle) container.getResourceBundles().get(0));
@@ -315,8 +316,9 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
   }
 
   public void showEditSourceDialog() {
-    wizard.showEditDialog(model.getDomain(), new XulServiceCallback<Domain>() {
-      public void success(Domain domain) {
+    wizard.showEditDialog(model.getDomain(), new DialogListener<Domain>() {
+      @Override
+      public void onDialogAccept(Domain domain) {
         try {
           model.refresh(domain);
         } catch (ModelerException e) {
@@ -324,9 +326,13 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
         }
       }
 
-      public void error(String s, Throwable throwable) {
-        showErrorDialog("Error", s);
-        throwable.printStackTrace();
+      @Override
+      public void onDialogCancel() {
+        //To change body of implemented methods use File | Settings | File Templates.
+      }
+
+      @Override
+      public void onDialogReady() {
       }
     });
   }
