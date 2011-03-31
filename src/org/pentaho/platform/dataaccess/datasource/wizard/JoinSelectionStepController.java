@@ -66,7 +66,6 @@ public class JoinSelectionStepController extends AbstractWizardStep {
 
 			public void success(List tables) {
 				joinGuiModel.processAvailableTables(tables);
-				setValid(true);
 			}
 		});
 	}
@@ -76,6 +75,7 @@ public class JoinSelectionStepController extends AbstractWizardStep {
 		if (this.availableTables.getSelectedItem() != null) {
 			this.joinGuiModel.addSelectedTable((JoinTableModel) this.availableTables.getSelectedItem());
 		}
+		super.setValid(!this.selectedTables.getElements().isEmpty());
 	}
 
 	@Bindable
@@ -83,6 +83,7 @@ public class JoinSelectionStepController extends AbstractWizardStep {
 		if (this.selectedTables.getSelectedItem() != null) {
 			this.joinGuiModel.removeSelectedTable((JoinTableModel) this.selectedTables.getSelectedItem());
 		}
+		super.setValid(!this.selectedTables.getElements().isEmpty());
 	}
 
 	@Override
@@ -95,7 +96,6 @@ public class JoinSelectionStepController extends AbstractWizardStep {
 	}
 
 	public void setBindings() {
-
 		BindingFactory bf = new GwtBindingFactory(document);
 		bf.createBinding(this.joinGuiModel.getAvailableTables(), "children", this.availableTables, "elements");
 		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.selectedTables, "elements");
@@ -109,4 +109,10 @@ public class JoinSelectionStepController extends AbstractWizardStep {
 	public XulComponent getUIComponent() {
 		return this.tablesSelectionDialog;
 	}
+	
+	@Override
+	  public void stepActivatingReverse() {
+		parentDatasource.setFinishable(false);
+	}
+
 }

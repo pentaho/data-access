@@ -39,6 +39,10 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTable
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
+import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.BindingConvertor;
+import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -51,6 +55,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	private JoinSelectionStepController joinSelectionStepController;
 	private JoinDefinitionStepController joinDefinitionStepController;
 	private IConnection selectedConnection;
+	private BindingFactory bf;
 
 	public MultiTableDatasource(DatasourceModel datasourceModel) {
 		this.datasourceModel = datasourceModel;
@@ -67,7 +72,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 				bogoPojo.getlRelationship();
 			}
 		});
-
+		
 		// GOOD DO NOT REMOVE
 		//this.joinSelectionStepController = new JoinSelectionStepController(this.joinGuiModel, joinSelectionServiceGwtImpl, this.datasourceModel.getSelectedRelationalConnection(), this);
 		//this.joinDefinitionStepController = new JoinDefinitionStepController(this.joinGuiModel, joinSelectionServiceGwtImpl, this.datasourceModel.getSelectedRelationalConnection(), this);
@@ -110,6 +115,16 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 				}
 			}
 		});
+
+		this.bf = new GwtBindingFactory(container.getDocumentRoot());
+		bf.setBindingType(Binding.Type.ONE_WAY);
+		Binding finishedButtonBinding = this.bf.createBinding(this, "finishable", "finish_btn", "disabled", new NotDisabledBindingConvertor());
+		try {
+			finishedButtonBinding.fireSourceChanged();
+		} catch (Exception e) {
+			// TODO add some exception handling here.
+		}
+
 	}
 
 	@Override
@@ -168,8 +183,6 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 			public void success(MultiTableDatasourceDTO datasourceDTO) {
 				datasourceModel.setDatasourceName(datasourceDTO.getDatasourceName());
 				joinGuiModel.populateJoinGuiModel(datasourceDTO);
-				datasourceModel.getGuiStateModel().setDirty(false);
-				datasourceModel.getGuiStateModel().setEditing(true);
 				callback.success(null);
 			}
 
@@ -179,4 +192,15 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 			}
 		});
 	}
+
+	class NotDisabledBindingConvertor extends BindingConvertor<Boolean, Boolean> {
+		public Boolean sourceToTarget(Boolean value) {
+			return Boolean.valueOf(!value.booleanValue());
+		}
+
+		public Boolean targetToSource(Boolean value) {
+			return Boolean.valueOf(!value.booleanValue());
+		}
+	}
+
 }

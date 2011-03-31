@@ -23,7 +23,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
@@ -63,7 +62,6 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
 		this.selectedConnection = selectedConnection;
-		setValid(true);
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -99,11 +97,15 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 		join.setLeftKeyFieldModel(this.joinGuiModel.getLeftKeyField());
 		join.setRightKeyFieldModel(this.joinGuiModel.getRightKeyField());
 		this.joinGuiModel.addJoin(join);
+
+		//TODO this must be triggered after validating if the join is good.
+		parentDatasource.setFinishable(true);
 	}
 
 	@Bindable
 	public void deleteJoin() {
 		this.joinGuiModel.removeSelectedJoin();
+		parentDatasource.setFinishable(!this.joins.getElements().isEmpty());
 	}
 
 	@Override
@@ -132,7 +134,6 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 		bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
 		bf.createBinding(this.joinGuiModel.getJoins(), "children", this.joins, "elements");
 		bf.createBinding(this.joins, "selectedItem", this.joinGuiModel, "selectedJoin");
-
 		bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
 
 			@Override
@@ -164,6 +165,13 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 				return null;
 			}
 		});
+	}
+	
+	@Override
+	public void stepActivatingForward() {
+		if(this.joins.getElements() != null) {
+			parentDatasource.setFinishable(!this.joins.getElements().isEmpty());
+		}
 	}
 
 	public String getStepName() {

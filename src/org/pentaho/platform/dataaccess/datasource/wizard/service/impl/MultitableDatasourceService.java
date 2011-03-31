@@ -69,6 +69,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		Domain domain = multiTable.generateDomain();
 
 		// /////////////////////////////////////////
+		//TODO... deal with this... serializing should not rely on this.
 		List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
 		OlapDimension dimension = new OlapDimension();
 		dimension.setName("test");
