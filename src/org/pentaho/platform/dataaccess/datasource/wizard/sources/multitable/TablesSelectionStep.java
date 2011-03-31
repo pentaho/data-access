@@ -17,16 +17,16 @@
  * @author Ezequiel Cuellar
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard;
+package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -37,7 +37,7 @@ import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 @SuppressWarnings("unchecked")
-public class JoinSelectionStepController extends AbstractWizardStep {
+public class TablesSelectionStep extends AbstractWizardStep {
 
 	protected static final String JOIN_STEP_PANEL_ID = "joinSelectionWindow";
 
@@ -48,7 +48,7 @@ public class JoinSelectionStepController extends AbstractWizardStep {
 	private JoinGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 
-  public JoinSelectionStepController(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
+  public TablesSelectionStep(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;

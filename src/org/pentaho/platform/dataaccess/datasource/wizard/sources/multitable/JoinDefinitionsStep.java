@@ -17,7 +17,7 @@
  * @author Ezequiel Cuellar
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard;
+package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -25,13 +25,13 @@ import java.util.List;
 
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -45,7 +45,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
 @SuppressWarnings("unchecked")
-public class JoinDefinitionStepController extends AbstractWizardStep implements PropertyChangeListener {
+public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyChangeListener {
 
 	protected static final String JOIN_DEFINITION_PANEL_ID = "joinDefinitionWindow";
 
@@ -59,7 +59,7 @@ public class JoinDefinitionStepController extends AbstractWizardStep implements 
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private IConnection selectedConnection;
 
-	public JoinDefinitionStepController(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
+	public JoinDefinitionsStep(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;

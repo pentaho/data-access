@@ -55,9 +55,6 @@ import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
 import com.google.gwt.core.client.GWT;
 
-import java.util.HashSet;
-import java.util.Set;
-
 
 @SuppressWarnings("unchecked")
 public class EmbeddedWizard extends AbstractXulDialogController<Domain> implements IXulLoaderCallback, IResourceBundleLoadCallback, IWizardListener, XulServiceCallback<Domain>{
@@ -127,7 +124,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
     wizardModel.addDatasource(new CsvDatasource(datasourceModel, datasourceService, csvDatasourceService));
     wizardModel.addDatasource(new QueryDatasource(datasourceService, datasourceModel));
-    wizardModel.addDatasource(new MultiTableDatasource(datasourceModel));
+    wizardModel.addDatasource(new MultiTableDatasource());
 
     if (checkHasAccess) {
       datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
