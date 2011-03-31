@@ -7,6 +7,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHand
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
+import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -50,6 +51,8 @@ public class SelectDatasourceStep extends AbstractWizardStep {
 
     datasourceDeck = (XulDeck) document.getElementById("datasourceDialogDeck");
     super.init(wizardModel);
+    bf.setBindingType(Binding.Type.ONE_WAY);
+    bf.createBinding(wizardModel, "selectedDatasource", this, "selectedDatasource");
   }
 
   @Override
@@ -74,6 +77,9 @@ public class SelectDatasourceStep extends AbstractWizardStep {
       this.datasourceDeck.setSelectedIndex(0);
       this.datasource = null;
       this.wrappedStep = null;
+      return;
+    }
+    if(datasource == null){
       return;
     }
     if(this.datasource != null){

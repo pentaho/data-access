@@ -190,9 +190,9 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     datatypeMenuList = (XulMenuList) document.getElementById("datatypeMenuList");
 
 
-    Binding datasourceBinding = bf.createBinding(this, "datasources", datatypeMenuList, "elements");
+    Binding datasourceBinding = bf.createBinding(wizardModel, "datasources", datatypeMenuList, "elements");
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    bf.createBinding(datatypeMenuList, "selectedItem", this, "selectedDatasource");
+    bf.createBinding(datatypeMenuList, "selectedItem", wizardModel, "selectedDatasource");
 
 
     bf.setBindingType(Binding.Type.ONE_WAY);
@@ -200,6 +200,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     bf.createBinding(this, ACTIVE_STEP_PROPERTY_NAME, BACK_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, new BackButtonBindingConverter());
 
     dummyDatasource = ((DummyDatasource) wizardModel.getDatasources().iterator().next());
+    activeDatasource = dummyDatasource;
     selectDatasourceStep = dummyDatasource.getSelectDatasourceStep();
     
     try {
@@ -226,7 +227,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   public void setSelectedDatasource(IWizardDatasource datasource){
     IWizardDatasource prevSelection = activeDatasource;
     activeDatasource = datasource;
-    if(datasource == null){
+    if(datasource == null || prevSelection == activeDatasource){
       return;
     }
     try {

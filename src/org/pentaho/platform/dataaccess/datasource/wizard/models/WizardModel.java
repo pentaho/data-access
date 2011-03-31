@@ -1,6 +1,7 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -18,7 +19,7 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
   private IWizardDatasource selectedDatasource;
 
   public WizardModel(){
-
+    addDatasource(new DummyDatasource());
   }
 
   @Override
@@ -34,6 +35,7 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
   }
 
   @Override
+  @Bindable
   public Set getDatasources() {
     return datasources;
   }
