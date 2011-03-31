@@ -9,7 +9,7 @@
           buttonlabelcancel="${dialog.cancel}">
     <hbox id="metadatastep" flex="1" padding="0" spacing="3" height="465">
       <groupbox width="210" height="463">
-        <caption label="${available_fields}"/>
+        <caption label="${available}:"/>
 
         <toolbar mode="icons">
           <toolbarspacer flex="1"/>
