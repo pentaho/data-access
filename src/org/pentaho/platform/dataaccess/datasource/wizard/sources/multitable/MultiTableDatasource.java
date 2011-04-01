@@ -29,17 +29,23 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.containers.XulVbox;
+import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -49,13 +55,16 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	private boolean finishable;
 	private JoinGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
+	private QueryPhysicalStep connectionSelectionStep;
 	private TablesSelectionStep tablesSelectionStep;
 	private JoinDefinitionsStep joinDefinitionsStep;
 	private IConnection selectedConnection;
 	private BindingFactory bf;
 	private IWizardModel wizardModel;
+	private DatasourceModel datasourceModel;
 
-	public MultiTableDatasource() {
+	public MultiTableDatasource(DatasourceModel datasourceModel) {
+		this.datasourceModel = datasourceModel;
 		this.joinGuiModel = new JoinGuiModel();
 		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
 
@@ -73,16 +82,23 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		// GOOD DO NOT REMOVE
 		//this.joinSelectionStepController = new JoinSelectionStepController(this.joinGuiModel, joinSelectionServiceGwtImpl, this.datasourceModel.getSelectedRelationalConnection(), this);
 		//this.joinDefinitionStepController = new JoinDefinitionStepController(this.joinGuiModel, joinSelectionServiceGwtImpl, this.datasourceModel.getSelectedRelationalConnection(), this);
+		
 	}
 
 	@Override
 	public void activating() throws XulException {
+		this.connectionSelectionStep.activating();
 		this.tablesSelectionStep.activating();
 		this.joinDefinitionsStep.activating();
+		
+		Document document = this.connectionSelectionStep.getXulDomContainer().getDocumentRoot();
+		XulVbox vbox = (XulVbox) document.getElementById("queryBox");
+		vbox.setVisible(false);
 	}
 
 	@Override
 	public void deactivating() {
+		this.connectionSelectionStep.deactivate();
 		this.tablesSelectionStep.deactivate();
 		this.joinDefinitionsStep.deactivate();
 	}
@@ -91,7 +107,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	public void init(final XulDomContainer container, final IWizardModel wizardModel) throws XulException {
 		this.wizardModel = wizardModel;
 		bf = new GwtBindingFactory(document);
-
+		
 		// HARCODING SAMPLE DATA FOR NOW
 		ConnectionServiceGwtImpl connectionService = new ConnectionServiceGwtImpl();
 		connectionService.getConnectionByName("SampleData", new XulServiceCallback<IConnection>() {
@@ -102,12 +118,15 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 				try {
 					selectedConnection = iConnection;
+					connectionSelectionStep = new QueryPhysicalStep(datasourceModel, MultiTableDatasource.this, false);
 					tablesSelectionStep = new TablesSelectionStep(joinGuiModel, joinSelectionServiceGwtImpl, selectedConnection, MultiTableDatasource.this);
 					joinDefinitionsStep = new JoinDefinitionsStep(joinGuiModel, joinSelectionServiceGwtImpl, selectedConnection, MultiTableDatasource.this);
 
 					// THIS BELONGS HERE IN THE INIT METHOD.
+					container.addEventHandler(connectionSelectionStep);
 					container.addEventHandler(tablesSelectionStep);
 					container.addEventHandler(joinDefinitionsStep);
+					connectionSelectionStep.init(wizardModel);
 					tablesSelectionStep.init(wizardModel);
 					joinDefinitionsStep.init(wizardModel);
 				} catch (XulException e) {
@@ -136,6 +155,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	@Override
 	public List<IWizardStep> getSteps() {
 		List<IWizardStep> steps = new ArrayList<IWizardStep>();
+		steps.add(this.connectionSelectionStep);
 		steps.add(this.tablesSelectionStep);
 		steps.add(this.joinDefinitionsStep);
 		return steps;
@@ -152,10 +172,10 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
         error.printStackTrace();
       }
 
-      public void success(IDatasourceSummary value) {
-        callback.success(value);
-      }
-    });
+			public void success(IDatasourceSummary value) {
+				callback.success(value);
+			}
+		});
 	}
 
 	@Override
@@ -187,11 +207,11 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
         callback.success(null);
       }
 
-      public void error(String s, Throwable throwable) {
-        MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString("DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
-        callback.error(s, throwable);
-      }
-    });
+			public void error(String s, Throwable throwable) {
+				MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString("DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
+				callback.error(s, throwable);
+			}
+		});
 	}
 
 	class NotDisabledBindingConvertor extends BindingConvertor<Boolean, Boolean> {

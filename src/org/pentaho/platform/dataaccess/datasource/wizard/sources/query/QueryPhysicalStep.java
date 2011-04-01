@@ -44,6 +44,8 @@ import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulTree;
+import org.pentaho.ui.xul.containers.XulVbox;
+import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 @SuppressWarnings("unchecked")
@@ -59,19 +61,27 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   private WizardConnectionController connectionController;
   private ConnectionController databaseConnectionController;
   private IXulAsyncConnectionService connectionService;
+  private boolean isFinishable = false;
 
-  public QueryPhysicalStep(DatasourceModel datasourceModel, QueryDatasource parentDatasource) {
-    super(parentDatasource);
-    this.datasourceModel = datasourceModel;
-    this.datasourceService = new DatasourceServiceGwtImpl();
-    this.connectionService = new ConnectionServiceGwtImpl();
+  public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource, boolean isFinishable) {
+	  super(parentDatasource);
+	  this.datasourceModel = datasourceModel;
+	  this.datasourceService = new DatasourceServiceGwtImpl();
+	  this.connectionService = new ConnectionServiceGwtImpl();
+	  this.isFinishable = isFinishable;
   }
-
+  
+  public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource) {
+	  this(datasourceModel, parentDatasource, true);
+  }
+  
   @Override
   public void activating() {
     //To change body of implemented methods use File | Settings | File Templates.
+	XulVbox vbox = (XulVbox) document.getElementById("queryBox");
+	vbox.setVisible(true);
   }
-
+  
   @Override
   public XulComponent getUIComponent() {
     return document.getElementById("queryDeckPanel");
@@ -205,15 +215,20 @@ public class QueryPhysicalStep extends AbstractWizardStep {
       if(newValue == null || newValue.trim().length() == 0) {
         parentDatasource.setFinishable(false);
       } else {
-        parentDatasource.setFinishable(true);
+    	if(isFinishable) {
+    		parentDatasource.setFinishable(true);	
+    	} else {
+    		parentDatasource.setFinishable(false);
+    		setValid(true);
+    	}
       }
     }
   }
   
   
-  public boolean stepDeactivatingForward(){
-    return super.stepDeactivatingForward();
-  }
+  //public boolean stepDeactivatingForward(){
+	//return super.stepDeactivatingForward();
+  //}
 
   public WizardConnectionController getConnectionController() {
     return connectionController;

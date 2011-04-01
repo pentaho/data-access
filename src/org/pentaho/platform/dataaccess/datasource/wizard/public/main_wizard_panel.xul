@@ -35,7 +35,12 @@
 							<hbox id="NoopDatasource" flex="1">
 								<!-- Empty panel for select Database type menu item. -->
 							</hbox>
+							
+							
 							<hbox flex="1" height="400" id="queryDeckPanel">
+								<!--  ###############################################################################  -->
+								<!--     SQL datasource step 1 -->
+								<!--  ###############################################################################  -->
 								<vbox flex="3" height="400">
 									<hbox>
 										<label value="${datasourceDialog.Connection}" tooltiptext="${datasourceDialog.ConnectionToolTip}"/>
@@ -47,7 +52,7 @@
 									<listbox flex="1" id="connectionList" pen:binding="name" disabled="true" height="366"/>
 								</vbox>
 								<spacer width="10" height="400"/>
-								<vbox height="400" flex="7">
+								<vbox id="queryBox" height="400" flex="7">
 									<hbox>
 										<label value="${datasourceDialog.Query}" tooltiptext="${datasourceDialog.QueryToolTip}" flex="1"/>
 										<!--<spacer flex="1"/>-->
@@ -62,118 +67,125 @@
 									</hbox>
 								</vbox>
 							</hbox>
+							
+							
 							<vbox id="csvDeckPanel" height="405" spacing="0" padding="0">
 								<!--  ###############################################################################  -->
-								<!--     CSV TAB PANEL: Panel containing contents for CSV based model -->
+								<!--     CSV datasource step 1 -->
 								<!--  ###############################################################################  -->
-				  <hbox spacing="0">				
-                    <label id="fileLabel" value="${physicalDatasourceDialog.FILE}"/>
-                    <spacer width="303"/> 	
-                    <label value="${physicalDatasourceDialog.ENCODING}" tooltiptext="${physicalDatasourceDialog.ENCODING_TOOLTIP}"/>
-                  </hbox>
-                  <hbox spacing="0">
-                    <textbox id="uploadedFile" value="" disabled="true" height="20" width="190"/>
-                    <button id="addFileButton" label="${physicalDatasourceDialog.IMPORT}..." onclick="fileImportController.showFileImportDialog()" tooltiptext="${datasourceDialog.addFileToolTip}"/>
-					<spacer width="70"/>	
-					<menulist id="encodingTypeMenuList" editable="true" disabled="true" width="204">
-					 <menupopup>
-					  <menuitem label=""/>
-					 </menupopup>
-					</menulist>  
-                  </hbox>
-                  <label id="csvDescriptionLabel" value="${datasourceDialog.CSV_DESCRIPTION}" height="25"/>
-                  <hbox id="filesPropertiesBox">
-                    <!-- Properties -->
-                    <groupbox flex="1" padding="0" height="120">
-                      <caption label="${physicalDatasourceDialog.DELIMITER}" />
-                      <radiogroup id="delimiterRadioGroup" disabled="true" padding="0" height="80">
-                        <grid padding="3">
-                          <columns>
-                            <column flex="3" />
-                            <column flex="2" />
-                          </columns>
-                          <rows>
-                            <row flex="1">
-                              <radio id="commaRadio" checked="true" value="Delimiter.USER_COMMA_DESC" label="${physicalDatasourceDialog.COMMA}"/>
-                              <radio id="semicolonRadio" value="Delimiter.USER_SEMI_COLON_DESC" label="${physicalDatasourceDialog.SEMICOLON}" />
-                            </row>
-                            <row flex="1">
-                              <radio id="tabRadio" value="Delimiter.USER_TAB_DESC" label="${physicalDatasourceDialog.TAB}" />
-                              <radio id="spaceRadio" value="Delimiter.USER_SPACE_DESC" label="${physicalDatasourceDialog.SPACE}" />
-                            </row>
-                            <row flex="1">
-                              <hbox id="otherRadioHbox" spacing="0">
-                                <radio flex="1" customValue="true" value="Delimiter.OTHER" id="otherRadio" label="${physicalDatasourceDialog.OTHER}" />
-                              </hbox>
-                              <spacer flex="1"/>
-                            </row>
-                          </rows>
-                        </grid>
-                      </radiogroup>
-                    </groupbox>
-                    <spacer width="8"/>
-                    <groupbox flex="1" height="120">
-                      <caption label="${physicalDatasourceDialog.ENCLOSURE}" />
-                      <radiogroup id="enclosureRadioGroup" disabled="true" height="80">
-                        <grid padding="3">
-                          <columns>
-                            <column flex="1" />
-                          </columns>
-                          <rows>
-                            <row flex="1">
-                              <radio id="doubleQuote" checked="true" value="Enclosure.USER_DOUBLE_QUOTE" label="${physicalDatasourceDialog.DOUBLE}" />
-                            </row>
-                            <row flex="1">
-                              <radio id="singleQuote" value="Enclosure.USER_SINGLE_QUOTE" label="${physicalDatasourceDialog.SINGLE}" />
-                            </row>
-                            <row flex="1">
-                              <radio id="noneQuote" value="Enclosure.USER_NONE" label="${physicalDatasourceDialog.NONE}" />
-                            </row>
-                          </rows>
-                        </grid>
-                      </radiogroup>
-                    </groupbox>
-
-                  </hbox>
-                  <checkbox id="isHeaderCheckBox" checked="true" label="${physicalDatasourceDialog.IS_HEADER}" disabled="true" />
-
-                  <spacer height="8"/>
-                <groupbox height="186">
-                  <caption label="${physicalDatasourceDialog.PREVIEW}"/>
-                  <label multiline="true" id="csvTextPreview" height="160" width="630" pre="true" />
-                </groupbox>
-              </vbox>
-              
-              <!--Multi-table STEP 1-->
-              <vbox id="joinSelectionWindow">
-			      <hbox>
-			        <vbox>
-			          <label value="Select from available tables to define join" tooltiptext=""/>
-			        </vbox>
-			      </hbox>
-			      <hbox>
-			        <vbox>
-			          <label value="Available:" tooltiptext=""/>
-			          <listbox id="availableTables" pen:binding="name" disabled="false" height="200" width="295"/>
-			        </vbox>
-			        <vbox>
-			          <spacer height="90"/>
-			          <button id="addButton" image="images/forward.gif" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false"/>
-			          <button id="removeButton" image="images/accum_remove.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"/>
-			        </vbox>
-			        <vbox>
-			          <label value="Selected tables and columns:" tooltiptext=""/>
-			          <listbox id="selectedTables" pen:binding="name" disabled="false" height="200" width="295"/>
-			        </vbox>
-			      </hbox>
-			    </vbox>
-              <!--Multi-table STEP 1-->
-              
+							  <hbox spacing="0">				
+			                    <label id="fileLabel" value="${physicalDatasourceDialog.FILE}"/>
+			                    <spacer width="303"/> 	
+			                    <label value="${physicalDatasourceDialog.ENCODING}" tooltiptext="${physicalDatasourceDialog.ENCODING_TOOLTIP}"/>
+			                  </hbox>
+			                  <hbox spacing="0">
+			                    <textbox id="uploadedFile" value="" disabled="true" height="20" width="190"/>
+			                    <button id="addFileButton" label="${physicalDatasourceDialog.IMPORT}..." onclick="fileImportController.showFileImportDialog()" tooltiptext="${datasourceDialog.addFileToolTip}"/>
+								<spacer width="70"/>	
+								<menulist id="encodingTypeMenuList" editable="true" disabled="true" width="204">
+								 <menupopup>
+								  <menuitem label=""/>
+								 </menupopup>
+								</menulist>  
+			                  </hbox>
+			                  <label id="csvDescriptionLabel" value="${datasourceDialog.CSV_DESCRIPTION}" height="25"/>
+			                  <hbox id="filesPropertiesBox">
+			                    <!-- Properties -->
+			                    <groupbox flex="1" padding="0" height="120">
+			                      <caption label="${physicalDatasourceDialog.DELIMITER}" />
+			                      <radiogroup id="delimiterRadioGroup" disabled="true" padding="0" height="80">
+			                        <grid padding="3">
+			                          <columns>
+			                            <column flex="3" />
+			                            <column flex="2" />
+			                          </columns>
+			                          <rows>
+			                            <row flex="1">
+			                              <radio id="commaRadio" checked="true" value="Delimiter.USER_COMMA_DESC" label="${physicalDatasourceDialog.COMMA}"/>
+			                              <radio id="semicolonRadio" value="Delimiter.USER_SEMI_COLON_DESC" label="${physicalDatasourceDialog.SEMICOLON}" />
+			                            </row>
+			                            <row flex="1">
+			                              <radio id="tabRadio" value="Delimiter.USER_TAB_DESC" label="${physicalDatasourceDialog.TAB}" />
+			                              <radio id="spaceRadio" value="Delimiter.USER_SPACE_DESC" label="${physicalDatasourceDialog.SPACE}" />
+			                            </row>
+			                            <row flex="1">
+			                              <hbox id="otherRadioHbox" spacing="0">
+			                                <radio flex="1" customValue="true" value="Delimiter.OTHER" id="otherRadio" label="${physicalDatasourceDialog.OTHER}" />
+			                              </hbox>
+			                              <spacer flex="1"/>
+			                            </row>
+			                          </rows>
+			                        </grid>
+			                      </radiogroup>
+			                    </groupbox>
+			                    <spacer width="8"/>
+			                    <groupbox flex="1" height="120">
+			                      <caption label="${physicalDatasourceDialog.ENCLOSURE}" />
+			                      <radiogroup id="enclosureRadioGroup" disabled="true" height="80">
+			                        <grid padding="3">
+			                          <columns>
+			                            <column flex="1" />
+			                          </columns>
+			                          <rows>
+			                            <row flex="1">
+			                              <radio id="doubleQuote" checked="true" value="Enclosure.USER_DOUBLE_QUOTE" label="${physicalDatasourceDialog.DOUBLE}" />
+			                            </row>
+			                            <row flex="1">
+			                              <radio id="singleQuote" value="Enclosure.USER_SINGLE_QUOTE" label="${physicalDatasourceDialog.SINGLE}" />
+			                            </row>
+			                            <row flex="1">
+			                              <radio id="noneQuote" value="Enclosure.USER_NONE" label="${physicalDatasourceDialog.NONE}" />
+			                            </row>
+			                          </rows>
+			                        </grid>
+			                      </radiogroup>
+			                    </groupbox>
+			                  </hbox>
+			                  <checkbox id="isHeaderCheckBox" checked="true" label="${physicalDatasourceDialog.IS_HEADER}" disabled="true" />
+			                  <spacer height="8"/>
+			                  <groupbox height="186">
+			                    <caption label="${physicalDatasourceDialog.PREVIEW}"/>
+			                    <label multiline="true" id="csvTextPreview" height="160" width="630" pre="true" />
+			                  </groupbox>
+	                        </vbox>
 						</deck>
 					</vbox>
+	
+				  <!--Multi-table STEP 2-->
+	              <vbox id="joinSelectionWindow">
+						<!--  ###############################################################################  -->
+						<!--     Multitable datasource step 2 -->
+						<!--  ###############################################################################  -->        		            
+	              
+				      <hbox>
+				        <vbox>
+				          <label value="Select from available tables to define join" tooltiptext=""/>
+				        </vbox>
+				      </hbox>
+				      <hbox>
+				        <vbox>
+				          <label value="Available:" tooltiptext=""/>
+				          <listbox id="availableTables" pen:binding="name" disabled="false" height="200" width="295"/>
+				        </vbox>
+				        <vbox>
+				          <spacer height="90"/>
+				          <button id="addButton" image="images/forward.gif" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false"/>
+				          <button id="removeButton" image="images/accum_remove.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"/>
+				        </vbox>
+				        <vbox>
+				          <label value="Selected tables and columns:" tooltiptext=""/>
+				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="200" width="295"/>
+				        </vbox>
+				      </hbox>
+				    </vbox>
+	              <!--Multi-table STEP 2-->
 
 				<!-- Wizard "Stage Data" Step -->
 				<vbox id="stagedatastep" height="500">
+					<!--  ###############################################################################  -->
+					<!--    CSV datasource step 2 - stage data step -->
+					<!--  ###############################################################################  -->        		            
+				
 					<hbox>
 						<label id="stageDataDescription" value="${stageDataStep.DESCRIPTION}" flex="1"/>
 						<!--<button image="images/stageStepImage.png" />-->
@@ -202,8 +214,12 @@
 					</vbox>
 				</vbox>
 
-				<!-- Multi-table step 2 -->
+				<!-- Multi-table step 3 -->
 				<vbox id="joinDefinitionWindow">
+					<!--  ###############################################################################  -->
+					<!--     Multitable datasource step 3 -->
+					<!--  ###############################################################################  -->        		            
+				
 				      <hbox>
 				        <vbox>
 				          <label value="Define the Join..." tooltiptext=""/>
@@ -242,7 +258,7 @@
 				        </vbox>
 				      </hbox>
 				    </vbox>
-				<!-- End Multi-table -->
+				<!-- Multi-table step 3 -->
 
 			</deck>
 		</hbox>

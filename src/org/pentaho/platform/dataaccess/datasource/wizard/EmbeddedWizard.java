@@ -124,7 +124,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
     wizardModel.addDatasource(new CsvDatasource(datasourceModel, datasourceService, csvDatasourceService));
     wizardModel.addDatasource(new QueryDatasource(datasourceService, datasourceModel));
-    wizardModel.addDatasource(new MultiTableDatasource());
+    wizardModel.addDatasource(new MultiTableDatasource(datasourceModel));
 
     if (checkHasAccess) {
       datasourceService.hasPermission(new XulServiceCallback<Boolean>() {

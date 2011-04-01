@@ -151,7 +151,7 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
     previewButton = (XulButton) document.getElementById("preview"); //$NON-NLS-1$
     columnNameTreeCol = (XulTreeCol) document.getElementById("relationalColumnNameTreeCol"); //$NON-NLS-1$
     columnTypeTreeCol = (XulTreeCol) document.getElementById("relationalColumnTypeTreeCol"); //$NON-NLS-1$
-
+    
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(datasourceModel.getGuiStateModel(), "relationalPreviewValidated", previewButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
 
