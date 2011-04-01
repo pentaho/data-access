@@ -62,6 +62,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	private XulMenuList<JoinFieldModel> rightKeyFieldList;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private IConnection selectedConnection;
+	private JoinValidator validator;
 
 	public JoinDefinitionsStep(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
@@ -103,88 +104,23 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		join.setLeftKeyFieldModel(this.joinGuiModel.getLeftKeyField());
 		join.setRightKeyFieldModel(this.joinGuiModel.getRightKeyField());
 
-		// validate against duplicate joins.
-		// and
-		// validate against joining to the same table.
-		// and
-		// validate against circular joins
-		StringBuffer errors = new StringBuffer();
-		if (notDuplicate(join, errors) && notSelfJoin(join, errors) && notCircularJoins(join, errors)) {
+		if (this.validator.isValid(join)) {
 			this.joinGuiModel.addJoin(join);
 		} else {
-
-			this.displayErrors(errors.toString());
+			this.displayErrors(this.validator.getErrors());
 		}
-
-		parentDatasource.setFinishable(this.isFinishable());
-	}
-
-	private boolean notDuplicate(JoinModel newJoin, StringBuffer errors) {
-		boolean notDuplicate = true;
-		for (JoinModel join : this.joinGuiModel.getJoins()) {
-			if (newJoin.equals(join)) {
-				notDuplicate = false;
-				errors.append("Duplicate Join Detected\n");  // TODO: i18n
-				break;
-			}
-		}
-		return notDuplicate;
-	}
-
-	private boolean notSelfJoin(JoinModel newJoin, StringBuffer errors) {
-		boolean notSelfJoin = !newJoin.getLeftKeyFieldModel().getParentTable().equals(newJoin.getRightKeyFieldModel().getParentTable());
-		if (!notSelfJoin) {
-			errors.append("Self Join Detected\n");  // TODO: i18n
-		}
-		return notSelfJoin;
-	}
-
-	private boolean notCircularJoins(JoinModel newJoin, StringBuffer errors) {
-		//TODO pending
-		boolean notCircularJoin = true;
-		/*JoinTableModel targetTable = newJoin.getRightKeyFieldModel().getParentTable();
-		for (JoinModel join : this.joinGuiModel.getJoins()) {
-			JoinTableModel sourceTable = join.getLeftKeyFieldModel().getParentTable();
-			if (targetTable.equals(sourceTable)) {
-				notCircularJoin = false;
-				errors.append("Circular Join Detected\n");  // TODO: i18n
-				break;
-			}
-		}*/
-		return notCircularJoin;
-	}
-
-	private boolean isFinishable() {
-		//Can only finish if all the tables are joined and datasource name is present.
-		return allTablesJoined() && !StringUtils.isEmpty(wizardModel.getDatasourceName());
-	}
-
-	private boolean allTablesJoined() {
-
-		boolean allTablesJoined = true;
-		next: for (JoinTableModel table : this.joinGuiModel.getSelectedTables()) {
-			for (JoinModel join : this.joinGuiModel.getJoins()) {
-				JoinTableModel table1 = join.getLeftKeyFieldModel().getParentTable();
-				JoinTableModel table2 = join.getRightKeyFieldModel().getParentTable();
-				if (table.equals(table1) || table.equals(table2)) {
-					continue next;
-				}
-			}
-			allTablesJoined = false;
-			break;
-		}
-		return allTablesJoined;
+		parentDatasource.setFinishable(this.validator.isFinishable());
 	}
 
 	@Bindable
 	public void deleteJoin() {
 		this.joinGuiModel.removeSelectedJoin();
-		parentDatasource.setFinishable(this.isFinishable());
+		parentDatasource.setFinishable(this.validator.isFinishable());
 	}
 
 	@Override
 	public void init(IWizardModel wizardModel) throws XulException {
-
+		this.validator = new JoinValidator(this.joinGuiModel, wizardModel);
 		this.joinDefinitionDialog = (XulVbox) document.getElementById(JOIN_DEFINITION_PANEL_ID);
 		this.joins = (XulListbox) document.getElementById("joins");
 		this.leftKeyFieldList = (XulMenuList<JoinFieldModel>) document.getElementById("leftKeyField");
@@ -261,7 +197,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	@Override
 	public void stepActivatingForward() {
 		if (this.joins.getElements() != null) {
-			parentDatasource.setFinishable(this.isFinishable());
+			parentDatasource.setFinishable(this.validator.isFinishable());
 		}
 	}
 
