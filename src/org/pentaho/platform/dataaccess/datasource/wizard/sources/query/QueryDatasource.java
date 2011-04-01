@@ -116,4 +116,9 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
       }
     });
   }
+
+  @Override
+  public void reset() {
+    datasourceModel.clearModel();
+  }
 }

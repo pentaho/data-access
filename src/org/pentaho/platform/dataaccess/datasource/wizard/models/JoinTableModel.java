@@ -66,4 +66,7 @@ public class JoinTableModel extends XulEventSourceAdapter {
 		}
 		return fieldModels;
 	}
+  public void reset(){
+    fields.clear();
+  }
 }

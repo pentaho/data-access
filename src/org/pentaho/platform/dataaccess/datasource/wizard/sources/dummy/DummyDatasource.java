@@ -84,4 +84,8 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
   public SelectDatasourceStep getSelectDatasourceStep() {
     return this.datasourceStep;
   }
+
+  @Override
+  public void reset() {
+  }
 }

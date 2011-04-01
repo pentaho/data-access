@@ -251,4 +251,13 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 			}
 		}
 	}
+
+  public void reset() {
+
+		this.availableTables.clear();
+		this.selectedTables.clear();
+		this.joins.clear();
+		this.leftJoinTable.reset();
+		this.rightJoinTable.reset();
+  }
 }

@@ -62,8 +62,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
   public static final String COMMA = ","; //$NON-NLS-1$
 
-  private DatasourceMessages datasourceMessages;
-
   private XulDialog connectionDialog;
   
   private XulDialog waitingDialog = null;
@@ -263,7 +261,7 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
   @Bindable
   public void displayPreview() {
 
-      showWaitingDialog(datasourceMessages.getString("DatasourceController.GENERATE_PREVIEW_DATA"), datasourceMessages
+      showWaitingDialog(MessageHandler.getString("DatasourceController.GENERATE_PREVIEW_DATA"), MessageHandler
           .getString("DatasourceController.WAIT"));
       service.doPreview(datasourceModel.getSelectedRelationalConnection().getName(), datasourceModel
           .getQuery(), datasourceModel.getGuiStateModel().getPreviewLimit(),

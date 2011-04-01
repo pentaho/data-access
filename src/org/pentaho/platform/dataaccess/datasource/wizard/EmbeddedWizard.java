@@ -205,6 +205,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     }
     wizardModel.setEditing(false);
     wizardController.setActiveStep(0);
+    wizardModel.reset();
     
     /* BISERVER-5153: Work around where XulGwtButton is getting its disabled state and style
      * confused.  The only way to get the train on the track is to flip-flop it.
@@ -228,7 +229,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
         selectedDatasource = datasource;
         break;
       }
-    }
+    } 
     if(selectedDatasource == null){
       MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN_TITLE"), MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"));
       return;

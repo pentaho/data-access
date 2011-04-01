@@ -136,4 +136,5 @@ public class FileTransformStats implements Serializable, IDatasourceSummary {
   public boolean isShowModeler() {
     return showModeler;
   }
+
 }

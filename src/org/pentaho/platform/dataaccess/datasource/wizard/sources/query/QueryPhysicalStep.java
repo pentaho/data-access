@@ -25,6 +25,7 @@ import java.beans.PropertyChangeListener;
 
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardConnectionController;
@@ -35,9 +36,11 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnec
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -76,6 +79,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
   @Bindable
   public void init(IWizardModel wizardModel) throws XulException {
+
     datasourceNameTextBox = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
     
     connectionController = new WizardConnectionController(document);
@@ -149,6 +153,25 @@ public class QueryPhysicalStep extends AbstractWizardStep {
    * @see org.pentaho.platform.dataaccess.datasource.wizard.steps.IWizardStep#setBindings()
    */
   public void setBindings() {
+
+    bf.setBindingType(Binding.Type.ONE_WAY);
+    bf.createBinding(wizardModel, "selectedDatasource", datasourceModel, "datasourceType", new BindingConvertor<IWizardDatasource, DatasourceType>(){
+      @Override
+      public DatasourceType sourceToTarget(IWizardDatasource iWizardDatasource) {
+        if(iWizardDatasource instanceof QueryDatasource){
+          return DatasourceType.SQL;
+        } else if( iWizardDatasource instanceof CsvDatasource){
+          return DatasourceType.CSV;
+        }
+        return DatasourceType.NONE;
+      }
+
+      @Override
+      public IWizardDatasource targetToSource(DatasourceType datasourceType) {
+        return null;
+      }
+    });
+    
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     bf.createBinding(datasourceModel, "datasourceName", datasourceNameTextBox, "value"); //$NON-NLS-1$ //$NON-NLS-2$
 

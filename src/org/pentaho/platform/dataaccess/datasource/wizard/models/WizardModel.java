@@ -90,4 +90,13 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
     this.editing = editing;
     firePropertyChange("editing", !this.editing, this.editing);
   }
+
+  @Override
+  public void reset() {
+    this.setDatasourceName("");
+    this.setSelectedDatasource(datasources.iterator().next());
+    for(IWizardDatasource source : datasources){
+      source.reset();
+    }
+  }
 }

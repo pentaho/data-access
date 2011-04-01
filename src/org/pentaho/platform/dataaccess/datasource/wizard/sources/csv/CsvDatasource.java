@@ -205,4 +205,9 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
       }
     });
   }
+
+  @Override
+  public void reset() {
+    datasourceModel.clearModel();
+  }
 }

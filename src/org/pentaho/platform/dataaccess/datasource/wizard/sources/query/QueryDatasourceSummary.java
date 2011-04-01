@@ -14,6 +14,7 @@ public class QueryDatasourceSummary implements IDatasourceSummary {
 
   private Domain domain;
   private boolean showModeler;
+  private boolean reportingOnly ;
 
   public QueryDatasourceSummary(){
     

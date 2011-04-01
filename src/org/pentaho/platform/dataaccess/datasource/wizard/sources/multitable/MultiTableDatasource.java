@@ -148,14 +148,14 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO(dsName);
 
 		joinSelectionServiceGwtImpl.serializeJoins(dto, this.selectedConnection, new XulServiceCallback<IDatasourceSummary>() {
-			public void error(String message, Throwable error) {
-				error.printStackTrace();
-			}
+      public void error(String message, Throwable error) {
+        error.printStackTrace();
+      }
 
-			public void success(IDatasourceSummary value) {
-				callback.success(value);
-			}
-		});
+      public void success(IDatasourceSummary value) {
+        callback.success(value);
+      }
+    });
 	}
 
 	@Override
@@ -181,17 +181,17 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		String serializedDatasource = (String) previousDomain.getLogicalModels().get(0).getProperty("datasourceModel");
 		joinSelectionServiceGwtImpl.deSerializeModelState(serializedDatasource, new XulServiceCallback<MultiTableDatasourceDTO>() {
 
-			public void success(MultiTableDatasourceDTO datasourceDTO) {
-				wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
-				joinGuiModel.populateJoinGuiModel(datasourceDTO);
-				callback.success(null);
-			}
+      public void success(MultiTableDatasourceDTO datasourceDTO) {
+        wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
+        joinGuiModel.populateJoinGuiModel(datasourceDTO);
+        callback.success(null);
+      }
 
-			public void error(String s, Throwable throwable) {
-				MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString("DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
-				callback.error(s, throwable);
-			}
-		});
+      public void error(String s, Throwable throwable) {
+        MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString("DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
+        callback.error(s, throwable);
+      }
+    });
 	}
 
 	class NotDisabledBindingConvertor extends BindingConvertor<Boolean, Boolean> {
@@ -203,4 +203,9 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 			return Boolean.valueOf(!value.booleanValue());
 		}
 	}
+
+  @Override
+  public void reset() {
+    this.joinGuiModel.reset();
+  }
 }

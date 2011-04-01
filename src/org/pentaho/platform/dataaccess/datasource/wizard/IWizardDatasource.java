@@ -72,4 +72,5 @@ public interface IWizardDatasource extends XulEventSource {
 
   void restoreSavedDatasource(Domain previousDomain, XulServiceCallback<Void> callback);
 
+  void reset();
 }

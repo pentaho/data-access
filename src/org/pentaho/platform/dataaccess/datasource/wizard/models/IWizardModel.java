@@ -28,4 +28,5 @@ public interface IWizardModel {
 
   void setSelectedDatasource(IWizardDatasource datasource);
   IWizardDatasource getSelectedDatasource();
+  void reset();
 }
