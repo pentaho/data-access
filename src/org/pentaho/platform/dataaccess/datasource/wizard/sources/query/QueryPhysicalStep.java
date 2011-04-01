@@ -226,9 +226,9 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   }
   
   
-  //public boolean stepDeactivatingForward(){
-	//return super.stepDeactivatingForward();
-  //}
+  public boolean stepDeactivatingForward(){
+	return super.stepDeactivatingForward();
+  }
 
   public WizardConnectionController getConnectionController() {
     return connectionController;

@@ -27,6 +27,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -48,11 +49,10 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private JoinGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 
-  public TablesSelectionStep(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
+	public TablesSelectionStep(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
-		this.selectedConnection = selectedConnection;
 	}
 
 	public String getName() {
@@ -89,7 +89,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
 	@Override
 	public void init(IWizardModel wizardModel) throws XulException {
-    this.tablesSelectionDialog = (XulVbox) document.getElementById(JOIN_STEP_PANEL_ID);
+		this.tablesSelectionDialog = (XulVbox) document.getElementById(JOIN_STEP_PANEL_ID);
 		this.availableTables = (XulListbox) document.getElementById("availableTables");
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
 
@@ -100,7 +100,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		BindingFactory bf = new GwtBindingFactory(document);
 		bf.createBinding(this.joinGuiModel.getAvailableTables(), "children", this.availableTables, "elements");
 		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.selectedTables, "elements");
-		this.getAvailableTables();
+
 	}
 
 	public String getStepName() {
@@ -110,10 +110,19 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	public XulComponent getUIComponent() {
 		return this.tablesSelectionDialog;
 	}
-	
+
 	@Override
-	  public void stepActivatingReverse() {
+	public void stepActivatingReverse() {
 		parentDatasource.setFinishable(false);
+	}
+
+	@Override
+	public void activating() throws XulException {
+
+		//TODO get rid of the DatasourceModel dependency.
+		QueryPhysicalStep x = (QueryPhysicalStep) parentDatasource.getSteps().get(0);
+		this.selectedConnection = x.getConnectionController().getDatasourceModel().getSelectedRelationalConnection();
+		this.getAvailableTables();
 	}
 
 }

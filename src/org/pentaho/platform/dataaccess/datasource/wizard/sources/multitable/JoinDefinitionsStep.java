@@ -32,6 +32,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -64,11 +65,10 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	private IConnection selectedConnection;
 	private JoinValidator validator;
 
-	public JoinDefinitionsStep(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, IConnection selectedConnection, MultiTableDatasource parentDatasource) {
+	public JoinDefinitionsStep(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
-		this.selectedConnection = selectedConnection;
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -180,7 +180,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 			}
 		});
 
-		bf.createBinding(wizardModel, "datasourceName", this, "finishable", new BindingConvertor<String, Boolean>() {
+		bf.createBinding(wizardModel, "datasourceName", parentDatasource, "finishable", new BindingConvertor<String, Boolean>() {
 
 			@Override
 			public Boolean sourceToTarget(final String datasourceName) {
@@ -212,5 +212,12 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	public XulComponent getUIComponent() {
 		return this.joinDefinitionDialog;
+	}
+
+	@Override
+	public void activating() throws XulException {
+		// TODO get rid of the DatasourceModel dependency.
+		QueryPhysicalStep x = (QueryPhysicalStep) parentDatasource.getSteps().get(0);
+		this.selectedConnection = x.getConnectionController().getDatasourceModel().getSelectedRelationalConnection();
 	}
 }

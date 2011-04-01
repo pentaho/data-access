@@ -32,7 +32,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHand
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
@@ -42,8 +41,6 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.components.XulButton;
-import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
@@ -79,10 +76,9 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 			}
 		});
 
-		// GOOD DO NOT REMOVE
-		//this.joinSelectionStepController = new JoinSelectionStepController(this.joinGuiModel, joinSelectionServiceGwtImpl, this.datasourceModel.getSelectedRelationalConnection(), this);
-		//this.joinDefinitionStepController = new JoinDefinitionStepController(this.joinGuiModel, joinSelectionServiceGwtImpl, this.datasourceModel.getSelectedRelationalConnection(), this);
-		
+		connectionSelectionStep = new QueryPhysicalStep(datasourceModel, MultiTableDatasource.this, false);
+		tablesSelectionStep = new TablesSelectionStep(joinGuiModel, joinSelectionServiceGwtImpl, MultiTableDatasource.this);
+		joinDefinitionsStep = new JoinDefinitionsStep(joinGuiModel, joinSelectionServiceGwtImpl, MultiTableDatasource.this);
 	}
 
 	@Override
@@ -90,7 +86,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		this.connectionSelectionStep.activating();
 		this.tablesSelectionStep.activating();
 		this.joinDefinitionsStep.activating();
-		
+
 		Document document = this.connectionSelectionStep.getXulDomContainer().getDocumentRoot();
 		XulVbox vbox = (XulVbox) document.getElementById("queryBox");
 		vbox.setVisible(false);
@@ -107,34 +103,6 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	public void init(final XulDomContainer container, final IWizardModel wizardModel) throws XulException {
 		this.wizardModel = wizardModel;
 		bf = new GwtBindingFactory(document);
-		
-		// HARCODING SAMPLE DATA FOR NOW
-		ConnectionServiceGwtImpl connectionService = new ConnectionServiceGwtImpl();
-		connectionService.getConnectionByName("SampleData", new XulServiceCallback<IConnection>() {
-			public void error(String message, Throwable error) {
-			}
-
-			public void success(IConnection iConnection) {
-
-				try {
-					selectedConnection = iConnection;
-					connectionSelectionStep = new QueryPhysicalStep(datasourceModel, MultiTableDatasource.this, false);
-					tablesSelectionStep = new TablesSelectionStep(joinGuiModel, joinSelectionServiceGwtImpl, selectedConnection, MultiTableDatasource.this);
-					joinDefinitionsStep = new JoinDefinitionsStep(joinGuiModel, joinSelectionServiceGwtImpl, selectedConnection, MultiTableDatasource.this);
-
-					// THIS BELONGS HERE IN THE INIT METHOD.
-					container.addEventHandler(connectionSelectionStep);
-					container.addEventHandler(tablesSelectionStep);
-					container.addEventHandler(joinDefinitionsStep);
-					connectionSelectionStep.init(wizardModel);
-					tablesSelectionStep.init(wizardModel);
-					joinDefinitionsStep.init(wizardModel);
-				} catch (XulException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-
 		this.bf = new GwtBindingFactory(container.getDocumentRoot());
 		bf.setBindingType(Binding.Type.ONE_WAY);
 		Binding finishedButtonBinding = this.bf.createBinding(this, "finishable", "finish_btn", "disabled", new NotDisabledBindingConvertor());
@@ -144,6 +112,12 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 			// TODO add some exception handling here.
 		}
 
+		container.addEventHandler(connectionSelectionStep);
+		container.addEventHandler(tablesSelectionStep);
+		container.addEventHandler(joinDefinitionsStep);
+		connectionSelectionStep.init(wizardModel);
+		tablesSelectionStep.init(wizardModel);
+		joinDefinitionsStep.init(wizardModel);
 	}
 
 	@Override
@@ -168,9 +142,9 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO(dsName);
 
 		joinSelectionServiceGwtImpl.serializeJoins(dto, this.selectedConnection, new XulServiceCallback<IDatasourceSummary>() {
-      public void error(String message, Throwable error) {
-        error.printStackTrace();
-      }
+			public void error(String message, Throwable error) {
+				error.printStackTrace();
+			}
 
 			public void success(IDatasourceSummary value) {
 				callback.success(value);
@@ -201,11 +175,11 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		String serializedDatasource = (String) previousDomain.getLogicalModels().get(0).getProperty("datasourceModel");
 		joinSelectionServiceGwtImpl.deSerializeModelState(serializedDatasource, new XulServiceCallback<MultiTableDatasourceDTO>() {
 
-      public void success(MultiTableDatasourceDTO datasourceDTO) {
-        wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
-        joinGuiModel.populateJoinGuiModel(datasourceDTO);
-        callback.success(null);
-      }
+			public void success(MultiTableDatasourceDTO datasourceDTO) {
+				wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
+				joinGuiModel.populateJoinGuiModel(datasourceDTO);
+				callback.success(null);
+			}
 
 			public void error(String s, Throwable throwable) {
 				MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString("DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
@@ -224,8 +198,8 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		}
 	}
 
-  @Override
-  public void reset() {
-    this.joinGuiModel.reset();
-  }
+	@Override
+	public void reset() {
+		this.joinGuiModel.reset();
+	}
 }
