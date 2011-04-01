@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.util.ISpoonModelerSource;
-import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -54,9 +53,6 @@ public class InlineSqlModelerSource implements ISpoonModelerSource {
     try{
       BusinessData bd =  datasourceImpl.generateLogicalModel(datasourceName, connectionName, dbType, query, "10");
       Domain domain = bd.getDomain();
-      if (dualModelingMode) {
-        ModelerSourceUtil.duplicateLogicalTablesForDualModelingMode(domain.getLogicalModels().get(0));
-      }
       return domain;
     } catch(DatasourceServiceException dce){
       throw new ModelerException(dce);
