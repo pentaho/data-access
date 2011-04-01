@@ -120,8 +120,8 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	public void activating() throws XulException {
 
 		//TODO get rid of the DatasourceModel dependency.
-		QueryPhysicalStep x = (QueryPhysicalStep) parentDatasource.getSteps().get(0);
-		this.selectedConnection = x.getConnectionController().getDatasourceModel().getSelectedRelationalConnection();
+		QueryPhysicalStep step = (QueryPhysicalStep) parentDatasource.getSteps().get(0);
+		this.selectedConnection = step.getConnectionController().getDatasourceModel().getSelectedRelationalConnection();
 		this.getAvailableTables();
 	}
 
