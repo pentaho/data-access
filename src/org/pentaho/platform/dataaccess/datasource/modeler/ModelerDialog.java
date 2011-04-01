@@ -187,7 +187,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     }
 
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(model.getModel(), "valid", "modeler_dialog_accept", "disabled", new BindingConvertor<Boolean, Boolean>(){
+    bf.createBinding(model, "valid", "modeler_dialog_accept", "disabled", new BindingConvertor<Boolean, Boolean>(){
       @Override
       public Boolean sourceToTarget(Boolean value) {
         return !value;
