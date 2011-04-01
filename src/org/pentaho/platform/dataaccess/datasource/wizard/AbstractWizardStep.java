@@ -82,7 +82,7 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
   }
 
   @Bindable
-  protected void setValid(final boolean valid) {
+  public void setValid(final boolean valid) {
     this.valid = valid;
 
     this.firePropertyChange(VALID_PROPERTY_NAME, !valid , this.valid);

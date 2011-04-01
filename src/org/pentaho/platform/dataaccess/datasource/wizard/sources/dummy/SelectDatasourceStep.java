@@ -92,6 +92,7 @@ public class SelectDatasourceStep extends AbstractWizardStep {
     this.datasource.addPropertyChangeListener(finishableListener);
 
     this.datasourceDeck.setSelectedIndex(datasourceDeck.getChildNodes().indexOf(datasource.getSteps().get(0).getUIComponent()));
+    firePropertyChange("valid", !isValid(), isValid());
   }
 
   @Override

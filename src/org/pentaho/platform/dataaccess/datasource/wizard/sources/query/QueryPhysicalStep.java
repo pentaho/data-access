@@ -24,6 +24,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
+import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
@@ -62,6 +63,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   private ConnectionController databaseConnectionController;
   private IXulAsyncConnectionService connectionService;
   private boolean isFinishable = false;
+  private IConnection connection;
 
   public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource, boolean isFinishable) {
 	  super(parentDatasource);
@@ -197,7 +199,9 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     bf.createBinding(datasourceModel, "datasourceName", datasourceModel.getModelInfo(), "stageTableName");
 
     bf.createBinding(wizardModel, "editing", datasourceNameTextBox, "disabled");
-    
+    bf.createBinding(datasourceModel, "selectedRelationalConnection", this, "connection");
+
+
   }
 
   public void setFocus() {
@@ -236,5 +240,17 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
   public void setConnectionController(WizardConnectionController connectionController) {
     this.connectionController = connectionController;
+  }
+
+  @Bindable
+  public IConnection getConnection() {
+    return connection;
+  }
+
+  @Bindable
+  public void setConnection(IConnection connection) {
+    Object prevVal = this.connection == null ? new Object() : null;
+    this.connection = connection;
+    firePropertyChange("connection", prevVal, connection);
   }
 }

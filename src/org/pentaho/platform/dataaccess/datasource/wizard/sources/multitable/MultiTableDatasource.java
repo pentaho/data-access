@@ -55,13 +55,11 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	private QueryPhysicalStep connectionSelectionStep;
 	private TablesSelectionStep tablesSelectionStep;
 	private JoinDefinitionsStep joinDefinitionsStep;
-	private IConnection selectedConnection;
+	private IConnection connection;
 	private BindingFactory bf;
 	private IWizardModel wizardModel;
-	private DatasourceModel datasourceModel;
 
 	public MultiTableDatasource(DatasourceModel datasourceModel) {
-		this.datasourceModel = datasourceModel;
 		this.joinGuiModel = new JoinGuiModel();
 		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
 
@@ -90,6 +88,8 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		Document document = this.connectionSelectionStep.getXulDomContainer().getDocumentRoot();
 		XulVbox vbox = (XulVbox) document.getElementById("queryBox");
 		vbox.setVisible(false);
+    this.connectionSelectionStep.setValid(true);
+
 	}
 
 	@Override
@@ -118,6 +118,8 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		connectionSelectionStep.init(wizardModel);
 		tablesSelectionStep.init(wizardModel);
 		joinDefinitionsStep.init(wizardModel);
+
+    bf.createBinding(connectionSelectionStep, "connection", this, "connection");
 	}
 
 	@Override
@@ -141,7 +143,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		String dsName = this.wizardModel.getDatasourceName().replace(".", "_").replace(" ", "_");
 		MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO(dsName);
 
-		joinSelectionServiceGwtImpl.serializeJoins(dto, this.selectedConnection, new XulServiceCallback<IDatasourceSummary>() {
+		joinSelectionServiceGwtImpl.serializeJoins(dto, this.connection, new XulServiceCallback<IDatasourceSummary>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
 			}
@@ -202,4 +204,14 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	public void reset() {
 		this.joinGuiModel.reset();
 	}
+
+  @Bindable
+  public IConnection getConnection() {
+    return connection;
+  }
+
+  @Bindable
+  public void setConnection(IConnection connection) {
+    this.connection = connection;
+  }
 }
