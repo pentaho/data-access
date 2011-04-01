@@ -162,6 +162,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   @Override
   public void onFinish(final IDatasourceSummary summary) {
     this.summary = summary;
+    if(wizardModel.isEditing()){
+      onDialogAccept();
+      return;
+    }
     summaryDialogController.showSummaryDialog(summary, new XulServiceCallback<IDatasourceSummary>(){
       @Override
       public void error(String s, Throwable throwable) {
@@ -236,6 +240,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     }
 
     wizardModel.setSelectedDatasource(selectedDatasource);
+    wizardModel.setEditing(true);
     wizardController.reset();
     selectedDatasource.restoreSavedDatasource(domain, new XulServiceCallback<Void>(){
       @Override
