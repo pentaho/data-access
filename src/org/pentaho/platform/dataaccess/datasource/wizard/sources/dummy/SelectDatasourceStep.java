@@ -36,6 +36,9 @@ public class SelectDatasourceStep extends AbstractWizardStep {
   private PropertyChangeListener finishableListener = new PropertyChangeListener(){
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+      if(datasource == null){
+        return;
+      }
       parentDatasource.setFinishable(datasource.isFinishable());
     }
   };
