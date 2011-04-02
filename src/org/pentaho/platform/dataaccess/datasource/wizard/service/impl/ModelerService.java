@@ -139,6 +139,10 @@ public class ModelerService extends PentahoBase implements IModelerService {
   }
 
   public String serializeModels(Domain domain, String name) throws Exception {
+    return serializeModels(domain, name, true);
+  }
+
+  public String serializeModels(Domain domain, String name, boolean doOlap) throws Exception {
     String domainId = null;
     initKettle();
 
@@ -175,8 +179,9 @@ public class ModelerService extends PentahoBase implements IModelerService {
       String catName = lModel.getName(Locale.getDefault().toString());
 
       cleanseExistingCatalog(catName);
-      
-      lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
+      if(doOlap){
+        lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
+      }
       XmiParser parser = new XmiParser();
       String reportXML =  parser.generateXmi(model.getDomain());
 
@@ -189,25 +194,27 @@ public class ModelerService extends PentahoBase implements IModelerService {
       }
 
       // Serialize domain to olap schema.
-      MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
-      String mondrianSchema = exporter.createMondrianModelXML();
-      Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
-      byte[] schemaBytes = schemaDoc.asXML().getBytes("UTF-8"); //$NON-NLS-1$
+      if(doOlap){
+        MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
+        String mondrianSchema = exporter.createMondrianModelXML();
+        Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
+        byte[] schemaBytes = schemaDoc.asXML().getBytes("UTF-8"); //$NON-NLS-1$
 
-      status = repository.publish(base, '/' + parentPath, name + ".mondrian.xml", schemaBytes, true); //$NON-NLS-1$  
-      if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
-        throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$  
+        status = repository.publish(base, '/' + parentPath, name + ".mondrian.xml", schemaBytes, true); //$NON-NLS-1$
+        if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
+          throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
+        }
+
+        // Refresh Metadata
+        PentahoSystem.publish(session, MetadataPublisher.class.getName());
+
+        // Write this catalog to the default Pentaho DataSource and refresh the cache.
+        File file = new File(path + name + ".mondrian.xml"); //$NON-NLS-1$
+        String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getDatasource().getDatabaseName(); //$NON-NLS-1$
+        String catDef = "solution:" + solutionStorage + ISolutionRepository.SEPARATOR //$NON-NLS-1$
+            + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR + file.getName(); //$NON-NLS-1$//$NON-NLS-2$
+        addCatalog(catName, catConnectStr, catDef, session);
       }
-
-      // Refresh Metadata
-      PentahoSystem.publish(session, MetadataPublisher.class.getName());
-
-      // Write this catalog to the default Pentaho DataSource and refresh the cache.
-      File file = new File(path + name + ".mondrian.xml"); //$NON-NLS-1$  
-      String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getDatasource().getDatabaseName(); //$NON-NLS-1$
-      String catDef = "solution:" + solutionStorage + ISolutionRepository.SEPARATOR //$NON-NLS-1$
-          + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR + file.getName(); //$NON-NLS-1$//$NON-NLS-2$
-      addCatalog(catName, catConnectStr, catDef, session);
 
     } catch (Exception e) {
       e.printStackTrace();
