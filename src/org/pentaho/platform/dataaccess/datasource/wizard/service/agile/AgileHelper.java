@@ -32,22 +32,27 @@ public class AgileHelper {
   public static String getDatasourceSolutionStorage() {
     return PentahoSystem.getSystemSetting(SETTINGS_FILE, DATASOURCE_SOLUTION_STORAGE, "admin");
   }
-
+  
+  public static String getDialect(DatabaseMeta meta, String jndiName) {
+	    String dialect = null;
+	    try {
+	      Connection conn = getConnection(jndiName);
+	      dialect = conn.getMetaData().getDatabaseProductName();
+	      if (dialect.indexOf("HSQL") >= 0) {
+	        dialect = "Hypersonic";
+	      }
+	      conn.close();
+	    } catch (SQLException e) {
+	      logger.debug("Error determining database type from connection", e);
+	    } catch (DatasourceServiceException e) {
+	      logger.debug("Error determining database type from connection - getting JNDI connection", e);
+	    }
+	    return dialect;
+	  
+  }
+  
   public static String getDialect(DatabaseMeta meta) {
-    String dialect = null;
-    try {
-      Connection conn = getConnection(getJndiName());
-      dialect = conn.getMetaData().getDatabaseProductName();
-      if (dialect.indexOf("HSQL") >= 0) {
-        dialect = "Hypersonic";
-      }
-      conn.close();
-    } catch (SQLException e) {
-      logger.debug("Error determining database type from connection", e);
-    } catch (DatasourceServiceException e) {
-      logger.debug("Error determining database type from connection - getting JNDI connection", e);
-    }
-    return dialect;
+	  return getDialect(meta, getJndiName());
   }
 
   public static String generateTableName( String filename ) {

@@ -44,9 +44,10 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 	private DatabaseMeta getDatabaseMeta(IConnection connection) {
 		DatabaseMeta databaseMeta = new DatabaseMeta();
 		databaseMeta.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-		databaseMeta.setDatabaseType(AgileHelper.getDialect(databaseMeta));
 		databaseMeta.setDBName(connection.getName());
 		databaseMeta.setName(connection.getName());
+		databaseMeta.setDatabaseType(AgileHelper.getDialect(databaseMeta, connection.getName()));
+		databaseMeta.setQuoteAllFields(true);
 		return databaseMeta;
 	}
 
