@@ -184,6 +184,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	@Override
 	public void stepActivatingForward() {
+    super.stepActivatingForward();
 		if (this.joins.getElements() != null) {
 			parentDatasource.setFinishable(this.validator.isFinishable());
 		}
@@ -204,6 +205,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	@Override
 	public void activating() throws XulException {
+    super.activating();
 		// TODO get rid of the DatasourceModel dependency.
 		QueryPhysicalStep step = (QueryPhysicalStep) parentDatasource.getSteps().get(0);
 		this.selectedConnection = step.getConnectionController().getDatasourceModel().getSelectedRelationalConnection();
