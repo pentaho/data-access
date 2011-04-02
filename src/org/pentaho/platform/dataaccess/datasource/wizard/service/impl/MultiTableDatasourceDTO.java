@@ -23,14 +23,10 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.pentaho.metadata.model.LogicalRelationship;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
-import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class MultiTableDatasourceDTO implements Serializable {
+	
+	private static final long serialVersionUID = 1368165523678535182L;
 
 	private String datasourceName;
 	private List<LogicalRelationship> logicalRelationships;
