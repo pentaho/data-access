@@ -180,18 +180,6 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 			}
 		});
 
-		bf.createBinding(wizardModel, "datasourceName", parentDatasource, "finishable", new BindingConvertor<String, Boolean>() {
-
-			@Override
-			public Boolean sourceToTarget(final String datasourceName) {
-				return !StringUtils.isEmpty(datasourceName);
-			}
-
-			@Override
-			public String targetToSource(final Boolean value) {
-				return null;
-			}
-		});
 	}
 
 	@Override

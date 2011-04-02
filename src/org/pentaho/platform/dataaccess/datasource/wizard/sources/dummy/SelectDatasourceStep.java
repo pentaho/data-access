@@ -114,7 +114,7 @@ public class SelectDatasourceStep extends AbstractWizardStep {
   @Override
   public boolean isValid() {
     if(wrappedStep != null){
-      return wrappedStep.isValid();
+      return wrappedStep.isValid() && wizardModel.getDatasourceName() != null && !wizardModel.getDatasourceName().isEmpty();
     } else {
       return false;
     }

@@ -30,7 +30,7 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
 
   @Override
   @Bindable
-    public void setDatasourceName(String datasourceName) {
+  public void setDatasourceName(String datasourceName) {
     this.datasourceName = datasourceName;
   }
 

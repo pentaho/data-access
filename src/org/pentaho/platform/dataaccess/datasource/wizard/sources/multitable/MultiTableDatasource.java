@@ -105,12 +105,6 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		bf = new GwtBindingFactory(document);
 		this.bf = new GwtBindingFactory(container.getDocumentRoot());
 		bf.setBindingType(Binding.Type.ONE_WAY);
-		Binding finishedButtonBinding = this.bf.createBinding(this, "finishable", "finish_btn", "disabled", new NotDisabledBindingConvertor());
-		try {
-			finishedButtonBinding.fireSourceChanged();
-		} catch (Exception e) {
-			// TODO add some exception handling here.
-		}
 
 		container.addEventHandler(connectionSelectionStep);
 		container.addEventHandler(tablesSelectionStep);
@@ -166,9 +160,8 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 	@Bindable
 	public void setFinishable(boolean finishable) {
-		boolean prevFinishable = this.finishable;
 		this.finishable = finishable;
-		firePropertyChange("finishable", prevFinishable, finishable);
+		firePropertyChange("finishable", !finishable, finishable);
 	}
 
 	@Override

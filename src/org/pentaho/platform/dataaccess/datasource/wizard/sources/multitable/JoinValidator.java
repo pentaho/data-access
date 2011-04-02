@@ -84,7 +84,7 @@ public class JoinValidator {
 
 	public boolean isFinishable() {
 		//Can only finish if all the tables are joined and datasource name is present.
-		return allTablesJoined() && !StringUtils.isEmpty(wizardModel.getDatasourceName());
+		return allTablesJoined();
 	}
 
 	private boolean allTablesJoined() {

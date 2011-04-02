@@ -1,6 +1,7 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
+import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.util.Set;
@@ -9,7 +10,7 @@ import java.util.Set;
  * User: nbaker
  * Date: 3/30/11
  */
-public interface IWizardModel {
+public interface IWizardModel extends XulEventSource {
   @Bindable
   String getDatasourceName();
 

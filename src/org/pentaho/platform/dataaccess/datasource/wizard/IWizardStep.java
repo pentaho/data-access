@@ -49,6 +49,13 @@ public interface IWizardStep extends XulEventHandler, XulEventSource {
    */
   public boolean isValid();
 
+
+  /**
+   * Set the validity of the step. Really only used to manually fire the valid binding/
+   *
+   */
+  public void setValid(boolean valid);
+
   /**
    * stepActivatingForward()
    * 

@@ -17,6 +17,8 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,6 +186,14 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
     datasourceName = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
     bf.createBinding(datasourceName, "value", wizardModel, "datasourceName");
+    wizardModel.addPropertyChangeListener(new PropertyChangeListener(){
+      @Override
+      public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        if(propertyChangeEvent.getPropertyName().equals("datasourceName")){
+          steps.get(activeStep).setValid(steps.get(activeStep).isValid());
+        }
+      }
+    });
 
     bf.setBindingType(Binding.Type.ONE_WAY);
 
