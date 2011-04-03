@@ -22,11 +22,9 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
 import java.util.List;
 
-import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -38,7 +36,7 @@ public interface ICsvDatasourceServiceAsync {
 
   public void getStagedFiles(AsyncCallback<FileInfo[]> aCallback);
 
-  public void generateDomain(ModelInfo modelInfo, AsyncCallback<IDatasourceSummary> callback);
+  public void generateDomain(ModelInfo modelInfo, String modelId, AsyncCallback<IDatasourceSummary> callback);
 
   public void getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding, AsyncCallback<List<String>> callback) throws Exception;
   

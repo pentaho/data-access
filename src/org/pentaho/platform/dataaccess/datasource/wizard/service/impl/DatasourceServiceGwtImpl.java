@@ -273,10 +273,10 @@ public class DatasourceServiceGwtImpl implements IXulAsyncDatasourceService {
   }
 
   @Override
-  public void generateQueryDomain(final String name, final String query, final IConnection connection, final DatasourceDTO datasourceDTO, final XulServiceCallback<IDatasourceSummary> callback) {
+  public void generateQueryDomain(final String name, final String query, final String datasourceId, final IConnection connection, final DatasourceDTO datasourceDTO, final XulServiceCallback<IDatasourceSummary> callback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
-        SERVICE.generateQueryDomain(name, query, connection, datasourceDTO, callback);
+        SERVICE.generateQueryDomain(name, query, datasourceId, connection, datasourceDTO, callback);
       }
     },new AsyncCallback<IDatasourceSummary>() {
       public void onFailure(Throwable arg0) {

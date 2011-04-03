@@ -69,8 +69,8 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
 		MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getLogicalRelationships(), dto.getDatasourceName());
 		Domain domain = multiTable.generateDomain();
-
 		domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(dto));
+		domain.getLogicalModels().get(0).setProperty("DatasourceType", dto.getDatasourceId());
 		modelerService.serializeModels(domain, dto.getDatasourceName(), false);
 
 		QueryDatasourceSummary summary = new QueryDatasourceSummary();

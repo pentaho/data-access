@@ -487,7 +487,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
   }
 
   @Override
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, String datasourceId, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
 
     ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
     ModelerService modelerService = new ModelerService();
@@ -509,6 +509,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
       modelerWorkspace.setModelName(datasourceDTO.getDatasourceName());
       modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
       domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(datasourceDTO));
+      domain.getLogicalModels().get(0).setProperty("DatasourceType", datasourceId);
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
       prepareForSerializaton(domain);

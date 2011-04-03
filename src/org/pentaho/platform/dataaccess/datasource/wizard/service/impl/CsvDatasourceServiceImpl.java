@@ -23,23 +23,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.tree.DefaultElement;
-import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
-import org.pentaho.platform.api.engine.IPentahoUrlFactory;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
@@ -47,21 +40,15 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.engine.core.system.PentahoBase;
-import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
-import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
-import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
-import org.pentaho.platform.uifoundation.component.xml.PMDUIComponent;
-import org.pentaho.platform.util.web.SimpleUrlFactory;
 import org.pentaho.reporting.libraries.base.util.StringUtils;
-import org.pentaho.ui.xul.XulServiceCallback;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -244,6 +231,65 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   @Override
   public BogoPojo gwtWorkaround(BogoPojo pojo) {
     return pojo;
+  }
+
+  public FileTransformStats generateDomain(ModelInfo modelInfo, String modelId) throws Exception {
+    IPentahoSession pentahoSession = null;
+    try {
+      pentahoSession = getSession();
+      KettleSystemListener.environmentInit(pentahoSession);
+      
+      String statsKey = FileTransformStats.class.getSimpleName() + "_" + modelInfo.getFileInfo().getTmpFilename(); //$NON-NLS-1$
+
+      FileTransformStats stats = new FileTransformStats();
+      pentahoSession.setAttribute(statsKey, stats);
+      CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(modelInfo, AgileHelper.getDatabaseMeta());
+      csvTransformGenerator.setTransformStats(stats);
+      
+      
+      try {
+        csvTransformGenerator.dropTable(modelInfo.getStageTableName());
+      } catch (CsvTransformGeneratorException e) {
+        // this is ok, the table may not have existed.
+        logger.info("Could not drop table before staging"); //$NON-NLS-1$
+      }
+      csvTransformGenerator.createOrModifyTable(pentahoSession);
+
+      // no longer need to truncate the table since we dropped it a few lines up, so just pass false
+      csvTransformGenerator.loadTable(false, pentahoSession, true);
+
+      ArrayList<String> combinedErrors = new ArrayList<String>(modelInfo.getCsvInputErrors());
+      combinedErrors.addAll(modelInfo.getTableOutputErrors());
+      stats.setErrors(combinedErrors);
+      
+      // wait until it it done
+      while (!stats.isRowsFinished()) {
+        Thread.sleep(200);
+      }
+
+      modelerWorkspace.setDomain(modelerService.generateCSVDomain(modelInfo.getStageTableName(), modelInfo.getDatasourceName()));
+
+      modelerWorkspace.getWorkspaceHelper().autoModelFlat(modelerWorkspace);
+      modelerWorkspace.setModelName(modelInfo.getDatasourceName());
+      modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
+      Domain workspaceDomain = modelerWorkspace.getDomain();
+      
+      workspaceDomain.getLogicalModels().get(0).setProperty("DatasourceType", modelId);
+      prepareForSerialization(workspaceDomain);
+
+      modelerService.serializeModels(workspaceDomain, modelerWorkspace.getModelName());
+      stats.setDomain(modelerWorkspace.getDomain());
+
+      return stats;
+    } catch (Exception e) {
+      e.printStackTrace();
+      logger.error(e);
+      throw e;
+    } finally {
+      if (pentahoSession != null) {
+        pentahoSession.destroy();
+      }
+    }
   }
 
 }

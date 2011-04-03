@@ -64,9 +64,9 @@ public class CsvDatasourceServiceServlet extends RemoteServiceServlet implements
   }
 
   @Override
-  public FileTransformStats generateDomain(ModelInfo modelInfo) throws Exception {
+  public FileTransformStats generateDomain(ModelInfo modelInfo, String modelId) throws Exception {
 	  CsvDatasourceServiceImpl serviceImpl = new CsvDatasourceServiceImpl();
-	  return serviceImpl.generateDomain(modelInfo);
+	  return serviceImpl.generateDomain(modelInfo, modelId);
   }
 
   public BogoPojo gwtWorkaround(BogoPojo pojo) {

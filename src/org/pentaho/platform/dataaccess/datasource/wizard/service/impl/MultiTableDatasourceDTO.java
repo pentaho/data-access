@@ -25,15 +25,16 @@ import java.util.List;
 import org.pentaho.metadata.model.LogicalRelationship;
 
 public class MultiTableDatasourceDTO implements Serializable {
-	
+
 	private static final long serialVersionUID = 1368165523678535182L;
 
 	private String datasourceName;
+	private String datasourceId;
 	private List<LogicalRelationship> logicalRelationships;
 
 	public MultiTableDatasourceDTO() {
 	}
-	
+
 	public String getDatasourceName() {
 		return datasourceName;
 	}
@@ -48,5 +49,13 @@ public class MultiTableDatasourceDTO implements Serializable {
 
 	public void setLogicalRelationships(List<LogicalRelationship> logicalRelationships) {
 		this.logicalRelationships = logicalRelationships;
+	}
+
+	public String getDatasourceId() {
+		return datasourceId;
+	}
+
+	public void setDatasourceId(String datasourceId) {
+		this.datasourceId = datasourceId;
 	}
 }
