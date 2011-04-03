@@ -58,7 +58,7 @@ public class JoinMetadataTest extends BaseTest {
 		try {
 			JoinGuiModel joinGuiModel = new JoinGuiModel();
 			List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
-			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), logicalRelationships);
+			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), logicalRelationships, this.getDatabaseMeta().getName());
 			Domain domain = multiTable.generateDomain();
 			assertNotNull(domain);
 		} catch (ModelerException e) {

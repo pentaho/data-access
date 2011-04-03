@@ -63,7 +63,7 @@ public class SerializeMultiTableServiceTest {
   
     JoinGuiModel joinGuiModel = new JoinGuiModel();
 	List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
-	MultiTableModelerSource multiTable = new MultiTableModelerSource(database, logicalRelationships);
+	MultiTableModelerSource multiTable = new MultiTableModelerSource(database, logicalRelationships, database.getName());
 	Domain domain = multiTable.generateDomain();
     
     List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
