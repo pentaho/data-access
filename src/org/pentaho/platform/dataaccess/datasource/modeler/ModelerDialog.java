@@ -107,7 +107,11 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
       showErrorDialog(messages.getString("ModelEditor.ERROR"),
           messages.getString("ModelEditor.ERROR_0001_SAVING_MODELS"));
     }
-    service.serializeModels(model.getDomain(), model.getModelName(), new XulServiceCallback<String>(){
+    boolean doOlap = true;
+    if(model.getDomain().getLogicalModels().get(0).getProperty("MondrianCatalogRef") == null){
+      doOlap = false;
+    }
+    service.serializeModels(model.getDomain(), model.getModelName(), doOlap, new XulServiceCallback<String>(){
       public void success(String retVal) {
         enableWaitCursor(false);
         hideDialog();

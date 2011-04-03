@@ -28,6 +28,16 @@ public class ModelerServiceDebugServlet extends RemoteServiceServlet implements 
     }
   }
 
+  @Override
+  public String serializeModels(Domain domain, String name, boolean doOlap) throws Exception {
+    try{
+      return delegate.serializeModels(domain, name, doOlap);
+    } catch(Exception e){
+      e.printStackTrace();
+      throw e;
+    }
+  }
+
   public BogoPojo gwtWorkaround( BogoPojo pojo ) {
     return delegate.gwtWorkaround(pojo);
   }
