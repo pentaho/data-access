@@ -44,7 +44,7 @@ public interface IXulAsyncDatasourceService {
 
   public void listDatasourceNames(XulServiceCallback<List<String>> callback);
 
-  void generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO, XulServiceCallback<IDatasourceSummary> callback);
+  void generateQueryDomain(String name, String query, String datasourceId, IConnection connection, DatasourceDTO datasourceDTO, XulServiceCallback<IDatasourceSummary> callback);
 }
 
   
