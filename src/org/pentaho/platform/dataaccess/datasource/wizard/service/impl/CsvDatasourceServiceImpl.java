@@ -150,6 +150,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       modelerWorkspace.setModelName(modelInfo.getDatasourceName());
       modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
       Domain workspaceDomain = modelerWorkspace.getDomain();
+      workspaceDomain.getLogicalModels().get(0).setProperty("DatasourceType", "CSV");
 
       modelerService.serializeModels(workspaceDomain, modelerWorkspace.getModelName());
       stats.setDomain(modelerWorkspace.getDomain());

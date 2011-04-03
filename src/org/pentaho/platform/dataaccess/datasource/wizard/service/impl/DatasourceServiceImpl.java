@@ -509,7 +509,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
       modelerWorkspace.setModelName(datasourceDTO.getDatasourceName());
       modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
       domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(datasourceDTO));
-      domain.getLogicalModels().get(0).setProperty("DatasourceType", datasourceId);
+      domain.getLogicalModels().get(0).setProperty("DatasourceType", "SQL-DS");
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
       prepareForSerializaton(domain);
