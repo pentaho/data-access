@@ -170,13 +170,25 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		String serializedDatasource = (String) previousDomain.getLogicalModels().get(0).getProperty("datasourceModel");
 		joinSelectionServiceGwtImpl.deSerializeModelState(serializedDatasource, new XulServiceCallback<MultiTableDatasourceDTO>() {
 
-			public void success(MultiTableDatasourceDTO datasourceDTO) {
+			public void success(final MultiTableDatasourceDTO datasourceDTO) {
 				wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
+        //This sets up a race. populateJoinGuiModel relies on the available tables being populated, with is async
         MultiTableDatasource.this.connectionSelectionStep.selectConnectionByName(datasourceDTO.getSelectedConnection().getName());
-				joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
-        joinDefinitionsStep.setValid(true);
-        tablesSelectionStep.setValid(true);
-				callback.success(null);
+
+        //We'll get out of the race by making the same async call now and tailing off it's success
+        //TODO: investigate a better way around this race condition. This service is being called twice on edit as is
+        joinSelectionServiceGwtImpl.getDatabaseTables(connection, new XulServiceCallback<List>() {
+          public void error(String message, Throwable error) {
+            error.printStackTrace();
+          }
+    
+          public void success(List tables) {
+            joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
+            tablesSelectionStep.setValid(true);
+            callback.success(null);
+          }
+        });
+
 			}
 
 			public void error(String s, Throwable throwable) {
