@@ -104,6 +104,7 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
           queryStep.reloadConnections();
         }
         wizardModel.setEditing(true);
+        wizardModel.setSelectedDatasource(QueryDatasource.this);
 
         callback.success(null);
       }

@@ -193,6 +193,7 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
         DatasourceDTO.populateModel(datasourceDTO, datasourceModel);
         datasourceModel.getGuiStateModel().setDirty(false);
         wizardModel.setEditing(true);
+        wizardModel.setSelectedDatasource(CsvDatasource.this);
 
         callback.success(null);
       }
