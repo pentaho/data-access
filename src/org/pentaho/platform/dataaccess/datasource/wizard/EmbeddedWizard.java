@@ -246,10 +246,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN_TITLE"), MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"));
       return;
     }
-
+    
+    wizardModel.reset();
     wizardModel.setSelectedDatasource(selectedDatasource);
     wizardModel.setEditing(true);
-    wizardModel.reset();
     wizardController.reset();
     selectedDatasource.restoreSavedDatasource(domain, new XulServiceCallback<Void>(){
       @Override

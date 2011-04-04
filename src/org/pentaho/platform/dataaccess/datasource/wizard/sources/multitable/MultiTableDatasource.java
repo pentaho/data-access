@@ -172,7 +172,6 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 			public void success(final MultiTableDatasourceDTO datasourceDTO) {
 				wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
-				wizardModel.setSelectedDatasource(MultiTableDatasource.this);
         //This sets up a race. populateJoinGuiModel relies on the available tables being populated, with is async
         MultiTableDatasource.this.connectionSelectionStep.selectConnectionByName(datasourceDTO.getSelectedConnection().getName());
 
