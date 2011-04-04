@@ -29,6 +29,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
@@ -64,9 +65,9 @@ public class CsvDatasourceServiceServlet extends RemoteServiceServlet implements
   }
 
   @Override
-  public FileTransformStats generateDomain(ModelInfo modelInfo) throws Exception {
+  public FileTransformStats generateDomain(DatasourceDTO datasourceDto) throws Exception {
 	  CsvDatasourceServiceImpl serviceImpl = new CsvDatasourceServiceImpl();
-	  return serviceImpl.generateDomain(modelInfo);
+	  return serviceImpl.generateDomain(datasourceDto);
   }
 
   public BogoPojo gwtWorkaround(BogoPojo pojo) {

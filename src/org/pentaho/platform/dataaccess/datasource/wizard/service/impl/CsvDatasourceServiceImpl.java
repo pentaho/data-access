@@ -110,7 +110,8 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
     return files;
   }
 
-  public FileTransformStats generateDomain(ModelInfo modelInfo) throws Exception {
+  public FileTransformStats generateDomain(DatasourceDTO datasourceDto) throws Exception {
+    ModelInfo modelInfo = datasourceDto.getCsvModelInfo();
     IPentahoSession pentahoSession = null;
     try {
       pentahoSession = getSession();
@@ -150,6 +151,12 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       modelerWorkspace.setModelName(modelInfo.getDatasourceName());
       modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
       Domain workspaceDomain = modelerWorkspace.getDomain();
+
+
+      XStream xstream = new XStream();
+      String serializedDto = xstream.toXML(datasourceDto);
+      workspaceDomain.getLogicalModels().get(0).setProperty("datasourceModel", serializedDto);
+
       workspaceDomain.getLogicalModels().get(0).setProperty("DatasourceType", "CSV");
 
       modelerService.serializeModels(workspaceDomain, modelerWorkspace.getModelName());

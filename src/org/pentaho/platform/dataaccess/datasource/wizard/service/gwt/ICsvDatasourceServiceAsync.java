@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 
@@ -36,7 +37,7 @@ public interface ICsvDatasourceServiceAsync {
 
   public void getStagedFiles(AsyncCallback<FileInfo[]> aCallback);
 
-  public void generateDomain(ModelInfo modelInfo, AsyncCallback<IDatasourceSummary> callback);
+  public void generateDomain(DatasourceDTO datasourceDto, AsyncCallback<IDatasourceSummary> callback);
 
   public void getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding, AsyncCallback<List<String>> callback) throws Exception;
   

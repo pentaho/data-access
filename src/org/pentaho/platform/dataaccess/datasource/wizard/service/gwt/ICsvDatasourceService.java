@@ -23,6 +23,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
@@ -35,7 +36,7 @@ public interface ICsvDatasourceService extends RemoteService {
 
 	public FileInfo[] getStagedFiles() throws Exception;
 
-	public FileTransformStats generateDomain(ModelInfo modelInfo) throws Exception;
+	public FileTransformStats generateDomain(DatasourceDTO datasourceDto) throws Exception;
 
 	public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception;
 
