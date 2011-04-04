@@ -36,7 +36,7 @@ public interface ICsvDatasourceServiceAsync {
 
   public void getStagedFiles(AsyncCallback<FileInfo[]> aCallback);
 
-  public void generateDomain(ModelInfo modelInfo, String modelId, AsyncCallback<IDatasourceSummary> callback);
+  public void generateDomain(ModelInfo modelInfo, AsyncCallback<IDatasourceSummary> callback);
 
   public void getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding, AsyncCallback<List<String>> callback) throws Exception;
   

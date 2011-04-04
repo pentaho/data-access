@@ -35,7 +35,7 @@ public interface ICsvDatasourceService extends RemoteService {
 
 	public FileInfo[] getStagedFiles() throws Exception;
 
-	public FileTransformStats generateDomain(ModelInfo modelInfo, String modelId) throws Exception;
+	public FileTransformStats generateDomain(ModelInfo modelInfo) throws Exception;
 
 	public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception;
 

@@ -249,6 +249,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
     wizardModel.setSelectedDatasource(selectedDatasource);
     wizardModel.setEditing(true);
+    wizardModel.reset();
     wizardController.reset();
     selectedDatasource.restoreSavedDatasource(domain, new XulServiceCallback<Void>(){
       @Override

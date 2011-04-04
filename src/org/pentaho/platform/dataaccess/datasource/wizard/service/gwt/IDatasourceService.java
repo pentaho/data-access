@@ -124,7 +124,7 @@ public interface IDatasourceService {
 
   public List<String> listDatasourceNames() throws IOException;
 
-  QueryDatasourceSummary generateQueryDomain(String name, String query, String datasourceId, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException;
+  QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException;
 }
 
  

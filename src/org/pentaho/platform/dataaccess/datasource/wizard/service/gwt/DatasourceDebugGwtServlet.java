@@ -92,9 +92,9 @@ public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements I
     return SERVICE.listDatasourceNames();
   }
 
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, String datasourceId, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
     try {
-      return SERVICE.generateQueryDomain(name, query, datasourceId, connection, datasourceDTO);
+      return SERVICE.generateQueryDomain(name, query, connection, datasourceDTO);
     } catch (DatasourceServiceException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       throw e;

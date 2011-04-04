@@ -47,7 +47,7 @@ public interface IGwtDatasourceServiceAsync {
   void deSerializeModelState(String dtoStr, AsyncCallback<DatasourceDTO> callback);
 
   public void listDatasourceNames(AsyncCallback<List<String>> callback);
-  void generateQueryDomain(String name, String query, String datasourceId, IConnection connection, DatasourceDTO datasourceDTO, AsyncCallback<QueryDatasourceSummary> callback);
+  void generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO, AsyncCallback<QueryDatasourceSummary> callback);
 }
 
   

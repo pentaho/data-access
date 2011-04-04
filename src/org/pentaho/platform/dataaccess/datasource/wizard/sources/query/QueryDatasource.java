@@ -60,7 +60,7 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
     String query = datasourceModel.getQuery();
 
        
-    datasourceService.generateQueryDomain(name, query, getId(), datasourceModel.getSelectedRelationalConnection(), DatasourceDTOUtil.generateDTO(datasourceModel), callback);
+    datasourceService.generateQueryDomain(name, query, datasourceModel.getSelectedRelationalConnection(), DatasourceDTOUtil.generateDTO(datasourceModel), callback);
   }
 
   @Override

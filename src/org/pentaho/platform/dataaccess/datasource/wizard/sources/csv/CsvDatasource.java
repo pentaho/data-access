@@ -141,7 +141,7 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
     }
 
     datasourceModel.getModelInfo().setDatasourceName(datasourceModel.getDatasourceName());
-    csvDatasourceService.generateDomain(datasourceModel.getModelInfo(), getId(), new AsyncCallback<IDatasourceSummary>(){
+    csvDatasourceService.generateDomain(datasourceModel.getModelInfo(), new AsyncCallback<IDatasourceSummary>(){
       public void onFailure(Throwable th) {
         MessageHandler.getInstance().closeWaitingDialog();
         if (th instanceof CsvTransformGeneratorException) {
