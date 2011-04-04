@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.pentaho.metadata.model.LogicalRelationship;
+import org.pentaho.platform.dataaccess.datasource.IConnection;
 
 public class MultiTableDatasourceDTO implements Serializable {
 
@@ -30,6 +31,7 @@ public class MultiTableDatasourceDTO implements Serializable {
 
 	private String datasourceName;
 	private String datasourceId;
+  private IConnection selectedConnection;
 	private List<LogicalRelationship> logicalRelationships;
 
 	public MultiTableDatasourceDTO() {
@@ -51,11 +53,11 @@ public class MultiTableDatasourceDTO implements Serializable {
 		this.logicalRelationships = logicalRelationships;
 	}
 
-	public String getDatasourceId() {
-		return datasourceId;
-	}
+  public IConnection getSelectedConnection() {
+    return selectedConnection;
+  }
 
-	public void setDatasourceId(String datasourceId) {
-		this.datasourceId = datasourceId;
-	}
+  public void setSelectedConnection(IConnection selectedConnection) {
+    this.selectedConnection = selectedConnection;
+  }
 }

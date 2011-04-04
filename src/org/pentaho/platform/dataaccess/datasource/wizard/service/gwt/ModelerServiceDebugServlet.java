@@ -56,7 +56,7 @@ public class ModelerServiceDebugServlet extends RemoteServiceServlet implements 
   public Domain loadDomain(String id) throws Exception{
     XmiParser parser = new XmiParser();
     try {
-      return parser.parseXmi(new FileInputStream(new File("test-res/test.xmi")));
+      return parser.parseXmi(new FileInputStream(new File("test-res/testMulti.xmi")));
     } catch (Exception e) {
       e.printStackTrace();
       throw e;

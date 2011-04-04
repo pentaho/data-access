@@ -31,7 +31,9 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
   @Override
   @Bindable
   public void setDatasourceName(String datasourceName) {
+    String prevVal = this.datasourceName;
     this.datasourceName = datasourceName;
+    firePropertyChange("datasourceName", prevVal, datasourceName);
   }
 
   @Override

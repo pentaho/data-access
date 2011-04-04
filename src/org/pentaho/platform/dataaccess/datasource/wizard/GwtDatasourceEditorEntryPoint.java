@@ -199,11 +199,11 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
     };
 
-    modeler = ModelerDialog.getInstance(new AsyncConstructorListener<ModelerDialog>(){
+    modeler = ModelerDialog.getInstance(wizard, new AsyncConstructorListener<ModelerDialog>(){
         public void asyncConstructorDone(ModelerDialog dialog) {
 
           dialog.addDialogListener(listener);
-          dialog.showDialog(domainId, modelId);
+          dialog.showDialog("testMulti", "MODEL_1");
         }
       });
 

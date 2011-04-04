@@ -136,7 +136,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 		String dsName = this.wizardModel.getDatasourceName().replace(".", "_").replace(" ", "_");
 		MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO(dsName);
-		dto.setDatasourceId(getId());
+    dto.setSelectedConnection(this.connection);
 		joinSelectionServiceGwtImpl.serializeJoins(dto, this.connection, new XulServiceCallback<IDatasourceSummary>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
@@ -172,7 +172,10 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 			public void success(MultiTableDatasourceDTO datasourceDTO) {
 				wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
-				joinGuiModel.populateJoinGuiModel(datasourceDTO);
+        MultiTableDatasource.this.connectionSelectionStep.selectConnectionByName(datasourceDTO.getSelectedConnection().getName());
+				joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
+        joinDefinitionsStep.setValid(true);
+        tablesSelectionStep.setValid(true);
 				callback.success(null);
 			}
 

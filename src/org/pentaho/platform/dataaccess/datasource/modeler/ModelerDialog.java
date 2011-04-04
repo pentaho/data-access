@@ -66,7 +66,6 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     AsyncXulLoader.loadXulFromUrl("modeler.xul", "modeler", this);
   }
 
-
   public static ModelerDialog getInstance(final AsyncConstructorListener<ModelerDialog> constructorListener){
     if(instance != null){
       constructorListener.asyncConstructorDone(instance);

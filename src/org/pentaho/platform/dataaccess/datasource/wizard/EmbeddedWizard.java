@@ -17,6 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
+import com.google.gwt.user.client.Window;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.gwt.widgets.client.utils.i18n.IResourceBundleLoadCallback;
@@ -227,6 +228,12 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     addDialogListener(listener);
 
     String datasourceType = (String) domain.getLogicalModels().get(0).getProperty("DatasourceType");
+
+    //previous versions of Data-access would leave this property blank for Query datasources.
+    if(datasourceType == null){
+      datasourceType = "SQL-DS";
+    }
+
     IWizardDatasource selectedDatasource = null;
     for(IWizardDatasource datasource: wizardModel.getDatasources()){
       if(datasource.getId().equals(datasourceType)){
@@ -235,6 +242,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       }
     } 
     if(selectedDatasource == null){
+      Window.alert("bad one: " + datasourceType);
       MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN_TITLE"), MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"));
       return;
     }

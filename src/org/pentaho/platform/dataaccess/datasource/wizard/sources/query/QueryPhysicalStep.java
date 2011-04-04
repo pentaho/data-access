@@ -213,6 +213,11 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     databaseConnectionController.reloadConnections();
   }
 
+  public void selectConnectionByName(String name) {
+    connection = databaseConnectionController.getDatasourceModel().getGuiStateModel().getConnectionByName(name);
+    databaseConnectionController.getDatasourceModel().setSelectedRelationalConnection(connection);
+  }
+
   private class QueryAndDatasourceNamePropertyChangeListener implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
       String newValue = (String) evt.getNewValue();
