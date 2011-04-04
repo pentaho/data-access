@@ -203,7 +203,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         public void asyncConstructorDone(ModelerDialog dialog) {
 
           dialog.addDialogListener(listener);
-          dialog.showDialog("testMulti", "MODEL_1");
+          dialog.showDialog(domainId, modelId);
         }
       });
 
