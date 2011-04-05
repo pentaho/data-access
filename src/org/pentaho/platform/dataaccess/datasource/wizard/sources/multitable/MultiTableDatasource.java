@@ -119,7 +119,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	@Override
 	@Bindable
 	public String getName() {
-		return "Database Table(s)"; // TODO: i18n
+		return MessageHandler.getString("multitable.DATABASE_TABLES");
 	}
 
 	@Override

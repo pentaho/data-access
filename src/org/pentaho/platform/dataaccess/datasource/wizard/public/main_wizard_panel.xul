@@ -159,12 +159,12 @@
 	              
 				      <hbox>
 				        <vbox>
-				          <label value="Select from available tables to define join" tooltiptext=""/>
+				          <label value="${multitable.SELECT_JOIN_TABLES}" tooltiptext=""/>
 				        </vbox>
 				      </hbox>
 				      <hbox>
 				        <vbox>
-				          <label value="Available:" tooltiptext=""/>
+				          <label value="${multitable.AVAILABLE_TABLES}" tooltiptext=""/>
 				          <listbox id="availableTables" pen:binding="name" disabled="false" height="200" width="295"/>
 				        </vbox>
 				        <vbox>
@@ -173,7 +173,7 @@
 				          <button id="removeButton" image="images/accum_remove.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"/>
 				        </vbox>
 				        <vbox>
-				          <label value="Selected tables and columns:" tooltiptext=""/>
+				          <label value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
 				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="200" width="295"/>
 				        </vbox>
 				      </hbox>
@@ -222,38 +222,38 @@
 				
 				      <hbox>
 				        <vbox>
-				          <label value="Define the Join..." tooltiptext=""/>
+				          <label value="${multitable.DEFINE_JOIN_TABLES}" tooltiptext=""/>
 				        </vbox>
 				      </hbox>
 				      <hbox>
 				        <vbox>
-				          <label value="Left Table:" tooltiptext=""/>
+				          <label value="${multitable.LEFT_TABLE}" tooltiptext=""/>
 				          <listbox id="leftTables" pen:binding="name" disabled="false" height="150" width="300"/>
-				          <label value="Key Field:" tooltiptext=""/>
+				          <label value="${multitable.KEY_FIELD}:" tooltiptext=""/>
 				          <menulist id="leftKeyField" pen:binding="name" editable="false" width="300">
 						    <menupopup/>
 						  </menulist>          
 				        </vbox>
 				        <vbox>
-				          <label value="Right Table:" tooltiptext=""/>
+				          <label value="${multitable.RIGHT_TABLE}" tooltiptext=""/>
 				          <listbox id="rightTables" pen:binding="name" disabled="false" height="150" width="300"/>
-				          <label value="Key Field:" tooltiptext=""/>
+				          <label value="${multitable.KEY_FIELD}" tooltiptext=""/>
 				          <menulist id="rightKeyField" pen:binding="name" editable="false" width="300">
 						    <menupopup/>
 						  </menulist>   
 						  <hbox>
 						    <spacer width="217"/>
-						    <button id="createJoinButton" label="Create Join" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
+						    <button id="createJoinButton" label="${multitable.CREATE_JOIN}" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
 						  </hbox>
 				        </vbox>
 				      </hbox>
 				      <hbox>
 				        <vbox>
-				          <label value="Join(s):" tooltiptext=""/>
+				          <label value="${multitable.JOINS}" tooltiptext=""/>
 				          <listbox id="joins" pen:binding="name" disabled="false" height="100" width="610"/>
 				          <hbox>
 						    <spacer width="530"/>
-						    <button id="deleteJoinButton" label="Delete Join" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.deleteJoin()" disabled="false"/>
+						    <button id="deleteJoinButton" label="${multitable.DELETE_JOIN}" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.deleteJoin()" disabled="false"/>
 						  </hbox>
 				        </vbox>
 				      </hbox>

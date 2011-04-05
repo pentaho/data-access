@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
@@ -103,7 +104,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	}
 
 	public String getStepName() {
-		return "Select Tables";
+		return MessageHandler.getString("multitable.SELECT_TABLES");
 	}
 
 	public XulComponent getUIComponent() {

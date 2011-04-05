@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
@@ -105,7 +106,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		if (this.validator.isValid(join)) {
 			this.joinGuiModel.addJoin(join);
 		} else {
-			this.displayErrors(this.validator.getErrors());
+			this.displayErrors(this.validator.getError());
 		}
 		parentDatasource.setFinishable(this.validator.isFinishable());
 	}
@@ -183,26 +184,27 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	@Override
 	public void stepActivatingForward() {
 		super.stepActivatingForward();
-    	this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
+		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
 		this.leftTables.setSelectedIndex(0);
 		this.rightTables.setSelectedIndex(0);
 
 		parentDatasource.setFinishable(this.validator.isFinishable());
 	}
 
-	public void displayErrors(String error) {
-		this.errorLabel.setValue(error);
+	public void displayErrors(JoinError error) {
+		this.errorDialog.setTitle(error.getTitle());
+		this.errorLabel.setValue(error.getError());
 		this.errorDialog.show();
 	}
 
 	public String getStepName() {
-		return "Define Joins";
+		return MessageHandler.getString("multitable.DEFINE_JOINS");
 	}
 
 	public XulComponent getUIComponent() {
 		return this.joinDefinitionDialog;
 	}
-	
+
 	public void resetComponents() {
 		this.leftKeyFieldList.setElements(null);
 		this.rightKeyFieldList.setElements(null);

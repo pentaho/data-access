@@ -19,6 +19,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -49,20 +50,44 @@ public class JoinModel extends XulEventSourceAdapter {
 
 	@Bindable
 	public String getName() {
+		String innerJoinLabel = MessageHandler.getString("multitable.INNER_JOIN");
 		String leftTable = this.leftKeyFieldModel.getParentTable().getName();
 		String rightTable = this.rightKeyFieldModel.getParentTable().getName();
 		StringBuffer joinName = new StringBuffer();
 		joinName.append(leftTable);
 		joinName.append(".");
 		joinName.append(this.leftKeyFieldModel.getName());
-		joinName.append(" - INNER JOIN - ");
+		joinName.append(" - ");
+		joinName.append(innerJoinLabel);
+		joinName.append(" - ");
 		joinName.append(rightTable);
 		joinName.append(".");
 		joinName.append(this.rightKeyFieldModel.getName());
 		return joinName.toString();
 	}
-	
+
 	public boolean equals(JoinModel join) {
-		return this.getName().equals(join.getName());
+
+		String leftTable1 = join.getLeftKeyFieldModel().getParentTable().getName();
+		String leftKey1 = join.getLeftKeyFieldModel().getName();
+
+		String rightTable1 = join.getRightKeyFieldModel().getParentTable().getName();
+		String rightKey1 = join.getRightKeyFieldModel().getName();
+
+		String leftTable2 = this.leftKeyFieldModel.getParentTable().getName();
+		String leftKey2 = this.leftKeyFieldModel.getName();
+
+		String rightTable2 = this.rightKeyFieldModel.getParentTable().getName();
+		String rightKey2 = this.rightKeyFieldModel.getName();
+
+		// eval1
+		// join1:a.b = d.c
+		// join2:c.d = b.a
+		boolean eval1 = leftTable1.equals(rightTable2) && leftTable2.equals(rightTable1) && leftKey1.equals(rightKey2) && leftKey2.equals(rightKey1);
+		// eval2
+		// join1:a.b = d.c
+		// join2:a.b = d.c
+		boolean eval2 = leftTable1.equals(leftTable2) && rightTable1.equals(rightTable2) && leftKey1.equals(leftKey2) && rightKey1.equals(rightKey2);
+		return eval1 || eval2;
 	}
 }
