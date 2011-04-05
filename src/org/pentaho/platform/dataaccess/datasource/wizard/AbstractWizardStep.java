@@ -160,7 +160,7 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
    * @see org.pentaho.reporting.engine.classic.wizard.ui.xul.components.WizardStep#stepActivatingReverse()
    */
   public void stepActivatingReverse() {
-    stepActivatingForward();
+	  setStepImageVisible(true);
   }
 
 

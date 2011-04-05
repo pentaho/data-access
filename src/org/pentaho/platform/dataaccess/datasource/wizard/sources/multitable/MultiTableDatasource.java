@@ -88,11 +88,12 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		Document document = this.connectionSelectionStep.getXulDomContainer().getDocumentRoot();
 		XulVbox queryVbox = (XulVbox) document.getElementById("queryBox");
 		queryVbox.setVisible(false);
-		
+
 		XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
 		connectionsVbox.setVisible(true);
-		
+
 		this.connectionSelectionStep.setValid(true);
+		this.setConnection(connectionSelectionStep.getConnection());
 	}
 
 	@Override
@@ -116,7 +117,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		tablesSelectionStep.init(wizardModel);
 		joinDefinitionsStep.init(wizardModel);
 
-    bf.createBinding(connectionSelectionStep, "connection", this, "connection");
+		bf.createBinding(connectionSelectionStep, "connection", this, "connection");
 	}
 
 	@Override
@@ -139,7 +140,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 		String dsName = this.wizardModel.getDatasourceName().replace(".", "_").replace(" ", "_");
 		MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO(dsName);
-    dto.setSelectedConnection(this.connection);
+		dto.setSelectedConnection(this.connection);
 		joinSelectionServiceGwtImpl.serializeJoins(dto, this.connection, new XulServiceCallback<IDatasourceSummary>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
@@ -175,23 +176,26 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 			public void success(final MultiTableDatasourceDTO datasourceDTO) {
 				wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
-        //This sets up a race. populateJoinGuiModel relies on the available tables being populated, with is async
-        MultiTableDatasource.this.connectionSelectionStep.selectConnectionByName(datasourceDTO.getSelectedConnection().getName());
+				// This sets up a race. populateJoinGuiModel relies on the
+				// available tables being populated, with is async
+				MultiTableDatasource.this.connectionSelectionStep.selectConnectionByName(datasourceDTO.getSelectedConnection().getName());
 
-        //We'll get out of the race by making the same async call now and tailing off it's success
-        //TODO: investigate a better way around this race condition. This service is being called twice on edit as is
-        joinSelectionServiceGwtImpl.getDatabaseTables(connection, new XulServiceCallback<List>() {
-          public void error(String message, Throwable error) {
-            error.printStackTrace();
-          }
-    
-          public void success(List tables) {
-            joinGuiModel.processAvailableTables(tables);
-            joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
-            tablesSelectionStep.setValid(true);
-            callback.success(null);
-          }
-        });
+				// We'll get out of the race by making the same async call now
+				// and tailing off it's success
+				// TODO: investigate a better way around this race condition.
+				// This service is being called twice on edit as is
+				joinSelectionServiceGwtImpl.getDatabaseTables(connection, new XulServiceCallback<List>() {
+					public void error(String message, Throwable error) {
+						error.printStackTrace();
+					}
+
+					public void success(List tables) {
+						joinGuiModel.processAvailableTables(tables);
+						joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
+						tablesSelectionStep.setValid(true);
+						callback.success(null);
+					}
+				});
 
 			}
 
@@ -217,15 +221,16 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		this.joinGuiModel.reset();
 	}
 
-  @Bindable
-  public IConnection getConnection() {
-    return connection;
-  }
+	@Bindable
+	public IConnection getConnection() {
+		return connection;
+	}
 
-  @Bindable
-  public void setConnection(IConnection connection) {
-    this.connection = connection;
-    this.joinGuiModel.reset();
-    this.joinDefinitionsStep.resetComponents();
-  }
+	@Bindable
+	public void setConnection(IConnection connection) {
+		this.connection = connection;
+		this.joinGuiModel.reset();
+		this.joinDefinitionsStep.resetComponents();
+		this.tablesSelectionStep.processAvailableTables(connection);
+	}
 }

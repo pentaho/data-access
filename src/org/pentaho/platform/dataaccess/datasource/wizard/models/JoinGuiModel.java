@@ -20,6 +20,8 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.pentaho.metadata.model.Domain;
@@ -160,6 +162,13 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 			joinTable.setName(table);
 			joinTables.add(joinTable);
 		}
+
+		Collections.sort(joinTables, new Comparator<JoinTableModel>() {
+			@Override
+			public int compare(JoinTableModel joinTableModel, JoinTableModel joinTableModel1) {
+				return joinTableModel.getName().compareTo(joinTableModel1.getName());
+			}
+		});
 		setAvailableTables(new AbstractModelList<JoinTableModel>(joinTables));
 	}
 
@@ -192,33 +201,36 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 	public MultiTableDatasourceDTO createMultiTableDatasourceDTO(String dsName) {
 		MultiTableDatasourceDTO dto = new MultiTableDatasourceDTO();
 		dto.setDatasourceName(dsName);
-    List<String> selectedTables = new ArrayList<String>();
-    for(JoinTableModel tbl : this.selectedTables){
-      selectedTables.add(tbl.getName());
-    }
-    dto.setSelectedTables(selectedTables);
+		List<String> selectedTables = new ArrayList<String>();
+		for (JoinTableModel tbl : this.selectedTables) {
+			selectedTables.add(tbl.getName());
+		}
+		dto.setSelectedTables(selectedTables);
 		dto.setLogicalRelationships(this.generateLogicalRelationships(this.getJoins()));
 		return dto;
 	}
 
 	public void populateJoinGuiModel(Domain domain, MultiTableDatasourceDTO dto) {
 
-    //existing joinTableModels will not have fields. We can add these from the domain.
-    addFieldsToTables(domain, this.availableTables);
+		// existing joinTableModels will not have fields. We can add these from
+		// the domain.
+		addFieldsToTables(domain, this.availableTables);
 
 		// Populate "selectedTables" from availableTables using
 		// logicalRelationships.
 		AbstractModelList<JoinTableModel> selectedTablesList = new AbstractModelList<JoinTableModel>();
 		List<LogicalRelationship> logicalRelationships = dto.getLogicalRelationships();
-//		for (LogicalRelationship logicalRelationship : logicalRelationships) {
-//			this.selectTable(logicalRelationship.getFromTable(), selectedTablesList);
-//			this.selectTable(logicalRelationship.getToTable(), selectedTablesList);
-//		}
-    for(String selectedTable : dto.getSelectedTables()){
-      this.selectTable(selectedTable, selectedTablesList);
-    }
+		// for (LogicalRelationship logicalRelationship : logicalRelationships)
+		// {
+		// this.selectTable(logicalRelationship.getFromTable(),
+		// selectedTablesList);
+		// this.selectTable(logicalRelationship.getToTable(),
+		// selectedTablesList);
+		// }
+		for (String selectedTable : dto.getSelectedTables()) {
+			this.selectTable(selectedTable, selectedTablesList);
+		}
 		this.selectedTables.addAll(selectedTablesList);
-
 
 		// Populate "joins" from availableTables using logicalRelationships.
 		AbstractModelList<JoinModel> joinsList = new AbstractModelList<JoinModel>();
@@ -229,29 +241,29 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 
 	}
 
-  private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
+	private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
 
 		String locale = LocalizedString.DEFAULT_LOCALE;
-    for(JoinTableModel table : availableTables){
-      for(LogicalTable tbl : domain.getLogicalModels().get(0).getLogicalTables()){
-        if(tbl.getName(locale).equals(table.getName())){
-          for(LogicalColumn col : tbl.getLogicalColumns()){
-            JoinFieldModel field = new JoinFieldModel();
-            field.setName(col.getName(locale));
-            field.setParentTable(table);
-            table.getFields().add(field);
-          }
-          continue;
-        }
-      }
-    }
-  }
+		for (JoinTableModel table : availableTables) {
+			for (LogicalTable tbl : domain.getLogicalModels().get(0).getLogicalTables()) {
+				if (tbl.getName(locale).equals(table.getName())) {
+					for (LogicalColumn col : tbl.getLogicalColumns()) {
+						JoinFieldModel field = new JoinFieldModel();
+						field.setName(col.getName(locale));
+						field.setParentTable(table);
+						table.getFields().add(field);
+					}
+					continue;
+				}
+			}
+		}
+	}
 
-  private LogicalTable findTable(Domain domain, String id) {
-    return domain.getLogicalModels().get(0).findLogicalTable(id);
-  }
+	private LogicalTable findTable(Domain domain, String id) {
+		return domain.getLogicalModels().get(0).findLogicalTable(id);
+	}
 
-  private void populateJoin(LogicalRelationship logicalRelationship, AbstractModelList<JoinModel> joinsList) {
+	private void populateJoin(LogicalRelationship logicalRelationship, AbstractModelList<JoinModel> joinsList) {
 
 		JoinModel join = new JoinModel();
 		String locale = LocalizedString.DEFAULT_LOCALE;
@@ -287,22 +299,22 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		}
 	}
 
-  private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList) {
-    for (JoinTableModel table : this.availableTables) {
+	private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList) {
+		for (JoinTableModel table : this.availableTables) {
 			if (table.getName().equals(selectedTable)) {
 				if (!selectedTablesList.contains(table)) {
 					selectedTablesList.add(table);
 				}
 			}
 		}
-  }
+	}
 
-  public void reset() {
+	public void reset() {
 
 		this.availableTables.clear();
 		this.selectedTables.clear();
 		this.joins.clear();
 		this.leftJoinTable.reset();
 		this.rightJoinTable.reset();
-  }
+	}
 }

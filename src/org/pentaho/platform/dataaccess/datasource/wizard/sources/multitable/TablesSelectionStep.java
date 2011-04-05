@@ -42,7 +42,6 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
 	protected static final String JOIN_STEP_PANEL_ID = "joinSelectionWindow";
 
-	private IConnection selectedConnection;
 	private XulVbox tablesSelectionDialog;
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
@@ -59,8 +58,8 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		return "joinSelectionStepController";
 	}
 
-	private void getAvailableTables() {
-		joinSelectionServiceGwtImpl.getDatabaseTables(this.selectedConnection, new XulServiceCallback<List>() {
+	public void processAvailableTables(IConnection connection) {
+		joinSelectionServiceGwtImpl.getDatabaseTables(connection, new XulServiceCallback<List>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
 			}
@@ -113,14 +112,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
 	@Override
 	public void stepActivatingReverse() {
-    super.stepActivatingReverse();
+		super.stepActivatingReverse();
 		parentDatasource.setFinishable(false);
-	}
-
-	@Override
-	public void stepActivatingForward() {
-		super.stepActivatingForward();
-		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
-		this.getAvailableTables();
 	}
 }
