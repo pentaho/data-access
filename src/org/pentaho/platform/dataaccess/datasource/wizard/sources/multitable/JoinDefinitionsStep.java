@@ -187,9 +187,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.leftTables.setSelectedIndex(0);
 		this.rightTables.setSelectedIndex(0);
 
-    	if (this.joins.getElements() != null) {
-			parentDatasource.setFinishable(this.validator.isFinishable());
-		}
+		parentDatasource.setFinishable(this.validator.isFinishable());
 	}
 
 	public void displayErrors(String error) {

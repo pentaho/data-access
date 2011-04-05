@@ -183,6 +183,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
           }
     
           public void success(List tables) {
+            joinGuiModel.processAvailableTables(tables);
             joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
             tablesSelectionStep.setValid(true);
             callback.success(null);

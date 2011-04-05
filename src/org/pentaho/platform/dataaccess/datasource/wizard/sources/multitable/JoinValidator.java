@@ -84,8 +84,11 @@ public class JoinValidator {
 
 	public boolean isFinishable() {
 		//Can only finish if all the tables are joined and datasource name is present.
-		return allTablesJoined();
+		return isSingleTable() || allTablesJoined();
 	}
+  private boolean isSingleTable(){
+    return this.joinGuiModel.getSelectedTables().size() == 1;
+  }
 
 	private boolean allTablesJoined() {
 

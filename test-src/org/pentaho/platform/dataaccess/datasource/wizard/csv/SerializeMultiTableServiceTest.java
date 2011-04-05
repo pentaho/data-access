@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -63,7 +64,7 @@ public class SerializeMultiTableServiceTest {
   
     JoinGuiModel joinGuiModel = new JoinGuiModel();
 	List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
-	MultiTableModelerSource multiTable = new MultiTableModelerSource(database, logicalRelationships, database.getName());
+	MultiTableModelerSource multiTable = new MultiTableModelerSource(database, logicalRelationships, database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
 	Domain domain = multiTable.generateDomain();
     
     List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();

@@ -192,6 +192,11 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 	public MultiTableDatasourceDTO createMultiTableDatasourceDTO(String dsName) {
 		MultiTableDatasourceDTO dto = new MultiTableDatasourceDTO();
 		dto.setDatasourceName(dsName);
+    List<String> selectedTables = new ArrayList<String>();
+    for(JoinTableModel tbl : this.selectedTables){
+      selectedTables.add(tbl.getName());
+    }
+    dto.setSelectedTables(selectedTables);
 		dto.setLogicalRelationships(this.generateLogicalRelationships(this.getJoins()));
 		return dto;
 	}
@@ -205,10 +210,13 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		// logicalRelationships.
 		AbstractModelList<JoinTableModel> selectedTablesList = new AbstractModelList<JoinTableModel>();
 		List<LogicalRelationship> logicalRelationships = dto.getLogicalRelationships();
-		for (LogicalRelationship logicalRelationship : logicalRelationships) {
-			this.selectTable(logicalRelationship.getFromTable(), selectedTablesList);
-			this.selectTable(logicalRelationship.getToTable(), selectedTablesList);
-		}
+//		for (LogicalRelationship logicalRelationship : logicalRelationships) {
+//			this.selectTable(logicalRelationship.getFromTable(), selectedTablesList);
+//			this.selectTable(logicalRelationship.getToTable(), selectedTablesList);
+//		}
+    for(String selectedTable : dto.getSelectedTables()){
+      this.selectTable(selectedTable, selectedTablesList);
+    }
 		this.selectedTables.addAll(selectedTablesList);
 
 
@@ -278,6 +286,16 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 			}
 		}
 	}
+
+  private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList) {
+    for (JoinTableModel table : this.availableTables) {
+			if (table.getName().equals(selectedTable)) {
+				if (!selectedTablesList.contains(table)) {
+					selectedTablesList.add(table);
+				}
+			}
+		}
+  }
 
   public void reset() {
 

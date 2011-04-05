@@ -171,9 +171,6 @@ public class ModelerService extends PentahoBase implements IModelerService {
       IPentahoSession session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
 
       ISolutionRepository repository = PentahoSystem.get(ISolutionRepository.class, session);
-
-      // Keep a reference to the mondrian catalog
-      model.getWorkspaceHelper().populateDomain(model);
       
       LogicalModel lModel = domain.getLogicalModels().get(0);
       String catName = lModel.getName(Locale.getDefault().toString());

@@ -34,7 +34,11 @@ public class SerializeServiceTest {
   @Test
   public void testSerialize() throws Exception {
     KettleEnvironment.init();
-    Props.init(Props.TYPE_PROPERTIES_EMPTY);
+    try{
+      Props.init(Props.TYPE_PROPERTIES_EMPTY);
+    } catch(Exception e){
+      // Kettle may already be initialized by another test.
+    }
 
     String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
     String path = solutionStorage + ISolutionRepository.SEPARATOR
@@ -59,7 +63,7 @@ public class SerializeServiceTest {
     service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
     Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "test_file");
-    
+
     File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
     File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
 

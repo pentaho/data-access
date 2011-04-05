@@ -112,6 +112,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
 	@Override
 	public void stepActivatingReverse() {
+    super.stepActivatingReverse();
 		parentDatasource.setFinishable(false);
 	}
 

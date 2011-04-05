@@ -30,9 +30,9 @@ public class MultiTableDatasourceDTO implements Serializable {
 	private static final long serialVersionUID = 1368165523678535182L;
 
 	private String datasourceName;
-	private String datasourceId;
   private IConnection selectedConnection;
 	private List<LogicalRelationship> logicalRelationships;
+  private List<String> selectedTables;
 
 	public MultiTableDatasourceDTO() {
 	}
@@ -59,5 +59,13 @@ public class MultiTableDatasourceDTO implements Serializable {
 
   public void setSelectedConnection(IConnection selectedConnection) {
     this.selectedConnection = selectedConnection;
+  }
+
+  public List<String> getSelectedTables() {
+    return selectedTables;
+  }
+
+  public void setSelectedTables(List<String> selectedTables) {
+    this.selectedTables = selectedTables;
   }
 }
