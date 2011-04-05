@@ -42,6 +42,9 @@
 								<!--     SQL datasource step 1 -->
 								<!--  ###############################################################################  -->
 								<vbox flex="3" height="400">
+								    <vbox id="connectionsLbl">
+								    	<label value="${multitable.CONNECTIONS_LBL}" />
+								    </vbox>
 									<hbox>
 										<label value="${datasourceDialog.Connection}" tooltiptext="${datasourceDialog.ConnectionToolTip}"/>
 										<spacer flex="1"/>
@@ -49,7 +52,7 @@
 										<button id="addConnection" image="images/add.png" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="images/add_disabled.png" onclick="connectionController.showAddConnectionDialog()" disabled="false"/>
 										<button id="removeConnection" image="images/remove.png" pen:disabledimage="images/remove_disabled.png" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="connectionController.showRemoveConnectionDialog()" disabled="true"/>
 									</hbox>
-									<listbox flex="1" id="connectionList" pen:binding="name" disabled="true" height="366"/>
+									<listbox flex="1" id="connectionList" pen:binding="name" disabled="true" height="332"/>
 								</vbox>
 								<spacer width="10" height="400"/>
 								<vbox id="queryBox" height="400" flex="7">

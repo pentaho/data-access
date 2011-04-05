@@ -86,10 +86,13 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		this.joinDefinitionsStep.activating();
 
 		Document document = this.connectionSelectionStep.getXulDomContainer().getDocumentRoot();
-		XulVbox vbox = (XulVbox) document.getElementById("queryBox");
-		vbox.setVisible(false);
-    this.connectionSelectionStep.setValid(true);
-
+		XulVbox queryVbox = (XulVbox) document.getElementById("queryBox");
+		queryVbox.setVisible(false);
+		
+		XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
+		connectionsVbox.setVisible(true);
+		
+		this.connectionSelectionStep.setValid(true);
 	}
 
 	@Override

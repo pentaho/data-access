@@ -79,9 +79,11 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   
   @Override
   public void activating() {
-    //To change body of implemented methods use File | Settings | File Templates.
-	XulVbox vbox = (XulVbox) document.getElementById("queryBox");
-	vbox.setVisible(true);
+	XulVbox queryVbox = (XulVbox) document.getElementById("queryBox");
+	queryVbox.setVisible(true);
+	
+	XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
+	connectionsVbox.setVisible(false);
   }
   
   @Override
