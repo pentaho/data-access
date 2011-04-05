@@ -23,7 +23,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
@@ -32,7 +31,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -75,7 +73,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		final XulListbox xulListbox = (XulListbox) evt.getSource();
 		final JoinTableModel table = (JoinTableModel) xulListbox.getSelectedItem();
 		if (table != null) {
-			joinSelectionServiceGwtImpl.getTableFields(table.getName(), selectedConnection, new XulServiceCallback<List>() {
+			joinSelectionServiceGwtImpl.getTableFields(table.getName(), this.selectedConnection, new XulServiceCallback<List>() {
 				public void error(String message, Throwable error) {
 					error.printStackTrace();
 				}
@@ -184,8 +182,12 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	@Override
 	public void stepActivatingForward() {
-    super.stepActivatingForward();
-		if (this.joins.getElements() != null) {
+		super.stepActivatingForward();
+    	this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
+		this.leftTables.setSelectedIndex(0);
+		this.rightTables.setSelectedIndex(0);
+
+    	if (this.joins.getElements() != null) {
 			parentDatasource.setFinishable(this.validator.isFinishable());
 		}
 	}
@@ -202,12 +204,9 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	public XulComponent getUIComponent() {
 		return this.joinDefinitionDialog;
 	}
-
-	@Override
-	public void activating() throws XulException {
-    super.activating();
-		// TODO get rid of the DatasourceModel dependency.
-		QueryPhysicalStep step = (QueryPhysicalStep) parentDatasource.getSteps().get(0);
-		this.selectedConnection = step.getConnectionController().getDatasourceModel().getSelectedRelationalConnection();
+	
+	public void resetComponents() {
+		this.leftKeyFieldList.setElements(null);
+		this.rightKeyFieldList.setElements(null);
 	}
 }

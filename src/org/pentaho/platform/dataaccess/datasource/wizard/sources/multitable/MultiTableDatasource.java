@@ -221,5 +221,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
   @Bindable
   public void setConnection(IConnection connection) {
     this.connection = connection;
+    this.joinGuiModel.reset();
+    this.joinDefinitionsStep.resetComponents();
   }
 }

@@ -27,7 +27,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -117,12 +116,9 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	}
 
 	@Override
-	public void activating() throws XulException {
-    super.activating();
-		//TODO get rid of the DatasourceModel dependency.
-		QueryPhysicalStep step = (QueryPhysicalStep) parentDatasource.getSteps().get(0);
-		this.selectedConnection = step.getConnectionController().getDatasourceModel().getSelectedRelationalConnection();
+	public void stepActivatingForward() {
+		super.stepActivatingForward();
+		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
 		this.getAvailableTables();
 	}
-
 }
