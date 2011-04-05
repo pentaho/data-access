@@ -506,6 +506,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
 
 
       modelerWorkspace.getWorkspaceHelper().autoModelFlat(modelerWorkspace);
+      modelerWorkspace.getWorkspaceHelper().autoModelRelationalFlat(modelerWorkspace);
       modelerWorkspace.setModelName(datasourceDTO.getDatasourceName());
       modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
       domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(datasourceDTO));
