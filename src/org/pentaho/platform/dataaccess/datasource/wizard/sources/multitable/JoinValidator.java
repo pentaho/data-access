@@ -19,40 +19,38 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
-import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 
 public class JoinValidator {
-	
-	
+
 	private JoinGuiModel joinGuiModel;
 	private IWizardModel wizardModel;
-	private StringBuffer errors;
-	
+	private JoinError error;
+
 	public JoinValidator(JoinGuiModel joinGuiModel, IWizardModel wizardModel) {
 		this.joinGuiModel = joinGuiModel;
 		this.wizardModel = wizardModel;
 	}
-	
+
 	public boolean isValid(JoinModel join) {
 		// validate against duplicate joins.
 		// and
 		// validate against joining to the same table.
 		// and
 		// validate against circular joins
-		this.errors = new StringBuffer();
 		return notDuplicate(join) && notSelfJoin(join) && notCircularJoins(join);
 	}
-	
+
 	private boolean notDuplicate(JoinModel newJoin) {
 		boolean notDuplicate = true;
 		for (JoinModel join : this.joinGuiModel.getJoins()) {
 			if (newJoin.equals(join)) {
 				notDuplicate = false;
-				errors.append("Duplicate Join Detected\n");  // TODO: i18n
+				this.error = new JoinError(MessageHandler.getString("multitable.DUPLICATE_JOIN_TITLE"), MessageHandler.getString("multitable.DUPLICATE_JOIN_ERROR"));
 				break;
 			}
 		}
@@ -62,33 +60,34 @@ public class JoinValidator {
 	private boolean notSelfJoin(JoinModel newJoin) {
 		boolean notSelfJoin = !newJoin.getLeftKeyFieldModel().getParentTable().equals(newJoin.getRightKeyFieldModel().getParentTable());
 		if (!notSelfJoin) {
-			errors.append("Self Join Detected\n");  // TODO: i18n
+			this.error = new JoinError(MessageHandler.getString("multitable.SELF_JOIN_TITLE"), MessageHandler.getString("multitable.SELF_JOIN_ERROR"));
 		}
 		return notSelfJoin;
 	}
 
 	private boolean notCircularJoins(JoinModel newJoin) {
-		//TODO pending
+		// TODO pending
 		boolean notCircularJoin = true;
-		/*JoinTableModel targetTable = newJoin.getRightKeyFieldModel().getParentTable();
-		for (JoinModel join : this.joinGuiModel.getJoins()) {
-			JoinTableModel sourceTable = join.getLeftKeyFieldModel().getParentTable();
-			if (targetTable.equals(sourceTable)) {
-				notCircularJoin = false;
-				errors.append("Circular Join Detected\n");  // TODO: i18n
-				break;
-			}
-		}*/
+		/*
+		 * JoinTableModel targetTable =
+		 * newJoin.getRightKeyFieldModel().getParentTable(); for (JoinModel join
+		 * : this.joinGuiModel.getJoins()) { JoinTableModel sourceTable =
+		 * join.getLeftKeyFieldModel().getParentTable(); if
+		 * (targetTable.equals(sourceTable)) { notCircularJoin = false;
+		 * errors.append("Circular Join Detected\n"); // TODO: i18n break; } }
+		 */
 		return notCircularJoin;
 	}
 
 	public boolean isFinishable() {
-		//Can only finish if all the tables are joined and datasource name is present.
+		// Can only finish if all the tables are joined and datasource name is
+		// present.
 		return isSingleTable() || allTablesJoined();
 	}
-  private boolean isSingleTable(){
-    return this.joinGuiModel.getSelectedTables().size() == 1;
-  }
+
+	private boolean isSingleTable() {
+		return this.joinGuiModel.getSelectedTables().size() == 1;
+	}
 
 	private boolean allTablesJoined() {
 
@@ -106,8 +105,8 @@ public class JoinValidator {
 		}
 		return allTablesJoined;
 	}
-	
-	public String getErrors() {
-		return this.errors.toString();
+
+	public JoinError getError() {
+		return this.error;
 	}
 }
