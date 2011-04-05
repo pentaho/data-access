@@ -100,11 +100,6 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
   @Override
   public void activating() throws XulException {
 
-    //TODO: clean this initialization stuff up.
-    if(activated){
-      return;
-    }
-
     // get the grid itself so we can update it later
     final XulGrid stepGrid = (XulGrid) document.getElementById(STEP_GRID_ID);
 
