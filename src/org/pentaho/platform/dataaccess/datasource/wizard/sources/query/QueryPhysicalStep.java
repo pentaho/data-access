@@ -60,10 +60,10 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   XulButton cancelButton = null;
   private XulTree csvDataTable = null;
   private WizardConnectionController connectionController;
-  private ConnectionController databaseConnectionController;
   private IXulAsyncConnectionService connectionService;
   private boolean isFinishable = false;
   private IConnection connection;
+  private ConnectionController databaseConnectionController;
 
   public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource, boolean isFinishable) {
 	  super(parentDatasource);
@@ -96,14 +96,14 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     
     connectionController = new WizardConnectionController(document);
     connectionController.setDatasourceModel(datasourceModel);
+
+    connectionController.setConnectionService(connectionService);
     getXulDomContainer().addEventHandler(connectionController);
     connectionController.init();
 
     databaseConnectionController = new ConnectionController();
-    getXulDomContainer().addEventHandler(databaseConnectionController);
     databaseConnectionController.setDatasourceModel(datasourceModel);
     databaseConnectionController.setService(connectionService);
-    databaseConnectionController.init();
     databaseConnectionController.reloadConnections();
 
     WizardRelationalDatasourceController relationalDatasourceController = new WizardRelationalDatasourceController();

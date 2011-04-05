@@ -468,4 +468,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
     
   }
 
+  public IXulAsyncConnectionService getConnectionService() {
+    return connectionService;
+  }
+
+  public void setConnectionService(IXulAsyncConnectionService connectionService) {
+    this.connectionService = connectionService;
+  }
 }
