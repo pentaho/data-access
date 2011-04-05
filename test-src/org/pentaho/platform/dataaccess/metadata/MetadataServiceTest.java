@@ -32,7 +32,6 @@ import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.query.model.CombinationType;
 import org.pentaho.metadata.query.model.util.QueryXmlHelper;
 import org.pentaho.platform.api.engine.IApplicationContext;
-import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.metadata.messages.Messages;
 import org.pentaho.platform.dataaccess.metadata.model.IColumn;
 import org.pentaho.platform.dataaccess.metadata.model.Operator;
@@ -62,15 +61,13 @@ public class MetadataServiceTest  extends BaseTest {
 
   private static final String SOLUTION_PATH = "test-res/solution1/"; //$NON-NLS-1$
 
-  private static final String ALT_SOLUTION_PATH = "test-res/solution11"; //$NON-NLS-1$
+  private static final String ALT_SOLUTION_PATH = "test-src/solution1"; //$NON-NLS-1$
 
   private static final String PENTAHO_XML_PATH = "/system/pentaho.xml"; //$NON-NLS-1$
 
   private static final String SYSTEM_FOLDER = "/system"; //$NON-NLS-1$
 
   private static final String SOLUTION = "testsolution"; //$NON-NLS-1$
-
-  private CsvUtils service = null;
 
   private void init() {
     if (!PentahoSystem.getInitializedOK()) {
@@ -401,6 +398,7 @@ public class MetadataServiceTest  extends BaseTest {
         
     assertTrue( model.equals(model) );
     assertFalse( model.equals(null) );
+    assertFalse( model.equals(this) );
     assertFalse( model.equals(svc.loadModel("steel-wheels/metadata.xmi", "BV_ORDERS") ) );
     
     Model model2 = new Model();
@@ -793,30 +791,60 @@ public class MetadataServiceTest  extends BaseTest {
 
     MetadataService svc = new MetadataService();
     
-    Model model = svc.loadModel("steel-wheels/metadata.xmi", "BV_HUMAN_RESOURCES");
+    Model model = svc.loadModel("steel-wheels/metadata.xmi", "BV_ORDERS");
     assertNotNull("model should not be null", model);
     
     assertEquals("domain id is wrong","steel-wheels/metadata.xmi",model.getDomainId());
-    assertEquals("model id is wrong","BV_HUMAN_RESOURCES",model.getId());
-    assertEquals("model name is wrong","Human Resources",model.getName());
-    assertEquals("model description is wrong","This model contains information about Employees.",model.getDescription());
+    assertEquals("model id is wrong","BV_ORDERS",model.getId());
+    assertEquals("model name is wrong","Orders",model.getName());
+    assertEquals("model description is wrong","This model contains information about customers and their orders.",model.getDescription());
     assertTrue("model hash is wrong",model.hashCode() != 0);
     
-    assertEquals("wrong number of categories",2,model.getCategories().length);
+    assertEquals("wrong number of categories",4,model.getCategories().length);
     
     Category category = model.getCategories()[0];
-    assertEquals("wrong number of business columns",9,category.getColumns().length);
-    assertEquals("category id is wrong","BC_OFFICES_",category.getId());
-    assertEquals("category name is wrong","Offices",category.getName());
+    assertEquals("wrong number of business columns",13,category.getColumns().length);
+    assertEquals("category id is wrong","BC_CUSTOMER_W_TER_",category.getId());
+    assertEquals("category name is wrong","Customer",category.getName());
 
     IColumn column = category.getColumns()[0];
-    assertEquals("column default agg type is wrong","NONE", column.getDefaultAggType());
-    assertEquals("column id is wrong","BC_OFFICES_TERRITORY",column.getId());
+    assertEquals("column default agg type is wrong","NONE",column.getDefaultAggType().toString());
+    assertEquals("column id is wrong","BC_CUSTOMER_W_TER_TERRITORY",column.getId());
     assertEquals("column name is wrong","Territory",column.getName());
-    assertEquals("column selected agg type is wrong","NONE", column.getSelectedAggType());
-    assertEquals("column type is wrong","STRING", column.getType());
-    assertEquals("field type is wrong","DIMENSION", column.getFieldType());
+    assertEquals("column selected agg type is wrong","NONE",column.getSelectedAggType().toString());
+    assertEquals("column type is wrong","STRING",column.getType().toString());
+    assertEquals("field type is wrong","DIMENSION",column.getFieldType().toString());
+    assertEquals("mask is wrong",null,column.getFormatMask());
+    assertEquals("alignment is wrong","LEFT",column.getHorizontalAlignment().toString());
     assertEquals("column agg types list is wrong size",1,column.getAggTypes().length);
+    
+    category = model.getCategories()[1];
+    assertEquals("wrong number of business columns",9,category.getColumns().length);
+    assertEquals("category id is wrong","CAT_ORDERS",category.getId());
+    assertEquals("category name is wrong","Orders",category.getName());
+
+    column = category.getColumns()[6];
+    assertEquals("column default agg type is wrong","SUM",column.getDefaultAggType().toString());
+    assertEquals("column id is wrong","BC_ORDERDETAILS_QUANTITYORDERED",column.getId());
+    assertEquals("column name is wrong","Quantity Ordered",column.getName());
+    assertEquals("column selected agg type is wrong","SUM",column.getSelectedAggType().toString());
+    assertEquals("column type is wrong","NUMERIC",column.getType().toString());
+    assertEquals("field type is wrong","FACT",column.getFieldType().toString());
+    assertEquals("mask is wrong","#,###.##",column.getFormatMask());
+    assertEquals("alignment is wrong","RIGHT",column.getHorizontalAlignment().toString());
+    assertEquals("column agg types list is wrong size",5,column.getAggTypes().length);
+
+    column = category.getColumns()[8];
+    assertEquals("column default agg type is wrong","SUM",column.getDefaultAggType().toString());
+    assertEquals("column id is wrong","BC_ORDERDETAILS_TOTAL",column.getId());
+    assertEquals("column name is wrong","Total",column.getName());
+    assertEquals("column selected agg type is wrong","SUM",column.getSelectedAggType().toString());
+    assertEquals("column type is wrong","NUMERIC",column.getType().toString());
+    assertEquals("field type is wrong","FACT",column.getFieldType().toString());
+    assertEquals("mask is wrong","$#,##0.00;($#,##0.00)",column.getFormatMask());
+    assertEquals("alignment is wrong","RIGHT",column.getHorizontalAlignment().toString());
+    assertEquals("column agg types list is wrong size",5,column.getAggTypes().length);
+    
   }
 
   public void testGetModel2() {

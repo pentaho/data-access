@@ -17,8 +17,6 @@
 package org.pentaho.platform.dataaccess.metadata.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Operator is used in the definition of a @see MqlCondition 
@@ -60,45 +58,45 @@ public enum Operator implements Serializable{
   
   public static Operator parse(String val){
     
-    if(val == null || val.equals("")){
+    if(val == null || val.equals("")){ //$NON-NLS-1$
       return Operator.EQUAL;
     }
     // These are the UI equivalents that are re-resolved. Note this needs to be i18n
     // @TODO i18n
-    if(val.equals(">")){
+    if(val.equals(">")){ //$NON-NLS-1$
       return Operator.GREATER_THAN;
-    } else if(val.equals(">=")){
+    } else if(val.equals(">=")){ //$NON-NLS-1$
       return Operator.GREATOR_OR_EQUAL;
-    } else if(val.equals("=")){
+    } else if(val.equals("=")){ //$NON-NLS-1$
       return Operator.EQUAL;
-    } else if(val.equals("<")){
+    } else if(val.equals("<")){ //$NON-NLS-1$
       return Operator.LESS_THAN;
-    } else if(val.equals("<=")){
+    } else if(val.equals("<=")){ //$NON-NLS-1$
       return Operator.LESS_OR_EQUAL;
-    } else if(val.equals("exactly matches")){
+    } else if(val.equals("exactly matches")){ //$NON-NLS-1$
       return Operator.EXACTLY_MATCHES;
-    } else if(val.equals("contains")){
+    } else if(val.equals("contains")){ //$NON-NLS-1$
       return Operator.CONTAINS;
-    } else if(val.equals("does not contain")){
+    } else if(val.equals("does not contain")){ //$NON-NLS-1$
       return Operator.DOES_NOT_CONTAIN;
-    } else if(val.equals("begins with")){
+    } else if(val.equals("begins with")){ //$NON-NLS-1$
       return Operator.BEGINS_WITH;
-    } else if(val.equals("ends with")){
+    } else if(val.equals("ends with")){ //$NON-NLS-1$
       return Operator.ENDS_WITH;
-    } else if(val.equals("is null")){
+    } else if(val.equals("is null")){ //$NON-NLS-1$
       return Operator.IS_NULL;
-    }  else if(val.equals("is not null")){
+    }  else if(val.equals("is not null")){ //$NON-NLS-1$
       return Operator.IS_NOT_NULL;
     } 
     
     // Actual generated Open Formula formula name is passed in from deserialization routine. Try to match those here.
-    if(val.equals("CONTAINS")){
+    if(val.equals("CONTAINS")){ //$NON-NLS-1$
       return Operator.CONTAINS;
-    } else if(val.equals("BEGINSWITH")){
+    } else if(val.equals("BEGINSWITH")){ //$NON-NLS-1$
       return Operator.BEGINS_WITH;
-    } else if(val.equals("ENDSWITH")){
+    } else if(val.equals("ENDSWITH")){ //$NON-NLS-1$
       return Operator.ENDS_WITH;
-    } else if(val.equals("ISNA")){
+    } else if(val.equals("ISNA")){ //$NON-NLS-1$
       return Operator.IS_NULL;
     }
     

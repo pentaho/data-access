@@ -32,11 +32,11 @@ import org.pentaho.platform.util.messages.MessageUtil;
 public class Messages {
   private static final String BUNDLE_NAME = "org.pentaho.platform.dataaccess.metadata.messages.messages"; //$NON-NLS-1$
 
-  private static final Map locales = Collections.synchronizedMap(new HashMap());
+  private static final Map<Locale,ResourceBundle> locales = Collections.synchronizedMap(new HashMap<Locale,ResourceBundle>());
 
   private static ResourceBundle getBundle() {
     Locale locale = LocaleHelper.getLocale();
-    ResourceBundle bundle = (ResourceBundle) Messages.locales.get(locale);
+    ResourceBundle bundle = Messages.locales.get(locale);
     if (bundle == null) {
       bundle = ResourceBundle.getBundle(Messages.BUNDLE_NAME, locale);
       Messages.locales.put(locale, bundle);

@@ -34,7 +34,9 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.Concept;
 import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metadata.model.concept.types.Alignment;
 import org.pentaho.metadata.model.concept.types.DataType;
+import org.pentaho.metadata.model.concept.types.FieldType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.query.model.CombinationType;
 import org.pentaho.metadata.query.model.Constraint;
@@ -98,7 +100,8 @@ public class MetadataServiceUtil extends PentahoBase {
    * @return
    */
   protected String getLocale(  ) {
-    return LocaleHelper.getClosestLocale(LocaleHelper.getLocale().toString(), domain.getLocaleCodes());
+    String locale = LocaleHelper.getClosestLocale(LocaleHelper.getLocale().toString(), domain.getLocaleCodes());
+    return locale;
   }
   
   /**
@@ -178,13 +181,42 @@ public class MetadataServiceUtil extends PentahoBase {
     if (c.getAggregationType() != null) {
       defaultAggType = c.getAggregationType();
     }
-    if (!aggTypes.contains(defaultAggType.toString())) {
+    if (!aggTypes.contains(defaultAggType)) {
       aggTypes.add(defaultAggType.name());
     }
     col.setAggTypes(aggTypes);
     col.setDefaultAggType(defaultAggType.name());
     col.setSelectedAggType(defaultAggType.name());
 
+    // set the alignment
+    DataType dataType = c.getDataType();
+    FieldType fieldType = c.getFieldType();
+    Object obj = c.getProperty("alignment"); //$NON-NLS-1$
+    if(obj instanceof Alignment) {
+      if(obj == Alignment.LEFT) {
+        col.setHorizontalAlignment(Alignment.LEFT.toString());
+      }
+      else if(obj == Alignment.RIGHT) {
+        col.setHorizontalAlignment(Alignment.RIGHT.toString());
+      }
+      else if(obj == Alignment.CENTERED) {
+        col.setHorizontalAlignment(Alignment.CENTERED.toString());
+      }
+    }
+    else if(fieldType == FieldType.FACT) {
+      col.setHorizontalAlignment(Alignment.RIGHT.toString());
+    }
+    else if(fieldType == FieldType.OTHER && dataType == DataType.NUMERIC) {
+      col.setHorizontalAlignment(Alignment.RIGHT.toString());
+    }
+    else {
+      col.setHorizontalAlignment(Alignment.LEFT.toString());
+    }
+    // set the format mask
+    obj = c.getProperty("mask"); //$NON-NLS-1$
+    if(obj != null) {
+      col.setFormatMask((String)obj);
+    }
     return col;
   }
 

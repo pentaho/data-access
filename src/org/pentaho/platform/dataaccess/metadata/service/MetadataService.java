@@ -109,8 +109,9 @@ public class MetadataService extends PentahoBase {
   public String listBusinessModelsJson( String domainName ) throws IOException {
 
     ModelInfo[] models = listBusinessModels(domainName);
-    JSONSerializer serializer = new JSONSerializer();
-    return serializer.deepSerialize( models );
+    JSONSerializer serializer = new JSONSerializer(); 
+    String json = serializer.deepSerialize( models );
+    return json;
   }
   
   /**
@@ -184,7 +185,8 @@ public class MetadataService extends PentahoBase {
     // create the thin metadata model and return it
     MetadataServiceUtil util = new MetadataServiceUtil();
     util.setDomain(domain);
-    return util.createThinModel(model, domainId);
+    Model thinModel = util.createThinModel(model, domainId);
+    return thinModel;
 
   }
   
@@ -198,8 +200,9 @@ public class MetadataService extends PentahoBase {
   public String loadModelJson( String domainId, String modelId ) {
 
     Model model = loadModel( domainId, modelId );
-    JSONSerializer serializer = new JSONSerializer();
-    return serializer.deepSerialize( model );
+    JSONSerializer serializer = new JSONSerializer(); 
+    String json = serializer.deepSerialize( model );
+    return json;
   }
 
   /**
@@ -244,8 +247,9 @@ public class MetadataService extends PentahoBase {
     if( resultSet == null ) {
       return null;
     }
-    JSONSerializer serializer = new JSONSerializer();
-    return serializer.deepSerialize( resultSet );
+    JSONSerializer serializer = new JSONSerializer(); 
+    String json = serializer.deepSerialize( resultSet );      
+    return json;
   }
   
   /**
@@ -345,7 +349,8 @@ public class MetadataService extends PentahoBase {
       
       // get the XML for the query
       QueryXmlHelper helper = new QueryXmlHelper();
-      return helper.toXML(fullQuery);
+      String xml = helper.toXML(fullQuery);
+      return xml;
     } catch (Exception e) {
       error(Messages.getErrorString("MetadataService.ERROR_0008_BAD_QUERY"), e); //$NON-NLS-1$
     }

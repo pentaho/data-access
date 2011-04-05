@@ -39,7 +39,27 @@ public class Column implements IColumn {
   private String selectedAggType;
   private String fieldType;
   private String category;
+  private String getHorizontalAlignment;
+  private String formatMask;
   
+  @Override
+  public String getHorizontalAlignment() {
+    return getHorizontalAlignment;
+  }
+
+  public void setHorizontalAlignment(String getHorizontalAlignment) {
+    this.getHorizontalAlignment = getHorizontalAlignment;
+  }
+
+  @Override
+  public String getFormatMask() {
+    return formatMask;
+  }
+
+  public void setFormatMask(String formatMask) {
+    this.formatMask = formatMask;
+  }
+
   @Override
   public String getCategory() {
     return category;

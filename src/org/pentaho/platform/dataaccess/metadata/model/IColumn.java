@@ -73,5 +73,16 @@ public interface IColumn extends Serializable {
    * @return
    */
   public String getFieldType();
-  
+
+  /**
+   * Returns the horizontal alignment of the column - RIGHT, LEFT, CENTERED. 
+   * @return
+   */
+  public String getHorizontalAlignment();
+
+  /**
+   * Returns the format mask for this column, e.g. "#,###.00" or "MMM dd, yyyy"
+   * @return
+   */
+  public String getFormatMask();
 }
