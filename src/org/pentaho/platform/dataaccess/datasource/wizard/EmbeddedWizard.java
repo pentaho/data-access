@@ -100,8 +100,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   /**
   /**
-   * @param datasourceService
-   * @param connectionService
    * @param checkHasAccess
    */
   public EmbeddedWizard(boolean checkHasAccess) {
@@ -164,6 +162,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   public void onFinish(final IDatasourceSummary summary) {
     this.summary = summary;
     if(wizardModel.isEditing()){
+      MessageHandler.getInstance().closeWaitingDialog();
       onDialogAccept();
       return;
     }
