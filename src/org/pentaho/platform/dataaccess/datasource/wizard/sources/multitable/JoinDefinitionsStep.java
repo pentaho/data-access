@@ -21,7 +21,10 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
@@ -188,8 +191,31 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.leftTables.setSelectedIndex(0);
 		this.rightTables.setSelectedIndex(0);
 
+    checkExistingJoinsStillValid();
+    
+    checkExistingJoinsStillValid();
+
 		parentDatasource.setFinishable(this.validator.isFinishable());
 	}
+
+  private void checkExistingJoinsStillValid(){
+    Set allTables = new HashSet<String>();
+    for(JoinTableModel tbl : joinGuiModel.getAvailableTables()){
+      allTables.add(tbl);
+    }
+
+    List<JoinModel> toRemove = new ArrayList<JoinModel>();
+
+    for(JoinModel join : joinGuiModel.getJoins()){
+      if(!allTables.contains(join.getLeftKeyFieldModel().getParentTable().getName())
+          || !allTables.contains(join.getRightKeyFieldModel().getParentTable().getName())){
+        toRemove.add(join);
+      }
+    }
+    for(JoinModel join : toRemove){
+      joinGuiModel.getJoins().remove(join);
+    }
+  }
 
 	public void displayErrors(JoinError error) {
 		this.errorDialog.setTitle(error.getTitle());
