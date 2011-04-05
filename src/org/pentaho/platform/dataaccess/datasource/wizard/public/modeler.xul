@@ -431,7 +431,7 @@
                   <row flex="1">
                     <image src="images/warning.png" />
                     <label id="category_message_label" flex="1" multiline="true"
-                      value="This is a test to see how a warning message will appear." />
+                      value="${test_message}" />
                   </row>
 
                </rows>
@@ -456,7 +456,7 @@
                   <row flex="1">
                     <image src="images/warning.png" />
                     <label id="fieldmessageslabel" flex="1" multiline="true"
-                      value="This is a test to see how a warning message will appear." />
+                      value="${test_message}" />
                   </row>
 
                </rows>
