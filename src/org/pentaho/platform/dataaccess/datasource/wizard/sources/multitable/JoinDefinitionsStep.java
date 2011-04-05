@@ -21,10 +21,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
@@ -199,9 +196,9 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	}
 
   private void checkExistingJoinsStillValid(){
-    Set allTables = new HashSet<String>();
+    Set<String> allTables = new HashSet<String>();
     for(JoinTableModel tbl : joinGuiModel.getAvailableTables()){
-      allTables.add(tbl);
+      allTables.add(tbl.getName());
     }
 
     List<JoinModel> toRemove = new ArrayList<JoinModel>();
