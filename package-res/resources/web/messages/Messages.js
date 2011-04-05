@@ -31,9 +31,14 @@ Messages.entityDecoder=document.createElement('textarea');
 /*public static*/
 Messages.html_entity_decode = function(str)
 {
-    Messages.entityDecoder.innerHTML = str; 
-    var value = Messages.entityDecoder.value;
-    return value;
+    try{
+        Messages.entityDecoder.innerHTML = str; 
+        var value = Messages.entityDecoder.value;
+        value = unescape(value);
+        return value;
+    } catch (e) {
+        alert('cannot localize message: '+str);
+    }
 }
 
 /**
