@@ -180,24 +180,31 @@ public class DatasourceServiceImpl implements IDatasourceService {
       Domain domain = metadataDomainRepository.getDomain(domainId);
       LogicalModel logicalModel = domain.getLogicalModels().get(0);
       String modelState = (String) logicalModel.getProperty("datasourceModel");
-      DatasourceDTO datasource = null;
-
-      if(modelState != null){
-        datasource = deSerializeModelState(modelState);
-      }
     	
       // if CSV, drop the staged table
       // TODO: use the edit story's stored info to do this
       if ("CSV".equals(logicalModel.getProperty("DatasourceType")) ||
           "true".equalsIgnoreCase((String)logicalModel.getProperty( LogicalModel.PROPERTY_TARGET_TABLE_STAGED ))) {
         targetTable = ((SqlPhysicalTable)domain.getPhysicalModels().get(0).getPhysicalTables().get(0)).getTargetTable();
-        CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta());
-        try {
-          csvTransformGenerator.dropTable(targetTable);
-        } catch (CsvTransformGeneratorException e) {
-            // table might not be there, it's OK that is what we were trying to do anyway
-            logger.warn(Messages.getErrorString(
-              "DatasourceServiceImpl.ERROR_0019_UNABLE_TO_DROP_TABLE", targetTable, domainId, e.getLocalizedMessage()), e);//$NON-NLS-1$
+        DatasourceDTO datasource = null;
+
+        if(modelState != null){
+          datasource = deSerializeModelState(modelState);
+        }
+        if(datasource != null){
+          CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta());
+          try {
+            csvTransformGenerator.dropTable(targetTable);
+          } catch (CsvTransformGeneratorException e) {
+              // table might not be there, it's OK that is what we were trying to do anyway
+              logger.warn(Messages.getErrorString(
+                "DatasourceServiceImpl.ERROR_0019_UNABLE_TO_DROP_TABLE", targetTable, domainId, e.getLocalizedMessage()), e);//$NON-NLS-1$
+          }
+            String fileName = datasource.getCsvModelInfo().getFileInfo().getFilename();
+            FileUtils fileService = new FileUtils();
+            if(fileName != null) {
+              fileService.deleteFile(fileName);
+            }
         }
       }
 
@@ -210,13 +217,6 @@ public class DatasourceServiceImpl implements IDatasourceService {
       }
 
       metadataDomainRepository.removeModel(domainId, modelName);
-      if(datasource != null){
-        String fileName = datasource.getCsvModelInfo().getFileInfo().getFilename();
-        FileUtils fileService = new FileUtils();
-        if(fileName != null) {
-          fileService.deleteFile(fileName);
-        }
-      }
     } catch (MondrianCatalogServiceException me) {
       logger.error(Messages.getErrorString(
           "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage()), me);//$NON-NLS-1$
