@@ -176,6 +176,8 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       public void success(IDatasourceSummary iDatasourceSummary) {
         if(iDatasourceSummary.isShowModeler()){
           showModelEditor();
+        } else {
+          onDialogAccept();
         }
         MessageHandler.getInstance().closeWaitingDialog();
       }
