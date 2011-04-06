@@ -19,6 +19,9 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
@@ -79,19 +82,20 @@ public class JoinValidator {
 		return notCircularJoin;
 	}
 
-	public boolean isFinishable() {
-		// Can only finish if all the tables are joined and datasource name is
-		// present.
-		return isSingleTable() || allTablesJoined();
+	public boolean hasTablesSelected() {
+		return !this.joinGuiModel.getSelectedTables().isEmpty();
 	}
 
 	private boolean isSingleTable() {
 		return this.joinGuiModel.getSelectedTables().size() == 1;
 	}
 
-	private boolean allTablesJoined() {
+	public boolean allTablesJoined() {
 
-		boolean allTablesJoined = true;
+		if (isSingleTable()) {
+			return true;
+		}
+		List<String> orphanedTables = new ArrayList<String>();
 		next: for (JoinTableModel table : this.joinGuiModel.getSelectedTables()) {
 			for (JoinModel join : this.joinGuiModel.getJoins()) {
 				JoinTableModel table1 = join.getLeftKeyFieldModel().getParentTable();
@@ -100,10 +104,16 @@ public class JoinValidator {
 					continue next;
 				}
 			}
-			allTablesJoined = false;
-			break;
+			orphanedTables.add(table.getName());
 		}
-		return allTablesJoined;
+		if (!orphanedTables.isEmpty()) {
+			StringBuffer tables = new StringBuffer();
+			for (String table : orphanedTables) {
+				tables.append(" " + table + ", ");
+			}
+			this.error = new JoinError(MessageHandler.getString("multitable.ORPHANED_TABLES_TITLE"), MessageHandler.getString("multitable.ORPHANED_TABLES") + tables.substring(0, tables.lastIndexOf(",")));
+		}
+		return orphanedTables.isEmpty();
 	}
 
 	public JoinError getError() {

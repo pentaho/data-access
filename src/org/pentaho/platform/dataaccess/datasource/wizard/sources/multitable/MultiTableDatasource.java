@@ -41,8 +41,9 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulLabel;
+import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulVbox;
-import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -58,10 +59,14 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	private IConnection connection;
 	private BindingFactory bf;
 	private IWizardModel wizardModel;
+	private JoinValidator validator;
+	private XulDialog errorDialog;
+	private XulLabel errorLabel;
 
 	public MultiTableDatasource(DatasourceModel datasourceModel) {
 		this.joinGuiModel = new JoinGuiModel();
 		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
+		this.validator = new JoinValidator(this.joinGuiModel, wizardModel);
 
 		this.joinSelectionServiceGwtImpl.gwtWorkaround(new BogoPojo(), new XulServiceCallback<BogoPojo>() {
 
@@ -85,12 +90,14 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		this.tablesSelectionStep.activating();
 		this.joinDefinitionsStep.activating();
 
-		Document document = this.connectionSelectionStep.getXulDomContainer().getDocumentRoot();
 		XulVbox queryVbox = (XulVbox) document.getElementById("queryBox");
 		queryVbox.setVisible(false);
 
 		XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
 		connectionsVbox.setVisible(true);
+
+		this.errorDialog = (XulDialog) document.getElementById("errorDialog");
+		this.errorLabel = (XulLabel) document.getElementById("errorLabel");
 
 		this.connectionSelectionStep.setValid(true);
 		this.setConnection(connectionSelectionStep.getConnection());
@@ -106,8 +113,8 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	@Override
 	public void init(final XulDomContainer container, final IWizardModel wizardModel) throws XulException {
 		this.wizardModel = wizardModel;
-		bf = new GwtBindingFactory(document);
-		this.bf = new GwtBindingFactory(container.getDocumentRoot());
+		document = container.getDocumentRoot();
+		this.bf = new GwtBindingFactory(document);
 		bf.setBindingType(Binding.Type.ONE_WAY);
 
 		container.addEventHandler(connectionSelectionStep);
@@ -135,21 +142,34 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		return steps;
 	}
 
+	protected void displayErrors(JoinError error) {
+		this.errorDialog.setTitle(error.getTitle());
+		this.errorLabel.setValue(error.getError());
+		this.errorDialog.show();
+	}
+
 	@Override
 	public void onFinish(final XulServiceCallback<IDatasourceSummary> callback) {
 
-		String dsName = this.wizardModel.getDatasourceName().replace(".", "_").replace(" ", "_");
-		MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO(dsName);
-		dto.setSelectedConnection(this.connection);
-		joinSelectionServiceGwtImpl.serializeJoins(dto, this.connection, new XulServiceCallback<IDatasourceSummary>() {
-			public void error(String message, Throwable error) {
-				error.printStackTrace();
-			}
+		if (this.validator.allTablesJoined()) {
+			String dsName = this.wizardModel.getDatasourceName().replace(".", "_").replace(" ", "_");
+			MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO(dsName);
+			dto.setSelectedConnection(this.connection);
+			joinSelectionServiceGwtImpl.serializeJoins(dto, this.connection, new XulServiceCallback<IDatasourceSummary>() {
+				public void error(String message, Throwable error) {
+					error.printStackTrace();
+				}
 
-			public void success(IDatasourceSummary value) {
-				callback.success(value);
-			}
-		});
+				public void success(IDatasourceSummary value) {
+					callback.success(value);
+				}
+			});
+		} else {
+			MessageHandler.getInstance().closeWaitingDialog();
+			XulDialog wizardDialog = (XulDialog) document.getElementById("main_wizard_window");
+			wizardDialog.show();
+			this.displayErrors(this.validator.getError());
+		}
 	}
 
 	@Override

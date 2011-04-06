@@ -21,7 +21,10 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
@@ -37,9 +40,7 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
@@ -51,8 +52,6 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	protected static final String JOIN_DEFINITION_PANEL_ID = "joinDefinitionWindow";
 
-	private XulDialog errorDialog;
-	private XulLabel errorLabel;
 	private XulVbox joinDefinitionDialog;
 	private JoinGuiModel joinGuiModel;
 	private XulListbox leftTables;
@@ -106,15 +105,13 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		if (this.validator.isValid(join)) {
 			this.joinGuiModel.addJoin(join);
 		} else {
-			this.displayErrors(this.validator.getError());
+			((MultiTableDatasource) this.parentDatasource).displayErrors(this.validator.getError());
 		}
-		parentDatasource.setFinishable(this.validator.isFinishable());
 	}
 
 	@Bindable
 	public void deleteJoin() {
 		this.joinGuiModel.removeSelectedJoin();
-		parentDatasource.setFinishable(this.validator.isFinishable());
 	}
 
 	@Override
@@ -129,9 +126,6 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.leftTables.addPropertyChangeListener(this);
 
 		this.rightTables = (XulListbox) document.getElementById("rightTables");
-
-		this.errorDialog = (XulDialog) document.getElementById("errorDialog");
-		this.errorLabel = (XulLabel) document.getElementById("errorLabel");
 
 		this.rightTables.addPropertyChangeListener(this);
 
@@ -187,37 +181,26 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
 		this.leftTables.setSelectedIndex(0);
 		this.rightTables.setSelectedIndex(0);
-
-    checkExistingJoinsStillValid();
-    
-    checkExistingJoinsStillValid();
-
-		parentDatasource.setFinishable(this.validator.isFinishable());
+		checkExistingJoinsStillValid();
+		parentDatasource.setFinishable(this.validator.hasTablesSelected());
 	}
 
-  private void checkExistingJoinsStillValid(){
-    Set<String> allTables = new HashSet<String>();
-    for(JoinTableModel tbl : joinGuiModel.getAvailableTables()){
-      allTables.add(tbl.getName());
-    }
+	private void checkExistingJoinsStillValid() {
+		Set<String> allTables = new HashSet<String>();
+		for (JoinTableModel tbl : joinGuiModel.getAvailableTables()) {
+			allTables.add(tbl.getName());
+		}
 
-    List<JoinModel> toRemove = new ArrayList<JoinModel>();
+		List<JoinModel> toRemove = new ArrayList<JoinModel>();
 
-    for(JoinModel join : joinGuiModel.getJoins()){
-      if(!allTables.contains(join.getLeftKeyFieldModel().getParentTable().getName())
-          || !allTables.contains(join.getRightKeyFieldModel().getParentTable().getName())){
-        toRemove.add(join);
-      }
-    }
-    for(JoinModel join : toRemove){
-      joinGuiModel.getJoins().remove(join);
-    }
-  }
-
-	public void displayErrors(JoinError error) {
-		this.errorDialog.setTitle(error.getTitle());
-		this.errorLabel.setValue(error.getError());
-		this.errorDialog.show();
+		for (JoinModel join : joinGuiModel.getJoins()) {
+			if (!allTables.contains(join.getLeftKeyFieldModel().getParentTable().getName()) || !allTables.contains(join.getRightKeyFieldModel().getParentTable().getName())) {
+				toRemove.add(join);
+			}
+		}
+		for (JoinModel join : toRemove) {
+			joinGuiModel.getJoins().remove(join);
+		}
 	}
 
 	public String getStepName() {
