@@ -232,7 +232,7 @@
 				        <vbox>
 				          <label value="${multitable.LEFT_TABLE}" tooltiptext=""/>
 				          <listbox id="leftTables" pen:binding="name" disabled="false" height="150" width="300"/>
-				          <label value="${multitable.KEY_FIELD}:" tooltiptext=""/>
+				          <label value="${multitable.KEY_FIELD}" tooltiptext=""/>
 				          <menulist id="leftKeyField" pen:binding="name" editable="false" width="300">
 						    <menupopup/>
 						  </menulist>          
