@@ -246,7 +246,7 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		String locale = LocalizedString.DEFAULT_LOCALE;
 		for (JoinTableModel table : availableTables) {
 			for (LogicalTable tbl : domain.getLogicalModels().get(0).getLogicalTables()) {
-				if (tbl.getName(locale).equals(table.getName())) {
+				if(tbl.getPhysicalTable().getName().equals(table.getName())){
 					for (LogicalColumn col : tbl.getLogicalColumns()) {
 						JoinFieldModel field = new JoinFieldModel();
 						field.setName(col.getName(locale));
