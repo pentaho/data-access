@@ -294,6 +294,8 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
         model.setDomain(retVal);
         if(retVal.getLogicalModels().get(0).getProperty("MondrianCatalogRef") == null){
           controller.setModellingMode(ModelerMode.REPORTING_ONLY);
+        } else {
+          controller.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
         }
         controller.resetPropertyForm();
         enableWaitCursor(false);
