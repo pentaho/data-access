@@ -23,37 +23,14 @@
 
   <body>
     <div id="dragPanel">
-    <!-- OPTIONAL: include this if you want history support -->
-    <iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
-    <div id="root"></div>
+      <!-- OPTIONAL: include this if you want history support -->
+      <iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
+      <div id="root"></div>
 
-    <script type="text/javascript">
+      <script type="text/javascript">
 
-      function showDatasourceEditor(){
-        openDatasourceEditor(new function(){
-          this.onOk = function(json, mqlStr){
-            alert(json+"\n\n\n"+mqlStr);
-          }
-          this.onError = function(err){
-            alert(err);
-          }
-          this.onCancel = function(){
-            alert("Canceled");
-          }
-          this.onReady = function(){
-
-          }
-          this.onFinish = function(status) {
-
-          }
-          this.onFinish = function(status, transport) {
-
-          }
-        });
-      }
-
-      function showEditDatasourceEditor() {
-          openEditDatasourceEditor("Test", "MODEL_1", new function(){
+        function showDatasourceEditor(){
+          openDatasourceEditor(new function(){
             this.onOk = function(json, mqlStr){
               alert(json+"\n\n\n"+mqlStr);
             }
@@ -70,18 +47,44 @@
 
             }
             this.onFinish = function(status, transport) {
-              
+
             }
           });
         }
 
-      function initDataAccess(){}
-    </script>
-    <input type="button" onclick="showDatasourceEditor()" value="New Data Source"/>
-    <br>
-    First Create a SQL Data Source named "Test" and then click this button:
-    <br>
-    <input type="button" onclick="showEditDatasourceEditor()" value="Edit Test Data Source"/>
-      </div>
+        function showEditDatasourceEditor(domain) {
+            openEditDatasourceEditor(domain, "MODEL_1", new function(){
+              this.onOk = function(json, mqlStr){
+                alert(json+"\n\n\n"+mqlStr);
+              }
+              this.onError = function(err){
+                alert(err);
+              }
+              this.onCancel = function(){
+                alert("Canceled");
+              }
+              this.onReady = function(){
+
+              }
+              this.onFinish = function(status) {
+
+              }
+              this.onFinish = function(status, transport) {
+
+              }
+            });
+          }
+
+        function initDataAccess(){}
+      </script>
+      <input type="button" onclick="showDatasourceEditor()" value="New Data Source"/>
+      <br>
+
+      <br>
+      <h3>Edit Sample Data Source:</h3>
+      <input type="button" onclick="showEditDatasourceEditor('Sample_CSV')" value="CSV"/>
+      <input type="button" onclick="showEditDatasourceEditor('Sample_SQL_Query')" value="SQL Query"/>
+      <input type="button" onclick="showEditDatasourceEditor('Sample_DB_Table_Joins')" value="Database Tables"/>
+    </div>
   </body>
 </html>
