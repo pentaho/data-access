@@ -750,9 +750,8 @@ pentaho.pda.query.mql.prototype.getSelectionXML = function( selection ) {
             xml += '<selection>\n';
             xml += '<table>'+selection.category+'</table>\n';
             xml += '<column>'+selection.id+'</column>\n';
-            if( selection.selectedAggType != pentaho.pda.Column.AGG_TYPES.NONE ) {
-                xml += '<aggregation>'+selection.selectedAggType+'</aggregation>';
-            }
+            // MQL Editor requires a selection to have an aggregation type
+            xml += '<aggregation>'+selection.selectedAggType+'</aggregation>';
             xml += '</selection>\n';
             return xml;
         } else {
