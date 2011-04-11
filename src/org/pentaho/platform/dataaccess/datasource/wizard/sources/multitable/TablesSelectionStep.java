@@ -32,6 +32,8 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
@@ -45,6 +47,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private XulVbox tablesSelectionDialog;
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
+	private XulMenuList<JoinTableModel> factTables;
 	private JoinGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 
@@ -91,6 +94,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		this.tablesSelectionDialog = (XulVbox) document.getElementById(JOIN_STEP_PANEL_ID);
 		this.availableTables = (XulListbox) document.getElementById("availableTables");
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
+		this.factTables = (XulMenuList<JoinTableModel>) document.getElementById("factTables");
 
 		super.init(wizardModel);
 	}
@@ -99,7 +103,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		BindingFactory bf = new GwtBindingFactory(document);
 		bf.createBinding(this.joinGuiModel.getAvailableTables(), "children", this.availableTables, "elements");
 		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.selectedTables, "elements");
-
+		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.factTables, "elements");
 	}
 
 	public String getStepName() {
@@ -114,5 +118,12 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	public void stepActivatingReverse() {
 		super.stepActivatingReverse();
 		parentDatasource.setFinishable(false);
+	}
+	
+	@Override
+	public void stepActivatingForward() {
+		XulRadio reportingAnalysisRadio = (XulRadio) document.getElementById("reporting_analysis");
+		XulVbox factTableVBox = (XulVbox) document.getElementById("factTableVbox");
+		factTableVBox.setVisible(reportingAnalysisRadio.isSelected());
 	}
 }

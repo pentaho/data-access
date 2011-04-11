@@ -92,6 +92,9 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 		XulVbox queryVbox = (XulVbox) document.getElementById("queryBox");
 		queryVbox.setVisible(false);
+		
+		XulVbox metadataVbox = (XulVbox) document.getElementById("metadata");
+		metadataVbox.setVisible(true);
 
 		XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
 		connectionsVbox.setVisible(true);

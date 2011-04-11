@@ -44,6 +44,7 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.dom.Document;
@@ -79,8 +80,12 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   
   @Override
   public void activating() {
+
 	XulVbox queryVbox = (XulVbox) document.getElementById("queryBox");
 	queryVbox.setVisible(true);
+	
+	XulVbox metadataVbox = (XulVbox) document.getElementById("metadata");
+	metadataVbox.setVisible(false);
 	
 	XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
 	connectionsVbox.setVisible(false);
