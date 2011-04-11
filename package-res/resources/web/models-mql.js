@@ -255,7 +255,7 @@ pentaho.pda.model.mql.prototype.getAllColumns = function() {
 }
         
 pentaho.pda.model.mql.prototype.searchColumn = function( column, searchStr ) {
-        var query = model.createQuery();
+        var query = this.createQuery();
         var selection = query.addSelectionById( column.id );
         var sort = query.addSortById( column.id, pentaho.pda.Column.SORT_TYPES.ASCENDING );
         if( searchStr ) {
