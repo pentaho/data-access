@@ -25,12 +25,14 @@ import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulRadio;
@@ -104,6 +106,21 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		bf.createBinding(this.joinGuiModel.getAvailableTables(), "children", this.availableTables, "elements");
 		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.selectedTables, "elements");
 		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.factTables, "elements");
+		bf.createBinding(this.factTables, "selectedIndex", this.joinGuiModel, "factTable", new BindingConvertor<Integer, JoinTableModel>() {
+
+			@Override
+			public JoinTableModel sourceToTarget(final Integer index) {
+				if (index == -1) {
+					return null;
+				}
+				return joinGuiModel.getSelectedTables().get(index);
+			}
+
+			@Override
+			public Integer targetToSource(final JoinTableModel value) {
+				return joinGuiModel.getSelectedTables().indexOf(value);
+			}
+		});
 	}
 
 	public String getStepName() {
@@ -125,5 +142,6 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		XulRadio reportingAnalysisRadio = (XulRadio) document.getElementById("reporting_analysis");
 		XulVbox factTableVBox = (XulVbox) document.getElementById("factTableVbox");
 		factTableVBox.setVisible(reportingAnalysisRadio.isSelected());
+		this.joinGuiModel.setIsStarSchema(reportingAnalysisRadio.isSelected());
 	}
 }

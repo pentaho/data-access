@@ -38,17 +38,22 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 
 	private AbstractModelList<JoinModel> joins;
 	private AbstractModelList<JoinTableModel> selectedTables;
-
 	private AbstractModelList<JoinTableModel> availableTables;
+	private AbstractModelList<JoinTableModel> leftTables;
+	private AbstractModelList<JoinTableModel> rightTables;
 	private JoinTableModel leftJoinTable;
 	private JoinTableModel rightJoinTable;
 	private JoinFieldModel leftKeyField;
 	private JoinFieldModel rightKeyField;
 	private JoinModel selectedJoin;
+	private JoinTableModel factTable;
+	private boolean isStarSchema;
 
 	public JoinGuiModel() {
 		this.availableTables = new AbstractModelList<JoinTableModel>();
 		this.selectedTables = new AbstractModelList<JoinTableModel>();
+		this.leftTables = new AbstractModelList<JoinTableModel>();
+		this.rightTables = new AbstractModelList<JoinTableModel>();
 		this.joins = new AbstractModelList<JoinModel>();
 		this.leftJoinTable = new JoinTableModel();
 		this.rightJoinTable = new JoinTableModel();
@@ -134,6 +139,16 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 	public void setSelectedJoin(JoinModel selectedJoin) {
 		this.selectedJoin = selectedJoin;
 	}
+	
+	@Bindable
+	public JoinTableModel getFactTable() {
+		return factTable;
+	}
+	
+	@Bindable
+	public void setFactTable(JoinTableModel factTable) {
+		this.factTable = factTable;
+	}
 
 	public void addJoin(JoinModel join) {
 		this.joins.add(join);
@@ -150,8 +165,39 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 
 	public void removeSelectedTable(JoinTableModel table) {
 		this.selectedTables.remove(table);
-
 		this.availableTables.add(table);
+	}
+	
+	@Bindable
+	public AbstractModelList<JoinTableModel> getLeftTables() {
+		return this.leftTables;
+	}
+	
+	@Bindable
+	public AbstractModelList<JoinTableModel> getRightTables() {
+		return this.rightTables;
+	}
+	
+	public void setIsStarSchema(boolean isStar) {
+		this.isStarSchema = isStar;
+	}
+	
+	public void computeJoinDefinitionStepTables() {
+		this.leftTables.clear();
+		this.rightTables.clear();
+		if(this.isStarSchema) {
+			this.leftTables.add(this.factTable);
+			for(JoinTableModel table : this.selectedTables) {
+				if(table.equals(this.factTable)) {
+					continue;
+				} else {
+					this.rightTables.add(table);
+				}
+			}
+		} else {
+			this.leftTables.addAll(this.selectedTables);
+			this.rightTables.addAll(this.selectedTables);
+		}
 	}
 
 	public void processAvailableTables(List<String> tables) {
@@ -259,10 +305,6 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		}
 	}
 
-	private LogicalTable findTable(Domain domain, String id) {
-		return domain.getLogicalModels().get(0).findLogicalTable(id);
-	}
-
 	private void populateJoin(LogicalRelationship logicalRelationship, AbstractModelList<JoinModel> joinsList) {
 
 		JoinModel join = new JoinModel();
@@ -288,17 +330,6 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		joinsList.add(join);
 	}
 
-	private void selectTable(LogicalTable logicalTable, AbstractModelList<JoinTableModel> selectedTablesList) {
-		String locale = LocalizedString.DEFAULT_LOCALE;
-		for (JoinTableModel table : this.availableTables) {
-			if (table.getName().equals(logicalTable.getName(locale))) {
-				if (!selectedTablesList.contains(table)) {
-					selectedTablesList.add(table);
-				}
-			}
-		}
-	}
-
 	private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList) {
 		for (JoinTableModel table : this.availableTables) {
 			if (table.getName().equals(selectedTable)) {
@@ -310,7 +341,6 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 	}
 
 	public void reset() {
-
 		this.availableTables.clear();
 		this.selectedTables.clear();
 		this.joins.clear();

@@ -126,7 +126,6 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.leftTables.addPropertyChangeListener(this);
 
 		this.rightTables = (XulListbox) document.getElementById("rightTables");
-
 		this.rightTables.addPropertyChangeListener(this);
 
 		super.init(wizardModel);
@@ -135,8 +134,8 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	public void setBindings() {
 
 		BindingFactory bf = new GwtBindingFactory(document);
-		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.leftTables, "elements");
-		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.rightTables, "elements");
+		bf.createBinding(this.joinGuiModel.getLeftTables(), "children", this.leftTables, "elements");
+		bf.createBinding(this.joinGuiModel.getRightTables(), "children", this.rightTables, "elements");
 		bf.createBinding(this.leftTables, "selectedItem", this.joinGuiModel, "leftJoinTable");
 		bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
 		bf.createBinding(this.joinGuiModel.getJoins(), "children", this.joins, "elements");
@@ -179,6 +178,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	public void stepActivatingForward() {
 		super.stepActivatingForward();
 		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
+		this.joinGuiModel.computeJoinDefinitionStepTables();
 		this.leftTables.setSelectedIndex(0);
 		this.rightTables.setSelectedIndex(0);
 		checkExistingJoinsStillValid();

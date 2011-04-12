@@ -9,6 +9,8 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
@@ -60,7 +62,13 @@ public class SerializeServiceTest {
 
     Domain domain = generateModel();
     ModelerService service = new ModelerService();
-    service.serializeModels(domain, "test_file");//$NON-NLS-1$
+    
+    ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+    model.setModelName("ORDERS");
+    model.setDomain(domain);
+    model.getWorkspaceHelper().populateDomain(model);
+
+    service.serializeModels(domain, "ORDERS");//$NON-NLS-1$
 
     Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "test_file");
 
