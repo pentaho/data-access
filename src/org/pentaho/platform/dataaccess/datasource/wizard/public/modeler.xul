@@ -229,16 +229,19 @@
 
               <label value="${display_name}:"/>
               <textbox id="displayname"/>
-              <label value="${aggregation}:"/>
-              <menulist id="aggregationtype">
+
+              <label value="${aggregation}:" />
+              <menulist id="defaultAggregation">
                 <menupopup>
-                  <menuitem label="SUM"/>
-                  <menuitem label="AVERAGE"/>
-                  <menuitem label="MINIMUM"/>
-                  <menuitem label="MAXIMUM"/>
- 				  <menuitem label="COUNT_DISTINCT"/>                  
+                  <menuitem label="NONE" />
+                  <menuitem label="#,###;(#,###)" />
+                  <menuitem label="#,###.00;(#,###.00)" />
+                  <menuitem label="$ #,###;($ #,###)" />
+                  <menuitem label="$ #,###.00;($ #,###.00)" />
+                  <menuitem label="#.#%;(#.#%)" />
                 </menupopup>
               </menulist>
+
               <label value="${format}:"/>
               <menulist id="formatstring">
                 <menupopup>
@@ -493,16 +496,29 @@
 
                 <label value="${display_name}:" />
                 <textbox id="fielddisplayname" />
+
+                <label value="${possible_aggregations}:" />
+                <listbox id="field_possibleAggregationTypes" seltype="multi" height="100">
+                    <listitem label="NONE" />
+                    <listitem label="SUM" />
+                    <listitem label="AVERAGE" />
+                    <listitem label="MINIMUM" />
+                    <listitem label="MAXIMUM" />
+                    <listitem label="COUNT_DISTINCT" />
+                </listbox>
+
                 <label value="${aggregation}:" />
-                <menulist id="fieldaggregationtype">
+                <menulist id="field_defaultAggregation">
                   <menupopup>
-                    <menuitem label="SUM" />
-                    <menuitem label="AVERAGE" />
-                    <menuitem label="MINIMUM" />
-                    <menuitem label="MAXIMUM" />
-                    <menuitem label="COUNT_DISTINCT" />
+                    <menuitem label="NONE" />
+                    <menuitem label="#,###;(#,###)" />
+                    <menuitem label="#,###.00;(#,###.00)" />
+                    <menuitem label="$ #,###;($ #,###)" />
+                    <menuitem label="$ #,###.00;($ #,###.00)" />
+                    <menuitem label="#.#%;(#.#%)" />
                   </menupopup>
                 </menulist>
+
                 <label value="${format}:" />
                 <menulist id="fieldformatstring">
                   <menupopup>
