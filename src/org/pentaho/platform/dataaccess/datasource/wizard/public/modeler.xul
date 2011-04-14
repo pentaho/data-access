@@ -31,7 +31,7 @@
           <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
         </hbox>
 -->
-        <tree id="fieldList" height="413" flex="1" editable="false" hiddenrootnode="true" preserveselection="true">
+        <tree id="fieldList" height="413" width="210" flex="1" editable="false" hiddenrootnode="true" preserveselection="true">
           <treecols>
             <treecol flex="1" label="" primary="true"
               pen:binding="name" pen:childrenbinding="children"
@@ -105,9 +105,9 @@
             <tab id="reportingTab" label="${reportingTabLabel}" onclick="modeler.setModelerPerspective('REPORTING')"></tab>
           </tabs>
           <tabpanels>
-            <tabpanel id="analysisTabPanel">
+            <tabpanel id="analysisTabPanel" height="413">
 
-              <vbox id="analyzerModelPanel" flex="1" spacing="0" padding="0">
+              <vbox id="analyzerModelPanel" height="413" flex="1" spacing="0" padding="0">
                 <toolbar id="schema-toolbar" mode="icons">
                   <toolbarspacer flex="1"/>
                   <toolbarbutton id="measureBtn" image="images/sm_measure_icon.png" onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}"/>
@@ -142,8 +142,8 @@
                 </tree>
               </vbox>
             </tabpanel>
-            <tabpanel id="reportingTabPanel">
-              <vbox id="reportingModelPanel" flex="1" spacing="0" padding="0">
+            <tabpanel id="reportingTabPanel" height="413">
+              <vbox id="reportingModelPanel" height="413" flex="1" spacing="0" padding="0">
                 <toolbar id="categories-toolbar" mode="icons">
                   <toolbarspacer flex="1"/>
                   <toolbarbutton id="categoryBtn" image="images/sm_folder_icon.png" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}"/>
@@ -178,7 +178,7 @@
 
         <groupbox width="360" height="463" id="schema-toolbar-groupbox">
           <caption label="${model}" />
-          <hbox id="modelPanel" flex="1" spacing="0" padding="0">
+          <hbox id="modelPanel" height="463" flex="1" spacing="0" padding="0">
 
           </hbox>
         </groupbox>
