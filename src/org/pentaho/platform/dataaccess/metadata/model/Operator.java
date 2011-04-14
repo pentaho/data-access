@@ -29,14 +29,14 @@ public enum Operator implements Serializable{
   GREATOR_OR_EQUAL(">=", 1, true),  //$NON-NLS-1$
   LESS_OR_EQUAL("<=", 1, true),  //$NON-NLS-1$
   
-  EXACTLY_MATCHES("exactly matches", 0, true),  //$NON-NLS-1$
-  CONTAINS("contains", 0, true),  //$NON-NLS-1$
-  DOES_NOT_CONTAIN("does not contain", 0, true),  //$NON-NLS-1$
-  BEGINS_WITH("begins with", 0, true),  //$NON-NLS-1$
-  ENDS_WITH("ends with", 0, true), //$NON-NLS-1$
+  EXACTLY_MATCHES("EXACTLY MATCHES", 0, true),  //$NON-NLS-1$
+  CONTAINS("CONTAINS", 0, true),  //$NON-NLS-1$
+  DOES_NOT_CONTAIN("DOES NOT CONTAIN", 0, true),  //$NON-NLS-1$
+  BEGINS_WITH("BEGINS WITH", 0, true),  //$NON-NLS-1$
+  ENDS_WITH("ENDS WITH", 0, true), //$NON-NLS-1$
   
-  IS_NULL("is null", 2, false),  //$NON-NLS-1$
-  IS_NOT_NULL("is not null", 2, false); //$NON-NLS-1$
+  IS_NULL("IS NULL", 2, false),  //$NON-NLS-1$
+  IS_NOT_NULL("IS NOT NULL", 2, false); //$NON-NLS-1$
 
   
   private String strVal;
@@ -61,6 +61,7 @@ public enum Operator implements Serializable{
     if(val == null || val.equals("")){ //$NON-NLS-1$
       return Operator.EQUAL;
     }
+    val = val.toUpperCase();
     // These are the UI equivalents that are re-resolved. Note this needs to be i18n
     // @TODO i18n
     if(val.equals(">")){ //$NON-NLS-1$
@@ -73,19 +74,19 @@ public enum Operator implements Serializable{
       return Operator.LESS_THAN;
     } else if(val.equals("<=")){ //$NON-NLS-1$
       return Operator.LESS_OR_EQUAL;
-    } else if(val.equals("exactly matches")){ //$NON-NLS-1$
+    } else if(val.equals("EXACTLY MATCHES")){ //$NON-NLS-1$
       return Operator.EXACTLY_MATCHES;
-    } else if(val.equals("contains")){ //$NON-NLS-1$
+    } else if(val.equals("CONTAINS")){ //$NON-NLS-1$
       return Operator.CONTAINS;
-    } else if(val.equals("does not contain")){ //$NON-NLS-1$
+    } else if(val.equals("DOES NOT CONTAIN")){ //$NON-NLS-1$
       return Operator.DOES_NOT_CONTAIN;
-    } else if(val.equals("begins with")){ //$NON-NLS-1$
+    } else if(val.equals("BEGINS WITH")){ //$NON-NLS-1$
       return Operator.BEGINS_WITH;
-    } else if(val.equals("ends with")){ //$NON-NLS-1$
+    } else if(val.equals("ENDS WITH")){ //$NON-NLS-1$
       return Operator.ENDS_WITH;
-    } else if(val.equals("is null")){ //$NON-NLS-1$
+    } else if(val.equals("IS NULL")){ //$NON-NLS-1$
       return Operator.IS_NULL;
-    }  else if(val.equals("is not null")){ //$NON-NLS-1$
+    }  else if(val.equals("IS NOT NULL")){ //$NON-NLS-1$
       return Operator.IS_NOT_NULL;
     } 
     
