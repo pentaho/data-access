@@ -175,7 +175,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
       LogicalModel lModel = domain.getLogicalModels().get(0);
       String catName = lModel.getName(Locale.getDefault().toString());
 
-      cleanseExistingCatalog(catName);
+      cleanseExistingCatalog(catName, session);
       if(doOlap){
         lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
       }
@@ -221,10 +221,10 @@ public class ModelerService extends PentahoBase implements IModelerService {
     return domainId;
   }
   
-  private void cleanseExistingCatalog(String catName) {
+  private void cleanseExistingCatalog(String catName, IPentahoSession session) {
 	  
 	  // If mondrian catalog exists delete it to avoid duplicates and orphan entries in the datasources.xml registry.
-	  IPentahoSession session = PentahoSessionHolder.getSession();
+	  //IPentahoSession session = PentahoSessionHolder.getSession();
 	  if(session != null) {
 		  IMondrianCatalogService service = PentahoSystem.get(IMondrianCatalogService.class, null);
 	      MondrianCatalog catalog = service.getCatalog(catName, session);

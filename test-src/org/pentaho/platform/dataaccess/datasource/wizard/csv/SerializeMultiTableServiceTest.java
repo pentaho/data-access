@@ -32,119 +32,119 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class SerializeMultiTableServiceTest {
 	
-  static {
-    if (!PentahoSystem.getInitializedOK()) {
-      PentahoSystemHelper.init();
-      System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-  }
+	  static {
+	    if (!PentahoSystem.getInitializedOK()) {
+	      PentahoSystemHelper.init();
+	      System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
+	    }
+	    
+	    if(ModelerMessagesHolder.getMessages() == null){
+	 	   ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
+	 	}
+	  }
 
-  @Test
-  public void testSerialize() throws Exception {
+	  @Test
+	  public void testSerialize() throws Exception {
+		  
+	    KettleEnvironment.init();
+	    Props.init(Props.TYPE_PROPERTIES_EMPTY);
+
+	    String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
+	    String path = solutionStorage + ISolutionRepository.SEPARATOR
+	        + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
+
+	    String olapPath = null;
+
+	    IApplicationContext appContext = PentahoSystem.getApplicationContext();
+	    if (appContext != null) {
+	      path = PentahoSystem.getApplicationContext().getSolutionPath(path);
+	      olapPath = PentahoSystem.getApplicationContext().getSolutionPath(
+	          "system" + ISolutionRepository.SEPARATOR + "olap" + ISolutionRepository.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
+	    }
+
+	    File olap1 = new File(olapPath + "datasources.xml"); //$NON-NLS-1$
+	    File olap2 = new File(olapPath + "tmp_datasources.xml"); //$NON-NLS-1$
+
+	    FileUtils.copyFile(olap1, olap2);
+
+	    DatabaseMeta database = getDatabaseMeta();
 	  
-    if(ModelerMessagesHolder.getMessages() == null){
-	  ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
-    }
-   
-    KettleEnvironment.init();
-    Props.init(Props.TYPE_PROPERTIES_EMPTY);
+	    JoinGuiModel joinGuiModel = new JoinGuiModel();
+		List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(database, logicalRelationships, database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
+		Domain domain = multiTable.generateDomain();
+	    
+	    List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
+		OlapDimension dimension = new OlapDimension();
+		dimension.setName("test");//$NON-NLS-1$
+		dimension.setTimeDimension(false);
+		olapDimensions.add(dimension);
+		domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
+	    
+	    
+	    ModelerService service = new ModelerService();
+	    service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
-    String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
-    String path = solutionStorage + ISolutionRepository.SEPARATOR
-        + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
+	    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "SampleData");
+	    
+	    File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
+	    File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
 
-    String olapPath = null;
+	    assertTrue(xmiFile.exists());
+	    assertTrue(mondrianFile.exists());
 
-    IApplicationContext appContext = PentahoSystem.getApplicationContext();
-    if (appContext != null) {
-      path = PentahoSystem.getApplicationContext().getSolutionPath(path);
-      olapPath = PentahoSystem.getApplicationContext().getSolutionPath(
-          "system" + ISolutionRepository.SEPARATOR + "olap" + ISolutionRepository.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
-    }
+	    if (xmiFile.exists()) {
+	      xmiFile.delete();
+	    }
 
-    File olap1 = new File(olapPath + "datasources.xml"); //$NON-NLS-1$
-    File olap2 = new File(olapPath + "tmp_datasources.xml"); //$NON-NLS-1$
+	    if (mondrianFile.exists()) {
+	      mondrianFile.delete();
+	    }
 
-    FileUtils.copyFile(olap1, olap2);
+	    //Restores datasources.xml to its original content.
+	    FileUtils.copyFile(olap2, olap1);
+	    olap2.delete();
+	  }
+	  
+	  private List<JoinModel> getJoinModel() {
+			List<JoinModel> joins = new ArrayList<JoinModel>();
 
-    DatabaseMeta database = getDatabaseMeta();
-  
-    JoinGuiModel joinGuiModel = new JoinGuiModel();
-	List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
-	MultiTableModelerSource multiTable = new MultiTableModelerSource(database, logicalRelationships, database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
-	Domain domain = multiTable.generateDomain();
-    
-    List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
-	OlapDimension dimension = new OlapDimension();
-	dimension.setName("test");//$NON-NLS-1$
-	dimension.setTimeDimension(false);
-	olapDimensions.add(dimension);
-	domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
-    
-    
-    ModelerService service = new ModelerService();
-    service.serializeModels(domain, "test_file");//$NON-NLS-1$
+			JoinTableModel joinTable1 = new JoinTableModel();
+			joinTable1.setName("CUSTOMERS");
 
-    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "test_file");
-    
-    File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
-    File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
+			JoinTableModel joinTable2 = new JoinTableModel();
+			joinTable2.setName("PRODUCTS");
 
-    assertTrue(xmiFile.exists());
-    assertTrue(mondrianFile.exists());
+			JoinModel join1 = new JoinModel();
+			JoinFieldModel lField1 = new JoinFieldModel();
+			lField1.setName("CUSTOMERNAME");
+			lField1.setParentTable(joinTable1);
+			join1.setLeftKeyFieldModel(lField1);
 
-    if (xmiFile.exists()) {
-      xmiFile.delete();
-    }
+			JoinFieldModel rField1 = new JoinFieldModel();
+			rField1.setName("PRODUCTCODE");
+			rField1.setParentTable(joinTable2);
+			join1.setRightKeyFieldModel(rField1);
 
-    if (mondrianFile.exists()) {
-      mondrianFile.delete();
-    }
+			joins.add(join1);
+			return joins;
+		}
 
-    //Restores datasources.xml to its original content.
-    FileUtils.copyFile(olap2, olap1);
-    olap2.delete();
-  }
-  
-  private List<JoinModel> getJoinModel() {
-		List<JoinModel> joins = new ArrayList<JoinModel>();
-
-		JoinTableModel joinTable1 = new JoinTableModel();
-		joinTable1.setName("CUSTOMERS");
-
-		JoinTableModel joinTable2 = new JoinTableModel();
-		joinTable2.setName("PRODUCTS");
-
-		JoinModel join1 = new JoinModel();
-		JoinFieldModel lField1 = new JoinFieldModel();
-		lField1.setName("CUSTOMERNAME");
-		lField1.setParentTable(joinTable1);
-		join1.setLeftKeyFieldModel(lField1);
-
-		JoinFieldModel rField1 = new JoinFieldModel();
-		rField1.setName("PRODUCTCODE");
-		rField1.setParentTable(joinTable2);
-		join1.setRightKeyFieldModel(rField1);
-
-		joins.add(join1);
-		return joins;
+	  private DatabaseMeta getDatabaseMeta() {
+	     DatabaseMeta database = new DatabaseMeta();
+	     try {
+	      //database.setDatabaseInterface(new HypersonicDatabaseMeta());
+	      database.setDatabaseType("Hypersonic");//$NON-NLS-1$
+	      //database.setUsername("sa");//$NON-NLS-1$
+	      //database.setPassword("");//$NON-NLS-1$
+	      database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
+	      //database.setHostname(".");
+	      database.setDBName("SampleData");//$NON-NLS-1$
+	      //database.setDBPort("9001");//$NON-NLS-1$
+	      database.setName("SampleData");//$NON-NLS-1$
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return database;
+	  }
 	}
-
-  private DatabaseMeta getDatabaseMeta() {
-     DatabaseMeta database = new DatabaseMeta();
-     try {
-      //database.setDatabaseInterface(new HypersonicDatabaseMeta());
-      database.setDatabaseType("Hypersonic");//$NON-NLS-1$
-      //database.setUsername("sa");//$NON-NLS-1$
-      //database.setPassword("");//$NON-NLS-1$
-      database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-      //database.setHostname(".");
-      database.setDBName("SampleData");//$NON-NLS-1$
-      //database.setDBPort("9001");//$NON-NLS-1$
-      database.setName("SampleData");//$NON-NLS-1$
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return database;
-  }
-}

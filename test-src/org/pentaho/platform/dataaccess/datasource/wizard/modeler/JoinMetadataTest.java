@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
+import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -51,10 +53,14 @@ public class JoinMetadataTest extends BaseTest {
 		} catch (KettleException e) {
 			e.printStackTrace();
 		}
+		
+	    if(ModelerMessagesHolder.getMessages() == null){
+	  	   ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
+	  	}
 	}
 
 	public void testGenerateDomain() {
-
+		
 		Domain domain = null;
 		try {
 
@@ -67,6 +73,7 @@ public class JoinMetadataTest extends BaseTest {
 			e.printStackTrace();
 		}
 		assertNotNull(domain);
+
 	}
 
 	private List<JoinModel> getJoinModel() {
