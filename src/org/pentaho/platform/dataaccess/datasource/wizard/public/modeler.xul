@@ -31,7 +31,7 @@
           <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
         </hbox>
 -->
-        <tree id="fieldList" height="413" width="210" flex="1" editable="false" hiddenrootnode="true" preserveselection="true">
+        <tree id="fieldList" height="413" width="210" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy">
           <treecols>
             <treecol flex="1" label="" primary="true"
               pen:binding="name" pen:childrenbinding="children"
@@ -51,52 +51,6 @@
 
       </groupbox>
 
-<!--
-      <groupbox width="360" height="463" id="schema-toolbar-groupbox">
-        <caption label="${model}"/>
-        <toolbar id="schema-toolbar" mode="icons">
-          <toolbarspacer flex="1"/>
-          <toolbarbutton id="measureBtn" image="images/sm_measure_icon.png"
-                         onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}"/>
-          <toolbarbutton id="dimensionBtn" image="images/sm_dim_icon.png"
-                         onclick="modeler.showNewDimensionDialog()" disabled="true"
-                         tooltiptext="${add_dimension}"/>
-          <toolbarbutton id="hierarchyBtn" image="images/sm_hierarchy_icon.png"
-                         onclick="modeler.showNewHierarchyDialog()" disabled="true"
-                         tooltiptext="${add_hiearchy}"/>
-          <toolbarbutton id="levelBtn" image="images/sm_level_icon.png" onclick="modeler.showNewLevelDialog()"
-                         disabled="true" tooltiptext="${add_level}"/>
-          <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveFieldDown()"
-                         tooltiptext="${move_field_down}"/>
-          <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveFieldUp()"
-                         tooltiptext="${move_field_up}"/>
-          <toolbarseparator/>
-          <toolbarbutton image="images/remove.png" onclick="modeler.removeField()" tooltiptext="${remove_field}"/>
-          <toolbarbutton id="clearModel" image="images/clear_model.png" onclick="modeler.clearFields()"
-                         tooltiptext="${clearFields}"/>
-        </toolbar>
-        <tree id="dimensionTree" width="355" height="413" editable="false"
-              pen:ondrag="modeler.onDimensionTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
-              pen:ondrop="modeler.onDimensionTreeDrop()" hiddenrootnode="false" preserveselection="true">
-          <treecols>
-            <treecol width="355" label="" primary="true"
-                     pen:binding="displayName" pen:childrenbinding="children"
-                     pen:imagebinding="image" editable="false"
-                     pen:disabledbinding="editingDisabled"
-                     pen:tooltipbinding="validationMessagesString"
-                     pen:expandedbinding="expanded"/>
-          </treecols>
-          <treechildren>
-            <treeitem container="true" open="true">
-              <treerow>
-                <treecell label=""/>
-              </treerow>
-              <treechildren></treechildren>
-            </treeitem>
-          </treechildren>
-        </tree>
-      </groupbox>
--->
       <deck id="modelDeck" width="360" height="463">
 
         <tabbox id="modelTabbox" flex="1" >
@@ -121,8 +75,8 @@
                                  tooltiptext="${clearFields}"/>
                 </toolbar>
                 <tree id="dimensionTree" width="355" height="413" editable="false"
-                  ondrag="modeler.onDimensionTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
-                  ondrop="modeler.onDimensionTreeDrop()" hiddenrootnode="false" preserveselection="true">
+                  pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
+                  pen:ondrop="modeler.onModelTreeDrop()" hiddenrootnode="false" preserveselection="true">
                   <treecols>
                     <treecol width="355" label="" primary="true"
                       pen:binding="displayName" pen:childrenbinding="children"
@@ -153,7 +107,9 @@
                   <toolbarbutton image="images/remove.png" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
                   <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
                 </toolbar>
-                <tree id="categoriesTree" width="355" height="413" editable="false" hiddenrootnode="false" preserveselection="true">
+                <tree id="categoriesTree" width="355" height="413" editable="false" hiddenrootnode="false" preserveselection="true"
+                    pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
+                    pen:ondrop="modeler.onModelTreeDrop()">
                   <treecols>
                     <treecol width="355" label="" primary="true"
                       pen:binding="displayName" pen:childrenbinding="children"
