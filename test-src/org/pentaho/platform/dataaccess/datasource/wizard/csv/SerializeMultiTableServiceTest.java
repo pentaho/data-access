@@ -10,10 +10,14 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
+import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.olap.OlapDimension;
@@ -35,10 +39,15 @@ public class SerializeMultiTableServiceTest {
       PentahoSystemHelper.init();
       System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
     }
+    
+    if(ModelerMessagesHolder.getMessages() == null){
+ 	   ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
+ 	}
   }
 
   @Test
   public void testSerialize() throws Exception {
+	  
     KettleEnvironment.init();
     Props.init(Props.TYPE_PROPERTIES_EMPTY);
 
@@ -78,7 +87,7 @@ public class SerializeMultiTableServiceTest {
     ModelerService service = new ModelerService();
     service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
-    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "test_file");
+    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "SampleData");
     
     File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
     File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$

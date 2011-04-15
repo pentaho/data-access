@@ -24,7 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
+import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -52,15 +54,26 @@ public class JoinMetadataTest extends BaseTest {
 		} catch (KettleException e) {
 			e.printStackTrace();
 		}
+		
+	    if(ModelerMessagesHolder.getMessages() == null){
+	  	   ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
+	  	}
 	}
 
 	public void testGenerateDomain() {
+		
+		Domain domain = null;
+		try {
 
-    JoinGuiModel joinGuiModel = new JoinGuiModel();
-    List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
-    MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), logicalRelationships, this.getDatabaseMeta().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
-    Domain domain = multiTable.generateDomain();
-    assertNotNull(domain);
+			JoinGuiModel joinGuiModel = new JoinGuiModel();
+			List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
+			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), logicalRelationships, this.getDatabaseMeta().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+			domain = multiTable.generateDomain();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		assertNotNull(domain);
 
 	}
 
