@@ -10,7 +10,9 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
+import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -39,6 +41,11 @@ public class SerializeMultiTableServiceTest {
 
   @Test
   public void testSerialize() throws Exception {
+	  
+    if(ModelerMessagesHolder.getMessages() == null){
+	  ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
+    }
+   
     KettleEnvironment.init();
     Props.init(Props.TYPE_PROPERTIES_EMPTY);
 

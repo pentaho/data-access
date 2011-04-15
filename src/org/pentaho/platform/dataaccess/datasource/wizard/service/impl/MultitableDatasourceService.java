@@ -70,24 +70,10 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
 		MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getLogicalRelationships(), dto.getDatasourceName(), dto.getSelectedTables());
-		Domain domain = multiTable.generateDomain();
-		
-		
-		// /////////////////////////////////////////
-		//TODO... deal with this... serializing should not rely on this.
-		List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
-		OlapDimension dimension = new OlapDimension();
-		dimension.setName("test");
-		dimension.setTimeDimension(false);
-		olapDimensions.add(dimension);
-		domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);
-		// /////////////////////////////////////////
-		
-		
-		
+		Domain domain = multiTable.generateDomain(dto.isDoOlap());
 		domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(dto));
 		domain.getLogicalModels().get(0).setProperty("DatasourceType", "MULTI-TABLE-DS");
-		modelerService.serializeModels(domain, dto.getDatasourceName(), false);
+		modelerService.serializeModels(domain, dto.getDatasourceName(), dto.isDoOlap());
 
 		QueryDatasourceSummary summary = new QueryDatasourceSummary();
 		summary.setDomain(domain);

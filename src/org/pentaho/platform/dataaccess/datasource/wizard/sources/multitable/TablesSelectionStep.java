@@ -142,6 +142,6 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		XulRadio reportingAnalysisRadio = (XulRadio) document.getElementById("reporting_analysis");
 		XulVbox factTableVBox = (XulVbox) document.getElementById("factTableVbox");
 		factTableVBox.setVisible(reportingAnalysisRadio.isSelected());
-		this.joinGuiModel.setIsStarSchema(reportingAnalysisRadio.isSelected());
+		this.joinGuiModel.doOlap(reportingAnalysisRadio.isSelected());
 	}
 }

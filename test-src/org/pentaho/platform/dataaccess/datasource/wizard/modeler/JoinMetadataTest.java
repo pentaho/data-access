@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
@@ -56,12 +55,18 @@ public class JoinMetadataTest extends BaseTest {
 
 	public void testGenerateDomain() {
 
-    JoinGuiModel joinGuiModel = new JoinGuiModel();
-    List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
-    MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), logicalRelationships, this.getDatabaseMeta().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
-    Domain domain = multiTable.generateDomain();
-    assertNotNull(domain);
+		Domain domain = null;
+		try {
 
+			JoinGuiModel joinGuiModel = new JoinGuiModel();
+			List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
+			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), logicalRelationships, this.getDatabaseMeta().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+			domain = multiTable.generateDomain();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		assertNotNull(domain);
 	}
 
 	private List<JoinModel> getJoinModel() {

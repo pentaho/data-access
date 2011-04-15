@@ -47,7 +47,7 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 	private JoinFieldModel rightKeyField;
 	private JoinModel selectedJoin;
 	private JoinTableModel factTable;
-	private boolean isStarSchema;
+	private boolean doOlap;
 
 	public JoinGuiModel() {
 		this.availableTables = new AbstractModelList<JoinTableModel>();
@@ -178,14 +178,14 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		return this.rightTables;
 	}
 	
-	public void setIsStarSchema(boolean isStar) {
-		this.isStarSchema = isStar;
+	public void doOlap(boolean isStar) {
+		this.doOlap = isStar;
 	}
 	
 	public void computeJoinDefinitionStepTables() {
 		this.leftTables.clear();
 		this.rightTables.clear();
-		if(this.isStarSchema) {
+		if(this.doOlap) {
 			this.leftTables.add(this.factTable);
 			for(JoinTableModel table : this.selectedTables) {
 				if(table.equals(this.factTable)) {
@@ -246,6 +246,7 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 
 	public MultiTableDatasourceDTO createMultiTableDatasourceDTO(String dsName) {
 		MultiTableDatasourceDTO dto = new MultiTableDatasourceDTO();
+		dto.setDoOlap(this.doOlap);
 		dto.setDatasourceName(dsName);
 		List<String> selectedTables = new ArrayList<String>();
 		for (JoinTableModel tbl : this.selectedTables) {
