@@ -436,17 +436,17 @@ pentaho.pda.Column.OPERATOR_TYPES.AND = 'AND';
 
 pentaho.pda.Column.CONDITION_TYPES = new Object();
 pentaho.pda.Column.CONDITION_TYPES.LIKE = 'LIKE';
-pentaho.pda.Column.CONDITION_TYPES.BEGINSWITH = 'begins with';
-pentaho.pda.Column.CONDITION_TYPES.ENDSWITH = 'ends with';
-pentaho.pda.Column.CONDITION_TYPES.CONTAINS = 'contains';
-pentaho.pda.Column.CONDITION_TYPES.NOT_CONTAINS = 'does not contain';
+pentaho.pda.Column.CONDITION_TYPES.BEGINSWITH = 'BEGINS WITH';
+pentaho.pda.Column.CONDITION_TYPES.ENDSWITH = 'ENDS WITH';
+pentaho.pda.Column.CONDITION_TYPES.CONTAINS = 'CONTAINS';
+pentaho.pda.Column.CONDITION_TYPES.NOT_CONTAINS = 'DOES NOT CONTAIN';
 pentaho.pda.Column.CONDITION_TYPES.EQUAL = 'EQUAL';
 pentaho.pda.Column.CONDITION_TYPES.LESS_THAN = '<';
 pentaho.pda.Column.CONDITION_TYPES.LESS_THAN_OR_EQUAL = '<=';
 pentaho.pda.Column.CONDITION_TYPES.MORE_THAN = '>';
 pentaho.pda.Column.CONDITION_TYPES.MORE_THAN_OR_EQUAL = '>=';
-pentaho.pda.Column.CONDITION_TYPES.IS_NULL = 'is null';
-pentaho.pda.Column.CONDITION_TYPES.NOT_NULL = 'is not null';
+pentaho.pda.Column.CONDITION_TYPES.IS_NULL = 'IS NULL';
+pentaho.pda.Column.CONDITION_TYPES.NOT_NULL = 'IS NOT NULL';
 
 pentaho.pda.Column.DATA_TYPES = new Object();
 pentaho.pda.Column.DATA_TYPES.NUMERIC = "NUMERIC";

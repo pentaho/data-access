@@ -782,6 +782,7 @@ pentaho.pda.query.mql.prototype.getFilterXML = function( filter, parameters ) {
     }
 
 pentaho.pda.query.mql.prototype.getFilterConditionString = function( columnId, category, operator, value, parameters ) {
+        operator = operator.toUpperCase();
         var column = this.model.getColumnById( columnId );
         var isArrayValues = value.constructor.toString().indexOf("Array") != -1;
         if( operator == pentaho.pda.Column.CONDITION_TYPES.LIKE ) {

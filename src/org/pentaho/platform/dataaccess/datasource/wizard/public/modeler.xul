@@ -31,16 +31,24 @@
           <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
         </hbox>
 -->
-        <listbox id="fieldList" flex="1" seltype="multi"
-                 pen:binding="name" pen:ondrag="modeler.onFieldListDrag()"
-                 pen:drageffect="copy" width="200" height="413">
-          <listitem label="field"/>
-          <listitem label="field"/>
-          <listitem label="field"/>
-          <listitem label="field"/>
-          <listitem label="field"/>
-          <listitem label="field"/>
-        </listbox>
+        <tree id="fieldList" height="413" flex="1" editable="false" hiddenrootnode="true" preserveselection="true">
+          <treecols>
+            <treecol flex="1" label="" primary="true"
+              pen:binding="name" pen:childrenbinding="children"
+              pen:imagebinding="image" editable="false"
+              pen:expandedbinding="expanded"/>
+          </treecols>
+          <treechildren>
+            <treeitem container="true" open="true">
+              <treerow>
+                <treecell label="" />
+              </treerow>
+              <treechildren></treechildren>
+            </treeitem>
+          </treechildren>
+
+        </tree>
+
       </groupbox>
 
 <!--
