@@ -24,6 +24,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import mondrian.rolap.aggmatcher.AggStar.Table.JoinCondition;
+
+import org.pentaho.agilebi.modeler.multitable.JoinDTO;
+import org.pentaho.agilebi.modeler.multitable.JoinFieldDTO;
+import org.pentaho.agilebi.modeler.multitable.JoinTableDTO;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalRelationship;
@@ -34,123 +39,125 @@ import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
-public class JoinGuiModel extends XulEventSourceAdapter {
+import com.google.gwt.core.client.UnsafeNativeLong;
 
-	private AbstractModelList<JoinModel> joins;
-	private AbstractModelList<JoinTableModel> selectedTables;
-	private AbstractModelList<JoinTableModel> availableTables;
-	private AbstractModelList<JoinTableModel> leftTables;
-	private AbstractModelList<JoinTableModel> rightTables;
-	private JoinTableModel leftJoinTable;
-	private JoinTableModel rightJoinTable;
-	private JoinFieldModel leftKeyField;
-	private JoinFieldModel rightKeyField;
-	private JoinModel selectedJoin;
-	private JoinTableModel factTable;
+public class MultitableGuiModel extends XulEventSourceAdapter {
+
+	private AbstractModelList<JoinRelationshipGuiModel> joins;
+	private AbstractModelList<JoinedTableGuiModel> selectedTables;
+	private AbstractModelList<JoinedTableGuiModel> availableTables;
+	private AbstractModelList<JoinedTableGuiModel> leftTables;
+	private AbstractModelList<JoinedTableGuiModel> rightTables;
+	private JoinedTableGuiModel leftJoinTable;
+	private JoinedTableGuiModel rightJoinTable;
+	private JoinedFieldGuiModel leftKeyField;
+	private JoinedFieldGuiModel rightKeyField;
+	private JoinRelationshipGuiModel selectedJoin;
+	private JoinedTableGuiModel factTable;
 	private boolean doOlap;
 
-	public JoinGuiModel() {
-		this.availableTables = new AbstractModelList<JoinTableModel>();
-		this.selectedTables = new AbstractModelList<JoinTableModel>();
-		this.leftTables = new AbstractModelList<JoinTableModel>();
-		this.rightTables = new AbstractModelList<JoinTableModel>();
-		this.joins = new AbstractModelList<JoinModel>();
-		this.leftJoinTable = new JoinTableModel();
-		this.rightJoinTable = new JoinTableModel();
-		this.selectedJoin = new JoinModel();
+	public MultitableGuiModel() {
+		this.availableTables = new AbstractModelList<JoinedTableGuiModel>();
+		this.selectedTables = new AbstractModelList<JoinedTableGuiModel>();
+		this.leftTables = new AbstractModelList<JoinedTableGuiModel>();
+		this.rightTables = new AbstractModelList<JoinedTableGuiModel>();
+		this.joins = new AbstractModelList<JoinRelationshipGuiModel>();
+		this.leftJoinTable = new JoinedTableGuiModel();
+		this.rightJoinTable = new JoinedTableGuiModel();
+		this.selectedJoin = new JoinRelationshipGuiModel();
 	}
 
 	@Bindable
-	public AbstractModelList<JoinTableModel> getAvailableTables() {
+	public AbstractModelList<JoinedTableGuiModel> getAvailableTables() {
 		return this.availableTables;
 	}
 
 	@Bindable
-	public void setAvailableTables(AbstractModelList<JoinTableModel> availableTables) {
+	public void setAvailableTables(AbstractModelList<JoinedTableGuiModel> availableTables) {
 		this.availableTables.setChildren(availableTables);
 	}
 
 	@Bindable
-	public AbstractModelList<JoinTableModel> getSelectedTables() {
+	public AbstractModelList<JoinedTableGuiModel> getSelectedTables() {
 		return this.selectedTables;
 	}
 
 	@Bindable
-	public void setSelectedTables(AbstractModelList<JoinTableModel> selectedTables) {
+	public void setSelectedTables(AbstractModelList<JoinedTableGuiModel> selectedTables) {
 		this.selectedTables = selectedTables;
 	}
 
 	@Bindable
-	public JoinTableModel getLeftJoinTable() {
+	public JoinedTableGuiModel getLeftJoinTable() {
 		return this.leftJoinTable;
 	}
 
 	@Bindable
-	public void setLeftJoinTable(JoinTableModel leftJoinTable) {
+	public void setLeftJoinTable(JoinedTableGuiModel leftJoinTable) {
 		this.leftJoinTable = leftJoinTable;
 	}
 
 	@Bindable
-	public JoinTableModel getRightJoinTable() {
+	public JoinedTableGuiModel getRightJoinTable() {
 		return this.rightJoinTable;
 	}
 
 	@Bindable
-	public void setRightJoinTable(JoinTableModel rightJoinTable) {
+	public void setRightJoinTable(JoinedTableGuiModel rightJoinTable) {
 		this.rightJoinTable = rightJoinTable;
 	}
 
 	@Bindable
-	public JoinFieldModel getLeftKeyField() {
+	public JoinedFieldGuiModel getLeftKeyField() {
 		return this.leftKeyField;
 	}
 
 	@Bindable
-	public void setLeftKeyField(JoinFieldModel leftKeyField) {
+	public void setLeftKeyField(JoinedFieldGuiModel leftKeyField) {
 		this.leftKeyField = leftKeyField;
 	}
-
+	
 	@Bindable
-	public JoinFieldModel getRightKeyField() {
+	public JoinedFieldGuiModel getRightKeyField() {
 		return this.rightKeyField;
 	}
 
 	@Bindable
-	public void setRightKeyField(JoinFieldModel rightKeyField) {
+	public void setRightKeyField(JoinedFieldGuiModel rightKeyField) {
 		this.rightKeyField = rightKeyField;
 	}
 
 	@Bindable
-	public AbstractModelList<JoinModel> getJoins() {
+	public AbstractModelList<JoinRelationshipGuiModel> getJoins() {
 		return this.joins;
 	}
 
 	@Bindable
-	public void setJoins(AbstractModelList<JoinModel> joins) {
+	public void setJoins(AbstractModelList<JoinRelationshipGuiModel> joins) {
 		this.joins = joins;
 	}
 
 	@Bindable
-	public JoinModel getSelectedJoin() {
+	public JoinRelationshipGuiModel getSelectedJoin() {
 		return this.selectedJoin;
 	}
 
 	@Bindable
-	public void setSelectedJoin(JoinModel selectedJoin) {
+	public void setSelectedJoin(JoinRelationshipGuiModel selectedJoin) {
 		this.selectedJoin = selectedJoin;
 	}
 	
 	@Bindable
-	public JoinTableModel getFactTable() {
+	public JoinedTableGuiModel getFactTable() {
 		return factTable;
 	}
 	
 	@Bindable
-	public void setFactTable(JoinTableModel factTable) {
+	public void setFactTable(JoinedTableGuiModel factTable) {
 		this.factTable = factTable;
 	}
 
-	public void addJoin(JoinModel join) {
+	public void addJoin(JoinRelationshipGuiModel join) {
 		this.joins.add(join);
 	}
 
@@ -158,23 +165,23 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		this.joins.remove(this.selectedJoin);
 	}
 
-	public void addSelectedTable(JoinTableModel table) {
+	public void addSelectedTable(JoinedTableGuiModel table) {
 		this.availableTables.remove(table);
 		this.selectedTables.add(table);
 	}
 
-	public void removeSelectedTable(JoinTableModel table) {
+	public void removeSelectedTable(JoinedTableGuiModel table) {
 		this.selectedTables.remove(table);
 		this.availableTables.add(table);
 	}
 	
 	@Bindable
-	public AbstractModelList<JoinTableModel> getLeftTables() {
+	public AbstractModelList<JoinedTableGuiModel> getLeftTables() {
 		return this.leftTables;
 	}
 	
 	@Bindable
-	public AbstractModelList<JoinTableModel> getRightTables() {
+	public AbstractModelList<JoinedTableGuiModel> getRightTables() {
 		return this.rightTables;
 	}
 	
@@ -187,7 +194,7 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		this.rightTables.clear();
 		if(this.doOlap) {
 			this.leftTables.add(this.factTable);
-			for(JoinTableModel table : this.selectedTables) {
+			for(JoinedTableGuiModel table : this.selectedTables) {
 				if(table.equals(this.factTable)) {
 					continue;
 				} else {
@@ -202,26 +209,27 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 
 	public void processAvailableTables(List<String> tables) {
 
-		List<JoinTableModel> joinTables = new ArrayList<JoinTableModel>();
+		List<JoinedTableGuiModel> joinTables = new ArrayList<JoinedTableGuiModel>();
 		for (String table : tables) {
-			JoinTableModel joinTable = new JoinTableModel();
+			JoinedTableGuiModel joinTable = new JoinedTableGuiModel();
 			joinTable.setName(table);
 			joinTables.add(joinTable);
 		}
 
-		Collections.sort(joinTables, new Comparator<JoinTableModel>() {
+		Collections.sort(joinTables, new Comparator<JoinedTableGuiModel>() {
 			@Override
-			public int compare(JoinTableModel joinTableModel, JoinTableModel joinTableModel1) {
+			public int compare(JoinedTableGuiModel joinTableModel, JoinedTableGuiModel joinTableModel1) {
 				return joinTableModel.getName().compareTo(joinTableModel1.getName());
 			}
 		});
-		setAvailableTables(new AbstractModelList<JoinTableModel>(joinTables));
+		setAvailableTables(new AbstractModelList<JoinedTableGuiModel>(joinTables));
 	}
 
-	public List<LogicalRelationship> generateLogicalRelationships(List<JoinModel> joins) {
+	@Deprecated
+	public List<LogicalRelationship> generateLogicalRelationships(List<JoinRelationshipGuiModel> joins) {
 		String locale = LocalizedString.DEFAULT_LOCALE;
 		List<LogicalRelationship> logicalRelationships = new ArrayList<LogicalRelationship>();
-		for (JoinModel join : joins) {
+		for (JoinRelationshipGuiModel join : joins) {
 			LogicalTable fromTable = new LogicalTable();
 			fromTable.setName(new LocalizedString(locale, join.getLeftKeyFieldModel().getParentTable().getName()));
 
@@ -249,53 +257,71 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		dto.setDoOlap(this.doOlap);
 		dto.setDatasourceName(dsName);
 		List<String> selectedTables = new ArrayList<String>();
-		for (JoinTableModel tbl : this.selectedTables) {
+		for (JoinedTableGuiModel tbl : this.selectedTables) {
 			selectedTables.add(tbl.getName());
 		}
 		dto.setSelectedTables(selectedTables);
-		dto.setLogicalRelationships(this.generateLogicalRelationships(this.getJoins()));
+		dto.setJoins(this.generateJoinDTOs(this.getJoins()));
 		return dto;
 	}
+	
+	
+	public List<JoinDTO> generateJoinDTOs(List<JoinRelationshipGuiModel> joins) {
+		List<JoinDTO> logicalRelationships = new ArrayList<JoinDTO>();
+		for (JoinRelationshipGuiModel join : joins) {
+			JoinTableDTO fromTable = new JoinTableDTO();
+			fromTable.setName(join.getLeftKeyFieldModel().getParentTable().getName());
+
+			JoinTableDTO toTable = new JoinTableDTO();
+			toTable.setName(join.getRightKeyFieldModel().getParentTable().getName());
+
+			JoinFieldDTO fromColumn = new JoinFieldDTO();
+			fromColumn.setName(join.getLeftKeyFieldModel().getName());
+			fromColumn.setParentTable(fromTable);
+
+			JoinFieldDTO toColumn = new JoinFieldDTO();
+			toColumn.setName(join.getRightKeyFieldModel().getName());
+			toColumn.setParentTable(toTable);
+
+			JoinDTO logicalRelationship = new JoinDTO();
+			logicalRelationship.setLeftKeyFieldModel(fromColumn);
+			logicalRelationship.setRightKeyFieldModel(toColumn);
+			logicalRelationships.add(logicalRelationship);
+		}
+		return logicalRelationships;
+	}
+	
 
 	public void populateJoinGuiModel(Domain domain, MultiTableDatasourceDTO dto) {
-
+ 
 		// existing joinTableModels will not have fields. We can add these from
 		// the domain.
 		addFieldsToTables(domain, this.availableTables);
 
 		// Populate "selectedTables" from availableTables using
 		// logicalRelationships.
-		AbstractModelList<JoinTableModel> selectedTablesList = new AbstractModelList<JoinTableModel>();
-		List<LogicalRelationship> logicalRelationships = dto.getLogicalRelationships();
-		// for (LogicalRelationship logicalRelationship : logicalRelationships)
-		// {
-		// this.selectTable(logicalRelationship.getFromTable(),
-		// selectedTablesList);
-		// this.selectTable(logicalRelationship.getToTable(),
-		// selectedTablesList);
-		// }
+		AbstractModelList<JoinedTableGuiModel> selectedTablesList = new AbstractModelList<JoinedTableGuiModel>();
 		for (String selectedTable : dto.getSelectedTables()) {
 			this.selectTable(selectedTable, selectedTablesList);
 		}
 		this.selectedTables.addAll(selectedTablesList);
-
+		
 		// Populate "joins" from availableTables using logicalRelationships.
-		AbstractModelList<JoinModel> joinsList = new AbstractModelList<JoinModel>();
-		for (LogicalRelationship logicalRelationship : logicalRelationships) {
+		AbstractModelList<JoinRelationshipGuiModel> joinsList = new AbstractModelList<JoinRelationshipGuiModel>();
+		for (JoinDTO logicalRelationship : dto.getJoins()) {
 			this.populateJoin(logicalRelationship, joinsList);
 		}
 		this.joins.addAll(joinsList);
-
 	}
 
-	private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
+	private void addFieldsToTables(Domain domain, AbstractModelList<JoinedTableGuiModel> availableTables) {
 
 		String locale = LocalizedString.DEFAULT_LOCALE;
-		for (JoinTableModel table : availableTables) {
+		for (JoinedTableGuiModel table : availableTables) {
 			for (LogicalTable tbl : domain.getLogicalModels().get(0).getLogicalTables()) {
 				if(tbl.getPhysicalTable().getProperty("target_table").equals(table.getName())){
 					for (LogicalColumn col : tbl.getLogicalColumns()) {
-						JoinFieldModel field = new JoinFieldModel();
+						JoinedFieldGuiModel field = new JoinedFieldGuiModel();
 						field.setName(col.getName(locale));
 						field.setParentTable(table);
 						table.getFields().add(field);
@@ -306,23 +332,23 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		}
 	}
 
-	private void populateJoin(LogicalRelationship logicalRelationship, AbstractModelList<JoinModel> joinsList) {
+	
+	private void populateJoin(JoinDTO logicalRelationship, AbstractModelList<JoinRelationshipGuiModel> joinsList) {
 
-		JoinModel join = new JoinModel();
-		String locale = LocalizedString.DEFAULT_LOCALE;
+		JoinRelationshipGuiModel join = new JoinRelationshipGuiModel();
 
-		for (JoinTableModel table : this.selectedTables) {
-			if (table.getName().equals(logicalRelationship.getFromTable().getName(locale))) {
-				for (JoinFieldModel field : table.getFields()) {
-					if (field.getName().equals(logicalRelationship.getFromColumn().getName(locale))) {
+		for (JoinedTableGuiModel table : this.selectedTables) {
+			if (table.getName().equals(logicalRelationship.getLeftKeyFieldModel().getName())) {
+				for (JoinedFieldGuiModel field : table.getFields()) {
+					if (field.getName().equals(logicalRelationship.getRightKeyFieldModel().getName())) {
 						join.setLeftKeyFieldModel(field);
 					}
 				}
 			}
 
-			if (table.getName().equals(logicalRelationship.getToTable().getName(locale))) {
-				for (JoinFieldModel field : table.getFields()) {
-					if (field.getName().equals(logicalRelationship.getToColumn().getName(locale))) {
+			if (table.getName().equals(logicalRelationship.getLeftKeyFieldModel().getParentTable().getName())) {
+				for (JoinedFieldGuiModel field : table.getFields()) {
+					if (field.getName().equals(logicalRelationship.getRightKeyFieldModel().getParentTable().getName())) {
 						join.setRightKeyFieldModel(field);
 					}
 				}
@@ -331,8 +357,8 @@ public class JoinGuiModel extends XulEventSourceAdapter {
 		joinsList.add(join);
 	}
 
-	private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList) {
-		for (JoinTableModel table : this.availableTables) {
+	private void selectTable(String selectedTable, AbstractModelList<JoinedTableGuiModel> selectedTablesList) {
+		for (JoinedTableGuiModel table : this.availableTables) {
 			if (table.getName().equals(selectedTable)) {
 				if (!selectedTablesList.contains(table)) {
 					selectedTablesList.add(table);

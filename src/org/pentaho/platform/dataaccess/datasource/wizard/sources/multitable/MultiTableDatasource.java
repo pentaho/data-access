@@ -31,7 +31,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.MultitableGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
@@ -51,7 +51,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class MultiTableDatasource extends AbstractXulEventHandler implements IWizardDatasource {
 
 	private boolean finishable;
-	private JoinGuiModel joinGuiModel;
+	private MultitableGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private QueryPhysicalStep connectionSelectionStep;
 	private TablesSelectionStep tablesSelectionStep;
@@ -64,7 +64,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	private XulLabel errorLabel;
 
 	public MultiTableDatasource(DatasourceModel datasourceModel) {
-		this.joinGuiModel = new JoinGuiModel();
+		this.joinGuiModel = new MultitableGuiModel();
 		this.joinSelectionServiceGwtImpl = new JoinSelectionServiceGwtImpl();
 		this.validator = new JoinValidator(this.joinGuiModel, wizardModel);
 

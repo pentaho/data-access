@@ -11,20 +11,18 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.multitable.JoinDTO;
+import org.pentaho.agilebi.modeler.multitable.JoinFieldDTO;
+import org.pentaho.agilebi.modeler.multitable.JoinTableDTO;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.platform.api.engine.IApplicationContext;
 import org.pentaho.platform.api.repository.ISolutionRepository;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
@@ -68,10 +66,7 @@ public class SerializeMultiTableServiceTest {
 	    FileUtils.copyFile(olap1, olap2);
 
 	    DatabaseMeta database = getDatabaseMeta();
-	  
-	    JoinGuiModel joinGuiModel = new JoinGuiModel();
-		List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
-		MultiTableModelerSource multiTable = new MultiTableModelerSource(database, logicalRelationships, database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(database, getJoinModel(), database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
 		Domain domain = multiTable.generateDomain();
 	    
 	    List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
@@ -106,22 +101,22 @@ public class SerializeMultiTableServiceTest {
 	    olap2.delete();
 	  }
 	  
-	  private List<JoinModel> getJoinModel() {
-			List<JoinModel> joins = new ArrayList<JoinModel>();
+	  private List<JoinDTO> getJoinModel() {
+			List<JoinDTO> joins = new ArrayList<JoinDTO>();
 
-			JoinTableModel joinTable1 = new JoinTableModel();
+			JoinTableDTO joinTable1 = new JoinTableDTO();
 			joinTable1.setName("CUSTOMERS");
 
-			JoinTableModel joinTable2 = new JoinTableModel();
+			JoinTableDTO joinTable2 = new JoinTableDTO();
 			joinTable2.setName("PRODUCTS");
 
-			JoinModel join1 = new JoinModel();
-			JoinFieldModel lField1 = new JoinFieldModel();
+			JoinDTO join1 = new JoinDTO();
+			JoinFieldDTO lField1 = new JoinFieldDTO();
 			lField1.setName("CUSTOMERNAME");
 			lField1.setParentTable(joinTable1);
 			join1.setLeftKeyFieldModel(lField1);
 
-			JoinFieldModel rField1 = new JoinFieldModel();
+			JoinFieldDTO rField1 = new JoinFieldDTO();
 			rField1.setName("PRODUCTCODE");
 			rField1.setParentTable(joinTable2);
 			join1.setRightKeyFieldModel(rField1);

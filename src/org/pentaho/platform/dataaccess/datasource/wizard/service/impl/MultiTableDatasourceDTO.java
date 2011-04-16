@@ -22,8 +22,10 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.io.Serializable;
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.multitable.JoinDTO;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinRelationshipGuiModel;
 
 public class MultiTableDatasourceDTO implements Serializable {
 
@@ -31,7 +33,7 @@ public class MultiTableDatasourceDTO implements Serializable {
 
 	private String datasourceName;
 	private IConnection selectedConnection;
-	private List<LogicalRelationship> logicalRelationships;
+	private List<JoinDTO> joins;
 	private List<String> selectedTables;
 	private boolean doOlap;
 
@@ -46,12 +48,12 @@ public class MultiTableDatasourceDTO implements Serializable {
 		this.datasourceName = datasourceName;
 	}
 
-	public List<LogicalRelationship> getLogicalRelationships() {
-		return logicalRelationships;
+	public  List<JoinDTO> getJoins() {
+		return joins;
 	}
 
-	public void setLogicalRelationships(List<LogicalRelationship> logicalRelationships) {
-		this.logicalRelationships = logicalRelationships;
+	public void setJoins(List<JoinDTO> logicalRelationships) {
+		this.joins = logicalRelationships;
 	}
 
 	public IConnection getSelectedConnection() {

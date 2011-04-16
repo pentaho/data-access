@@ -18,7 +18,6 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,7 +27,6 @@ import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -69,7 +67,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		modelerService.initKettle();
 		
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getLogicalRelationships(), dto.getDatasourceName(), dto.getSelectedTables());
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getJoins(), dto.getDatasourceName(), dto.getSelectedTables());
 		Domain domain = multiTable.generateDomain(dto.isDoOlap());
 		domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(dto));
 		domain.getLogicalModels().get(0).setProperty("DatasourceType", "MULTI-TABLE-DS");
