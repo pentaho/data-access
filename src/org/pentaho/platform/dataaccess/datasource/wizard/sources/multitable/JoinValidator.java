@@ -22,11 +22,10 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.MultitableGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinRelationshipGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinedTableGuiModel;
 
 public class JoinValidator {
 
@@ -39,7 +38,7 @@ public class JoinValidator {
 		this.wizardModel = wizardModel;
 	}
 
-	public boolean isValid(JoinRelationshipGuiModel join) {
+	public boolean isValid(JoinRelationshipModel join) {
 		// validate against duplicate joins.
 		// and
 		// validate against joining to the same table.
@@ -48,9 +47,9 @@ public class JoinValidator {
 		return notDuplicate(join) && notSelfJoin(join) && notCircularJoins(join);
 	}
 
-	private boolean notDuplicate(JoinRelationshipGuiModel newJoin) {
+	private boolean notDuplicate(JoinRelationshipModel newJoin) {
 		boolean notDuplicate = true;
-		for (JoinRelationshipGuiModel join : this.joinGuiModel.getJoins()) {
+		for (JoinRelationshipModel join : this.joinGuiModel.getJoins()) {
 			if (newJoin.equals(join)) {
 				notDuplicate = false;
 				this.error = new JoinError(MessageHandler.getString("multitable.DUPLICATE_JOIN_TITLE"), MessageHandler.getString("multitable.DUPLICATE_JOIN_ERROR"));
@@ -60,7 +59,7 @@ public class JoinValidator {
 		return notDuplicate;
 	}
 
-	private boolean notSelfJoin(JoinRelationshipGuiModel newJoin) {
+	private boolean notSelfJoin(JoinRelationshipModel newJoin) {
 		boolean notSelfJoin = !newJoin.getLeftKeyFieldModel().getParentTable().equals(newJoin.getRightKeyFieldModel().getParentTable());
 		if (!notSelfJoin) {
 			this.error = new JoinError(MessageHandler.getString("multitable.SELF_JOIN_TITLE"), MessageHandler.getString("multitable.SELF_JOIN_ERROR"));
@@ -68,7 +67,7 @@ public class JoinValidator {
 		return notSelfJoin;
 	}
 
-	private boolean notCircularJoins(JoinRelationshipGuiModel newJoin) {
+	private boolean notCircularJoins(JoinRelationshipModel newJoin) {
 		// TODO pending
 		boolean notCircularJoin = true;
 		/*
@@ -96,10 +95,10 @@ public class JoinValidator {
 			return true;
 		}
 		List<String> orphanedTables = new ArrayList<String>();
-		next: for (JoinedTableGuiModel table : this.joinGuiModel.getSelectedTables()) {
-			for (JoinRelationshipGuiModel join : this.joinGuiModel.getJoins()) {
-				JoinedTableGuiModel table1 = join.getLeftKeyFieldModel().getParentTable();
-				JoinedTableGuiModel table2 = join.getRightKeyFieldModel().getParentTable();
+		next: for (JoinTableModel table : this.joinGuiModel.getSelectedTables()) {
+			for (JoinRelationshipModel join : this.joinGuiModel.getJoins()) {
+				JoinTableModel table1 = join.getLeftKeyFieldModel().getParentTable();
+				JoinTableModel table2 = join.getRightKeyFieldModel().getParentTable();
 				if (table.equals(table1) || table.equals(table2)) {
 					continue next;
 				}

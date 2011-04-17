@@ -91,11 +91,11 @@
     	<dependency org="pentaho" name="pentaho-bi-platform-engine-security" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
     	<dependency org="pentaho" name="pentaho-bi-platform-plugin-services" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
     	<dependency org="pentaho" name="pentaho-bi-platform-plugin-actions" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-ui-foundation" rev="${dependency.bi-platform.revision}" changing="true" conf="default->default"/>    	
+    	<dependency org="pentaho" name="pentaho-bi-platform-ui-foundation" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
 
     	<dependency org="pentaho" name="pentaho-bi-platform-repository" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
     	<dependency org="pentaho" name="pentaho-bi-platform-web" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-        <dependency org="pentaho" name="pentaho-actionsequence-dom" rev="${dependency.pentaho-actionsequence-dom.revision}" changing="true" />
+        <dependency org="pentaho" name="pentaho-actionsequence-dom" rev="${dependency.pentaho-actionsequence-dom.revision}" changing="true" transitive="false"/>
 		<dependency org="pentaho" name="pentaho-bi-platform-test-foundation" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />
 
         <!--  Testing dependencies -->

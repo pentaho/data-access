@@ -11,9 +11,10 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
-import org.pentaho.agilebi.modeler.multitable.JoinDTO;
-import org.pentaho.agilebi.modeler.multitable.JoinFieldDTO;
-import org.pentaho.agilebi.modeler.multitable.JoinTableDTO;
+import org.pentaho.agilebi.modeler.models.JoinFieldModel;
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.JoinTableModel;
+import org.pentaho.agilebi.modeler.models.SchemaModel;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
@@ -43,9 +44,12 @@ public class SerializeMultiTableServiceTest {
 
 	  @Test
 	  public void testSerialize() throws Exception {
-		  
-	    KettleEnvironment.init();
-	    Props.init(Props.TYPE_PROPERTIES_EMPTY);
+		  try{
+	      KettleEnvironment.init();
+	      Props.init(Props.TYPE_PROPERTIES_EMPTY);
+      } catch(Exception e){
+        // may already be initialized by another test
+      }
 
 	    String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
 	    String path = solutionStorage + ISolutionRepository.SEPARATOR
@@ -66,7 +70,7 @@ public class SerializeMultiTableServiceTest {
 	    FileUtils.copyFile(olap1, olap2);
 
 	    DatabaseMeta database = getDatabaseMeta();
-		MultiTableModelerSource multiTable = new MultiTableModelerSource(database, getJoinModel(), database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(database, getSchema(), database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
 		Domain domain = multiTable.generateDomain();
 	    
 	    List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
@@ -101,28 +105,30 @@ public class SerializeMultiTableServiceTest {
 	    olap2.delete();
 	  }
 	  
-	  private List<JoinDTO> getJoinModel() {
-			List<JoinDTO> joins = new ArrayList<JoinDTO>();
+	  private SchemaModel getSchema() {
+			List<JoinRelationshipModel> joins = new ArrayList<JoinRelationshipModel>();
 
-			JoinTableDTO joinTable1 = new JoinTableDTO();
+			JoinTableModel joinTable1 = new JoinTableModel();
 			joinTable1.setName("CUSTOMERS");
 
-			JoinTableDTO joinTable2 = new JoinTableDTO();
+			JoinTableModel joinTable2 = new JoinTableModel();
 			joinTable2.setName("PRODUCTS");
 
-			JoinDTO join1 = new JoinDTO();
-			JoinFieldDTO lField1 = new JoinFieldDTO();
+			JoinRelationshipModel join1 = new JoinRelationshipModel();
+			JoinFieldModel lField1 = new JoinFieldModel();
 			lField1.setName("CUSTOMERNAME");
 			lField1.setParentTable(joinTable1);
 			join1.setLeftKeyFieldModel(lField1);
 
-			JoinFieldDTO rField1 = new JoinFieldDTO();
+			JoinFieldModel rField1 = new JoinFieldModel();
 			rField1.setName("PRODUCTCODE");
 			rField1.setParentTable(joinTable2);
 			join1.setRightKeyFieldModel(rField1);
 
 			joins.add(join1);
-			return joins;
+      SchemaModel model = new SchemaModel();
+      model.setJoins(joins);
+			return model;
 		}
 
 	  private DatabaseMeta getDatabaseMeta() {

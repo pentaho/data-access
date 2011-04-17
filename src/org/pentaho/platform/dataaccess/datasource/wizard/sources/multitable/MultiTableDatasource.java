@@ -31,7 +31,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.MultitableGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
@@ -75,7 +74,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 			}
 
 			public void success(BogoPojo bogoPojo) {
-				bogoPojo.getlRelationship();
+				bogoPojo.getJoinDTO();
 			}
 		});
 

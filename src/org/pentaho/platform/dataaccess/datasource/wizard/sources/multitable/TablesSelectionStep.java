@@ -21,12 +21,11 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.MultitableGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinedTableGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -48,7 +47,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private XulVbox tablesSelectionDialog;
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
-	private XulMenuList<JoinedTableGuiModel> factTables;
+	private XulMenuList<JoinTableModel> factTables;
 	private MultitableGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 
@@ -77,7 +76,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Bindable
 	public void addSelectedTable() {
 		if (this.availableTables.getSelectedItem() != null) {
-			this.joinGuiModel.addSelectedTable((JoinedTableGuiModel) this.availableTables.getSelectedItem());
+			this.joinGuiModel.addSelectedTable((JoinTableModel) this.availableTables.getSelectedItem());
 		}
 		super.setValid(!this.selectedTables.getElements().isEmpty());
 	}
@@ -85,7 +84,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Bindable
 	public void removeSelectedTable() {
 		if (this.selectedTables.getSelectedItem() != null) {
-			this.joinGuiModel.removeSelectedTable((JoinedTableGuiModel) this.selectedTables.getSelectedItem());
+			this.joinGuiModel.removeSelectedTable((JoinTableModel) this.selectedTables.getSelectedItem());
 		}
 		super.setValid(!this.selectedTables.getElements().isEmpty());
 	}
@@ -95,7 +94,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		this.tablesSelectionDialog = (XulVbox) document.getElementById(JOIN_STEP_PANEL_ID);
 		this.availableTables = (XulListbox) document.getElementById("availableTables");
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
-		this.factTables = (XulMenuList<JoinedTableGuiModel>) document.getElementById("factTables");
+		this.factTables = (XulMenuList<JoinTableModel>) document.getElementById("factTables");
 
 		super.init(wizardModel);
 	}
@@ -105,10 +104,10 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		bf.createBinding(this.joinGuiModel.getAvailableTables(), "children", this.availableTables, "elements");
 		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.selectedTables, "elements");
 		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.factTables, "elements");
-		bf.createBinding(this.factTables, "selectedIndex", this.joinGuiModel, "factTable", new BindingConvertor<Integer, JoinedTableGuiModel>() {
+		bf.createBinding(this.factTables, "selectedIndex", this.joinGuiModel, "factTable", new BindingConvertor<Integer, JoinTableModel>() {
 
 			@Override
-			public JoinedTableGuiModel sourceToTarget(final Integer index) {
+			public JoinTableModel sourceToTarget(final Integer index) {
 				if (index == -1) {
 					return null;
 				}
@@ -116,7 +115,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 			}
 
 			@Override
-			public Integer targetToSource(final JoinedTableGuiModel value) {
+			public Integer targetToSource(final JoinTableModel value) {
 				return joinGuiModel.getSelectedTables().indexOf(value);
 			}
 		});
