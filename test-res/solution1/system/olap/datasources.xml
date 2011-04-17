@@ -37,6 +37,18 @@
       <Catalog name="ddsds"> 
         <DataSourceInfo>Provider=mondrian;DataSource=pentaho_staging_H2</DataSourceInfo>  
         <Definition>solution:admin/resources/metadata/ddsds.mondrian.xml</Definition> 
+      </Catalog>  
+      <Catalog name="ORDERS"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=SampleData</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/test_file.mondrian.xml</Definition> 
+      </Catalog>  
+      <Catalog name="asdf"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=SampleData</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/asdf.mondrian.xml</Definition> 
+      </Catalog>  
+      <Catalog name="test"> 
+        <DataSourceInfo>Provider=mondrian;DataSource=SampleData</DataSourceInfo>  
+        <Definition>solution:admin/resources/metadata/test.mondrian.xml</Definition> 
       </Catalog> 
     </Catalogs> 
   </DataSource> 

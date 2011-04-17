@@ -30,10 +30,10 @@ import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinedFieldGuiModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.MultitableGuiModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinRelationshipGuiModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinedTableGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -53,17 +53,17 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	protected static final String JOIN_DEFINITION_PANEL_ID = "joinDefinitionWindow";
 
 	private XulVbox joinDefinitionDialog;
-	private JoinGuiModel joinGuiModel;
+	private MultitableGuiModel joinGuiModel;
 	private XulListbox leftTables;
 	private XulListbox rightTables;
 	private XulListbox joins;
-	private XulMenuList<JoinFieldModel> leftKeyFieldList;
-	private XulMenuList<JoinFieldModel> rightKeyFieldList;
+	private XulMenuList<JoinedFieldGuiModel> leftKeyFieldList;
+	private XulMenuList<JoinedFieldGuiModel> rightKeyFieldList;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private IConnection selectedConnection;
 	private JoinValidator validator;
 
-	public JoinDefinitionsStep(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
+	public JoinDefinitionsStep(MultitableGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
@@ -71,7 +71,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	public void propertyChange(PropertyChangeEvent evt) {
 		final XulListbox xulListbox = (XulListbox) evt.getSource();
-		final JoinTableModel table = (JoinTableModel) xulListbox.getSelectedItem();
+		final JoinedTableGuiModel table = (JoinedTableGuiModel) xulListbox.getSelectedItem();
 		if (table != null) {
 			joinSelectionServiceGwtImpl.getTableFields(table.getName(), this.selectedConnection, new XulServiceCallback<List>() {
 				public void error(String message, Throwable error) {
@@ -79,8 +79,8 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 				}
 
 				public void success(List fields) {
-					List<JoinFieldModel> fieldModels = table.processTableFields(fields);
-					table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
+					List<JoinedFieldGuiModel> fieldModels = table.processTableFields(fields);
+					table.setFields(new AbstractModelList<JoinedFieldGuiModel>(fieldModels));
 					if (xulListbox.equals(leftTables)) {
 						leftKeyFieldList.setElements(fields);
 					}
@@ -98,7 +98,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	@Bindable
 	public void createJoin() {
-		JoinModel join = new JoinModel();
+		JoinRelationshipGuiModel join = new JoinRelationshipGuiModel();
 		join.setLeftKeyFieldModel(this.joinGuiModel.getLeftKeyField());
 		join.setRightKeyFieldModel(this.joinGuiModel.getRightKeyField());
 
@@ -119,14 +119,13 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.validator = new JoinValidator(this.joinGuiModel, wizardModel);
 		this.joinDefinitionDialog = (XulVbox) document.getElementById(JOIN_DEFINITION_PANEL_ID);
 		this.joins = (XulListbox) document.getElementById("joins");
-		this.leftKeyFieldList = (XulMenuList<JoinFieldModel>) document.getElementById("leftKeyField");
-		this.rightKeyFieldList = (XulMenuList<JoinFieldModel>) document.getElementById("rightKeyField");
+		this.leftKeyFieldList = (XulMenuList<JoinedFieldGuiModel>) document.getElementById("leftKeyField");
+		this.rightKeyFieldList = (XulMenuList<JoinedFieldGuiModel>) document.getElementById("rightKeyField");
 
 		this.leftTables = (XulListbox) document.getElementById("leftTables");
 		this.leftTables.addPropertyChangeListener(this);
 
 		this.rightTables = (XulListbox) document.getElementById("rightTables");
-
 		this.rightTables.addPropertyChangeListener(this);
 
 		super.init(wizardModel);
@@ -135,16 +134,16 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	public void setBindings() {
 
 		BindingFactory bf = new GwtBindingFactory(document);
-		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.leftTables, "elements");
-		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.rightTables, "elements");
+		bf.createBinding(this.joinGuiModel.getLeftTables(), "children", this.leftTables, "elements");
+		bf.createBinding(this.joinGuiModel.getRightTables(), "children", this.rightTables, "elements");
 		bf.createBinding(this.leftTables, "selectedItem", this.joinGuiModel, "leftJoinTable");
 		bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
 		bf.createBinding(this.joinGuiModel.getJoins(), "children", this.joins, "elements");
 		bf.createBinding(this.joins, "selectedItem", this.joinGuiModel, "selectedJoin");
-		bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
+		bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftKeyField", new BindingConvertor<Integer, JoinedFieldGuiModel>() {
 
 			@Override
-			public JoinFieldModel sourceToTarget(final Integer index) {
+			public JoinedFieldGuiModel sourceToTarget(final Integer index) {
 				if (index == -1) {
 					return null;
 				}
@@ -152,15 +151,15 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 			}
 
 			@Override
-			public Integer targetToSource(final JoinFieldModel value) {
+			public Integer targetToSource(final JoinedFieldGuiModel value) {
 				return null;
 			}
 		});
 
-		bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
+		bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightKeyField", new BindingConvertor<Integer, JoinedFieldGuiModel>() {
 
 			@Override
-			public JoinFieldModel sourceToTarget(final Integer index) {
+			public JoinedFieldGuiModel sourceToTarget(final Integer index) {
 				if (index == -1) {
 					return null;
 				}
@@ -168,7 +167,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 			}
 
 			@Override
-			public Integer targetToSource(final JoinFieldModel value) {
+			public Integer targetToSource(final JoinedFieldGuiModel value) {
 				return null;
 			}
 		});
@@ -179,6 +178,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	public void stepActivatingForward() {
 		super.stepActivatingForward();
 		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
+		this.joinGuiModel.computeJoinDefinitionStepTables();
 		this.leftTables.setSelectedIndex(0);
 		this.rightTables.setSelectedIndex(0);
 		checkExistingJoinsStillValid();
@@ -187,18 +187,18 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	private void checkExistingJoinsStillValid() {
 		Set<String> allTables = new HashSet<String>();
-		for (JoinTableModel tbl : joinGuiModel.getAvailableTables()) {
+		for (JoinedTableGuiModel tbl : joinGuiModel.getAvailableTables()) {
 			allTables.add(tbl.getName());
 		}
 
-		List<JoinModel> toRemove = new ArrayList<JoinModel>();
+		List<JoinRelationshipGuiModel> toRemove = new ArrayList<JoinRelationshipGuiModel>();
 
-		for (JoinModel join : joinGuiModel.getJoins()) {
+		for (JoinRelationshipGuiModel join : joinGuiModel.getJoins()) {
 			if (!allTables.contains(join.getLeftKeyFieldModel().getParentTable().getName()) || !allTables.contains(join.getRightKeyFieldModel().getParentTable().getName())) {
 				toRemove.add(join);
 			}
 		}
-		for (JoinModel join : toRemove) {
+		for (JoinRelationshipGuiModel join : toRemove) {
 			joinGuiModel.getJoins().remove(join);
 		}
 	}

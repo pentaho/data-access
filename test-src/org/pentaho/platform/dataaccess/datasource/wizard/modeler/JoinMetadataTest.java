@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.multitable.JoinDTO;
+import org.pentaho.agilebi.modeler.multitable.JoinFieldDTO;
+import org.pentaho.agilebi.modeler.multitable.JoinTableDTO;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
@@ -32,11 +34,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalRelationship;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.test.platform.engine.core.BaseTest;
 import org.slf4j.Logger;
@@ -64,10 +61,7 @@ public class JoinMetadataTest extends BaseTest {
 		
 		Domain domain = null;
 		try {
-
-			JoinGuiModel joinGuiModel = new JoinGuiModel();
-			List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
-			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), logicalRelationships, this.getDatabaseMeta().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), getJoinModel(), this.getDatabaseMeta().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
 			domain = multiTable.generateDomain();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -77,29 +71,29 @@ public class JoinMetadataTest extends BaseTest {
 
 	}
 
-	private List<JoinModel> getJoinModel() {
-		List<JoinModel> joins = new ArrayList<JoinModel>();
+	 private List<JoinDTO> getJoinModel() {
+			List<JoinDTO> joins = new ArrayList<JoinDTO>();
 
-		JoinTableModel joinTable1 = new JoinTableModel();
-		joinTable1.setName("CUSTOMERS");
+			JoinTableDTO joinTable1 = new JoinTableDTO();
+			joinTable1.setName("CUSTOMERS");
 
-		JoinTableModel joinTable2 = new JoinTableModel();
-		joinTable2.setName("PRODUCTS");
+			JoinTableDTO joinTable2 = new JoinTableDTO();
+			joinTable2.setName("PRODUCTS");
 
-		JoinModel join1 = new JoinModel();
-		JoinFieldModel lField1 = new JoinFieldModel();
-		lField1.setName("CUSTOMERNAME");
-		lField1.setParentTable(joinTable1);
-		join1.setLeftKeyFieldModel(lField1);
+			JoinDTO join1 = new JoinDTO();
+			JoinFieldDTO lField1 = new JoinFieldDTO();
+			lField1.setName("CUSTOMERNAME");
+			lField1.setParentTable(joinTable1);
+			join1.setLeftKeyFieldModel(lField1);
 
-		JoinFieldModel rField1 = new JoinFieldModel();
-		rField1.setName("PRODUCTCODE");
-		rField1.setParentTable(joinTable2);
-		join1.setRightKeyFieldModel(rField1);
+			JoinFieldDTO rField1 = new JoinFieldDTO();
+			rField1.setName("PRODUCTCODE");
+			rField1.setParentTable(joinTable2);
+			join1.setRightKeyFieldModel(rField1);
 
-		joins.add(join1);
-		return joins;
-	}
+			joins.add(join1);
+			return joins;
+		}
 
 	private DatabaseMeta getDatabaseMeta() {
 		DatabaseMeta database = new DatabaseMeta();

@@ -11,22 +11,18 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
-import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
+import org.pentaho.agilebi.modeler.multitable.JoinDTO;
+import org.pentaho.agilebi.modeler.multitable.JoinFieldDTO;
+import org.pentaho.agilebi.modeler.multitable.JoinTableDTO;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.platform.api.engine.IApplicationContext;
 import org.pentaho.platform.api.repository.ISolutionRepository;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinFieldModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
@@ -34,119 +30,116 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class SerializeMultiTableServiceTest {
 	
-  static {
-    if (!PentahoSystem.getInitializedOK()) {
-      PentahoSystemHelper.init();
-      System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-    
-    if(ModelerMessagesHolder.getMessages() == null){
- 	   ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
- 	}
-  }
+	  static {
+	    if (!PentahoSystem.getInitializedOK()) {
+	      PentahoSystemHelper.init();
+	      System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
+	    }
+	    
+	    if(ModelerMessagesHolder.getMessages() == null){
+	 	   ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
+	 	}
+	  }
 
-  @Test
-  public void testSerialize() throws Exception {
+	  @Test
+	  public void testSerialize() throws Exception {
+		  
+	    KettleEnvironment.init();
+	    Props.init(Props.TYPE_PROPERTIES_EMPTY);
+
+	    String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
+	    String path = solutionStorage + ISolutionRepository.SEPARATOR
+	        + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
+
+	    String olapPath = null;
+
+	    IApplicationContext appContext = PentahoSystem.getApplicationContext();
+	    if (appContext != null) {
+	      path = PentahoSystem.getApplicationContext().getSolutionPath(path);
+	      olapPath = PentahoSystem.getApplicationContext().getSolutionPath(
+	          "system" + ISolutionRepository.SEPARATOR + "olap" + ISolutionRepository.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
+	    }
+
+	    File olap1 = new File(olapPath + "datasources.xml"); //$NON-NLS-1$
+	    File olap2 = new File(olapPath + "tmp_datasources.xml"); //$NON-NLS-1$
+
+	    FileUtils.copyFile(olap1, olap2);
+
+	    DatabaseMeta database = getDatabaseMeta();
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(database, getJoinModel(), database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
+		Domain domain = multiTable.generateDomain();
+	    
+	    List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
+		OlapDimension dimension = new OlapDimension();
+		dimension.setName("test");//$NON-NLS-1$
+		dimension.setTimeDimension(false);
+		olapDimensions.add(dimension);
+		domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
+	    
+	    
+	    ModelerService service = new ModelerService();
+	    service.serializeModels(domain, "test_file");//$NON-NLS-1$
+
+	    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "SampleData");
+	    
+	    File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
+	    File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
+
+	    assertTrue(xmiFile.exists());
+	    assertTrue(mondrianFile.exists());
+
+	    if (xmiFile.exists()) {
+	      xmiFile.delete();
+	    }
+
+	    if (mondrianFile.exists()) {
+	      mondrianFile.delete();
+	    }
+
+	    //Restores datasources.xml to its original content.
+	    FileUtils.copyFile(olap2, olap1);
+	    olap2.delete();
+	  }
 	  
-    KettleEnvironment.init();
-    Props.init(Props.TYPE_PROPERTIES_EMPTY);
+	  private List<JoinDTO> getJoinModel() {
+			List<JoinDTO> joins = new ArrayList<JoinDTO>();
 
-    String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
-    String path = solutionStorage + ISolutionRepository.SEPARATOR
-        + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
+			JoinTableDTO joinTable1 = new JoinTableDTO();
+			joinTable1.setName("CUSTOMERS");
 
-    String olapPath = null;
+			JoinTableDTO joinTable2 = new JoinTableDTO();
+			joinTable2.setName("PRODUCTS");
 
-    IApplicationContext appContext = PentahoSystem.getApplicationContext();
-    if (appContext != null) {
-      path = PentahoSystem.getApplicationContext().getSolutionPath(path);
-      olapPath = PentahoSystem.getApplicationContext().getSolutionPath(
-          "system" + ISolutionRepository.SEPARATOR + "olap" + ISolutionRepository.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
-    }
+			JoinDTO join1 = new JoinDTO();
+			JoinFieldDTO lField1 = new JoinFieldDTO();
+			lField1.setName("CUSTOMERNAME");
+			lField1.setParentTable(joinTable1);
+			join1.setLeftKeyFieldModel(lField1);
 
-    File olap1 = new File(olapPath + "datasources.xml"); //$NON-NLS-1$
-    File olap2 = new File(olapPath + "tmp_datasources.xml"); //$NON-NLS-1$
+			JoinFieldDTO rField1 = new JoinFieldDTO();
+			rField1.setName("PRODUCTCODE");
+			rField1.setParentTable(joinTable2);
+			join1.setRightKeyFieldModel(rField1);
 
-    FileUtils.copyFile(olap1, olap2);
+			joins.add(join1);
+			return joins;
+		}
 
-    DatabaseMeta database = getDatabaseMeta();
-  
-    JoinGuiModel joinGuiModel = new JoinGuiModel();
-	List<LogicalRelationship> logicalRelationships = joinGuiModel.generateLogicalRelationships(getJoinModel());
-	MultiTableModelerSource multiTable = new MultiTableModelerSource(database, logicalRelationships, database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
-	Domain domain = multiTable.generateDomain();
-    
-    List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
-	OlapDimension dimension = new OlapDimension();
-	dimension.setName("test");//$NON-NLS-1$
-	dimension.setTimeDimension(false);
-	olapDimensions.add(dimension);
-	domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
-    
-    
-    ModelerService service = new ModelerService();
-    service.serializeModels(domain, "test_file");//$NON-NLS-1$
-
-    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "SampleData");
-    
-    File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
-    File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
-
-    assertTrue(xmiFile.exists());
-    assertTrue(mondrianFile.exists());
-
-    if (xmiFile.exists()) {
-      xmiFile.delete();
-    }
-
-    if (mondrianFile.exists()) {
-      mondrianFile.delete();
-    }
-
-    //Restores datasources.xml to its original content.
-    FileUtils.copyFile(olap2, olap1);
-    olap2.delete();
-  }
-  
-  private List<JoinModel> getJoinModel() {
-		List<JoinModel> joins = new ArrayList<JoinModel>();
-
-		JoinTableModel joinTable1 = new JoinTableModel();
-		joinTable1.setName("CUSTOMERS");
-
-		JoinTableModel joinTable2 = new JoinTableModel();
-		joinTable2.setName("PRODUCTS");
-
-		JoinModel join1 = new JoinModel();
-		JoinFieldModel lField1 = new JoinFieldModel();
-		lField1.setName("CUSTOMERNAME");
-		lField1.setParentTable(joinTable1);
-		join1.setLeftKeyFieldModel(lField1);
-
-		JoinFieldModel rField1 = new JoinFieldModel();
-		rField1.setName("PRODUCTCODE");
-		rField1.setParentTable(joinTable2);
-		join1.setRightKeyFieldModel(rField1);
-
-		joins.add(join1);
-		return joins;
+	  private DatabaseMeta getDatabaseMeta() {
+	     DatabaseMeta database = new DatabaseMeta();
+	     try {
+	      //database.setDatabaseInterface(new HypersonicDatabaseMeta());
+	      database.setDatabaseType("Hypersonic");//$NON-NLS-1$
+	      //database.setUsername("sa");//$NON-NLS-1$
+	      //database.setPassword("");//$NON-NLS-1$
+	      database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
+	      //database.setHostname(".");
+	      database.setDBName("SampleData");//$NON-NLS-1$
+	      //database.setDBPort("9001");//$NON-NLS-1$
+	      database.setName("SampleData");//$NON-NLS-1$
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return database;
+	  }
 	}
-
-  private DatabaseMeta getDatabaseMeta() {
-     DatabaseMeta database = new DatabaseMeta();
-     try {
-      //database.setDatabaseInterface(new HypersonicDatabaseMeta());
-      database.setDatabaseType("Hypersonic");//$NON-NLS-1$
-      //database.setUsername("sa");//$NON-NLS-1$
-      //database.setPassword("");//$NON-NLS-1$
-      database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-      //database.setHostname(".");
-      database.setDBName("SampleData");//$NON-NLS-1$
-      //database.setDBPort("9001");//$NON-NLS-1$
-      database.setName("SampleData");//$NON-NLS-1$
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return database;
-  }
-}

@@ -15,7 +15,7 @@
 							</columns>
 							<rows id="step_rows"/>
 						</grid>
-            <spacer flex="1"/>
+           				<spacer flex="1"/>
 					</vbox>
 				</hbox>
 			</vbox>
@@ -52,7 +52,14 @@
 										<button id="addConnection" image="images/add.png" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="images/add_disabled.png" onclick="connectionController.showAddConnectionDialog()" disabled="false"/>
 										<button id="removeConnection" image="images/remove.png" pen:disabledimage="images/remove_disabled.png" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="connectionController.showRemoveConnectionDialog()" disabled="true"/>
 									</hbox>
-									<listbox flex="1" id="connectionList" pen:binding="name" disabled="true" height="332"/>
+									<listbox flex="1" id="connectionList" pen:binding="name" disabled="true"/>
+									<vbox id="metadata">
+									    <label value="${multitable.REPORTING_METADATA_GROUP_LABEL}" tooltiptext=""/>
+										<radiogroup id="metadataRadioGrup" padding="0">
+											<radio id="reporting" checked="true" value="${multitable.REPORTING_METADATA}" label="${multitable.REPORTING_METADATA_LABEL}"/>
+	                            			<radio id="reporting_analysis" value="${multitable.REPORTING_METADATA_ANALYSIS}" label="${multitable.REPORTING_METADATA_ANALYSIS_LABEL}" />
+										</radiogroup>
+									</vbox>
 								</vbox>
 								<spacer width="10" height="400"/>
 								<vbox id="queryBox" height="400" flex="7">
@@ -70,7 +77,6 @@
 									</hbox>
 								</vbox>
 							</hbox>
-							
 							
 							<vbox id="csvDeckPanel" height="405" spacing="0" padding="0">
 								<!--  ###############################################################################  -->
@@ -178,6 +184,14 @@
 				        <vbox>
 				          <label value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
 				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="200" width="295"/>
+				          <vbox id="factTableVbox">
+				          	<label value="${multitable.FACT_TABLE}" tooltiptext=""/>
+   						  	<menulist id="factTables" pen:binding="name" width="204">
+						  		<menupopup>
+									<menuitem label=""/>
+								</menupopup>
+						  	</menulist>  
+				          </vbox>
 				        </vbox>
 				      </hbox>
 				    </vbox>

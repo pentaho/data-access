@@ -19,13 +19,21 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.util.AbstractModelList;
 
-public class JoinFieldModel extends XulEventSourceAdapter {
+public class JoinedTableGuiModel extends XulEventSourceAdapter {
 
 	private String name;
-	private JoinTableModel parentTable;
+	private AbstractModelList<JoinedFieldGuiModel> fields;
+
+	public JoinedTableGuiModel() {
+		this.fields = new AbstractModelList<JoinedFieldGuiModel>();
+	}
 
 	@Bindable
 	public String getName() {
@@ -38,12 +46,27 @@ public class JoinFieldModel extends XulEventSourceAdapter {
 	}
 
 	@Bindable
-	public JoinTableModel getParentTable() {
-		return this.parentTable;
+	public AbstractModelList<JoinedFieldGuiModel> getFields() {
+		return this.fields;
 	}
 
 	@Bindable
-	public void setParentTable(JoinTableModel parentTable) {
-		this.parentTable = parentTable;
+	public void setFields(AbstractModelList<JoinedFieldGuiModel> fields) {
+		this.fields = fields;
 	}
+
+	public List<JoinedFieldGuiModel> processTableFields(List<String> fields) {
+
+		List<JoinedFieldGuiModel> fieldModels = new ArrayList<JoinedFieldGuiModel>();
+		for (String field : fields) {
+			JoinedFieldGuiModel fieldModel = new JoinedFieldGuiModel();
+			fieldModel.setName(field);
+			fieldModel.setParentTable(this);
+			fieldModels.add(fieldModel);
+		}
+		return fieldModels;
+	}
+  public void reset(){
+    fields.clear();
+  }
 }

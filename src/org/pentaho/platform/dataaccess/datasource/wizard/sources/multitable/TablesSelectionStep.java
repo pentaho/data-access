@@ -25,13 +25,16 @@ import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinGuiModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinTableModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.MultitableGuiModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinedTableGuiModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
@@ -45,10 +48,11 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private XulVbox tablesSelectionDialog;
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
-	private JoinGuiModel joinGuiModel;
+	private XulMenuList<JoinedTableGuiModel> factTables;
+	private MultitableGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 
-	public TablesSelectionStep(JoinGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
+	public TablesSelectionStep(MultitableGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
@@ -73,7 +77,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Bindable
 	public void addSelectedTable() {
 		if (this.availableTables.getSelectedItem() != null) {
-			this.joinGuiModel.addSelectedTable((JoinTableModel) this.availableTables.getSelectedItem());
+			this.joinGuiModel.addSelectedTable((JoinedTableGuiModel) this.availableTables.getSelectedItem());
 		}
 		super.setValid(!this.selectedTables.getElements().isEmpty());
 	}
@@ -81,7 +85,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Bindable
 	public void removeSelectedTable() {
 		if (this.selectedTables.getSelectedItem() != null) {
-			this.joinGuiModel.removeSelectedTable((JoinTableModel) this.selectedTables.getSelectedItem());
+			this.joinGuiModel.removeSelectedTable((JoinedTableGuiModel) this.selectedTables.getSelectedItem());
 		}
 		super.setValid(!this.selectedTables.getElements().isEmpty());
 	}
@@ -91,6 +95,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		this.tablesSelectionDialog = (XulVbox) document.getElementById(JOIN_STEP_PANEL_ID);
 		this.availableTables = (XulListbox) document.getElementById("availableTables");
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
+		this.factTables = (XulMenuList<JoinedTableGuiModel>) document.getElementById("factTables");
 
 		super.init(wizardModel);
 	}
@@ -99,7 +104,22 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		BindingFactory bf = new GwtBindingFactory(document);
 		bf.createBinding(this.joinGuiModel.getAvailableTables(), "children", this.availableTables, "elements");
 		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.selectedTables, "elements");
+		bf.createBinding(this.joinGuiModel.getSelectedTables(), "children", this.factTables, "elements");
+		bf.createBinding(this.factTables, "selectedIndex", this.joinGuiModel, "factTable", new BindingConvertor<Integer, JoinedTableGuiModel>() {
 
+			@Override
+			public JoinedTableGuiModel sourceToTarget(final Integer index) {
+				if (index == -1) {
+					return null;
+				}
+				return joinGuiModel.getSelectedTables().get(index);
+			}
+
+			@Override
+			public Integer targetToSource(final JoinedTableGuiModel value) {
+				return joinGuiModel.getSelectedTables().indexOf(value);
+			}
+		});
 	}
 
 	public String getStepName() {
@@ -114,5 +134,13 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	public void stepActivatingReverse() {
 		super.stepActivatingReverse();
 		parentDatasource.setFinishable(false);
+	}
+	
+	@Override
+	public void stepActivatingForward() {
+		XulRadio reportingAnalysisRadio = (XulRadio) document.getElementById("reporting_analysis");
+		XulVbox factTableVBox = (XulVbox) document.getElementById("factTableVbox");
+		factTableVBox.setVisible(reportingAnalysisRadio.isSelected());
+		this.joinGuiModel.doOlap(reportingAnalysisRadio.isSelected());
 	}
 }

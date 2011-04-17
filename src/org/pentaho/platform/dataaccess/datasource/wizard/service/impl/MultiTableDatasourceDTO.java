@@ -22,17 +22,20 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.io.Serializable;
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.multitable.JoinDTO;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.JoinRelationshipGuiModel;
 
 public class MultiTableDatasourceDTO implements Serializable {
 
 	private static final long serialVersionUID = 1368165523678535182L;
 
 	private String datasourceName;
-  private IConnection selectedConnection;
-	private List<LogicalRelationship> logicalRelationships;
-  private List<String> selectedTables;
+	private IConnection selectedConnection;
+	private List<JoinDTO> joins;
+	private List<String> selectedTables;
+	private boolean doOlap;
 
 	public MultiTableDatasourceDTO() {
 	}
@@ -45,27 +48,35 @@ public class MultiTableDatasourceDTO implements Serializable {
 		this.datasourceName = datasourceName;
 	}
 
-	public List<LogicalRelationship> getLogicalRelationships() {
-		return logicalRelationships;
+	public  List<JoinDTO> getJoins() {
+		return joins;
 	}
 
-	public void setLogicalRelationships(List<LogicalRelationship> logicalRelationships) {
-		this.logicalRelationships = logicalRelationships;
+	public void setJoins(List<JoinDTO> logicalRelationships) {
+		this.joins = logicalRelationships;
 	}
 
-  public IConnection getSelectedConnection() {
-    return selectedConnection;
-  }
+	public IConnection getSelectedConnection() {
+		return selectedConnection;
+	}
 
-  public void setSelectedConnection(IConnection selectedConnection) {
-    this.selectedConnection = selectedConnection;
-  }
+	public void setSelectedConnection(IConnection selectedConnection) {
+		this.selectedConnection = selectedConnection;
+	}
 
-  public List<String> getSelectedTables() {
-    return selectedTables;
-  }
+	public List<String> getSelectedTables() {
+		return selectedTables;
+	}
 
-  public void setSelectedTables(List<String> selectedTables) {
-    this.selectedTables = selectedTables;
-  }
+	public void setSelectedTables(List<String> selectedTables) {
+		this.selectedTables = selectedTables;
+	}
+
+	public boolean isDoOlap() {
+		return doOlap;
+	}
+
+	public void setDoOlap(boolean doOlap) {
+		this.doOlap = doOlap;
+	}
 }

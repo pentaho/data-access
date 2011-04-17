@@ -19,32 +19,33 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-public class JoinModel extends XulEventSourceAdapter {
+public class JoinRelationshipGuiModel extends XulEventSourceAdapter {
 
-	public JoinFieldModel leftKeyFieldModel;
-	public JoinFieldModel rightKeyFieldModel;
+	private JoinedFieldGuiModel leftKeyFieldModel;
+	private JoinedFieldGuiModel rightKeyFieldModel;
 
 	@Bindable
-	public JoinFieldModel getLeftKeyFieldModel() {
+	public JoinedFieldGuiModel getLeftKeyFieldModel() {
 		return this.leftKeyFieldModel;
 	}
 
 	@Bindable
-	public void setLeftKeyFieldModel(JoinFieldModel leftKeyFieldModel) {
+	public void setLeftKeyFieldModel(JoinedFieldGuiModel leftKeyFieldModel) {
 		this.leftKeyFieldModel = leftKeyFieldModel;
 	}
 
 	@Bindable
-	public JoinFieldModel getRightKeyFieldModel() {
+	public JoinedFieldGuiModel getRightKeyFieldModel() {
 		return this.rightKeyFieldModel;
 	}
 
 	@Bindable
-	public void setRightKeyFieldModel(JoinFieldModel rightKeyFieldModel) {
+	public void setRightKeyFieldModel(JoinedFieldGuiModel rightKeyFieldModel) {
 		this.rightKeyFieldModel = rightKeyFieldModel;
 	}
 
@@ -66,7 +67,7 @@ public class JoinModel extends XulEventSourceAdapter {
 		return joinName.toString();
 	}
 
-	public boolean equals(JoinModel join) {
+	public boolean equals(JoinRelationshipGuiModel join) {
 
 		String leftTable1 = join.getLeftKeyFieldModel().getParentTable().getName();
 		String leftKey1 = join.getLeftKeyFieldModel().getName();

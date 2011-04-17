@@ -26,101 +26,100 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class SerializeServiceTest {
 
-  static {
-    if (!PentahoSystem.getInitializedOK()) {
-      PentahoSystemHelper.init();
-      System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-  }
+	  static {
+	    if (!PentahoSystem.getInitializedOK()) {
+	      PentahoSystemHelper.init();
+	      System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
+	    }
+	  }
 
-  @Test
-  public void testSerialize() throws Exception {
-    KettleEnvironment.init();
-    try{
-      Props.init(Props.TYPE_PROPERTIES_EMPTY);
-    } catch(Exception e){
-      // Kettle may already be initialized by another test.
-    }
+	  @Test
+	  public void testSerialize() throws Exception {
+	    KettleEnvironment.init();
+	    try{
+	      Props.init(Props.TYPE_PROPERTIES_EMPTY);
+	    } catch(Exception e){
+	      // Kettle may already be initialized by another test.
+	    }
 
-    String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
-    String path = solutionStorage + ISolutionRepository.SEPARATOR
-        + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
+	    String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
+	    String path = solutionStorage + ISolutionRepository.SEPARATOR
+	        + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
 
-    String olapPath = null;
+	    String olapPath = null;
 
-    IApplicationContext appContext = PentahoSystem.getApplicationContext();
-    if (appContext != null) {
-      path = PentahoSystem.getApplicationContext().getSolutionPath(path);
-      olapPath = PentahoSystem.getApplicationContext().getSolutionPath(
-          "system" + ISolutionRepository.SEPARATOR + "olap" + ISolutionRepository.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
-    }
+	    IApplicationContext appContext = PentahoSystem.getApplicationContext();
+	    if (appContext != null) {
+	      path = PentahoSystem.getApplicationContext().getSolutionPath(path);
+	      olapPath = PentahoSystem.getApplicationContext().getSolutionPath(
+	          "system" + ISolutionRepository.SEPARATOR + "olap" + ISolutionRepository.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
+	    }
 
-    File olap1 = new File(olapPath + "datasources.xml"); //$NON-NLS-1$
-    File olap2 = new File(olapPath + "tmp_datasources.xml"); //$NON-NLS-1$
+	    File olap1 = new File(olapPath + "datasources.xml"); //$NON-NLS-1$
+	    File olap2 = new File(olapPath + "tmp_datasources.xml"); //$NON-NLS-1$
 
-    FileUtils.copyFile(olap1, olap2);
+	    FileUtils.copyFile(olap1, olap2);
 
-    Domain domain = generateModel();
-    ModelerService service = new ModelerService();
-    
-    ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
-    model.setModelName("ORDERS");
-    model.setDomain(domain);
-    model.getWorkspaceHelper().populateDomain(model);
-    
-    service.serializeModels(domain, "test_file");//$NON-NLS-1$
+	    Domain domain = generateModel();
+	    ModelerService service = new ModelerService();
+	    
+	    ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+	    model.setModelName("ORDERS");
+	    model.setDomain(domain);
+	    model.getWorkspaceHelper().populateDomain(model);
+	    service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
-    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), model.getModelName());
+	    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), model.getModelName());
 
-    File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
-    File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
+	    File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
+	    File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
 
-    assertTrue(xmiFile.exists());
-    assertTrue(mondrianFile.exists());
+	    assertTrue(xmiFile.exists());
+	    assertTrue(mondrianFile.exists());
 
-    if (xmiFile.exists()) {
-      xmiFile.delete();
-    }
+	    if (xmiFile.exists()) {
+	      xmiFile.delete();
+	    }
 
-    if (mondrianFile.exists()) {
-      mondrianFile.delete();
-    }
+	    if (mondrianFile.exists()) {
+	      mondrianFile.delete();
+	    }
 
-    //Restores datasources.xml to its original content.
-    FileUtils.copyFile(olap2, olap1);
-    olap2.delete();
-  }
+	    //Restores datasources.xml to its original content.
+	    FileUtils.copyFile(olap2, olap1);
+	    olap2.delete();
+	  }
 
-  private Domain generateModel() {
-    Domain domain = null;
-    try {
+	  private Domain generateModel() {
+	    Domain domain = null;
+	    try {
 
-      DatabaseMeta database = new DatabaseMeta();
-      //database.setDatabaseInterface(new HypersonicDatabaseMeta());
-      database.setDatabaseType("Hypersonic");//$NON-NLS-1$
-      //database.setUsername("sa");//$NON-NLS-1$
-      //database.setPassword("");//$NON-NLS-1$
-      database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-      //database.setHostname(".");
-      database.setDBName("SampleData");//$NON-NLS-1$
-      //database.setDBPort("9001");//$NON-NLS-1$
-      database.setName("SampleData");//$NON-NLS-1$
+	      DatabaseMeta database = new DatabaseMeta();
+	      //database.setDatabaseInterface(new HypersonicDatabaseMeta());
+	      database.setDatabaseType("Hypersonic");//$NON-NLS-1$
+	      //database.setUsername("sa");//$NON-NLS-1$
+	      //database.setPassword("");//$NON-NLS-1$
+	      database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
+	      //database.setHostname(".");
+	      database.setDBName("SampleData");//$NON-NLS-1$
+	      //database.setDBPort("9001");//$NON-NLS-1$
+	      database.setName("SampleData");//$NON-NLS-1$
 
-      System.out.println(database.testConnection());
+	      System.out.println(database.testConnection());
 
-      TableModelerSource source = new TableModelerSource(database, "ORDERS", null);//$NON-NLS-1$
-      domain = source.generateDomain();
+	      TableModelerSource source = new TableModelerSource(database, "ORDERS", null);//$NON-NLS-1$
+	      domain = source.generateDomain();
 
-      List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
-      OlapDimension dimension = new OlapDimension();
-      dimension.setName("test");//$NON-NLS-1$
-      dimension.setTimeDimension(false);
-      olapDimensions.add(dimension);
-      domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
+	      List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
+	      OlapDimension dimension = new OlapDimension();
+	      dimension.setName("test");//$NON-NLS-1$
+	      dimension.setTimeDimension(false);
+	      olapDimensions.add(dimension);
+	      domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
 
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return domain;
-  }
-}
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return domain;
+	  }
+	}
