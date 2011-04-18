@@ -1,7 +1,7 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.util.AbstractModelList;
+import org.pentaho.agilebi.modeler.models.AbstractModelList;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

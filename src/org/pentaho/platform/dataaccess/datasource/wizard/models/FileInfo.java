@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class FileInfo extends XulEventSourceAdapter implements Serializable {//, XulEventSource {

@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class ModelInfo extends XulEventSourceAdapter implements Serializable {

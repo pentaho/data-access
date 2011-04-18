@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.metadata.model.concept.types.AggregationType;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class Aggregation  extends XulEventSourceAdapter{

@@ -21,10 +21,10 @@
 package org.pentaho.platform.dataaccess.datasource.beans;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-public class Connection extends XulEventSourceAdapter implements IConnection{
+  public class Connection extends XulEventSourceAdapter implements IConnection{
 
   private static final long serialVersionUID = 5825649640767205332L;
   private String name;

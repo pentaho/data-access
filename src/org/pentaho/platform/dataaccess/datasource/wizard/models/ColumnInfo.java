@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.metadata.model.concept.types.DataType;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class ColumnInfo extends XulEventSourceAdapter implements Serializable {

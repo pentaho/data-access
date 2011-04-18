@@ -44,7 +44,7 @@ import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.util.AbstractModelList;
+import org.pentaho.agilebi.modeler.models.AbstractModelList;
 
 @SuppressWarnings("unchecked")
 public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyChangeListener {
