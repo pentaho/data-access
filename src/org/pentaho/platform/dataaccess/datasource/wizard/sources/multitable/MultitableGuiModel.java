@@ -258,8 +258,9 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 			selectedTables.add(tbl.getName());
 		}
 		dto.setSelectedTables(selectedTables);
-    SchemaModel schema = new SchemaModel();
-    schema.setJoins(this.getJoins());
+        SchemaModel schema = new SchemaModel();
+        schema.setJoins(this.getJoins());
+        schema.setFactTable(this.factTable);        
 		dto.setSchemaModel(schema);
 		return dto;
 	}
