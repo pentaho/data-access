@@ -550,8 +550,8 @@ pentaho.pda.Column.COMPARATOR.DATE = [
 
 //Comparators with no right-hand parameters (is null, etc).
 pentaho.pda.Column.SINGLE_COMPARATORS = {};
-pentaho.pda.Column.SINGLE_COMPARATORS[Messages.getString( "IS_NULL" )] = {};
-pentaho.pda.Column.SINGLE_COMPARATORS[Messages.getString( "IS_NOT_NULL" )] = {};
+pentaho.pda.Column.SINGLE_COMPARATORS[pentaho.pda.Column.CONDITION_TYPES.IS_NULL] = {};
+pentaho.pda.Column.SINGLE_COMPARATORS[pentaho.pda.Column.CONDITION_TYPES.NOT_NULL] = {};
   
 pentaho.pda.Column.COMPARATOR_MAP = new Object();
 pentaho.pda.Column.COMPARATOR_MAP[ pentaho.pda.Column.DATA_TYPES.NUMERIC ] = pentaho.pda.Column.COMPARATOR.NUMERIC;
