@@ -517,28 +517,36 @@ pentaho.pda.Column.JAVA_SQL_TYPE_TO_TYPE[ pentaho.pda.Column.JAVA_SQL_TYPES.BOOL
 
 pentaho.pda.Column.COMPARATOR = new Object();
 pentaho.pda.Column.COMPARATOR.STRING = [ 
-	Messages.getString( "EXACTLY_MATCHES" ), 
-	Messages.getString( "CONTAINS" ), 
-	Messages.getString( "ENDS_WITH" ), 
-	Messages.getString( "BEGINS_WITH" ), 
-  Messages.getString( "DOES_NOT_CONTAIN" ),
-  Messages.getString( "IS_NULL" ),
-  Messages.getString( "IS_NOT_NULL" ) ];
-pentaho.pda.Column.COMPARATOR.NUMERIC = [ "=", "<>", ">=", "<=", ">", "<",
-  Messages.getString( "IS_NULL" ),
-  Messages.getString( "IS_NOT_NULL" ) ];
-pentaho.pda.Column.COMPARATOR.BOOLEAN = [ "=", "<>",
-  Messages.getString( "IS_NULL" ),
-  Messages.getString( "IS_NOT_NULL" ) ];
+	[Messages.getString( "EXACTLY_MATCHES" ), pentaho.pda.Column.CONDITION_TYPES.EQUAL],
+	[Messages.getString( "CONTAINS" ), pentaho.pda.Column.CONDITION_TYPES.CONTAINS],
+	[Messages.getString( "ENDS_WITH" ), pentaho.pda.Column.CONDITION_TYPES.ENDSWITH],
+	[Messages.getString( "BEGINS_WITH" ), pentaho.pda.Column.CONDITION_TYPES.BEGINSWITH],
+  [Messages.getString( "DOES_NOT_CONTAIN" ), pentaho.pda.Column.CONDITION_TYPES.NOT_CONTAINS],
+  [Messages.getString( "IS_NULL" ), pentaho.pda.Column.CONDITION_TYPES.IS_NULL],
+  [Messages.getString( "IS_NOT_NULL" ), pentaho.pda.Column.CONDITION_TYPES.NOT_NULL]];
+pentaho.pda.Column.COMPARATOR.NUMERIC = [
+  ["=", pentaho.pda.Column.CONDITION_TYPES.EQUAL],
+//  ["<>", ],
+  [">=", pentaho.pda.Column.CONDITION_TYPES.MORE_THAN_OR_EQUAL],
+  ["<=", pentaho.pda.Column.CONDITION_TYPES.LESS_THAN_OR_EQUAL],
+  [">", pentaho.pda.Column.CONDITION_TYPES.MORE_THAN],
+  ["<", pentaho.pda.Column.CONDITION_TYPES.LESS_THAN],
+  [Messages.getString( "IS_NULL" ), pentaho.pda.Column.CONDITION_TYPES.IS_NULL],
+  [Messages.getString( "IS_NOT_NULL" ), pentaho.pda.Column.CONDITION_TYPES.NOT_NULL]];
+pentaho.pda.Column.COMPARATOR.BOOLEAN = [
+  ["=", pentaho.pda.Column.CONDITION_TYPES.EQUAL],
+//  ["<>", ],
+  [Messages.getString( "IS_NULL" ), pentaho.pda.Column.CONDITION_TYPES.IS_NULL],
+  [Messages.getString( "IS_NOT_NULL" ), pentaho.pda.Column.CONDITION_TYPES.NOT_NULL]];
 pentaho.pda.Column.COMPARATOR.DATE = [ 
-	Messages.getString( "ON" ), 
-	Messages.getString( "NOT_ON" ), 
-	Messages.getString( "ON_OR_AFTER" ), 
-	Messages.getString( "ON_OR_BEFORE" ), 
-	Messages.getString( "AFTER" ), 
-  Messages.getString( "BEFORE" ),
-  Messages.getString( "IS_NULL" ),
-  Messages.getString( "IS_NOT_NULL" )];
+	[Messages.getString( "ON" ), pentaho.pda.Column.CONDITION_TYPES.EQUAL],
+//	[Messages.getString( "NOT_ON" ),
+	[Messages.getString( "ON_OR_AFTER" ), pentaho.pda.Column.CONDITION_TYPES.MORE_THAN_OR_EQUAL],
+	[Messages.getString( "ON_OR_BEFORE" ), pentaho.pda.Column.CONDITION_TYPES.LESS_THAN_OR_EQUAL],
+	[Messages.getString( "AFTER" ), pentaho.pda.Column.CONDITION_TYPES.MORE_THAN],
+  [Messages.getString( "BEFORE" ), pentaho.pda.Column.CONDITION_TYPES.LESS_THAN],
+  [Messages.getString( "IS_NULL" ), pentaho.pda.Column.CONDITION_TYPES.IS_NULL],
+  [Messages.getString( "IS_NOT_NULL" ), pentaho.pda.Column.CONDITION_TYPES.NOT_NULL]];
 
 //Comparators with no right-hand parameters (is null, etc).
 pentaho.pda.Column.SINGLE_COMPARATORS = {};
