@@ -2,7 +2,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
-import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.util.*;

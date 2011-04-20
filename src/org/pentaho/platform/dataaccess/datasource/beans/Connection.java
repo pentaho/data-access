@@ -21,7 +21,7 @@
 package org.pentaho.platform.dataaccess.datasource.beans;
 
 import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
   public class Connection extends XulEventSourceAdapter implements IConnection{

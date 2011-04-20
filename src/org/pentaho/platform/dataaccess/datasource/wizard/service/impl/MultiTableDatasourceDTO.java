@@ -25,7 +25,7 @@ import java.util.List;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.SchemaModel;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.agilebi.modeler.models.AbstractModelList;
+import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class MultiTableDatasourceDTO implements Serializable {
 

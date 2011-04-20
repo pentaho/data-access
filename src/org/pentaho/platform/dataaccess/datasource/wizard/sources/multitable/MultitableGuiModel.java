@@ -34,9 +34,9 @@ import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
-import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.agilebi.modeler.models.AbstractModelList;
+import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class MultitableGuiModel extends XulEventSourceAdapter {
 

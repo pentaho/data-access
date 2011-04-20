@@ -22,7 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.beans;
 
 import java.io.Serializable;
 
-import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
