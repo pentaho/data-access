@@ -156,6 +156,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
 
       String path = solutionStorage + ISolutionRepository.SEPARATOR + metadataLocation + ISolutionRepository.SEPARATOR;
       domainId = path + name + ".xmi"; //$NON-NLS-1$ 
+      domain.setId(domainId);
 
       IApplicationContext appContext = PentahoSystem.getApplicationContext();
       if (appContext != null) {
