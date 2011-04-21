@@ -76,6 +76,8 @@
     <exclude name="**/AggregationTest*"/>
     <exclude name="**/CsvModelTest*"/>
     <exclude name="**/CsvFileInfoTest*"/>
+    <exclude name="**/MultitableDatasourceService*"/>
+
 
   </source>
   <stylesheet src="datasourceEditorDialog.css"/>

@@ -278,11 +278,6 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     enableWaitCursor(true);
     model.setDomain(domain);
     controller.resetPropertyForm();
-    if(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef") == null){
-      controller.setModellingMode(ModelerMode.REPORTING_ONLY);
-    } else {
-      controller.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
-    }
     showDialog();
     enableWaitCursor(false);
   }
@@ -292,11 +287,6 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     service.loadDomain(domainId, new XulServiceCallback<Domain>(){
       public void success(Domain retVal) {
         model.setDomain(retVal);
-        if(retVal.getLogicalModels().get(0).getProperty("MondrianCatalogRef") == null){
-          controller.setModellingMode(ModelerMode.REPORTING_ONLY);
-        } else {
-          controller.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
-        }
         controller.resetPropertyForm();
         enableWaitCursor(false);
         showDialog();

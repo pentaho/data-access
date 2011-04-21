@@ -82,6 +82,8 @@ This module serves as the Debuging environment and default implementation for in
         <exclude name="**/AggregationTest*"/>
         <exclude name="**/CsvModelTest*"/>
         <exclude name="**/CsvFileInfoTest*"/>
+        <exclude name="**/MultitableDatasourceService*"/>
+
 
     </source>
    <stylesheet src="datasourceEditorDialog.css"/>
