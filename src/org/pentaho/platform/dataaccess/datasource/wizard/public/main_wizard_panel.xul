@@ -174,7 +174,7 @@
 				      <hbox>
 				        <vbox>
 				          <label value="${multitable.AVAILABLE_TABLES}" tooltiptext=""/>
-				          <listbox id="availableTables" pen:binding="name" disabled="false" height="200" width="295"/>
+				          <listbox id="availableTables" pen:binding="name" disabled="false" height="370" width="295"/>
 				        </vbox>
 				        <vbox>
 				          <spacer height="90"/>
@@ -183,7 +183,7 @@
 				        </vbox>
 				        <vbox>
 				          <label value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
-				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="200" width="295"/>
+				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="370" width="295"/>
 				          <vbox id="factTableVbox">
 				          	<label value="${multitable.FACT_TABLE}" tooltiptext=""/>
    						  	<menulist id="factTables" pen:binding="name" width="204">
