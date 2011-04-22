@@ -53,11 +53,11 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	private XulVbox joinDefinitionDialog;
 	private MultitableGuiModel joinGuiModel;
-	private XulListbox leftTables;
-	private XulListbox rightTables;
+	private XulMenuList<JoinTableModel> leftTables;
+	private XulMenuList<JoinTableModel> rightTables;
 	private XulListbox joins;
-	private XulMenuList<JoinFieldModel> leftKeyFieldList;
-	private XulMenuList<JoinFieldModel> rightKeyFieldList;
+	private XulListbox leftKeyFieldList;
+	private XulListbox rightKeyFieldList;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private IConnection selectedConnection;
 	private JoinValidator validator;
@@ -69,21 +69,21 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
-		final XulListbox xulListbox = (XulListbox) evt.getSource();
-		final JoinTableModel table = (JoinTableModel) xulListbox.getSelectedItem();
+	
+		final XulMenuList<JoinTableModel> tablesList = (XulMenuList<JoinTableModel>) evt.getSource();
+		final JoinTableModel table = tablesList.getSelectedIndex() >= 0 ? (JoinTableModel) this.joinGuiModel.getLeftTables().get(tablesList.getSelectedIndex()) : null;
 		if (table != null) {
 			joinSelectionServiceGwtImpl.getTableFields(table.getName(), this.selectedConnection, new XulServiceCallback<List>() {
 				public void error(String message, Throwable error) {
-					error.printStackTrace();
 				}
 
 				public void success(List fields) {
 					List<JoinFieldModel> fieldModels = table.processTableFields(fields);
 					table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
-					if (xulListbox.equals(leftTables)) {
-						leftKeyFieldList.setElements(fields);
+					if (tablesList.equals(leftTables)) {
+						leftKeyFieldList.setElements(fields);	
 					}
-					if (xulListbox.equals(rightTables)) {
+					if (tablesList.equals(rightTables)) {
 						rightKeyFieldList.setElements(fields);
 					}
 				}
@@ -118,13 +118,13 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.validator = new JoinValidator(this.joinGuiModel, wizardModel);
 		this.joinDefinitionDialog = (XulVbox) document.getElementById(JOIN_DEFINITION_PANEL_ID);
 		this.joins = (XulListbox) document.getElementById("joins");
-		this.leftKeyFieldList = (XulMenuList<JoinFieldModel>) document.getElementById("leftKeyField");
-		this.rightKeyFieldList = (XulMenuList<JoinFieldModel>) document.getElementById("rightKeyField");
+		this.leftKeyFieldList = (XulListbox) document.getElementById("leftKeyField");
+		this.rightKeyFieldList = (XulListbox) document.getElementById("rightKeyField");
 
-		this.leftTables = (XulListbox) document.getElementById("leftTables");
+		this.leftTables = (XulMenuList<JoinTableModel>) document.getElementById("leftTables");
 		this.leftTables.addPropertyChangeListener(this);
 
-		this.rightTables = (XulListbox) document.getElementById("rightTables");
+		this.rightTables = (XulMenuList<JoinTableModel>) document.getElementById("rightTables");
 		this.rightTables.addPropertyChangeListener(this);
 
 		super.init(wizardModel);
@@ -143,10 +143,11 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
-				if (index == -1) {
+				List<JoinFieldModel> fields = joinGuiModel.getLeftJoinTable().getFields();
+				if (index == -1 || fields.isEmpty()) {
 					return null;
 				}
-				return joinGuiModel.getLeftJoinTable().getFields().get(index);
+				return fields.get(index);
 			}
 
 			@Override
@@ -159,10 +160,11 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
-				if (index == -1) {
+				List<JoinFieldModel> fields = joinGuiModel.getRightJoinTable().getFields();
+				if (index == -1 || fields.isEmpty()) {
 					return null;
 				}
-				return joinGuiModel.getRightJoinTable().getFields().get(index);
+				return fields.get(index);
 			}
 
 			@Override
@@ -170,7 +172,6 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 				return null;
 			}
 		});
-
 	}
 
 	@Override
@@ -211,7 +212,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	}
 
 	public void resetComponents() {
-		this.leftKeyFieldList.setElements(null);
-		this.rightKeyFieldList.setElements(null);
+		this.leftKeyFieldList.setElements(new AbstractModelList<JoinFieldModel>());
+		this.rightKeyFieldList.setElements(new AbstractModelList<JoinFieldModel>());
 	}
 }

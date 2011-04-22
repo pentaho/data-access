@@ -244,20 +244,24 @@
 				      </hbox>
 				      <hbox>
 				        <vbox>
+
 				          <label value="${multitable.LEFT_TABLE}" tooltiptext=""/>
-				          <listbox id="leftTables" pen:binding="name" disabled="false" height="150" width="300"/>
-				          <label value="${multitable.KEY_FIELD}" tooltiptext=""/>
-				          <menulist id="leftKeyField" pen:binding="name" editable="false" width="300">
+				          <menulist id="leftTables" pen:binding="name" editable="false" width="300">
 						    <menupopup/>
 						  </menulist>          
+				          <label value="${multitable.KEY_FIELD}" tooltiptext=""/>
+   				          <listbox id="leftKeyField" pen:binding="name" disabled="false" height="150" width="300"/>
+				          
 				        </vbox>
 				        <vbox>
+				        
 				          <label value="${multitable.RIGHT_TABLE}" tooltiptext=""/>
-				          <listbox id="rightTables" pen:binding="name" disabled="false" height="150" width="300"/>
-				          <label value="${multitable.KEY_FIELD}" tooltiptext=""/>
-				          <menulist id="rightKeyField" pen:binding="name" editable="false" width="300">
+				          <menulist id="rightTables" pen:binding="name" editable="false" width="300">
 						    <menupopup/>
 						  </menulist>   
+				          <label value="${multitable.KEY_FIELD}" tooltiptext=""/>
+				          <listbox id="rightKeyField" pen:binding="name" disabled="false" height="150" width="300"/>
+
 						  <hbox>
 						    <spacer width="217"/>
 						    <button id="createJoinButton" label="${multitable.CREATE_JOIN}" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
