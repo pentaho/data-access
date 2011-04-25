@@ -154,7 +154,8 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
 		bf.createBinding(this.joinGuiModel.getJoins(), "children", this.joins, "elements");
 		bf.createBinding(this.joins, "selectedItem", this.joinGuiModel, "selectedJoin");
-		bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
+		
+		this.leftKeyFieldBinding = bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
 
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
@@ -171,7 +172,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 			}
 		});
 
-		rightKeyFieldBinding = bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
+		this.rightKeyFieldBinding = bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
 
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
