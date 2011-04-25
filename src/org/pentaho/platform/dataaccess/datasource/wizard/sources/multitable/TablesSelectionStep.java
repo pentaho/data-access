@@ -83,7 +83,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 			this.joinGuiModel.addSelectedTable((JoinTableModel) this.availableTables.getSelectedItem());
 		}
 		if(!this.reportingAnalysisRadio.isSelected()) {
-			super.setValid(!this.selectedTables.getElements().isEmpty());
+			super.setValid(this.selectedTables.getElements().size() > 1);
 		}
 	}
 
@@ -93,7 +93,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 			this.joinGuiModel.removeSelectedTable((JoinTableModel) this.selectedTables.getSelectedItem());
 		}
 		if(!this.reportingAnalysisRadio.isSelected()) {
-			super.setValid(!this.selectedTables.getElements().isEmpty());
+			super.setValid(this.selectedTables.getElements().size() > 1);
 		}
 	}
 
@@ -138,7 +138,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 				}
 				//Index 0 represents [select table] option.
 				//To be valid index must not be 0.
-				TablesSelectionStep.this.setValid(index > 0);
+				TablesSelectionStep.this.setValid(index > 0 && selectedTables.getElements().size() > 1);
 				int i = (int) index;
 				i--;
 				return i < 0 ? null : joinGuiModel.getSelectedTables().get(i);

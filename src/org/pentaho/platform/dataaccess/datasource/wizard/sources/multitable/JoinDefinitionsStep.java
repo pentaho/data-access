@@ -71,7 +71,14 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	public void propertyChange(PropertyChangeEvent evt) {
 	
 		final XulMenuList<JoinTableModel> tablesList = (XulMenuList<JoinTableModel>) evt.getSource();
-		final JoinTableModel table = tablesList.getSelectedIndex() >= 0 ? (JoinTableModel) this.joinGuiModel.getLeftTables().get(tablesList.getSelectedIndex()) : null;
+		List<JoinTableModel> tables = null;
+		if (tablesList.equals(leftTables)) {
+			tables = this.joinGuiModel.getLeftTables();
+		} else if (tablesList.equals(rightTables)) {
+			tables = this.joinGuiModel.getRightTables();
+		}
+		
+		final JoinTableModel table = tablesList.getSelectedIndex() >= 0 ? (JoinTableModel) tables.get(tablesList.getSelectedIndex()) : null;
 		if (table != null) {
 			joinSelectionServiceGwtImpl.getTableFields(table.getName(), this.selectedConnection, new XulServiceCallback<List>() {
 				public void error(String message, Throwable error) {
@@ -82,8 +89,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 					table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
 					if (tablesList.equals(leftTables)) {
 						leftKeyFieldList.setElements(fields);	
-					}
-					if (tablesList.equals(rightTables)) {
+					} else if (tablesList.equals(rightTables)) {
 						rightKeyFieldList.setElements(fields);
 					}
 				}
@@ -176,6 +182,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	@Override
 	public void stepActivatingForward() {
+		
 		super.stepActivatingForward();
 		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
 		this.joinGuiModel.computeJoinDefinitionStepTables();
