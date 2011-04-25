@@ -359,3 +359,7 @@ html>body .dialog-content {
   width: 188px;
   white-space: normal !important;
 }
+#joinDefinitionWindow,
+#joinSelectionWindow {
+  border-collapse: separate;
+}

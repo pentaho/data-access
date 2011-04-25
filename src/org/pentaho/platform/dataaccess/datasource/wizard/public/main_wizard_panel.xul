@@ -4,9 +4,9 @@
 	<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="800" height="500" title="${WIZARD_TITLE}" onload="" resizable="false" padding="0" spacing="0" buttons="">
 		<hbox id="main_box" padding="0" spacing="0" width="800" height="500">
 			<vbox id="stepsPanel" width="150" height="500" padding="0" spacing="0">
-				<hbox flex="1" padding="0">
+				<hbox flex="1" padding="0" spacing="0">
 					<spacer width="2"/>
-					<vbox flex="1" padding="0" height="494">
+					<vbox flex="1" padding="0" spacing="0" height="494">
 						<spacer height="10"/>
 						<grid id="step_grid">
 							<columns>
@@ -52,7 +52,7 @@
 										<button id="addConnection" image="images/add.png" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="images/add_disabled.png" onclick="connectionController.showAddConnectionDialog()" disabled="false"/>
 										<button id="removeConnection" image="images/remove.png" pen:disabledimage="images/remove_disabled.png" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="connectionController.showRemoveConnectionDialog()" disabled="true"/>
 									</hbox>
-									<listbox flex="1" id="connectionList" pen:binding="name" disabled="true"/>
+									<listbox id="connectionList" pen:binding="name" disabled="true" height="258"/>
 									<vbox id="metadata">
 									    <label value="${multitable.REPORTING_METADATA_GROUP_LABEL}" tooltiptext=""/>
 										<radiogroup id="metadataRadioGrup" padding="0">
