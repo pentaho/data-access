@@ -37,6 +37,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelect
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
+import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulMenuList;
@@ -61,6 +62,8 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private IConnection selectedConnection;
 	private JoinValidator validator;
+	private Binding rightKeyFieldBinding;
+	private Binding leftKeyFieldBinding;
 
 	public JoinDefinitionsStep(MultitableGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
@@ -85,12 +88,18 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 				}
 
 				public void success(List fields) {
-					List<JoinFieldModel> fieldModels = table.processTableFields(fields);
-					table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
-					if (tablesList.equals(leftTables)) {
-						leftKeyFieldList.setElements(fields);	
-					} else if (tablesList.equals(rightTables)) {
-						rightKeyFieldList.setElements(fields);
+					try {
+						List<JoinFieldModel> fieldModels = table.processTableFields(fields);
+						table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
+						if (tablesList.equals(leftTables)) {
+							leftKeyFieldList.setElements(fields);	
+							leftKeyFieldBinding.fireSourceChanged();
+						} else if (tablesList.equals(rightTables)) {
+							rightKeyFieldList.setElements(fields);
+							rightKeyFieldBinding.fireSourceChanged();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			});
@@ -162,7 +171,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 			}
 		});
 
-		bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
+		rightKeyFieldBinding = bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
 
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
