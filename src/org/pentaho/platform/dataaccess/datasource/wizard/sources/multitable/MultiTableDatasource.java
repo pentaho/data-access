@@ -19,9 +19,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
@@ -46,6 +43,9 @@ import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MultiTableDatasource extends AbstractXulEventHandler implements IWizardDatasource {
 
@@ -154,7 +154,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	public void onFinish(final XulServiceCallback<IDatasourceSummary> callback) {
 
 		if (this.validator.allTablesJoined()) {
-			String dsName = this.wizardModel.getDatasourceName().replace(".", "_").replace(" ", "_");
+			String dsName = this.wizardModel.getDatasourceName();
 			MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO(dsName);
 			dto.setSelectedConnection(this.connection);
 			joinSelectionServiceGwtImpl.serializeJoins(dto, this.connection, new XulServiceCallback<IDatasourceSummary>() {
