@@ -507,7 +507,22 @@
     ondialogaccept="colResolver.done()" ondialogcancel="colResolver.cancel()" onload="colResolver.init()"  buttons="accept, cancel" buttonalign="right" buttonlabelaccept="${dialog.OK}" buttonlabelcancel="${dialog.cancel}">
     <groupbox flex="1">
     <caption label="Choose a column from the available list"/>
-      <listbox id="resolveColumnsList" height="280" pen:binding="name" command="colResolver.done()"/>
+      <tree id="resolveColumnsTree" flex="1" editable="false" hiddenrootnode="true" preserveselection="false" height="400" >
+        <treecols>
+          <treecol flex="1" label="" primary="true"
+            pen:binding="name" pen:childrenbinding="children"
+            pen:imagebinding="image" editable="false"
+            pen:expandedbinding="expanded"/>
+        </treecols>
+        <treechildren>
+          <treeitem container="true" open="true">
+            <treerow>
+              <treecell label="" />
+            </treerow>
+            <treechildren></treechildren>
+          </treeitem>
+        </treechildren>
+      </tree>
     </groupbox>
   </dialog>
   

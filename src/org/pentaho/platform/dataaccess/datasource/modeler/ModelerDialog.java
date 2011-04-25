@@ -5,7 +5,6 @@ import org.pentaho.agilebi.modeler.*;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.propforms.*;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
@@ -44,6 +43,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
 
   private ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
   private ModelerController controller;
+
   private IModelerMessages messages;
   private XulDialog errorDialog;
   private XulDialog waitDialog;
@@ -174,10 +174,9 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
       // Messages may have been set earlier, ignore.
     }
 
-    GwtModelerWorkspaceHelper workspacehelper = new GwtModelerWorkspaceHelper();
+    IModelerWorkspaceHelper workspacehelper = model.getWorkspaceHelper();
 
     controller = new ModelerController(model);
-
     controller.setWorkspaceHelper(workspacehelper);
 //    controller.setMessages(messages);
     BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
@@ -203,66 +202,8 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     });
 
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    AbstractModelerNodeForm propController = new MeasuresPropertiesForm(workspacehelper.getLocale());
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
 
-    propController = new DimensionPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new LevelsPropertiesForm(workspacehelper.getLocale());
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-
-    propController = new HierarchyPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new MainModelerNodePropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-
-    propController = new GenericPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new CategoryPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new FieldsPropertiesForm(workspacehelper.getLocale());
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new RelationalModelNodePropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    ColResolverController colController = new ColResolverController();
-    container.addEventHandler(colController);
-    controller.setColResolver(colController);
-    colController.init();
+    ModelerUiHelper.configureControllers(container, model, bf, controller, new ColResolverController());
 
     waitDialog = (XulDialog) document.getElementById("waitingDialog");
     this.constructorListener.asyncConstructorDone(this);
