@@ -103,6 +103,8 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 		this.connectionSelectionStep.setValid(true);
 		this.setConnection(connectionSelectionStep.getConnection());
+		
+		this.tablesSelectionStep.setRadioState(false);
 	}
 
 	@Override
@@ -215,6 +217,10 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 						joinGuiModel.processAvailableTables(tables);
 						joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
 						tablesSelectionStep.setValid(true);
+						tablesSelectionStep.setRadioState(joinGuiModel.isDoOlap());
+						if(joinGuiModel.isDoOlap()) {
+							tablesSelectionStep.setFactTable(joinGuiModel.getFactTable());
+						}
 						callback.success(null);
 					}
 				});

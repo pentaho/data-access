@@ -51,6 +51,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
 	private XulRadio reportingAnalysisRadio;
+	private XulRadio reportingRadio;
 	private XulMenuList<JoinTableModel> factTables;
 	private MultitableGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
@@ -104,6 +105,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
 		this.factTables = (XulMenuList<JoinTableModel>) document.getElementById("factTables");
 		this.reportingAnalysisRadio = (XulRadio) document.getElementById("reporting_analysis");
+		this.reportingRadio = (XulRadio) document.getElementById("reporting");
 		super.init(wizardModel);
 	}
 
@@ -158,6 +160,19 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	public XulComponent getUIComponent() {
 		return this.tablesSelectionDialog;
 	}
+	
+	public void setRadioState(boolean isOlap) {
+		if(reportingAnalysisRadio != null && reportingRadio != null) {
+			this.reportingAnalysisRadio.setSelected(isOlap);
+			this.reportingRadio.setSelected(!isOlap);
+		}
+	}
+	
+	public void setFactTable(JoinTableModel factTable) {
+		List<JoinTableModel> tables = new ArrayList<JoinTableModel>();
+		tables.addAll(this.factTables.getElements());
+		this.factTables.setSelectedIndex(tables.indexOf(factTable.getName()));
+	}
 
 	@Override
 	public void stepActivatingReverse() {
@@ -168,8 +183,8 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Override
 	public void stepActivatingForward() {
 		XulVbox factTableVBox = (XulVbox) document.getElementById("factTableVbox");
-		factTableVBox.setVisible(reportingAnalysisRadio.isSelected());
-		this.joinGuiModel.doOlap(reportingAnalysisRadio.isSelected());
+		factTableVBox.setVisible(this.reportingAnalysisRadio.isSelected());
+		this.joinGuiModel.doOlap(this.reportingAnalysisRadio.isSelected());
 		
 		if(this.reportingAnalysisRadio.isSelected()) {
 			super.setValid(this.factTables.getSelectedIndex() > 0);

@@ -182,6 +182,10 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		return this.rightTables;
 	}
 	
+	public boolean isDoOlap() {
+		return this.doOlap;
+	}
+	
 	public void doOlap(boolean isStar) {
 		this.doOlap = isStar;
 	}
@@ -279,8 +283,11 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 			this.selectTable(selectedTable, selectedTablesList);
 		}
 		this.selectedTables.addAll(selectedTablesList);
-
 		this.joins.addAll(dto.getSchemaModel().getJoins());
+		this.doOlap(dto.isDoOlap());
+		if(dto.isDoOlap()) {
+			this.setFactTable(dto.getSchemaModel().getFactTable());
+		}
 	}
 
 	private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
