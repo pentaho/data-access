@@ -21,14 +21,12 @@
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
 
+import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.RootPanel;
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
-import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
+import com.google.gwt.core.client.JavaScriptObject;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPane;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPaneNativeListener;
-import org.pentaho.gwt.widgets.client.utils.i18n.IResourceBundleLoadCallback;
-import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
@@ -43,11 +41,8 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
-import org.pentaho.ui.xul.util.XulDialogCallback;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
-
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.JavaScriptObject;
+import org.pentaho.ui.xul.util.XulDialogCallback;
 
 /**
  * Creates the singleton datasource wizard and sets up native JavaScript functions to show the wizard.
@@ -101,6 +96,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     }
     $wnd.openEditDatasourceEditor= function(domainId, modelId, callback) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showEdit(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(domainId, modelId, callback);
+    }
+    $wnd.openEditDatasourceEditor= function(domainId, modelId, perspective, callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showEdit(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(domainId, modelId, perspective, callback);
     }
     $wnd.deleteModel=function(domainId, modelName, callback) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::deleteLogicalModel(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(domainId, modelName, callback);
@@ -175,6 +173,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     wizard.showDialog();
   }
 
+  private void showEdit(final String domainId, final String modelId, final JavaScriptObject callback) {
+    showEdit(domainId, modelId, ModelerPerspective.REPORTING.name(), callback);
+  }
   /**
    * edit entry-point from Javascript, responds to provided callback with the following:
    *
@@ -185,7 +186,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
    * @param callback
    *
    */
-  private void showEdit(final String domainId, final String modelId, final JavaScriptObject callback) {
+  private void showEdit(final String domainId, final String modelId, final String perspective, final JavaScriptObject callback) {
     final DialogListener<Domain> listener = new DialogListener<Domain>(){
       public void onDialogCancel() {
         notifyCallbackCancel(callback);
@@ -202,8 +203,14 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     modeler = ModelerDialog.getInstance(wizard, new AsyncConstructorListener<ModelerDialog>(){
         public void asyncConstructorDone(ModelerDialog dialog) {
 
+          ModelerPerspective modelerPerspective;
+          try {
+            modelerPerspective = ModelerPerspective.valueOf(perspective);
+          } catch (IllegalArgumentException e) {
+            modelerPerspective = ModelerPerspective.REPORTING;
+          }
           dialog.addDialogListener(listener);
-          dialog.showDialog(domainId, modelId);
+          dialog.showDialog(domainId, modelId, modelerPerspective);
         }
       });
 
