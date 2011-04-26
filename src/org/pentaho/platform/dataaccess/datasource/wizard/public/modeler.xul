@@ -51,7 +51,7 @@
 
       </groupbox>
 
-      <deck id="modelDeck" width="360" height="463">
+      <deck id="modelDeck" width="360" height="488">
 
         <tabbox id="modelTabbox" flex="1" >
           <tabs>
@@ -134,7 +134,7 @@
 
         <groupbox width="360" height="463" id="schema-toolbar-groupbox">
           <caption label="${model}" />
-          <hbox id="modelPanel" height="463" flex="1" spacing="0" padding="0">
+          <hbox id="modelPanel" height="413" flex="1" spacing="0" padding="0">
 
           </hbox>
         </groupbox>

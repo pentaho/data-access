@@ -349,7 +349,9 @@ html>body .dialog-content {
 #schema-toolbar-groupbox > .vbox {
   height: 443px !important;
 }
-
+#schema-toolbar-groupbox  {
+  height: 463px !important;
+}
 #propertiesPanel .xul-textbox {
   width: 202px !important;
 }
