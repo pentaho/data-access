@@ -165,7 +165,6 @@
 						<!--  ###############################################################################  -->
 						<!--     Multitable datasource step 2 -->
 						<!--  ###############################################################################  -->        		            
-	              
 				      <hbox>
 				        <vbox>
 				          <label value="${multitable.SELECT_JOIN_TABLES}" tooltiptext=""/>
@@ -177,14 +176,19 @@
 				          <listbox id="availableTables" pen:binding="name" disabled="false" height="370" width="295"/>
 				        </vbox>
 				        <vbox>
-				          <spacer height="90"/>
+				          <spacer height="175"/>
 				          <button id="addButton" image="images/forward.gif" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false"/>
 				          <button id="removeButton" image="images/accum_remove.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"/>
+				          <spacer flex="1"/>
 				        </vbox>
 				        <vbox>
 				          <label value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
 				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="370" width="295"/>
-				          <vbox id="factTableVbox">
+				        </vbox>
+				      </hbox>
+				      <hbox>
+				          <spacer width="330"/>
+				      	  <vbox id="factTableVbox">
 				          	<label value="${multitable.FACT_TABLE}" tooltiptext=""/>
    						  	<menulist id="factTables" pen:binding="name" width="204">
 						  		<menupopup>
@@ -192,9 +196,8 @@
 								</menupopup>
 						  	</menulist>  
 				          </vbox>
-				        </vbox>
 				      </hbox>
-				    </vbox>
+				  </vbox>
 	              <!--Multi-table STEP 2-->
 
 				<!-- Wizard "Stage Data" Step -->
@@ -236,7 +239,6 @@
 					<!--  ###############################################################################  -->
 					<!--     Multitable datasource step 3 -->
 					<!--  ###############################################################################  -->        		            
-				
 				      <hbox>
 				        <vbox>
 				          <label value="${multitable.DEFINE_JOIN_TABLES}" tooltiptext=""/>
@@ -244,30 +246,26 @@
 				      </hbox>
 				      <hbox>
 				        <vbox>
-
 				          <label value="${multitable.LEFT_TABLE}" tooltiptext=""/>
 				          <menulist id="leftTables" pen:binding="name" editable="false" width="300">
 						    <menupopup/>
 						  </menulist>          
 				          <label value="${multitable.KEY_FIELD}" tooltiptext=""/>
    				          <listbox id="leftKeyField" pen:binding="name" disabled="false" height="150" width="300"/>
-				          
 				        </vbox>
 				        <vbox>
-				        
 				          <label value="${multitable.RIGHT_TABLE}" tooltiptext=""/>
 				          <menulist id="rightTables" pen:binding="name" editable="false" width="300">
 						    <menupopup/>
 						  </menulist>   
 				          <label value="${multitable.KEY_FIELD}" tooltiptext=""/>
 				          <listbox id="rightKeyField" pen:binding="name" disabled="false" height="150" width="300"/>
-
-						  <hbox>
-						    <spacer width="217"/>
-						    <button id="createJoinButton" label="${multitable.CREATE_JOIN}" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
-						  </hbox>
 				        </vbox>
 				      </hbox>
+					  <hbox>
+					    <spacer width="530"/>
+					    <button id="createJoinButton" label="${multitable.CREATE_JOIN}" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
+					  </hbox>
 				      <hbox>
 				        <vbox>
 				          <label value="${multitable.JOINS}" tooltiptext=""/>
