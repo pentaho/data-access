@@ -737,7 +737,7 @@ pentaho.pda.query.mql.prototype.getParameterXML = function( parameter ) {
         if(parameter.value != null) {
             xml += parameter.value;
         } else {
-            xml += parameter.defulatValue;
+            xml += parameter.defaultValue;
         }
         xml += '" name="'+parameter.column;
         xml += '" type="'+parameter.type+'"/>';
