@@ -50,17 +50,19 @@ public class WAQRTransport extends JavaScriptObject {
     String modelName = model.getName() != null ? model.getName().getString(locale) : null; 
     String categoryId = category.getId(); 
     String categoryName = category.getName() != null ? category.getName().getString(locale) : null;
+    String schemaName = model.getName(locale);
     
-    return createDomain(domainId, modelId, modelName, categoryId, categoryName);
+    return createDomain(domainId, modelId, modelName, categoryId, categoryName, schemaName);
   }
   
-  private native static WAQRTransport createDomain(String domainId, String modelId, String modelName, String categoryId, String categoryName) /*-{
+  private native static WAQRTransport createDomain(String domainId, String modelId, String modelName, String categoryId, String categoryName, String schemaName) /*-{
     var waqrTransport = {};
     waqrTransport.domainId = domainId;
     waqrTransport.modelId = modelId;
     waqrTransport.modelName = modelName;
     waqrTransport.categoryId = categoryId;
     waqrTransport.categoryName = categoryName;
+    waqrTransport.schemaName = schemaName;
     return waqrTransport;
   }-*/;
   
