@@ -63,6 +63,8 @@
 
               <vbox id="analyzerModelPanel" height="413" flex="1" spacing="0" padding="0">
                 <toolbar id="schema-toolbar" mode="icons">
+                  <toolbarbutton image="images/ExpandAll.png" onclick="modeler.expandAll()" disabled="false" tooltiptext="${expand_all}"/>
+                  <toolbarbutton image="images/CollapseAll.png" onclick="modeler.collapseAll()" disabled="false" tooltiptext="${collapse_all}"/>
                   <toolbarspacer flex="1"/>
                   <toolbarbutton id="measureBtn" image="images/sm_measure_icon.png" onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}"/>
                   <toolbarbutton id="dimensionBtn" image="images/sm_dim_icon.png" onclick="modeler.showNewDimensionDialog()" disabled="true" tooltiptext="${add_dimension}"/>
@@ -99,6 +101,8 @@
             <tabpanel id="reportingTabPanel" height="413">
               <vbox id="reportingModelPanel" height="413" flex="1" spacing="0" padding="0">
                 <toolbar id="categories-toolbar" mode="icons">
+                  <toolbarbutton image="images/ExpandAll.png" onclick="modeler.expandRelationalAll()" disabled="false" tooltiptext="${expand_all}"/>
+                  <toolbarbutton image="images/CollapseAll.png" onclick="modeler.collapseRelationalAll()" disabled="false" tooltiptext="${collapse_all}"/>
                   <toolbarspacer flex="1"/>
                   <toolbarbutton id="categoryBtn" image="images/sm_folder_icon.png" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}"/>
                   <toolbarbutton id="fieldBtn" image="images/fields.png" onclick="modeler.showNewFieldDialog()" disabled="true" tooltiptext="${new_field}"/>
