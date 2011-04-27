@@ -40,10 +40,15 @@ import org.pentaho.platform.engine.core.system.PentahoBase;
 import com.thoughtworks.xstream.XStream;
 
 public class MultitableDatasourceService extends PentahoBase implements IGwtJoinSelectionService {
+	
+	private ConnectionServiceImpl connectionServiceImpl;
+	
+	public MultitableDatasourceService() {
+		this.connectionServiceImpl = new ConnectionServiceImpl();
+	}
 
 	private DatabaseMeta getDatabaseMeta(IConnection connection) throws Exception {
-		ConnectionServiceImpl connectionServiceImpl = new ConnectionServiceImpl();
-		IDatabaseConnection iDatabaseConnection = connectionServiceImpl.convertFromConnection(connection);
+		IDatabaseConnection iDatabaseConnection = this.connectionServiceImpl.convertFromConnection(connection);
 		iDatabaseConnection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
 		return DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
 	}
