@@ -51,17 +51,27 @@ public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implement
 	}
 	
 	private DatabaseMeta getDatabaseMeta(IConnection connection) throws Exception {
-
 		ConnectionDebugGwtServlet connectionServiceImpl = new ConnectionDebugGwtServlet();
 		IDatabaseConnection iDatabaseConnection = connectionServiceImpl.convertFromConnection(connection);
-		return DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
+		DatabaseMeta databaseMeta = DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
+		
+		if(connection.getName().equals("SampleData")) {
+			databaseMeta.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
+			databaseMeta.setDBName("SampleData");
+		}
+		return databaseMeta;
 	}
 
 	public List<String> getDatabaseTables(IConnection connection) throws Exception {
 		
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
 		Database database = new Database(null, databaseMeta);
-		database.connect();
+		
+		try {
+			database.connect();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 
 		String[] tableNames = database.getTablenames();
 		List<String> tables = Arrays.asList(tableNames);
