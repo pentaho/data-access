@@ -167,6 +167,16 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		this.selectedTables.add(table);
 	}
 
+  public void addSelectedTables(List<JoinTableModel> selected) {
+    this.availableTables.removeAll(selected);
+		this.selectedTables.addAll(selected);
+  }
+
+  public void removeSelectedTables(List<JoinTableModel> selected) {
+		this.selectedTables.removeAll(selected);
+		this.availableTables.addAll(selected);
+  }
+
 	public void removeSelectedTable(JoinTableModel table) {
 		this.selectedTables.remove(table);
 		this.availableTables.add(table);
@@ -325,4 +335,5 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		this.leftJoinTable.reset();
 		this.rightJoinTable.reset();
 	}
+
 }

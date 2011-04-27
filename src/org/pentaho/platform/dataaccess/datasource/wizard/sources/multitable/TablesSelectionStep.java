@@ -81,7 +81,12 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Bindable
 	public void addSelectedTable() {
 		if (this.availableTables.getSelectedItem() != null) {
-			this.joinGuiModel.addSelectedTable((JoinTableModel) this.availableTables.getSelectedItem());
+      List<JoinTableModel> selected = new ArrayList<JoinTableModel>();
+      for(Object obj : this.availableTables.getSelectedItems()){
+        selected.add((JoinTableModel) obj);
+      }
+      this.joinGuiModel.addSelectedTables(selected);
+
 		}
 		if(!this.reportingAnalysisRadio.isSelected()) {
 			super.setValid(this.selectedTables.getElements().size() > 1);
@@ -91,7 +96,13 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Bindable
 	public void removeSelectedTable() {
 		if (this.selectedTables.getSelectedItem() != null) {
-			this.joinGuiModel.removeSelectedTable((JoinTableModel) this.selectedTables.getSelectedItem());
+
+      List<JoinTableModel> selected = new ArrayList<JoinTableModel>();
+      for(Object obj : this.selectedTables.getSelectedItems()){
+        selected.add((JoinTableModel) obj);
+      }
+      this.joinGuiModel.removeSelectedTables(selected);
+
 		}
 		if(!this.reportingAnalysisRadio.isSelected()) {
 			super.setValid(this.selectedTables.getElements().size() > 1);
@@ -182,6 +193,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	
 	@Override
 	public void stepActivatingForward() {
+    super.stepActivatingForward();
 		XulVbox factTableVBox = (XulVbox) document.getElementById("factTableVbox");
 		factTableVBox.setVisible(this.reportingAnalysisRadio.isSelected());
 		this.joinGuiModel.doOlap(this.reportingAnalysisRadio.isSelected());
