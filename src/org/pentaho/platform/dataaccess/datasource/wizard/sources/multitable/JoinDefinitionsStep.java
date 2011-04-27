@@ -205,7 +205,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	private void checkExistingJoinsStillValid() {
 		Set<String> allTables = new HashSet<String>();
-		for (JoinTableModel tbl : joinGuiModel.getAvailableTables()) {
+		for (JoinTableModel tbl : joinGuiModel.getSelectedTables()) {
 			allTables.add(tbl.getName());
 		}
 
