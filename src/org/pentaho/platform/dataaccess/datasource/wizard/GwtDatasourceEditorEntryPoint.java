@@ -94,10 +94,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     $wnd.openDatasourceEditor= function(callback) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::show(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
     }
-    $wnd.openEditDatasourceEditor= function(domainId, modelId, callback) {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showEdit(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(domainId, modelId, callback);
-    }
-    $wnd.openEditDatasourceEditor= function(domainId, modelId, perspective, callback) {
+    $wnd.openEditDatasourceEditor= function(domainId, modelId, callback, perspective) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showEdit(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(domainId, modelId, perspective, callback);
     }
     $wnd.deleteModel=function(domainId, modelName, callback) {
@@ -187,6 +184,12 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
    *
    */
   private void showEdit(final String domainId, final String modelId, final String perspective, final JavaScriptObject callback) {
+    final String modelPerspective;
+    if (perspective == null) {
+      modelPerspective = ModelerPerspective.REPORTING.name();
+    } else {
+      modelPerspective = perspective;
+    }
     final DialogListener<Domain> listener = new DialogListener<Domain>(){
       public void onDialogCancel() {
         notifyCallbackCancel(callback);
@@ -205,7 +208,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
           ModelerPerspective modelerPerspective;
           try {
-            modelerPerspective = ModelerPerspective.valueOf(perspective);
+            modelerPerspective = ModelerPerspective.valueOf(modelPerspective);
           } catch (IllegalArgumentException e) {
             modelerPerspective = ModelerPerspective.REPORTING;
           }

@@ -57,7 +57,7 @@
           if (domain == "Sample_DB_Table_Joins") {
             perspective = "REPORTING";
           }
-            openEditDatasourceEditor(domain, "MODEL_1", perspective, new function(){
+            openEditDatasourceEditor(domain, "MODEL_1", new function(){
               this.onOk = function(json, mqlStr){
                 alert(json+"\n\n\n"+mqlStr);
               }
@@ -76,7 +76,7 @@
               this.onFinish = function(status, transport) {
 
               }
-            });
+            }, perspective);
           }
 
         function initDataAccess(){}
