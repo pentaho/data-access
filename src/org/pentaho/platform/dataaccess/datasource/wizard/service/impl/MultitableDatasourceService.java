@@ -24,14 +24,16 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
+import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.ConnectionServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 
@@ -39,14 +41,11 @@ import com.thoughtworks.xstream.XStream;
 
 public class MultitableDatasourceService extends PentahoBase implements IGwtJoinSelectionService {
 
-	private DatabaseMeta getDatabaseMeta(IConnection connection) {
-		DatabaseMeta databaseMeta = new DatabaseMeta();
-		databaseMeta.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-		databaseMeta.setDBName(connection.getName());
-		databaseMeta.setName(connection.getName());
-		databaseMeta.setDatabaseType(AgileHelper.getDialect(databaseMeta, connection.getName()));
-		databaseMeta.setQuoteAllFields(true);
-		return databaseMeta;
+	private DatabaseMeta getDatabaseMeta(IConnection connection) throws Exception {
+		ConnectionServiceImpl connectionServiceImpl = new ConnectionServiceImpl();
+		IDatabaseConnection iDatabaseConnection = connectionServiceImpl.convertFromConnection(connection);
+		iDatabaseConnection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
+		return DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
 	}
 
 	public List<String> getDatabaseTables(IConnection connection) throws Exception {
