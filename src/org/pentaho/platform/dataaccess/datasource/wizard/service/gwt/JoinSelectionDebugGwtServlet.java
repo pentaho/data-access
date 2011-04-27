@@ -18,7 +18,6 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
@@ -26,7 +25,6 @@ import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
@@ -63,29 +61,20 @@ public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implement
 	}
 
 	public List<String> getDatabaseTables(IConnection connection) throws Exception {
-		
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		Database database = new Database(null, databaseMeta);
-		
-		try {
-			database.connect();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-
-		String[] tableNames = database.getTablenames();
-		List<String> tables = Arrays.asList(tableNames);
-		database.disconnect();
-		return tables;
+		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
+		return service.getDatabaseTables(connection);
 	}
 
 	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IConnection connection) throws Exception {
-		MultitableDatasourceService service = new MultitableDatasourceService();
+		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
+		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
 		return service.serializeJoins(dto, connection);
 	}
 
 	public List<String> getTableFields(String table, IConnection connection) throws Exception {
-		MultitableDatasourceService service = new MultitableDatasourceService();
+		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
+		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
 		return service.getTableFields(table, connection);
 	}
 	
