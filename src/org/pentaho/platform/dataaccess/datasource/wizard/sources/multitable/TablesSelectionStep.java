@@ -88,9 +88,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
       this.joinGuiModel.addSelectedTables(selected);
 
 		}
-		if(!this.reportingAnalysisRadio.isSelected()) {
-			super.setValid(this.selectedTables.getElements().size() > 1);
-		}
+    checkValidState();
 	}
 
 	@Bindable
@@ -104,9 +102,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
       this.joinGuiModel.removeSelectedTables(selected);
 
 		}
-		if(!this.reportingAnalysisRadio.isSelected()) {
-			super.setValid(this.selectedTables.getElements().size() > 1);
-		}
+    checkValidState();
 	}
 
 	@Override
@@ -151,7 +147,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 				}
 				//Index 0 represents [select table] option.
 				//To be valid index must not be 0.
-				TablesSelectionStep.this.setValid(index > 0 && selectedTables.getElements().size() > 1);
+				checkValidState();
 				int i = (int) index;
 				i--;
 				return i < 0 ? null : joinGuiModel.getSelectedTables().get(i);
@@ -189,7 +185,22 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	public void stepActivatingReverse() {
 		super.stepActivatingReverse();
 		parentDatasource.setFinishable(false);
+
+    checkValidState();
 	}
+
+  private void checkValidState(){
+    boolean valid = true;
+    boolean finishable = true;
+		if(this.reportingAnalysisRadio.isSelected()) {
+			valid &= this.factTables.getSelectedIndex() > 0;
+      finishable &= this.factTables.getSelectedIndex() > 0;
+		}
+		valid &= this.selectedTables.getElements().size() > 1;
+		finishable &= this.selectedTables.getElements().size() == 1;
+    super.setValid(valid);
+    this.parentDatasource.setFinishable(finishable);
+  }
 	
 	@Override
 	public void stepActivatingForward() {
@@ -198,10 +209,6 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		factTableVBox.setVisible(this.reportingAnalysisRadio.isSelected());
 		this.joinGuiModel.doOlap(this.reportingAnalysisRadio.isSelected());
 		
-		if(this.reportingAnalysisRadio.isSelected()) {
-			super.setValid(this.factTables.getSelectedIndex() > 0);
-		} else {
-			super.setValid(!this.selectedTables.getElements().isEmpty());
-		}
+    checkValidState();
 	}
 }
