@@ -788,11 +788,8 @@ pentaho.pda.query.mql.prototype.getFilterConditionString = function( columnId, c
         if( operator == pentaho.pda.Column.CONDITION_TYPES.LIKE ) {
             return 'LIKE(['+category+'.'+columnId+']; "%'+this.getFilterValueString(column, value, parameters)+'%")'; 
         }
-        else if( operator == pentaho.pda.Column.CONDITION_TYPES.EQUAL && !isArrayValues) {
-            return '['+category+'.'+columnId+'] = '+this.getFilterValueString(column, value, parameters); 
-        }
-        else if( operator == pentaho.pda.Column.CONDITION_TYPES.EQUAL && isArrayValues && value.length == 1) {
-            return '['+category+'.'+columnId+'] = '+this.getFilterValueString(column, value, parameters); 
+        else if( operator == pentaho.pda.Column.CONDITION_TYPES.EQUAL && (!isArrayValues || value.length == 1)) {
+            return 'EQUALS(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters) + ')'; 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.EQUAL && isArrayValues) {
             return 'IN(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+")"; 
