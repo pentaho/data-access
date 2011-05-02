@@ -30,7 +30,7 @@
       <script type="text/javascript">
 
         function showDatasourceEditor(){
-          openDatasourceEditor(new function(){
+          pho.openDatasourceEditor(new function(){
             this.onOk = function(json, mqlStr){
               alert(json+"\n\n\n"+mqlStr);
             }
@@ -57,7 +57,7 @@
           if (domain == "Sample_DB_Table_Joins") {
             perspective = "REPORTING";
           }
-            openEditDatasourceEditor(domain, "MODEL_1", new function(){
+            pho.openEditDatasourceEditor(domain, "MODEL_1", new function(){
               this.onOk = function(json, mqlStr){
                 alert(json+"\n\n\n"+mqlStr);
               }

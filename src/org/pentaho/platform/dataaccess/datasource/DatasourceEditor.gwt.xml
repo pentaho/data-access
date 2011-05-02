@@ -84,12 +84,10 @@ This module serves as the Debuging environment and default implementation for in
         <exclude name="**/CsvFileInfoTest*"/>
         <exclude name="**/MultitableDatasourceService*"/>
 
-
     </source>
    <stylesheet src="datasourceEditorDialog.css"/>
    <public path="wizard/public"/>
     <entry-point class="org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint"/>
-    <entry-point class="org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialogEntryPoint"/>
    <!--
   <servlet path="/databaseConnectionService" class="org.pentaho.ui.database.gwt.GwtDatabaseConnectionServlet" />
   <servlet path="/ConnectionService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet" />
