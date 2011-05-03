@@ -167,9 +167,11 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
     final DialogListener<Domain> listener = new DialogListener<Domain>(){
       public void onDialogCancel() {
+        wizard.removeDialogListener(this);
         notifyCallbackCancel(callback);
       }
       public void onDialogAccept(final Domain domain) {
+        wizard.removeDialogListener(this);
         WAQRTransport transport = WAQRTransport.createFromMetadata(domain);
         notifyCallbackSuccess(callback, true, transport);
       }
@@ -190,6 +192,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
           wizard.showDialog();
         }
       });
+    } else {
+      wizard.addDialogListener(listener);
+      wizard.showDialog();
     }
 
   }
@@ -216,11 +221,13 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     }
     final DialogListener<Domain> listener = new DialogListener<Domain>(){
       public void onDialogCancel() {
+        modeler.removeDialogListener(this);
         notifyCallbackCancel(callback);
       }
       public void onDialogAccept(final Domain domain) {
-            WAQRTransport transport = WAQRTransport.createFromMetadata(domain);
-            notifyCallbackSuccess(callback, true, transport);
+        modeler.removeDialogListener(this);
+        WAQRTransport transport = WAQRTransport.createFromMetadata(domain);
+        notifyCallbackSuccess(callback, true, transport);
       }
       public void onDialogReady() {
         notifyCallbackReady(callback);
@@ -274,11 +281,11 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
     final DialogListener<Domain> wizardListener = new DialogListener<Domain>(){
       public void onDialogCancel() {
-//        editor.removeDialogListener(this);
+        wizard.removeDialogListener(this);
         notifyCallbackCancel(callback);
       }
       public void onDialogAccept(final Domain domain) {
-//        editor.removeDialogListener(this);
+        wizard.removeDialogListener(this);
         WAQRTransport transport = WAQRTransport.createFromMetadata(domain);
         notifyCallbackSuccess(callback, domain.getId(), domain.getLogicalModels().get(0).getId());
       }
@@ -290,11 +297,13 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
     final DialogListener<LogicalModelSummary> listener = new DialogListener<LogicalModelSummary>(){
       public void onDialogCancel() {
+        selectDialog.removeDialogListener(this);
         asyncConstructorDone = false;
         notifyCallbackCancel(callback);
       }
 
       public void onDialogAccept(final LogicalModelSummary logicalModelSummary) {
+        selectDialog.removeDialogListener(this);
         asyncConstructorDone = false;
         notifyCallbackSuccess(callback, logicalModelSummary.getDomainId(), logicalModelSummary.getModelId(),logicalModelSummary.getModelName());
       }
