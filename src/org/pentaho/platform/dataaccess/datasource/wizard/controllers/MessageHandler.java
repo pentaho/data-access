@@ -24,6 +24,8 @@ public class MessageHandler extends AbstractXulEventHandler {
   private XulLabel successLabel = null;
 
   private XulDialog wizardDialog;
+  
+  private boolean showWizardDialog;
 
   public static final String MSG_OPENING_MODELER = "waiting.openingModeler";
   public static final String MSG_GENERAL_WAIT = "waiting.generalWaiting";
@@ -54,29 +56,35 @@ public class MessageHandler extends AbstractXulEventHandler {
   public void showErrorDialog(String message) {
     showErrorDialog(messages.getString("error"), message);
   }
-
+  
   public void showErrorDialog(String title, String message) {
-    XulDialog errorDialog = (XulDialog) document.getElementById("errorDialog");
-    errorDialog.setTitle(title);
-
-    XulLabel errorLabel = (XulLabel) document.getElementById("errorLabel");
-    errorLabel.setValue(message);
-
-    errorDialog.show();
+	  showErrorDialog(title, message, false);
   }
 
+  public void showErrorDialog(String title, String message, boolean showWizardDialog) {
+	  this.showWizardDialog = showWizardDialog; 
+	  XulDialog errorDialog = (XulDialog) document.getElementById("errorDialog");
+	  errorDialog.setTitle(title);
+
+	  XulLabel errorLabel = (XulLabel) document.getElementById("errorLabel");
+	  errorLabel.setValue(message);
+
+	  errorDialog.show();
+	  
+  }
+  
   public void showErrorDetailsDialog(String title, String message, String detailMessage) {
-    XulDialog errorDialog = (XulDialog) document.getElementById("errorDetailsDialog");
-    errorDialog.setTitle(title);
+	  XulDialog errorDialog = (XulDialog) document.getElementById("errorDetailsDialog");
+	  errorDialog.setTitle(title);
 
-    XulLabel errorLabel = (XulLabel) document.getElementById("errorDetailsLabel");
-    errorLabel.setValue(message);
+	  XulLabel errorLabel = (XulLabel) document.getElementById("errorDetailsLabel");
+	  errorLabel.setValue(message);
 
-    XulLabel detailMessageBox = (XulLabel) document.getElementById("error_dialog_details");
-    detailMessageBox.setValue(detailMessage);
+	  XulLabel detailMessageBox = (XulLabel) document.getElementById("error_dialog_details");
+	  detailMessageBox.setValue(detailMessage);
 
-    errorDialog.show();
-  }
+	  errorDialog.show();  
+  }  
   
   @Bindable
   public void closeSuccessDetailsDialog() {
@@ -125,7 +133,7 @@ public class MessageHandler extends AbstractXulEventHandler {
     if (!errorDetailsDialog.isHidden()) {
       errorDetailsDialog.hide();
     }
-    wizardDialog.show();
+   	wizardDialog.show();
   }
 
   @Bindable
@@ -133,7 +141,9 @@ public class MessageHandler extends AbstractXulEventHandler {
     if (!errorDialog.isHidden()) {
       errorDialog.hide();
     }
-    wizardDialog.show();
+    if(this.showWizardDialog) {
+    	wizardDialog.show();
+    }
   }
 
 

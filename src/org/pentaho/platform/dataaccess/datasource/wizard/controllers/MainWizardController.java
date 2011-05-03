@@ -353,7 +353,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
         throwable.printStackTrace();
         //TODO: improve error messaging
         MessageHandler.getInstance().closeWaitingDialog();
-        MessageHandler.getInstance().showErrorDialog(s, s);
+        MessageHandler.getInstance().showErrorDialog(s, s, true);
       }
     });
 
