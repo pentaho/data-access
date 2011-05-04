@@ -254,7 +254,7 @@ pentaho.pda.model.mql.prototype.getAllColumns = function() {
         return columns;
 }
         
-pentaho.pda.model.mql.prototype.searchColumn = function( column, searchStr ) {
+pentaho.pda.model.mql.prototype.searchColumn = function( column, searchStr, rowLimit ) {
         var query = this.createQuery();
         var selection = query.addSelectionById( column.id );
         var sort = query.addSortById( column.id, pentaho.pda.Column.SORT_TYPES.ASCENDING );
@@ -262,11 +262,11 @@ pentaho.pda.model.mql.prototype.searchColumn = function( column, searchStr ) {
             query.addConditionById(column.id,pentaho.pda.Column.CONDITION_TYPES.CONTAINS,searchStr,pentaho.pda.Column.OPERATOR_TYPES.OR);
         }
         // TODO submit this thru CDA
-        return this.submitQuery( query );
+        return this.submitQuery( query, rowLimit );
     }
     
-pentaho.pda.model.mql.prototype.getAllValuesForColumn = function( column ) {
-        return this.searchColumn( column );
+pentaho.pda.model.mql.prototype.getAllValuesForColumn = function( column, rowLimit ) {
+        return this.searchColumn( column, undefined, rowLimit );
     }
     
     // create a new query
