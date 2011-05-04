@@ -84,11 +84,11 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   private final static String VALID_PROPERTY_NAME = "valid"; //$NON-NLS-1$
 
-  private final static String NEXT_BTN_ELEMENT_ID = "next_btn"; //$NON-NLS-1$
+  private final static String NEXT_BTN_ELEMENT_ID = "main_wizard_window_extra2"; //$NON-NLS-1$
 
-  private final static String BACK_BTN_ELEMENT_ID = "back_btn"; //$NON-NLS-1$
+  private final static String BACK_BTN_ELEMENT_ID = "main_wizard_window_extra1"; //$NON-NLS-1$
 
-  private final static String FINISH_BTN_ELEMENT_ID = "finish_btn"; //$NON-NLS-1$
+  private final static String FINISH_BTN_ELEMENT_ID = "main_wizard_window_accept"; //$NON-NLS-1$
 
   private final static String CONTENT_DECK_ELEMENT_ID = "content_deck"; //$NON-NLS-1$
 
