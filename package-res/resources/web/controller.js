@@ -432,7 +432,9 @@ pentaho.pda.Column.SORT_TYPES.DESCENDING = "DESC";
 
 pentaho.pda.Column.OPERATOR_TYPES = new Object();
 pentaho.pda.Column.OPERATOR_TYPES.OR = 'OR';
+pentaho.pda.Column.OPERATOR_TYPES.OR_NOT = 'OR NOT';
 pentaho.pda.Column.OPERATOR_TYPES.AND = 'AND';
+pentaho.pda.Column.OPERATOR_TYPES.AND_NOT = 'AND NOT';
 
 pentaho.pda.Column.CONDITION_TYPES = new Object();
 pentaho.pda.Column.CONDITION_TYPES.LIKE = 'LIKE';
