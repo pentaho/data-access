@@ -199,7 +199,6 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
       e.printStackTrace();
       showMessagebox("Error", e.getLocalizedMessage()); //$NON-NLS-1$
     }
-    refreshDatasources(null, null);
   }
 
   /**
