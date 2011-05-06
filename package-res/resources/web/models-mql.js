@@ -786,37 +786,37 @@ pentaho.pda.query.mql.prototype.getFilterConditionString = function( columnId, c
         var column = this.model.getColumnById( columnId );
         var isArrayValues = value.constructor.toString().indexOf("Array") != -1;
         if( operator == pentaho.pda.Column.CONDITION_TYPES.LIKE ) {
-            return 'LIKE(['+category+'.'+columnId+']; "%'+this.getFilterValueString(column, value, parameters)+'%")'; 
+            return 'LIKE(['+category+'.'+columnId+'];"%'+this.getFilterValueString(column, value, parameters)+'%")'; 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.EQUAL && (!isArrayValues || value.length == 1)) {
-            return 'EQUALS(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters) + ')'; 
+            return 'EQUALS(['+category+'.'+columnId+'];'+this.getFilterValueString(column, value, parameters) + ')'; 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.EQUAL && isArrayValues) {
-            return 'IN(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+")"; 
+            return 'IN(['+category+'.'+columnId+'];'+this.getFilterValueString(column, value, parameters)+")"; 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.LESS_THAN ) {
-            return '['+category+'.'+columnId+'] < '+this.getFilterValueString(column, value, parameters); 
+            return '['+category+'.'+columnId+'] <'+this.getFilterValueString(column, value, parameters); 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.LESS_THAN_OR_EQUAL ) {
-            return '['+category+'.'+columnId+'] <= '+this.getFilterValueString(column, value, parameters); 
+            return '['+category+'.'+columnId+'] <='+this.getFilterValueString(column, value, parameters); 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.MORE_THAN ) {
-            return '['+category+'.'+columnId+'] > '+this.getFilterValueString(column, value, parameters); 
+            return '['+category+'.'+columnId+'] >'+this.getFilterValueString(column, value, parameters); 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.MORE_THAN_OR_EQUAL ) {
-            return '['+category+'.'+columnId+'] >= '+this.getFilterValueString(column, value, parameters); 
+            return '['+category+'.'+columnId+'] >='+this.getFilterValueString(column, value, parameters); 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.CONTAINS) {
-            return 'CONTAINS(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+")"; 
+            return 'CONTAINS(['+category+'.'+columnId+'];'+this.getFilterValueString(column, value, parameters)+")"; 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.NOT_CONTAINS) {
-            return 'NOT(CONTAINS(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+"))"; 
+            return 'NOT(CONTAINS(['+category+'.'+columnId+'];'+this.getFilterValueString(column, value, parameters)+"))"; 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.BEGINSWITH) {
-            return 'BEGINSWITH(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+")"; 
+            return 'BEGINSWITH(['+category+'.'+columnId+'];'+this.getFilterValueString(column, value, parameters)+")"; 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.ENDSWITH) {
-            return 'ENDSWITH(['+category+'.'+columnId+']; '+this.getFilterValueString(column, value, parameters)+")"; 
+            return 'ENDSWITH(['+category+'.'+columnId+'];'+this.getFilterValueString(column, value, parameters)+")"; 
         }
         else if( operator == pentaho.pda.Column.CONDITION_TYPES.IS_NULL) {
             return 'ISNA(['+category+'.'+columnId+'])'; 
@@ -841,7 +841,7 @@ pentaho.pda.query.mql.prototype.getFilterValueString = function( column, value, 
             var str = '';
             for( var idx=0; idx<value.length; idx++ ) {
                 if( idx > 0 ) {
-                    str += '; ';
+                    str += ';';
                 }
                 str += this.getFilterValueString(column,value[idx], parameters);
             }
