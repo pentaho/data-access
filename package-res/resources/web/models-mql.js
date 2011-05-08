@@ -733,16 +733,38 @@ pentaho.pda.query.mql.prototype.getXML = function() {
 
 pentaho.pda.query.mql.prototype.getParameterXML = function( parameter ) {
         var xml = '';
+        var column = this.model.getColumnById(parameter.column);
         xml += '<parameter defaultValue="';
         if(parameter.value != null) {
-            xml += parameter.value;
+            xml += this.getParameterValueString(column, parameter.value);
         } else {
-            xml += parameter.defaultValue;
+            xml += this.getParameterValueString(column, parameter.defaultValue);
         }
         xml += '" name="'+parameter.column;
         xml += '" type="'+parameter.type+'"/>';
         return xml;
     }
+
+pentaho.pda.query.mql.prototype.getParameterValueString = function ( column, value ) {
+        if( value.constructor.toString().indexOf("Array") != -1 ) {
+            // we have an array of values
+            var str = '';
+            for( var idx=0; idx<value.length; idx++ ) {
+                if( idx > 0 ) {
+                    str += '|';
+                }
+                str += this.getParameterValueString(column,value[idx]);
+            }
+            return str;
+        }
+        if( column.dataType == pentaho.pda.Column.DATA_TYPES.NUMERIC ) {
+            return ''+value;
+        }
+        if( column.dataType == pentaho.pda.Column.DATA_TYPES.BOOLEAN ) {
+            return ''+value;
+        }
+        return '&quot;'+value+'&quot;';
+}
 
 pentaho.pda.query.mql.prototype.getSelectionXML = function( selection ) {
         if( selection && selection.id && selection.category ) {
