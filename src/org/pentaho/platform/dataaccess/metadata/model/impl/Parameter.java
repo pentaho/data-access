@@ -25,6 +25,7 @@ public class Parameter implements Serializable {
   
   private static final long serialVersionUID = -3581457277760183764L;
   private String column;
+  private String name;
   private String type;
   private String defaultValue[];
   private String value[];
@@ -54,6 +55,14 @@ public class Parameter implements Serializable {
 
   public void setColumn(String column) {
     this.column = column;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String[] getValue() {

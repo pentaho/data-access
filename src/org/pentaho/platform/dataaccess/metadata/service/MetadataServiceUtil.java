@@ -315,14 +315,14 @@ public class MetadataServiceUtil extends PentahoBase {
     for(Condition condition : src.getConditions()) {
       org.pentaho.metadata.query.model.CombinationType combinationType = CombinationType.valueOf(condition.getCombinationType());
       LogicalColumn logicalColumn = logicalModel.findLogicalColumn(condition.getColumn());
-      boolean parameterized = false;
+      String paramName = null;
       for(Parameter parameter : src.getParameters()) {
         if(parameter.getColumn().equals(condition.getColumn())) {
-          parameterized = true;          
+          paramName = parameter.getName() == null ? parameter.getColumn() : parameter.getName();
         }
       }      
 //      condition.setParameterized(parameterized);
-      String formula = condition.getCondition(logicalColumn.getDataType().name(), parameterized);
+      String formula = condition.getCondition(logicalColumn.getDataType().name(), paramName);
       Constraint constraint = new Constraint(combinationType, formula);
       constraints.add(constraint);
     }

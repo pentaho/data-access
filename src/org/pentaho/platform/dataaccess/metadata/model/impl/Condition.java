@@ -74,10 +74,10 @@ public class Condition implements ICondition {
   }
 
   public String getCondition(String type) {
-    return getCondition(type, true);
+    return getCondition(type, column);
   }
 
-  public String getCondition(String type, boolean enforceParameters){
+  public String getCondition(String type, String paramName){
     String val[] = this.value;
 /*
     if(val == null && defaultValue != null) {
@@ -94,8 +94,7 @@ public class Condition implements ICondition {
         val[idx] = "\""+val[idx]+"\"";         //$NON-NLS-1$ //$NON-NLS-2$
       }
     }
-
-    String paramName = column;
+    boolean enforceParameters = paramName != null;
     String columnName = "["+category+"."+column+"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$;
     // Date is a special case where we craft a formula function.
     if(type.equals(DataType.DATE.getName())){

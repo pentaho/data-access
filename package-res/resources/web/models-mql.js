@@ -608,7 +608,8 @@ pentaho.pda.query.mql.prototype.createCondition = function() {
 pentaho.pda.query.mql.prototype.createParameter = function() {
         var parameter = {
             "class" : "org.pentaho.platform.dataaccess.metadata.model.impl.Parameter",
-            "column" : null,
+            "column": null,
+            "name": null,
             "type" : null,
             "value" : null,
             "defaultValue" : null
@@ -661,11 +662,12 @@ pentaho.pda.query.mql.prototype.addConditionById = function(columnId, operator, 
         return null;
     }
     
-pentaho.pda.query.mql.prototype.addParameterById = function(columnId, value, defaultValue) {
+pentaho.pda.query.mql.prototype.addParameterById = function(columnId, name, value, defaultValue) {
         var column = this.model.getColumnById( columnId );
         if(column != null) {
             var parameter = this.createParameter();
             parameter.column = columnId;
+            parameter.name = name;
             parameter.type = column.dataType;
             parameter.value = value;
             parameter.defaultValue = defaultValue;
@@ -740,7 +742,7 @@ pentaho.pda.query.mql.prototype.getParameterXML = function( parameter ) {
         } else {
             xml += this.getParameterValueString(column, parameter.defaultValue);
         }
-        xml += '" name="'+parameter.column;
+        xml += '" name="'+parameter.name;
         xml += '" type="'+parameter.type+'"/>';
         return xml;
     }
@@ -854,7 +856,7 @@ pentaho.pda.query.mql.prototype.getFilterValueString = function( column, value, 
         for(var idx=0; idx<parameters.length; idx++) {
             if( parameters[idx].column == column.id ) {
                 // this has a parameter
-                return '[param:'+parameters[idx].column+']';
+                return '[param:'+parameters[idx].name+']';
             }
         }
         

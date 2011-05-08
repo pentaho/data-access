@@ -65,10 +65,10 @@ public interface ICondition extends Serializable{
   /**
    * Returns the comparision plus value, i.e "= 'Atlanta'" 
    * 
-   * @param enforceParam flag to format the Condition for  parameters
+   * @param paramname If set, this value is to be used as the name of the parameter for this condition 
    * @return a string formatted to support parameters based on the enforceParams flag
    */
-  public String getCondition(String type, boolean enforceParams);
+  public String getCondition(String type, String paramName);
   
   /**
    * Value in this condition is not static, but rather supplied for each execution of this query.
