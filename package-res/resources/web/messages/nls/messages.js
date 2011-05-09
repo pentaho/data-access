@@ -13,7 +13,7 @@
     AGG_TYPES_STDDEV : 'Standard Deviation',
     AGG_TYPES_CALC : 'Calc',
     AGG_TYPES_UNKNOWN : 'Unknown',
-    AGG_TYPES_NONE : 'None'
+    AGG_TYPES_NONE : 'None',
 
     AXIS_LOCATION_ACROSS : 'Across',
     AXIS_LOCATION_DOWN : 'Sown',
