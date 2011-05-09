@@ -432,7 +432,9 @@ pentaho.pda.Column.SORT_TYPES.DESCENDING = "DESC";
 
 pentaho.pda.Column.OPERATOR_TYPES = new Object();
 pentaho.pda.Column.OPERATOR_TYPES.OR = 'OR';
+pentaho.pda.Column.OPERATOR_TYPES.OR_NOT = 'OR NOT';
 pentaho.pda.Column.OPERATOR_TYPES.AND = 'AND';
+pentaho.pda.Column.OPERATOR_TYPES.AND_NOT = 'AND NOT';
 
 pentaho.pda.Column.CONDITION_TYPES = new Object();
 pentaho.pda.Column.CONDITION_TYPES.LIKE = 'LIKE';
@@ -525,12 +527,12 @@ pentaho.pda.Column.COMPARATOR.STRING = [
   [Messages.getString( "IS_NULL" ), pentaho.pda.Column.CONDITION_TYPES.IS_NULL],
   [Messages.getString( "IS_NOT_NULL" ), pentaho.pda.Column.CONDITION_TYPES.NOT_NULL]];
 pentaho.pda.Column.COMPARATOR.NUMERIC = [
-  ["=", pentaho.pda.Column.CONDITION_TYPES.EQUAL],
+  [Messages.getString( "EXACTLY_MATCHES" ), pentaho.pda.Column.CONDITION_TYPES.EQUAL],
 //  ["<>", ],
-  [">=", pentaho.pda.Column.CONDITION_TYPES.MORE_THAN_OR_EQUAL],
-  ["<=", pentaho.pda.Column.CONDITION_TYPES.LESS_THAN_OR_EQUAL],
-  [">", pentaho.pda.Column.CONDITION_TYPES.MORE_THAN],
-  ["<", pentaho.pda.Column.CONDITION_TYPES.LESS_THAN],
+  [Messages.getString( "MORE_THAN_OR_EQUAL" ), pentaho.pda.Column.CONDITION_TYPES.MORE_THAN_OR_EQUAL],
+  [Messages.getString( "LESS_THAN_OR_EQUAL" ), pentaho.pda.Column.CONDITION_TYPES.LESS_THAN_OR_EQUAL],
+  [Messages.getString( "MORE_THAN" ), pentaho.pda.Column.CONDITION_TYPES.MORE_THAN],
+  [Messages.getString( "LESS_THAN" ), pentaho.pda.Column.CONDITION_TYPES.LESS_THAN],
   [Messages.getString( "IS_NULL" ), pentaho.pda.Column.CONDITION_TYPES.IS_NULL],
   [Messages.getString( "IS_NOT_NULL" ), pentaho.pda.Column.CONDITION_TYPES.NOT_NULL]];
 pentaho.pda.Column.COMPARATOR.BOOLEAN = [

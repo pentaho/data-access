@@ -6,13 +6,14 @@
   BEGINS_WITH: "Begins with",
   IS_NULL: "Is null",
   IS_NOT_NULL: "Is not null",
-  LESS_THAN: "<",
-  LESS_THAN_OR_EQUAL: "<=",
-  MORE_THAN: ">",
-  MORE_THAN_OR_EQUAL: ">=",
+  LESS_THAN: "Less Than",
+  LESS_THAN_OR_EQUAL: "Less Than or Equals",
+  MORE_THAN: "Greater Than",
+  MORE_THAN_OR_EQUAL: "Greater Than or Equals",
   ON: "On",
   ON_OR_AFTER: "On or after",
   ON_OR_BEFORE: "On or before",
   AFTER: "After",
-  BEFORE: "Before"
+  BEFORE: "Before",
+  EQUALS: "Equals"
 }

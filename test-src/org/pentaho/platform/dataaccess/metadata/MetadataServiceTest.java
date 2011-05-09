@@ -1020,6 +1020,9 @@ public class MetadataServiceTest  extends BaseTest {
     
     param.setType("String");
     assertEquals("String", param.getType());
+    
+    param.setName("myparam");
+    assertEquals("myparam", param.getName());
   }
   
   public void testCondition1() {
@@ -1035,20 +1038,23 @@ public class MetadataServiceTest  extends BaseTest {
     assertEquals("[cat.column] = [param:column]", str);
 
     condition.setValue(new String[] {"bingo"});
-    str = condition.getCondition(DataType.STRING.getName(), true);
+    str = condition.getCondition(DataType.STRING.getName(), condition.getColumn());
     assertEquals("[cat.column] = [param:column]", str);
 
     condition.setValue(new String[] {"bingo"});
-    str = condition.getCondition(DataType.DATE.getName(), true);
+    str = condition.getCondition(DataType.DATE.getName(), condition.getColumn());
     assertEquals("[cat.column] =DATEVALUE([param:bingo])", str);
 
     condition.setValue(new String[] {"bingo"});
-    str = condition.getCondition(DataType.STRING.getName(), false);
+    str = condition.getCondition(DataType.STRING.getName(), null);
     assertEquals("[cat.column] = \"bingo\"", str);
     
     condition.setValue(new String[] {"bingo"});
-    str = condition.getCondition(DataType.DATE.getName(), false);
+    str = condition.getCondition(DataType.DATE.getName(), null);
     assertEquals("[cat.column] =DATEVALUE(\"bingo\")", str);
+    
+    str = condition.getCondition(DataType.STRING.getName(), "myparam");
+    assertEquals("[cat.column] = [param:myparam]", str);
     
   }
     
