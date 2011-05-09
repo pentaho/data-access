@@ -671,6 +671,9 @@ pentaho.pda.query.mql.prototype.addParameterById = function(columnId, name, valu
             parameter.type = column.dataType;
             parameter.value = value;
             parameter.defaultValue = defaultValue;
+            if (parameter.defaultValue == undefined) {
+              parameter.defaultValue = parameter.value;
+            }
         }
         this.addParameter(parameter);
         return parameter;
@@ -693,7 +696,7 @@ pentaho.pda.query.mql.prototype.addParameter = function( parameter ) {
     }
     
 pentaho.pda.query.mql.prototype.getJson = function() {
-        return JSON.stringify(this.state);
+        return dojo.toJson(this.state);
     }
     
 pentaho.pda.query.mql.prototype.getQueryStr = function() {

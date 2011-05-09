@@ -380,7 +380,7 @@ function test16() {
     query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
     query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.LESS_THAN,["Finland"], pentaho.pda.Column.OPERATOR_TYPES.AND);
     query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
-    query.addParameterById('BC_CUSTOMER_W_TER_COUNTRY',["Belgium"]);
+    query.addParameterById('BC_CUSTOMER_W_TER_COUNTRY','BC_CUSTOMER_W_TER_COUNTRY',["Belgium"]);
     
     var obj = model.submitQuery(query);
     testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria']],16);
@@ -578,7 +578,7 @@ function test31() {
     query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
     query.addConditionById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.CONDITION_TYPES.LESS_THAN,["Finland"], pentaho.pda.Column.OPERATOR_TYPES.AND);
     query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
-    query.addParameterById('BC_CUSTOMER_W_TER_COUNTRY',["Belgium"]);
+    query.addParameterById('BC_CUSTOMER_W_TER_COUNTRY','BC_CUSTOMER_W_TER_COUNTRY',["Belgium"]);
     
     var obj = model.submitXmlQuery(query);
     testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria']],31);
