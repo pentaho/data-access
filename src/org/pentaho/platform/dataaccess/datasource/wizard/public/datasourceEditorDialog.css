@@ -32,23 +32,6 @@ aggregation-dialog-checkbox-label {
   	font-size: 0.65em;
 }
 
-.gwt-Button {
-  font-size: 0.85em;
-  background-color: #ddd;
-}
-.gwt-Button:down {
-  cursor:pointer;
-}
-.gwt-Button:hover {
-  background-color: #ffcc99;
-  cursor:hand;
-}
-.gwt-Button:disabled {
-  color: #888;
-  background-color: #ccc;
-  cursor:none;
-}
-
 .waiting .waiting-indicator {
   background: white;
   color: #444;
@@ -210,8 +193,6 @@ html>body .dialog-content {
 }
 .dialog-content {
 	position: relative;
-	top: -1px;
-	left: -1px;
 	height: 539px;
 }
 #filesLabel {

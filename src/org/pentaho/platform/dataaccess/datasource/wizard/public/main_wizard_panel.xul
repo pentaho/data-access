@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="datasourceEditorWindow" title="${datasourceEditorDialog.TITLE}" orient="vertical" height="600" width="800">
-	<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="800" height="500" title="${WIZARD_TITLE}" onload="" resizable="false" padding="0" spacing="0" buttons="">
+	<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="800" height="500" title="${WIZARD_TITLE}" onload="" resizable="false" padding="0" spacing="0"
+          buttons="accept,cancel,extra1,extra2"
+          pen:acceptbuttonalign="right"
+          pen:cancelbuttonalign="right"
+          pen:extra1buttonalign="center"
+          pen:extra2buttonalign="center"
+          ondialogaccept="wizardController.finish()"
+          ondialogcancel="wizardController.cancel()"
+          ondialogextra1="wizardController.back()"
+          ondialogextra2="wizardController.next()"
+          buttonlabelaccept="${FINISH}"
+          buttonlabelcancel="${CANCEL}"
+          buttonlabelextra1="${BACK}"
+          buttonlabelextra2="${NEXT}"
+          >
+
 		<hbox id="main_box" padding="0" spacing="0" width="800" height="500">
 			<vbox id="stepsPanel" width="150" height="500" padding="0" spacing="0">
 				<hbox flex="1" padding="0" spacing="0">
@@ -279,14 +294,6 @@
 				    </vbox>
 				<!-- Multi-table step 3 -->
 			</deck>
-		</hbox>
-		<hbox id="controller_panel">
-			<spacer flex="5"/>
-			<button id="back_btn" label="${BACK}" onclick="wizardController.back()"/>
-			<button id="next_btn" label="${NEXT}" onclick="wizardController.next()" style="{white-space: nowrap;}"/>
-			<spacer flex="3"/>
-			<button id="finish_btn" label="${FINISH}" onclick="wizardController.finish()"/>
-			<button id="cancel_btn" label="${CANCEL}" onclick="wizardController.cancel()"/>
 		</hbox>
 	</dialog>
 	<!--  ###############################################################################  -->

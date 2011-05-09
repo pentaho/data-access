@@ -216,7 +216,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     /* BISERVER-5153: Work around where XulGwtButton is getting its disabled state and style
      * confused.  The only way to get the train on the track is to flip-flop it.
      */
-    XulButton nextButton = (XulButton)mainWizardContainer.getDocumentRoot().getElementById("next_btn"); //$NON-NLS-1$
+    XulButton nextButton = (XulButton)mainWizardContainer.getDocumentRoot().getElementById("main_wizard_window_extra2"); //$NON-NLS-1$
     nextButton.setDisabled(false);
     nextButton.setDisabled(true);
     /* end of work around */
