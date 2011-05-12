@@ -158,7 +158,7 @@ pentaho.pda.MqlHandler.prototype.getNodeTextOfChild = function( node, tag1, tag2
 } //getNodeTextOfChild
     
 pentaho.pda.MqlHandler.prototype.getText = function(node) {
-        if( node.firstChild ) {
+        if( node && node.firstChild ) {
             return node.firstChild.nodeValue;
         } else {
             return null;
