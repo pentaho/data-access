@@ -86,9 +86,9 @@
 									<textbox height="332" id="query" rows="5" cols="80" multiline="true" disabled="false"/>
 									<hbox>
 										<spacer flex="1"/>
-										<label value="Limit:" height="16"/>
-										<textbox id="previewLimit" value="10" height="20" width="22"/>
-										<button id="preview" label="${datasourceDialog.PREVIEW}" tooltiptext="${datasourceDialog.previewToolTip}" onclick="relationalDatasourceController.displayPreview()" disabled="true" height="16"/>										
+										<label value="Limit:"/>
+										<textbox id="previewLimit" value="10" width="22"/>
+										<button id="preview" label="${datasourceDialog.PREVIEW}" tooltiptext="${datasourceDialog.previewToolTip}" onclick="relationalDatasourceController.displayPreview()" disabled="true"/>
 									</hbox>
 								</vbox>
 							</hbox>

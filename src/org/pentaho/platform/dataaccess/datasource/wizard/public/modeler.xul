@@ -31,7 +31,7 @@
           <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
         </hbox>
 -->
-        <tree id="fieldList" height="413" width="210" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy">
+        <tree id="fieldList" height="413" width="208" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy">
           <treecols>
             <treecol flex="1" label="" primary="true"
               pen:binding="name" pen:childrenbinding="children"

@@ -4,11 +4,6 @@
   <head>
     <title>XUL Library</title>
     <style>
-      body,td,a,div,.p{font-family:Tahoma, Helvetica, Arial, sans-serif}
-      div,td{color:#000000}
-      a:link,.w,.w a:link{color:#0000cc}
-      a:visited{color:#551a8b}
-      a:active{color:#ff0000}
       #existingPanel{
         height:100%;
         width: 100%;
@@ -18,10 +13,29 @@
     <link rel='stylesheet' href='ScrollTable.css'>
     <link rel='stylesheet' href='datasourceEditorDialog.css'>
     <link rel='stylesheet' href='xul.css'>
+    <link rel='stylesheet' href='jquery.jscrollpane.css'>
+    <link rel='stylesheet' href='Widgets.css'>
+    <link rel='stylesheet' href='style/mainStyles.css'>
     <script language='javascript' src='DatasourceEditor.nocache.js'></script>
+    <!-- latest jQuery direct from google's CDN -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <!-- the mousewheel plugin -->
+    <script type="text/javascript" src="style/jquery.mousewheel.js"></script>
+    <!-- the jScrollPane script -->
+    <script type="text/javascript" src="style/jquery.jscrollpane.js"></script>
+    <script type="text/javascript" src="style/mwheelIntent.js"></script>
+    <!-- scripts specific to this demo site -->
+
+    <script type="text/javascript" id="sourcecode">
+//      $(function()
+//      {
+//        $('.scroll-pane').jScrollPane({showArrows: true});
+//      });
+    </script>
+
   </head>
 
-  <body>
+  <body style="background: url('images/abstract.jpg')">
     <div id="dragPanel">
       <!-- OPTIONAL: include this if you want history support -->
       <iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>

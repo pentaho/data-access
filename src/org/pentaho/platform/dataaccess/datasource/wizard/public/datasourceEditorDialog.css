@@ -4,28 +4,6 @@
   	font-size: 0.85em;
 }
 
-.xul-label{
-  white-space: nowrap;
-  font-family: Tahoma, Helvetica, Arial, sans-serif;
-  font-size: 0.85em;
-}
-
-.gwt-label{
-  font-family: Tahoma, Helvetica, Arial, sans-serif;
-  font-size: 0.85em;
-}
-
-.gwt-TextBox{
-  font-family: Tahoma, Helvetica, Arial, sans-serif;
-  font-size: 0.85em;
-}
-
-.custom-list-item {
-  white-space: nowrap;
-  font-family: Tahoma, Helvetica, Arial, sans-serif;
-  font-size: 1em;
-}
-
 aggregation-dialog-checkbox-label {
 	padding-left:3px;
   	font-family: Tahoma, Helvetica, Arial, sans-serif;
@@ -345,4 +323,8 @@ html>body .dialog-content {
 #joinDefinitionWindow,
 #joinSelectionWindow {
   border-collapse: separate;
+}
+
+.rowHeaderFormat .xul-label {
+  
 }

@@ -309,7 +309,7 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
   }
 
   public void closeWaitingDialog() {
-    waitingDialog.hide();
+    MessageHandler.getInstance().closeWaitingDialog();
   }
   public void showWaitingDataStageDialog() {
     MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString(MSG_STAGING_DATA));
