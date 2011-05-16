@@ -279,21 +279,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private void showSelectionDialog(final String selectDatasource, final JavaScriptObject callback) {
     final boolean selectDs = Boolean.valueOf(selectDatasource);
 
-    final DialogListener<Domain> wizardListener = new DialogListener<Domain>(){
-      public void onDialogCancel() {
-        wizard.removeDialogListener(this);
-        notifyCallbackCancel(callback);
-      }
-      public void onDialogAccept(final Domain domain) {
-        wizard.removeDialogListener(this);
-        WAQRTransport transport = WAQRTransport.createFromMetadata(domain);
-        notifyCallbackSuccess(callback, domain.getId(), domain.getLogicalModels().get(0).getId());
-      }
-
-      public void onDialogReady() {
-        notifyCallbackReady(callback);
-      }
-    };
 
     final DialogListener<LogicalModelSummary> listener = new DialogListener<LogicalModelSummary>(){
       public void onDialogCancel() {
@@ -320,12 +305,10 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       wizard.setCsvDatasourceService(csvService);
       wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
         public void asyncConstructorDone(EmbeddedWizard source) {
-          source.addDialogListener(wizardListener);
           showSelectionDialog(selectDs, listener);
         }
       });
     } else {
-      wizard.addDialogListener(wizardListener);
       showSelectionDialog(selectDs, listener);
     }
   }
@@ -339,6 +322,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         selectDialog = new GwtDatasourceSelectionDialog(datasourceService, wizard, constructorListener);
 
       } else {
+        selectDialog.addDialogListener(listener);
         selectDialog.showDialog();
       }
 
