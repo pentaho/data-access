@@ -596,6 +596,21 @@ function test32() {
     testResults(obj,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia'],['Austria'],['Belgium'],['Canada']],32);
 }
 
+function test33() {
+  initModel();
+  var query = model.createQuery();
+  query.addSelectionById('BC_CUSTOMER_W_TER_COUNTRY');
+  query.addSortById('BC_CUSTOMER_W_TER_COUNTRY', pentaho.pda.Column.SORT_TYPES.ASCENDING );
+
+  var callback = function(data) {
+    testResults(data,['BC_CUSTOMER_W_TER_COUNTRY'],[['Australia']],33);
+  }
+
+  // Set the status to failed in cause this doesn't return
+  setResult(33, 'fail', 'Callback not fired');
+  var obj = model.submitQuery(query, 1, callback);
+}
+
 function initModel() {
     if(model == null || model.getAllColumns().length == 0 ) {
         pentaho.myapp.source = pentaho.myapp.app.getSources({property:'id', value:'steel-wheels/metadata.xmi:BV_ORDERS'});

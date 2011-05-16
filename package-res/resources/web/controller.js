@@ -211,7 +211,7 @@ pentaho.pda.model.prototype.getNodeTextOfChild = function( node, tag1, tag2 ) {
 } //getNodeTextOfChild
 
 pentaho.pda.model.prototype.getText = function(node) {
-        if( node.firstChild ) {
+        if( node && node.firstChild ) {
             return node.firstChild.nodeValue;
         } else {
             return null;

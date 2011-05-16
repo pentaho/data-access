@@ -158,7 +158,7 @@ pentaho.pda.MqlHandler.prototype.getNodeTextOfChild = function( node, tag1, tag2
 } //getNodeTextOfChild
     
 pentaho.pda.MqlHandler.prototype.getText = function(node) {
-        if( node.firstChild ) {
+        if( node && node.firstChild ) {
             return node.firstChild.nodeValue;
         } else {
             return null;
@@ -254,7 +254,7 @@ pentaho.pda.model.mql.prototype.getAllColumns = function() {
         return columns;
 }
         
-pentaho.pda.model.mql.prototype.searchColumn = function( column, searchStr, rowLimit ) {
+pentaho.pda.model.mql.prototype.searchColumn = function( column, searchStr, rowLimit, callback ) {
         var query = this.createQuery();
         var selection = query.addSelectionById( column.id );
         var sort = query.addSortById( column.id, pentaho.pda.Column.SORT_TYPES.ASCENDING );
@@ -262,7 +262,7 @@ pentaho.pda.model.mql.prototype.searchColumn = function( column, searchStr, rowL
             query.addConditionById(column.id,pentaho.pda.Column.CONDITION_TYPES.CONTAINS,searchStr,pentaho.pda.Column.OPERATOR_TYPES.OR);
         }
         // TODO submit this thru CDA
-        return this.submitQuery( query, rowLimit );
+        return this.submitQuery( query, rowLimit, callback );
     }
     
 pentaho.pda.model.mql.prototype.getAllValuesForColumn = function( column, rowLimit ) {
@@ -280,25 +280,36 @@ pentaho.pda.model.mql.prototype.createQuery = function() {
 }
 
     // get the results of the query
-pentaho.pda.model.mql.prototype.submitQuery = function( queryObject, rowLimit ) {
+// This is a synchronous call unless a callback is provided. see pentaho-ajax's pentahoAction() documentation
+// for types of callbacks.
+pentaho.pda.model.mql.prototype.submitQuery = function( queryObject, rowLimit, callback ) {
         var json = queryObject.getJson(); 
 //        alert(json);
         if (!rowLimit) {
             rowLimit = -1;
         }
     
+        var handleResultCallback = dojo.hitch(this, function(resultXml) {
+          var result = parseXML( resultXml );
+          var nodes = result.getElementsByTagName('return');
+          resultJson = this.getText( nodes[0] );
+//          alert(resultJson);
+          var result = eval('('+resultJson+')');
+          if (callback) {
+            callback(result);
+          }
+          return result;
+        });
+        
         try {
             // get the info about the models from the server
             var url = this.handler.METADATA_SERVICE_URL+'/doJsonQueryToCdaJson';
             var query = 'json='+escape(json)+'&rowLimit='+rowLimit;
 
-            var resultXml = pentahoGet( url, query );
-            var result = parseXML( resultXml );
-            var nodes = result.getElementsByTagName('return');
-            resultJson = this.getText( nodes[0] );
-//            alert(resultJson);
-            var result = eval('('+resultJson+')');
-            return result;
+            var resultXml = pentahoGet( url, query, callback ? handleResultCallback : undefined);
+            if (!callback) {
+              return handleResultCallback(resultXml);
+            }
         } catch (e) {
             alert(e.message);
         }
