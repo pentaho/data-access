@@ -511,7 +511,7 @@
     ondialogaccept="colResolver.done()" ondialogcancel="colResolver.cancel()" onload="colResolver.init()"  buttons="accept, cancel" buttonalign="right" buttonlabelaccept="${dialog.OK}" buttonlabelcancel="${dialog.cancel}">
     <groupbox flex="1">
     <caption label="Choose a column from the available list"/>
-      <tree id="resolveColumnsTree" flex="1" editable="false" hiddenrootnode="true" preserveselection="false" height="400" >
+      <tree id="resolveColumnsTree" flex="1" editable="false" hiddenrootnode="true" preserveselection="false" height="400" width="295" >
         <treecols>
           <treecol flex="1" label="" primary="true"
             pen:binding="name" pen:childrenbinding="children"
