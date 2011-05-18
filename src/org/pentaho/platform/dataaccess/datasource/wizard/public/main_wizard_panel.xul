@@ -222,7 +222,7 @@
 					<!--  ###############################################################################  -->        		            
 				
 					<hbox>
-						<label id="stageDataDescription" value="${stageDataStep.DESCRIPTION}" flex="1"/>
+						<label id="stageDataDescription" value="${stageDataStep.DESCRIPTION}" flex="1" multiline="true"/>
 						<!--<button image="images/stageStepImage.png" />-->
 					</hbox>
 					<!-- Columns -->
