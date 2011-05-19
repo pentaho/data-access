@@ -467,7 +467,7 @@
                 </menulist>
 
                 <label value="${optional_aggregations}:" />
-                <listbox id="field_optionalAggregationTypes" seltype="multi">
+                <listbox id="field_optionalAggregationTypes" seltype="multi" height="120">
                     <listitem label="NONE" />
                     <listitem label="SUM" />
                     <listitem label="AVERAGE" />
