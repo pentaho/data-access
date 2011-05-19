@@ -1,6 +1,6 @@
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns:pen="http://www.pentaho.org/2008/xul">
-  <dialog id="modeler_dialog" width="800" height="500"
+  <dialog id="modeler_dialog" width="950" height="500"
           title="${modeler.title}" onload="modelerDialogController.onLoad()" resizable="false" padding="0" spacing="0"
           buttons="accept,cancel"
           ondialogaccept="modelerDialogController.onAccept()"
@@ -8,7 +8,7 @@
           buttonlabelaccept="${dialog.OK}"
           buttonlabelcancel="${dialog.cancel}">
     <hbox id="metadatastep" flex="1" padding="0" spacing="3" height="465">
-      <editpanel width="210" height="463">
+      <editpanel width="260" height="463">
         <caption label="${available}:"/>
 
         <toolbar mode="icons">
@@ -31,7 +31,7 @@
           <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
         </hbox>
 -->
-        <tree id="fieldList" height="413" width="208" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy">
+        <tree id="fieldList" height="413" width="258" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy">
           <treecols>
             <treecol flex="1" label="" primary="true"
               pen:binding="name" pen:childrenbinding="children"
@@ -51,7 +51,7 @@
 
       </editpanel>
 
-      <deck id="modelDeck" width="360" height="488">
+      <deck id="modelDeck" width="410" height="486">
 
         <tabbox id="modelTabbox" flex="1" >
           <tabs>
@@ -59,9 +59,9 @@
             <tab id="reportingTab" label="${reportingTabLabel}" onclick="modeler.setModelerPerspective('REPORTING')"></tab>
           </tabs>
           <tabpanels>
-            <tabpanel id="analysisTabPanel" height="413">
+            <tabpanel id="analysisTabPanel" height="411">
 
-              <vbox id="analyzerModelPanel" height="413" flex="1" spacing="0" padding="0">
+              <vbox id="analyzerModelPanel" height="411" flex="1" spacing="0" padding="0">
                 <toolbar id="schema-toolbar" mode="icons">
                   <toolbarbutton image="images/ExpandAll.png" onclick="modeler.expandAll()" disabled="false" tooltiptext="${expand_all}"/>
                   <toolbarbutton image="images/CollapseAll.png" onclick="modeler.collapseAll()" disabled="false" tooltiptext="${collapse_all}"/>
@@ -76,11 +76,11 @@
                   <toolbarbutton id="clearModel" image="images/clear_model.png" onclick="modeler.clearFields()"
                                  tooltiptext="${clearFields}"/>
                 </toolbar>
-                <tree id="dimensionTree" width="355" height="413" editable="false"
+                <tree id="dimensionTree" width="405" height="411" editable="false"
                   pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
                   pen:ondrop="modeler.onModelTreeDrop()" hiddenrootnode="false" preserveselection="true">
                   <treecols>
-                    <treecol width="355" label="" primary="true"
+                    <treecol width="405" label="" primary="true"
                       pen:binding="displayName" pen:childrenbinding="children"
                       pen:imagebinding="image" editable="false"
                        pen:disabledbinding="editingDisabled"
@@ -98,8 +98,8 @@
                 </tree>
               </vbox>
             </tabpanel>
-            <tabpanel id="reportingTabPanel" height="413">
-              <vbox id="reportingModelPanel" height="413" flex="1" spacing="0" padding="0">
+            <tabpanel id="reportingTabPanel" height="411">
+              <vbox id="reportingModelPanel" height="411" flex="1" spacing="0" padding="0">
                 <toolbar id="categories-toolbar" mode="icons">
                   <toolbarbutton image="images/ExpandAll.png" onclick="modeler.expandRelationalAll()" disabled="false" tooltiptext="${expand_all}"/>
                   <toolbarbutton image="images/CollapseAll.png" onclick="modeler.collapseRelationalAll()" disabled="false" tooltiptext="${collapse_all}"/>
@@ -111,11 +111,11 @@
                   <toolbarbutton image="images/remove.png" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
                   <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
                 </toolbar>
-                <tree id="categoriesTree" width="355" height="413" editable="false" hiddenrootnode="false" preserveselection="true"
+                <tree id="categoriesTree" width="405" height="411" editable="false" hiddenrootnode="false" preserveselection="true"
                     pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
                     pen:ondrop="modeler.onModelTreeDrop()">
                   <treecols>
-                    <treecol width="355" label="" primary="true"
+                    <treecol width="405" label="" primary="true"
                       pen:binding="displayName" pen:childrenbinding="children"
                       pen:imagebinding="image" editable="false"
                       pen:disabledbinding="editingDisabled"
@@ -136,7 +136,7 @@
           </tabpanels>
         </tabbox>
 
-        <groupbox width="360" height="463" id="schema-toolbar-groupbox">
+        <groupbox width="410" height="463" id="schema-toolbar-groupbox">
           <caption label="${model}" />
           <hbox id="modelPanel" height="413" flex="1" spacing="0" padding="0">
 
@@ -145,11 +145,11 @@
       </deck>
 
 
-      <editpanel type="closable" width="222" height="463" id="propertiesPanel">
+      <editpanel type="closable" width="272" height="463" id="propertiesPanel">
         <caption label="${properties}"/>
         <deck id="propertiesdeck">
           <vbox/>
-          <vbox id="measuresprops" spacing="4" width="210">
+          <vbox id="measuresprops" spacing="4" width="260">
             <vbox bgcolor="#FFFFCC" id="messages2">
               <grid spacing="3">
                 <columns>
@@ -191,7 +191,7 @@
               <textbox id="displayname"/>
 
               <label value="${aggregation}:" />
-              <menulist id="defaultAggregation" width="205">
+              <menulist id="defaultAggregation" width="255">
                 <menupopup>
                   <menuitem label="NONE" />
                   <menuitem label="#,###;(#,###)" />
@@ -203,7 +203,7 @@
               </menulist>
 
               <label value="${format}:"/>
-              <menulist id="formatstring" width="205">
+              <menulist id="formatstring" width="255">
                 <menupopup>
                   <menuitem label="NONE"/>
                   <menuitem label="#,###;(#,###)"/>
@@ -216,7 +216,7 @@
             </groupbox>
           </vbox>
 
-          <vbox id="dimensionprops" width="210">
+          <vbox id="dimensionprops" width="260">
             <vbox bgcolor="#FFFFCC" id="dimension_message">
               <grid spacing="3">
                 <columns>
@@ -279,7 +279,7 @@
           </vbox>
 
 
-          <vbox id="hierarchyprops" width="210">
+          <vbox id="hierarchyprops" width="260">
             <vbox bgcolor="#FFFFCC" id="hierarchy_message">
               <grid spacing="3">
                 <columns>
@@ -304,7 +304,7 @@
 
           </vbox>
 
-          <vbox id="genericProps" width="210">
+          <vbox id="genericProps" width="260">
             <vbox bgcolor="#FFFFCC" id="generic_message">
               <grid spacing="3">
                 <columns>
@@ -323,7 +323,7 @@
             </vbox>
           </vbox>
 
-          <vbox id="levelprops" width="210">
+          <vbox id="levelprops" width="260">
             <vbox bgcolor="#FFFFCC" id="level_message">
               <grid spacing="3">
                 <columns>
@@ -348,7 +348,7 @@
             </vbox>
 
 
-            <groupbox width="210">
+            <groupbox width="260">
               <caption label="${source_column}"/>
               <hbox flex="1">
                 <label id="level_source_col" value="" flex="1"/>
@@ -360,7 +360,7 @@
 
             <spacer height="5"/>
 
-            <groupbox width="210">
+            <groupbox width="260">
               <caption label="${details}"/>
               <label value="${level_name}:"/>
               <textbox id="level_name"/>
@@ -458,7 +458,7 @@
                 <textbox id="fielddisplayname" />
 
                 <label value="${default_aggregation}:" />
-                <menulist id="field_defaultAggregation" width="205">
+                <menulist id="field_defaultAggregation" width="255">
                   <menupopup>
                     <menuitem label="NONE" />
                     <menuitem label="SUM" />
@@ -477,7 +477,7 @@
                 </listbox>
 
                 <label value="${format}:" />
-                <menulist id="fieldformatstring" width="205">
+                <menulist id="fieldformatstring" width="255">
                   <menupopup>
                     <menuitem label="NONE" />
                     <menuitem label="#,###;(#,###)" />
