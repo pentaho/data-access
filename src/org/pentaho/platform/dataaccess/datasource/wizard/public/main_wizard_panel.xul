@@ -192,8 +192,8 @@
 				        </vbox>
 				        <vbox>
 				          <spacer height="175"/>
-				          <button id="addButton" image="images/forward.gif" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false"/>
-				          <button id="removeButton" image="images/accum_remove.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"/>
+				          <button id="addButton" image="images/move_arrow.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false"/>
+				          <button id="removeButton" image="images/move_arrow_back.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"/>
 				          <spacer flex="1"/>
 				        </vbox>
 				        <vbox>
