@@ -169,10 +169,7 @@ html>body .dialog-content {
 .roundedbutton-label {
 	white-space: nowrap;
 }
-.dialog-content {
-	position: relative;
-	height: 539px;
-}
+
 #filesLabel {
 	white-space: nowrap;
 }
