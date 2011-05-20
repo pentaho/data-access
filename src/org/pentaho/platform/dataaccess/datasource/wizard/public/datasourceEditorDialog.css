@@ -169,7 +169,7 @@ html>body .dialog-content {
 .roundedbutton-label {
 	white-space: nowrap;
 }
-.dialog-content {
+#main_wizard_window .dialog-content {
 	position: relative;
 	height: 539px;
 }
