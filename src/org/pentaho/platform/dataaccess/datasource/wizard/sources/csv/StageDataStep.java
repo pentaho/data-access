@@ -299,6 +299,10 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
     datasourceModel.getModelInfo().validate();
   }
   
+  public String getName() {
+      return "stageDataController";
+  }
+  
   @Bindable
   public void closeErrorDialog() {
 	  errorDialog.hide();
