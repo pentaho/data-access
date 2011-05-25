@@ -20,6 +20,7 @@
 package org.pentaho.platform.dataaccess.metadata.service;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +35,9 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.query.model.util.QueryXmlHelper;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.ILogger;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAccessPermissionHandler;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAccessViewPermissionHandler;
 import org.pentaho.platform.dataaccess.metadata.messages.Messages;
 import org.pentaho.platform.dataaccess.metadata.model.impl.Model;
 import org.pentaho.platform.dataaccess.metadata.model.impl.ModelInfo;
@@ -65,6 +69,54 @@ public class MetadataService extends PentahoBase {
     setLoggingLevel(ILogger.ERROR);
   }
   
+  /**
+   * Returns a string that indicates whether the current user has access to
+   * edit or view metadata models
+   * @return
+   */
+  public String getDatasourcePermissions() {
+    
+    String dataAccessClassName = null;
+    IDataAccessPermissionHandler dataAccessPermHandler = null;
+    IDataAccessViewPermissionHandler dataAccessViewPermHandler = null;
+    try {
+      IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
+      dataAccessClassName = resLoader
+          .getPluginSetting(
+              getClass(),
+              "settings/data-access-permission-handler", "org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessPermissionHandler"); //$NON-NLS-1$ //$NON-NLS-2$
+      Class<?> clazz = Class.forName(dataAccessClassName);
+      Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
+      dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance();
+    } catch (Exception e) {
+      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0007_DATAACCESS_PERMISSIONS_INIT_ERROR"), e); //$NON-NLS-1$
+    }
+    String dataAccessViewClassName = null;
+    try {
+      IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
+      dataAccessViewClassName = resLoader
+          .getPluginSetting(
+              getClass(),
+              "settings/data-access-view-permission-handler", "org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessViewPermissionHandler"); //$NON-NLS-1$ //$NON-NLS-2$
+      Class<?> clazz = Class.forName(dataAccessViewClassName);
+      Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
+      dataAccessViewPermHandler = (IDataAccessViewPermissionHandler) defaultConstructor.newInstance();
+    } catch (Exception e) {
+      logger.error(
+          Messages.getErrorString("DatasourceServiceImpl.ERROR_0030_DATAACCESS_VIEW_PERMISSIONS_INIT_ERROR"), e); //$NON-NLS-1$
+    }
+
+    boolean canEdit = dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());
+    boolean canView = dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession());
+    
+    if(canEdit) {
+      return "EDIT"; //$NON-NLS-1$
+    }
+    else if(canView) {
+      return "VIEW"; //$NON-NLS-1$
+    }
+    return "NONE"; //$NON-NLS-1$
+}
   /**
    * Returns a list of the available business models
    * @param domainName optional domain to limit the results
