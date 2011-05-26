@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <window id="datasourceListWindow" title="Datasource List Dialog Demo" orient="vertical"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
+  xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
   height="600" width="800" onload="datasourceSelectionDialogController.init()">
 
   <!-- this button for demo purposes only -->

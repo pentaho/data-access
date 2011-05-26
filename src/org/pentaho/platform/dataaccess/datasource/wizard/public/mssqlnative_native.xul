@@ -1,6 +1,6 @@
 <overlay>
 	<groupbox id="database-options-box" orient="vertical" flex="1"
-		xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		xmlns="http://www.pentaho.org/there.is.only.xul"
 		xmlns:pen="http://www.pentaho.org/2008/xul" >
 		<caption label="${DatabaseDialog.USER_SETTINGS}" />
 		<label id="server-host-name-label" value="${DatabaseDialog.label.ServerHostname}" />

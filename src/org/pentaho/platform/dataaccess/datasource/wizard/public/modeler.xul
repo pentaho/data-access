@@ -1,4 +1,4 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+<window xmlns="http://www.pentaho.org/there.is.only.xul"
         xmlns:pen="http://www.pentaho.org/2008/xul">
   <dialog id="modeler_dialog" width="950" height="500"
           title="${modeler.title}" onload="modelerDialogController.onLoad()" resizable="false" padding="0" spacing="0"
