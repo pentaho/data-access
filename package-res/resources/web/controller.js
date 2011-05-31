@@ -211,11 +211,9 @@ pentaho.pda.model.prototype.getNodeTextOfChild = function( node, tag1, tag2 ) {
 } //getNodeTextOfChild
 
 pentaho.pda.model.prototype.getText = function(node) {
-        if( node && node.firstChild ) {
-            return node.firstChild.nodeValue;
-        } else {
-            return null;
-        }
+        if(!node || !node.firstChild) return null;
+        if(typeof(node.textContent) != "undefined") return node.textContent;
+        return node.firstChild.nodeValue;
 } //getText
 
 pentaho.pda.model.prototype.hasCapability = function( capability ) {
