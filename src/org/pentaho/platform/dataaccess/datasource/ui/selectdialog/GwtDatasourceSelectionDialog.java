@@ -72,6 +72,12 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
    */
   public void overlayLoaded() {
   }
+  
+  public void reset() {
+	  if(datasourceSelectionDialogController != null) {
+		  datasourceSelectionDialogController.reset();
+	  }
+  }
 
   /**
    * Specified by <code>IXulLoaderCallback</code>.
