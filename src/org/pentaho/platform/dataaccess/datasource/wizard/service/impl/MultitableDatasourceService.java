@@ -22,15 +22,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.ConnectionServiceHelper;
@@ -43,6 +47,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 	
 	private DatabaseMeta databaseMeta;
 	private ConnectionServiceImpl connectionServiceImpl;
+  private Log logger = LogFactory.getLog(MultitableDatasourceService.class);
 	
 	public MultitableDatasourceService() {
 		this.connectionServiceImpl = new ConnectionServiceImpl();
@@ -52,8 +57,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		this.databaseMeta = databaseMeta;
 	}
 	
-	private DatabaseMeta getDatabaseMeta(IConnection connection) throws Exception {
-		
+	private DatabaseMeta getDatabaseMeta(IConnection connection) throws ConnectionServiceException {
 		if(this.connectionServiceImpl == null) {
 			return this.databaseMeta;
 		}
@@ -61,36 +65,47 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		IDatabaseConnection iDatabaseConnection = this.connectionServiceImpl.convertFromConnection(connection);
 		iDatabaseConnection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
 		return DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
-	}
+  }
 
-	public List<String> getDatabaseTables(IConnection connection) throws Exception {
+	public List<String> getDatabaseTables(IConnection connection) throws DatasourceServiceException {
+    try{
+      DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
+      Database database = new Database(null, databaseMeta);
+      database.connect();
 
-		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		Database database = new Database(null, databaseMeta);
-		database.connect();
+      String[] tableNames = database.getTablenames();
+      List<String> tables = Arrays.asList(tableNames);
+      database.disconnect();
+      return tables;
+    } catch (KettleDatabaseException e) {
+      logger.error("Error creating database object", e);
+      throw new DatasourceServiceException(e);
+    } catch (ConnectionServiceException e) {
+      logger.error("Error getting database meta", e);
+      throw new DatasourceServiceException(e);
+    }
+  }
 
-		String[] tableNames = database.getTablenames();
-		List<String> tables = Arrays.asList(tableNames);
-		database.disconnect();
-		return tables;
-	}
+	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IConnection connection) throws DatasourceServiceException {
+    try{
+      ModelerService modelerService = new ModelerService();
+      modelerService.initKettle();
 
-	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IConnection connection) throws Exception {
+      DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
+      MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getSchemaModel(), dto.getDatasourceName(), dto.getSelectedTables());
+      Domain domain = multiTable.generateDomain(dto.isDoOlap());
+      domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(dto));
+      domain.getLogicalModels().get(0).setProperty("DatasourceType", "MULTI-TABLE-DS");
+      modelerService.serializeModels(domain, dto.getDatasourceName(), dto.isDoOlap());
 
-		ModelerService modelerService = new ModelerService();
-		modelerService.initKettle();
-		
-		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getSchemaModel(), dto.getDatasourceName(), dto.getSelectedTables());
-		Domain domain = multiTable.generateDomain(dto.isDoOlap());
-		domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(dto));
-		domain.getLogicalModels().get(0).setProperty("DatasourceType", "MULTI-TABLE-DS");
-		modelerService.serializeModels(domain, dto.getDatasourceName(), dto.isDoOlap());
-
-		QueryDatasourceSummary summary = new QueryDatasourceSummary();
-		summary.setDomain(domain);
-		return summary;
-	}
+      QueryDatasourceSummary summary = new QueryDatasourceSummary();
+      summary.setDomain(domain);
+      return summary;
+    } catch (Exception e) {
+      logger.error("Error serializing joins", e);
+      throw new DatasourceServiceException(e);
+    }
+  }
 
 	private String serializeModelState(MultiTableDatasourceDTO dto) throws DatasourceServiceException {
 		XStream xs = new XStream();
@@ -102,25 +117,32 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 			XStream xs = new XStream();
 			return (MultiTableDatasourceDTO) xs.fromXML(dtoStr);
 		} catch (Exception e) {
-			e.printStackTrace();
+      logger.error(e);
 			throw new DatasourceServiceException(e);
 		}
 	}
 
-	public List<String> getTableFields(String table, IConnection connection) throws Exception {
+	public List<String> getTableFields(String table, IConnection connection) throws DatasourceServiceException {
+    try{
+      DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
+      Database database = new Database(null, databaseMeta);
+      database.connect();
 
-		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		Database database = new Database(null, databaseMeta);
-		database.connect();
+      String query = databaseMeta.getSQLQueryFields(table);
+      database.getRows(query, 1);
+      String[] tableFields = database.getReturnRowMeta().getFieldNames();
 
-		String query = databaseMeta.getSQLQueryFields(table);
-		database.getRows(query, 1);
-		String[] tableFields = database.getReturnRowMeta().getFieldNames();
-
-		List<String> fields = Arrays.asList(tableFields);
-		database.disconnect();
-		return fields;
-	}
+      List<String> fields = Arrays.asList(tableFields);
+      database.disconnect();
+      return fields;
+    } catch (KettleDatabaseException e) {
+      logger.error(e);
+      throw new DatasourceServiceException(e);
+    } catch (ConnectionServiceException e) {
+      logger.error(e);
+      throw new DatasourceServiceException(e);
+    }
+  }
 
 	public BogoPojo gwtWorkaround(BogoPojo pojo) {
 		return pojo;

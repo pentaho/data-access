@@ -96,7 +96,6 @@ public class ModelerService extends PentahoBase implements IModelerService {
       }
     } catch (KettleException e) {
       logger.error(e);
-      e.printStackTrace();
       throw new IllegalStateException("Failed to initialize Kettle system"); //$NON-NLS-1$
     }
   }
@@ -215,7 +214,6 @@ public class ModelerService extends PentahoBase implements IModelerService {
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
       logger.error(e);
       throw e;
     }

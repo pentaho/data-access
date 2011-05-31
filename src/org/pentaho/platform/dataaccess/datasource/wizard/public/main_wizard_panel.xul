@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="datasourceEditorWindow" title="${datasourceEditorDialog.TITLE}" orient="vertical" height="600" width="800">
-	<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="800" height="500" title="${WIZARD_TITLE}" onload="" resizable="false" padding="0" spacing="0"
+<window xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="datasourceEditorWindow" title="${datasourceEditorDialog.TITLE}" orient="vertical" height="600" width="800">
+	<dialog xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="800" height="500" title="${WIZARD_TITLE}" onload="" resizable="false" padding="0" spacing="0"
           buttons="accept,cancel,extra1,extra2"
           pen:acceptbuttonalign="right"
           pen:cancelbuttonalign="right"
@@ -83,7 +83,7 @@
 										<!--<spacer flex="1"/>-->
 										<!--<button id="editQuery" image="images/update.png" pen:disabledimage="images/update_disabled.png" tooltiptext="${datasourceDialog.editQueryImageToolTip}" onclick="relationalDatasourceController.editQuery()"  disabled="true"/>-->
 									</hbox>
-									<textbox height="332" id="query" rows="5" cols="80" multiline="true" disabled="false"/>
+									<textbox height="332" id="query" cols="80" multiline="true" disabled="false"/>
 									<hbox>
 										<spacer flex="1"/>
 										<label value="Limit:"/>
