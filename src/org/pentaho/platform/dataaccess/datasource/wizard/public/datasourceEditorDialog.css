@@ -325,3 +325,8 @@ html>body .dialog-content {
 .rowHeaderFormat .xul-label {
   
 }
+
+#addFileButton{
+  font-size:.65em;
+  padding: 3px 10px;
+}

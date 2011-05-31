@@ -20,6 +20,8 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -29,6 +31,7 @@ import org.springframework.security.GrantedAuthority;
 
 public class SimpleDataAccessPermissionHandler implements IDataAccessPermissionHandler {
 
+  private Log logger = LogFactory.getLog(SimpleDataAccessPermissionHandler.class);
   public boolean hasDataAccessPermission(IPentahoSession session) {
 
     Authentication auth = SecurityHelper.getAuthentication(session, true);
@@ -43,7 +46,7 @@ public class SimpleDataAccessPermissionHandler implements IDataAccessPermissionH
       roles = resLoader.getPluginSetting(getClass(), "settings/data-access-roles" ); //$NON-NLS-1$
       users = resLoader.getPluginSetting(getClass(), "settings/data-access-users" ); //$NON-NLS-1$
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.debug("Error getting data access plugin settings", e);
     }
     
     // TODO: delete hardcoded admin this is a fully fledged plugin

@@ -23,6 +23,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -31,6 +33,8 @@ import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 
 public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPermissionHandler {
+
+  private Log logger = LogFactory.getLog(SimpleDataAccessViewPermissionHandler.class);
 
   public List<String> getPermittedRoleList(IPentahoSession session) {
     List<String> roleList = new ArrayList<String>();
@@ -41,7 +45,7 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
     try {
       roles = resLoader.getPluginSetting(getClass(), "settings/data-access-view-roles"); //$NON-NLS-1$
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.debug("Error getting plugin setting", e);
     }
 
     if (roles != null) {
@@ -66,7 +70,7 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
     try {
       users = resLoader.getPluginSetting(getClass(), "settings/data-access-view-users"); //$NON-NLS-1$
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.debug("Error getting plugin setting", e);
     }
 
     if (users != null) {
@@ -88,7 +92,7 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
     try {
       defaultAclsAsString = resLoader.getPluginSetting(getClass(), "settings/data-access-default-view-acls"); //$NON-NLS-1$
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.debug("Error getting plugin setting", e);
     }
     if (defaultAclsAsString != null && defaultAclsAsString.length() > 0) {
       defaultAcls = Integer.parseInt(defaultAclsAsString);
