@@ -323,6 +323,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
       } else {
         selectDialog.addDialogListener(listener);
+        selectDialog.reset();
         selectDialog.showDialog();
       }
 
@@ -333,6 +334,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         final AsyncConstructorListener<GwtDatasourceSelectionDialog> constructorListener = getSelectionDialogListener(listener);
         manageDialog = new GwtDatasourceManageDialog(datasourceService, wizard, constructorListener);
       } else {
+        manageDialog.reset();
         manageDialog.showDialog();
       }
     }

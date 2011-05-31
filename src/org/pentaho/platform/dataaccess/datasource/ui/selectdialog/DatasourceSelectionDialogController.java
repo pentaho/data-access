@@ -115,6 +115,12 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
       }
     });
   }
+  
+  public void reset() {
+	  if(datasourceListbox != null) { 
+		  datasourceListbox.setSelectedIndex(0);
+	  }
+  }
 
   private void internalInit() {
     try {
