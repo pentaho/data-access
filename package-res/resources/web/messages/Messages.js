@@ -53,16 +53,33 @@ Messages.html_entity_decode = function(str)
 	var msg = key; // if we don't find the msg, return the key as the msg
 	// loop through each message bundle
 	for ( var ii=0; ii<Messages.messageBundle.length; ++ii ) {
-	  // does this bundle have the key we are looking for?
-  	if (key in Messages.messageBundle[ii]) {
-  	  // yes, it has the key
-  		msg = Messages.messageBundle[ii][key];
-  		if ( undefined != substitutionVars )
-  		{
-  			msg = dojo.string.substituteParams(msg, substitutionVars);
-  		}
-  		break;
-  	}
+          // does this bundle have the key we are looking for?
+        if (key in Messages.messageBundle[ii]) {
+          // yes, it has the key
+            msg = Messages.messageBundle[ii][key];
+            if ( undefined != substitutionVars )
+            {
+                var subs = {};
+                if(dojo.isString(substitutionVars)) {
+                    subs['0'] = substitutionVars;
+                }
+                else if(dojo.isArray(substitutionVars)) {
+                    for(var sNo=0; sNo<substitutionVars.length; sNo++) {
+                        subs[''+sNo] = substitutionVars[sNo];
+                    }
+                }
+                else if(dojo.isObject(substitutionVars)) {
+                    subs = substitutionVars;
+                }
+                if(dojo.string.substituteParams) {
+                    msg = dojo.string.substituteParams(msg, subs);
+                } 
+                else if(dojo.replace) {
+                    msg = dojo.replace(msg, subs);
+                }
+            }
+            break;
+        }
 	}
 	return Messages.html_entity_decode(msg);
 };
