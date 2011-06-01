@@ -87,6 +87,21 @@ public class MetadataServiceTest  extends BaseTest {
     }
   }
   
+  public void testPermissions() {
+    StandaloneSession session = new StandaloneSession();
+    PentahoSessionHolder.setSession(session);
+
+    MetadataService svc = new MetadataService();
+
+    String perms = svc.getDatasourcePermissions();
+    assertEquals("NONE", perms);
+
+    session.setAuthenticated("suzy");
+    perms = svc.getDatasourcePermissions();
+    assertEquals("NONE", perms);
+    
+  }
+  
   public void testMessages() {
     
     assertEquals( "!bogus!", Messages.getString("bogus") );
