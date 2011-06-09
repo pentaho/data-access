@@ -39,6 +39,7 @@ import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -97,6 +98,12 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 		XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
 		connectionsVbox.setVisible(true);
+
+
+		XulListbox connections = (XulListbox) document.getElementById("connectionList");
+    connections.setWidth(568);
+    connections.setHeight(275);
+
 
 		this.errorDialog = (XulDialog) document.getElementById("errorDialog");
 		this.errorLabel = (XulLabel) document.getElementById("errorLabel");
