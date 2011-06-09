@@ -89,6 +89,10 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 	
 	XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
 	connectionsVbox.setVisible(false);
+
+		XulListbox connections = (XulListbox) document.getElementById("connectionList");
+    connections.setWidth(180);
+    connections.setHeight(325);
   }
   
   @Override
