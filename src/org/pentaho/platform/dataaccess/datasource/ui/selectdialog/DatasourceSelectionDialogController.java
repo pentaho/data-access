@@ -374,15 +374,21 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
 
   @Bindable
   public void removeDatasourceAccept() {
+    if (removeDatasourceButton.isDisabled()) {
+      return;
+    }
+    removeDatasourceButton.setDisabled(true);
     LogicalModelSummary logicalModelSummary = getDialogResult();
     datasourceService.deleteLogicalModel(logicalModelSummary.getDomainId(), logicalModelSummary.getModelId(), new XulServiceCallback<Boolean>() {
       public void error(String message, Throwable error) {
         showMessagebox("Error", error.getLocalizedMessage()); //$NON-NLS-1$
+        removeDatasourceButton.setDisabled(false);
       }
 
       public void success(Boolean retVal) {
         refreshDatasources(null, null);
         removeDatasourceConfirmationDialog.hide();
+        removeDatasourceButton.setDisabled(false);
       }
     });
   }
