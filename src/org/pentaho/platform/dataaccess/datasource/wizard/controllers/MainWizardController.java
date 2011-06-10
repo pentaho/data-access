@@ -23,7 +23,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.*;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardController;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardListener;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
@@ -33,6 +37,7 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDeck;
@@ -112,6 +117,8 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   private XulMenuList datatypeMenuList;
 
+  private XulButton finishButton;
+  
   private DummyDatasource dummyDatasource = new DummyDatasource();
   private SelectDatasourceStep selectDatasourceStep;
 
@@ -183,6 +190,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
     summaryDialog = (XulDialog) document.getElementById("summaryDialog");
 
+    finishButton  = (XulButton) document.getElementById(FINISH_BTN_ELEMENT_ID);
 
     datasourceName = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
     bf.createBinding(datasourceName, "value", wizardModel, "datasourceName");
@@ -302,11 +310,18 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   @Bindable
   // TODO: migrate to CSV datasource
   public void finish() {
+    
+    if (finishButton.isDisabled()) {
+      return;
+    }
+    finishButton.setDisabled(true);    
+    
     final String datasourceName = this.wizardModel.getDatasourceName();
     datasourceService.listDatasourceNames(new XulServiceCallback<List<String>>() {
 
       @Override
       public void success(List<String> datasourceNames) {
+        finishButton.setDisabled(false);
         boolean isEditing = wizardModel.isEditing();
         if(datasourceNames.contains(datasourceName) && !isEditing) {
           showWarningDialog();
@@ -317,12 +332,13 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
       @Override
       public void error(String s, Throwable throwable) {
+        finishButton.setDisabled(false);
         throwable.printStackTrace();
         MessageHandler.getInstance().showErrorDialog(throwable.getMessage());
       }
     });
   }
-
+    
   @Bindable
   public void overwriteDialogAccept() {
 	  warningDialog.hide();
