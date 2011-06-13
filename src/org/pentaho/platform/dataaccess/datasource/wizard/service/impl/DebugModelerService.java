@@ -109,7 +109,8 @@ public class DebugModelerService extends ModelerService {
 
       // Write this catalog to the default Pentaho DataSource and refresh the cache.
       File file = new File(path + name + ".mondrian.xml"); //$NON-NLS-1$  
-      String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getDatasource().getDatabaseName(); //$NON-NLS-1$
+      // Need to find a better way to get the connection name instead of using the Id.
+      String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$
       String catDef = "solution:" + solutionStorage + ISolutionRepository.SEPARATOR //$NON-NLS-1$
           + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR + file.getName(); //$NON-NLS-1$//$NON-NLS-2$
       addCatalog(catName, catConnectStr, catDef, session);
