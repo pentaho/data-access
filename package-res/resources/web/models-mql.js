@@ -586,7 +586,7 @@ pentaho.pda.query.mql.prototype.createSelection = function() {
             "fieldType":null,
             "id":null,
             "name":null,
-            "selectedAggType":"NONE",
+            "selectedAggType":null,
             "type":null
         };
         return selection;
@@ -632,7 +632,7 @@ pentaho.pda.query.mql.prototype.addSelectionById = function( columnId ) {
             var selection = this.createSelection();
             selection.id = columnId;
             selection.category = column.parent.id;
-//            selection.defaultAggType = column.defaultAggregation;
+            selection.selectedAggType = selection.defaultAggType = column.defaultAggregation;
             this.addSelection( selection );
             return selection;
         }
@@ -787,7 +787,11 @@ pentaho.pda.query.mql.prototype.getSelectionXML = function( selection ) {
             xml += '<table>'+selection.category+'</table>\n';
             xml += '<column>'+selection.id+'</column>\n';
             // MQL Editor requires a selection to have an aggregation type
-            xml += '<aggregation>'+selection.selectedAggType+'</aggregation>';
+            var aggType = selection.selectedAggType;
+            if (!aggType) {
+              aggType = selection.defaultAggType;
+            }
+            xml += '<aggregation>'+aggType+'</aggregation>';
             xml += '</selection>\n';
             return xml;
         } else {
