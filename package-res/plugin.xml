@@ -55,4 +55,8 @@
     type="xml,gwt"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService"/>
 
+   <webservice
+    id="metadataServiceDA"
+    type="xml,gwt"
+    class="org.pentaho.platform.dataaccess.metadata.service.MetadataService"/>
 </plugin>
