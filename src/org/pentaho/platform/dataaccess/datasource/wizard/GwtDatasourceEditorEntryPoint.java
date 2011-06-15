@@ -68,15 +68,18 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
     datasourceService = new DatasourceServiceGwtImpl();
     // only init the app if the user has permissions
+
+    connectionService = new ConnectionServiceGwtImpl();
+    csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
       public void error(String message, Throwable error) {
+        setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
         initDashboardButtons(false);
       }
       public void success(Boolean retVal) {
+        setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
         if (retVal) {
-          connectionService = new ConnectionServiceGwtImpl();
-          csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
-          setupNativeHooks(GwtDatasourceEditorEntryPoint.this);
+          setupPrivilegedNativeHooks(GwtDatasourceEditorEntryPoint.this);
         }
         initDashboardButtons(retVal);
       }
@@ -87,20 +90,18 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     $wnd.initDataAccess(val);
   }-*/;
 
-
-  private native void setupNativeHooks(GwtDatasourceEditorEntryPoint wizard)/*-{
+  private native void setupStandardNativeHooks(GwtDatasourceEditorEntryPoint wizard)/*-{
     if(!$wnd.pho){
       $wnd.pho = {};
     }
-    $wnd.pho.openDatasourceEditor= function(callback) {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showWizard(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
+    $wnd.addDataAccessGlassPaneListener = function(callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::addGlassPaneListener(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
     }
-    $wnd.pho.openEditDatasourceEditor= function(domainId, modelId, callback, perspective) {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showWizardEdit(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(domainId, modelId, perspective, callback);
+
+    $wnd.pho.showDatasourceSelectionDialog = function(callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)("true", callback);
     }
-    $wnd.pho.deleteModel=function(domainId, modelName, callback) {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::deleteLogicalModel(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(domainId, modelName, callback);
-    }
+
     $wnd.gwtConfirm = function(message, callback, options){
       var title = options.title || $wnd.pho_messages.getMessage("prompt","Prompt");
       var accept = options.acceptLabel || $wnd.pho_messages.getMessage("okButton","OK");
@@ -110,21 +111,24 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       } catch(e) {
         // if it fails just show browser prompt
         callback.okOk($wnd.confirm(message));
-      }  
+      }
+    }
+  }-*/;
+
+  private native void setupPrivilegedNativeHooks(GwtDatasourceEditorEntryPoint wizard)/*-{
+    $wnd.pho.openDatasourceEditor= function(callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showWizard(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
+    }
+    $wnd.pho.openEditDatasourceEditor= function(domainId, modelId, callback, perspective) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showWizardEdit(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(domainId, modelId, perspective, callback);
+    }
+    $wnd.pho.deleteModel=function(domainId, modelName, callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::deleteLogicalModel(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(domainId, modelName, callback);
     }
 
-    $wnd.addDataAccessGlassPaneListener = function(callback) {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::addGlassPaneListener(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
-    }
-
-    $wnd.pho.showDatasourceSelectionDialog = function(callback) {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)("true", callback);
-    }
     $wnd.pho.showDatasourceManageDialog = function(callback) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)("false", callback);
     }
-
-
 
   }-*/;
 
