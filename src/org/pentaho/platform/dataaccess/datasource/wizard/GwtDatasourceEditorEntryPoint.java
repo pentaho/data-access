@@ -63,22 +63,24 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private GwtDatasourceManageDialog manageDialog;
   private GwtDatasourceSelectionDialog selectDialog ;
   private boolean asyncConstructorDone;
+  private boolean hasPermissions;
 
   public void onModuleLoad() {
 
     datasourceService = new DatasourceServiceGwtImpl();
     // only init the app if the user has permissions
 
-    connectionService = new ConnectionServiceGwtImpl();
-    csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
       public void error(String message, Throwable error) {
         setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
         initDashboardButtons(false);
       }
       public void success(Boolean retVal) {
+        hasPermissions = retVal;
         setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
         if (retVal) {
+          connectionService = new ConnectionServiceGwtImpl();
+          csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
           setupPrivilegedNativeHooks(GwtDatasourceEditorEntryPoint.this);
         }
         initDashboardButtons(retVal);
@@ -301,7 +303,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
     };
 
-    if(wizard == null){
+    if(wizard == null && this.hasPermissions){
       wizard = new EmbeddedWizard(false);
 
       wizard.setDatasourceService(datasourceService);
