@@ -29,7 +29,6 @@ import org.pentaho.database.util.DatabaseTypeHelper;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
-import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
@@ -47,8 +46,6 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import com.google.gwt.user.client.Window;
 
 public class WizardConnectionController extends AbstractXulEventHandler {
-
-  private DatasourceMessages datasourceMessages;
 
   private IXulAsyncConnectionService connectionService;
 
@@ -222,10 +219,10 @@ public class WizardConnectionController extends AbstractXulEventHandler {
         public void success(Boolean value) {
           try {
             if (value) {
-              openSuccesDialog(datasourceMessages.getString("SUCCESS"), datasourceMessages//$NON-NLS-1$
+              openSuccesDialog(MessageHandler.getString("SUCCESS"), MessageHandler//$NON-NLS-1$
                   .getString("ConnectionController.CONNECTION_TEST_SUCCESS"));//$NON-NLS-1$
             } else {
-              openErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages//$NON-NLS-1$
+              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
                   .getString("ConnectionController.ERROR_0003_CONNECTION_TEST_FAILED"));//$NON-NLS-1$
             }
 
@@ -252,7 +249,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
           public void success(Boolean value) {
             try {
               if (value) {
-                openSuccesDialog(datasourceMessages.getString("SUCCESS"), datasourceMessages//$NON-NLS-1$
+                openSuccesDialog(MessageHandler.getString("SUCCESS"), MessageHandler//$NON-NLS-1$
                     .getString("ConnectionController.CONNECTION_DELETED"));//$NON-NLS-1$
                 datasourceModel.getGuiStateModel().deleteConnection(
                     datasourceModel.getSelectedRelationalConnection().getName());
@@ -264,7 +261,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
                 }
 
               } else {
-                openErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages//$NON-NLS-1$
+                openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
                     .getString("ConnectionController.ERROR_0002_UNABLE_TO_DELETE_CONNECTION"));//$NON-NLS-1$
               }
 
@@ -294,7 +291,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
                 datasourceModel.getGuiStateModel().addConnection(currentConnection);
                 datasourceModel.setSelectedRelationalConnection(currentConnection);
               } else {
-                openErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages//$NON-NLS-1$
+                openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
                     .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
               }
 
@@ -313,12 +310,12 @@ public class WizardConnectionController extends AbstractXulEventHandler {
         public void success(Boolean value) {
           try {
             if (value) {
-              openSuccesDialog(datasourceMessages.getString("SUCCESS"), datasourceMessages//$NON-NLS-1$
+              openSuccesDialog(MessageHandler.getString("SUCCESS"), MessageHandler//$NON-NLS-1$
                   .getString("ConnectionController.CONNECTION_UPDATED"));//$NON-NLS-1$
               datasourceModel.getGuiStateModel().updateConnection(currentConnection);
               datasourceModel.setSelectedRelationalConnection(currentConnection);
             } else {
-              openErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages//$NON-NLS-1$
+              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
                   .getString("ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION"));//$NON-NLS-1$
             }
 
@@ -342,24 +339,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   }
 
   public void displayErrorMessage(Throwable th) {
-    errorDialog.setTitle(ExceptionParser.getErrorHeader(th, getDatasourceMessages().getString("DatasourceEditor.USER_ERROR_TITLE")));//$NON-NLS-1$
-    errorLabel.setValue(ExceptionParser.getErrorMessage(th, getDatasourceMessages().getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED")));//$NON-NLS-1$
+    errorDialog.setTitle(ExceptionParser.getErrorHeader(th, MessageHandler.getString("DatasourceEditor.USER_ERROR_TITLE")));//$NON-NLS-1$
+    errorLabel.setValue(ExceptionParser.getErrorMessage(th, MessageHandler.getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED")));//$NON-NLS-1$
     errorDialog.show();
   }
-
-  /**
-   * @param datasourceMessages the datasourceMessages to set
-   */
-  public void setDatasourceMessages(DatasourceMessages datasourceMessages) {
-    this.datasourceMessages = datasourceMessages;
-  }
-
-  /**
-   * @return the datasourceMessages
-   */
-  public DatasourceMessages getDatasourceMessages() {
-    return datasourceMessages;
-  }
+  
   @Bindable
   public void onDialogAccept(IDatabaseConnection arg0) {
     connectionService.convertToConnection(arg0, new XulServiceCallback<IConnection>() {
