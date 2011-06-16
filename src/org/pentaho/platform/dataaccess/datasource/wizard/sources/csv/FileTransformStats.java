@@ -104,7 +104,12 @@ public class FileTransformStats implements Serializable, IDatasourceSummary {
   }
 
   public long getErrorCount() {
-    return errorCount;
+    if (errorCount > 0) return errorCount;
+    if (errors != null) {
+      return errors.size();
+    } else {
+      return 0;
+    }
   }
 
   public void setErrorCount(long errorCount) {
