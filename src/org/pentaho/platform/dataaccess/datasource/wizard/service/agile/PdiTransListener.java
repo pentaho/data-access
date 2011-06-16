@@ -53,7 +53,10 @@ public class PdiTransListener implements TransListener, Runnable {
     }
     transformStats.setRowsFinished(true);
     transformStats.setTotalRecords(step.getLinesOutput());
-    transformStats.setErrorCount(errorCount);
+
+    // there seems to be an issue with trans.getErrors() reporting 0 - figure it out on our own instead
+//    transformStats.setErrorCount(errorCount);
+    transformStats.setErrorCount(step.getLinesOutput() - step.getLinesWritten());
 
     finished = true;
   }
