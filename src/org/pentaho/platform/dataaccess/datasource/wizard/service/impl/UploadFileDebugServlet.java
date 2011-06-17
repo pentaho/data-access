@@ -20,18 +20,6 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -44,6 +32,17 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.web.http.PentahoHttpSessionHelper;
 import org.pentaho.reporting.libraries.base.util.StringUtils;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 public class UploadFileDebugServlet extends HttpServlet implements Servlet {
 
@@ -106,11 +105,11 @@ public class UploadFileDebugServlet extends HttpServlet implements Servlet {
       }
 
       File file;
-      if(isTemporary) {
-        file = PentahoSystem.getApplicationContext().createTempFile(session, "",".tmp", true); //$NON-NLS-1$
-      } else {
+//      if(isTemporary) {
+//        file = PentahoSystem.getApplicationContext().createTempFile(session, "",".tmp", true); //$NON-NLS-1$
+//      } else {
         file = new File(path + File.separatorChar + filename);        
-      }
+//      }
       
       FileOutputStream outputStream = new FileOutputStream(file);
       byte[] fileContents = uploadItem.get();
