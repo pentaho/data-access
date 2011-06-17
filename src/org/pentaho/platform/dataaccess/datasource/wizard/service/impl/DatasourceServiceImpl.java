@@ -502,6 +502,8 @@ public class DatasourceServiceImpl implements IDatasourceService {
           securityEnabled, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
               .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
       Domain domain = sqlModelGenerator.generate();
+      domain.getPhysicalModels().get(0).setId(connection.getName());
+
       modelerWorkspace.setDomain(domain);
 
 
