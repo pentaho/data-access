@@ -17,17 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
-import org.pentaho.platform.dataaccess.datasource.wizard.IWizardController;
-import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
-import org.pentaho.platform.dataaccess.datasource.wizard.IWizardListener;
-import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
+import org.pentaho.platform.dataaccess.datasource.wizard.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
@@ -44,6 +34,12 @@ import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The wizard-controler manages the navigation between the wizard-panes. All panes are organized as a list, where
@@ -440,7 +436,6 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   @Bindable
   public void editFieldSettings() {
-    setFinished();
     summaryDialog.hide();
     wizardDialog.show();
   }
