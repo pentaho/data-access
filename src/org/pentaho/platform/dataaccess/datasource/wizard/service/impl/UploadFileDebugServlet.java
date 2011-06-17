@@ -105,11 +105,11 @@ public class UploadFileDebugServlet extends HttpServlet implements Servlet {
       }
 
       File file;
-//      if(isTemporary) {
-//        file = PentahoSystem.getApplicationContext().createTempFile(session, "",".tmp", true); //$NON-NLS-1$
-//      } else {
+      if(isTemporary) {
+        file = PentahoSystem.getApplicationContext().createTempFile(session, "",".tmp", true); //$NON-NLS-1$
+      } else {
         file = new File(path + File.separatorChar + filename);        
-//      }
+      }
       
       FileOutputStream outputStream = new FileOutputStream(file);
       byte[] fileContents = uploadItem.get();
