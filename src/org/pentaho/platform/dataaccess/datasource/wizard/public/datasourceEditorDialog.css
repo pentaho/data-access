@@ -330,3 +330,7 @@ html>body .dialog-content {
   font-size:.65em;
   padding: 3px 10px;
 }
+
+#otherRadio .gwt-TextBox {
+  width: 150px;
+}
