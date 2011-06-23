@@ -97,6 +97,8 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   private IWizardModel wizardModel = new WizardModel();
 
   private ICsvDatasourceServiceAsync csvDatasourceService;
+  private DialogListener<Domain> modelerDialogListener;
+
 
   /**
   /**
@@ -163,7 +165,13 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     this.summary = summary;
     if(wizardModel.isEditing()){
       MessageHandler.getInstance().closeWaitingDialog();
-      onDialogAccept();
+      
+      // biserver-6210 - manage modeler dialog listener separate from the wizard's listener
+      if (modelerDialogListener != null) {
+        modelerDialogListener.onDialogAccept(getDialogResult());
+      }
+      modelerDialogListener = null;
+
       return;
     }
     summaryDialogController.showSummaryDialog(summary, new XulServiceCallback<IDatasourceSummary>(){
@@ -204,7 +212,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
    * Specified by <code>DialogController</code>.
    */
   public void showDialog() {
-
+    this.modelerDialogListener = null;
     if (datasourceModel.getGuiStateModel().getConnections() == null
         || datasourceModel.getGuiStateModel().getConnections().size() <= 0) {
       checkInitialized();
@@ -226,7 +234,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   public void showEditDialog(final Domain domain, DialogListener<Domain> listener) {
     checkInitialized();
-    addDialogListener(listener);
+
+    // biserver-6210
+    this.modelerDialogListener = listener;
 
     String datasourceType = (String) domain.getLogicalModels().get(0).getProperty("DatasourceType");
 
