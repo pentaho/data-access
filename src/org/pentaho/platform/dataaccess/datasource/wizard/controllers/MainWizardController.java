@@ -17,6 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
+import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
@@ -59,6 +60,8 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   private XulTextbox datasourceName;
   private List<IWizardDatasource> datasources = new ArrayList<IWizardDatasource>();
   private IWizardDatasource activeDatasource;
+  private String invalidCharacters;
+  public static final String DEFAULT_INVALID_CHARACTERS = "$<>?&#%^*()!~:;[]{}|"; //$NON-NLS-1$
 
   // Binding converters
   protected class BackButtonBindingConverter extends BindingConvertor<Integer, Boolean> {
@@ -226,6 +229,20 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       setActiveStep(0);
       datasourceBinding.fireSourceChanged();
       setSelectedDatasource(dummyDatasource);
+      datasourceService.getDatasourceIllegalCharacters(new XulServiceCallback<String>() {
+
+        @Override
+        public void success(String retVal) {
+          invalidCharacters = retVal;
+          
+        }
+
+        @Override
+        public void error(String message, Throwable error) {
+          invalidCharacters = DEFAULT_INVALID_CHARACTERS;
+          
+        }
+      });
     } catch (XulException e) {
       MessageHandler.getInstance().showErrorDialog("Error", e.getMessage());
       e.printStackTrace();
@@ -311,28 +328,35 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       return;
     }
     finishButton.setDisabled(true);    
-    
     final String datasourceName = this.wizardModel.getDatasourceName();
-    datasourceService.listDatasourceNames(new XulServiceCallback<List<String>>() {
 
-      @Override
-      public void success(List<String> datasourceNames) {
-        finishButton.setDisabled(false);
-        boolean isEditing = wizardModel.isEditing();
-        if(datasourceNames.contains(datasourceName) && !isEditing) {
-          showWarningDialog();
-        } else {
-          setFinished();
+    // Validating whether the datasource name contains any illegal characters
+    if(isDatasourceNameValid(datasourceName)) {
+      datasourceService.listDatasourceNames(new XulServiceCallback<List<String>>() {
+  
+        @Override
+        public void success(List<String> datasourceNames) {
+          finishButton.setDisabled(false);
+          boolean isEditing = wizardModel.isEditing();
+          if(datasourceNames.contains(datasourceName) && !isEditing) {
+            showWarningDialog();
+          } else {
+            setFinished();
+          }
         }
-      }
-
-      @Override
-      public void error(String s, Throwable throwable) {
-        finishButton.setDisabled(false);
-        throwable.printStackTrace();
-        MessageHandler.getInstance().showErrorDialog(throwable.getMessage());
-      }
-    });
+  
+        @Override
+        public void error(String s, Throwable throwable) {
+          finishButton.setDisabled(false);
+          throwable.printStackTrace();
+          MessageHandler.getInstance().showErrorDialog(throwable.getMessage());
+        }
+      });
+    } else {
+      finishButton.setDisabled(false);
+      MessageHandler.getInstance().showErrorDialog("Error", MessageHandler//$NON-NLS-1$
+          .getString("DatasourceEditor.ERROR_0005_INVALID_DATASOURCE_NAME", invalidCharacters), true); //$NON-NLS-1$ 
+    }
   }
     
   @Bindable
@@ -365,7 +389,8 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
         throwable.printStackTrace();
         //TODO: improve error messaging
         MessageHandler.getInstance().closeWaitingDialog();
-        MessageHandler.getInstance().showErrorDialog(s, s, true);
+        MessageHandler.getInstance().showErrorDialog("Error", ExceptionParser //$NON-NLS-1$
+            .getErrorMessage(throwable, MessageHandler.getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED")), true); //$NON-NLS-1$  
       }
     });
 
@@ -440,4 +465,35 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     wizardDialog.show();
   }
 
+  private boolean isDatasourceNameValid(String datasourceName) {
+    return containsNone(datasourceName, invalidCharacters);
+  }
+  
+  /**
+   * Checks that the String does not contain certain characters.
+   *
+   * @param str  the String to check, may be null
+   * @param invalidChars  an String of invalid chars, may be null
+   * @return true if it contains none of the invalid chars, or is null
+   */
+  private boolean containsNone(String str, String invalidChars) {
+      if (str == null || invalidChars == null) {
+          return true;
+      }
+      char[] invalidCharsArray = null;
+      int strSize = str.length();
+      if(invalidChars != null) {
+        invalidCharsArray = invalidChars.toCharArray();
+      }
+      int validSize = invalidCharsArray.length;
+      for (int i = 0; i < strSize; i++) {
+          char ch = str.charAt(i);
+          for (int j = 0; j < validSize; j++) {
+              if (invalidCharsArray[j] == ch) {
+                  return false;
+              }
+          }
+      }
+      return true;
+  }
 }

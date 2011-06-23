@@ -28,11 +28,10 @@ import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IGwtDatasourceServiceAsync {
   void getLogicalModels(AsyncCallback<List<LogicalModelSummary>> callback);
@@ -48,6 +47,7 @@ public interface IGwtDatasourceServiceAsync {
 
   public void listDatasourceNames(AsyncCallback<List<String>> callback);
   void generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO, AsyncCallback<QueryDatasourceSummary> callback);
+  void getDatasourceIllegalCharacters(AsyncCallback<String> callback);
 }
 
   

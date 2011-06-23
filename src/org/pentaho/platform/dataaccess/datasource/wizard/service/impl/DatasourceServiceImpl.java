@@ -48,7 +48,11 @@ import org.pentaho.metadata.repository.DomainStorageException;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
-import org.pentaho.platform.api.engine.*;
+import org.pentaho.platform.api.engine.IPentahoObjectFactory;
+import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.IPentahoUrlFactory;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
+import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
@@ -77,9 +81,9 @@ import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 import org.pentaho.platform.uifoundation.component.xml.PMDUIComponent;
 import org.pentaho.platform.util.logging.SimpleLogger;
 import org.pentaho.platform.util.messages.LocaleHelper;
+import org.pentaho.platform.util.web.SimpleUrlFactory;
 
 import com.thoughtworks.xstream.XStream;
-import org.pentaho.platform.util.web.SimpleUrlFactory;
 
 public class DatasourceServiceImpl implements IDatasourceService {
 
@@ -521,25 +525,25 @@ public class DatasourceServiceImpl implements IDatasourceService {
 
       return summary;
     } catch (SQLModelGeneratorException smge) {
-      logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
+      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL",//$NON-NLS-1$
           smge.getLocalizedMessage()), smge);
       throw new DatasourceServiceException(Messages
-          .getErrorString("InMemoryDatasourceServiceImpl.ERROR_0015_UNABLE_TO_GENERATE_MODEL"), smge); //$NON-NLS-1$
+          .getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL",smge.getLocalizedMessage()), smge); //$NON-NLS-1$
     } catch (QueryValidationException e) {
       logger.error(Messages.getErrorString(
-          "InMemoryDatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
+          "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
       throw new DatasourceServiceException(Messages.getErrorString(
-          "InMemoryDatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e); //$NON-NLS-1$
+          "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e); //$NON-NLS-1$
     } catch (ModelerException e) {
-      logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
+      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL",//$NON-NLS-1$
           e.getLocalizedMessage()), e);
       throw new DatasourceServiceException(Messages
-          .getErrorString("InMemoryDatasourceServiceImpl.ERROR_0015_UNABLE_TO_GENERATE_MODEL"), e); //$NON-NLS-1$
+          .getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", e.getLocalizedMessage()), e); //$NON-NLS-1$
     } catch (Exception e) {
-      logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0016_UNABLE_TO_GENERATE_MODEL",
+      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", //$NON-NLS-1$
           e.getLocalizedMessage()), e);
       throw new DatasourceServiceException(Messages
-          .getErrorString("InMemoryDatasourceServiceImpl.ERROR_0015_UNABLE_TO_GENERATE_MODEL"), e); //$NON-NLS-1$
+          .getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", e.getLocalizedMessage()), e); //$NON-NLS-1$
     }
 
   }
@@ -591,4 +595,9 @@ public class DatasourceServiceImpl implements IDatasourceService {
 		    logicalModel.setProperty("datasourceModel", modelState);
 		}
 	}
+  
+  public String getDatasourceIllegalCharacters() throws DatasourceServiceException {
+    IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
+    return resLoader.getPluginSetting(getClass(), "settings/data-access-datasource-illegal-characters"); //$NON-NLS-1$
+  }
 }

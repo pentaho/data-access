@@ -100,4 +100,14 @@ public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements I
       throw e;
     }
   }
+
+  @Override
+  public String getDatasourceIllegalCharacters() throws DatasourceServiceException {
+    try {
+      return SERVICE.getDatasourceIllegalCharacters();
+    } catch (DatasourceServiceException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      throw e;
+    }
+  }
 }

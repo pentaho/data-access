@@ -288,4 +288,20 @@ public class DatasourceServiceGwtImpl implements IXulAsyncDatasourceService {
       }
     });
   }
+
+  @Override
+  public void getDatasourceIllegalCharacters(final XulServiceCallback<String> callback) {
+    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+      public void execute(AsyncCallback callback) {
+        SERVICE.getDatasourceIllegalCharacters(callback);
+      }
+    },new AsyncCallback<String>() {
+      public void onFailure(Throwable arg0) {
+        callback.error(arg0.getLocalizedMessage(), arg0); //$NON-NLS-1$
+      }
+
+      public void onSuccess(String arg0) {
+        callback.success(arg0);
+      }
+    });  }
 }

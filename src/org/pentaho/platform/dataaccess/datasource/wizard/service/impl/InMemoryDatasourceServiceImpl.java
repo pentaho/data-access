@@ -392,4 +392,8 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
 
   }
 
+  public String getDatasourceIllegalCharacters() throws DatasourceServiceException {
+    return "$<>?&#%^*()!~:;[]{}|" ;
+  }
+
 }

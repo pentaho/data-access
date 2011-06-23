@@ -18,5 +18,5 @@
 
     <data-access-datasource-solution-storage>admin</data-access-datasource-solution-storage>
     <data-access-csv-sample-rows>500</data-access-csv-sample-rows>
-    
+    <data-access-datasource-illegal-characters><![CDATA[$<>?&#%^*()!~:;[]{}|]]></data-access-datasource-illegal-characters>
 </settings>

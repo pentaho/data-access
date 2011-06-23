@@ -29,7 +29,6 @@ import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
-import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
@@ -125,6 +124,14 @@ public interface IDatasourceService {
   public List<String> listDatasourceNames() throws IOException;
 
   QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException;
+  
+  /**
+   * Returns a list of illegal characters in a string that are not allowed in a Data Source name
+   * This string is stored in settings.xml in data-access-datasource-illegal-characters xml tag
+   * @return string of illegal character
+   * @throws DatasourceServiceException
+   */
+  public String getDatasourceIllegalCharacters() throws DatasourceServiceException;
 }
 
  
