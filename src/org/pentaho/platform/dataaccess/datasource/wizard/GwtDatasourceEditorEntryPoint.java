@@ -89,7 +89,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   }
   
   public native void initDashboardButtons(boolean val) /*-{
-    $wnd.initDataAccess(val);
+    if($wnd.initDataAccess){
+      $wnd.initDataAccess(val);
+    }
   }-*/;
 
   private native void setupStandardNativeHooks(GwtDatasourceEditorEntryPoint wizard)/*-{
