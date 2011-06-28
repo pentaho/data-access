@@ -118,7 +118,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 		if (this.validator.isValid(join)) {
 			this.joinGuiModel.addJoin(join);
-      this.parentDatasource.setFinishable(this.validator.allTablesJoined());
+			this.parentDatasource.setFinishable(this.validator.allTablesJoined());
 		} else {
 			((MultiTableDatasource) this.parentDatasource).displayErrors(this.validator.getError());
 		}
@@ -127,6 +127,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	@Bindable
 	public void deleteJoin() {
 		this.joinGuiModel.removeSelectedJoin();
+		this.parentDatasource.setFinishable(this.validator.allTablesJoined());
 	}
 
 	@Override
