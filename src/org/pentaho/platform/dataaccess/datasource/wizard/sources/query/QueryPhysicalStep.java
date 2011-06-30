@@ -236,7 +236,8 @@ public class QueryPhysicalStep extends AbstractWizardStep {
         parentDatasource.setFinishable(false);
       } else {
     	if(isFinishable) {
-    		parentDatasource.setFinishable(true);	
+    		datasourceModel.validate();
+    		parentDatasource.setFinishable(datasourceModel.isValidated());
     	} else {
     		parentDatasource.setFinishable(false);
     		setValid(true);
