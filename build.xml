@@ -45,12 +45,14 @@
 			value="${findbugs.build.cache.dir}/findbugs-${findbugs.version}"
 			description="Where findbugs is installed to" />
 
-	<target name="install" description="Installs the plugin to your Pentaho BI Server">
+	      <target name="install" description="Installs the plugin to your Pentaho BI Server">
 		<unzip src="${dist.dir}/${package.basename}.zip" dest="${pentaho.solutions.dir}/system" overwrite="true">
 		</unzip>
 
 		<!--copy todir="${pentaho.solutions.dir}">
-      <fileset dir="${basedir}/solutions/" />
+        <fileset dir="${basedir}/solutions/" />
+
+<!-- we did some stuffs -->
     </copy-->
 	</target>
 
