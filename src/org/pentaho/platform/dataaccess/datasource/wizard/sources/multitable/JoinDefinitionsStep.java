@@ -165,26 +165,10 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 		this.joinGuiModel.computeJoinDefinitionStepTables();
 		this.leftTables.setSelectedIndex(0);
 		this.rightTables.setSelectedIndex(0);
-		checkExistingJoinsStillValid();
 		parentDatasource.setFinishable(this.validator.allTablesJoined());
 	}
 
-	private void checkExistingJoinsStillValid() {
-		Set<String> allTables = new HashSet<String>();
-		for (JoinTableModel tbl : joinGuiModel.getSelectedTables()) {
-			allTables.add(tbl.getName());
-		}
-
-		List<JoinRelationshipModel> toRemove = new ArrayList<JoinRelationshipModel>();
-		for (JoinRelationshipModel join : joinGuiModel.getJoins()) {
-			if (!allTables.contains(join.getLeftKeyFieldModel().getParentTable().getName()) || !allTables.contains(join.getRightKeyFieldModel().getParentTable().getName())) {
-				toRemove.add(join);
-			}
-		}
-		for (JoinRelationshipModel join : toRemove) {
-			joinGuiModel.getJoins().remove(join);
-		}
-	}
+	
 
 	public String getStepName() {
 		return MessageHandler.getString("multitable.DEFINE_JOINS");

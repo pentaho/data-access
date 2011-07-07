@@ -21,8 +21,11 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
@@ -103,6 +106,24 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
 		}
     checkValidState();
+    checkExistingJoinsStillValid();
+	}
+	
+	private void checkExistingJoinsStillValid() {
+		Set<String> allTables = new HashSet<String>();
+		for (JoinTableModel tbl : joinGuiModel.getSelectedTables()) {
+			allTables.add(tbl.getName());
+		}
+
+		List<JoinRelationshipModel> toRemove = new ArrayList<JoinRelationshipModel>();
+		for (JoinRelationshipModel join : joinGuiModel.getJoins()) {
+			if (!allTables.contains(join.getLeftKeyFieldModel().getParentTable().getName()) || !allTables.contains(join.getRightKeyFieldModel().getParentTable().getName())) {
+				toRemove.add(join);
+			}
+		}
+		for (JoinRelationshipModel join : toRemove) {
+			joinGuiModel.getJoins().remove(join);
+		}
 	}
 
 	@Override
