@@ -30,4 +30,7 @@ public interface IWizardModel extends XulEventSource {
   void setSelectedDatasource(IWizardDatasource datasource);
   IWizardDatasource getSelectedDatasource();
   void reset();
+
+  boolean isReportingOnlyValid();
+  void setReportingOnlyValid(boolean valid);
 }
