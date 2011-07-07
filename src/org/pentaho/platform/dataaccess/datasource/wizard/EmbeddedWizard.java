@@ -98,6 +98,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   private ICsvDatasourceServiceAsync csvDatasourceService;
   private DialogListener<Domain> modelerDialogListener;
+  private boolean reportingOnlyValid = true;
 
 
   /**
@@ -220,6 +221,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     wizardModel.setEditing(false);
     wizardController.setActiveStep(0);
     wizardModel.reset();
+    wizardModel.setReportingOnlyValid(this.reportingOnlyValid);
     
     /* BISERVER-5153: Work around where XulGwtButton is getting its disabled state and style
      * confused.  The only way to get the train on the track is to flip-flop it.
@@ -259,6 +261,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     }
     
     wizardModel.reset();
+    wizardModel.setReportingOnlyValid(this.reportingOnlyValid);
     wizardModel.setSelectedDatasource(selectedDatasource);
     wizardModel.setEditing(true);
     wizardController.reset();
@@ -498,5 +501,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   public void setCsvDatasourceService(ICsvDatasourceServiceAsync csvDatasourceService) {
     this.csvDatasourceService = csvDatasourceService;
+  }
+
+  public void setReportingOnlyValid(boolean reportingOnlyValid){
+    this.reportingOnlyValid = reportingOnlyValid;
   }
 }

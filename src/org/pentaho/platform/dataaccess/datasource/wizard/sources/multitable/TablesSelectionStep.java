@@ -19,6 +19,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -53,8 +54,6 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private XulVbox tablesSelectionDialog;
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
-	private XulRadio reportingAnalysisRadio;
-	private XulRadio reportingRadio;
 	private XulMenuList<JoinTableModel> factTables;
 	private MultitableGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
@@ -132,8 +131,6 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		this.availableTables = (XulListbox) document.getElementById("availableTables");
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
 		this.factTables = (XulMenuList<JoinTableModel>) document.getElementById("factTables");
-		this.reportingAnalysisRadio = (XulRadio) document.getElementById("reporting_analysis");
-		this.reportingRadio = (XulRadio) document.getElementById("reporting");
 		super.init(wizardModel);
 	}
 
@@ -161,25 +158,32 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		
 		bf.createBinding(this.factTables, "selectedIndex", this.joinGuiModel, "factTable", new BindingConvertor<Integer, JoinTableModel>() {
 
-			@Override
-			public JoinTableModel sourceToTarget(final Integer index) {
-				if (index == -1) {
-					return null;
-				}
-				//Index 0 represents [select table] option.
-				//To be valid index must not be 0.
-				checkValidState();
-				int i = (int) index;
-				i--;
-				return i < 0 ? null : joinGuiModel.getSelectedTables().get(i);
-			}
+      @Override
+      public JoinTableModel sourceToTarget(final Integer index) {
+        if (index == -1) {
+          return null;
+        }
+        //Index 0 represents [select table] option.
+        //To be valid index must not be 0.
+        checkValidState();
+        int i = (int) index;
+        i--;
+        return i < 0 ? null : joinGuiModel.getSelectedTables().get(i);
+      }
 
-			@Override
-			public Integer targetToSource(final JoinTableModel value) {
-				return joinGuiModel.getSelectedTables().indexOf(value);
-			}
-		});
-	}
+      @Override
+      public Integer targetToSource(final JoinTableModel value) {
+        return joinGuiModel.getSelectedTables().indexOf(value);
+      }
+    });
+
+    // use a binding to handle the visibility state of the schema type radio group
+    try {
+      bf.createBinding(joinGuiModel, "reportingOnlyValid", "doOlap", "visible").fireSourceChanged();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
 	public String getStepName() {
 		return MessageHandler.getString("multitable.SELECT_TABLES");
@@ -187,13 +191,6 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
 	public XulComponent getUIComponent() {
 		return this.tablesSelectionDialog;
-	}
-	
-	public void setRadioState(boolean isOlap) {
-		if(reportingAnalysisRadio != null && reportingRadio != null) {
-			this.reportingAnalysisRadio.setSelected(isOlap);
-			this.reportingRadio.setSelected(!isOlap);
-		}
 	}
 	
 	public void setFactTable(JoinTableModel factTable) {
@@ -213,7 +210,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
   private void checkValidState(){
     boolean valid = true;
     boolean finishable = true;
-		if(this.reportingAnalysisRadio.isSelected()) {
+		if(joinGuiModel.isDoOlap()) {
 			valid &= this.factTables.getSelectedIndex() > 0;
       finishable &= this.factTables.getSelectedIndex() > 0;
 		}
@@ -226,10 +223,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Override
 	public void stepActivatingForward() {
     super.stepActivatingForward();
-		XulVbox factTableVBox = (XulVbox) document.getElementById("factTableVbox");
-		factTableVBox.setVisible(this.reportingAnalysisRadio.isSelected());
-		this.joinGuiModel.doOlap(this.reportingAnalysisRadio.isSelected());
-		
+
     checkValidState();
 	}
 }

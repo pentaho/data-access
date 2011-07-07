@@ -31,6 +31,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
+import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -38,6 +39,7 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulLabel;
+import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -45,6 +47,7 @@ import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,13 +108,27 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
     connections.setHeight(275);
 
 
+    // conditionally hiding the selection of reporting vs reporting+olap in the case where reporting only makes no sense.
+    try {
+      bf.createBinding(wizardModel, "reportingOnlyValid", "metadata", "visible").fireSourceChanged();
+    } catch (Exception e) {
+      e.printStackTrace(); 
+    }
+
+    // Use a binding to keep the radio buttons in sync
+    XulRadio olapRadio  = (XulRadio) document.getElementById("reporting_analysis");
+    bf.createBinding(olapRadio, "selected", joinGuiModel, "doOlap");
+
+    // Non-star is the default, change that if relational only is not an option
+    joinGuiModel.setDoOlap(wizardModel.isReportingOnlyValid() == false);
+
+
 		this.errorDialog = (XulDialog) document.getElementById("errorDialog");
 		this.errorLabel = (XulLabel) document.getElementById("errorLabel");
 
 		this.connectionSelectionStep.setValid(true);
 		this.setConnection(connectionSelectionStep.getConnection());
-		
-		this.tablesSelectionStep.setRadioState(false);
+
 	}
 
 	@Override
@@ -134,7 +151,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		connectionSelectionStep.init(wizardModel);
 		tablesSelectionStep.init(wizardModel);
 		joinDefinitionsStep.init(wizardModel);
-
+    
 		bf.createBinding(connectionSelectionStep, "connection", this, "connection");
 	}
 
@@ -224,7 +241,6 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 						joinGuiModel.processAvailableTables(tables);
 						joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
 						tablesSelectionStep.setValid(true);
-						tablesSelectionStep.setRadioState(joinGuiModel.isDoOlap());
 						if(joinGuiModel.isDoOlap()) {
 							tablesSelectionStep.setFactTable(joinGuiModel.getFactTable());
 						}

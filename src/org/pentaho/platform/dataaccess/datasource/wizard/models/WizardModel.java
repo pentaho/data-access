@@ -17,6 +17,7 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
   private boolean editing;
   private List<Class<? extends IWizardDatasource>> ignoredDatasources = new ArrayList<Class<? extends IWizardDatasource>>();
   private IWizardDatasource selectedDatasource;
+  private boolean reportingOnlyValid = true;
 
   public WizardModel(){
     addDatasource(new DummyDatasource());
@@ -94,9 +95,22 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
   }
 
   @Override
+  @Bindable
+  public boolean isReportingOnlyValid() {
+    return reportingOnlyValid;
+  }
+
+  @Bindable
+  public void setReportingOnlyValid(boolean reportingOnlyValid) {
+    this.reportingOnlyValid = reportingOnlyValid;
+    firePropertyChange("reportingOnlyValid", !this.reportingOnlyValid, this.reportingOnlyValid);
+  }
+
+  @Override
   public void reset() {
     this.setDatasourceName("");
     this.setSelectedDatasource(datasources.iterator().next());
+    this.setReportingOnlyValid(true);
     for(IWizardDatasource source : datasources){
       source.reset();
     }
