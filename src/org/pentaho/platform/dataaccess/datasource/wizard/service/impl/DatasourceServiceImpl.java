@@ -86,7 +86,7 @@ import org.pentaho.platform.util.web.SimpleUrlFactory;
 import com.thoughtworks.xstream.XStream;
 
 public class DatasourceServiceImpl implements IDatasourceService {
-
+  
   private static final Log logger = LogFactory.getLog(DatasourceServiceImpl.class);
 
   private IDataAccessPermissionHandler dataAccessPermHandler;
@@ -476,18 +476,20 @@ public class DatasourceServiceImpl implements IDatasourceService {
   }
   
   public List<String> listDatasourceNames() throws IOException {
-	  IPentahoUrlFactory urlFactory = new SimpleUrlFactory(""); //$NON-NLS-1$
-	  PMDUIComponent component = new PMDUIComponent(urlFactory, new ArrayList());
-	  component.validate(getSession(), null);
-	  component.setAction(PMDUIComponent.ACTION_LIST_MODELS);
-	  Document document = component.getXmlContent();
-	  List<DefaultElement> modelElements = document.selectNodes("//model_name"); //$NON-NLS-1$
-
-	  ArrayList<String> datasourceNames = new ArrayList<String>();
-	  for(DefaultElement element : modelElements) {
-		  datasourceNames.add(element.getText());
-	  }
-	  return datasourceNames;
+    synchronized(CsvDatasourceServiceImpl.lock) {
+  	  IPentahoUrlFactory urlFactory = new SimpleUrlFactory(""); //$NON-NLS-1$
+  	  PMDUIComponent component = new PMDUIComponent(urlFactory, new ArrayList());
+  	  component.validate(getSession(), null);
+  	  component.setAction(PMDUIComponent.ACTION_LIST_MODELS);
+  	  Document document = component.getXmlContent();
+  	  List<DefaultElement> modelElements = document.selectNodes("//model_name"); //$NON-NLS-1$
+  
+  	  ArrayList<String> datasourceNames = new ArrayList<String>();
+  	  for(DefaultElement element : modelElements) {
+  		  datasourceNames.add(element.getText());
+  	  }
+  	  return datasourceNames;
+    }
   }
 
   @Override
