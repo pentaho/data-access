@@ -285,12 +285,12 @@
 				        <vbox>
 				          <label value="${multitable.JOINS}" tooltiptext=""/>
 				          <listbox id="joins" pen:binding="name" disabled="false" height="100" width="610"/>
-				          <hbox>
-						    <spacer width="530"/>
-						    <button id="deleteJoinButton" label="${multitable.DELETE_JOIN}" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.deleteJoin()" disabled="false"/>
-						  </hbox>
 				        </vbox>
 				      </hbox>
+			          <hbox>
+					    <spacer width="530"/>
+					    <button id="deleteJoinButton" label="${multitable.DELETE_JOIN}" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.deleteJoin()" disabled="false"/>
+					  </hbox>
 				    </vbox>
 				<!-- Multi-table step 3 -->
 			</deck>
