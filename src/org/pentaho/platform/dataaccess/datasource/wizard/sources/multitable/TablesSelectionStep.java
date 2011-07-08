@@ -179,7 +179,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
     // use a binding to handle the visibility state of the schema type radio group
     try {
-      bf.createBinding(joinGuiModel, "reportingOnlyValid", "doOlap", "visible").fireSourceChanged();
+      bf.createBinding(joinGuiModel, "doOlap", "factTableVbox", "visible").fireSourceChanged();
     } catch (Exception e) {
       e.printStackTrace();
     }
