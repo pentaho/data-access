@@ -117,8 +117,8 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   }
   
   public void reset() {
-	  if(datasourceListbox != null) { 
-		  datasourceListbox.setSelectedIndex(0);
+	  if(datasourceListbox != null &&datasourceListbox.getChildNodes().size() > 0){
+      datasourceListbox.setSelectedIndex(0);
 	  }
   }
 
