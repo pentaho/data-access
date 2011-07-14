@@ -273,58 +273,62 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   }
 
   @Bindable
-  public void saveConnection() {
-    if (!saveConnectionConfirmationDialog.isHidden()) {
-      saveConnectionConfirmationDialog.hide();
-    }
+	public void saveConnection() {
+		if (!saveConnectionConfirmationDialog.isHidden()) {
+			saveConnectionConfirmationDialog.hide();
+		}
 
-    //TODO: manage connection editing state better
-    if (true /*adding*/) {
-        connectionService.addConnection(currentConnection, new XulServiceCallback<Boolean>() {
-          public void error(String message, Throwable error) {
-            displayErrorMessage(error);
-          }
+		connectionService.getConnectionByName(currentConnection.getName(), new XulServiceCallback<IConnection>() {
+			public void error(String message, Throwable error) {
+				// Connection not found. Create a new one.
+				connectionService.addConnection(currentConnection, new XulServiceCallback<Boolean>() {
+					public void error(String message, Throwable error) {
+						displayErrorMessage(error);
+					}
 
-          public void success(Boolean value) {
-            try {
-              if (value) {
-                datasourceModel.getGuiStateModel().addConnection(currentConnection);
-                datasourceModel.setSelectedRelationalConnection(currentConnection);
-              } else {
-                openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                    .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
-              }
+					public void success(Boolean value) {
+						try {
+							if (value) {
+								datasourceModel.getGuiStateModel().addConnection(currentConnection);
+								datasourceModel.setSelectedRelationalConnection(currentConnection);
+							} else {
+								openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
+										.getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
+							}
 
-            } catch (Exception e) {
-              displayErrorMessage(e);
-            }
-          }
-        });
-    } else {
-      connectionService.updateConnection(currentConnection, new XulServiceCallback<Boolean>() {
+						} catch (Exception e) {
+							displayErrorMessage(e);
+						}
+					}
+				});
+			}
 
-        public void error(String message, Throwable error) {
-          displayErrorMessage(error);
-        }
+			public void success(IConnection value) {
+				// Connection found. Update it.
+				connectionService.updateConnection(currentConnection, new XulServiceCallback<Boolean>() {
 
-        public void success(Boolean value) {
-          try {
-            if (value) {
-              openSuccesDialog(MessageHandler.getString("SUCCESS"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.CONNECTION_UPDATED"));//$NON-NLS-1$
-              datasourceModel.getGuiStateModel().updateConnection(currentConnection);
-              datasourceModel.setSelectedRelationalConnection(currentConnection);
-            } else {
-              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION"));//$NON-NLS-1$
-            }
+					public void error(String message, Throwable error) {
+						displayErrorMessage(error);
+					}
 
-          } catch (Exception e) {
-          }
-        }
-      });
-    }
-  }
+					public void success(Boolean value) {
+						try {
+							if (value) {
+								openSuccesDialog(MessageHandler.getString("SUCCESS"), MessageHandler//$NON-NLS-1$
+										.getString("ConnectionController.CONNECTION_UPDATED"));//$NON-NLS-1$
+								datasourceModel.getGuiStateModel().updateConnection(currentConnection);
+								datasourceModel.setSelectedRelationalConnection(currentConnection);
+							} else {
+								openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
+										.getString("ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION"));//$NON-NLS-1$
+							}
+						} catch (Exception e) {
+						}
+					}
+				});
+			}
+		});
+	}
 
   public void addConnectionDialogListener(ConnectionDialogListener listener) {
     if (listeners.contains(listener) == false) {
