@@ -65,10 +65,9 @@
             <artifact name="pentaho-metadata" type="source" ext="jar" m:classifier="sources"/>
         </dependency>
         <dependency org="pentaho" name="pentaho-cwm" rev="${dependency.pentaho-cwm.revision}"/>
-        <dependency org="pentaho.kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
-        <dependency org="pentaho.kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
-
-		<dependency org="pentaho.kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false" conf="default->default" changing="true" />
+        <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+        <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
+        <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false" conf="default->default" changing="true" />
 
         <dependency org="dom4j" name="dom4j" rev="1.6.1"/>
         <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.3.1"/>
