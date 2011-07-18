@@ -22,22 +22,15 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulFileUpload;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
-import org.pentaho.ui.xul.gwt.GwtXulRunner;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
-import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
-import org.pentaho.ui.xul.gwt.util.IXulLoaderCallback;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import com.google.gwt.core.client.GWT;
 
 //TODO: move to the CSV datasource package
 public class FileImportController extends AbstractXulEventHandler  {
@@ -157,11 +150,23 @@ public class FileImportController extends AbstractXulEventHandler  {
   if(selectedFile.endsWith(".csv") || selectedFile.endsWith(".txt")
         || selectedFile.endsWith(".zip") || selectedFile.endsWith(".tgz") || selectedFile.endsWith(".tar")) {
 		datasourceModel.getModelInfo().getFileInfo().setTmpFilename(uploadedFile);
-		datasourceModel.getModelInfo().getFileInfo().setFriendlyFilename(selectedFile);
+		datasourceModel.getModelInfo().getFileInfo().setFriendlyFilename(extractFilename(selectedFile));
 	} else {
 		showErroDialog(messages.getString("fileImportDialog.INVALID_FILE"));
 	}
   }
+  
+  private String extractFilename(String path) {
+	int idx = path.lastIndexOf('\\');
+	if (idx >= 0) { // Windows-based path
+		return path.substring(idx + 1);
+	}
+	idx = path.lastIndexOf('/');
+	if (idx >= 0) {// Unix-based path
+		return path.substring(idx + 1);
+	}
+	return path; // just the filename
+  } 
 
   @Bindable
   public void uploadFailure(Throwable t) {
