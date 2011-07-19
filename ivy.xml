@@ -75,7 +75,7 @@
         <dependency org="org.codehaus.jettison" name="jettison" rev="1.0.1"/>
         <dependency org="jaxen" name="jaxen" rev="1.1" transitive="false" conf="default->default"/>
 	    <dependency org="hsqldb"              name="hsqldb" rev="1.8.0.7"  conf="test->default"/>
-	    <dependency org="mysql"               name="mysql-connector-java" rev="5.1.10"  conf="runtime->default"/>
+	    <dependency org="mysql"               name="mysql-connector-java" rev="5.1.17"  conf="runtime->default"/>
 		<dependency org="com.h2database"      name="h2" rev="1.0.78" transitive="false" conf="test->default" />
 
         <!--  internal dependencies -->
