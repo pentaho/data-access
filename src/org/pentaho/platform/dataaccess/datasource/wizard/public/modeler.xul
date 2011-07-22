@@ -7,7 +7,7 @@
           ondialogcancel='modelerDialogController.onCancel()'
           buttonlabelaccept="${dialog.OK}"
           buttonlabelcancel="${dialog.cancel}">
-    <hbox id="metadatastep" flex="1" padding="0" spacing="3" height="465">
+    <hbox id="metadatastep" flex="1" padding="0" spacing="3" height="425">
       <editpanel width="260" height="463">
         <caption label="${available}:"/>
 
@@ -51,15 +51,15 @@
 
       </editpanel>
 
-      <deck id="modelDeck" width="410" height="486">
+      <deck id="modelDeck" flex="1" height="465">
 
-        <tabbox id="modelTabbox" flex="1" >
+        <tabbox id="modelTabbox" flex="1" width="410">
           <tabs>
             <tab id="analysisTab" label="${analysisTabLabel}" onclick="modeler.setModelerPerspective('ANALYSIS')"></tab>
             <tab id="reportingTab" label="${reportingTabLabel}" onclick="modeler.setModelerPerspective('REPORTING')"></tab>
           </tabs>
           <tabpanels>
-            <tabpanel id="analysisTabPanel" height="411">
+            <tabpanel id="analysisTabPanel" height="409">
 
               <vbox id="analyzerModelPanel" height="411" flex="1" spacing="0" padding="0">
                 <toolbar id="schema-toolbar" mode="icons">
@@ -76,7 +76,7 @@
                   <toolbarbutton id="clearModel" image="images/clear_model.png" onclick="modeler.clearFields()"
                                  tooltiptext="${clearFields}"/>
                 </toolbar>
-                <tree id="dimensionTree" width="405" height="411" editable="false"
+                <tree id="dimensionTree" width="405" height="409" editable="false"
                   pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
                   pen:ondrop="modeler.onModelTreeDrop()" hiddenrootnode="false" preserveselection="true"
                   pen:dropiconsvisible="false">
@@ -99,8 +99,8 @@
                 </tree>
               </vbox>
             </tabpanel>
-            <tabpanel id="reportingTabPanel" height="411">
-              <vbox id="reportingModelPanel" height="411" flex="1" spacing="0" padding="0">
+            <tabpanel id="reportingTabPanel" height="409">
+              <vbox id="reportingModelPanel" height="409" flex="1" spacing="0" padding="0">
                 <toolbar id="categories-toolbar" mode="icons">
                   <toolbarbutton image="images/ExpandAll.png" onclick="modeler.expandRelationalAll()" disabled="false" tooltiptext="${expand_all}"/>
                   <toolbarbutton image="images/CollapseAll.png" onclick="modeler.collapseRelationalAll()" disabled="false" tooltiptext="${collapse_all}"/>
@@ -112,7 +112,7 @@
                   <toolbarbutton image="images/remove.png" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
                   <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
                 </toolbar>
-                <tree id="categoriesTree" width="405" height="411" editable="false" hiddenrootnode="false" preserveselection="true"
+                <tree id="categoriesTree" width="405" height="409" editable="false" hiddenrootnode="false" preserveselection="true"
                     pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
                     pen:ondrop="modeler.onModelTreeDrop()"  pen:dropiconsvisible="false">
                   <treecols>
@@ -137,12 +137,12 @@
           </tabpanels>
         </tabbox>
 
-        <groupbox width="410" height="463" id="schema-toolbar-groupbox">
+        <editpanel width="410" height="463" id="schema-toolbar-groupbox">
           <caption label="${model}" />
           <hbox id="modelPanel" height="413" flex="1" spacing="0" padding="0">
 
           </hbox>
-        </groupbox>
+        </editpanel>
       </deck>
 
 
