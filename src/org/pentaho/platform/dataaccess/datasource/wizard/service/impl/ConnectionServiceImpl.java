@@ -121,7 +121,15 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
           .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
     }
     try {
-      return convertTo(datasourceMgmtSvc.getDatasource(name));
+      IConnection connection = convertTo(datasourceMgmtSvc.getDatasource(name));
+      if (connection != null) {
+        return connection;
+      } else {
+        // no connection found, throw an exception
+        logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name));
+        throw new ConnectionServiceException(Messages.getErrorString(
+          "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name)); //$NON-NLS-1$
+      }
     } catch (DatasourceMgmtServiceException dme) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name, dme //$NON-NLS-1$
           .getLocalizedMessage()));
@@ -246,7 +254,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   /**
    * This method converts from IDatasource to IConnection 
    * 
-   * @param IDatasource
+   * @param datasource
    * @return IConnection
    */
   private IConnection convertTo(IDatasource datasource) {
@@ -266,7 +274,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   /**
    * This method converts from IConnection to IDatasource 
    * 
-   * @param IConnection
+   * @param connection
    * @return IDatasource
    */
   private IDatasource convertFrom(IConnection connection) {
