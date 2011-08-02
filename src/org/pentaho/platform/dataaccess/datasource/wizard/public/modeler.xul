@@ -31,7 +31,7 @@
           <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
         </hbox>
 -->
-        <tree id="fieldList" height="413" width="258" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy" pen:dropiconsvisible="false">
+        <tree id="fieldList" height="410" width="258" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy" pen:dropiconsvisible="false">
           <treecols>
             <treecol flex="1" label="" primary="true"
               pen:binding="name" pen:childrenbinding="children"
@@ -112,7 +112,7 @@
                   <toolbarbutton image="images/remove.png" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
                   <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
                 </toolbar>
-                <tree id="categoriesTree" width="405" height="409" editable="false" hiddenrootnode="false" preserveselection="true"
+                <tree id="categoriesTree" width="405" height="403" editable="false" hiddenrootnode="false" preserveselection="true"
                     pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
                     pen:ondrop="modeler.onModelTreeDrop()"  pen:dropiconsvisible="false">
                   <treecols>
