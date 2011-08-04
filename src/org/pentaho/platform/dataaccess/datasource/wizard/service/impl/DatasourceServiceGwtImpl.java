@@ -186,11 +186,11 @@ public class DatasourceServiceGwtImpl implements IXulAsyncDatasourceService {
     });
   }
 
-  public void getLogicalModels(final XulServiceCallback<List<LogicalModelSummary>> xulCallback) {
+  public void getLogicalModels(final String context, final XulServiceCallback<List<LogicalModelSummary>> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
 
-        SERVICE.getLogicalModels(callback);
+        SERVICE.getLogicalModels(context, callback);
       }
     },new AsyncCallback<List<LogicalModelSummary>>() {
 

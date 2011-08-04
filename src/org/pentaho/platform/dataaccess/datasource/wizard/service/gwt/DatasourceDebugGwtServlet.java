@@ -70,8 +70,8 @@ public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements I
     return SERVICE.deleteLogicalModel(domainId, modelName);
   }
 
-  public List<LogicalModelSummary> getLogicalModels() throws DatasourceServiceException {
-    return SERVICE.getLogicalModels();
+  public List<LogicalModelSummary> getLogicalModels(String context) throws DatasourceServiceException {
+    return SERVICE.getLogicalModels(context);
   }
 
   public BusinessData loadBusinessData(String domainId, String modelId) throws DatasourceServiceException {

@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -400,8 +401,8 @@ public class DatasourceServiceImpl implements IDatasourceService {
       return false;
     }
   }
-
-  public List<LogicalModelSummary> getLogicalModels() throws DatasourceServiceException {
+ 
+  public List<LogicalModelSummary> getLogicalModels(String context) throws DatasourceServiceException {
     if (!hasDataAccessViewPermission()) {
       logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
       throw new DatasourceServiceException(Messages
@@ -419,6 +420,20 @@ public class DatasourceServiceImpl implements IDatasourceService {
       locale = LocaleHelper.getClosestLocale(locale, locales);
 
       for (LogicalModel model : domain.getLogicalModels()) {
+        String vis = (String) model.getProperty("visible");
+        if(StringUtils.isNotEmpty(vis)){
+          String[] visibleContexts = vis.split(",");
+          boolean visibleToContext = false;
+          for(String c : visibleContexts){
+            if(StringUtils.isNotEmpty(c.trim()) && c.trim().equals(context)){
+              visibleToContext = true;
+              break;
+            }
+          }
+          if(!visibleToContext){
+            continue;
+          }
+        }
         logicalModelSummaries.add(new LogicalModelSummary(domainId, model.getId(), model.getName(locale)));
       }
     }

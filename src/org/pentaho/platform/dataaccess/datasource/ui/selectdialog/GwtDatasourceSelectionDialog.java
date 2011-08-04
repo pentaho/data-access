@@ -40,6 +40,7 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
 
   protected DatasourceSelectionDialogController datasourceSelectionDialogController;
 
+  protected String context;
   protected EmbeddedWizard gwtDatasourceEditor;
 
   protected IXulAsyncDatasourceService datasourceService;
@@ -50,8 +51,9 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
 
   // ~ Constructors ====================================================================================================
 
-  public GwtDatasourceSelectionDialog(final IXulAsyncDatasourceService datasourceService,
+  public GwtDatasourceSelectionDialog(String context, final IXulAsyncDatasourceService datasourceService,
       final EmbeddedWizard gwtDatasourceEditor, final AsyncConstructorListener<GwtDatasourceSelectionDialog> constructorListener) {
+    this.context = context;
 
     this.gwtDatasourceEditor = gwtDatasourceEditor;
     this.datasourceService = datasourceService;
@@ -92,7 +94,7 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
       BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
 
       // begin DatasourceSelectionDialogController setup
-      datasourceSelectionDialogController = new DatasourceSelectionDialogController();
+      datasourceSelectionDialogController = new DatasourceSelectionDialogController(context);
       datasourceSelectionDialogController.setBindingFactory(bf);
       datasourceSelectionDialogController.setDatasourceService(datasourceService);
       container.addEventHandler(datasourceSelectionDialogController);
@@ -155,4 +157,7 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
     datasourceSelectionDialogController.showDialog();
   }
 
+  public void setContext(String context) {
+    datasourceSelectionDialogController.setContext(context);
+  }
 }

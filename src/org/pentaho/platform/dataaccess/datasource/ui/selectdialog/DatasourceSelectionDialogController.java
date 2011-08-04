@@ -79,12 +79,12 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   private Binding editDatasourceButtonBinding; 
   private Binding removeDatasourceButtonBinding;
   private ModelerDialog modeler;
-
+  private String context;
 
   // ~ Constructors ====================================================================================================
 
-  public DatasourceSelectionDialogController() {
-
+  public DatasourceSelectionDialogController(String context) {
+    this.context = context;
   }
 
   // ~ Methods =========================================================================================================
@@ -241,7 +241,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   }
 
   private void refreshDatasources(final String domainId, final String modelId) {
-    datasourceService.getLogicalModels(new XulServiceCallback<List<LogicalModelSummary>>() {
+    datasourceService.getLogicalModels(context, new XulServiceCallback<List<LogicalModelSummary>>() {
 
       public void error(final String message, final Throwable error) {
         System.out.println(message);
@@ -397,5 +397,9 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   public void showDialog() {    
     super.showDialog();
     refreshDatasources(null, null);
+  }
+
+  public void setContext(String context) {
+    this.context = context;
   }
 }

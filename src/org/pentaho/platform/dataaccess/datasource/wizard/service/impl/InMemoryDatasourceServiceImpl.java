@@ -295,7 +295,7 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
     return true;
   }
 
-  public List<LogicalModelSummary> getLogicalModels() throws DatasourceServiceException {
+  public List<LogicalModelSummary> getLogicalModels(String context) throws DatasourceServiceException {
     List<LogicalModelSummary> logicalModelSummaries = new ArrayList<LogicalModelSummary>();
     for (String domainId : getMetadataDomainRepository().getDomainIds()) {
       Domain domain = getMetadataDomainRepository().getDomain(domainId);
@@ -308,6 +308,20 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
       locale = LocaleHelper.getClosestLocale(locale, locales);
 
       for (LogicalModel model : domain.getLogicalModels()) {
+        String vis = (String) model.getProperty("visible");
+        if(vis != null){
+          String[] visibleContexts = vis.split(",");
+          boolean visibleToContext = false;
+          for(String c : visibleContexts){
+            if(context.equals(c.trim())){
+              visibleToContext = true;
+              break;
+            }
+          }
+          if(!visibleToContext){
+            continue;
+          }
+        }
         logicalModelSummaries.add(new LogicalModelSummary(domainId, model.getId(), model.getName().getString(locale)));
       }
     }

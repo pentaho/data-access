@@ -102,8 +102,8 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::addGlassPaneListener(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
     }
 
-    $wnd.pho.showDatasourceSelectionDialog = function(callback) {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)("true", callback);
+    $wnd.pho.showDatasourceSelectionDialog = function(context, callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(context,"true", callback);
     }
 
     $wnd.gwtConfirm = function(message, callback, options){
@@ -137,7 +137,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     }
 
     $wnd.pho.showDatasourceManageDialog = function(callback) {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)("false", callback);
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)("manage", "false", callback);
     }
 
   }-*/;
@@ -291,7 +291,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
 
   @SuppressWarnings("unused")
-  private void showSelectionDialog(final String selectDatasource, final JavaScriptObject callback) {
+  private void showSelectionDialog(final String context, final String selectDatasource, final JavaScriptObject callback) {
     final boolean selectDs = Boolean.valueOf(selectDatasource);
 
 
@@ -320,26 +320,27 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       wizard.setCsvDatasourceService(csvService);
       wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
         public void asyncConstructorDone(EmbeddedWizard source) {
-          showSelectionDialog(selectDs, listener);
+          showSelectionDialog(context, selectDs, listener);
         }
       });
     } else {
-      showSelectionDialog(selectDs, listener);
+      showSelectionDialog(context, selectDs, listener);
     }
   }
 
-  private void showSelectionDialog(final boolean selectDs, final DialogListener<LogicalModelSummary> listener) {
+  private void showSelectionDialog(final String context, final boolean selectDs, final DialogListener<LogicalModelSummary> listener) {
     if (selectDs) {
       // selection dialog
       if (selectDialog == null) {
 
         final AsyncConstructorListener<GwtDatasourceSelectionDialog> constructorListener = getSelectionDialogListener(listener);
         asyncConstructorDone = false;
-        selectDialog = new GwtDatasourceSelectionDialog(datasourceService, wizard, constructorListener);
+        selectDialog = new GwtDatasourceSelectionDialog(context, datasourceService, wizard, constructorListener);
 
       } else {
         selectDialog.addDialogListener(listener);
         selectDialog.reset();
+        selectDialog.setContext(context);
         selectDialog.showDialog();
       }
 
