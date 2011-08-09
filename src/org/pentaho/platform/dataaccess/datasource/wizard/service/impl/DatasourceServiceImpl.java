@@ -421,7 +421,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
 
       for (LogicalModel model : domain.getLogicalModels()) {
         String vis = (String) model.getProperty("visible");
-        if(StringUtils.isNotEmpty(vis)){
+        if(vis != null){
           String[] visibleContexts = vis.split(",");
           boolean visibleToContext = false;
           for(String c : visibleContexts){
