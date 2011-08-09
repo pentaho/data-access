@@ -36,6 +36,7 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulLabel;
@@ -104,24 +105,28 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
 
 		XulListbox connections = (XulListbox) document.getElementById("connectionList");
-    connections.setWidth(568);
-    connections.setHeight(275);
+	    connections.setWidth(568);
+	    connections.setHeight(275);
 
+        // Non-star is the default, change that if relational only is not an option
+        joinGuiModel.setDoOlap(!wizardModel.isReportingOnlyValid());
 
-    // conditionally hiding the selection of reporting vs reporting+olap in the case where reporting only makes no sense.
-    try {
-      bf.createBinding(wizardModel, "reportingOnlyValid", "metadata", "visible").fireSourceChanged();
-    } catch (Exception e) {
-      e.printStackTrace(); 
-    }
-
-    // Use a binding to keep the radio buttons in sync
-    XulRadio olapRadio  = (XulRadio) document.getElementById("reporting_analysis");
-    bf.createBinding(olapRadio, "checked", joinGuiModel, "doOlap");
-
-    // Non-star is the default, change that if relational only is not an option
-    joinGuiModel.setDoOlap(wizardModel.isReportingOnlyValid() == false);
-
+	    try {
+		    // conditionally hiding the selection of reporting vs reporting+olap in the case where reporting only makes no sense.
+	        bf.createBinding(wizardModel, "reportingOnlyValid", "metadata", "visible").fireSourceChanged();
+	
+		    // Use a binding to keep the radio buttons in sync
+		    bf.setBindingType(Type.BI_DIRECTIONAL);
+		    XulRadio olapRadio  = (XulRadio) document.getElementById("reporting_analysis");
+		    bf.createBinding(olapRadio, "checked", joinGuiModel, "doOlap").fireSourceChanged();
+		
+		    bf.setBindingType(Type.ONE_WAY);
+		    XulRadio reportingRadio  = (XulRadio) document.getElementById("reporting");
+		    bf.createBinding(wizardModel, "reportingOnlyValid", reportingRadio, "checked").fireSourceChanged();
+    
+	    } catch (Exception e) {
+	    	e.printStackTrace(); 
+        }
 
 		this.errorDialog = (XulDialog) document.getElementById("errorDialog");
 		this.errorLabel = (XulLabel) document.getElementById("errorLabel");
