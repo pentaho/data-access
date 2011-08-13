@@ -19,10 +19,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
@@ -193,28 +190,35 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 		@Override
 		public List sourceToTarget(final JoinTableModel table) {
 			if (table != null) {
-				joinSelectionServiceGwtImpl.getTableFields(table.getName(), selectedConnection, new XulServiceCallback<List>() {
-					public void error(String message, Throwable error) {
-					}
+        if(table.getFields() == null || table.getFields().isEmpty()){
+          MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString("multitable.FETCHING_TABLE_INFO"));
+          joinSelectionServiceGwtImpl.getTableFields(table.getName(), selectedConnection, new XulServiceCallback<List>() {
+            public void error(String message, Throwable error) {
+              MessageHandler.getInstance().closeWaitingDialog();
+            }
 
-					public void success(List fields) {
-						try {
-							List<JoinFieldModel> fieldModels = table.processTableFields(fields);
-							table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
-							if (source.equals(leftTables)) {
-								leftKeyFieldList.setElements(fields);	
-								leftKeyFieldBinding.fireSourceChanged();
-							} else if (source.equals(rightTables)) {
-								rightKeyFieldList.setElements(fields);
-								rightKeyFieldBinding.fireSourceChanged();
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				});
+            public void success(List fields) {
+              try {
+                List<JoinFieldModel> fieldModels = table.processTableFields(fields);
+                table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
+                if (source.equals(leftTables)) {
+                  leftKeyFieldList.setElements(table.getFields());
+                  leftKeyFieldBinding.fireSourceChanged();
+                } else if (source.equals(rightTables)) {
+                  rightKeyFieldList.setElements(table.getFields());
+                  rightKeyFieldBinding.fireSourceChanged();
+                }
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+              MessageHandler.getInstance().closeWaitingDialog();
+            }
+          });
+        }
+        return table.getFields();
+
 			}
-			return new AbstractModelList<JoinFieldModel>();
+      return Collections.emptyList();
 		}
 
 		@Override
