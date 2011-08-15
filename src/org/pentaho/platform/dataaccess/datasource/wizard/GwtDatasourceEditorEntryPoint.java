@@ -209,6 +209,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       });
     } else {
       wizard.addDialogListener(listener);
+      wizard.setReportingOnlyValid(relationalOnlyValid);
       wizard.showDialog();
     }
 

@@ -118,7 +118,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		    // Use a binding to keep the radio buttons in sync
 		    bf.setBindingType(Type.BI_DIRECTIONAL);
 		    XulRadio olapRadio  = (XulRadio) document.getElementById("reporting_analysis");
-		    bf.createBinding(olapRadio, "checked", joinGuiModel, "doOlap").fireSourceChanged();
+		    bf.createBinding(olapRadio, "checked", joinGuiModel, "doOlap");
 		
 		    bf.setBindingType(Type.ONE_WAY);
 		    XulRadio reportingRadio  = (XulRadio) document.getElementById("reporting");
