@@ -221,7 +221,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
         service.removeCatalog(catalogRef, PentahoSessionHolder.getSession());
       }
 
-      metadataDomainRepository.removeModel(domainId, modelName);
+      metadataDomainRepository.removeModel(domainId, logicalModel.getId());
     } catch (MondrianCatalogServiceException me) {
       logger.error(Messages.getErrorString(
           "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage()), me);//$NON-NLS-1$
