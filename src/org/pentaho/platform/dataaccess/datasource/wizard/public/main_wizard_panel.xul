@@ -56,7 +56,7 @@
 								<!--  ###############################################################################  -->
 								<!--     SQL datasource step 1 -->
 								<!--  ###############################################################################  -->
-								<vbox flex="3" height="400">
+								<vbox height="400">
 								    <vbox id="connectionsLbl">
 								    	<label value="${multitable.CONNECTIONS_LBL}" />
 								    </vbox>
@@ -77,13 +77,13 @@
 									</vbox>
 								</vbox>
 								<spacer width="10" height="400"/>
-								<vbox id="queryBox" height="400" flex="7">
+								<vbox id="queryBox" height="400" flex="1">
 									<hbox>
 										<label value="${datasourceDialog.Query}" tooltiptext="${datasourceDialog.QueryToolTip}" flex="1"/>
 										<!--<spacer flex="1"/>-->
 										<!--<button id="editQuery" image="images/update.png" pen:disabledimage="images/update_disabled.png" tooltiptext="${datasourceDialog.editQueryImageToolTip}" onclick="relationalDatasourceController.editQuery()"  disabled="true"/>-->
 									</hbox>
-									<textbox height="332" id="query" cols="80" multiline="true" disabled="false"/>
+									<textbox height="332" id="query"  multiline="true" disabled="false"/>
 									<hbox>
 										<spacer flex="1"/>
 										<label value="Limit:"/>
