@@ -250,15 +250,14 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
       public void success(final List<LogicalModelSummary> logicalModelSummaries) {
         Collections.sort(logicalModelSummaries);
         datasourceSelectionDialogModel.setLogicalModelSummaries(logicalModelSummaries);
+        datasourceListbox.setSelectedIndex(-1);
         if (domainId != null && modelId != null) {
           datasourceSelectionDialogModel.setSelectedLogicalModel(domainId, modelId);
           datasourceListbox.setSelectedIndex(datasourceSelectionDialogModel.getSelectedIndex());
         } else if (logicalModelSummaries.isEmpty()) {
-          datasourceListbox.setSelectedIndex(-1);
-          datasourceSelectionDialogModel.setSelectedIndex(-1);
+          
         } else {
           datasourceListbox.setSelectedIndex(0);
-          datasourceSelectionDialogModel.setSelectedIndex(0);
         }
       }
 

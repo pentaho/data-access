@@ -67,9 +67,9 @@ public class DatasourceSelectionDialogModel extends XulEventSourceAdapter {
 
   @Bindable
   public void setSelectedIndex(final int selectedIndex) {
-    final int previousVal = this.selectedIndex;
     this.selectedIndex = selectedIndex;
-    this.firePropertyChange("selectedIndex", previousVal, selectedIndex); //$NON-NLS-1$
+    // we want this to fire every time. setting prevval to always be different.
+    this.firePropertyChange("selectedIndex", selectedIndex+1, selectedIndex); //$NON-NLS-1$
   }
 
   @Bindable
