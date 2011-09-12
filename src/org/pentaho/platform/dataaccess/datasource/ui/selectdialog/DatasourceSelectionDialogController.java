@@ -79,12 +79,12 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   private Binding editDatasourceButtonBinding; 
   private Binding removeDatasourceButtonBinding;
   private ModelerDialog modeler;
-
+  private String context;
 
   // ~ Constructors ====================================================================================================
 
-  public DatasourceSelectionDialogController() {
-
+  public DatasourceSelectionDialogController(String context) {
+    this.context = context;
   }
 
   // ~ Methods =========================================================================================================
@@ -117,8 +117,8 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   }
   
   public void reset() {
-	  if(datasourceListbox != null) { 
-		  datasourceListbox.setSelectedIndex(0);
+	  if(datasourceListbox != null &&datasourceListbox.getChildNodes().size() > 0){
+      datasourceListbox.setSelectedIndex(0);
 	  }
   }
 
@@ -241,7 +241,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   }
 
   private void refreshDatasources(final String domainId, final String modelId) {
-    datasourceService.getLogicalModels(new XulServiceCallback<List<LogicalModelSummary>>() {
+    datasourceService.getLogicalModels(context, new XulServiceCallback<List<LogicalModelSummary>>() {
 
       public void error(final String message, final Throwable error) {
         System.out.println(message);
@@ -249,15 +249,14 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
 
       public void success(final List<LogicalModelSummary> logicalModelSummaries) {
         Collections.sort(logicalModelSummaries);
+
+        datasourceSelectionDialogModel.setSelectedIndex(-1);
         datasourceSelectionDialogModel.setLogicalModelSummaries(logicalModelSummaries);
+  
         if (domainId != null && modelId != null) {
           datasourceSelectionDialogModel.setSelectedLogicalModel(domainId, modelId);
           datasourceListbox.setSelectedIndex(datasourceSelectionDialogModel.getSelectedIndex());
-        } else if (logicalModelSummaries.isEmpty()) {
-          datasourceListbox.setSelectedIndex(-1);
-          datasourceSelectionDialogModel.setSelectedIndex(-1);
         } else {
-          datasourceListbox.setSelectedIndex(0);
           datasourceSelectionDialogModel.setSelectedIndex(0);
         }
       }
@@ -397,5 +396,9 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   public void showDialog() {    
     super.showDialog();
     refreshDatasources(null, null);
+  }
+
+  public void setContext(String context) {
+    this.context = context;
   }
 }

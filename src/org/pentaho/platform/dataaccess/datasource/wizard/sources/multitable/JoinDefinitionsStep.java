@@ -19,12 +19,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
@@ -48,7 +43,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
 @SuppressWarnings("unchecked")
-public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyChangeListener {
+public class JoinDefinitionsStep extends AbstractWizardStep { 
 
 	protected static final String JOIN_DEFINITION_PANEL_ID = "joinDefinitionWindow";
 
@@ -70,42 +65,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
 	}
-
-	public void propertyChange(PropertyChangeEvent evt) {
 	
-		final XulMenuList<JoinTableModel> tablesList = (XulMenuList<JoinTableModel>) evt.getSource();
-		List<JoinTableModel> tables = null;
-		if (tablesList.equals(leftTables)) {
-			tables = this.joinGuiModel.getLeftTables();
-		} else if (tablesList.equals(rightTables)) {
-			tables = this.joinGuiModel.getRightTables();
-		}
-		
-		final JoinTableModel table = tablesList.getSelectedIndex() >= 0 ? (JoinTableModel) tables.get(tablesList.getSelectedIndex()) : null;
-		if (table != null) {
-			joinSelectionServiceGwtImpl.getTableFields(table.getName(), this.selectedConnection, new XulServiceCallback<List>() {
-				public void error(String message, Throwable error) {
-				}
-
-				public void success(List fields) {
-					try {
-						List<JoinFieldModel> fieldModels = table.processTableFields(fields);
-						table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
-						if (tablesList.equals(leftTables)) {
-							leftKeyFieldList.setElements(fields);	
-							leftKeyFieldBinding.fireSourceChanged();
-						} else if (tablesList.equals(rightTables)) {
-							rightKeyFieldList.setElements(fields);
-							rightKeyFieldBinding.fireSourceChanged();
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-		}
-	}
-
 	public String getName() {
 		return "joinDefinitionStepController";
 	}
@@ -118,7 +78,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 		if (this.validator.isValid(join)) {
 			this.joinGuiModel.addJoin(join);
-      this.parentDatasource.setFinishable(this.validator.allTablesJoined());
+			this.parentDatasource.setFinishable(this.validator.allTablesJoined());
 		} else {
 			((MultiTableDatasource) this.parentDatasource).displayErrors(this.validator.getError());
 		}
@@ -127,6 +87,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 	@Bindable
 	public void deleteJoin() {
 		this.joinGuiModel.removeSelectedJoin();
+		this.parentDatasource.setFinishable(this.validator.allTablesJoined());
 	}
 
 	@Override
@@ -136,13 +97,8 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.joins = (XulListbox) document.getElementById("joins");
 		this.leftKeyFieldList = (XulListbox) document.getElementById("leftKeyField");
 		this.rightKeyFieldList = (XulListbox) document.getElementById("rightKeyField");
-
 		this.leftTables = (XulMenuList<JoinTableModel>) document.getElementById("leftTables");
-		this.leftTables.addPropertyChangeListener(this);
-
 		this.rightTables = (XulMenuList<JoinTableModel>) document.getElementById("rightTables");
-		this.rightTables.addPropertyChangeListener(this);
-
 		super.init(wizardModel);
 	}
 
@@ -155,16 +111,21 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
 		bf.createBinding(this.joinGuiModel.getJoins(), "children", this.joins, "elements");
 		bf.createBinding(this.joins, "selectedItem", this.joinGuiModel, "selectedJoin");
+		bf.createBinding(this.leftTables, "selectedItem", this.leftKeyFieldList, "elements", new TableSelectionConvertor(this.leftTables));
+		bf.createBinding(this.rightTables, "selectedItem", this.rightKeyFieldList, "elements", new TableSelectionConvertor(this.rightTables));
 		
 		this.leftKeyFieldBinding = bf.createBinding(this.leftKeyFieldList, "selectedIndex", this.joinGuiModel, "leftKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
-
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
-				List<JoinFieldModel> fields = joinGuiModel.getLeftJoinTable().getFields();
-				if (index == -1 || fields.isEmpty()) {
-					return null;
+				JoinTableModel joinTable = joinGuiModel.getLeftJoinTable();
+				if(joinTable != null) {
+					List<JoinFieldModel> fields = joinTable.getFields();
+					if (index == -1 || fields.isEmpty()) {
+						return null;
+					}
+					return fields.get(index);
 				}
-				return fields.get(index);
+				return null;
 			}
 
 			@Override
@@ -174,14 +135,17 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		});
 
 		this.rightKeyFieldBinding = bf.createBinding(this.rightKeyFieldList, "selectedIndex", this.joinGuiModel, "rightKeyField", new BindingConvertor<Integer, JoinFieldModel>() {
-
 			@Override
 			public JoinFieldModel sourceToTarget(final Integer index) {
-				List<JoinFieldModel> fields = joinGuiModel.getRightJoinTable().getFields();
-				if (index == -1 || fields.isEmpty()) {
-					return null;
+				JoinTableModel joinTable = joinGuiModel.getRightJoinTable();
+				if(joinTable != null) {
+					List<JoinFieldModel> fields = joinTable.getFields();
+					if (index == -1 || fields.isEmpty()) {
+						return null;
+					}
+					return fields.get(index);
 				}
-				return fields.get(index);
+				return null;
 			}
 
 			@Override
@@ -193,33 +157,15 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 
 	@Override
 	public void stepActivatingForward() {
-		
 		super.stepActivatingForward();
 		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
 		this.joinGuiModel.computeJoinDefinitionStepTables();
 		this.leftTables.setSelectedIndex(0);
 		this.rightTables.setSelectedIndex(0);
-		checkExistingJoinsStillValid();
 		parentDatasource.setFinishable(this.validator.allTablesJoined());
 	}
 
-	private void checkExistingJoinsStillValid() {
-		Set<String> allTables = new HashSet<String>();
-		for (JoinTableModel tbl : joinGuiModel.getSelectedTables()) {
-			allTables.add(tbl.getName());
-		}
-
-		List<JoinRelationshipModel> toRemove = new ArrayList<JoinRelationshipModel>();
-
-		for (JoinRelationshipModel join : joinGuiModel.getJoins()) {
-			if (!allTables.contains(join.getLeftKeyFieldModel().getParentTable().getName()) || !allTables.contains(join.getRightKeyFieldModel().getParentTable().getName())) {
-				toRemove.add(join);
-			}
-		}
-		for (JoinRelationshipModel join : toRemove) {
-			joinGuiModel.getJoins().remove(join);
-		}
-	}
+	
 
 	public String getStepName() {
 		return MessageHandler.getString("multitable.DEFINE_JOINS");
@@ -233,4 +179,51 @@ public class JoinDefinitionsStep extends AbstractWizardStep implements PropertyC
 		this.leftKeyFieldList.setElements(new AbstractModelList<JoinFieldModel>());
 		this.rightKeyFieldList.setElements(new AbstractModelList<JoinFieldModel>());
 	}
+	
+	class TableSelectionConvertor extends BindingConvertor<JoinTableModel, List> {
+		private XulMenuList<JoinTableModel> source;
+		
+		public TableSelectionConvertor(XulMenuList<JoinTableModel> source) {
+			this.source = source;
+		}
+		
+		@Override
+		public List sourceToTarget(final JoinTableModel table) {
+			if (table != null) {
+        if(table.getFields() == null || table.getFields().isEmpty()){
+          MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString("multitable.FETCHING_TABLE_INFO"));
+          joinSelectionServiceGwtImpl.getTableFields(table.getName(), selectedConnection, new XulServiceCallback<List>() {
+            public void error(String message, Throwable error) {
+              MessageHandler.getInstance().closeWaitingDialog();
+            }
+
+            public void success(List fields) {
+              try {
+                List<JoinFieldModel> fieldModels = table.processTableFields(fields);
+                table.setFields(new AbstractModelList<JoinFieldModel>(fieldModels));
+                if (source.equals(leftTables)) {
+                  leftKeyFieldList.setElements(table.getFields());
+                  leftKeyFieldBinding.fireSourceChanged();
+                } else if (source.equals(rightTables)) {
+                  rightKeyFieldList.setElements(table.getFields());
+                  rightKeyFieldBinding.fireSourceChanged();
+                }
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+              MessageHandler.getInstance().closeWaitingDialog();
+            }
+          });
+        }
+        return table.getFields();
+
+			}
+      return Collections.emptyList();
+		}
+
+		@Override
+		public JoinTableModel targetToSource(List value) {
+			return null;
+		}
+	}	
 }

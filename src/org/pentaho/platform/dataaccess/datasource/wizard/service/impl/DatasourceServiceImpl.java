@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -86,7 +87,7 @@ import org.pentaho.platform.util.web.SimpleUrlFactory;
 import com.thoughtworks.xstream.XStream;
 
 public class DatasourceServiceImpl implements IDatasourceService {
-
+  
   private static final Log logger = LogFactory.getLog(DatasourceServiceImpl.class);
 
   private IDataAccessPermissionHandler dataAccessPermHandler;
@@ -220,7 +221,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
         service.removeCatalog(catalogRef, PentahoSessionHolder.getSession());
       }
 
-      metadataDomainRepository.removeModel(domainId, modelName);
+      metadataDomainRepository.removeModel(domainId, logicalModel.getId());
     } catch (MondrianCatalogServiceException me) {
       logger.error(Messages.getErrorString(
           "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage()), me);//$NON-NLS-1$
@@ -400,8 +401,8 @@ public class DatasourceServiceImpl implements IDatasourceService {
       return false;
     }
   }
-
-  public List<LogicalModelSummary> getLogicalModels() throws DatasourceServiceException {
+ 
+  public List<LogicalModelSummary> getLogicalModels(String context) throws DatasourceServiceException {
     if (!hasDataAccessViewPermission()) {
       logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
       throw new DatasourceServiceException(Messages
@@ -419,6 +420,20 @@ public class DatasourceServiceImpl implements IDatasourceService {
       locale = LocaleHelper.getClosestLocale(locale, locales);
 
       for (LogicalModel model : domain.getLogicalModels()) {
+        String vis = (String) model.getProperty("visible");
+        if(vis != null){
+          String[] visibleContexts = vis.split(",");
+          boolean visibleToContext = false;
+          for(String c : visibleContexts){
+            if(StringUtils.isNotEmpty(c.trim()) && c.trim().equals(context)){
+              visibleToContext = true;
+              break;
+            }
+          }
+          if(!visibleToContext){
+            continue;
+          }
+        }
         logicalModelSummaries.add(new LogicalModelSummary(domainId, model.getId(), model.getName(locale)));
       }
     }
@@ -476,18 +491,20 @@ public class DatasourceServiceImpl implements IDatasourceService {
   }
   
   public List<String> listDatasourceNames() throws IOException {
-	  IPentahoUrlFactory urlFactory = new SimpleUrlFactory(""); //$NON-NLS-1$
-	  PMDUIComponent component = new PMDUIComponent(urlFactory, new ArrayList());
-	  component.validate(getSession(), null);
-	  component.setAction(PMDUIComponent.ACTION_LIST_MODELS);
-	  Document document = component.getXmlContent();
-	  List<DefaultElement> modelElements = document.selectNodes("//model_name"); //$NON-NLS-1$
-
-	  ArrayList<String> datasourceNames = new ArrayList<String>();
-	  for(DefaultElement element : modelElements) {
-		  datasourceNames.add(element.getText());
-	  }
-	  return datasourceNames;
+    synchronized(CsvDatasourceServiceImpl.lock) {
+  	  IPentahoUrlFactory urlFactory = new SimpleUrlFactory(""); //$NON-NLS-1$
+  	  PMDUIComponent component = new PMDUIComponent(urlFactory, new ArrayList());
+  	  component.validate(getSession(), null);
+  	  component.setAction(PMDUIComponent.ACTION_LIST_MODELS);
+  	  Document document = component.getXmlContent();
+  	  List<DefaultElement> modelElements = document.selectNodes("//model_name"); //$NON-NLS-1$
+  
+  	  ArrayList<String> datasourceNames = new ArrayList<String>();
+  	  for(DefaultElement element : modelElements) {
+  		  datasourceNames.add(element.getText());
+  	  }
+  	  return datasourceNames;
+    }
   }
 
   @Override

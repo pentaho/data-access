@@ -16,7 +16,7 @@ public class GwtDatasourceManageDialog extends GwtDatasourceSelectionDialog {
   public GwtDatasourceManageDialog(final IXulAsyncDatasourceService datasourceService,
                                    final EmbeddedWizard gwtDatasourceEditor,
                                    final AsyncConstructorListener<GwtDatasourceSelectionDialog> constructorListener) {
-
+    this.context = "manage";
     this.gwtDatasourceEditor = gwtDatasourceEditor;
     this.datasourceService = datasourceService;
     this.constructorListener = constructorListener;

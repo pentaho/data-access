@@ -9,6 +9,7 @@ import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
@@ -107,7 +108,8 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
           messages.getString("ModelEditor.ERROR_0001_SAVING_MODELS"));
     }
     boolean doOlap = true;
-    if(model.getDomain().getLogicalModels().get(0).getProperty("MondrianCatalogRef") == null){
+    LogicalModel lModel = model.getDomain().getLogicalModels().get(0);
+    if(lModel.getProperty("MondrianCatalogRef") == null && lModel.getProperty("DUAL_MODELING_SCHEMA") == null){
       doOlap = false;
     }
     service.serializeModels(model.getDomain(), model.getModelName(), doOlap, new XulServiceCallback<String>(){

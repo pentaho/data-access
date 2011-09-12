@@ -191,16 +191,19 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	public AbstractModelList<JoinTableModel> getRightTables() {
 		return this.rightTables;
 	}
-	
+
+  @Bindable
 	public boolean isDoOlap() {
 		return this.doOlap;
 	}
-	
-	public void doOlap(boolean isStar) {
+
+  @Bindable
+	public void setDoOlap(boolean isStar) {
 		this.doOlap = isStar;
+    firePropertyChange("doOlap", !isStar, isStar);
 	}
-	
-	public void computeJoinDefinitionStepTables() {
+
+  public void computeJoinDefinitionStepTables() {
 		this.leftTables.clear();
 		this.rightTables.clear();
 		if(this.doOlap) {
@@ -294,7 +297,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		}
 		this.selectedTables.addAll(selectedTablesList);
 		this.joins.addAll(dto.getSchemaModel().getJoins());
-		this.doOlap(dto.isDoOlap());
+		this.setDoOlap(dto.isDoOlap());
 		if(dto.isDoOlap()) {
 			this.setFactTable(dto.getSchemaModel().getFactTable());
 		}

@@ -32,7 +32,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 public interface IXulAsyncDatasourceService {
-  void getLogicalModels(XulServiceCallback<List<LogicalModelSummary>> callback);
+  void getLogicalModels(String context, XulServiceCallback<List<LogicalModelSummary>> callback);
   void deleteLogicalModel(String domainId, String modelName, XulServiceCallback<Boolean> callback);
   void doPreview(String connectionName, String query, String previewLimit, XulServiceCallback<SerializedResultSet> callback);
   void generateLogicalModel(String modelName, String connectionName, String dbType, String query, String previewLimit, XulServiceCallback<BusinessData> callback); 

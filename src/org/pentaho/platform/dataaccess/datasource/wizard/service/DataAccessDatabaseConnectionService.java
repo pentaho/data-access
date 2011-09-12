@@ -30,24 +30,26 @@ import org.pentaho.database.service.DatabaseConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.ConnectionServiceHelper;
 
 public class DataAccessDatabaseConnectionService extends DatabaseConnectionService {
-  
+  private static final byte[] lock = new byte[0];
   /**
    * This service method overrides it's parent and removes all the database types
    * other than native.
    */
   @Override
   public List<IDatabaseType> getDatabaseTypes() {
-     List<IDatabaseType> databaseTypes = super.getDatabaseTypes();
-     for (IDatabaseType type : databaseTypes) {
-       Iterator<DatabaseAccessType> iter = type.getSupportedAccessTypes().iterator();
-       while (iter.hasNext()) {
-         DatabaseAccessType accessType = iter.next();
-         if (accessType != DatabaseAccessType.NATIVE) {
-           iter.remove();
+     synchronized (lock) {
+       List<IDatabaseType> databaseTypes = super.getDatabaseTypes();
+       for (IDatabaseType type : databaseTypes) {
+         Iterator<DatabaseAccessType> iter = type.getSupportedAccessTypes().iterator();
+         while (iter.hasNext()) {
+           DatabaseAccessType accessType = iter.next();
+           if (accessType != DatabaseAccessType.NATIVE) {
+             iter.remove();
+           }
          }
        }
+       return databaseTypes;
      }
-     return databaseTypes;
   }
 
   @Override

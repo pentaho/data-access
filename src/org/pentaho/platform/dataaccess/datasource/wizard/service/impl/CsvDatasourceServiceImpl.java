@@ -54,7 +54,8 @@ import com.thoughtworks.xstream.XStream;
 
 @SuppressWarnings("unchecked")
 public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasourceService {
-
+  public static final byte[] lock = new byte[0];
+  
   private static final long serialVersionUID = 2498165533158485182L;
 
   private Log logger = LogFactory.getLog(CsvDatasourceServiceImpl.class);
@@ -111,64 +112,66 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   }
 
   public FileTransformStats generateDomain(DatasourceDTO datasourceDto) throws Exception {
-    ModelInfo modelInfo = datasourceDto.getCsvModelInfo();
-    IPentahoSession pentahoSession = null;
-    try {
-      pentahoSession = getSession();
-      KettleSystemListener.environmentInit(pentahoSession);
-      
-      String statsKey = FileTransformStats.class.getSimpleName() + "_" + modelInfo.getFileInfo().getTmpFilename(); //$NON-NLS-1$
-
-      FileTransformStats stats = new FileTransformStats();
-      pentahoSession.setAttribute(statsKey, stats);
-      CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(modelInfo, AgileHelper.getDatabaseMeta());
-      csvTransformGenerator.setTransformStats(stats);
-      
-      
+    synchronized (lock) {
+      ModelInfo modelInfo = datasourceDto.getCsvModelInfo();
+      IPentahoSession pentahoSession = null;
       try {
-        csvTransformGenerator.dropTable(modelInfo.getStageTableName());
-      } catch (CsvTransformGeneratorException e) {
-        // this is ok, the table may not have existed.
-        logger.info("Could not drop table before staging"); //$NON-NLS-1$
-      }
-      csvTransformGenerator.createOrModifyTable(pentahoSession);
-
-      // no longer need to truncate the table since we dropped it a few lines up, so just pass false
-      csvTransformGenerator.loadTable(false, pentahoSession, true);
-
-      ArrayList<String> combinedErrors = new ArrayList<String>(modelInfo.getCsvInputErrors());
-      combinedErrors.addAll(modelInfo.getTableOutputErrors());
-      stats.setErrors(combinedErrors);
-      
-      // wait until it it done
-      while (!stats.isRowsFinished()) {
-        Thread.sleep(200);
-      }
-
-      modelerWorkspace.setDomain(modelerService.generateCSVDomain(modelInfo.getStageTableName(), modelInfo.getDatasourceName()));
-      modelerWorkspace.getWorkspaceHelper().autoModelFlat(modelerWorkspace);
-      modelerWorkspace.getWorkspaceHelper().autoModelRelationalFlat(modelerWorkspace);
-      modelerWorkspace.setModelName(modelInfo.getDatasourceName());
-      modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
-      Domain workspaceDomain = modelerWorkspace.getDomain();
-      
-      XStream xstream = new XStream();
-      String serializedDto = xstream.toXML(datasourceDto);
-      workspaceDomain.getLogicalModels().get(0).setProperty("datasourceModel", serializedDto);
-      workspaceDomain.getLogicalModels().get(0).setProperty("DatasourceType", "CSV");
-      prepareForSerialization(workspaceDomain);
-
-      modelerService.serializeModels(workspaceDomain, modelerWorkspace.getModelName());
-      stats.setDomain(modelerWorkspace.getDomain());
-
-      return stats;
-    } catch (Exception e) {
-      logger.error(e);
-      throw e;
-    } finally {
-      if (pentahoSession != null) {
-        pentahoSession.destroy();
-      }
+        pentahoSession = getSession();
+        KettleSystemListener.environmentInit(pentahoSession);
+        
+        String statsKey = FileTransformStats.class.getSimpleName() + "_" + modelInfo.getFileInfo().getTmpFilename(); //$NON-NLS-1$
+  
+        FileTransformStats stats = new FileTransformStats();
+        pentahoSession.setAttribute(statsKey, stats);
+        CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(modelInfo, AgileHelper.getDatabaseMeta());
+        csvTransformGenerator.setTransformStats(stats);
+        
+        
+        try {
+          csvTransformGenerator.dropTable(modelInfo.getStageTableName());
+        } catch (CsvTransformGeneratorException e) {
+          // this is ok, the table may not have existed.
+          logger.info("Could not drop table before staging"); //$NON-NLS-1$
+        }
+        csvTransformGenerator.createOrModifyTable(pentahoSession);
+  
+        // no longer need to truncate the table since we dropped it a few lines up, so just pass false
+        csvTransformGenerator.loadTable(false, pentahoSession, true);
+  
+        ArrayList<String> combinedErrors = new ArrayList<String>(modelInfo.getCsvInputErrors());
+        combinedErrors.addAll(modelInfo.getTableOutputErrors());
+        stats.setErrors(combinedErrors);
+        
+        // wait until it it done
+        while (!stats.isRowsFinished()) {
+          Thread.sleep(200);
+        }
+  
+        modelerWorkspace.setDomain(modelerService.generateCSVDomain(modelInfo.getStageTableName(), modelInfo.getDatasourceName()));
+        modelerWorkspace.getWorkspaceHelper().autoModelFlat(modelerWorkspace);
+        modelerWorkspace.getWorkspaceHelper().autoModelRelationalFlat(modelerWorkspace);
+        modelerWorkspace.setModelName(modelInfo.getDatasourceName());
+        modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
+        Domain workspaceDomain = modelerWorkspace.getDomain();
+        
+        XStream xstream = new XStream();
+        String serializedDto = xstream.toXML(datasourceDto);
+        workspaceDomain.getLogicalModels().get(0).setProperty("datasourceModel", serializedDto);
+        workspaceDomain.getLogicalModels().get(0).setProperty("DatasourceType", "CSV");
+        prepareForSerialization(workspaceDomain);
+  
+        modelerService.serializeModels(workspaceDomain, modelerWorkspace.getModelName());
+        stats.setDomain(modelerWorkspace.getDomain());
+  
+        return stats;
+      } catch (Exception e) {
+        logger.error(e);
+        throw e;
+      } finally {
+        if (pentahoSession != null) {
+          pentahoSession.destroy();
+        }
+    }
     }
   }
   

@@ -330,6 +330,10 @@ html>body .dialog-content {
   font-size:.65em;
   padding: 3px 10px;
 }
+.IE #addFileButton{
+  background-color: #000000;
+  height: 24px;
+}
 
 #otherRadio .gwt-TextBox {
   width: 150px;

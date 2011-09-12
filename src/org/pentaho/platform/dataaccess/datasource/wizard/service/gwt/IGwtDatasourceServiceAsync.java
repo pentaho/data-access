@@ -34,13 +34,13 @@ import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryData
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IGwtDatasourceServiceAsync {
-  void getLogicalModels(AsyncCallback<List<LogicalModelSummary>> callback);
+  void getLogicalModels(String context, AsyncCallback<List<LogicalModelSummary>> callback);
   void deleteLogicalModel(String domainId, String modelName, AsyncCallback<Boolean> callback);
   void doPreview(String connectionName, String query, String previewLimit, AsyncCallback<SerializedResultSet> callback);
   void generateLogicalModel(String modelName, String connectionName, String dbType, String query, String previewLimit, AsyncCallback<BusinessData> callback);
   void saveLogicalModel(Domain domain, boolean overwrite,AsyncCallback<Boolean> callback);
   void hasPermission(AsyncCallback<Boolean> callback);
-  void gwtWorkaround (BogoPojo pojo, AsyncCallback<BogoPojo> callback);
+  void gwtWorkaround(BogoPojo pojo, AsyncCallback<BogoPojo> callback);
   void loadBusinessData(String domainId, String modelId, AsyncCallback<BusinessData> callback);
   void serializeModelState(DatasourceDTO dto, AsyncCallback<String> callback);
   void deSerializeModelState(String dtoStr, AsyncCallback<DatasourceDTO> callback);

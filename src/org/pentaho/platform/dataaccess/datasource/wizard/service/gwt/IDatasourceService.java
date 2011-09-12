@@ -39,7 +39,7 @@ public interface IDatasourceService {
    * 
    * @return List of LogicalModelSummary.
    */
-  public List<LogicalModelSummary> getLogicalModels() throws DatasourceServiceException;
+  public List<LogicalModelSummary> getLogicalModels(String context) throws DatasourceServiceException;
   /**
    * Delete the Logical Mode identified by the Domain ID and the Model Name
    * 
