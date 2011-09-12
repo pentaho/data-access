@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<overlay  xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul">
+  <textbox id="relationalDatasourceName" height="15" width="185"/>
+  <textbox id="csvDatasourceName" height="15" width="185"/>
+  <listbox id="connectionList" height="96" width="187"/>
+  <textbox flex="0" id="query" rows="6" cols="80" height="90" width="326" />
+  <tree width="551" height="143" id="modelDataTable"/>
+  <tree width="551" height="179" id="csvDataTable"/>
+</overlay>

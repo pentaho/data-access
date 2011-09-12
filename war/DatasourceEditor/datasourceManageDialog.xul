@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window id="datasourceListWindow" title="Datasource List Dialog Demo" orient="vertical"
+  xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
+  height="600" width="800" onload="datasourceSelectionDialogController.init()">
+
+  <!-- this button for demo purposes only -->
+  <hbox>
+    <button label="Open Datasource List Dialog" tooltiptext="Open Datasource Selection Dialog" onclick="datasourceSelectionDialogController.showDialog()" />
+  </hbox>
+
+  <dialog id="datasourceSelectionDialog" buttonlabelcancel="${datasourceSelectionDialog.close}" buttons="cancel"
+    buttonalign="right" title="${datasourceSelectionDialog.manage_title}" width="350" height="215"
+    ondialogcancel="datasourceSelectionDialogController.onDialogCancel()">
+    <vbox flex="1" height="125">
+      <hbox>
+        <label value="${datasourceSelectionDialog.listLabel}" tooltiptext="${datasourceSelectionDialog.listLabel}" />
+        <spacer flex="1" />
+        <button id="editDatasource" image="images/edit.png" tooltiptext="${datasourceSelectionDialog.edit}" pen:disabledimage="images/edit_disabled.png"
+          visible="false" disabled="true" onclick="datasourceSelectionDialogController.editDatasource()" />
+        <button id="addDatasource" image="images/add.png" tooltiptext="${datasourceSelectionDialog.add}" pen:disabledimage="images/add_disabled.png"
+          visible="false" onclick="datasourceSelectionDialogController.addDatasource()" />
+        <button id="removeDatasource" image="images/remove.png" tooltiptext="${datasourceSelectionDialog.remove}" pen:disabledimage="images/remove_disabled.png"
+          visible="false" onclick="datasourceSelectionDialogController.removeDatasourceConfirm()" />
+      </hbox>
+      <listbox id="datasourceListbox" flex="1" rows="6" pen:binding="modelName" seltype="single" height="125" />
+    </vbox>
+  </dialog>
+
+  <dialog id="removeDatasourceConfirmationDialog" buttonlabelaccept="${removeDatasourceConfirmationDialog.ok}" buttonlabelcancel="${removeDatasourceConfirmationDialog.cancel}" buttons="accept, cancel"
+    ondialogcancel="datasourceSelectionDialogController.removeDatasourceCancel()" ondialogaccept="datasourceSelectionDialogController.removeDatasourceAccept()"
+    buttonalign="right" title="${removeDatasourceConfirmationDialog.title}" height="200" width="300">
+    <vbox>
+      <label value="${removeDatasourceConfirmationDialog.message}" />
+    </vbox>
+  </dialog>
+
+</window>
