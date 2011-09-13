@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>XUL Library</title>
+    <style>
+      body,td,a,div,.p{font-family:arial,sans-serif}
+      div,td{color:#000000}
+      a:link,.w,.w a:link{color:#0000cc}
+      a:visited{color:#551a8b}
+      a:active{color:#ff0000}
+    </style>
+    <script language='javascript' src='DatasourceEditor.nocache.js'></script>
+  </head>
+
+  <body>
+    <!-- OPTIONAL: include this if you want history support -->
+    <iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
+    <div id="root"></div>
+
+    <script type="text/javascript">
+
+      var callback = new function() {
+    	  this.onFinish = function(domainId, modelId) {
+          alert('got domainId='+domainId+', modelId='+modelId);
+        }
+
+        this.onCancel = function() {
+        	alert('cancelled');
+        }
+        
+        this.onReady = function(){
+
+        }
+      }
+    </script>
+    <input type="button" onclick="showDatasourceSelectionDialog(callback)" value="Select Datasource"/>
+    <p/>
+    <input type="button" onclick="showDatasourceManageDialog(callback)" value="Manage Datasources"/>
+
+  </body>
+</html>

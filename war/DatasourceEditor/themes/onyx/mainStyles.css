@@ -1,0 +1,1789 @@
+/*
+* This program is free software; you can redistribute it and/or modify it under the
+* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+* Foundation.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this
+* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+* or from the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* Copyright 2005 - 2010 Pentaho Corporation.  All rights reserved.
+*/
+
+html, body {
+  margin: 0px;
+  padding: 0px;
+  font-family: Tahoma, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+div {
+  outline: 0px;
+  hideFocus: true;
+}
+
+img {
+  outline: 0px;
+  -moz-user-focus: none;
+  user-focus: none;
+}
+label {
+font-size: .85em;
+}
+
+.scroll-panel{
+  position:relative;
+  overflow:auto;
+  height:100%;
+  width:100%;
+}
+
+.pentaho-page-background {
+  background: url('images/bg_pentaho_default.png') repeat-x top left;
+  background-color: #303030;
+}
+/* Standard button style. Should be applied to a <button> element to get full pseudo-styles. */
+.pentaho-button {
+  /* fallback color */
+  background: #000000;
+  /* Safari/Chrome */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #AAA), color-stop(0.10, #888), color-stop(0.50, #3f3f3f), color-stop(0.55, #000), color-stop(0.90, #121212));
+  /* Firefox */
+  background: -moz-linear-gradient(#AAAAAA, #888888 10%, #3F3F3F 50%, #000000 55%, #121212 90%) repeat scroll 0 0 transparent;
+
+  font-size: .75em;
+  color: #ffffff;
+  padding: 5px 14px;
+
+  /* Standard form */
+  border-radius: 5px;
+  /* Firefox */
+  -moz-border-radius: 5px;
+  /* Safari/Chrome */
+  -webkit-border-radius: 5px;
+
+  border: 1px solid #333;
+
+  /* Safari/Chrome */
+  -webkit-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px rgba(0, 0, 0, 0.7) inset;
+  /* Firefox */
+  -moz-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px rgba(0, 0, 0, 0.7) inset;
+  /* Standard form */
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px rgba(0, 0, 0, 0.7) inset;
+
+  white-space: nowrap;
+  text-shadow: 0px 0px 2px rgba(000, 000, 000, 1);
+  cursor: pointer;
+}
+.IE .pentaho-button {
+  height: 30px;
+  background: url('images/bg_btn.png') repeat-x;
+}
+
+/* Applies the green glow to buttons */
+.pentaho-button:hover {
+  -webkit-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+  -moz-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+  box-shadow: 0 -2px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+}
+.IE .pentaho-button:hover {
+  background: url('images/bg_btn_hover.png') repeat-x;
+}
+
+/* Just lightening it up a bit */
+.pentaho-button:active {
+  background: -moz-linear-gradient(#C8C8C8, #AAA 10%, #666 50%, #353535 55%, #3F3F3F 90%) repeat scroll 0 0 transparent;
+
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #C8C8C8), color-stop(0.10, #AAA), color-stop(0.50, #666), color-stop(0.55, #353535), color-stop(0.90, #3F3F3F));
+}
+.IE .pentaho-button:active {
+  background: url('images/bg_btn_active.png') repeat-x;
+}
+
+/* lighter gray with white text */
+.pentaho-button:disabled {
+  color: white;
+
+  background: -moz-linear-gradient(#AAA, #BBB 10%, #8d8d8d 50%, #727272 55%, #747474 90%) repeat scroll 0 0 transparent;
+
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #AAA), color-stop(0.10, #BBB), color-stop(0.50, #8d8d8d), color-stop(0.55, #727272), color-stop(0.90, #747474));
+
+  -webkit-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px rgba(0, 0, 0, 0.2) inset;
+  -moz-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px rgba(0, 0, 0, 0.2) inset;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px rgba(0, 0, 0, 0.2) inset;
+  text-shadow: 0px 0px 2px rgba(000, 000, 000, 4);
+}
+.IE .pentaho-button.disabled{
+  background: url('images/bg_btn_disabled.png') repeat-x;
+  cursor:default;
+}
+
+
+.pentaho-toggle-button {
+  /* fallback color */
+  background: #000000;
+  /* Safari/Chrome */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #AAA), color-stop(0.10, #888), color-stop(0.50, #3f3f3f), color-stop(0.55, #000), color-stop(0.90, #121212));
+  /* Firefox */
+  background: -moz-linear-gradient(#AAAAAA, #888888 10%, #3F3F3F 50%, #000000 55%, #121212 90%) repeat scroll 0 0 transparent;
+
+  font-size: .75em;
+  color: #ffffff;
+  padding: 5px 14px;
+  margin: 5px 2px 0px 0px;
+
+  /* Standard form */
+  border-radius: 5px;
+  /* Firefox */
+  -moz-border-radius: 5px;
+  /* Safari/Chrome */
+  -webkit-border-radius: 5px;
+
+  border: 1px solid #333;
+
+  /* Safari/Chrome */
+  -webkit-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px rgba(0, 0, 0, 0.7) inset;
+  /* Firefox */
+  -moz-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px rgba(0, 0, 0, 0.7) inset;
+  /* Standard form */
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px rgba(0, 0, 0, 0.7) inset;
+
+  white-space: nowrap;
+  text-shadow: 0px 0px 2px rgba(000, 000, 000, 1);
+  cursor: pointer;
+  cursor: hand;
+}
+
+/* Standard toggle button style. Should be applied to a <button> element to get full pseudo-styles. */
+.pentaho-toggle-button-up, .pentaho-toggle-button-up-disabled {
+}
+
+.IE .pentaho-toggle-button-up, .IE .pentaho-toggle-button-up-disabled {
+  height: 30px;
+  background: url('images/bg_btn.png') repeat-x;
+}
+
+/* Applies the green glow to buttons */
+.pentaho-toggle-button-up-hovering {
+  -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+  -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+}
+
+.IE .pentaho-toggle-button-up-hovering {
+  background: url('images/bg_btn_hover.png') repeat-x;
+}
+
+
+/* Standard toggle-button style. Should be applied to a <button> element to get full pseudo-styles. */
+.pentaho-toggle-button-down, .pentaho-toggle-button-down-disabled {
+  -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+  -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+}
+
+.IE .pentaho-toggle-button-down, .IE .pentaho-toggle-button-down-disabled {
+  height: 30px;
+  background: url('images/bg_btn.png') repeat-x;
+}
+
+/* Applies the green glow to toggle buttons */
+.pentaho-toggle-button-down-hovering {
+  -webkit-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+  -moz-box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+  box-shadow: 0 -2px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(255, 255, 255, 0.7), 0 0 2px 1px rgba(115, 255, 2, 1) inset;
+}
+
+.IE .pentaho-toggle-button-down-hovering {
+  background: url('images/bg_btn_hover.png') repeat-x;
+}
+
+
+
+/* Note: By default there is no padding on the bottom as the button area supplies the necessary amount. If your dialog
+has no buttons add an addition class to your element, pentaho-dialog-buttonless, to have full padding around the contents*/
+.pentaho-dialog {
+  border: 1px solid rgba(255, 255, 255, 0.59375);
+  z-index: 1000;
+  position: absolute;
+
+  /* Firefox */
+  -moz-border-radius: 7px;
+  /* Safari/Chrome */
+  -webkit-border-radius: 7px;
+  /* Standard form */
+  border-radius: 7px;
+
+  /* Firefox */
+  -moz-box-shadow: 1px 1px 6px 0px #000000;
+  /* Safari/Chrome */
+  -webkit-box-shadow: 1px 1px 6px 0px #000000;
+  /* Standard form */
+  box-shadow: 1px 1px 6px 0px #000000;
+
+  background: rgba(255, 255, 255, 0.5);
+  padding: 8px 8px 0px 8px;
+}
+.IE .pentaho-dialog {
+  border: 1px solid #000000;
+  background: url('images/wt_transparent.png') repeat;
+}
+/* Secondary style applied to pentaho-dialog elements to add a continuous 8px padding. */
+.pentaho-dialog-buttonless {
+  padding: 8px 8px 3px 8px;
+}
+
+.pentaho-dialog .Caption {
+  /* Safari/Chrome */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #AAA), color-stop(0.10, #888), color-stop(0.50, #3f3f3f), color-stop(0.55, #000), color-stop(0.90, #121212));
+  /* Firefox */
+  background: -moz-linear-gradient(#AAAAAA, #888888 10%, #3F3F3F 50%, #000000 55%, #121212 90%);
+
+  font-size: .8em;
+  color: white;
+  cursor: move;
+
+  /* Safari/Chrome */
+  -moz-box-shadow: rgba(255, 255, 255, 0.6) 0px 0px 1px 1px inset;
+  /* Firefox */
+  -webkit-box-shadow: rgba(255, 255, 255, 0.6) 0px 0px 1px 1px inset;
+  /* Standard form */
+  box-shadow: rgba(255, 255, 255, 0.6) 0px 0px 1px 1px inset;
+  padding: 6px;
+
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  /* bottom border supplied by .dialog-content */
+  text-align: left;
+  text-shadow: 0px 0px 2px black;
+}
+.IE .pentaho-dialog .Caption {
+  background: url('images/bg_title.png') repeat-x;
+}
+
+.pentaho-dialog .button-panel{
+  padding:3px 0px 2px 0px; width: 100%; 
+}
+
+.pentaho-dialog .button-panel .pentaho-button{
+  margin-left: 5px;
+}
+
+.dialog-content {
+  border: 1px solid black;
+  background: #d4d6db;
+}
+
+.dialog-content fieldset {
+  padding: 0px;
+  width: auto;
+  border: 1px solid #888;
+}
+
+.dialog-content input[type='text'] {
+  border: 1px solid #333;
+  height: 20px;
+}
+
+.dialog-button-panel {
+  padding: 2px 0px;
+}
+
+/* The following classes are handing tons of intermediate and extraneous elements generated by the GWT dialog implementation */
+.pentaho-dialog .dialogTopCenterInner {
+}
+
+.pentaho-dialog .dialogMiddleCenter {
+  height: 100%;
+}
+
+.pentaho-dialog .dialogMiddleCenterInner {
+  height: 100%;
+}
+
+.pentaho-dialog .dialogMiddleLeft {
+  display: none;
+}
+
+.pentaho-dialog .dialogMiddleRight {
+  display: none;
+}
+
+.pentaho-dialog .dialogTopLeft {
+  display: none;
+}
+
+.pentaho-dialog .dialogTopRight {
+  display: none;
+}
+
+.pentaho-dialog .dialogBottomLeft {
+  display: none;
+}
+
+.pentaho-dialog .dialogBottomRight {
+  display: none;
+}
+
+/* Find a home for these */
+.login-dialog {
+  z-index: 2000;
+}
+.error-login-dialog {
+  z-index: 2100;
+}
+/**/
+
+
+.glasspane {
+  position: absolute;
+  background-color: black;
+  /* IE8 css hack for opacity */
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(opacity=65)";
+  filter: alpha(opacity = 65);
+  opacity: 0.65;
+
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: 300;
+  margin: 0px;
+  padding: 0px;
+  display: none;
+}
+
+.pentaho-tabWidget {
+    display: block;
+    float: left;
+    background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, rgba(255, 255, 255, 0.4)),
+        color-stop(0.7, rgba(196, 211, 215, 0.4)),
+        color-stop(1, rgba(200, 218, 218, 0.3))
+    );
+
+    background:-moz-linear-gradient(rgba(255, 255, 255, 0.4) 0%, rgba(187, 196, 199, 0.3) 50%, #787878 100%);
+    color: black;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    border-top-right-radius: 5px;
+    border-top-right-radius: 5px;
+    border-top: solid 1px #333;
+    border-left: solid 1px #333;
+    border-right: solid 1px #333;
+    border-bottom: none;
+    -moz-box-shadow: rgba(255,255,255,.35) 0px 1px 1px 1px inset;
+    -webkit-box-shadow: rgba(255,255,255,.35) 0px 1px 1px 1px inset;
+     box-shadow: rgba(255,255,255,.35) 0px 1px 1px 1px inset;
+    cursor: pointer;
+	margin-left: 2px;
+	padding: 4px 8px;
+}
+.IE .pentaho-tabWidget {
+  background: url('images/tab_off.png') repeat-x;
+}
+
+.pentaho-tabWidget .pentaho-tabWidgetLabel {
+  margin: 0px;
+  padding-bottom: 0px;
+  font-size: .8em;
+  /*text-shadow: rgba(255, 255, 255, 0.398438) 0px 1px 0px;*/
+  white-space:nowrap;
+ }
+ 
+
+
+.pentaho-tabWidget-selected {
+  background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0, #333333),
+      color-stop(0.10, #454545),
+      color-stop(0.50, #3f3f3f),
+      color-stop(0.55, #000),
+      color-stop(0.90, #121212)
+  );
+
+  background: -moz-linear-gradient(#CCCCCC, #454545 3%, #3F3F3F 50%, #000000 55%, #121212 90%) repeat scroll 0 0 transparent;
+
+  color: #ffffff;
+}
+
+.IE .pentaho-tabWidget-selected {
+  background: url('images/tab_on.png') repeat-x;
+}
+
+.pentaho-tabWidget-selected .pentaho-tabWidgetLabel {
+  margin: 0px;
+  padding-bottom: 0px;
+  font-size: .8em;
+  white-space:nowrap;
+  color: #ffffff;
+ }
+
+.pentaho-tabPanel{
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  border-top: 3px solid rgba(0, 0, 0, 0.7);
+  clear:both;
+}
+
+.pentaho-tab-deck-panel {
+  border-top: 3px solid rgba(0, 0, 0, 0.7);
+  border-right: 1px solid rgba(0, 0, 0, 0.7);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+  border-left: 1px solid rgba(0, 0, 0, 0.7);
+  height: 100%;
+}
+
+.pucContentDeck .pentaho-tab-deck-panel {
+  background: url('images/tab_panel_bg.png');
+}
+
+.pentaho-tabWidget-close {
+    margin-left: 4px;
+}
+
+/* ======================= Behins Scrollbar Styles ========================= */
+/*
+ * CSS Styles that are needed by jScrollPane for it to operate correctly.
+ *
+ * Include this stylesheet in your site or copy and paste the styles below into your stylesheet - jScrollPane
+ * may not operate correctly without them.
+ */
+
+.jspContainer {
+  overflow: hidden;
+  position: relative;
+}
+
+.jspPane {
+  position: absolute;
+}
+
+.jspVerticalBar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 16px;
+  height: 100%;
+  background: transparent;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#666666', endColorstr = '#666666', GradientType=1);
+  font-size: 0px;
+}
+
+.jspHorizontalBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 16px;
+  background: transparent;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#666666', endColorstr = '#666666', GradientType=1);
+  font-size: 0px;
+}
+
+/*.jspVerticalBar *,
+.jspHorizontalBar * {
+  margin: 0;
+  padding: 0;
+}
+*/
+.jspCap {
+  display: none;
+}
+
+.jspHorizontalBar .jspCap {
+  float: left;
+}
+
+.jspTrack {
+  position: relative;
+}
+
+.jspDrag {
+  background: #bbd;
+  position: relative;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.jspHorizontalBar .jspTrack {
+  /* Safari/Chrome */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #333), color-stop(0.50, #777), color-stop(1, #333));
+  /* Firefox */
+  background: -moz-linear-gradient(top, #333, #777 50%, #333 100%);
+
+  border-top: 1px solid #b5b5b5;
+  border-bottom: 1px solid #b5b5b5;
+  /* Safari/Chrome */
+  -webkit-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#777777', endColorstr = '#999999');
+}
+
+.jspVerticalBar .jspTrack {
+  /* Safari/Chrome */
+  background: -webkit-gradient(linear, left top, right top, color-stop(0, #333), color-stop(0.50, #777), color-stop(1, #333));
+  /* Firefox */
+  background: -moz-linear-gradient(left, #333, #777 50%, #333 100%);
+
+  border-left: 1px solid #b5b5b5;
+  border-right: 1px solid #b5b5b5;
+  /* Safari/Chrome */
+  -webkit-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Firefox */
+  -moz-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Standard Form */
+  box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#7777777', endColorstr = '#9999999', GradientType=1);
+}
+
+.jspHorizontalBar .jspTrack,
+.jspHorizontalBar .jspDrag {
+  float: left;
+  height: 100%;
+}
+
+.jspArrow {
+  text-indent: -20000px;
+  display: block;
+  cursor: pointer;
+}
+
+.jspArrow.jspDisabled {
+  cursor: default;
+}
+
+.jspVerticalBar .jspArrow {
+  height: 16px;
+}
+
+.jspVerticalBar .jspArrowDown {
+
+  /* Safari/Chrome */
+  -webkit-border-bottom-left-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+
+  /* Firefox */
+  -moz-border-radius-bottomleft: 4px;
+  -moz-border-radius-bottomright: 4px;
+
+  border: 1px solid #b5b5b5;
+  /* Safari/Chrome */
+  -webkit-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Firefox */
+  -moz-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Standard Form */
+  box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+
+  background: url("images/scroll_bottom_arrow.png") no-repeat center center;
+  /* Safari/Chrome */
+  background: url("images/scroll_bottom_arrow.png") center center no-repeat, -webkit-gradient(linear, left top, right top, color-stop(0, #282828), color-stop(0.50, #353535), color-stop(1, #282828));
+  /* Firefox */
+  background: url("images/scroll_bottom_arrow.png") no-repeat scroll center center, -moz-linear-gradient(center top , #282828, #353535 50%, #282828 100%);
+  
+}
+
+.jspVerticalBar .jspArrowUp {
+
+  -webkit-border-top-left-radius: 4px;
+  -webkit-border-top-right-radius: 4px;
+
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-topright: 4px;
+
+  border: 1px solid #b5b5b5;
+  /* Safari/Chrome */
+  -webkit-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Safari/Chrome */
+  -moz-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Standard Form */
+  box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  
+  background: url("images/scroll_top_arrow.png") no-repeat center center;
+  /* Safari/Chrome */
+  background: url("images/scroll_top_arrow.png") no-repeat center center, -webkit-gradient(linear, left top, right top, color-stop(0, #282828), color-stop(0.50, #353535), color-stop(1, #282828));
+  /* Firefox */
+  background: url("images/scroll_top_arrow.png") no-repeat center center, -moz-linear-gradient(top, #282828, #353535 50%, #282828 100%);
+
+}
+
+.jspHorizontalBar .jspArrowLeft {
+
+  /* Safari/Chrome */
+  -webkit-border-top-left-radius: 4px;
+  -webkit-border-bottom-left-radius: 4px;
+
+  /* Firefox */
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-bottomleft: 4px;
+
+  border: 1px solid #b5b5b5;
+  /* Safari/Chrome */
+  -webkit-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Firefox */
+  -moz-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Standard Form */
+  box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  
+  background: url("images/scroll_left_arrow.png") no-repeat center center;
+  /* Safari/Chrome */
+  background: url("images/scroll_left_arrow.png") no-repeat center center, -webkit-gradient(linear, left top, left bottom, color-stop(0, #282828), color-stop(0.50, #353535), color-stop(1, #282828));
+  /* Firefox */
+  background: url("images/scroll_left_arrow.png") no-repeat center center, -moz-linear-gradient(left, #282828, #353535 50%, #282828 100%);
+}
+
+.jspHorizontalBar .jspArrowRight {
+
+  /* Safari/Chrome */
+  -webkit-border-top-right-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+
+  /* Firefox */
+  -moz-border-radius-topright: 4px;
+  -moz-border-radius-bottomright: 4px;
+
+  /* Firefox */
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+
+  border: 1px solid #b5b5b5;
+
+  /* Safari/Chrome */
+  -webkit-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Firefox */
+  -moz-box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  /* Standard Form */
+  box-shadow: black 0px 0px 1px, rgba(0, 0, 0, 0.699219) 0px 0px 1px inset;
+  
+  background: url("images/scroll_right_arrow.png") no-repeat center center;  
+  background-repeat: no-repeat;
+  /* Safari/Chrome */
+  background: url("images/scroll_right_arrow.png") no-repeat center center, -webkit-gradient(linear, left top, left bottom, color-stop(0, #282828), color-stop(0.50, #353535), color-stop(1, #282828));
+  /* Firefox */
+  background: url("images/scroll_right_arrow.png") no-repeat center center, -moz-linear-gradient(left, #282828, #353535 50%, #282828 100%);
+}
+
+.jspHorizontalBar .jspArrow {
+  width: 16px;
+  float: left;
+  height: 16px;
+}
+
+.jspVerticalBar .jspArrow:focus {
+  outline: none;
+}
+
+.jspVerticalBar .jspDrag {
+
+  width: 8px;
+  /* Safari/Chrome */
+  -webkit-border-radius: 5px;
+  /* Firefox */
+  -moz-border-radius: 5px;
+  /* Standard Form */
+  border-radius: 5px;
+  border: 1px solid black;
+
+  /* Safari/Chrome */
+  -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7), 0 0 3px rgba(255, 255, 255, 1) inset;
+  /* Firefox */
+  -moz-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7), 0 0 3px rgba(255, 255, 255, 1) inset;
+  /* Standard Form */
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7), 0 0 3px rgba(255, 255, 255, 1) inset;
+
+  /* Safari/Chrome */
+  background: url("images/scroll_grabber.png") no-repeat center center, -webkit-gradient(linear, left top, right top, color-stop(0, #111), color-stop(0.50, #222), color-stop(1, #111));
+  /* Firefox */
+  background: url("images/scroll_grabber.png") no-repeat center center, -moz-linear-gradient(left, #111, #222 50%, #111 100%);
+  
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#777777', endColorstr = '#5555555', GradientType=1);
+}
+
+.jspHorizontalBar .jspDrag {
+
+  height: 8px;
+  /* Safari/Chrome */
+  -webkit-border-radius: 5px;
+  /* Firefox */
+  -moz-border-radius: 5px;
+  /* Standard Form */
+  border-radius: 5px;
+  border: 1px solid black;
+
+  /* Safari/Chrome */
+  -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7), 0 0 3px rgba(255, 255, 255, 1) inset;
+  /* Firefox */
+  -moz-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7), 0 0 3px rgba(255, 255, 255, 1) inset;
+  /* Standard Form */
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7), 0 0 3px rgba(255, 255, 255, 1) inset;
+
+  /* Firefox */
+  background: url("images/scroll_grabber_horz.png") no-repeat center center, -webkit-gradient(linear, left top, left bottom, color-stop(0, #111), color-stop(0.50, #222), color-stop(1, #111));
+  /* Safari/Chrome */ 
+  background: url("images/scroll_grabber_horz.png")  no-repeat center center,  -moz-linear-gradient(top, #111, #222 50%, #111 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#7777777', endColorstr = '#555555');
+}
+
+.jspHorizontalBar .jspTrack{
+  padding-top: 2px;
+}
+
+.jspVerticalBar .jspTrack{
+  padding-left: 2px;
+}
+
+
+.jspCorner {
+  background: #eeeef4;
+  float: left;
+  height: 100%;
+}
+
+/* Yuk! CSS Hack for IE6 3 pixel bug :( */
+* html .jspCorner {
+  margin: 0 -3px 0 0;
+}
+
+/* ======================= End Scrollbar Styles ========================= */
+
+/* ======================= Toolbar Styles ========================= */
+
+.toolbar {
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+  background-color: # #d8d8d8;
+  background-image: url(images/subtoolbar_bg.png);
+  background-repeat: repeat-x;
+  background-position: top center;
+  border-top: none;
+  border-left: none;
+  border-left: none;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #848484
+}
+
+.content-toolbar {
+    height:32px; 
+}
+
+.content-toolbar-button {
+    width:28px; 
+}
+
+.content-toolbar-separator {
+    width:10px; 
+}
+
+.toolbar-group-label-disabled {
+  color: #777;
+}
+
+.toolbar-group-label {
+  color: #000;
+}
+
+.toolbar-button {
+  background-color: transparent;
+  margin: 1px;
+}
+
+.toolbar-button.toolbar-button-hovering {
+  background-color: #E8E8E8;
+  border: 1px solid #AAA;
+  cursor: pointer;
+  margin: 0px;
+}
+
+.toolbar-toggle-button {
+  margin: 1px;
+}
+
+.toolbar-toggle-button-down {
+  border: 1px inset grey;
+  background-color: #E8E8E8;
+  margin: 0px;
+}
+
+.toolbar-toggle-button-down-hovering {
+  background-color: #E8E8E8;
+  margin: 0px;
+  cursor: pointer;
+}
+
+.toolbar-toggle-button-hovering {
+  border: 1px solid #AAA;
+  background-color: #E8E8E8;
+  cursor: pointer;
+  margin: 0px;
+}
+
+.toolbar-combo-button {
+  margin: 1px;
+  padding-right: 14px;
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-image: url("images/comboArrow.png");
+  background-color: transparent;
+}
+
+.toolbar-combo-button-hovering {
+  background-color: #E8E8E8;
+  border: 1px solid #AAA;
+  cursor: pointer;
+  margin: 0px;
+}
+
+.toolbar-button-disabled {
+  background-color: transparent;
+  margin: 1px;
+}
+
+.toolbar-button-disabled-hovering {
+}
+
+.toolbar-combo-button-disabled {
+  margin: 1px;
+  padding-right: 14px;
+  background-color: transparent;
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-image: url("images/comboArrow.png");
+}
+
+.toolbar-combo-button-hovering {
+  border: 1px solid #AAA;
+  margin: 0px;
+}
+
+.pentaho-titled-toolbar {
+  background: #1A1A1A; /* Old browsers */
+  background: -moz-linear-gradient(top, #1a1a1a 0%, #333333 50%, #000000 51%, #000000 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1a1a1a), color-stop(50%,#333333), color-stop(51%,#000000), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #1a1a1a 0%,#333333 50%,#000000 51%,#000000 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #1a1a1a 0%,#333333 50%,#000000 51%,#000000 100%); /* Opera11.10+ */
+  background: -ms-linear-gradient(top, #1a1a1a 0%,#333333 50%,#000000 51%,#000000 100%); /* IE10+ */
+  background: linear-gradient(top, #1a1a1a 0%,#333333 50%,#000000 51%,#000000 100%); /* W3C */
+  zoom: 1;
+
+}
+.IE .pentaho-titled-toolbar {
+  background: url('images/bg_title.png') repeat-x;
+}
+
+.pentaho-titled-toolbar .pentaho-titled-toolbar-label {
+  color: white;
+  font-size: 0.8em;
+}
+
+
+
+.pentaho-transparent {
+  background-color: transparent;
+}
+
+.pentaho-gradient {
+  background-color: #000;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #AAA), color-stop(0.10, #888), color-stop(0.50, #3f3f3f), color-stop(0.55, #000), color-stop(0.90, #121212));
+  background: -moz-linear-gradient(#AAAAAA, #888888 10%, #3F3F3F 50%, #000000 55%, #121212 90%) repeat scroll 0 0 transparent;
+}
+.IE .pentaho-gradient {
+  background: url('images/bg_title.png') repeat-x;
+}
+
+.pentaho-rounded-panel {
+  border: 1px solid rgba(255, 255, 255, 0.59375);
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  -moz-box-shadow: 2px 2px 6px 1px #333333;
+  -webkit-box-shadow: 2px 2px 6px 1px #333333;
+  box-shadow: 2px 2px 6px 1px #333333;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 4px 4px 4px;
+}
+.IE .pentaho-rounded-panel {
+  background: url('images/wt_transparent.png') repeat;
+}
+
+.pentaho-shine {
+  background-color: none;
+
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(170, 170, 170, 0.34)), color-stop(0.1, rgba(135, 135, 135, 0.34)), color-stop(0.5, rgba(50, 50, 50, 0.04)), color-stop(0.52, rgba(0, 0, 0, 0.25)), color-stop(0.8, rgba(0, 0, 0, 0.25)), to(rgba(10, 10, 10, 0.04)));
+  
+  background: -moz-linear-gradient(rgba(170, 170, 170, 0.34), rgba(135, 135, 135, 0.34) 10%, rgba(50, 50, 50, 0.04) 50%, rgba(0, 0, 0, 0.25) 52%, rgba(0, 0, 0, 0.25) 80%, rgba(10, 10, 10, 0.04) 100%) repeat scroll 0 0 transparent;
+
+}
+.IE .pentaho-shine {
+  background: url('images/shine_bg.png') repeat;
+}
+.pentaho-background {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.IE .pentaho-background {
+	background: url('images/wt_transparent.png') repeat;
+}
+
+.pentaho-padding-sm {
+    padding: 4px;
+}
+
+.pentaho-padding-lg {
+    padding: 8px;
+}
+
+.pentaho-tooltip-background {
+  background-color: #444;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #AAA), color-stop(0.10, #888), color-stop(0.50, #3f3f3f), color-stop(0.55, #000), color-stop(0.90, #121212));
+  background: -moz-linear-gradient(#AAAAAA, #888888 10%, #3F3F3F 50%, #000000 55%, #121212 90%) repeat scroll 0 0 transparent;
+}
+.IE .pentaho-tooltip-background {
+  background: url('images/wt_transparent.png') repeat;
+}
+.pentaho-tooltip-contents {
+  background-color: #dddddd;
+  padding: 4px;
+  border: 1px solid #808080;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
+.pentaho-shadow {
+  -moz-box-shadow: 1px 1px 5px 1px #333333;
+  -webkit-box-shadow: 1px 1px 5px 1px #333333;
+  box-shadow: 1px 1px 5px 1px #333333;
+}
+
+
+.pentaho-shadow-inset-glow {
+  -moz-box-shadow: 1px 1px 5px 0px #333333, 0 0 1px 1px rgba(255,255,255,.6) inset;
+  -webkit-box-shadow: 1px 1px 5px 0px #333333, 0 0 1px 1px rgba(255,255,255,.6) inset;
+  box-shadow: 1px 1px 5px 0px #333333, 0 0 1px 1px rgba(255,255,255,.6) inset;
+}
+
+.pentaho-shadow-no-offset {
+  -moz-box-shadow: 1px 1px 5px 0px #333333;
+  -webkit-box-shadow: 1px 1px 5px 0px #333333;
+  box-shadow: 1px 1px 5px 0px #333333;
+}
+
+.pentaho-rounded-panel2 {
+  border: 1px solid black;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  
+  -moz-box-shadow: 0 0 1px 1px rgba(255,255,255,.6) inset;
+  -webkit-box-shadow: 0 0 1px 1px rgba(255,255,255,.6) inset;
+  box-shadow:0 0 1px 1px rgba(255,255,255,.6) inset;
+}
+
+
+.pentaho-rounded-panel2-shadowed {
+  border: 1px solid black;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  
+  -moz-box-shadow: 1px 1px 5px 0px #333333, 0 0 1px 1px rgba(255,255,255,.6) inset;
+  -webkit-box-shadow: 1px 1px 5px 0px #333333, 0 0 1px 1px rgba(255,255,255,.6) inset;
+  box-shadow: 1px 1px 5px 0px #333333, 0 0 1px 1px rgba(255,255,255,.6) inset;
+}
+
+.pentaho-rounded-panel-bottom-lr {
+  border: 1px solid black;
+  -moz-border-radius: 0px 0px 7px 7px;
+  -webkit-border-radius: 0px 0px 7px 7px;
+  border-radius: 0px 0px 7px 7px;
+}
+
+.pentaho-shadow-right-side {
+  -moz-box-shadow: 2px 2px 4px 0 #333333;
+  -webkit-box-shadow: 2px 2px 4px 0 #333333;
+  box-shadow: 2px 2px 4px 0 #333333;
+}
+
+.pentaho-rounded-panel-right {
+  border-top: 1px solid rgba(255, 255, 255, 0.59375);
+  border-right: 1px solid rgba(255, 255, 255, 0.59375);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.59375);
+  -moz-border-radius: 0px 5px 5px 0px;
+  -webkit-border-radius: 0px 5px 5px 0px;
+  border-radius: 0px 5px 5px 0px;
+}
+
+.pentaho-rounded-panel-top-right {
+  border-top: 1px solid rgba(255, 255, 255, 0.59375);
+  border-right: 1px solid rgba(255, 255, 255, 0.59375);
+  -moz-border-radius: 0px 5px 0px 0px;
+  -webkit-border-radius: 0px 5px 0px 0px;
+  border-radius: 0px 5px 0px 0px;
+}
+
+.pentaho-rounded-panel-top-left {
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  -moz-border-radius: 5px 0px 0px 0px;
+  -webkit-border-radius: 5px 0px 0px 0px;
+  border-radius: 5px 0px 0px 0px;
+}
+
+.pentaho-disclosure-panel .header td {
+	text-shadow: 1px 2px 2px rgba(22, 24, 27, 0.5);
+	color: white;
+	font-size: 0.8em;
+}
+
+.pentaho-disclosure-panel-openicon {
+    width: 16px; 
+    height: 16px; 
+    background: url('images/disclosure_open.png') no-repeat scroll transparent;
+}
+
+.pentaho-disclosure-panel-closeicon {
+    width: 16px; 
+    height: 16px; 
+    background: url('images/disclosure_close.png') no-repeat scroll transparent;
+}
+
+.pentaho-disclosure-panel-open {
+	width: 100%;
+	padding: 6px 6px 0px 6px;
+}
+
+.pentaho-disclosure-panel-dropdown {
+    padding: 0px 10px 0px 10px; 
+    overflow: hidden; 
+}
+
+.pentaho-disclosure-panel-open .header {
+  text-decoration: none;
+  cursor: pointer;
+  cursor: hand;
+  background: black; /* Old browsers */
+  background: -moz-linear-gradient(top, #535a62 0%, #535a64 49%, #535a62 50%, #464e56 51%, #464e56 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#535a62), color-stop(49%,#535a64), color-stop(50%,#535a62), color-stop(51%,#464e56), color-stop(100%,#464e56)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #535a62 0%,#535a64 49%,#535a62 50%,#464e56 51%,#464e56 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #535a62 0%,#535a64 49%,#535a62 50%,#464e56 51%,#464e56 100%); /* Opera11.10+ */
+  background: -ms-linear-gradient(top, #535a62 0%,#535a64 49%,#535a62 50%,#464e56 51%,#464e56 100%); /* IE10+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#FF464E56', endColorstr = '#FF000000');
+  background: linear-gradient(top, #535a62 0%,#535a64 49%,#535a62 50%,#464e56 51%,#464e56 100%); /* W3C */
+  zoom: 1;  
+
+  border: 1px solid rgba(255, 255, 255, 0.59375);
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  -moz-box-shadow: 2px 2px 6px 1px #333333;
+  -webkit-box-shadow: 2px 2px 6px 1px #333333;
+  box-shadow: 2px 2px 6px 1px #333333;
+  padding: 4px 4px 4px 4px;
+}
+
+
+.pentaho-disclosure-panel-closed {
+	width: 100%;
+	padding: 6px 6px 0px 6px;
+}
+
+.pentaho-disclosure-panel-closed .header {
+  text-decoration: none;
+  cursor: pointer;
+  cursor: hand;
+  background: black; /* Old browsers */
+  background: -moz-linear-gradient(top, #535a62 0%, #535a64 49%, #535a62 50%, #464e56 51%, #464e56 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#535a62), color-stop(49%,#535a64), color-stop(50%,#535a62), color-stop(51%,#464e56), color-stop(100%,#464e56)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #535a62 0%,#535a64 49%,#535a62 50%,#464e56 51%,#464e56 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #535a62 0%,#535a64 49%,#535a62 50%,#464e56 51%,#464e56 100%); /* Opera11.10+ */
+  background: -ms-linear-gradient(top, #535a62 0%,#535a64 49%,#535a62 50%,#464e56 51%,#464e56 100%); /* IE10+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#FF464E56', endColorstr = '#FF000000');
+  background: linear-gradient(top, #535a62 0%,#535a64 49%,#535a62 50%,#464e56 51%,#464e56 100%); /* W3C */
+  zoom: 1;  
+  
+  border: 1px solid rgba(255, 255, 255, 0.59375);
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  -moz-box-shadow: 2px 2px 6px 1px #333333;
+  -webkit-box-shadow: 2px 2px 6px 1px #333333;
+  box-shadow: 2px 2px 6px 1px #333333;
+  padding: 4px 4px 4px 4px;
+}
+
+.contrast-color {
+    color: white;
+}
+
+.contrast-background {
+    background-color: #222222;
+}
+
+.section-header-outer {
+    padding: 1px;
+    background-color: #222222
+}
+
+.section-header-middle {
+    padding: 1px;
+}
+
+.section-header-inner {
+    color: white;
+    border: 1px solid #888888;
+    vertical-align:middle;
+    padding-left: 4px;
+}
+
+/* ======================= File Chooser Styles ========================= */
+.pentaho-file-chooser-selection {
+	background-color: #cbefa3;
+}
+
+/* ======================= Launcher Styles ========================= */
+.pentaho-launcher-panel-shadowed {
+  -moz-box-shadow: 1px 1px 5px 0 #333333, 0 0 1px 1px rgba(255, 255, 255, 0.6) inset;
+  border: 1px solid #000000;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  -webkit-box-shadow: 1px 1px 5px 1px #333333;
+  box-shadow: 2px 2px 6px 1px #333333;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.IE .pentaho-launcher-panel-shadowed {
+  background: url('images/wt_transparent.png') repeat;
+}
+ 
+.pentaho-launcher-shine {
+  background-color: none;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.35)), color-stop(0.1, rgba(255, 255, 255, 0.35)), color-stop(0.43, rgba(255, 255, 255, 0.35)), color-stop(0.43, rgba(255, 255, 255, 0.15)), to(rgba(255, 255, 255, 0.15)));
+  background: -moz-linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35) 43%, rgba(255, 255, 255, 0.15) 43%, rgba(255, 255, 255, 0.15) 100%) repeat scroll 0 0 transparent;
+}
+ 
+.IE .pentaho-launcher-shine {
+  background: url('images/container_bg.png') repeat;
+}
+
+/* ======================= Login Styles ========================= */
+.login-panel {
+	height: 100%;
+	width: 100%;
+	font-size: 0.85em;
+	text-shadow: rgba(255, 255, 255, 0.398438) 0px 1px 0px;
+	padding: 5px;
+}
+
+.login-panel-label {
+	font-size: 0.85em;
+	text-shadow: rgba(255, 255, 255, 0.398438) 0px 1px 0px;
+}
+
+.pentaho-light-text {
+    color: #888888;
+}
+
+.panel-content {
+  background: #d4d6db;
+}
+
+.pentaho-listbox-tb {
+	border-top: 1px solid #9f9f9f; 
+	border-bottom: 1px solid #9f9f9f; 
+    background-color: white
+}
+
+.pentaho-listbox {
+	border: 1px solid #9f9f9f;      
+    background-color: white
+}
+
+.pentaho-listitem {
+    background-color: #ffffff;
+	color:#000000;
+    cursor: default;
+}
+
+.pentaho-listitem-selected {
+    background-color: #87df27;
+	color:#000000;
+    cursor: default;
+}
+
+.pentaho-listitem-hover {
+    background-color: #cbefa3;
+	color:#000000;
+    cursor: default;
+}
+
+.pentaho-listitem-label {
+    padding-left: 4px;
+}
+
+.pentaho-menuitem {
+	background-color: #ffffff;
+    padding: 2px;
+	color:#000000;
+}
+
+.pentaho-menuitem-label {
+}
+
+.pentaho-menuitem.pentaho-menuitem-hover {
+	background-color: #87df27;
+	color:#000000;
+    padding: 2px;
+    cursor: default;
+}
+
+.pentaho-menu-outer {
+	background-color: #ffffff;
+	color:#000000;
+    border: 1px solid #000000;
+    padding: 2px;
+}
+
+.pentaho-menu-separator {
+    border-bottom: 2px solid white;
+    border-top: 2px solid white;
+    height: 5px;
+    padding: 0;
+}
+
+.pentaho-menu-separator-inner {
+    border-top: 1px solid #000000;
+}
+
+.pentaho-checkmenuitem {
+    width: 16px;
+    height: 16px;
+	background: url('images/checkbox-empty.png') no-repeat center;
+}
+
+.pentaho-checkmenuitem.menuitem-checked {
+    width: 16px;
+    height: 16px;
+	background: url('images/checkbox.png') no-repeat center;
+}
+
+.pentaho-menuitem-disabled {
+    color: #808080;
+}
+
+.pentaho-droppanel {
+    background-color: #D4D6DB;
+    border: 1px solid rgba(0, 0, 0, 0.592);
+    margin: 0 10px;
+}
+
+.pentaho-editbutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/edit.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-editbutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/edit_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-addbutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/add.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-addbutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/add_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-deletebutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/remove.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-deletebutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/remove_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-closebutton.pentaho-imagebutton-hover {
+    width: 16px;
+    height: 16px;
+	background: url('images/close_sm.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-closebutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/close_sm_disabled.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-closebutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/close_sm_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-closebutton-big {
+    width: 30px;
+    height: 30px;
+	background: url('images/close_big.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-closebutton-big.pentaho-imagebutton-disabled {
+    width: 30px;
+    height: 30px;
+	background: url('images/close_big.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-closebutton-big.pentaho-imagebutton-hover {
+    width: 30px;
+    height: 30px;
+	background: url('images/close_big_hover.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-undobutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/undo.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-undobutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/undo_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-redobutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/redo.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-redobutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/redo_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-downbutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/16x16_down.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-downbutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/16x16_down_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-upbutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/16x16_up.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-upbutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/16x16_up_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-optionsbutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/options.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-optionsbutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/options_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-left-lgbutton {
+    width: 26px;
+    height: 33px;
+	background: url('images/lg_arrow_left_on.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-left-lgbutton.pentaho-imagebutton-disabled {
+    width: 26px;
+    height: 33px;
+	background: url('images/lg_arrow_left_off.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-right-lgbutton {
+    width: 26px;
+    height: 33px;
+	background: url('images/lg_arrow_right_on.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-right-lgbutton.pentaho-imagebutton-disabled {
+    width: 26px;
+    height: 33px;
+	background: url('images/lg_arrow_right_off.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-forecolorbutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/font_color.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-forecolorbutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/font_color_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-backcolorbutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/back_color.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-backcolorbutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/back_color_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-filterbutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/filter.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-filterbutton.pentaho-imagebutton-disabled {
+    width: 16px;
+    height: 16px;
+	background: url('images/filter_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-layoutbutton {
+    width: 16px;
+    height: 16px;
+	background: url('images/field_layout.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-contextmenubutton {
+    width: 15px;
+    height: 15px;
+	background: url('images/options_menu_arrow.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-pagebackbutton {
+    width: 18px;
+    height: 18px;
+	background: url('images/page_back.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-pagebackbutton.pentaho-imagebutton-hover {
+    width: 18px;
+    height: 18px;
+	background: url('images/page_back_over.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-pagebackbutton.pentaho-imagebutton-disabled {
+    width: 18px;
+    height: 18px;
+	background: url('images/page_back_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-pagenextbutton {
+    width: 18px;
+    height: 18px;
+	background: url('images/page_forward.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-pagenextbutton.pentaho-imagebutton-hover {
+    width: 18px;
+    height: 18px;
+	background: url('images/page_forward_over.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-pagenextbutton.pentaho-imagebutton-disabled {
+    width: 18px;
+    height: 18px;
+	background: url('images/page_forward_disabled.png') no-repeat center;
+    cursor: default;
+}
+
+.pentaho-trashbutton {
+    width: 128px;
+    height: 150px;
+	background: url('images/trashcan.png') no-repeat center;
+}
+
+.pentaho-trashbutton.pentaho-imagebutton-hover {
+	background: url('images/trashcan_full.png') no-repeat center;
+    cursor: pointer;
+}
+
+.pentaho-toolbar-separator {
+    width: 1px;
+    height: 18px;
+	background: url('images/toolbar_separator.png') no-repeat center;
+}
+
+.pentaho-table content {
+  margin: 10px 10px 10px 10px;
+  padding: 10px 10px 10px 10px;
+}
+
+.pentaho-table {
+ background: black;
+}
+
+.pentaho-table-header-cell {
+ padding: 8px;
+ 
+  background: #1a1a1a; /* Old browsers */
+  background: -moz-linear-gradient(top, #1a1a1a 0%, #333333 50%, #000000 51%, #000000 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1a1a1a), color-stop(50%,#333333), color-stop(51%,#000000), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #1a1a1a 0%,#333333 50%,#000000 51%,#000000 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #1a1a1a 0%,#333333 50%,#000000 51%,#000000 100%); /* Opera11.10+ */
+  background: -ms-linear-gradient(top, #1a1a1a 0%,#333333 50%,#000000 51%,#000000 100%); /* IE10+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#FF777777', endColorstr = '#FF000000');
+  zoom: 1;
+  background: linear-gradient(top, #1a1a1a 0%,#333333 50%,#000000 51%,#000000 100%); /* W3C */	
+}
+
+.pentaho-table-header-cell .label {
+	color: white;
+}
+
+.pentaho-table-cell {
+ background-color: white;
+ padding: 0px 10px 0px 10px;
+}
+
+.pentaho-list-box {
+    border:1px solid #333333;
+}
+
+.categoryIndicator {
+	cursor: pointer;
+}
+
+.treenode-branch {
+    display: inline;
+}
+
+.treenode-open {
+    background: url('images/minus.gif');
+    width: 16px;
+    height: 16px;
+    float: left;
+}
+
+.treenode-closed {
+    background: url('images/plus.gif');
+    width: 16px;
+    height: 16px;
+    float: left;
+}
+
+.treenode-leaf-label {
+	margin-left: 16px;
+	padding-left: 16px;
+	height: 16px;
+}
+
+.fieldlist-filtered-field {
+  background-image: url('images/filter_sm.png');
+  background-repeat: no-repeat;
+  background-position: 2px 2px;
+}
+
+.dragDropAvatar {
+  padding: 4px;
+  background-color: #cbefa3;
+
+  border: 1px solid #87df27;
+
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+
+.dragDropTargetArea.highlightTarget {
+	background-color: #cbefa3;
+}
+
+.dragDropTargetArea {
+	background-color: #ffffff;
+    border: 1px solid #464f57;
+    padding: 2px;
+}
+
+.dragDropTargetAreaHint {
+    color: #898b8f;
+    font-size: 1.2em;
+    text-align: center;
+}
+
+/* styles for splash/logo dialogs */
+.splash-content {
+  /* fallback color */
+  background: #000000;
+  /* Safari/Chrome */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #000000), color-stop(0.9, #666666));
+  /* Firefox */
+  background: -moz-linear-gradient(#000000, #666666 90%) repeat scroll 0 0 transparent;
+
+  /* IE 7-9 */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#000000', endColorstr = '#666666');
+}
+
+.splashimage {
+    padding-top: 25px;
+}
+
+.splashtitle {
+    padding-top: 25px;
+    color: white;
+    font-size: 1.3em;
+    vertical-align: top;
+    heightx: 60px;
+}
+
+.splashtext {
+    color: white;
+    padding-left: 30px;
+    padding-top: 25px;
+    vertical-align: top;
+    line-height: 2em;
+}
+
+/* this style can be used to force padding on an element so the shadow of its child element can be seen */
+.pentaho-shadow-padding {
+    padding-right: 8px; 
+    padding-bottom: 8px;
+}
+
+.pentaho-dropdownbutton-outer {
+  padding: 4px;
+  background: #888;
+  background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0, #AAA),
+      color-stop(0.10, #888),
+      color-stop(0.50, #3f3f3f),
+      color-stop(0.55, #000),
+      color-stop(0.90, #121212)
+  );
+  background: -moz-linear-gradient(#AAAAAA, #888888 10%, #3F3F3F 50%, #000000 55%, #121212 90%);
+  border: 1px outset gray;
+  cursor: pointer;
+  font-size:0px;
+
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#888888', endColorstr = '#121212');
+  zoom:1;
+}
+
+.pentaho-dropdownbutton-outer.pentaho-disabled {
+  padding: 4px;
+  background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0, #AAA),
+      color-stop(0.10, #888),
+      color-stop(0.50, #8d8d8d),
+      color-stop(0.55, #727272),
+      color-stop(0.90, #747474)
+  );
+  background: -moz-linear-gradient(#AAA, #BBB 10%, #8d8d8d 50%, #727272 55%, #747474 90%);
+
+  border: 1px outset gray;
+  font-size:0px;
+}
+
+.pentaho-dropdownbutton-inner {
+  background-image: url('images/scroll_bottom_arrow.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  height: 8px;
+  width: 10px;
+  font-size:0px;
+}
+
+.pentaho-dropdownbutton-inner.pentaho-disabled {
+  background-image: url('images/scroll_bottom_arrow.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  height: 8px;
+  width: 10px;
+  font-size:0px;
+}
+

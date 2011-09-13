@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>XUL Library</title>
+    <style>
+      #existingPanel{
+        height:100%;
+        width: 100%;
+      }
+    </style>
+    <link rel='stylesheet' href='Mantle.css'>
+    <link rel='stylesheet' href='ScrollTable.css'>
+    <link rel='stylesheet' href='datasourceEditorDialog.css'>
+    <link rel='stylesheet' href='xul.css'>
+    <link rel='stylesheet' href='jquery.jscrollpane.css'>
+    <link rel='stylesheet' href='Widgets.css'>
+    <link rel='stylesheet' href='themes/onyx/mainStyles.css'>
+    <script language='javascript' src='DatasourceEditor.nocache.js'></script>
+    <!-- latest jQuery direct from google's CDN -->
+    <script type="text/javascript" src="themes/onyx/jquery.js"></script>
+    <!-- the mousewheel plugin -->
+    <script type="text/javascript" src="themes/onyx/jquery.mousewheel.js"></script>
+    <!-- the jScrollPane script -->
+    <script type="text/javascript" src="themes/onyx/jquery.jscrollpane.js"></script>
+    <script type="text/javascript" src="themes/onyx/mwheelIntent.js"></script>
+    <!-- scripts specific to this demo site -->
+
+    <script type="text/javascript" id="sourcecode">
+//      $(function()
+//      {
+//        $('.scroll-pane').jScrollPane({showArrows: true});
+//      });
+    </script>
+
+  </head>
+
+  <body style="background: url('images/abstract.jpg')">
+    <div id="dragPanel">
+      <!-- OPTIONAL: include this if you want history support -->
+      <iframe src="javascript:''" id="__gwt_historyFrame" style="width:0;height:0;border:0"></iframe>
+      <div id="root"></div>
+
+      <script type="text/javascript">
+
+        function showDatasourceEditor(){
+          pho.openDatasourceEditor(new function(){
+            this.onOk = function(json, mqlStr){
+              alert(json+"\n\n\n"+mqlStr);
+            }
+            this.onError = function(err){
+              alert(err);
+            }
+            this.onCancel = function(){
+              alert("Canceled");
+            }
+            this.onReady = function(){
+
+            }
+            this.onFinish = function(status) {
+
+            }
+            this.onFinish = function(status, transport) {
+              alert(transport.schemaName);
+            }
+          });
+        }
+
+        function showEditDatasourceEditor(domain) {
+          var perspective = "ANALYSIS";
+          if (domain == "Sample_DB_Table_Joins") {
+            perspective = "REPORTING";
+          }
+            pho.openEditDatasourceEditor(domain, "MODEL_1", new function(){
+              this.onOk = function(json, mqlStr){
+                alert(json+"\n\n\n"+mqlStr);
+              }
+              this.onError = function(err){
+                alert(err);
+              }
+              this.onCancel = function(){
+                alert("Canceled");
+              }
+              this.onReady = function(){
+
+              }
+              this.onFinish = function(status) {
+
+              }
+              this.onFinish = function(status, transport) {
+
+              }
+            }, perspective);
+          }
+
+        function initDataAccess(){}
+      </script>
+      <input type="button" onclick="showDatasourceEditor()" value="New Data Source"/>
+      <br>
+
+      <br>
+      <h3>Edit Sample Data Source:</h3>
+      <input type="button" onclick="showEditDatasourceEditor('Sample_CSV')" value="CSV"/>
+      <input type="button" onclick="showEditDatasourceEditor('Sample_SQL_Query')" value="SQL Query"/>
+      <input type="button" onclick="showEditDatasourceEditor('Sample_DB_Table_Joins')" value="Database Tables"/>
+      <input type="button" onclick="showEditDatasourceEditor('Sample_Star_Schema')" value="Star Schema"/>
+    </div>
+  </body>
+</html>

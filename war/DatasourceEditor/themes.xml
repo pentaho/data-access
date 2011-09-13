@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<themes root-folder="style">
+  <onyx display-name="Onyx">
+    <file>jquery.js</file>
+    <file>jquery.jscrollpane.js</file>
+    <file>jquery.mousewheel.js</file>
+    <file>mwheelIntent.js</file>
+    <file>mainStyles.css</file>
+  </onyx>
+</themes>

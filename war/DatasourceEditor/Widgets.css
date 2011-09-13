@@ -1,0 +1,1032 @@
+/** Add css rules here for your application.
+Please, please comment all entries so that it is clear
+which java class/code the style is associated with */
+
+/* start snb */
+/* default style for java class Schedule Editor caption panels */
+/* begin recurrence dialog ------------------------------------------------------*/
+
+
+/* killing some intermediate styles for tabs that aren't desired */
+.gwt-TabBarFirst-wrapper{
+  display: none;
+}
+
+
+.schedule-editor-caption-panel {
+  margin-top: 6px;
+  padding: 5px;
+}
+.startLabel {
+  padding-right: 1ex;
+  white-space: nowrap;
+  /*border:1px dotted red;*/
+}
+
+.middleLabel {
+  padding-right: 1ex;
+  padding-left: 1ex;
+  white-space: nowrap;
+  /*border:1px dotted red;*/
+}
+.endLabel {
+  padding-left: 1ex;
+  white-space: nowrap;
+  /*border:1px dotted red;*/
+}
+
+.schedule-label {
+  margin-top: 4px;
+}
+
+.cron-label {
+  margin-top: 6px;
+}
+
+.start-date-picker {
+  width: 10em;
+}
+
+.end-date-picker {
+  width: 10em;
+}
+
+.recurrenceRadioButton label {
+  padding-right: 1ex;
+  white-space: nowrap;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: 2px;
+}
+
+.recurrenceRadioButton {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-left: 10px;
+}
+
+.day-of-month-textbox {
+  margin-left: 6px;
+}
+
+.day-of-week-checkbox {
+  padding-left: 4px;
+}
+
+.weeklyRecurrencePanel {
+}
+
+.popupContent {
+  font-color: #000000;
+}
+
+.drop-popup .listbox-scroll-panel {
+  border: 1px solid gray;
+}
+
+.blue-current-month-selected {
+  background-color: #848484;
+}
+
+.blue-week-line {
+  background-color: #D2D2D2;
+}
+
+.blue-month-line {
+  background-color: #D2D2D2;
+  font-color: #000000;
+  color: #000000;
+}
+
+.blue-day-grid {
+	border: 1pt solid #848484;
+}
+
+.blue-date-picker {
+	z-index: 1000;
+}
+
+/* begin schedule editor ------------------------------------------------------*/
+.scheduleEditor {
+  /* can't add a margin here, IE7 can't handle it */
+  /*margin: 10px;*/
+  /*background-color: #CCCCFF; for testing*/
+  width: 100%;
+}
+
+.scheduleDescription {
+  width: 70%;
+  /*background-color: red; for testing */
+}
+
+.scheduleCombo {
+  margin-right: 5px;
+}
+/* end schedule editor ----------------------------------------------------------*/
+/* end recurrence dialog ----------------------------------------------------------*/
+
+/* style for error message associated with dialog controls with invalid data */
+.errorLabel {
+  background-color: #FFDDDD;
+  color: #FF0000;
+}
+
+.progressPopupPanel {
+  background-color: #EEEEEE;
+  border: 1px dotted black;
+}
+.progressPopupPanel\.label {
+}
+.addBtn {
+  width: 22px;
+}
+.deleteBtn {
+  width: 22px;
+}
+/* end snb */
+
+.tooltip{
+  padding: 5px;
+  border: 1px solid #666;
+  background-color: #FAFAFA;
+  max-width: 150px;
+  z-index: 2000;
+}
+
+.tooltip-label{
+  color: #000000;
+  font-size: .8em;
+}
+
+.roundedbutton{
+  height: 27px;
+  display: inline;
+}
+
+.roundedbutton-label{
+  font-size:.8em;
+  line-height: 24px;
+  color: #000
+}
+
+.roundedbutton-right{
+  background: url('style/images/button_right.png');
+  width: 7px;
+  height: 27px;
+}
+
+.roundedbutton-left{
+  background: url('style/images/button_left.png');
+  width: 7px;
+  height: 27px;
+}
+
+.roundedbutton-slice{
+  background: url('style/images/button_middle.png') repeat-x;
+}
+
+.roundedbutton-over{
+  cursor: pointer;
+}
+
+.roundedbutton-label-over{
+  font-size:.8em;
+  line-height: 24px;
+  color: #525252
+}
+
+.roundedbutton-right-over{
+  background: url('style/images/button_right_over.png');
+  width: 7px;
+  height: 27px;
+}
+
+.roundedbutton-left-over{
+  background: url('style/images/button_left_over.png');
+  width: 7px;
+  height: 27px;
+}
+
+.roundedbutton-slice-over{
+  background: url('style/images/button_middle_over.png') repeat-x;
+}
+
+.roundedbutton-label-disabled{
+  font-size:.8em;
+  line-height: 24px;
+  color: #525252
+}
+
+.roundedbutton-right-disabled{
+  background: url('style/images/button_right_disabled.png');
+  width: 7px;
+  height: 27px;
+}
+
+.roundedbutton-left-disabled{
+  background: url('style/images/button_left_disabled.png');
+  width: 7px;
+  height: 27px;
+}
+
+.roundedbutton-slice-disabled{
+  background: url('style/images/button_middle_disabled.png') repeat-x;
+}
+
+
+/* end menubar/menuitem styles ------------------------------------------------------*/
+
+.gwt-MenuBar-vertical .gwt-MenuItem-checkbox-checked-selected:hover {
+  background-color: #87df27;
+}
+ 
+.gwt-MenuBar-vertical .gwt-MenuItem-checkbox-unchecked-selected:hover {
+  background-color: #87df27;
+}
+ 
+gwt-MenuBar-horizontal .gwt-MenuItem-selected:hover {
+background-color: #87df27;
+}
+ 
+.gwt-MenuBar-vertical .gwt-MenuItem-selected:hover {
+  background-color:  #87df27;
+}
+
+.gwt-MenuBar-vertical .gwt-MenuItem-checkbox-checked {
+  cursor: hand;
+  cursor: pointer;
+  background-image:url(style/images/checkbox.png);
+  background-position:6px 50%;
+  background-repeat:no-repeat;
+  padding:3px 20px 3px 20px;
+}
+
+.gwt-MenuBar-vertical .gwt-MenuItem-checkbox-checked-selected {
+  background-color: #cbefa3;
+  vertical-align: bottom;
+}
+
+.gwt-MenuBar-vertical .gwt-MenuItem-checkbox-unchecked {
+  cursor: hand;
+  cursor: pointer;
+  background-image:url(style/images/checkbox-empty.png);
+  background-position:6px 50%;
+  background-repeat:no-repeat;
+  padding:3px 20px 3px 20px;
+}
+
+.gwt-MenuBar-vertical .gwt-MenuItem-checkbox-unchecked-selected {
+  background-color: #cbefa3;
+  vertical-align: bottom;
+}
+
+.disabledMenuItem {
+  color: gray;
+  cursor: Default;
+  padding:3px 20px 3px 20px;
+  vertical-align: bottom;
+}
+
+.gwt-MenuItem {
+  color: black;
+  padding:3px 20px 3px 20px;
+}
+
+
+.gwt-MenuBar {
+  cursor: default;
+}
+.gwt-MenuBar .gwt-MenuItem {
+  cursor: pointer;
+}
+.gwt-MenuBar .gwt-MenuItem-selected {
+  color: black;
+}
+.gwt-MenuBar-horizontal {
+}
+.gwt-MenuBar-horizontal .gwt-MenuItem {
+  color: white;
+  padding: 3px 6px 5px;
+  vertical-align: bottom;
+  border: 1px;
+  
+}
+.gwt-MenuBar-horizontal .gwt-MenuItem-selected {
+  border: 1px solid #000000;
+  background-color: #cbefa3;
+  color: black;
+  padding: 2px 5px 4px;
+  vertical-align: bottom;
+}
+.gwt-MenuBar-horizontal .gwt-MenuItemSeparator {
+  border-left: 1px solid #000000;
+}
+.gwt-MenuBar-horizontal .gwt-MenuItemSeparator .menuSeparatorInner {
+  width: 1px;
+  background: white;
+}
+
+
+
+
+
+.gwt-MenuBar-vertical {
+  background-color: #ffffff;
+  margin-top: 0px;
+  margin-left: 0px;
+  border-top: 1px solid #000;
+  border-right: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+  border-left: 1px solid #000;
+  padding: 2px;
+ }
+.gwt-MenuBar-vertical table {
+  border-collapse: collapse;
+}
+.gwt-MenuBar-vertical .gwt-MenuItem {
+  color: black;
+  padding:3px 20px 3px 20px;
+}
+
+.gwt-MenuBar-vertical .gwt-MenuItem-selected {
+  background-color: #cbefa3;
+  color: black;
+  vertical-align: bottom;
+}
+
+.gwt-MenuBar-vertical .gwt-MenuItemSeparator {
+  padding: 0px;
+  border-top: 2px solid white;
+  border-bottom: 2px solid white;
+  height: 5px;
+
+}
+.gwt-MenuBar-vertical .gwt-MenuItemSeparator .menuSeparatorInner {
+  border-top: 1px solid #000;
+}
+
+
+.gwt-MenuBar-vertical .subMenuIcon {
+  padding-right: 4px;
+}
+.gwt-MenuBar-vertical .subMenuIcon-selected {
+  background-color: #cbefa3;
+}
+
+
+.gwt-MenuBarPopup {
+  margin: 0px 0px 0px 0px;
+  z-index: 110;
+}
+.gwt-MenuBarPopup .menuPopupTopCenter {
+}
+html>body .gwt-MenuBarPopup .menuPopupBottomCenter {
+}
+* html .gwt-MenuBarPopup .menuPopupBottomCenter {
+}
+.gwt-MenuBarPopup .menuPopupMiddleLeft {
+}
+html>body .gwt-MenuBarPopup .menuPopupMiddleRight {
+}
+* html .gwt-MenuBarPopup .menuPopupMiddleRight {
+}
+.gwt-MenuBarPopup .menuPopupTopLeftInner {
+}
+.gwt-MenuBarPopup .menuPopupTopRightInner {
+}
+.gwt-MenuBarPopup .menuPopupBottomLeftInner {
+}
+.gwt-MenuBarPopup .menuPopupBottomRightInner {
+}
+* html .gwt-MenuBarPopup .menuPopupTopLeftInner {
+  width: 5px;
+  height: 41px;
+  margin-top: -36px;
+  overflow: hidden;
+}
+* html .gwt-MenuBarPopup .menuPopupTopRightInner {
+  width: 13px;
+  height: 41px;
+  margin-left: -5px;
+  margin-top: -36px;
+  overflow: hidden;
+}
+* html .gwt-MenuBarPopup .menuPopupBottomLeftInner {
+  width: 5px;
+  height: 49px;
+  margin-top: -41px;
+  overflow: hidden;
+}
+* html .gwt-MenuBarPopup .menuPopupBottomRightInner {
+  width: 13px;
+  height: 49px;
+  margin-left: -5px;
+  margin-top: -41px;
+  overflow: hidden;
+}
+
+/* end menubar/menuitem styles ------------------------------------------------------*/
+
+/* begin dialog styles ------------------------------------------------------*/
+
+.modalDialogPageBackground {
+  opacity: 0.20;
+  background-color:  #000000;
+  z-index:250;
+  filter:alpha(opacity=20)
+
+  cursor: wait;
+}
+
+.dialogButtonPanel button{
+  margin-left: 3px
+}
+
+/* Begin Wizard Styles ------------------------------------------------------ */
+.pentaho-wizard-deck-panel {
+	height: 80%;
+	width: 100%;
+}
+
+.pentaho-wizard-button-panel {
+	height: 100%;
+	vertical-align: bottom;
+}
+.pentaho-wizard-panel {
+	height: 100%;
+	width: 100%;
+}
+
+.pentaho-schedule-create {
+	padding: 10px;
+	width: 100%;
+}
+
+.pentaho-wizard-cancel-button {
+	horizontal-align: right;
+	vertical-align: bottom;
+}
+
+.pentaho-wizard-finish-button {
+	horizontal-align: right;
+	vertical-align: bottom;
+}
+
+.pentaho-wizard-next-button {
+	horizontal-align: right;
+	vertical-align: bottom;
+}
+
+.pentaho-wizard-back-button {
+	horizontal-align: right;
+	vertical-align: bottom;
+}
+
+/* End Wizard Styles -------------------------------------------------------- */
+
+body{
+}
+.nowrap{
+  white-space: nowrap;
+}
+
+/* begin file chooser styles ------------------------------------------------ */
+.fileChooserHeader {
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #848484;
+  border-right: 1px solid #848484;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: .85em;
+}
+.fileChooserCell {
+  background-color: white;
+  padding: 1px 5px;
+  font-size: .85em;
+}
+
+
+.fileChooserCell-over {
+  background-color: white;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: .85em;
+}
+
+/* end file chooser styles ------------------------------------------------ */
+
+
+/* begin resizable dialogbox styles ------------------------------------------------ */
+
+.dragdrop-handle {
+  cursor: ;
+}
+
+.dragdrop-draggable {
+  zoom: 1; /* IE gain hasLayout */
+}
+
+.dragdrop-dragging {
+  zoom: normal; /* remove artifacts */
+}
+
+.dragdrop-positioner {
+  border: 0px dashed #ffffff; /* 0px override from gwt-dnt.css */
+  margin: 0px !important;
+  zoom: 1; /* IE gain hasLayout */
+  z-index: 100;
+}
+
+.dragdrop-flow-panel-positioner {
+  color: #1E90FF; /* blue */
+  display: inline;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.dragdrop-proxy {
+}
+.dragdrop-selected,.dragdrop-dragging,.dragdrop-proxy {
+  	background-color: #CBEFA3;
+  	filter: alpha(opacity=100);
+  	opacity: 1;
+}
+.dragdrop-movable-panel {
+  z-index: 200;
+  margin: 0px !important;
+  border: none !important;
+}
+
+
+/* ------------ WindowExample ------------ */
+.resizable-DialogContentWidget {
+  padding: 5px;
+}
+
+.resizable-DialogHeaderAndContent {
+  background-color: #ececec;
+  border: 1px solid #848484;
+}
+
+.resizable-WindowPanel {
+  cursor: default;
+  z-index: 1000;
+}
+
+.resizable-WindowPanel .resizable-WindowPanel-header {
+  padding: 5px;
+  background-image: url(style/images/subtoolbar_bg.png);
+  color: black;
+  overflow: hidden;
+  cursor: move;
+}
+
+.dialog-resize-nw {
+  cursor: nw-resize;
+}
+
+.dialog-resize-n {
+  cursor: n-resize;
+}
+
+.dialog-resize-ne {
+  cursor: ne-resize;
+}
+
+.dialog-resize-w {
+  cursor: w-resize;
+}
+
+.dialog-resize-e {
+  cursor: e-resize;
+}
+
+.dialog-resize-sw {
+  cursor: sw-resize;
+}
+
+.dialog-resize-s {
+  cursor: s-resize;
+}
+
+.dialog-resize-se {
+  cursor: se-resize;
+}
+
+.custom-list-item {
+  white-space: nowrap;
+}
+
+.custom-list-item input[type='text'] {
+  height: normal;
+}
+
+.combo-arrow{
+  padding: 4px;
+  background: #888;
+  background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0, #AAA),
+      color-stop(0.10, #888),
+      color-stop(0.50, #3f3f3f),
+      color-stop(0.55, #000),
+      color-stop(0.90, #121212)
+  );
+  background: -moz-linear-gradient(#AAAAAA, #888888 10%, #3F3F3F 50%, #000000 55%, #121212 90%);
+  border: 1px outset gray;
+  cursor: pointer;
+  font-size:0px;
+
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#888888', endColorstr = '#121212');
+  zoom:1;
+}
+
+.combo-arrow div{
+  background-image: url('style/core/images/scroll_bottom_arrow.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  height: 8px;
+  width: 10px;
+  font-size:0px;
+}
+
+.combo-arrow-disabled{
+  padding: 4px;
+  background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0, #AAA),
+      color-stop(0.10, #888),
+      color-stop(0.50, #8d8d8d),
+      color-stop(0.55, #727272),
+      color-stop(0.90, #747474)
+  );
+  background: -moz-linear-gradient(#AAA, #BBB 10%, #8d8d8d 50%, #727272 55%, #747474 90%);
+
+  border: 1px outset gray;
+  font-size:0px;
+}
+
+
+.combo-arrow-disabled div{
+  background-image: url('style/core/images/scroll_bottom_arrow.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  height: 8px;
+  width: 10px;
+  font-size:0px;
+}
+
+.custom-list{
+ padding: 0px;
+  margin: 0px;
+  border: 1px solid #333;
+  background-color: white;
+}
+
+
+.custom-list-disabled{
+ padding: 0px;
+  margin: 0px;
+  border: 1px solid gray;
+  background-color: #ddd;
+}
+
+.custom-list-textbox{
+  border: none !important;
+  overflow:hidden;
+}
+
+.drop-popup{
+  background: white;
+  z-index: 1350;
+  width: auto;
+}
+
+.custom-list-item{
+  background-color: white;
+  font-size: .85em;
+}
+
+.custom-list-disabled-item{
+  background-color: #ddd;
+}
+
+.custom-list-item-hover{
+  background-color: #87df27;
+}
+
+.custom-list-item-selected{
+  background-color: #cbefa3;
+}
+
+.custom-list-item-proxy{
+  opacity: 0.85;
+  filter: alpha(opacity=85);
+  font-size: .85em;
+  border: 1px dashed #999 !important;
+  background: transparent;
+  z-index:1500 !important;
+}
+.custom-list-item-proxy-valid{
+}
+
+/* end resizable dialogbox styles ------------------------------------------------ */
+
+.customListBoxTdFix{
+  padding: 0px;
+  border: 0px;
+}
+
+
+.customButton {
+  font-size: 0.85em;
+  border: 1px outset #ccc;
+  background-color: #ddd;
+}
+.customButton-down {
+  border: 1px inset #ccc;
+  cursor:pointer;
+}
+.customButton-hover {
+  border-color: #9cf #69e #69e #7af;
+  background-color: #eee;
+  cursor:hand;
+}
+.customButton-disabled {
+  color: #888;
+  background-color: #ccc;
+  cursor:none;
+}
+.customButton-disabled-hover {
+  border: 1px outset #ccc;
+}
+
+.color-picker-popup{
+  background-color: white;
+  border: 1px solid black;
+  z-index: 2000;
+}
+
+.color-swatch{
+	border: 1px solid transparent;
+	padding: 3px;
+	background-color: white;
+	cursor: pointer;
+	}
+
+	.color-swatch:hover{
+  border: 1px solid #bbb;
+  padding: 3px;
+  background-color: #eee;
+  cursor: pointer;
+  }
+
+  .color-swatch-center{
+  height: 10px;
+  width: 10px;
+  }
+
+
+/* GWT Date Picker - BEGIN */
+
+.gwt-DateBox input {
+  width: 8em;
+}
+.dateBoxFormatError {
+  background: #ffcccc;
+}
+.dateBoxPopup {
+  z-index: 1200;
+}
+
+.gwt-DatePicker {
+  border: 1px solid #777777;
+  cursor: default;
+}
+.gwt-DatePicker td,
+.datePickerMonthSelector td:focus {
+  outline: none
+}
+.datePickerDays {
+  width: 100%;
+  background: white;
+}
+.datePickerDay,
+.datePickerWeekdayLabel,
+.datePickerWeekendLabel {
+  font-size: 75%;
+  text-align: center;
+  padding: 4px;
+  outline: none;
+}
+.datePickerWeekdayLabel,
+.datePickerWeekendLabel {
+  background: #CCCCCC;
+  padding: 0px 4px 2px;
+  cursor: default;
+}
+.datePickerDay {
+  padding: 4px;
+  cursor: hand;
+  cursor: pointer;
+}
+.datePickerDayIsToday {
+  border: 1px solid black;
+  padding: 3px;
+}
+.datePickerDayIsWeekend {
+  background: #EEEEEE;
+}
+.datePickerDayIsFiller {
+  color: #888888;
+}
+.datePickerDayIsValue {
+  background: #777777;
+  color: white;
+}
+.datePickerDayIsDisabled {
+  color: #AAAAAA;
+  font-style: italic;
+}
+.datePickerDayIsHighlighted {
+  background: #F0E68C;
+}
+.datePickerDayIsValueAndHighlighted {
+  background: #bbddd9;
+}
+.datePickerMonthSelector {
+  background: #CCCCCC;
+  width: 100%;
+}
+td.datePickerMonth {
+  text-align: center;
+  vertical-align: center;
+  white-space: nowrap;
+  font-size: 70%;
+  font-weight: bold;
+}
+.datePickerPreviousButton,
+.datePickerNextButton {
+  font-size: 120%;
+  line-height: 1em;
+  cursor: hand;
+  cursor: pointer;
+  padding: 0px 4px;
+}
+
+.gwt-ScrollTable .dataWrapper {
+  overflow: auto;
+}
+
+input[type=text]:focus,
+input[type=password]:focus {
+  outline: 0 none;
+}
+
+/* GWT Date Picker - END */
+
+/* ======================= GWT Scroll Table =========================== */
+.headerTable >tbody > tr > td {
+  padding: 2px 2px 2px 4px;
+}
+
+.gwt-ScrollTable {
+  border: 1px solid #848484;
+  overflow: hidden;
+}
+
+.gwt-ScrollTable .headerWrapper {
+  background: #d2d2d2 repeat-x scroll left bottom;
+  padding-right: 0px;
+}
+
+.gwt-ScrollTable .footerWrapper {
+  background: #858585;
+  border-top: 1px solid #848484;
+}
+
+.gwt-ScrollTable .dataWrapper {
+  width: 100% !important;
+  position:relative;
+  overflow: auto;
+  height:100%;
+}
+
+.gwt-ScrollTable .dataTable td {
+/*  font-size: .85em; */
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.gwt-ScrollTable .headerTable td {
+  font-weight: normal;
+  font-size: .8em;
+  color: #FFFFFF;
+  border-right: 1px solid #848484;
+  background: #000000;
+  /* Safari/Chrome */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #AAA), color-stop(0.10, #888), color-stop(0.50, #3f3f3f), color-stop(0.55, #000), color-stop(0.90, #121212));
+  /* Firefox */
+  background: -moz-linear-gradient(#AAAAAA, #888888 10%, #3F3F3F 50%, #000000 55%, #121212 90%) repeat scroll 0 0 transparent;
+  overflow: hidden;
+}
+
+.IE .gwt-ScrollTable .headerTable td {
+  background: url('style/images/header_20px.png') repeat-x;
+}
+
+.gwt-ScrollTable .headerTable-disabled td {
+  font-weight: normal;
+  color: #000000;
+  border-right: 0px;
+}
+
+.gwt-ScrollTable .dataTable tr {
+  background: white;
+}
+
+.gwt-ScrollTable .dataTable-disabled tr {
+  background: white;
+}
+
+.gwt-ScrollTable .dataTable td {
+  border-bottom: 1px solid #BEBEBE;
+  border-right: 1px solid #BEBEBE;
+  padding: 2px;
+}
+
+.gwt-ScrollTable .dataTable-disabled td {
+  border-bottom: 0px;
+}
+
+.gwt-ScrollTable .dataTable tr.hovering {
+  cursor: pointer;
+  background: #87df27 none repeat scroll 0% 0%;
+  cursor: hand;
+}
+
+.gwt-ScrollTable .dataTable-disabled tr.hovering {
+  cursor: default;
+  background: #87df27 none repeat scroll 0% 0%;
+}
+
+.gwt-ScrollTable .dataTable td.hovering {
+  cursor: pointer;
+  cursor: hand;
+  background: #87df27 none repeat scroll 0% 0%;
+}
+
+.gwt-ScrollTable .dataTable-disabled td.hovering {
+  cursor: default;
+}
+
+.gwt-ScrollTable .dataTable tr.selected {
+  background: #cbefa3 none repeat scroll 0% 0%;
+}
+
+.gwt-ScrollTable .dataTable tr:hover {
+  background: #87df27 none repeat scroll 0% 0%;
+}
+
+.gwt-ScrollTable .pagingOptions {
+  background: #e8e8e8 none repeat scroll 0% 0%;
+  border-right: 1px solid #848484;
+  border-top: 1px solid #848484;
+  padding: 1px 0px;
+}
+
+.gwt-ScrollTable .pagingOptions .errorLabel {
+  color: red;
+}
+
+.gwt-CellEditor {
+  background: white none repeat scroll 0% 0%;
+  border: 3px solid #BEBEBE;
+  padding: 4px;
+}
+
+.gwt-CellEditor td {
+  padding: 4px;
+}
+
+.listbox-scroll-panel {
+  position:relative;
+  overflow:auto;
+  height:100%;
+  width:100%;
+}
+
+/* ======================= GWT Scroll Table =========================== */
+
+.table-scroll-panel {
+  position:relative;
+  overflow:auto;
+  height:100%;
+  width:100%;
+}
