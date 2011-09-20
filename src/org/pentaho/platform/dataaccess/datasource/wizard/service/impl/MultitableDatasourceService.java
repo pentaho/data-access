@@ -19,6 +19,7 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -106,8 +107,10 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
       Database database = new Database(null, databaseMeta);
       database.connect();
 
-      String[] tableNames = database.getTablenames();
-      List<String> tables = Arrays.asList(tableNames);
+      String[] tableNames = database.getTablenames(true);
+      List<String> tables = new ArrayList<String>();
+      tables.addAll(Arrays.asList(tableNames));
+      tables.addAll(Arrays.asList(database.getViews(true)));
       database.disconnect();
       return tables;
     } catch (KettleDatabaseException e) {
