@@ -29,7 +29,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IGwtJoinSelectionServiceAsync {
 
-	void getDatabaseTables(IConnection connection, AsyncCallback<List> callback);
+	void getDatabaseTables(IConnection connection, String schema, AsyncCallback<List> callback);
+	
+	void retrieveSchemas(IConnection connection, AsyncCallback<List> callback);
 
 	void getTableFields(String table, IConnection connection, AsyncCallback<List> callback);
 
