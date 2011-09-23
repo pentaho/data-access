@@ -22,6 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
@@ -48,6 +49,7 @@ public interface IGwtDatasourceServiceAsync {
   public void listDatasourceNames(AsyncCallback<List<String>> callback);
   void generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO, AsyncCallback<QueryDatasourceSummary> callback);
   void getDatasourceIllegalCharacters(AsyncCallback<String> callback);
+  void getGeoContext(AsyncCallback<GeoContext> callback);
 }
 
   

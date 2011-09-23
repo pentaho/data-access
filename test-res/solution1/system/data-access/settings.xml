@@ -1,30 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
-    <!-- roles with data access permissions -->
-    <data-access-roles>Admin</data-access-roles>
-    <!-- users with data access permissions -->
-    <!--   
-    <data-access-users></data-access-users>
-     -->
-    <!-- roles with datasource view permissions -->
-    <data-access-view-roles>Authenticated,Admin</data-access-view-roles>
-    <!-- users with datasource view permissions -->
-    <data-access-view-users>suzy</data-access-view-users>
-    <!-- default view acls for user or role -->
-    <data-access-default-view-acls>31</data-access-default-view-acls>
-    
-    <!-- settings for Agile Data Access unit tests -->
-	<!-- 
-    <data-access-staging-jndi>pentaho_staging_MySQL</data-access-staging-jndi>
-    <data-access-staging-jndi>pentaho_staging_Hypersonic</data-access-staging-jndi>
-    <data-access-staging-jndi>pentaho_staging_H2</data-access-staging-jndi>
- 	-->
-    <!-- settings for Agile Data Access -->
-    <data-access-staging-jndi>pentaho_staging_H2</data-access-staging-jndi>
+  <!-- roles with data access permissions -->
+  <data-access-roles>Admin</data-access-roles>
+  <!-- users with data access permissions -->
+  <!--
+  <data-access-users></data-access-users>
+   -->
+  <!-- roles with datasource view permissions -->
+  <data-access-view-roles>Authenticated,Admin</data-access-view-roles>
+  <!-- users with datasource view permissions -->
+  <data-access-view-users>suzy</data-access-view-users>
+  <!-- default view acls for user or role -->
+  <data-access-default-view-acls>31</data-access-default-view-acls>
 
-    <data-access-files-path>system/data-access/datafiles/</data-access-files-path>
-    <data-access-tmp-files-path>system/data-access/tmpdatafiles/</data-access-tmp-files-path>
+  <!-- settings for Agile Data Access unit tests -->
+<!--
+  <data-access-staging-jndi>pentaho_staging_MySQL</data-access-staging-jndi>
+  <data-access-staging-jndi>pentaho_staging_Hypersonic</data-access-staging-jndi>
+  <data-access-staging-jndi>pentaho_staging_H2</data-access-staging-jndi>
+-->
+  <!-- settings for Agile Data Access -->
+  <data-access-staging-jndi>pentaho_staging_H2</data-access-staging-jndi>
 
-    <data-access-csv-sample-rows>500</data-access-csv-sample-rows>
+  <data-access-files-path>system/data-access/datafiles/</data-access-files-path>
+  <data-access-tmp-files-path>system/data-access/tmpdatafiles/</data-access-tmp-files-path>
+
+  <data-access-csv-sample-rows>500</data-access-csv-sample-rows>
+  <data-access-datasource-illegal-characters><![CDATA[$<>?&#%^*()!~:;[]{}|]]></data-access-datasource-illegal-characters>
+
+  <!-- Geography settings -->
+  <geo>
+    <roles>continent, country, state, city, postal_code</roles>
+    <dimension-name>Geography</dimension-name>
+
+    <continent>
+      <aliases>continent</aliases>
+    </continent>
+
+    <country>
+      <aliases>country, ctry</aliases>
+    </country>
+
+    <state>
+      <aliases>state, province, st, stateprovince</aliases>
+    </state>
+
+    <city>
+      <aliases>city, town</aliases>
+    </city>
+
+    <postal_code>
+      <aliases>zip, postal code, zip code</aliases>
+    </postal_code>
+
+    <latitude>
+      <aliases>lat, latitude</aliases>
+    </latitude>
+
+    <longitude>
+      <aliases>long, lng, longitude</aliases>
+    </longitude>
+  </geo>
+
+
+
 
 </settings>

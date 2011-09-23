@@ -35,6 +35,7 @@ import org.dom4j.Document;
 import org.dom4j.tree.DefaultElement;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.commons.connection.IPentahoResultSet;
@@ -101,6 +102,8 @@ public class DatasourceServiceImpl implements IDatasourceService {
   private static final String AFTER_QUERY = ") tbl"; //$NON-NLS-1$
 
   private IConnectionService connectionService;
+
+  private GeoContext geoContext;
 
   public DatasourceServiceImpl() {
     this(new ConnectionServiceImpl());
@@ -510,7 +513,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
   @Override
   public QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
 
-    ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+    ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), getGeoContext());
     ModelerService modelerService = new ModelerService();
     modelerWorkspace.setModelName(name);
 
@@ -616,5 +619,13 @@ public class DatasourceServiceImpl implements IDatasourceService {
   public String getDatasourceIllegalCharacters() throws DatasourceServiceException {
     IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
     return resLoader.getPluginSetting(getClass(), "settings/data-access-datasource-illegal-characters"); //$NON-NLS-1$
+  }
+
+  @Override
+  public GeoContext getGeoContext() throws DatasourceServiceException {
+    if (this.geoContext == null) {
+      this.geoContext = DatasourceServiceHelper.getGeoContext();
+    }
+    return this.geoContext;
   }
 }
