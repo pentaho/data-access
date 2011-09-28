@@ -29,9 +29,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.agilebi.modeler.geo.GeoRole;
-import org.pentaho.agilebi.modeler.geo.LocationRole;
+import org.pentaho.agilebi.modeler.geo.*;
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.commons.connection.IPentahoMetaData;
 import org.pentaho.commons.connection.IPentahoResultSet;
@@ -61,6 +59,7 @@ public class DatasourceServiceHelper {
   private static final String LATITUDE = "latitude";
   private static final String LONGITUDE = "longitude";
 
+  private static GeoContextConfigProvider configProvider = new GeoContextSettingsProvider(SETTINGS_FILE);
 
   public static Connection getDataSourceConnection(String connectionName, IPentahoSession session) {
     SQLConnection sqlConnection= (SQLConnection) PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, connectionName, session, new SimpleLogger(DatasourceServiceHelper.class.getName()));
@@ -161,53 +160,12 @@ public class DatasourceServiceHelper {
   }
 
   public static GeoContext getGeoContext() throws DatasourceServiceException {
-    GeoContext geo = new GeoContext();
-
-    String dimName = PentahoSystem.getSystemSetting(SETTINGS_FILE, "geo/dimension-name", null);
-    if (dimName != null && dimName.trim().length() > 0) {
-      geo.setDimensionName(dimName);
+    try {
+      GeoContext geo = GeoContextFactory.create(configProvider);
+      return geo;
+    } catch (ModelerException e) {
+      throw new DatasourceServiceException(e);
     }
-
-    String rolesCsv = PentahoSystem.getSystemSetting(SETTINGS_FILE, "geo/roles", null);
-
-    if(rolesCsv != null && rolesCsv.length() > 0) {
-      String[] tokens = rolesCsv.split(",");
-      ArrayList<String> roleNames = new ArrayList<String>(tokens.length);
-      for(String s: tokens) {
-        roleNames.add(s.trim());
-      }
-
-      // grab the corresponding aliases for each role
-      for(String rolename : roleNames) {
-        String aliases = getRoleAliasesFromProps(rolename);
-        GeoRole role = new GeoRole(rolename, aliases);
-        if (role != null) {
-          geo.addGeoRole(role);
-        }
-      }
-    } else {
-      throw new DatasourceServiceException("Error while building GeoContext from properties: No GeoRoles found, make sure there is a geo/roles element defined.");
-    }
-
-    String latAliases = getRoleAliasesFromProps(LATITUDE);
-    GeoRole latRole = new GeoRole(LATITUDE, latAliases);
-    String longAliases = getRoleAliasesFromProps(LONGITUDE);
-    GeoRole longRole = new GeoRole(LONGITUDE, longAliases);
-
-    LocationRole locationRole = new LocationRole(latRole, longRole);
-    geo.addGeoRole(locationRole);
-
-
-    return geo;
   }
-  private static String getRoleAliasesFromProps(String roleName) throws DatasourceServiceException {
-    String aliasKey = "geo/" + roleName + "/aliases";
-    String aliases = PentahoSystem.getSystemSetting(SETTINGS_FILE, aliasKey, null);
-    if (aliases == null || aliases.trim().length() == 0) {
-      throw new DatasourceServiceException("Error while building GeoContext from the settings file: No Aliases found for role  " + roleName + ". Make sure there is a " + aliasKey + " element defined");
-    }
-    return aliases;
-  }
-
 
 }

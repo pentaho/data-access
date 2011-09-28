@@ -43,14 +43,17 @@
 
     <state>
       <aliases>state, province, st, stateprovince</aliases>
+      <required-parents>country</required-parents>
     </state>
 
     <city>
       <aliases>city, town</aliases>
+      <required-parents>country,state</required-parents>
     </city>
 
     <postal_code>
       <aliases>zip, postal code, zip code</aliases>
+      <required-parents>country</required-parents>
     </postal_code>
 
     <latitude>
@@ -61,8 +64,4 @@
       <aliases>long, lng, longitude</aliases>
     </longitude>
   </geo>
-
-
-
-
 </settings>
