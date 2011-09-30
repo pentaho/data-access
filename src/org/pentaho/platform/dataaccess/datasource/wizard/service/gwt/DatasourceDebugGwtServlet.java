@@ -23,6 +23,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 import java.io.IOException;
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
@@ -107,6 +108,16 @@ public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements I
       return SERVICE.getDatasourceIllegalCharacters();
     } catch (DatasourceServiceException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      throw e;
+    }
+  }
+
+  @Override
+  public GeoContext getGeoContext() throws DatasourceServiceException {
+    try{
+      return SERVICE.getGeoContext();
+    } catch (DatasourceServiceException e) {
+      e.printStackTrace();
       throw e;
     }
   }

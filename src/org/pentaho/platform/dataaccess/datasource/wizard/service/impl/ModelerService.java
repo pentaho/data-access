@@ -146,7 +146,8 @@ public class ModelerService extends PentahoBase implements IModelerService {
     initKettle();
 
     try {
-      ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+      DatasourceServiceImpl datasourceService = new DatasourceServiceImpl();      
+      ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), datasourceService.getGeoContext());
       model.setModelName(name);
       model.setDomain(domain);
       String solutionStorage = AgileHelper.getDatasourceSolutionStorage();

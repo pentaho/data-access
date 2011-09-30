@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.database.model.IDatabaseConnection;
@@ -123,8 +124,11 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
       ModelerService modelerService = new ModelerService();
       modelerService.initKettle();
 
+      DatasourceServiceImpl datasourceService = new DatasourceServiceImpl();
+      GeoContext geoContext = datasourceService.getGeoContext();
+
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-      MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getSchemaModel(), dto.getDatasourceName(), dto.getSelectedTables());
+      MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getSchemaModel(), dto.getDatasourceName(), dto.getSelectedTables(), geoContext);
       Domain domain = multiTable.generateDomain(dto.isDoOlap());
       domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(dto));
       domain.getLogicalModels().get(0).setProperty("DatasourceType", "MULTI-TABLE-DS");

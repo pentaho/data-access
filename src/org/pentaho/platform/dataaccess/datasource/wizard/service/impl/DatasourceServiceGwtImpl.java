@@ -22,6 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
 import org.pentaho.metadata.model.Domain;
@@ -303,5 +304,23 @@ public class DatasourceServiceGwtImpl implements IXulAsyncDatasourceService {
       public void onSuccess(String arg0) {
         callback.success(arg0);
       }
-    });  }
+    });
+  }
+
+  @Override
+  public void getGeoContext(final XulServiceCallback<GeoContext> callback) {
+    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+      public void execute(AsyncCallback callback) {
+        SERVICE.getGeoContext(callback);
+      }
+    },new AsyncCallback<GeoContext>() {
+      public void onFailure(Throwable arg0) {
+        callback.error(arg0.getLocalizedMessage(), arg0); //$NON-NLS-1$
+      }
+
+      public void onSuccess(GeoContext arg0) {
+        callback.success(arg0);
+      }
+    });
+  }
 }

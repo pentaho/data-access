@@ -24,9 +24,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.geo.*;
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.commons.connection.IPentahoMetaData;
 import org.pentaho.commons.connection.IPentahoResultSet;
@@ -36,10 +39,12 @@ import org.pentaho.commons.connection.memory.MemoryMetaData;
 import org.pentaho.commons.connection.memory.MemoryResultSet;
 import org.pentaho.metadata.query.model.util.CsvDataReader;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.connection.PentahoConnectionFactory;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 import org.pentaho.platform.plugin.services.connections.sql.SQLMetaData;
@@ -48,6 +53,14 @@ import org.pentaho.platform.util.logging.SimpleLogger;
 public class DatasourceServiceHelper {
   private static final Log logger = LogFactory.getLog(DatasourceServiceHelper.class);
   
+  private static final String PLUGIN_NAME = "data-access"; //$NON-NLS-1$
+  private static final String SETTINGS_FILE = PLUGIN_NAME + "/settings.xml"; //$NON-NLS-1$
+
+  private static final String LATITUDE = "latitude";
+  private static final String LONGITUDE = "longitude";
+
+  private static GeoContextConfigProvider configProvider = new GeoContextSettingsProvider(SETTINGS_FILE);
+
   public static Connection getDataSourceConnection(String connectionName, IPentahoSession session) {
     SQLConnection sqlConnection= (SQLConnection) PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, connectionName, session, new SimpleLogger(DatasourceServiceHelper.class.getName()));
     return sqlConnection.getNativeConnection(); 
@@ -145,4 +158,14 @@ public class DatasourceServiceHelper {
     return cachedResultSet;        
         
   }
+
+  public static GeoContext getGeoContext() throws DatasourceServiceException {
+    try {
+      GeoContext geo = GeoContextFactory.create(configProvider);
+      return geo;
+    } catch (ModelerException e) {
+      throw new DatasourceServiceException(e);
+    }
+  }
+
 }
