@@ -57,17 +57,4 @@
     </longitude>
   </geo>
 
-
-<!--
-  <geo-roles>continent, country, state, city, postal_code, lat, long</geo-roles>
-  <geo-dimension-name>Geography</geo-dimension-name>
-  <geo-continent-aliases>continent</geo-continent-aliases>
-  <geo-country-aliases>country, ctry</geo-country-aliases>
-  <geo-state-aliases>state, province, st, stateprovince</geo-state-aliases>
-  <geo-city-aliases>city, town</geo-city-aliases>
-  <geo-postal_code-aliases>zip, postal code, zip code</geo-postal_code-aliases>
-  <geo-lat-aliases>lat, latitude</geo-lat-aliases>
-  <geo-long-aliases>long, lng, longitude</geo-long-aliases>
--->
-
 </settings>
