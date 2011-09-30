@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -41,6 +42,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGene
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
@@ -61,12 +63,21 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   private Log logger = LogFactory.getLog(CsvDatasourceServiceImpl.class);
 
   private ModelerService modelerService = new ModelerService();
+  private DatasourceServiceImpl datasourceService = new DatasourceServiceImpl();
 
   private ModelerWorkspace modelerWorkspace;
 
   public CsvDatasourceServiceImpl(){
     super();
     modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+
+    try {
+      modelerWorkspace.setGeoContext(datasourceService.getGeoContext());
+    } catch (DatasourceServiceException e) {
+      logger.warn("Could not get a GeoContext, auto-modeling will not use be able to auto detect geographies", e);
+    }
+
+
     modelerService = new ModelerService();
   }
 

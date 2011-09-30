@@ -2,6 +2,7 @@ package org.pentaho.platform.dataaccess.datasource.modeler;
 
 import com.google.gwt.core.client.GWT;
 import org.pentaho.agilebi.modeler.*;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
@@ -169,6 +170,16 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
       wizard.init(null);
     }
 
+    // go get the geocontext from the server
+    datasourceService.getGeoContext(new XulServiceCallback<GeoContext>() {
+      public void success(GeoContext geoContext) {
+        model.setGeoContext(geoContext);
+      }
+      public void error(String s, Throwable throwable) {
+        // issue getting the geocontext
+      }
+    });
+
     messages = new GwtModelerMessages((ResourceBundle) container.getResourceBundles().get(0));
     try{
       ModelerMessagesHolder.setMessages(messages);
@@ -308,6 +319,5 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     this.listener = listener;
     listener.onDialogReady();
   }
-
 
 }

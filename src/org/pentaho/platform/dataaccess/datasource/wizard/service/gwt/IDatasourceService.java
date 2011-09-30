@@ -23,6 +23,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 import java.io.IOException;
 import java.util.List;
 
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
@@ -132,6 +133,16 @@ public interface IDatasourceService {
    * @throws DatasourceServiceException
    */
   public String getDatasourceIllegalCharacters() throws DatasourceServiceException;
+
+  /**
+   * Returns a GeoContext object configured from the settings.xml file for the data access plugin.
+   *
+   *
+   * @return GeoContext
+   * @throws DatasourceServiceException
+   */
+  public GeoContext getGeoContext() throws DatasourceServiceException;
+
 }
 
  
