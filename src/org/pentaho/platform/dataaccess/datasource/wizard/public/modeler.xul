@@ -240,7 +240,7 @@
               </grid>
               <hbox flex="1">
                 <spacer flex="1"/>
-                <button id="fixLevelColumnsBtn" label="${missing_columns}"
+                <button id="fixLevelColumnsBtn" label="${missing_column}"
                   onclick="modeler.resolveMissingColumn()" visible="true" />
                 <spacer flex="1"/>
                 <button id="dimension_message_btn" label="${more}"
@@ -421,7 +421,7 @@
               </grid>
               <hbox flex="1">
                 <spacer flex="1"/>
-                <button id="fixMemberPropsColumnsBtn" label="${missing_columns}"
+                <button id="fixMemberPropsColumnsBtn" label="${missing_column}"
                   onclick="modeler.resolveMissingColumn()" visible="true" />
                 <spacer flex="1"/>
                 <button id="memberprops_message_btn" label="${more}"
