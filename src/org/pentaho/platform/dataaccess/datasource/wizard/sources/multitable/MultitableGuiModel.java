@@ -306,6 +306,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
 
 		String locale = LocalizedString.DEFAULT_LOCALE;
+    Outter:
 		for (JoinTableModel table : availableTables) {
 			for (LogicalTable tbl : domain.getLogicalModels().get(0).getLogicalTables()) {
 				if(tbl.getPhysicalTable().getProperty("target_table").equals(table.getName())){
@@ -315,7 +316,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 						field.setParentTable(table);
 						table.getFields().add(field);
 					}
-					continue;
+					continue Outter;
 				}
 			}
 		}
