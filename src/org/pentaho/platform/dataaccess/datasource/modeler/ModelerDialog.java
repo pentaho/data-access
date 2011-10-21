@@ -12,6 +12,7 @@ import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
@@ -170,15 +171,6 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
       wizard.init(null);
     }
 
-    // go get the geocontext from the server
-    datasourceService.getGeoContext(new XulServiceCallback<GeoContext>() {
-      public void success(GeoContext geoContext) {
-        model.setGeoContext(geoContext);
-      }
-      public void error(String s, Throwable throwable) {
-        // issue getting the geocontext
-      }
-    });
 
     messages = new GwtModelerMessages((ResourceBundle) container.getResourceBundles().get(0));
     try{
@@ -192,7 +184,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     controller = new ModelerController(model);
     controller.setWorkspaceHelper(workspacehelper);
 //    controller.setMessages(messages);
-    BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
+    final BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
     controller.setBindingFactory(bf);
     container.addEventHandler(controller);
     try{
@@ -216,7 +208,21 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
 
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
 
-    ModelerUiHelper.configureControllers(container, model, bf, controller, new ColResolverController());
+    // go get the geocontext from the server. Prop forms are initialized after this call returns as they
+    // may need them to create the UI
+    datasourceService.getGeoContext(new XulServiceCallback<GeoContext>() {
+      public void success(GeoContext geoContext) {
+        model.setGeoContext(geoContext);
+        ModelerUiHelper.configureControllers(container, model, bf, controller, new ColResolverController());
+      }
+      public void error(String s, Throwable throwable) {
+        throwable.printStackTrace();
+        // put in a stub to ensure the rest of the dialog works
+        model.setGeoContext(new GeoContext());
+        ModelerUiHelper.configureControllers(container, model, bf, controller, new ColResolverController());
+      }
+    });
+
 
     waitDialog = (XulDialog) document.getElementById("waitingDialog");
     this.constructorListener.asyncConstructorDone(this);
