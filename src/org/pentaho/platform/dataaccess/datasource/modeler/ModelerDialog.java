@@ -214,18 +214,20 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
       public void success(GeoContext geoContext) {
         model.setGeoContext(geoContext);
         ModelerUiHelper.configureControllers(container, model, bf, controller, new ColResolverController());
+        ModelerDialog.this.constructorListener.asyncConstructorDone(ModelerDialog.this);
       }
       public void error(String s, Throwable throwable) {
         throwable.printStackTrace();
         // put in a stub to ensure the rest of the dialog works
         model.setGeoContext(new GeoContext());
         ModelerUiHelper.configureControllers(container, model, bf, controller, new ColResolverController());
+        ModelerDialog.this.constructorListener.asyncConstructorDone(ModelerDialog.this);
       }
     });
 
 
     waitDialog = (XulDialog) document.getElementById("waitingDialog");
-    this.constructorListener.asyncConstructorDone(this);
+
   }
 
   public void overlayLoaded() {

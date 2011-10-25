@@ -22,6 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -37,6 +38,8 @@ import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
+import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.metadata.model.Domain;
@@ -413,7 +416,19 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
   }
 
   public GeoContext getGeoContext() throws DatasourceServiceException {
-    return DatasourceServiceHelper.getGeoContext();
+    try {
+      Properties props = new Properties();
+      props.load(new FileInputStream(new File("test-res/geoContextSample.properties")));
+      GeoContext geo = GeoContextFactory.create(new GeoContextPropertiesProvider(props));
+      return geo;
+    } catch (ModelerException e) {
+      throw new DatasourceServiceException(e);
+    } catch (FileNotFoundException e) {
+      throw new DatasourceServiceException(e);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+    return null;
   }
 
 }
