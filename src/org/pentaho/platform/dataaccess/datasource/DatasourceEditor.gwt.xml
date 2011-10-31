@@ -24,7 +24,7 @@ This module serves as the Debuging environment and default implementation for in
   <inherits name="org.pentaho.ui.database.DatabaseDialog"/>
   <inherits name="org.pentaho.agilebi.AgileBi"/>
   <inherits name="org.pentaho.ui.database.DatabaseDialog"/>
-  <inherits name="org.pentaho.database.Model"/>
+  <inherits name="org.pentaho.database.Database"/>
   <inherits name="org.pentaho.reporting.libraries.base.Util" />
   
     <source path="">    
@@ -62,7 +62,8 @@ This module serves as the Debuging environment and default implementation for in
         <exclude name="**/ConnectionInMemoryServiceHelper*"/>
         <exclude name="**/ConnectionServiceHelper*"/>        
         <exclude name="**/DatasourceServiceHelper*"/>
-    	<exclude name="**/DataAccessDatabaseConnectionService*"/>        
+    	<exclude name="**/DataAccessDatabaseConnectionService*"/>   
+    	<exclude name="**/DataAccessDatabaseDialectService*"/>    	
         <exclude name="**/Messages*"/>
         <exclude name="**/service/agile/*"/>
         <exclude name="**/service/impl/utils/*"/>
