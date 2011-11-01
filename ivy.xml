@@ -119,12 +119,17 @@
         <dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" conf="codegen->default"/>
 
         <dependency org="pentaho" name="pentaho-database-gwt" rev="${dependency.pentaho-database.revision}"
-                    conf="codegen->default" transitive="false"
+                    conf="codegen->default" transitive="true"
                     changing="true">
             <artifact name="pentaho-database-gwt"/>
             <artifact name="pentaho-database-gwt" type="source" ext="jar" m:classifier="sources"/>
         </dependency>
 
+		<dependency org="pentaho" name="pentaho-database-model"  rev="${dependency.pentaho-database-model.revision}"  transitive="false" conf="codegen->default"  changing="true">
+            <artifact name="pentaho-database-model"/>
+            <artifact name="pentaho-database-model" type="source" ext="jar" m:classifier="sources"/>
+        </dependency>	
+        
         <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}"
                     conf="codegen->default"
                     changing="true">

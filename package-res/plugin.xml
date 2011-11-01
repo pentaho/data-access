@@ -45,6 +45,13 @@
     description="This service is used with the database connection dialog"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.DataAccessDatabaseConnectionService"/>
 
+  <webservice
+    id="databaseDialectService"
+    type="gwt"
+    title="Database Dialect Service"
+    description="This service is used with the database connection dialog"
+    class="org.pentaho.platform.dataaccess.datasource.wizard.service.DataAccessDatabaseDialectService"/>
+    
    <webservice
     id="CsvDatasourceService"
     type="xml,gwt"
