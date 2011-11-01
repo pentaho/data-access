@@ -30,11 +30,11 @@ import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
 import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseConnectionService;
+import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseDialectService;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -42,8 +42,6 @@ import org.pentaho.ui.xul.containers.XulHbox;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import com.google.gwt.user.client.Window;
 
 public class WizardConnectionController extends AbstractXulEventHandler {
 
@@ -70,9 +68,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   private XulLabel successLabel = null;
 
   GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
+  
+  GwtXulAsyncDatabaseDialectService dialectService = new GwtXulAsyncDatabaseDialectService();
 
   GwtDatabaseDialog databaseDialog;
-
+  
   DatabaseTypeHelper databaseTypeHelper;
 
   IConnection currentConnection;
@@ -97,7 +97,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
         databaseTypeHelper = new DatabaseTypeHelper(retVal);
       }
     };
-    connService.getDatabaseTypes(callback);
+    dialectService.getDatabaseTypes(callback);
 
     saveConnectionConfirmationDialog = (XulDialog) document.getElementById("saveConnectionConfirmationDialog"); //$NON-NLS-1$
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$

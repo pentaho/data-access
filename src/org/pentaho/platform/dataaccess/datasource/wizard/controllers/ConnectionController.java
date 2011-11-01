@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
@@ -35,6 +36,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnec
 import org.pentaho.ui.database.event.DatabaseDialogListener;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
 import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseConnectionService;
+import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseDialectService;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -66,6 +68,8 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
   private XulLabel successLabel = null;
 
   GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
+  
+  GwtXulAsyncDatabaseDialectService dialectService = new GwtXulAsyncDatabaseDialectService();
 
   GwtDatabaseDialog databaseDialog;
 
@@ -78,6 +82,16 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
   @Bindable
   public void init() {
+    XulServiceCallback<List<IDatabaseType>> callback = new XulServiceCallback<List<IDatabaseType>>() {
+      public void error(String message, Throwable error) {
+        error.printStackTrace();
+      }
+
+      public void success(List<IDatabaseType> retVal) {
+        databaseTypeHelper = new DatabaseTypeHelper(retVal);
+      }
+    };
+    dialectService.getDatabaseTypes(callback);
     saveConnectionConfirmationDialog = (XulDialog) document.getElementById("saveConnectionConfirmationDialog"); //$NON-NLS-1$
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById("errorLabel");//$NON-NLS-1$

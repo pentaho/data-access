@@ -31,11 +31,12 @@ import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.database.DatabaseDialectException;
+import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
-import org.pentaho.database.dialect.IDatabaseDialect;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.service.DatabaseConnectionService;
-import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
@@ -47,6 +48,7 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
   
   // this should be a singleton
   private DatabaseConnectionService databaseConnectionService = new DatabaseConnectionService();
+  private DatabaseDialectService databaseDialectService = new DatabaseDialectService();
 
   private List<IConnection> connectionList = new ArrayList<IConnection>();
   private static final Log logger = LogFactory.getLog(InMemoryConnectionServiceImpl.class);
@@ -190,7 +192,7 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
   
   public IConnection convertToConnection(IDatabaseConnection connection) throws ConnectionServiceException {
     try {
-      IDatabaseDialect dialect = databaseConnectionService.getDialectService().getDialect(connection);
+      IDatabaseDialect dialect = databaseDialectService.getDialect(connection);
       org.pentaho.platform.dataaccess.datasource.beans.Connection conn = new org.pentaho.platform.dataaccess.datasource.beans.Connection();
 
       conn.setName(connection.getName());
@@ -204,7 +206,7 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
         conn.setDriverClass(dialect.getNativeDriver());
       }
       return conn;
-    } catch (KettleDatabaseException e) {
+    } catch (DatabaseDialectException e) {
       throw new ConnectionServiceException(e);
     }
   }

@@ -27,11 +27,12 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.commons.connection.IPentahoConnection;
+import org.pentaho.database.DatabaseDialectException;
+import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
-import org.pentaho.database.dialect.IDatabaseDialect;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.service.DatabaseConnectionService;
-import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.IServiceManager;
@@ -332,9 +333,9 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     try {
       IServiceManager manager = PentahoSystem.get(IServiceManager.class);
 
-      DatabaseConnectionService service = (DatabaseConnectionService) manager.getServiceBean("gwt", //$NON-NLS-1$ 
-          "databaseConnectionService"); //$NON-NLS-1$
-      IDatabaseDialect dialect = service.getDialectService().getDialect(connection);
+      DatabaseDialectService service = (DatabaseDialectService) manager.getServiceBean("gwt", //$NON-NLS-1$ 
+          "databaseDialectService"); //$NON-NLS-1$
+      IDatabaseDialect dialect = service.getDialect(connection);
 
       Connection conn = new Connection();
       conn.setName(connection.getName());
@@ -348,7 +349,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
         conn.setDriverClass(dialect.getNativeDriver());
       }
       return conn;
-    } catch (KettleDatabaseException e) {
+    } catch (DatabaseDialectException e) {
       throw new ConnectionServiceException(e);
     } catch (ServiceException e) {
       throw new ConnectionServiceException(e);
