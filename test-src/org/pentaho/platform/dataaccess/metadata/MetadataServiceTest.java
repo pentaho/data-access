@@ -256,7 +256,7 @@ public class MetadataServiceTest  extends BaseTest {
     assertEquals("wrong value","Switzerland",results.getRows()[0].getCell()[0]);
 
     condition.setValue(new String[] {"land"});
-    condition.setOperator("contains");    
+    condition.setOperator("contains");
     results = svc.doQuery(query,-1);
     assertNotNull("results are null", results);
     assertEquals("wrong number of column names",1,results.getColumnNames().getColumnName().length);
@@ -272,7 +272,7 @@ public class MetadataServiceTest  extends BaseTest {
     assertEquals("wrong value","Switzerland",results.getRows()[5].getCell()[0]);
 
     condition.setValue(new String[] {"land"});
-    condition.setOperator("CONTAINS");    
+    condition.setOperator("CONTAINS");
     results = svc.doQuery(query,-1);
     assertNotNull("results are null", results);
     assertEquals("wrong number of column names",1,results.getColumnNames().getColumnName().length);

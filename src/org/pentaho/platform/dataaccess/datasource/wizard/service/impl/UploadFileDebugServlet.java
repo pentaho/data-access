@@ -106,7 +106,11 @@ public class UploadFileDebugServlet extends HttpServlet implements Servlet {
 
       File file;
       if(isTemporary) {
-        file = PentahoSystem.getApplicationContext().createTempFile(session, "",".tmp", true); //$NON-NLS-1$
+        File tempDir = new File(PentahoSystem.getApplicationContext().getSolutionPath("system/tmp"));
+        if(tempDir.exists() == false){
+          tempDir.mkdir();
+        }
+        file = PentahoSystem.getApplicationContext().createTempFile(session, filename,".tmp", true); //$NON-NLS-1$
       } else {
         file = new File(path + File.separatorChar + filename);        
       }
