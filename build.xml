@@ -45,6 +45,15 @@
 			value="${findbugs.build.cache.dir}/findbugs-${findbugs.version}"
 			description="Where findbugs is installed to" />
 
+  <!--=======================================================================
+      continuous
+
+      Runs a typical continuous integration build including project dist, javadoc, test,
+      and coverage artifacts
+      ====================================================================-->
+  <target name="continuous" depends="clean-all,resolve,dist,cobertura,publish"/>
+
+
 	<target name="install" description="Installs the plugin to your Pentaho BI Server">
 		<unzip src="${dist.dir}/${package.basename}.zip" dest="${pentaho.solutions.dir}/system" overwrite="true">
 		</unzip>
