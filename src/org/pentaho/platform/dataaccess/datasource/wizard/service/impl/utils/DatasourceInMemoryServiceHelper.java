@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -41,7 +40,7 @@ import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.commons.connection.marshal.MarshallableResultSet;
 import org.pentaho.commons.connection.marshal.MarshallableRow;
 import org.pentaho.platform.api.engine.IPentahoSession;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -60,15 +59,15 @@ public class DatasourceInMemoryServiceHelper {
    * @return
    * @throws DatasourceServiceException
    */
-  public static Connection getDataSourceConnection(String connectionName) throws DatasourceServiceException {
-    IConnection connection = null;
+  public static java.sql.Connection getDataSourceConnection(String connectionName) throws DatasourceServiceException {
+	Connection connection = null;
     try {
       connection = ConnectionDebugGwtServlet.SERVICE.getConnectionByName(connectionName);
     } catch (ConnectionServiceException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
     }
-    Connection conn = null;
+    java.sql.Connection conn = null;
 
     String driverClass = null;
     if (connection != null) {
@@ -112,7 +111,7 @@ public class DatasourceInMemoryServiceHelper {
   }
 
   public static SQLConnection getConnection(String connectionName) throws DatasourceServiceException {
-    IConnection connection = null;
+	Connection connection = null;
     try {
       connection = ConnectionDebugGwtServlet.SERVICE.getConnectionByName(connectionName);
       return new SQLConnection(connection.getDriverClass(), connection.getUrl(), connection.getUsername(), connection.getPassword(), null);

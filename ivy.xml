@@ -1,169 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-    <info organisation="pentaho" module="${ivy.artifact.id}" revision="${project.revision}"/>
+  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${project.revision}"/>
 
-    <configurations>
-        <conf name="default"/>
-        <conf name="test" visibility="private"/>
-        <conf name="source"/>
-    	<conf name="runtime"/>
-        <conf name="codegen" visibility="private"/>
-        <conf name="codegen-mac" visibility="private" extends="codegen"/>
-        <conf name="codegen-win" visibility="private" extends="codegen"/>
-        <conf name="codegen-linux" visibility="private" extends="codegen"/>
-    </configurations>
+  <configurations>
+    <conf name="default"/>
+    <conf name="test" visibility="private"/>
+    <conf name="source"/>
+    <conf name="runtime"/>
+    <conf name="codegen" visibility="private"/>
+    <conf name="codegen-mac" visibility="private" extends="codegen"/>
+    <conf name="codegen-win" visibility="private" extends="codegen"/>
+    <conf name="codegen-linux" visibility="private" extends="codegen"/>
+  </configurations>
 
-    <publications>
-        <artifact name="${ivy.artifact.id}" type="jar" conf="default"/>
-        <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
-    </publications>
+  <publications>
+    <artifact name="${ivy.artifact.id}" type="jar" conf="default"/>
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
+  </publications>
 
-    <dependencies defaultconf="default->default">
+  <dependencies defaultconf="default->default">
 
-        <!--  internal dependencies -->
-	    <dependency org="pentaho" name="mondrian" rev="${dependency.mondrian.revision}" changing="true" >
-	        <exclude org="commons-dbcp" name="commons-dbcp"/>
-	        <exclude org="javax.servlet" name="jsp-api"/>
-	        <exclude org="javax.servlet" name="servlet-api"/>
-	    </dependency>    
-        
-        <dependency org="org.safehaus.jug" name="jug-lgpl" rev="2.0.0"/>
-        <dependency org="org.springframework.security"   name="spring-security-core"      rev="2.0.5.RELEASE" transitive="false"/>
-        <!--  will not properly pull from ibiblio maven2. needs classifier of 'lgpl' -->
-        <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1" transitive="false"/>
-        <dependency org="commons-vfs" name="commons-vfs" rev="1.0" transitive="false"/>
-        <dependency org="commons-digester" name="commons-digester" rev="1.8" transitive="false" />
-        <dependency org="commons-fileupload" name="commons-fileupload" rev="1.2.1" />
-        <dependency org="commons-io" name="commons-io" rev="1.4" />
-		<dependency org="commons-lang" name="commons-lang" rev="2.4"/>
-        <dependency org="joda-time" name="joda-time" rev="1.6" transitive="false" conf="test->default"/>
-        <dependency org="commons-math" name="commons-math" rev="1.1" transitive="false" conf="test->default"/>
-	    <dependency org="org.apache.ws.commons.axiom" name="axiom-api" rev="1.2.7" transitive="false"/>
-	    <dependency org="org.apache.ws.commons.axiom" name="axiom-dom" rev="1.2.7" transitive="false"/>
-    	<dependency org="org.apache.ws.commons.axiom" name="axiom-impl" rev="1.2.7" transitive="false"/>
-	    <dependency org="org.apache.axis2" name="axis2-adb" rev="1.4.1" transitive="false"/>
-	    <dependency org="org.apache.axis2" name="axis2-kernel" rev="1.4.1" transitive="false"/>
-        <dependency org="ognl" name="ognl" rev="2.6.9" transitive="false"/> 
-        <dependency org="log4j" name="log4j" rev="1.2.14"/>
-        <dependency org="jfree" name="jcommon" rev="1.0.14"/>
-        <dependency org="com.ibm.icu" name="icu4j" rev="4_4_1_1"/>
-        <dependency org="com.ibm.icu" name="icu4j-charsets" rev="4_4_1_1"/>
-		<dependency org="net.sf.flexjson" name="flexjson" rev="2.1" transitive="false" />
-		<dependency org="org.json" name="json" rev="3.1.1" transitive="false" conf="default->default" />
-		
-        <!--  using libbase's CSVTokenizer -->
-        <dependency org="${dependency.reporting-library.group}" name="libbase" rev="${dependency.libbase.revision}" changing="true">
-            <artifact name="libbase"/>
-            <artifact name="libbase" type="source" ext="jar" m:classifier="sources"/>        
-        </dependency>
-
-        <dependency org="pentaho" name="pentaho-connections" rev="${dependency.pentaho-connections.revision}"
-                    changing="true" transitive="false"/>
-        <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}" changing="true"
-                    transitive="false" conf="codegen->default">
-             <artifact name="pentaho-metadata"/>
-            <artifact name="pentaho-metadata" type="source" ext="jar" m:classifier="sources"/>
-        </dependency>
-        <dependency org="pentaho" name="pentaho-cwm" rev="${dependency.pentaho-cwm.revision}"/>
-        <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
-        <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
-        <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false" conf="default->default" changing="true" />
-
-        <dependency org="dom4j" name="dom4j" rev="1.6.1"/>
-        <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.3.1"/>
-        <dependency org="stax" name="stax" rev="1.2.0"/>
-        <dependency org="org.codehaus.jettison" name="jettison" rev="1.0.1"/>
-        <dependency org="jaxen" name="jaxen" rev="1.1" transitive="false" conf="default->default"/>
-	    <dependency org="hsqldb"              name="hsqldb" rev="1.8.0.7"  conf="test->default"/>
-	    <dependency org="mysql"               name="mysql-connector-java" rev="5.1.17"  conf="runtime->default"/>
-		<dependency org="com.h2database"      name="h2" rev="1.0.78" transitive="false" conf="test->default" />
-
-        <!--  internal dependencies -->
-        <dependency org="pentaho" name="pentaho-connections" rev="${dependency.pentaho-connections.revision}"
-                    changing="true"/>
-        <dependency org="${dependency.reporting-library.group}" name="libformula" rev="${dependency.libformula.revision}"/>
-        <dependency org="pentaho" name="pentaho-publisher" rev="${dependency.pentaho-pentaho-publisher.revision}"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-api" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-util" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-engine-core" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-engine-services" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-engine-security" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-plugin-services" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-plugin-actions" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-ui-foundation" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-
-    	<dependency org="pentaho" name="pentaho-bi-platform-repository" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-    	<dependency org="pentaho" name="pentaho-bi-platform-web" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="default->default"/>
-        <dependency org="pentaho" name="pentaho-actionsequence-dom" rev="${dependency.pentaho-actionsequence-dom.revision}" changing="true" transitive="false"/>
-		<dependency org="pentaho" name="pentaho-bi-platform-test-foundation" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default" />
-
-        <!--  Testing dependencies -->
-        <dependency org="org.jmock" name="jmock-junit4" rev="2.5.1" conf="test->default" />
-        <dependency org="junit" name="junit" rev="4.3.1" transitive="false" conf="test->default"/>
-        <dependency org="commons-codec"      name="commons-codec"      rev="1.3" transitive="false" conf="test->default"/>
-		<dependency org="org.springframework" name="spring"              rev="2.5.6"   transitive="false"/>
-		<dependency org="spring" name="spring-mock"              rev="1.0.2"   transitive="false"/>
-		<dependency org="org.hibernate"       name="hibernate"           rev="3.2.6.ga">
-      <exclude org="net.sf.ehcache" name="ehcache" />
+    <!--  internal dependencies -->
+    <dependency org="pentaho" name="mondrian" rev="${dependency.mondrian.revision}" changing="true">
+      <exclude org="commons-dbcp" name="commons-dbcp"/>
+      <exclude org="javax.servlet" name="jsp-api"/>
+      <exclude org="javax.servlet" name="servlet-api"/>
     </dependency>
 
-        <dependency org="com.google.gwt" name="gwt-servlet" rev="2.0.3" conf="default->default"/>
-		<!-- codegen dependencies -->
-		<dependency org="org.zenica" name="gwt-datepicker" rev="r30" conf="codegen->default"/>
-        <!-- it doesn't matter what platform of gwt-dev we use here. GWT compile only cares about the API part of the jar -->
-        <dependency org="com.google.gwt" name="gwt-dev"  rev="2.0.3" conf="codegen->default"/>        
-        <dependency org="com.google.gwt" name="gwt-user" rev="2.0.3" conf="codegen->default" />
+    <dependency org="org.safehaus.jug" name="jug-lgpl" rev="2.0.0"/>
+    <dependency org="org.springframework.security" name="spring-security-core" rev="2.0.5.RELEASE" transitive="false"/>
+    <!--  will not properly pull from ibiblio maven2. needs classifier of 'lgpl' -->
+    <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1" transitive="false"/>
+    <dependency org="commons-vfs" name="commons-vfs" rev="1.0" transitive="false"/>
+    <dependency org="commons-digester" name="commons-digester" rev="1.8" transitive="false"/>
+    <dependency org="commons-fileupload" name="commons-fileupload" rev="1.2.1"/>
+    <dependency org="commons-io" name="commons-io" rev="1.4"/>
+    <dependency org="commons-lang" name="commons-lang" rev="2.4"/>
+    <dependency org="joda-time" name="joda-time" rev="1.6" transitive="false" conf="test->default"/>
+    <dependency org="commons-math" name="commons-math" rev="1.1" transitive="false" conf="test->default"/>
+    <dependency org="org.apache.ws.commons.axiom" name="axiom-api" rev="1.2.7" transitive="false"/>
+    <dependency org="org.apache.ws.commons.axiom" name="axiom-dom" rev="1.2.7" transitive="false"/>
+    <dependency org="org.apache.ws.commons.axiom" name="axiom-impl" rev="1.2.7" transitive="false"/>
+    <dependency org="org.apache.axis2" name="axis2-adb" rev="1.4.1" transitive="false"/>
+    <dependency org="org.apache.axis2" name="axis2-kernel" rev="1.4.1" transitive="false"/>
+    <dependency org="ognl" name="ognl" rev="2.6.9" transitive="false"/>
+    <dependency org="log4j" name="log4j" rev="1.2.14"/>
+    <dependency org="jfree" name="jcommon" rev="1.0.14"/>
+    <dependency org="com.ibm.icu" name="icu4j" rev="4_4_1_1"/>
+    <dependency org="com.ibm.icu" name="icu4j-charsets" rev="4_4_1_1"/>
+    <dependency org="net.sf.flexjson" name="flexjson" rev="2.1" transitive="false"/>
+    <dependency org="org.json" name="json" rev="3.1.1" transitive="false" conf="default->default"/>
 
-        <dependency org="com.google.gwt" name="gwt-incubator" rev="2.0.1" conf="codegen->default"/>
-        <dependency org="com.allen_sauer" name="gwt-dnd" rev="3.0.1" conf="codegen->default"/>
-        <dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" conf="codegen->default"/>
+    <!--  using libbase's CSVTokenizer -->
+    <dependency org="${dependency.reporting-library.group}" name="libbase" rev="${dependency.libbase.revision}" changing="true">
+      <artifact name="libbase"/>
+      <artifact name="libbase" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
 
-        <dependency org="pentaho" name="pentaho-database-gwt" rev="${dependency.pentaho-database.revision}"
-                    conf="codegen->default" transitive="true"
-                    changing="true">
-            <artifact name="pentaho-database-gwt"/>
-            <artifact name="pentaho-database-gwt" type="source" ext="jar" m:classifier="sources"/>
-        </dependency>
+    <dependency org="pentaho" name="pentaho-connections" rev="${dependency.pentaho-connections.revision}"
+                changing="true" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}" changing="true"
+                transitive="false" conf="codegen->default">
+      <artifact name="pentaho-metadata"/>
+      <artifact name="pentaho-metadata" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+    <dependency org="pentaho" name="pentaho-cwm" rev="${dependency.pentaho-cwm.revision}"/>
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false"
+                conf="default->default" changing="true"/>
 
-		<dependency org="pentaho" name="pentaho-database-model"  rev="${dependency.pentaho-database-model.revision}"  transitive="false" conf="codegen->default"  changing="true">
-            <artifact name="pentaho-database-model"/>
-            <artifact name="pentaho-database-model" type="source" ext="jar" m:classifier="sources"/>
-        </dependency>	
-        
-        <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}"
-                    conf="codegen->default"
-                    changing="true">
-            <artifact name="pentaho-gwt-widgets"/>
-            <artifact name="pentaho-gwt-widgets" type="source" ext="jar" m:classifier="sources"/>
-        </dependency>
+    <dependency org="dom4j" name="dom4j" rev="1.6.1"/>
+    <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.3.1"/>
+    <dependency org="stax" name="stax" rev="1.2.0"/>
+    <dependency org="org.codehaus.jettison" name="jettison" rev="1.0.1"/>
+    <dependency org="jaxen" name="jaxen" rev="1.1" transitive="false" conf="default->default"/>
+    <dependency org="hsqldb" name="hsqldb" rev="1.8.0.7" conf="test->default"/>
+    <dependency org="mysql" name="mysql-connector-java" rev="5.1.17" conf="runtime->default"/>
+    <dependency org="com.h2database" name="h2" rev="1.0.78" transitive="false" conf="test->default"/>
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.5.8" conf="default->default"/>
+    <dependency org="org.slf4j" name="slf4j-jcl" rev="1.5.8" conf="default->default"/>
 
-        <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}"
-                    conf="codegen->default"
-                    changing="true">
-            <artifact name="pentaho-xul-core"/>
-            <artifact name="pentaho-xul-core" type="source" ext="jar" m:classifier="sources"/>
-        </dependency>
+    <!--  internal dependencies -->
+    <dependency org="pentaho" name="pentaho-modeler" rev="${dependency.pentaho-modeler.revision}" changing="true"
+                transitive="true">
+      <artifact name="pentaho-modeler"/>
+      <artifact name="pentaho-modeler" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
 
-        <dependency org="pentaho" name="pentaho-xul-gwt" rev="${dependency.pentaho-xul.revision}"
-                    conf="codegen->default"
-                    changing="true">
-            <artifact name="pentaho-xul-gwt"/>
-            <artifact name="pentaho-xul-gwt" type="source" ext="jar" m:classifier="sources"/>
-        </dependency>
+    <dependency org="pentaho" name="pentaho-connections" rev="${dependency.pentaho-connections.revision}"
+                changing="true"/>
+    <dependency org="${dependency.reporting-library.group}" name="libformula" rev="${dependency.libformula.revision}"/>
+    <dependency org="pentaho" name="pentaho-publisher" rev="${dependency.pentaho-publisher.revision}"/>
+    <dependency org="pentaho" name="pentaho-platform-api" rev="${dependency.pentaho-platform.revision}" changing="true"
+                transitive="false" conf="default->default"/>
+    <dependency org="pentaho" name="pentaho-platform-core" rev="${dependency.pentaho-platform.revision}"
+                changing="true" transitive="false" conf="default->default"/>
+    <dependency org="pentaho" name="pentaho-platform-extensions" rev="${dependency.pentaho-platform.revision}"
+                changing="true" transitive="false" conf="default->default"/>
+    <dependency org="pentaho" name="pentaho-platform-repository" rev="${dependency.pentaho-platform.revision}"
+                changing="true" transitive="false" conf="default->default"/>
+    <dependency org="pentaho" name="pentaho-actionsequence-dom" rev="${dependency.pentaho-actionsequence-dom.revision}"
+                changing="true" transitive="false"/>
 
-        <dependency org="pentaho" name="pentaho-xul-swing" rev="${dependency.pentaho-xul.revision}"
-                    conf="default->default"/>
+    <!--  Testing dependencies -->
+    <dependency org="pentaho" name="pentaho-platform-core-test" rev="${dependency.pentaho-platform.revision}"
+                changing="true" transitive="false" conf="test->default"/>
+    <dependency org="org.jmock" name="jmock-junit4" rev="2.5.1" conf="test->default"/>
+    <dependency org="junit" name="junit" rev="4.3.1" transitive="false" conf="test->default"/>
+    <dependency org="commons-codec" name="commons-codec" rev="1.3" transitive="false" conf="test->default"/>
+    <dependency org="org.springframework" name="spring" rev="2.5.6" transitive="false"/>
+    <dependency org="spring" name="spring-mock" rev="1.0.2" transitive="false"/>
+    <dependency org="org.hibernate" name="hibernate" rev="3.2.6.ga">
+      <exclude org="net.sf.ehcache" name="ehcache"/>
+    </dependency>
 
-		<dependency org="simple-jndi" name="simple-jndi" rev="0.11.3"
-			conf="test->default" transitive="false" />
+    <dependency org="com.google.gwt" name="gwt-servlet" rev="2.0.3" conf="default->default"/>
+    <!-- codegen dependencies -->
+    <dependency org="org.zenica" name="gwt-datepicker" rev="r30" conf="codegen->default"/>
+    <!-- it doesn't matter what platform of gwt-dev we use here. GWT compile only cares about the API part of the jar -->
+    <dependency org="com.google.gwt" name="gwt-dev" rev="2.0.3" conf="codegen->default"/>
+    <dependency org="com.google.gwt" name="gwt-user" rev="2.0.3" conf="codegen->default"/>
 
-      <dependency org="org.slf4j" name="slf4j-api" rev="1.5.8" conf="default->default" />
-      <dependency org="org.slf4j" name="slf4j-jcl" rev="1.5.8" conf="default->default" />
+    <dependency org="com.google.gwt" name="gwt-incubator" rev="2.0.1" conf="codegen->default"/>
+    <dependency org="com.allen_sauer" name="gwt-dnd" rev="3.0.1" conf="codegen->default"/>
+    <dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" conf="codegen->default"/>
 
-        <dependency org="pentaho" name="pentaho-modeler" rev="${dependency.pentaho-modeler.revision}" changing="true" transitive="true">
-            <artifact name="pentaho-modeler"/>
-            <artifact name="pentaho-modeler" type="source" ext="jar" m:classifier="sources"/>
-        </dependency>
+    <dependency org="pentaho" name="pentaho-database-gwt" rev="${dependency.pentaho-database.revision}"
+                conf="codegen->default" transitive="true"
+                changing="true">
+      <artifact name="pentaho-database-gwt"/>
+      <artifact name="pentaho-database-gwt" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
 
-    </dependencies>
+    <dependency org="pentaho" name="pentaho-database-model" rev="${dependency.pentaho-database-model.revision}"
+                transitive="false" conf="codegen->default" changing="true">
+      <artifact name="pentaho-database-model"/>
+      <artifact name="pentaho-database-model" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+
+    <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}"
+                conf="codegen->default" changing="true">
+      <artifact name="pentaho-gwt-widgets"/>
+      <artifact name="pentaho-gwt-widgets" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+
+    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}"
+                conf="codegen->default" changing="true">
+      <artifact name="pentaho-xul-core"/>
+      <artifact name="pentaho-xul-core" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+
+    <dependency org="pentaho" name="pentaho-xul-gwt" rev="${dependency.pentaho-xul.revision}"
+                conf="codegen->default" changing="true">
+      <artifact name="pentaho-xul-gwt"/>
+      <artifact name="pentaho-xul-gwt" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+
+    <dependency org="pentaho" name="pentaho-xul-swing" rev="${dependency.pentaho-xul.revision}"
+                conf="default->default"/>
+
+    <dependency org="simple-jndi" name="simple-jndi" rev="0.11.3" conf="test->default" transitive="false"/>
+
+  </dependencies>
 </ivy-module>

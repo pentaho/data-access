@@ -24,6 +24,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.Window;
+
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPane;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPaneNativeListener;

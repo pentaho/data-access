@@ -23,7 +23,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +54,9 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPentahoUrlFactory;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
@@ -293,7 +292,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
       throw new DatasourceServiceException(Messages
           .getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
     }
-    Connection conn = null;
+    java.sql.Connection conn = null;
     try {
       conn = DatasourceServiceHelper.getDataSourceConnection(connectionName, PentahoSessionHolder.getSession());
       if (conn == null) {
@@ -511,7 +510,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
   }
 
   @Override
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, Connection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
 
     ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), getGeoContext());
     ModelerService modelerService = new ModelerService();

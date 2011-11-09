@@ -22,8 +22,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.api.engine.IPentahoSession;
-import org.pentaho.platform.api.repository.datasource.IDatasource;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
@@ -44,7 +44,7 @@ public  class ConnectionServiceHelper {
   public static String getConnectionPassword(String connectionName, String password) throws ConnectionServiceException {
     try {
       HibernateUtil.beginTransaction();
-      IDatasource datasource = datasourceMgmtSvc.getDatasource(connectionName);
+      IDatabaseConnection datasource = datasourceMgmtSvc.getDatasourceByName(connectionName);
       HibernateUtil.commitTransaction();
       if (datasource != null && !hasPasswordChanged(password)) {
         return datasource.getPassword();

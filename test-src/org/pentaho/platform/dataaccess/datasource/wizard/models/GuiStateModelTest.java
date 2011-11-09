@@ -21,7 +21,6 @@ import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocaleType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.concept.types.TargetTableType;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 
@@ -34,13 +33,13 @@ public class GuiStateModelTest {
     GuiStateModel guiStateModel = new GuiStateModel();
     Assert.assertEquals(0, guiStateModel.getConnections().size());
     Assert.assertEquals(false, guiStateModel.isRelationalValidated());
-    IConnection connection = new Connection();
+    Connection connection = new Connection();
     connection.setDriverClass("org.hsqldb.jdbcDriver");
     connection.setName("SampleData");
     connection.setPassword("password");
     connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
     connection.setUsername("pentaho_user");
-    List<IConnection> connectionList = new ArrayList<IConnection>();
+    List<Connection> connectionList = new ArrayList<Connection>();
     connectionList.add(connection);
     guiStateModel.setConnections(connectionList);
     guiStateModel.setPreviewLimit("10");
