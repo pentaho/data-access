@@ -158,50 +158,53 @@ public class ModelerService extends PentahoBase implements IModelerService {
       domainId = path + name + ".xmi"; //$NON-NLS-1$ 
       domain.setId(domainId);
 
-      IApplicationContext appContext = PentahoSystem.getApplicationContext();
-      if (appContext != null) {
-        path = PentahoSystem.getApplicationContext().getSolutionPath(path);
-      }
+      //IApplicationContext appContext = PentahoSystem.getApplicationContext();
+      //if (appContext != null) {
+      //  path = PentahoSystem.getApplicationContext().getSolutionPath(path);
+      //}
 
-      File pathDir = new File(path);
-      if (!pathDir.exists()) {
-        pathDir.mkdirs();
-      }
+      //File pathDir = new File(path);
+      //if (!pathDir.exists()) {
+      //  pathDir.mkdirs();
+      //}
 
-      IPentahoObjectFactory pentahoObjectFactory = PentahoSystem.getObjectFactory();
-      IPentahoSession session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
+      //IPentahoObjectFactory pentahoObjectFactory = PentahoSystem.getObjectFactory();
+      //IPentahoSession session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
 
-      ISolutionRepository repository = PentahoSystem.get(ISolutionRepository.class, session);
+      //ISolutionRepository repository = PentahoSystem.get(ISolutionRepository.class, session);
       
       LogicalModel lModel = domain.getLogicalModels().get(0);
       String catName = lModel.getName(Locale.getDefault().toString());
 
-      cleanseExistingCatalog(catName, session);
+      //cleanseExistingCatalog(catName, session);
       if(doOlap){
         lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
       }
-      XmiParser parser = new XmiParser();
-      String reportXML =  parser.generateXmi(model.getDomain());
+      //XmiParser parser = new XmiParser();
+      //String reportXML =  parser.generateXmi(model.getDomain());
 
       // Serialize domain to xmi.
-      String base = PentahoSystem.getApplicationContext().getSolutionRootPath();
-      String parentPath = ActionInfo.buildSolutionPath(solutionStorage, metadataLocation, ""); //$NON-NLS-1$
-      int status = repository.publish(base, '/' + parentPath, name + ".xmi", reportXML.getBytes("UTF-8"), true); //$NON-NLS-1$  //$NON-NLS-2$
-      if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
-        throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
-      }
+      //String base = PentahoSystem.getApplicationContext().getSolutionRootPath();
+      //String parentPath = ActionInfo.buildSolutionPath(solutionStorage, metadataLocation, ""); //$NON-NLS-1$
+      //int status = repository.publish(base, '/' + parentPath, name + ".xmi", reportXML.getBytes("UTF-8"), true); //$NON-NLS-1$  //$NON-NLS-2$
+      //if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
+      //  throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
+      //}
 
       // Serialize domain to olap schema.
       if(doOlap){
         MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
         String mondrianSchema = exporter.createMondrianModelXML();
-        Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
-        byte[] schemaBytes = schemaDoc.asXML().getBytes("UTF-8"); //$NON-NLS-1$
+        IPentahoSession session = PentahoSessionHolder.getSession();
+        session.setAttribute("MONDRIAN_SCHEMA_CONTENT", mondrianSchema);
+        
+        //Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
+        //byte[] schemaBytes = schemaDoc.asXML().getBytes("UTF-8"); //$NON-NLS-1$
 
-        status = repository.publish(base, '/' + parentPath, name + ".mondrian.xml", schemaBytes, true); //$NON-NLS-1$
-        if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
-          throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
-        }
+        //status = repository.publish(base, '/' + parentPath, name + ".mondrian.xml", schemaBytes, true); //$NON-NLS-1$
+        //if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
+        //  throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
+        //}
 
         // Refresh Metadata
         PentahoSystem.publish(session, MetadataPublisher.class.getName());

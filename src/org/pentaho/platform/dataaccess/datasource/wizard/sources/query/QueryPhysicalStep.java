@@ -24,7 +24,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
@@ -47,7 +47,6 @@ import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulVbox;
-import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 @SuppressWarnings("unchecked")
@@ -63,7 +62,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   private WizardConnectionController connectionController;
   private IXulAsyncConnectionService connectionService;
   private boolean isFinishable = false;
-  private IConnection connection;
+  private Connection connection;
   private ConnectionController databaseConnectionController;
 
   public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource, boolean isFinishable) {
@@ -260,12 +259,12 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   }
 
   @Bindable
-  public IConnection getConnection() {
+  public Connection getConnection() {
     return connection;
   }
 
   @Bindable
-  public void setConnection(IConnection connection) {
+  public void setConnection(Connection connection) {
     Object prevVal = this.connection == null ? new Object() : null;
     this.connection = connection;
     firePropertyChange("connection", prevVal, connection);

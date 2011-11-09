@@ -1,9 +1,8 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
-
 import java.io.Serializable;
+
+import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 
 /**
  * This class is used to serialize out the current state of a DataSource. It contains enough information

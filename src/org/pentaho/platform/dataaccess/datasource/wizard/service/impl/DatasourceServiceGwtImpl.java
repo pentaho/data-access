@@ -26,8 +26,8 @@ import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
@@ -274,7 +274,7 @@ public class DatasourceServiceGwtImpl implements IXulAsyncDatasourceService {
   }
 
   @Override
-  public void generateQueryDomain(final String name, final String query, final IConnection connection, final DatasourceDTO datasourceDTO, final XulServiceCallback<IDatasourceSummary> callback) {
+  public void generateQueryDomain(final String name, final String query, final Connection connection, final DatasourceDTO datasourceDTO, final XulServiceCallback<IDatasourceSummary> callback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
         SERVICE.generateQueryDomain(name, query, connection, datasourceDTO, callback);
