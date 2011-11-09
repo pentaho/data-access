@@ -23,8 +23,7 @@ import java.util.List;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
-import org.pentaho.metadata.model.LogicalRelationship;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncJoinSelectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionServiceAsync;
@@ -79,7 +78,7 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 
 	}
 
-	public void getDatabaseTables(final IConnection connection, final XulServiceCallback<List> xulCallback) {
+	public void getDatabaseTables(final Connection connection, final XulServiceCallback<List> xulCallback) {
 
 		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
 			public void execute(AsyncCallback callback) {
@@ -96,7 +95,7 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 		});
 	}
 
-	public void getTableFields(final String table, final IConnection connection, final XulServiceCallback<List> xulCallback) {
+	public void getTableFields(final String table, final Connection connection, final XulServiceCallback<List> xulCallback) {
 
 		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
 			public void execute(AsyncCallback callback) {
@@ -113,7 +112,7 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 		});
 	}
 
-	public void serializeJoins(final MultiTableDatasourceDTO dto, final IConnection selectedConnection, final XulServiceCallback<IDatasourceSummary> xulCallback) {
+	public void serializeJoins(final MultiTableDatasourceDTO dto, final Connection selectedConnection, final XulServiceCallback<IDatasourceSummary> xulCallback) {
 
 		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
 			public void execute(AsyncCallback callback) {

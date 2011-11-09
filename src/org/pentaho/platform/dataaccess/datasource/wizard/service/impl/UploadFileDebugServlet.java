@@ -28,6 +28,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.web.http.PentahoHttpSessionHelper;
@@ -64,7 +65,7 @@ public class UploadFileDebugServlet extends HttpServlet implements Servlet {
       String relativePath = PentahoSystem.getSystemSetting("file-upload-defaults/relative-path", String.valueOf(DEFAULT_RELATIVE_UPLOAD_FILE_PATH));  //$NON-NLS-1$ 
       String maxFileLimit = PentahoSystem.getSystemSetting("file-upload-defaults/max-file-limit", String.valueOf(MAX_FILE_SIZE));  //$NON-NLS-1$    
       String maxFolderLimit = PentahoSystem.getSystemSetting("file-upload-defaults/max-folder-limit", String.valueOf(MAX_FOLDER_SIZE));  //$NON-NLS-1$
-      IPentahoSession session = PentahoHttpSessionHelper.getPentahoSession(request);
+      IPentahoSession session = PentahoSessionHolder.getSession(); // PentahoHttpSessionHelper.getPentahoSession(request);
       
       response.setContentType("text/plain"); //$NON-NLS-1$
       

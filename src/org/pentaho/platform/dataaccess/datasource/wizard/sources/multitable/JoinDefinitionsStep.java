@@ -19,12 +19,13 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
@@ -55,7 +56,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 	private XulListbox leftKeyFieldList;
 	private XulListbox rightKeyFieldList;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
-	private IConnection selectedConnection;
+	private Connection selectedConnection;
 	private JoinValidator validator;
 	private Binding rightKeyFieldBinding;
 	private Binding leftKeyFieldBinding;

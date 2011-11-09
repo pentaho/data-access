@@ -19,9 +19,12 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
@@ -31,7 +34,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryPhysicalStep;
-import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -48,10 +50,6 @@ import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
 public class MultiTableDatasource extends AbstractXulEventHandler implements IWizardDatasource {
 
 	private boolean finishable;
@@ -60,7 +58,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	private QueryPhysicalStep connectionSelectionStep;
 	private TablesSelectionStep tablesSelectionStep;
 	private JoinDefinitionsStep joinDefinitionsStep;
-	private IConnection connection;
+	private Connection connection;
 	private BindingFactory bf;
 	private IWizardModel wizardModel;
 	private JoinValidator validator;
@@ -278,12 +276,12 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	}
 
 	@Bindable
-	public IConnection getConnection() {
+	public Connection getConnection() {
 		return connection;
 	}
 
 	@Bindable
-	public void setConnection(IConnection connection) {
+	public void setConnection(Connection connection) {
 		this.connection = connection;
 		this.joinGuiModel.reset();
 		this.joinDefinitionsStep.resetComponents();

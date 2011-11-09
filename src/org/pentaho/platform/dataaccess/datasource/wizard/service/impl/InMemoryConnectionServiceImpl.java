@@ -20,7 +20,6 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -37,7 +36,7 @@ import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.service.DatabaseConnectionService;
 import org.pentaho.database.service.DatabaseDialectService;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
@@ -50,16 +49,16 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
   private DatabaseConnectionService databaseConnectionService = new DatabaseConnectionService();
   private DatabaseDialectService databaseDialectService = new DatabaseDialectService();
 
-  private List<IConnection> connectionList = new ArrayList<IConnection>();
+  private List<Connection> connectionList = new ArrayList<Connection>();
   private static final Log logger = LogFactory.getLog(InMemoryConnectionServiceImpl.class);
   public InMemoryConnectionServiceImpl() {
   }
   
-  public List<IConnection> getConnections() throws ConnectionServiceException  {
+  public List<Connection> getConnections() throws ConnectionServiceException  {
     return connectionList;
   }
-  public IConnection getConnectionByName(String name) throws ConnectionServiceException  {
-    for(IConnection connection:connectionList) {
+  public Connection getConnectionByName(String name) throws ConnectionServiceException  {
+    for(Connection connection:connectionList) {
       if(connection.getName().equals(name)) {
         return connection;
       }
@@ -67,7 +66,7 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
     logger.error(Messages.getErrorString("ConnectionServiceInMemoryDelegate.ERROR_0003_UNABLE_TO_GET_CONNECTION",name,null));
     throw new ConnectionServiceException(Messages.getErrorString("ConnectionServiceInMemoryDelegate.ERROR_0003_UNABLE_TO_GET_CONNECTION",name,null));
   }
-  public boolean addConnection(IConnection connection) throws ConnectionServiceException  {
+  public boolean addConnection(Connection connection) throws ConnectionServiceException  {
     if(!isConnectionExist(connection.getName())) {
       connectionList.add(connection);
       return true;
@@ -76,8 +75,8 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
       throw new ConnectionServiceException(Messages.getErrorString("ConnectionServiceInMemoryDelegate.ERROR_0004_UNABLE_TO_ADD_CONNECTION",connection.getName(),null));
     }
   }
-  public boolean updateConnection(IConnection connection) throws ConnectionServiceException  {
-    IConnection conn = getConnectionByName(connection.getName());
+  public boolean updateConnection(Connection connection) throws ConnectionServiceException  {
+	Connection conn = getConnectionByName(connection.getName());
     if(conn != null) {
       conn.setDriverClass(connection.getDriverClass());
       conn.setPassword(connection.getPassword());
@@ -89,12 +88,12 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
       throw new ConnectionServiceException(Messages.getErrorString("ConnectionServiceInMemoryDelegate.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION",connection.getName(),null));
     }
   }
-  public boolean deleteConnection(IConnection connection) throws ConnectionServiceException  {
+  public boolean deleteConnection(Connection connection) throws ConnectionServiceException  {
     connectionList.remove(connectionList.indexOf(connection));
     return true;
   }
   public boolean deleteConnection(String name) throws ConnectionServiceException  {
-    for(IConnection connection:connectionList) {
+    for(Connection connection:connectionList) {
       if(connection.getName().equals(name)) {
         return deleteConnection(connection);
       }
@@ -103,8 +102,8 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
     throw new ConnectionServiceException(Messages.getErrorString("ConnectionServiceInMemoryDelegate.ERROR_0006_UNABLE_TO_DELETE_CONNECTION",name,null));
   }
   
-  public boolean testConnection(IConnection connection) throws ConnectionServiceException {
-    Connection conn = null;
+  public boolean testConnection(Connection connection) throws ConnectionServiceException {
+    java.sql.Connection conn = null;
     try {
       conn = getConnection(connection);
     } catch (ConnectionServiceException dme) {
@@ -130,8 +129,8 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
    * @return
    * @throws DataSourceManagementException
    */
-  private static Connection getConnection(IConnection connection) throws ConnectionServiceException {
-    Connection conn = null;
+  private static java.sql.Connection getConnection(Connection connection) throws ConnectionServiceException {
+    java.sql.Connection conn = null;
 
     String driverClass = connection.getDriverClass();
     if (StringUtils.isEmpty(driverClass)) {
@@ -174,7 +173,7 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
    }
   }
   private boolean isConnectionExist(String connectionName) {
-    for(IConnection connection:connectionList) {
+    for(Connection connection:connectionList) {
       if(connection.getName().equals(connectionName)) {
         return true;
       }
@@ -182,7 +181,7 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
     return false;
   }
   
-  public IDatabaseConnection convertFromConnection(IConnection connection) throws ConnectionServiceException {
+  public IDatabaseConnection convertFromConnection(Connection connection) throws ConnectionServiceException {
     IDatabaseConnection conn = databaseConnectionService.createDatabaseConnection(connection.getDriverClass(), connection.getUrl());
     conn.setName(connection.getName());
     conn.setUsername(connection.getUsername());
@@ -190,10 +189,10 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
     return conn;
   }
   
-  public IConnection convertToConnection(IDatabaseConnection connection) throws ConnectionServiceException {
+  public Connection convertToConnection(IDatabaseConnection connection) throws ConnectionServiceException {
     try {
       IDatabaseDialect dialect = databaseDialectService.getDialect(connection);
-      org.pentaho.platform.dataaccess.datasource.beans.Connection conn = new org.pentaho.platform.dataaccess.datasource.beans.Connection();
+      Connection conn = new Connection();
 
       conn.setName(connection.getName());
       conn.setUsername(connection.getUsername());

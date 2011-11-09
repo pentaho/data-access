@@ -20,11 +20,11 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 
 public interface ConnectionDialogListener {
 
-  public void onDialogAccept(IConnection connection);
+  public void onDialogAccept(Connection connection);
 
   public void onDialogCancel();
 }

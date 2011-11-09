@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.database.model.DatabaseConnection;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 
@@ -43,9 +42,9 @@ public class ConnectionServiceConcrete {
   }
 
   public List<Connection> getConnections() throws ConnectionServiceException {
-    List<IConnection> iConnections = service.getConnections();
+    List<Connection> iConnections = service.getConnections();
     List<Connection> connections = new ArrayList<Connection>();
-    for( IConnection iConnection : iConnections ) {
+    for( Connection iConnection : iConnections ) {
       connections.add( (Connection) iConnection );
     }
     return connections;
