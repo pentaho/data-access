@@ -25,17 +25,17 @@ import java.util.List;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDatasourceServiceImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 
 public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements IGwtDatasourceService {
 
@@ -93,7 +93,7 @@ public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements I
     return SERVICE.listDatasourceNames();
   }
 
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, Connection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
     try {
       return SERVICE.generateQueryDomain(name, query, connection, datasourceDTO);
     } catch (DatasourceServiceException e) {

@@ -38,9 +38,7 @@ import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.IServiceManager;
 import org.pentaho.platform.api.engine.ServiceException;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
-import org.pentaho.platform.api.repository.datasource.IDatasource;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
@@ -94,17 +92,17 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
         && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());
   }
 
-  public List<IConnection> getConnections() throws ConnectionServiceException {
+  public List<Connection> getConnections() throws ConnectionServiceException {
     if (!hasDataAccessPermission()) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
       throw new ConnectionServiceException(Messages
           .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
     }
 
-    List<IConnection> connectionList = new ArrayList<IConnection>();
+    List<Connection> connectionList = new ArrayList<Connection>();
     try {
-      for (IDatasource datasource : datasourceMgmtSvc.getDatasources()) {
-        connectionList.add(convertTo(datasource));
+      for (IDatabaseConnection datasource : datasourceMgmtSvc.getDatasources()) {
+        connectionList.add(convertToConnection(datasource));
       }
     } catch (DatasourceMgmtServiceException dme) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0002_UNABLE_TO_GET_CONNECTION_LIST", dme //$NON-NLS-1$
@@ -115,14 +113,14 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     return connectionList;
   }
 
-  public IConnection getConnectionByName(String name) throws ConnectionServiceException {
+  public Connection getConnectionByName(String name) throws ConnectionServiceException {
     if (!hasDataAccessPermission()) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
       throw new ConnectionServiceException(Messages
           .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
     }
     try {
-      IConnection connection = convertTo(datasourceMgmtSvc.getDatasource(name));
+    	Connection connection = convertToConnection(datasourceMgmtSvc.getDatasourceByName(name));
       if (connection != null) {
         return connection;
       } else {
@@ -139,7 +137,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
   }
 
-  public boolean addConnection(IConnection connection) throws ConnectionServiceException {
+  public boolean addConnection(Connection connection) throws ConnectionServiceException {
     if (!hasDataAccessPermission()) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
       throw new ConnectionServiceException(Messages
@@ -148,7 +146,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
 
     try {
       HibernateUtil.beginTransaction();
-      datasourceMgmtSvc.createDatasource(convertFrom(connection));
+      datasourceMgmtSvc.createDatasource(convertFromConnection(connection));
       HibernateUtil.commitTransaction();
       return true;
     } catch (Exception e) {
@@ -160,7 +158,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
   }
 
-  public boolean updateConnection(IConnection connection) throws ConnectionServiceException {
+  public boolean updateConnection(Connection connection) throws ConnectionServiceException {
     if (!hasDataAccessPermission()) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
       throw new ConnectionServiceException(Messages
@@ -170,7 +168,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       HibernateUtil.beginTransaction();
       connection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection
           .getPassword()));
-      datasourceMgmtSvc.updateDatasource(convertFrom(connection));
+      datasourceMgmtSvc.updateDatasourceByName(connection.getName(), convertFromConnection(connection));
       HibernateUtil.commitTransaction();
       return true;
     } catch (Exception e) {
@@ -182,7 +180,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
   }
 
-  public boolean deleteConnection(IConnection connection) throws ConnectionServiceException {
+  public boolean deleteConnection(Connection connection) throws ConnectionServiceException {
     if (!hasDataAccessPermission()) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
       throw new ConnectionServiceException(Messages
@@ -190,7 +188,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
     try {
       HibernateUtil.beginTransaction();
-      datasourceMgmtSvc.deleteDatasource(convertFrom(connection));
+      datasourceMgmtSvc.deleteDatasourceByName(connection.getName());
       HibernateUtil.commitTransaction();
       return true;
     } catch (Exception e) {
@@ -211,7 +209,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
 
     try {
       HibernateUtil.beginTransaction();
-      datasourceMgmtSvc.deleteDatasource(name);
+      datasourceMgmtSvc.deleteDatasourceByName(name);
       HibernateUtil.commitTransaction();
       return true;
     } catch (Exception e) {
@@ -222,7 +220,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
   }
 
-  public boolean testConnection(IConnection connection) throws ConnectionServiceException {
+  public boolean testConnection(Connection connection) throws ConnectionServiceException {
     if (!hasDataAccessPermission()) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
       throw new ConnectionServiceException(Messages
@@ -252,47 +250,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
   }
 
-  /**
-   * This method converts from IDatasource to IConnection 
-   * 
-   * @param datasource
-   * @return IConnection
-   */
-  private IConnection convertTo(IDatasource datasource) {
-    if( datasource == null ) {
-      // make sure we don't attempt bad conversions
-      return null;
-    }
-    IConnection returnDatasource = new org.pentaho.platform.dataaccess.datasource.beans.Connection();
-    returnDatasource.setDriverClass(datasource.getDriverClass());
-    returnDatasource.setName(datasource.getName());
-    returnDatasource.setPassword(ConnectionServiceHelper.encodePassword(datasource.getPassword()));
-    returnDatasource.setUsername(datasource.getUserName());
-    returnDatasource.setUrl(datasource.getUrl());
-    return returnDatasource;
-  }
-
-  /**
-   * This method converts from IConnection to IDatasource 
-   * 
-   * @param connection
-   * @return IDatasource
-   */
-  private IDatasource convertFrom(IConnection connection) {
-    if( connection == null ) {
-      // make sure we don't attempt bad conversions
-      return null;
-    }
-    IDatasource returnDatasource = PentahoSystem.get(IDatasource.class, null);
-    returnDatasource.setDriverClass(connection.getDriverClass());
-    returnDatasource.setName(connection.getName());
-    returnDatasource.setPassword(connection.getPassword());
-    returnDatasource.setUserName(connection.getUsername());
-    returnDatasource.setUrl(connection.getUrl());
-    return returnDatasource;
-  }
-
-  public IDatabaseConnection convertFromConnection(IConnection connection) throws ConnectionServiceException {
+  public IDatabaseConnection convertFromConnection(Connection connection) throws ConnectionServiceException {
     if( connection == null ) {
       // make sure we don't attempt bad conversions
       return null;
@@ -319,7 +277,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
   }
 
-  public IConnection convertToConnection(IDatabaseConnection connection) throws ConnectionServiceException {
+  public Connection convertToConnection(IDatabaseConnection connection) throws ConnectionServiceException {
     if( connection == null ) {
       // make sure we don't attempt bad conversions
       return null;

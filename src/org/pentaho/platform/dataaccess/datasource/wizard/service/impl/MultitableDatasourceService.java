@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
@@ -39,7 +38,7 @@ import org.pentaho.metadata.model.concept.Concept;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -48,10 +47,10 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.Conn
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoBase;
-
-import com.thoughtworks.xstream.XStream;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+
+import com.thoughtworks.xstream.XStream;
 
 public class MultitableDatasourceService extends PentahoBase implements IGwtJoinSelectionService {
 	
@@ -90,7 +89,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 
   }
 
-	private DatabaseMeta getDatabaseMeta(IConnection connection) throws ConnectionServiceException {
+	private DatabaseMeta getDatabaseMeta(Connection connection) throws ConnectionServiceException {
 		if(this.connectionServiceImpl == null) {
 			return this.databaseMeta;
 		}
@@ -100,7 +99,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		return DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
   }
 
-	public List<String> getDatabaseTables(IConnection connection) throws DatasourceServiceException {
+	public List<String> getDatabaseTables(Connection connection) throws DatasourceServiceException {
     try{
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       Database database = new Database(null, databaseMeta);
@@ -119,7 +118,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
     }
   }
 
-	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IConnection connection) throws DatasourceServiceException {
+	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, Connection connection) throws DatasourceServiceException {
     try{
       ModelerService modelerService = new ModelerService();
       modelerService.initKettle();
@@ -162,7 +161,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		}
 	}
 
-	public List<String> getTableFields(String table, IConnection connection) throws DatasourceServiceException {
+	public List<String> getTableFields(String table, Connection connection) throws DatasourceServiceException {
     try{
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       Database database = new Database(null, databaseMeta);

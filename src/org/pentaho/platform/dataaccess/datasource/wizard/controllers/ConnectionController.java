@@ -26,12 +26,10 @@ import java.util.List;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
-import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
@@ -42,8 +40,6 @@ import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import com.google.gwt.user.client.Window;
 
 //TODO: move to the relational datasource package
 public class ConnectionController extends AbstractXulEventHandler implements DatabaseDialogListener {
@@ -75,7 +71,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
   DatabaseTypeHelper databaseTypeHelper;
 
-  IConnection currentConnection;
+  Connection currentConnection;
 
   public ConnectionController() {
   }
@@ -217,7 +213,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
                     .getString("ConnectionController.CONNECTION_DELETED"));//$NON-NLS-1$
                 datasourceModel.getGuiStateModel().deleteConnection(
                     datasourceModel.getSelectedRelationalConnection().getName());
-                List<IConnection> connections = datasourceModel.getGuiStateModel().getConnections();
+                List<Connection> connections = datasourceModel.getGuiStateModel().getConnections();
                 if (connections != null && connections.size() > 0) {
                   datasourceModel.setSelectedRelationalConnection(connections.get(connections.size() - 1));
                 } else {
@@ -317,11 +313,11 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
   @Bindable
   public void onDialogAccept(IDatabaseConnection arg0) {
-    service.convertToConnection(arg0, new XulServiceCallback<IConnection>() {
+    service.convertToConnection(arg0, new XulServiceCallback<Connection>() {
       public void error(String message, Throwable error) {
         displayErrorMessage(error);
       }
-      public void success(IConnection retVal) {
+      public void success(Connection retVal) {
         currentConnection = retVal;
         addConnection();
       }
@@ -358,7 +354,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
   public void showEditConnectionDialog() {
     datasourceModel.setEditing(true);
     if(databaseDialog != null){
-      IConnection connection = datasourceModel.getSelectedRelationalConnection();
+      Connection connection = datasourceModel.getSelectedRelationalConnection();
       service.convertFromConnection(connection, new XulServiceCallback<IDatabaseConnection>() {
         public void error(String message, Throwable error) {
           displayErrorMessage(error);
@@ -389,14 +385,14 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
 
   public void reloadConnections(){
     if (service != null) {
-      service.getConnections(new XulServiceCallback<List<IConnection>>() {
+      service.getConnections(new XulServiceCallback<List<Connection>>() {
 
         public void error(String message, Throwable error) {
           MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString(
               "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", error.getLocalizedMessage()));
         }
 
-        public void success(List<IConnection> connections) {
+        public void success(List<Connection> connections) {
           datasourceModel.getGuiStateModel().setConnections(connections);
         }
 
