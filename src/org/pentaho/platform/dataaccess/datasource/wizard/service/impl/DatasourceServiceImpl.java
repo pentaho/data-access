@@ -398,8 +398,7 @@ public class DatasourceServiceImpl implements IDatasourceService {
 
   public boolean hasPermission() {
     if (PentahoSessionHolder.getSession() != null) {
-      return (SecurityHelper.getInstance().isPentahoAdministrator(PentahoSessionHolder.getSession()) ||
-          hasDataAccessPermission());
+      return (SecurityHelper.getInstance().isPentahoAdministrator(PentahoSessionHolder.getSession()) || hasDataAccessPermission());
     } else {
       return false;
     }

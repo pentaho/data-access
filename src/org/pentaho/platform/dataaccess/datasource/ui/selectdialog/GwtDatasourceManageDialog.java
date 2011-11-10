@@ -5,6 +5,8 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDataso
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
 
+import com.google.gwt.core.client.GWT;
+
 /**
  * Created by IntelliJ IDEA.
  * User: rfellows
@@ -21,7 +23,7 @@ public class GwtDatasourceManageDialog extends GwtDatasourceSelectionDialog {
     this.datasourceService = datasourceService;
     this.constructorListener = constructorListener;
     try {
-      AsyncXulLoader.loadXulFromUrl("datasourceManageDialog.xul", "datasourceSelectionDialog", this); //$NON-NLS-1$//$NON-NLS-2$
+      AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "datasourceManageDialog.xul", GWT.getModuleBaseURL() + "datasourceSelectionDialog", this); //$NON-NLS-1$//$NON-NLS-2$
     } catch (Exception e) {
       e.printStackTrace();
     }

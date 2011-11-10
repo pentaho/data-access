@@ -149,9 +149,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   private void loadXul(){
     bundle = new ResourceBundle("", "modeler", true, this);
-
-    AsyncXulLoader.loadXulFromUrl(MAIN_WIZARD_PANEL, MAIN_WIZARD_PANEL_PACKAGE, EmbeddedWizard.this);
-
+    AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + MAIN_WIZARD_PANEL, GWT.getModuleBaseURL() + MAIN_WIZARD_PANEL_PACKAGE, EmbeddedWizard.this);
   }
 
 
