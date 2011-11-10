@@ -38,7 +38,7 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
 
   public List<String> getPermittedRoleList(IPentahoSession session) {
     List<String> roleList = new ArrayList<String>();
-    Authentication auth = SecurityHelper.getAuthentication(session, true);
+    Authentication auth = SecurityHelper.getInstance().getAuthentication(session, true);
     IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
     String roles = null;
 

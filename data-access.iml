@@ -9,6 +9,33 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="api" exported="" />
+    <orderEntry type="module" module-name="core" exported="" />
+    <orderEntry type="module" module-name="extensions" exported="" />
+    <orderEntry type="module" module-name="pentaho-metadata" exported="" />
+    <orderEntry type="module" module-name="repository" exported="" />
+    <orderEntry type="module-library" scope="TEST">
+      <library name="test-lib">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/test-lib" />
+          <root url="file://$MODULE_DIR$/test-lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="lib">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/war/WEB-INF/lib" />
+          <root url="file://$MODULE_DIR$/war/WEB-INF/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/war/WEB-INF/lib" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

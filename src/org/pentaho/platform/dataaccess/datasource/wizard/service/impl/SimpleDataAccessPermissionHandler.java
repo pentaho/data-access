@@ -34,7 +34,7 @@ public class SimpleDataAccessPermissionHandler implements IDataAccessPermissionH
   private Log logger = LogFactory.getLog(SimpleDataAccessPermissionHandler.class);
   public boolean hasDataAccessPermission(IPentahoSession session) {
 
-    Authentication auth = SecurityHelper.getAuthentication(session, true);
+    Authentication auth = SecurityHelper.getInstance().getAuthentication(session, true);
     
     IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
     String roles = null;
