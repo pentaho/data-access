@@ -66,7 +66,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
   private ModelerDialog(EmbeddedWizard wizard, final AsyncConstructorListener<ModelerDialog> constructorListener){
     this.wizard = wizard;
     this.constructorListener = constructorListener;
-    AsyncXulLoader.loadXulFromUrl("modeler.xul", "modeler", this);
+    AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "modeler.xul", GWT.getModuleBaseURL() + "modeler", this);
   }
 
   public static ModelerDialog getInstance(final AsyncConstructorListener<ModelerDialog> constructorListener){

@@ -32,6 +32,8 @@ import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
 import org.pentaho.ui.xul.gwt.util.IXulLoaderCallback;
 import org.pentaho.ui.xul.util.DialogController;
 
+import com.google.gwt.core.client.GWT;
+
 public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogController<LogicalModelSummary> {
 
   // ~ Static fields/initializers ======================================================================================
@@ -59,7 +61,7 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
     this.datasourceService = datasourceService;
     this.constructorListener = constructorListener;
     try {
-      AsyncXulLoader.loadXulFromUrl("datasourceSelectionDialog.xul", "datasourceSelectionDialog", this); //$NON-NLS-1$//$NON-NLS-2$
+      AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "datasourceSelectionDialog.xul", GWT.getModuleBaseURL() +  "datasourceSelectionDialog", this); //$NON-NLS-1$//$NON-NLS-2$
     } catch (Exception e) {
       e.printStackTrace();
     }
