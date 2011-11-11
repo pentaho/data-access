@@ -477,26 +477,12 @@ public class DatasourceServiceImpl implements IDatasourceService {
     XStream xs = new XStream();
     return (DatasourceDTO) xs.fromXML(dtoStr);
   }
-
-
-  private IPentahoSession getSession() {
-    IPentahoSession session = null;
-    IPentahoObjectFactory pentahoObjectFactory = PentahoSystem.getObjectFactory();
-    if (pentahoObjectFactory != null) {
-      try {
-        session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
-      } catch (ObjectFactoryException e) {
-        logger.error(e);
-      }
-    }
-    return session;
-  }
   
   public List<String> listDatasourceNames() throws IOException {
     synchronized(CsvDatasourceServiceImpl.lock) {
   	  IPentahoUrlFactory urlFactory = new SimpleUrlFactory(""); //$NON-NLS-1$
   	  PMDUIComponent component = new PMDUIComponent(urlFactory, new ArrayList());
-  	  component.validate(getSession(), null);
+  	  component.validate(PentahoSessionHolder.getSession(), null);
   	  component.setAction(PMDUIComponent.ACTION_LIST_MODELS);
   	  Document document = component.getXmlContent();
   	  List<DefaultElement> modelElements = document.selectNodes("//model_name"); //$NON-NLS-1$
