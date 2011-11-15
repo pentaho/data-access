@@ -85,24 +85,6 @@ public class SerializeMultiTableServiceTest {
 	    service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
 	    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "SampleData");
-	    
-	    File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
-	    File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
-
-	    assertTrue(xmiFile.exists());
-	    assertTrue(mondrianFile.exists());
-
-	    if (xmiFile.exists()) {
-	      xmiFile.delete();
-	    }
-
-	    if (mondrianFile.exists()) {
-	      mondrianFile.delete();
-	    }
-
-	    //Restores datasources.xml to its original content.
-	    FileUtils.copyFile(olap2, olap1);
-	    olap2.delete();
 	  }
 	  
 	  private SchemaModel getSchema() {
