@@ -65,7 +65,7 @@ public class UploadFileDebugServlet extends HttpServlet implements Servlet {
       String relativePath = PentahoSystem.getSystemSetting("file-upload-defaults/relative-path", String.valueOf(DEFAULT_RELATIVE_UPLOAD_FILE_PATH));  //$NON-NLS-1$ 
       String maxFileLimit = PentahoSystem.getSystemSetting("file-upload-defaults/max-file-limit", String.valueOf(MAX_FILE_SIZE));  //$NON-NLS-1$    
       String maxFolderLimit = PentahoSystem.getSystemSetting("file-upload-defaults/max-folder-limit", String.valueOf(MAX_FOLDER_SIZE));  //$NON-NLS-1$
-      IPentahoSession session = PentahoSessionHolder.getSession(); // PentahoHttpSessionHelper.getPentahoSession(request);
+      IPentahoSession session = PentahoSessionHolder.getSession();
       
       response.setContentType("text/plain"); //$NON-NLS-1$
       
