@@ -169,16 +169,16 @@ public class ModelerService extends PentahoBase implements IModelerService {
 
       // Serialize domain to olap schema.
       if(doOlap){
-        MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
+    	MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
         String mondrianSchema = exporter.createMondrianModelXML();
         IPentahoSession session = PentahoSessionHolder.getSession();
-        session.setAttribute("MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema);
-        
-        // Refresh Metadata
-        PentahoSystem.publish(session, MetadataPublisher.class.getName());
-
-        String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
-        addCatalog(catName, catConnectStr, session);
+        if(session != null) {
+	        session.setAttribute("MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema);
+	        // Refresh Metadata
+	        PentahoSystem.publish(session, MetadataPublisher.class.getName());
+	        String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
+	        addCatalog(catName, catConnectStr, session);
+        }
       }
 
     } catch (Exception e) {
