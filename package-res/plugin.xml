@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin title="Pentaho Data Access" loader="OVERRIDING" name="data-access">
+
+   <lifecycle-listener class="org.pentaho.platform.dataaccess.listener.DataaccessLifecycleListener"/>
+   
    <static-paths>
      <!-- this translates to /pentaho/content/data-access-plugin/resources/* -->
      <static-path url="/data-access/resources" localFolder="resources"/>
    </static-paths>
+   
+   <overlays>
+	    <overlay id="startup.dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages.properties">
+			<menubar id="managemenu">
+				<menuitem id="manageDatasourceItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />				
+			</menubar>				
+	    </overlay>
+	</overlays>
+
 
    <!-- this is used by the datasource service -->
    <bean id="connectionServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl"/>
