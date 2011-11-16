@@ -157,5 +157,4 @@
 	<target name="findbugs.clean" description="cleans up any previous findbugs reports">
 		<delete dir="${findbugs.output-dir}"></delete>
 	</target>
-	
 </project>

@@ -20,6 +20,7 @@
   <inherits name="org.pentaho.ui.database.DatabaseDialog"/>
   <inherits name="org.pentaho.database.Database"/>
   <inherits name="org.pentaho.reporting.libraries.base.Util" />
+  <inherits name="org.pentaho.platform.api.datasource.IGenericDatasource"/>
   
   <source path="">
     <exclude name="**/MQLEditorDebugGwtServlet*"/>
@@ -81,6 +82,7 @@
 
   </source>
   <stylesheet src="datasourceEditorDialog.css"/>
+  <stylesheet src="datasourceAdminDialog.css"/>
   <public path="wizard/public"/>
   <servlet path="/ConnectionService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet" />
   <servlet path="/DatasourceService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.DatasourceDebugGwtServlet" />

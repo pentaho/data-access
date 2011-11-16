@@ -21,26 +21,25 @@
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
 
-import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.user.client.Window;
-
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPane;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPaneNativeListener;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.api.datasource.IGenericDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
+import org.pentaho.platform.dataaccess.datasource.ui.admindialog.GwtDatasourceAdminDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceManageDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncGenericDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.GenericDatasourceServiceManagerGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -48,6 +47,10 @@ import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
 import org.pentaho.ui.xul.util.XulDialogCallback;
+
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * Creates the singleton datasource wizard and sets up native JavaScript functions to show the wizard.
@@ -59,13 +62,16 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private ModelerDialog modeler;
   private IXulAsyncDatasourceService datasourceService;
   private IXulAsyncConnectionService connectionService;
+  private IXulAsyncGenericDatasourceServiceManager genericDatasourceServiceManager;
   private ICsvDatasourceServiceAsync csvService;
   private GwtDatasourceSelectionDialog gwtDatasourceSelectionDialog;
   private EmbeddedWizard gwtDatasourceEditor;
   private GwtDatasourceManageDialog manageDialog;
   private GwtDatasourceSelectionDialog selectDialog ;
+  private GwtDatasourceAdminDialog adminDialog;
   private boolean asyncConstructorDone;
   private boolean hasPermissions;
+  private boolean isAdmin;
 
   public void onModuleLoad() {
 
@@ -88,6 +94,16 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         initDashboardButtons(retVal);
       }
     });
+    
+    genericDatasourceServiceManager = new GenericDatasourceServiceManagerGwtImpl();
+    
+    genericDatasourceServiceManager.isAdmin(new XulServiceCallback<Boolean>() {
+      public void error(String message, Throwable error) {
+      }
+      public void success(Boolean retVal) {
+        isAdmin = retVal;
+      }
+    });
   }
   
   public native void initDashboardButtons(boolean val) /*-{
@@ -107,6 +123,11 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     $wnd.pho.showDatasourceSelectionDialog = function(context, callback) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(context,"true", callback);
     }
+
+    $wnd.pho.showAdminDialog = function(callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showAdminDialog(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
+    }
+
 
     $wnd.gwtConfirm = function(message, callback, options){
       var title = options.title || $wnd.pho_messages.getMessage("prompt","Prompt");
@@ -292,6 +313,28 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   }
 
 
+  @SuppressWarnings("unused")
+  private void showAdminDialog(final JavaScriptObject callback) {
+    
+    final DialogListener<IGenericDatasourceInfo> listener = new DialogListener<IGenericDatasourceInfo>(){
+      public void onDialogCancel() {
+        adminDialog.removeDialogListener(this);
+        asyncConstructorDone = false;
+        notifyCallbackCancel(callback);
+      }
+
+      public void onDialogAccept(final IGenericDatasourceInfo genericDatasourceInfo) {
+        adminDialog.removeDialogListener(this);
+        asyncConstructorDone = false;
+        notifyCallbackSuccess(callback, genericDatasourceInfo.getId(), genericDatasourceInfo.getType());
+      }
+
+      public void onDialogReady() {
+      }
+    };
+    showAdminDialog(listener);
+  }
+  
 
   @SuppressWarnings("unused")
   private void showSelectionDialog(final String context, final String selectDatasource, final JavaScriptObject callback) {
@@ -314,7 +357,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       public void onDialogReady() {
       }
     };
-
     if(wizard == null && this.hasPermissions){
       wizard = new EmbeddedWizard(false);
 
@@ -323,14 +365,34 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       wizard.setCsvDatasourceService(csvService);
       wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
         public void asyncConstructorDone(EmbeddedWizard source) {
+          if(context != null && context.equals("manage") && isAdmin) {
+            showAdminDialog(callback);
+          } else {
           showSelectionDialog(context, selectDs, listener);
+          }
         }
       });
     } else {
-      showSelectionDialog(context, selectDs, listener);
+      if(context != null && context.equals("manage") && isAdmin) {
+        showAdminDialog(callback);
+      } else {
+        showSelectionDialog(context, selectDs, listener);
+      }
     }
   }
 
+
+  private void showAdminDialog(final DialogListener<IGenericDatasourceInfo> listener) {
+    if(adminDialog == null) {
+      final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener = getAdminDialogListener(listener);
+      asyncConstructorDone = false;
+      adminDialog = new GwtDatasourceAdminDialog(genericDatasourceServiceManager, constructorListener);
+    } else {
+      adminDialog.addDialogListener(listener);
+      adminDialog.showDialog();
+    }
+  }
+  
   private void showSelectionDialog(final String context, final boolean selectDs, final DialogListener<LogicalModelSummary> listener) {
     if (selectDs) {
       // selection dialog
@@ -375,6 +437,22 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     };
 
   }
+  
+  private AsyncConstructorListener<GwtDatasourceAdminDialog> getAdminDialogListener(final DialogListener<IGenericDatasourceInfo> listener){
+    return new AsyncConstructorListener<GwtDatasourceAdminDialog>() {
+
+     public void asyncConstructorDone(GwtDatasourceAdminDialog dialog) {
+       dialog.removeDialogListener(listener);
+       dialog.addDialogListener(listener);
+       if (!asyncConstructorDone) {
+         dialog.showDialog();
+       }
+       asyncConstructorDone = true;
+     }
+   };
+
+ }
+
   private native void notifyCallbackSuccess(JavaScriptObject callback, String domainId,
     String modelId, String modelName) /*-{
    callback.onFinish(domainId, modelId, modelName);

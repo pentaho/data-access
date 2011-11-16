@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<window id="datasourcesListWindow" title="Datasources List Dialog Demo" orient="vertical"
+  xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
+  height="600" width="800" onload="datasourceAdminDialogController.init()">
+
+  <!-- this button for demo purposes only -->
+  <hbox>
+    <button label="Open Datasources List Dialog" tooltiptext="Open Datasources Management Dialog" onclick="datasourceAdminDialogController.showDialog()" />
+  </hbox>
+
+  <dialog id="datasourceAdminDialog" buttonlabelcancel="${datasourceAdminDialog.close}" buttons="cancel"
+    buttonalign="right" title="${datasourceAdminDialog.title}" width="500" height="215"
+    ondialogcancel="datasourceAdminDialogController.onDialogCancel()">
+    <!--
+        <hbox flex="1">
+	        <label id="datasourcesLabel" value="${datasourceAdminDialog.DATASOURCES_LABEL}"/>
+	        <spacer flex="1"/>
+	        <button id="importButton" label="${datasourceAdminDialog.IMPORT}" disabled="true" onclick="datasourceAdminDialogController.import()" />
+	        <button id="exportButton" label="${datasourceAdminDialog.EXPORT}" disabled="true" onclick="datasourceAdminDialogController.export()" />
+	        <spacer flex="1"/>
+	        <button id="addButton" label="${datasourceAdminDialog.ADD}" disabled="true" onclick="datasourceAdminDialogController.add()" />
+	        <button id="editButton" label="${datasourceAdminDialog.EDIT}" disabled="true" onclick="datasourceAdminDialogController.edit()" />
+	        <button id="removeButton" label="${datasourceAdminDialog.REMOVE}" disabled="true" onclick="datasourceAdminDialogController.remove()" />
+	        <button id="sortButton" label="${datasourceAdminDialog.SORT}" disabled="true" onclick="datasourceAdminDialogController.sort()" />
+        </hbox>
+   -->    
+		<tree height="175" id="datasourcesListTable" seltype="single">
+			<treecols id="datasourcesListCols">
+				<treecol id="datasourceName" label="${datasourcesListCols.datasourceName}" flex="1" pen:binding="id" editable="false" type="text"/>
+				<treecol id="datasourceType" label="${datasourcesListCols.datasourceType}" flex="1" pen:binding="type" editable="false" type="text"/>
+			</treecols>
+			<treechildren id="datasourcesListRows"/>
+		</tree>
+  </dialog>
+
+</window>
