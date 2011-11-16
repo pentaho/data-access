@@ -48,7 +48,6 @@ import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.ICacheManager;
 import org.pentaho.platform.api.engine.IPentahoDefinableObjectFactory.Scope;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
-import org.pentaho.platform.api.engine.IUserRoleListService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.util.IPasswordService;
 import org.pentaho.platform.dataaccess.metadata.messages.Messages;
@@ -79,7 +78,6 @@ import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedReposi
 import org.pentaho.platform.util.Base64PasswordService;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
-import org.pentaho.test.platform.plugin.UserRoleMapperTest.TestUserRoleListService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -1154,7 +1152,6 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		booter.define(IDatabaseConnection.class, DatabaseConnection.class, Scope.GLOBAL);
 		booter.define(IDatabaseDialectService.class, DatabaseDialectService.class, Scope.GLOBAL);
 		booter.define(IMondrianCatalogService.class, MondrianCatalogHelper.class, Scope.GLOBAL);
-		booter.define(IUserRoleListService.class, TestUserRoleListService.class, Scope.GLOBAL);
 		booter.define("connection-SQL", SQLConnection.class, Scope.GLOBAL);
 		booter.define(IDatasourceService.class, JndiDatasourceService.class, Scope.GLOBAL);
 		booter.define(IPluginResourceLoader.class, PluginResourceLoader.class, Scope.GLOBAL);
