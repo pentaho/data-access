@@ -51,6 +51,7 @@ import org.pentaho.ui.xul.util.XulDialogCallback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.Timer;
 
 /**
  * Creates the singleton datasource wizard and sets up native JavaScript functions to show the wizard.
@@ -72,29 +73,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private boolean asyncConstructorDone;
   private boolean hasPermissions;
   private boolean isAdmin;
+  private Timer timer;
 
   public void onModuleLoad() {
-
-    datasourceService = new DatasourceServiceGwtImpl();
-    // only init the app if the user has permissions
-
-    datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
-      public void error(String message, Throwable error) {
-        setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
-        initDashboardButtons(false);
-      }
-      public void success(Boolean retVal) {
-        hasPermissions = retVal;
-        setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
-        if (retVal) {
-          connectionService = new ConnectionServiceGwtImpl();
-          csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
-          setupPrivilegedNativeHooks(GwtDatasourceEditorEntryPoint.this);
-        }
-        initDashboardButtons(retVal);
-      }
-    });
-    
     genericDatasourceServiceManager = new GenericDatasourceServiceManagerGwtImpl();
     
     genericDatasourceServiceManager.isAdmin(new XulServiceCallback<Boolean>() {
@@ -102,9 +83,47 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
       public void success(Boolean retVal) {
         isAdmin = retVal;
+        datasourceService = new DatasourceServiceGwtImpl();
+        // only init the app if the user has permissions
+
+        datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
+          public void error(String message, Throwable error) {
+            setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
+            initDashboardButtons(false);
+          }
+          public void success(Boolean retVal) {
+            hasPermissions = retVal;
+            setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
+            if (isAdmin || hasPermissions) {
+              connectionService = new ConnectionServiceGwtImpl();
+              csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
+              setupPrivilegedNativeHooks(GwtDatasourceEditorEntryPoint.this);
+            }
+            timer = new Timer() {
+               @Override
+              public void run() {
+                if(doesMenuItemExist("manageDatasourceItem")) {
+                  setMenuItemEnabled("manageDatasourceItem", isAdmin || hasPermissions);
+                  setMenuItemEnabled("newDatasourceItem", isAdmin || hasPermissions);
+                  timer.cancel(); 
+                } else {
+                  timer.schedule(1000);
+                }
+              }};
+            timer.schedule(1000);
+            initDashboardButtons(retVal);
+          }
+        });        
       }
     });
   }
+  private native boolean doesMenuItemExist(String menuItem) /*-{
+    return window.top.mantle_doesMenuItemExist(menuItem)
+
+  }-*/;
+  private native void setMenuItemEnabled(String menuItem, boolean enabled) /*-{
+    window.top.mantle_setMenuItemEnabled(menuItem, enabled)
+  }-*/;
   
   public native void initDashboardButtons(boolean val) /*-{
     if($wnd.initDataAccess){
@@ -122,10 +141,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
     $wnd.pho.showDatasourceSelectionDialog = function(context, callback) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(context,"true", callback);
-    }
-
-    $wnd.pho.showAdminDialog = function(callback) {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showAdminDialog(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
     }
 
 
