@@ -41,6 +41,8 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import com.google.gwt.core.client.GWT;
+
 //TODO: move to the relational datasource package
 public class ConnectionController extends AbstractXulEventHandler implements DatabaseDialogListener {
 
@@ -346,7 +348,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
       databaseDialog.show();
     } else {
       databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
+          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
     }
   }
 
@@ -366,7 +368,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
       });
     } else {
       databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
+    		  GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
     }
   }
 

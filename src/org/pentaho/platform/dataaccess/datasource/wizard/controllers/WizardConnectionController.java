@@ -43,6 +43,8 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import com.google.gwt.core.client.GWT;
+
 public class WizardConnectionController extends AbstractXulEventHandler {
 
   private IXulAsyncConnectionService connectionService;
@@ -383,7 +385,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       databaseDialog.show();
     } else {
       databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+    		  GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
     }
   }
 
@@ -403,7 +405,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       });
     } else {
       databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+    		  GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
     }
   }
 
