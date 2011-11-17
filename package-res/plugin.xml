@@ -13,9 +13,13 @@
 	    <overlay id="startup.dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages.properties">
 			<menubar id="managemenu">
 				<menuitem id="manageDatasourceItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />				
-			</menubar>				
+			</menubar>
+			<menubar id="newmenu">
+				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="window.top.pho.openDatasourceEditor(window.top.datasourceEditorCallback)" />				
+			</menubar>
 	    </overlay>
 	</overlays>
+
 
 
    <!-- this is used by the datasource service -->
