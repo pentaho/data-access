@@ -48,6 +48,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransf
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.engine.core.system.PentahoBase;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.reporting.libraries.base.util.StringUtils;
@@ -127,7 +128,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       ModelInfo modelInfo = datasourceDto.getCsvModelInfo();
       IPentahoSession pentahoSession = null;
       try {
-        pentahoSession = getSession();
+        pentahoSession = PentahoSessionHolder.getSession();
         KettleSystemListener.environmentInit(pentahoSession);
         
         String statsKey = FileTransformStats.class.getSimpleName() + "_" + modelInfo.getFileInfo().getTmpFilename(); //$NON-NLS-1$
@@ -224,19 +225,6 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
 		    logicalModel.setProperty("datasourceModel", modelState);
 		}
 	}
-
-  private IPentahoSession getSession() {
-    IPentahoSession session = null;
-    IPentahoObjectFactory pentahoObjectFactory = PentahoSystem.getObjectFactory();
-    if (pentahoObjectFactory != null) {
-      try {
-        session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
-      } catch (ObjectFactoryException e) {
-        logger.error(e);
-      }
-    } 
-    return session;
-  }
 
   public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception {
     List<String> previewRows = null;
