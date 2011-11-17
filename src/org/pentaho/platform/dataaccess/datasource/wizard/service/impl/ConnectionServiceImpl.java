@@ -49,7 +49,6 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.connection.PentahoConnectionFactory;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
-import org.pentaho.platform.repository.hibernate.HibernateUtil;
 
 /**
  * ConnectionServiceImpl extends PenahoBase so that it inherits the ILogger functionality.
@@ -145,9 +144,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
 
     try {
-      HibernateUtil.beginTransaction();
       datasourceMgmtSvc.createDatasource(convertFromConnection(connection));
-      HibernateUtil.commitTransaction();
       return true;
     } catch (Exception e) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", connection //$NON-NLS-1$
@@ -165,11 +162,9 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
           .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
     }
     try {
-      HibernateUtil.beginTransaction();
       connection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection
           .getPassword()));
       datasourceMgmtSvc.updateDatasourceByName(connection.getName(), convertFromConnection(connection));
-      HibernateUtil.commitTransaction();
       return true;
     } catch (Exception e) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION", //$NON-NLS-1$
@@ -187,9 +182,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
           .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
     }
     try {
-      HibernateUtil.beginTransaction();
       datasourceMgmtSvc.deleteDatasourceByName(connection.getName());
-      HibernateUtil.commitTransaction();
       return true;
     } catch (Exception e) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
@@ -208,9 +201,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
 
     try {
-      HibernateUtil.beginTransaction();
       datasourceMgmtSvc.deleteDatasourceByName(name);
-      HibernateUtil.commitTransaction();
       return true;
     } catch (Exception e) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", name, e //$NON-NLS-1$
@@ -268,7 +259,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       IDatabaseConnection conn = service.createDatabaseConnection(connection.getDriverClass(), connection.getUrl());
       conn.setName(connection.getName());
       conn.setUsername(connection.getUsername());
-      conn.setPassword(ConnectionServiceHelper.encodePassword(connection.getPassword()));
+      conn.setPassword(connection.getPassword());
       return conn;
     } catch (ServiceException e) {
       throw new ConnectionServiceException(e);

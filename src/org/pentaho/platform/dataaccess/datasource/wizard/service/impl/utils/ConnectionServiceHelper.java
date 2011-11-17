@@ -43,9 +43,7 @@ public  class ConnectionServiceHelper {
 
   public static String getConnectionPassword(String connectionName, String password) throws ConnectionServiceException {
     try {
-      HibernateUtil.beginTransaction();
       IDatabaseConnection datasource = datasourceMgmtSvc.getDatasourceByName(connectionName);
-      HibernateUtil.commitTransaction();
       if (datasource != null && !hasPasswordChanged(password)) {
         return datasource.getPassword();
       } else {
