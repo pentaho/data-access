@@ -150,13 +150,10 @@ public class ModelerService extends PentahoBase implements IModelerService {
       ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), datasourceService.getGeoContext());
       model.setModelName(name);
       model.setDomain(domain);
-      String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
+      domain.setId(name + ".xmi");
 
-      String metadataLocation = "resources" + ISolutionRepository.SEPARATOR + "metadata"; //$NON-NLS-1$  //$NON-NLS-2$
-
-      String path = solutionStorage + ISolutionRepository.SEPARATOR + metadataLocation + ISolutionRepository.SEPARATOR;
-      domainId = path + name + ".xmi"; //$NON-NLS-1$ 
-      domain.setId(domainId);
+      LogicalModel businessModel = domain.getLogicalModels().get(0); // schemaMeta.getActiveModel();
+      businessModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
 
       LogicalModel lModel = domain.getLogicalModels().get(0);
       String catName = lModel.getName(Locale.getDefault().toString());
@@ -166,7 +163,8 @@ public class ModelerService extends PentahoBase implements IModelerService {
       }
       
       // TODO STORE XMI INTO JCR HERE.
-
+      IMetadataDomainRepository repo = PentahoSystem.get(IMetadataDomainRepository.class);
+      repo.storeDomain(domain, false);
       // Serialize domain to olap schema.
       if(doOlap){
     	MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
