@@ -27,8 +27,6 @@ import mondrian.xmla.DataSourcesConfig.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.pentaho.agilebi.modeler.IModelerSource;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -45,18 +43,12 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.MondrianModelExporter;
-import org.pentaho.metadata.util.XmiParser;
-import org.pentaho.platform.api.engine.IApplicationContext;
-import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
-import org.pentaho.platform.api.repository.ISolutionRepository;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.InlineSqlModelerSource;
-import org.pentaho.platform.engine.core.solution.ActionInfo;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
@@ -119,7 +111,6 @@ public class ModelerService extends PentahoBase implements IModelerService {
     }
   }
 
-
   public Domain generateCSVDomain(String tableName, String datasourceName) throws Exception {
     initKettle();
     try{
@@ -131,7 +122,6 @@ public class ModelerService extends PentahoBase implements IModelerService {
       throw new Exception(e.getLocalizedMessage());
     }
   }
-
 
   public BogoPojo gwtWorkaround ( BogoPojo pojo){
     return new BogoPojo();
@@ -162,9 +152,10 @@ public class ModelerService extends PentahoBase implements IModelerService {
         lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
       }
       
-      // TODO STORE XMI INTO JCR HERE.
-      IMetadataDomainRepository repo = PentahoSystem.get(IMetadataDomainRepository.class);
-      repo.storeDomain(domain, false);
+      // Stores metadata into JCR.      
+      IMetadataDomainRepository  metadataDomainRep = PentahoSystem.get(IMetadataDomainRepository.class);
+      metadataDomainRep.storeDomain(model.getDomain(), true);
+      
       // Serialize domain to olap schema.
       if(doOlap){
     	MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
@@ -172,8 +163,6 @@ public class ModelerService extends PentahoBase implements IModelerService {
         IPentahoSession session = PentahoSessionHolder.getSession();
         if(session != null) {
 	        session.setAttribute("MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema);
-	        // Refresh Metadata
-	        PentahoSystem.publish(session, MetadataPublisher.class.getName());
 	        String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
 	        addCatalog(catName, catConnectStr, session);
         }
@@ -184,19 +173,6 @@ public class ModelerService extends PentahoBase implements IModelerService {
       throw e;
     }
     return domainId;
-  }
-  
-  private void cleanseExistingCatalog(String catName, IPentahoSession session) {
-	  
-	  // If mondrian catalog exists delete it to avoid duplicates and orphan entries in the datasources.xml registry.
-	  //IPentahoSession session = PentahoSessionHolder.getSession();
-	  if(session != null) {
-		  IMondrianCatalogService service = PentahoSystem.get(IMondrianCatalogService.class, null);
-	      MondrianCatalog catalog = service.getCatalog(catName, session);
-	      if(catalog != null) {
-	      	  service.removeCatalog(catName, session);
-	      }
-	  }
   }
   
   private void addCatalog(String catName, String catConnectStr, IPentahoSession session) {
