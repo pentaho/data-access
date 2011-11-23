@@ -151,13 +151,12 @@ public class ModelerService extends PentahoBase implements IModelerService {
       if(doOlap){
         lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
       }
-      
+            
       // Stores metadata into JCR.      
       IMetadataDomainRepository  metadataDomainRep = PentahoSystem.get(IMetadataDomainRepository.class);
       if(metadataDomainRep != null) {
     	  metadataDomainRep.storeDomain(model.getDomain(), true);
-      }
-      
+      }      
       // Serialize domain to olap schema.
       if(doOlap){
     	MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
