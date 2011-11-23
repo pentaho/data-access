@@ -71,10 +71,10 @@ import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
-import org.pentaho.platform.plugin.services.metadata.MetadataDomainRepository;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader;
 import org.pentaho.platform.repository2.unified.JackrabbitRepositoryTestBase;
 import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository;
+import org.pentaho.platform.repository2.unified.metadata.SecurityAwarePentahoMetadataDomainRepository;
 import org.pentaho.platform.util.Base64PasswordService;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
@@ -1158,8 +1158,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		booter.define(IUnifiedRepository.class, FileSystemBackedUnifiedRepository.class, Scope.GLOBAL);
 		booter.setSettingsProvider(new SystemSettings());
 
-		MetadataDomainRepository rep = new MetadataDomainRepository();
-		rep.setMetadataRootFolder("test-res/solution1/steel-wheels");
+		SecurityAwarePentahoMetadataDomainRepository rep = new SecurityAwarePentahoMetadataDomainRepository(repo);
 		booter.defineInstance(IMetadataDomainRepository.class, rep);
 
 		System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$
