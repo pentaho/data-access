@@ -78,9 +78,7 @@
     <constructor-arg ref="IDatabaseDialectService" />
   </bean>
 
-  <bean id="unifiedRepository" class="org.pentaho.platform.repository2.unified.ExceptionLoggingDecorator">
-    <constructor-arg ref="unifiedRepositoryProxy" />
-  </bean>
+  <bean id="unifiedRepository" class="org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository"/>
 
   <bean id="unifiedRepositoryProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
     <property name="target" ref="unifiedRepositoryTarget" />
