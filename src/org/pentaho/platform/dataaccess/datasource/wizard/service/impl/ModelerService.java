@@ -154,7 +154,9 @@ public class ModelerService extends PentahoBase implements IModelerService {
       
       // Stores metadata into JCR.      
       IMetadataDomainRepository  metadataDomainRep = PentahoSystem.get(IMetadataDomainRepository.class);
-      metadataDomainRep.storeDomain(model.getDomain(), true);
+      if(metadataDomainRep != null) {
+    	  metadataDomainRep.storeDomain(model.getDomain(), true);
+      }
       
       // Serialize domain to olap schema.
       if(doOlap){
