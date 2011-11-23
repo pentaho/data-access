@@ -19,6 +19,7 @@
  */
 package org.pentaho.platform.dataaccess.metadata;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +75,7 @@ import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader;
 import org.pentaho.platform.repository2.unified.JackrabbitRepositoryTestBase;
 import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository;
-import org.pentaho.platform.repository2.unified.metadata.SecurityAwarePentahoMetadataDomainRepository;
+import org.pentaho.platform.repository2.unified.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.util.Base64PasswordService;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
@@ -147,7 +148,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		MetadataService svc = new MetadataService();
 
 		Query query = new Query();
-		query.setDomainName("/metadata.xmi");
+		query.setDomainName("steel-wheels");
 		query.setModelId("BV_ORDERS");
 		query.setDisableDistinct(Boolean.FALSE);
 		List<Column> cols = new ArrayList<Column>();
@@ -429,13 +430,13 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 
 		MetadataService svc = new MetadataService();
 
-		Model model = svc.loadModel("/metadata.xmi", "BV_HUMAN_RESOURCES");
+		Model model = svc.loadModel("steel-wheels", "BV_HUMAN_RESOURCES");
 		Assert.assertNotNull("model should not be null", model);
 
 		Assert.assertTrue(model.equals(model));
 		Assert.assertFalse(model.equals(null));
 		Assert.assertFalse(model.equals(this));
-		Assert.assertFalse(model.equals(svc.loadModel("/metadata.xmi", "BV_ORDERS")));
+		Assert.assertFalse(model.equals(svc.loadModel("steel-wheels", "BV_ORDERS")));
 
 		Model model2 = new Model();
 		Model model3 = new Model();
@@ -472,7 +473,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		KettleSystemListener.environmentInit(PentahoSessionHolder.getSession());
 		MetadataService svc = new MetadataService();
 
-		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>/metadata.xmi</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints><constraint><operator>AND</operator><condition><![CDATA[[BC_CUSTOMER_W_TER_.BC_CUSTOMER_W_TER_COUNTRY] = \"Australia\"]]></condition></constraint></constraints><orders><order><direction>ASC</direction><view_id>CAT_ORDERS</view_id><column_id>BC_ORDERDETAILS_QUANTITYORDERED</column_id></order></orders></mql>";
+		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>steel-wheels</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints><constraint><operator>AND</operator><condition><![CDATA[[BC_CUSTOMER_W_TER_.BC_CUSTOMER_W_TER_COUNTRY] = \"Australia\"]]></condition></constraint></constraints><orders><order><direction>ASC</direction><view_id>CAT_ORDERS</view_id><column_id>BC_ORDERDETAILS_QUANTITYORDERED</column_id></order></orders></mql>";
 
 		MetadataServiceUtil util = new MetadataServiceUtil();
 		Domain domain = util.getDomainObject(queryString);
@@ -595,7 +596,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 
 	private Query getTestQuery() {
 		Query query = new Query();
-		query.setDomainName("/metadata.xmi");
+		query.setDomainName("steel-wheels");
 		query.setModelId("BV_ORDERS");
 		query.setDisableDistinct(Boolean.FALSE);
 		List<Column> cols = new ArrayList<Column>();
@@ -660,7 +661,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		KettleSystemListener.environmentInit(PentahoSessionHolder.getSession());
 		MetadataService svc = new MetadataService();
 
-		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>/metadata.xmi</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints><constraint><operator>AND</operator><condition><![CDATA[[BC_CUSTOMER_W_TER_.BC_CUSTOMER_W_TER_COUNTRY] = \"Australia\"]]></condition></constraint></constraints><orders><order><direction>ASC</direction><view_id>CAT_ORDERS</view_id><column_id>BC_ORDERDETAILS_QUANTITYORDERED</column_id></order></orders></mql>";
+		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>steel-wheels</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints><constraint><operator>AND</operator><condition><![CDATA[[BC_CUSTOMER_W_TER_.BC_CUSTOMER_W_TER_COUNTRY] = \"Australia\"]]></condition></constraint></constraints><orders><order><direction>ASC</direction><view_id>CAT_ORDERS</view_id><column_id>BC_ORDERDETAILS_QUANTITYORDERED</column_id></order></orders></mql>";
 		MarshallableResultSet results = svc.doXmlQuery(queryString, -1);
 		Assert.assertNotNull("results are null", results);
 		Assert.assertEquals("wrong number of column names", 5, results.getColumnNames().getColumnName().length);
@@ -683,7 +684,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		KettleSystemListener.environmentInit(PentahoSessionHolder.getSession());
 		MetadataService svc = new MetadataService();
 
-		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>/metadata.xmi</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints><constraint><operator>AND</operator><condition><![CDATA[[BC_CUSTOMER_W_TER_.BC_CUSTOMER_W_TER_COUNTRY] = \"Australia\"]]></condition></constraint></constraints><orders><order><direction>ASC</direction><view_id>CAT_ORDERS</view_id><column_id>BC_ORDERDETAILS_QUANTITYORDERED</column_id></order></orders></mql>";
+		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>steel-wheels</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints><constraint><operator>AND</operator><condition><![CDATA[[BC_CUSTOMER_W_TER_.BC_CUSTOMER_W_TER_COUNTRY] = \"Australia\"]]></condition></constraint></constraints><orders><order><direction>ASC</direction><view_id>CAT_ORDERS</view_id><column_id>BC_ORDERDETAILS_QUANTITYORDERED</column_id></order></orders></mql>";
 		MarshallableResultSet results = svc.doXmlQuery(queryString, 10);
 		Assert.assertNotNull("results are null", results);
 		Assert.assertEquals("wrong number of rows", 10, results.getRows().length);
@@ -712,7 +713,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		KettleSystemListener.environmentInit(PentahoSessionHolder.getSession());
 		MetadataService svc = new MetadataService();
 
-		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>/metadata.xmi</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints/><orders/></mql>";
+		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>steel-wheels</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints/><orders/></mql>";
 		String json = svc.doXmlQueryToJson(queryString, -1);
 		Assert.assertNotNull("results are null", json);
 		// System.out.println(json);
@@ -752,7 +753,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		KettleSystemListener.environmentInit(PentahoSessionHolder.getSession());
 		MetadataService svc = new MetadataService();
 
-		String json = "{\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Query\",\"columns\":[{\"aggTypes\":[],\"category\":\"BC_CUSTOMER_W_TER_\",\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Column\",\"defaultAggType\":null,\"fieldType\":null,\"id\":\"BC_CUSTOMER_W_TER_COUNTRY\",\"name\":null,\"selectedAggType\":\"NONE\",\"type\":null}],\"conditions\":[{\"category\":\"BC_CUSTOMER_W_TER_\",\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Condition\",\"column\":\"BC_CUSTOMER_W_TER_COUNTRY\",\"combinationType\":\"AND\",\"operator\":\"EQUAL\",\"value\":[\"Australia\"]}],\"defaultParameterMap\":null,\"disableDistinct\":false,\"domainName\":\"/metadata.xmi\",\"modelId\":\"BV_ORDERS\",\"orders\":[{\"category\":\"BC_CUSTOMER_W_TER_\",\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Order\",\"column\":\"BC_CUSTOMER_W_TER_COUNTRY\",\"orderType\":\"ASC\"}],\"parameters\":[]}";
+		String json = "{\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Query\",\"columns\":[{\"aggTypes\":[],\"category\":\"BC_CUSTOMER_W_TER_\",\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Column\",\"defaultAggType\":null,\"fieldType\":null,\"id\":\"BC_CUSTOMER_W_TER_COUNTRY\",\"name\":null,\"selectedAggType\":\"NONE\",\"type\":null}],\"conditions\":[{\"category\":\"BC_CUSTOMER_W_TER_\",\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Condition\",\"column\":\"BC_CUSTOMER_W_TER_COUNTRY\",\"combinationType\":\"AND\",\"operator\":\"EQUAL\",\"value\":[\"Australia\"]}],\"defaultParameterMap\":null,\"disableDistinct\":false,\"domainName\":\"steel-wheels\",\"modelId\":\"BV_ORDERS\",\"orders\":[{\"category\":\"BC_CUSTOMER_W_TER_\",\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Order\",\"column\":\"BC_CUSTOMER_W_TER_COUNTRY\",\"orderType\":\"ASC\"}],\"parameters\":[]}";
 		json = svc.doJsonQueryToJson(json, -1);
 
 		Assert.assertNotNull("results are null", json);
@@ -789,7 +790,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		KettleSystemListener.environmentInit(PentahoSessionHolder.getSession());
 		MetadataService svc = new MetadataService();
 
-		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>/metadata.xmi</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints/><orders/></mql>";
+		String queryString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>steel-wheels</domain_id><model_id>BV_ORDERS</model_id><options><disable_distinct>false</disable_distinct></options><selections><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTLINE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTNAME</column><aggregation>NONE</aggregation></selection><selection><view>CAT_PRODUCTS</view><column>BC_PRODUCTS_PRODUCTCODE</column><aggregation>NONE</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_QUANTITYORDERED</column><aggregation>SUM</aggregation></selection><selection><view>CAT_ORDERS</view><column>BC_ORDERDETAILS_TOTAL</column><aggregation>SUM</aggregation></selection></selections><constraints/><orders/></mql>";
 		String json = svc.doXmlQueryToCdaJson(queryString, -1);
 		Assert.assertNotNull("results are null", json);
 		System.out.println(json);
@@ -841,10 +842,10 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 
 		MetadataService svc = new MetadataService();
 
-		Model model = svc.loadModel("/metadata.xmi", "BV_ORDERS");
+		Model model = svc.loadModel("steel-wheels", "BV_ORDERS");
 		Assert.assertNotNull("model should not be null", model);
 
-		Assert.assertEquals("domain id is wrong", "/metadata.xmi", model.getDomainId());
+		Assert.assertEquals("domain id is wrong", "steel-wheels", model.getDomainId());
 		Assert.assertEquals("model id is wrong", "BV_ORDERS", model.getId());
 		Assert.assertEquals("model name is wrong", "Orders", model.getName());
 		Assert.assertEquals("model description is wrong", "This model contains information about customers and their orders.", model.getDescription());
@@ -916,7 +917,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		login(USERNAME_JOE, TENANT_ID_ACME, true);
 		MetadataService svc = new MetadataService();
 
-		Model model = svc.loadModel("/metadata.xmi", null);
+		Model model = svc.loadModel("steel-wheels", null);
 		Assert.assertNull("model should be null", model);
 	}
 
@@ -940,7 +941,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 
 		MetadataService svc = new MetadataService();
 
-		Model model = svc.loadModel("/metadata.xmi", "bogus");
+		Model model = svc.loadModel("steel-wheels", "bogus");
 		Assert.assertNull("model should be null", model);
 	}
 
@@ -952,14 +953,14 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 
 		MetadataService svc = new MetadataService();
 
-		String json = svc.loadModelJson("/metadata.xmi", "BV_HUMAN_RESOURCES");
+		String json = svc.loadModelJson("steel-wheels", "BV_HUMAN_RESOURCES");
 		Assert.assertNotNull("json should not be null", json);
 		// System.out.println(json);
 
 		Model model = new JSONDeserializer<Model>().deserialize(json);
 		Assert.assertNotNull("model should not be null", model);
 
-		Assert.assertEquals("domain id is wrong", "/metadata.xmi", model.getDomainId());
+		Assert.assertEquals("domain id is wrong", "steel-wheels", model.getDomainId());
 		Assert.assertEquals("model id is wrong", "BV_HUMAN_RESOURCES", model.getId());
 		Assert.assertEquals("model name is wrong", "Human Resources", model.getName());
 		Assert.assertEquals("model description is wrong", "This model contains information about Employees.", model.getDescription());
@@ -995,8 +996,8 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		Assert.assertTrue("Wrong nuber of models returned", models.length > 2);
 		boolean found = false;
 		for (int idx = 0; idx < models.length; idx++) {
-			if (models[idx].getDomainId().equals("/metadata.xmi") && models[idx].getModelId().equals("BV_HUMAN_RESOURCES")) {
-				Assert.assertEquals("Wrong domain id", "/metadata.xmi", models[idx].getDomainId());
+			if (models[idx].getDomainId().equals("steel-wheels") && models[idx].getModelId().equals("BV_HUMAN_RESOURCES")) {
+				Assert.assertEquals("Wrong domain id", "steel-wheels", models[idx].getDomainId());
 				Assert.assertEquals("Wrong description", "This model contains information about Employees.", models[idx].getModelDescription());
 				Assert.assertEquals("Wrong model id", "BV_HUMAN_RESOURCES", models[idx].getModelId());
 				Assert.assertEquals("Wrong model name", "Human Resources", models[idx].getModelName());
@@ -1014,7 +1015,7 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 
 		MetadataService svc = new MetadataService();
 
-		ModelInfo[] models = svc.listBusinessModels("/metadata.xmi");
+		ModelInfo[] models = svc.listBusinessModels("steel-wheels");
 		Assert.assertNotNull(models);
 		Assert.assertEquals("Wrong nuber of models returned", 3, models.length);
 	}
@@ -1053,8 +1054,8 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		Assert.assertTrue("Wrong nuber of models returned", models.length > 2);
 		boolean found = false;
 		for (int idx = 0; idx < models.length; idx++) {
-			if (models[idx].getDomainId().equals("/metadata.xmi") && models[idx].getModelId().equals("BV_HUMAN_RESOURCES")) {
-				Assert.assertEquals("Wrong domain id", "/metadata.xmi", models[idx].getDomainId());
+			if (models[idx].getDomainId().equals("steel-wheels") && models[idx].getModelId().equals("BV_HUMAN_RESOURCES")) {
+				Assert.assertEquals("Wrong domain id", "steel-wheels", models[idx].getDomainId());
 				Assert.assertEquals("Wrong description", "This model contains information about Employees.", models[idx].getModelDescription());
 				Assert.assertEquals("Wrong model id", "BV_HUMAN_RESOURCES", models[idx].getModelId());
 				Assert.assertEquals("Wrong model name", "Human Resources", models[idx].getModelName());
@@ -1155,11 +1156,13 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		booter.define("connection-SQL", SQLConnection.class, Scope.GLOBAL);
 		booter.define(IDatasourceService.class, JndiDatasourceService.class, Scope.GLOBAL);
 		booter.define(IPluginResourceLoader.class, PluginResourceLoader.class, Scope.GLOBAL);
-		booter.define(IUnifiedRepository.class, FileSystemBackedUnifiedRepository.class, Scope.GLOBAL);
-		booter.setSettingsProvider(new SystemSettings());
 
-		SecurityAwarePentahoMetadataDomainRepository rep = new SecurityAwarePentahoMetadataDomainRepository(repo);
-		booter.defineInstance(IMetadataDomainRepository.class, rep);
+		FileSystemBackedUnifiedRepository fileSystemRepo = (FileSystemBackedUnifiedRepository) repo;
+		fileSystemRepo.setRootDir(new File("test-res/solution1/steel-wheels"));
+		booter.defineInstance(IUnifiedRepository.class, fileSystemRepo);
+
+		booter.defineInstance(IMetadataDomainRepository.class, new PentahoMetadataDomainRepository(fileSystemRepo));
+		booter.setSettingsProvider(new SystemSettings());
 
 		System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$
 		System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
