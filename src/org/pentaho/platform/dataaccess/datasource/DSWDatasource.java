@@ -1,6 +1,5 @@
 package org.pentaho.platform.dataaccess.datasource;
 
-import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.api.datasource.IGenericDatasource;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.datasource.GenericDatasourceInfo;
@@ -11,8 +10,8 @@ public class DSWDatasource extends GenericDatasourceInfo implements IGenericData
   private LogicalModelSummary datasource;
   
   
-  public DSWDatasource(LogicalModelSummary datasource, String id, String type) {
-    super(id, type);
+  public DSWDatasource(LogicalModelSummary datasource, String name, String id, String type) {
+    super(name, id, type);
     this.datasource = datasource;
   }
 

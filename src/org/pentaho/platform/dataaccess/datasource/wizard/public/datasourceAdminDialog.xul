@@ -27,7 +27,7 @@
    -->    
 		<tree height="175" id="datasourcesListTable" seltype="single">
 			<treecols id="datasourcesListCols">
-				<treecol id="datasourceName" label="${datasourcesListCols.datasourceName}" flex="1" pen:binding="id" editable="false" type="text"/>
+				<treecol id="datasourceName" label="${datasourcesListCols.datasourceName}" flex="1" pen:binding="name" editable="false" type="text"/>
 				<treecol id="datasourceType" label="${datasourcesListCols.datasourceType}" flex="1" pen:binding="type" editable="false" type="text"/>
 			</treecols>
 			<treechildren id="datasourcesListRows"/>
