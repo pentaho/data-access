@@ -31,7 +31,7 @@ public class XMLToGenericDatasourceInfoConverter {
       NodeList nodeList = element.getChildNodes();
       for(int i=0;i<nodeList.getLength();i++) {
         Element ele = (Element) nodeList.item(i);
-        IGenericDatasourceInfo info = new GenericDatasourceInfo(getId(ele), getType(ele));
+        IGenericDatasourceInfo info = new GenericDatasourceInfo(getName(ele), getId(ele), getType(ele));
         datasourceInfoList.add(info);
       }
       return datasourceInfoList;
@@ -78,6 +78,10 @@ public class XMLToGenericDatasourceInfoConverter {
     
     private final String getId(Element element) {
       return getNodeValueByTagName(element, "id");
+    }
+
+    private final String getName(Element element) {
+      return getNodeValueByTagName(element, "name");
     }
     
     private Document getXMLDocumentFromString(String xmlText) {

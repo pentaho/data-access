@@ -20,7 +20,7 @@ public class DSWDatasourceService implements IGenericDatasourceService{
 
   IDatasourceService dswService;
   IModelerService modelerService;
-  
+  public final static String EXT = ".xmi";
   public final static String TYPE = "Data Source Wizard";
 
   public  DSWDatasourceService() {
@@ -66,7 +66,13 @@ public class DSWDatasourceService implements IGenericDatasourceService{
           LogicalModel logicalModel = logicalModelList.get(0);
           Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
           if(property != null) {
-            datasourceList.add(new DSWDatasource(summary, summary.getDomainId(), TYPE));    
+            String id = summary.getDomainId();
+            String name = null;
+            int index = id.indexOf(EXT);
+            if( index >=0) {
+              name = id.substring(0, index);
+            }
+            datasourceList.add(new DSWDatasource(summary, name, summary.getDomainId(), TYPE));    
           }
         }
       }
@@ -89,7 +95,13 @@ public class DSWDatasourceService implements IGenericDatasourceService{
           LogicalModel logicalModel = logicalModelList.get(0);
           Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
           if(property != null) {
-            datasourceList.add(new GenericDatasourceInfo(summary.getDomainId(), TYPE));
+            String id = summary.getDomainId();
+            String name = null;
+            int index = id.indexOf(EXT);
+            if( index >=0) {
+              name = id.substring(0, index);
+            }
+            datasourceList.add(new GenericDatasourceInfo(name, summary.getDomainId(), TYPE));
           }
         }
       }

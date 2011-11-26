@@ -25,6 +25,8 @@ public class GenericDatasourceInfo extends XulEventSourceAdapter implements IGen
    */
   private static final long serialVersionUID = 1L;
 
+  String name;
+  
   String id;
 
   String type;
@@ -34,17 +36,25 @@ public class GenericDatasourceInfo extends XulEventSourceAdapter implements IGen
     // TODO Auto-generated constructor stub
   }
 
-  public GenericDatasourceInfo(String id, String type) {
+  public GenericDatasourceInfo(String name, String id, String type) {
     super();
+    this.name = name;
     this.id = id;
     this.type = type;
   }
   
   @Bindable
   @Override
+  public String getName() {
+    return name;
+  }
+
+  @Bindable
+  @Override
   public String getId() {
     return id;
   }
+
   
   @Bindable
   @Override
@@ -59,14 +69,17 @@ public class GenericDatasourceInfo extends XulEventSourceAdapter implements IGen
   }
 
   @Override
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  @Override
   public void setId(String id) {
     this.id = id;
-    
   }
 
   @Override
   public void setType(String type) {
-    this.type = type;
-    
+    this.type = type;  
   }
 }
