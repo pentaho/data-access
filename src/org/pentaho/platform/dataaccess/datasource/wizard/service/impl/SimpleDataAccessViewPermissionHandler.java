@@ -48,7 +48,7 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
       logger.debug("Error getting plugin setting", e);
     }
 
-    if (roles != null) {
+    if (roles != null && roles.length() > 0) {
       String roleArr[] = roles.split(","); //$NON-NLS-1$
 
       for (String role : roleArr) {
@@ -73,7 +73,7 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
       logger.debug("Error getting plugin setting", e);
     }
 
-    if (users != null) {
+    if (users != null && users.length() > 0) {
       String userArr[] = users.split(","); //$NON-NLS-1$
       for (String user : userArr) {
         if (user != null && user.trim().length() > 0) {

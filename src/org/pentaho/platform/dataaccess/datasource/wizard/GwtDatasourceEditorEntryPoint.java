@@ -301,7 +301,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
           dialog.showDialog(domainId, modelId, modelerPerspective);
         }
       });
-
   }
 
 
