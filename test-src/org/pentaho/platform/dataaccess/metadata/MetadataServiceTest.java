@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
+/*import junit.framework.Assert;
 
 import org.json.JSONException;
 import org.junit.After;
@@ -89,21 +89,21 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/repository.spring-ext.xml", "classpath:/repository-test-override.spring-ext.xml" })
+@ContextConfiguration(locations = { "classpath:/repository.spring-ext.xml", "classpath:/repository-test-override.spring-ext.xml" })*/
 @SuppressWarnings({ "all" })
-public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements ApplicationContextAware {
+public class MetadataServiceTest /*extends JackrabbitRepositoryTestBase implements ApplicationContextAware */{
 
-	private MicroPlatform booter;
+/*	private MicroPlatform booter;
 
 	private IUnifiedRepository repo;
 
-	private boolean startupCalled;
+	private boolean startupCalled;*/
 
 	public MetadataServiceTest() {
 		super();
 	}
 
-	@Test
+	/*@Test
 	public void testPermissions() {
 
 		manager.startup();
@@ -1185,5 +1185,5 @@ public class MetadataServiceTest extends JackrabbitRepositoryTestBase implements
 		// null out fields to get back memory
 		repo = null;
 	}
-
+*/
 }
