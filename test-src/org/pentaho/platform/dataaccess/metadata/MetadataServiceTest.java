@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
+/*import junit.framework.Assert;
 
 import org.json.JSONException;
 import org.junit.After;
@@ -73,6 +73,7 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogServi
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader;
+import org.pentaho.platform.repository2.unified.JackrabbitRepositoryTestBase;
 import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository;
 import org.pentaho.platform.repository2.unified.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.util.Base64PasswordService;
@@ -87,16 +88,16 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations = { "classpath:/repository.spring-ext.xml", "classpath:/repository-test-override.spring-ext.xml" })
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:/repository.spring-ext.xml", "classpath:/repository-test-override.spring-ext.xml" })*/
 @SuppressWarnings({ "all" })
-public class MetadataServiceTest /* extends JackrabbitRepositoryTestBase implements ApplicationContextAware */{
+public class MetadataServiceTest /*extends JackrabbitRepositoryTestBase implements ApplicationContextAware */{
 
-	private MicroPlatform booter;
+/*	private MicroPlatform booter;
 
 	private IUnifiedRepository repo;
 
-	private boolean startupCalled;
+	private boolean startupCalled;*/
 
 	public MetadataServiceTest() {
 		super();
