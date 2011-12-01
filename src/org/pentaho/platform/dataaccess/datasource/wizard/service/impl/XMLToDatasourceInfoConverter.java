@@ -3,8 +3,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.platform.api.datasource.IGenericDatasourceInfo;
-import org.pentaho.platform.dataaccess.datasource.GenericDatasourceInfo;
+import org.pentaho.platform.api.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.DatasourceInfo;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -12,32 +12,32 @@ import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.google.gwt.xml.client.XMLParser;
 
-public class XMLToGenericDatasourceInfoConverter {
+public class XMLToDatasourceInfoConverter {
 
     private String xml;
     
-    public XMLToGenericDatasourceInfoConverter(String xml) {
+    public XMLToDatasourceInfoConverter(String xml) {
       this.xml = xml;
     }
     
-    public List<IGenericDatasourceInfo> convert() {
+    public List<IDatasourceInfo> convert() {
       Document document = getXMLDocumentFromString(xml);
-      return getGenericDatasourceInfoList(document.getDocumentElement());
+      return getDatasourceInfoList(document.getDocumentElement());
     }
     
     
-    private List<IGenericDatasourceInfo> getGenericDatasourceInfoList(Element element) {
-      List<IGenericDatasourceInfo> datasourceInfoList = new ArrayList<IGenericDatasourceInfo>();
+    private List<IDatasourceInfo> getDatasourceInfoList(Element element) {
+      List<IDatasourceInfo> datasourceInfoList = new ArrayList<IDatasourceInfo>();
       NodeList nodeList = element.getChildNodes();
       for(int i=0;i<nodeList.getLength();i++) {
         Element ele = (Element) nodeList.item(i);
-        IGenericDatasourceInfo info = new GenericDatasourceInfo(getName(ele), getId(ele), getType(ele));
+        IDatasourceInfo info = new DatasourceInfo(getName(ele), getId(ele), getType(ele));
         datasourceInfoList.add(info);
       }
       return datasourceInfoList;
     }
     
-    private Element getGenericDatasourceInfoElement(Node node) {
+    private Element getDatasourceInfoElement(Node node) {
       Element element = (Element) node;
       return (Element) getNodeByTagName(element, "genericDatasourceInfo");
     }

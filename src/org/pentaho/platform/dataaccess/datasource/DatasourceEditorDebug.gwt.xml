@@ -27,7 +27,7 @@ This module serves as the Debuging environment and default implementation for in
   <inherits name="org.pentaho.database.Database"/>
   <inherits name="org.pentaho.reporting.libraries.base.Util" />
   <inherits name='org.pentaho.gwt.widgets.themes.Themes'/>
-  <inherits name="org.pentaho.platform.api.datasource.IGenericDatasource"/>
+  <inherits name="org.pentaho.platform.api.datasource.IDatasource"/>
 
     <source path="">
         <exclude name="**/MQLEditorDebugGwtServlet*"/>

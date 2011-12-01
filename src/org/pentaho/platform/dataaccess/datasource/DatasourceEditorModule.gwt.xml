@@ -20,7 +20,7 @@
   <inherits name="org.pentaho.ui.database.DatabaseDialog"/>
   <inherits name="org.pentaho.database.Database"/>
   <inherits name="org.pentaho.reporting.libraries.base.Util" />
-  <inherits name="org.pentaho.platform.api.datasource.IGenericDatasource"/>
+  <inherits name="org.pentaho.platform.api.datasource.IDatasource"/>
   
   <source path="">
     <exclude name="**/MQLEditorDebugGwtServlet*"/>

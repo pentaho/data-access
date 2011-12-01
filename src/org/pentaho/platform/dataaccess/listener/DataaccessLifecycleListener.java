@@ -1,5 +1,5 @@
 package org.pentaho.platform.dataaccess.listener;
-import org.pentaho.platform.api.datasource.IGenericDatasourceServiceManager;
+import org.pentaho.platform.api.datasource.IDatasourceServiceManager;
 import org.pentaho.platform.api.engine.IPluginLifecycleListener;
 import org.pentaho.platform.api.engine.PluginLifecycleException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceService;
@@ -11,7 +11,7 @@ public class DataaccessLifecycleListener implements IPluginLifecycleListener{
 
   @Override
   public void init() throws PluginLifecycleException {
-    IGenericDatasourceServiceManager manager = PentahoSystem.get(IGenericDatasourceServiceManager.class, PentahoSessionHolder.getSession());
+    IDatasourceServiceManager manager = PentahoSystem.get(IDatasourceServiceManager.class, PentahoSessionHolder.getSession());
     manager.registerService(new DSWDatasourceService());
   }
 

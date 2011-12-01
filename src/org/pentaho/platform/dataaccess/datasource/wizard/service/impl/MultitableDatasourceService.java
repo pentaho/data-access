@@ -123,7 +123,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
       ModelerService modelerService = new ModelerService();
       modelerService.initKettle();
 
-      DatasourceServiceImpl datasourceService = new DatasourceServiceImpl();
+      DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();
       GeoContext geoContext = datasourceService.getGeoContext();
 
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);

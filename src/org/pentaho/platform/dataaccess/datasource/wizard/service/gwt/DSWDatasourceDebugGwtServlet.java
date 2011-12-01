@@ -32,21 +32,21 @@ import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDatasourceServiceImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDSWDatasourceServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class DatasourceDebugGwtServlet extends RemoteServiceServlet implements IGwtDatasourceService {
+public class DSWDatasourceDebugGwtServlet extends RemoteServiceServlet implements IGwtDSWDatasourceService {
 
   /**
    * 
    */
   private static final long serialVersionUID = -8247397306730500944L;
-  InMemoryDatasourceServiceImpl SERVICE;
+  InMemoryDSWDatasourceServiceImpl SERVICE;
 
-  public DatasourceDebugGwtServlet() {
-    SERVICE = new InMemoryDatasourceServiceImpl();
+  public DSWDatasourceDebugGwtServlet() {
+    SERVICE = new InMemoryDSWDatasourceServiceImpl();
   }
 
   public SerializedResultSet doPreview(String connectionName, String query, String previewLimit) throws DatasourceServiceException{

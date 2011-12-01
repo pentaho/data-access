@@ -34,7 +34,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryData
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public interface IGwtDatasourceServiceAsync {
+public interface IGwtDSWDatasourceServiceAsync {
   void getLogicalModels(String context, AsyncCallback<List<LogicalModelSummary>> callback);
   void deleteLogicalModel(String domainId, String modelName, AsyncCallback<Boolean> callback);
   void doPreview(String connectionName, String query, String previewLimit, AsyncCallback<SerializedResultSet> callback);

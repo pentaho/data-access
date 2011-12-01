@@ -15,11 +15,11 @@
 package org.pentaho.platform.dataaccess.datasource;
 
 
-import org.pentaho.platform.api.datasource.IGenericDatasourceInfo;
+import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-public class GenericDatasourceInfo extends XulEventSourceAdapter implements IGenericDatasourceInfo {
+public class DatasourceInfo extends XulEventSourceAdapter implements IDatasourceInfo {
   /**
    * 
    */
@@ -31,12 +31,12 @@ public class GenericDatasourceInfo extends XulEventSourceAdapter implements IGen
 
   String type;
 
-  public GenericDatasourceInfo() {
+  public DatasourceInfo() {
     super();
     // TODO Auto-generated constructor stub
   }
 
-  public GenericDatasourceInfo(String name, String id, String type) {
+  public DatasourceInfo(String name, String id, String type) {
     super();
     this.name = name;
     this.id = id;
@@ -66,20 +66,5 @@ public class GenericDatasourceInfo extends XulEventSourceAdapter implements IGen
   @Override
   public String toString() {
     return "GenericDatasourceInfo [id=" + id + ", type=" + type + "]";
-  }
-
-  @Override
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  @Override
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  @Override
-  public void setType(String type) {
-    this.type = type;  
   }
 }

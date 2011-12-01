@@ -30,7 +30,7 @@ import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorTest;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDatasourceServiceImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDSWDatasourceServiceImpl;
 
 @SuppressWarnings("nls")
 public class DatasourceModelTest {
@@ -202,7 +202,7 @@ public class DatasourceModelTest {
 
     DatasourceDTO dto = DatasourceDTO.generateDTO(datasourceModel);
     assertNotNull(dto);
-    InMemoryDatasourceServiceImpl service = new InMemoryDatasourceServiceImpl();
+    InMemoryDSWDatasourceServiceImpl service = new InMemoryDSWDatasourceServiceImpl();
     String dtoString = service.serializeModelState(dto);
     assertNotNull(dtoString);
     assertTrue(dtoString.contains("testDatasource"));

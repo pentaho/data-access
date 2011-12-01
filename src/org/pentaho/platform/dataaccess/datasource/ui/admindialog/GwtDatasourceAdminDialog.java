@@ -20,8 +20,8 @@
  */
 package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
-import org.pentaho.platform.api.datasource.IGenericDatasourceInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncGenericDatasourceServiceManager;
+import org.pentaho.platform.api.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
 import org.pentaho.ui.xul.gwt.GwtXulRunner;
@@ -33,7 +33,7 @@ import org.pentaho.ui.xul.util.DialogController;
 
 import com.google.gwt.core.client.GWT;
 
-public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogController<IGenericDatasourceInfo> {
+public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogController<IDatasourceInfo> {
 
   // ~ Static fields/initializers ======================================================================================
 
@@ -41,7 +41,7 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
 
   protected DatasourceAdminDialogController datasourceAdminDialogController;
 
-  protected IXulAsyncGenericDatasourceServiceManager genericDatasourceServiceManager;
+  protected IXulAsyncDatasourceServiceManager genericDatasourceServiceManager;
 
   protected AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener;
 
@@ -49,7 +49,7 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
 
   // ~ Constructors ====================================================================================================
 
-  public GwtDatasourceAdminDialog(final IXulAsyncGenericDatasourceServiceManager genericDatasourceServiceManager,
+  public GwtDatasourceAdminDialog(final IXulAsyncDatasourceServiceManager genericDatasourceServiceManager,
       final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener) {
     this.genericDatasourceServiceManager = genericDatasourceServiceManager;
     this.constructorListener = constructorListener;
@@ -84,7 +84,7 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
 
       datasourceAdminDialogController = new DatasourceAdminDialogController();
       datasourceAdminDialogController.setBindingFactory(bf);
-      datasourceAdminDialogController.setGenericDatasourceServiceManager(genericDatasourceServiceManager);
+      datasourceAdminDialogController.setDatasourceServiceManager(genericDatasourceServiceManager);
       container.addEventHandler(datasourceAdminDialogController);
 
 
@@ -113,7 +113,7 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
   /**
    * Specified by <code>DialogController</code>.
    */
-  public void addDialogListener(org.pentaho.ui.xul.util.DialogController.DialogListener<IGenericDatasourceInfo> listener) {
+  public void addDialogListener(org.pentaho.ui.xul.util.DialogController.DialogListener<IDatasourceInfo> listener) {
     checkInitialized();
     datasourceAdminDialogController.addDialogListener(listener);
     datasourceAdminDialogController.onDialogReady();
@@ -130,7 +130,7 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
   /**
    * Specified by <code>DialogController</code>.
    */
-  public void removeDialogListener(org.pentaho.ui.xul.util.DialogController.DialogListener<IGenericDatasourceInfo> listener) {
+  public void removeDialogListener(org.pentaho.ui.xul.util.DialogController.DialogListener<IDatasourceInfo> listener) {
     checkInitialized();
     datasourceAdminDialogController.removeDialogListener(listener);
   }
