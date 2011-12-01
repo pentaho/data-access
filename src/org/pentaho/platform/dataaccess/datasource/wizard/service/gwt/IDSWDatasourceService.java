@@ -34,7 +34,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 
-public interface IDatasourceService {
+public interface IDSWDatasourceService {
   /**
    * Returns the list of Logical Models. This method is used by the client app to display list of models
    * 

@@ -31,14 +31,14 @@ PentahoSystem which is initialized after Spring
   <bean id="IMondrianCatalogService" class="org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper" scope="singleton" />
   
     <!--
-    IDatasourceService - options are: 
+    IDBDatasourceService - options are: 
     org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService
     org.pentaho.platform.engine.services.connection.datasource.dbcp.NonPooledOrJndiDatasourceService
     org.pentaho.platform.engine.services.connection.datasource.dbcp.PooledDatasourceService
     org.pentaho.platform.engine.services.connection.datasource.dbcp.NonPooledDatasourceService
     org.pentaho.platform.engine.services.connection.datasource.dbcp.PooledOrJndiDatasourceService  (Default option)
   -->
-  <bean id="IDatasourceService" class="org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService" scope="singleton" />
+  <bean id="IDBDatasourceService" class="org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService" scope="singleton" />
   <bean id="IAuditEntry" class="org.pentaho.platform.engine.core.audit.AuditFileEntry" scope="singleton" />
   <bean id="IAclVoter" class="org.pentaho.platform.engine.security.acls.voter.PentahoAllowAllAclVoter" scope="singleton" />
   <bean id="IPluginManager" class="org.pentaho.platform.plugin.services.pluginmgr.PluginManager" scope="singleton" />

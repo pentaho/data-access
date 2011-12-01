@@ -52,7 +52,7 @@ public class DebugModelerService extends ModelerService {
     initKettle();
     
     try {
-      DatasourceServiceImpl datasourceService = new DatasourceServiceImpl();
+      DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();
       ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), datasourceService.getGeoContext());
       model.setModelName(name);
       model.setDomain(domain);
