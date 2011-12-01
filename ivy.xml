@@ -34,7 +34,7 @@
     <dependency org="commons-vfs" name="commons-vfs" rev="1.0" transitive="false"/>
     <dependency org="commons-digester" name="commons-digester" rev="1.8" transitive="false"/>
     <dependency org="commons-fileupload" name="commons-fileupload" rev="1.2.1"/>
-    <dependency org="commons-io" name="commons-io" rev="1.4"/>
+    <dependency org="commons-io" name="commons-io" rev="2.1"/>
     <dependency org="commons-lang" name="commons-lang" rev="2.4"/>
     <dependency org="joda-time" name="joda-time" rev="1.6" transitive="false" conf="test->default"/>
     <dependency org="commons-math" name="commons-math" rev="1.1" transitive="false" conf="test->default"/>
