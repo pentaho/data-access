@@ -33,7 +33,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtDatasourceServiceAsync;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtDSWDatasourceServiceAsync;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 import com.google.gwt.core.client.GWT;
@@ -43,12 +43,12 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 public class DatasourceServiceGwtImpl implements IXulAsyncDatasourceService {
   final static String ERROR = "ERROR:";
 
-  static IGwtDatasourceServiceAsync SERVICE;
+  static IGwtDSWDatasourceServiceAsync SERVICE;
 
   static {
 
-    SERVICE = (org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtDatasourceServiceAsync) GWT
-        .create(org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtDatasourceService.class);
+    SERVICE = (org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtDSWDatasourceServiceAsync) GWT
+        .create(org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtDSWDatasourceService.class);
     ServiceDefTarget endpoint = (ServiceDefTarget) SERVICE;
     endpoint.setServiceEntryPoint(getBaseUrl());
 

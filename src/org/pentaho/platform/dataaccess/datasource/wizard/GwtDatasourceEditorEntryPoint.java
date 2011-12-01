@@ -25,7 +25,7 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPane;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPaneNativeListener;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.platform.api.datasource.IGenericDatasourceInfo;
+import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.GwtDatasourceAdminDialog;
@@ -34,12 +34,13 @@ import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceS
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncGenericDatasourceServiceManager;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.GenericDatasourceServiceManagerGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceManagerGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -63,7 +64,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private ModelerDialog modeler;
   private IXulAsyncDatasourceService datasourceService;
   private IXulAsyncConnectionService connectionService;
-  private IXulAsyncGenericDatasourceServiceManager genericDatasourceServiceManager;
+  private IXulAsyncDatasourceServiceManager datasourceServiceManager;
   private ICsvDatasourceServiceAsync csvService;
   private GwtDatasourceSelectionDialog gwtDatasourceSelectionDialog;
   private EmbeddedWizard gwtDatasourceEditor;
@@ -76,9 +77,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private Timer timer;
 
   public void onModuleLoad() {
-    genericDatasourceServiceManager = new GenericDatasourceServiceManagerGwtImpl();
+    datasourceServiceManager = new DatasourceServiceManagerGwtImpl();
     
-    genericDatasourceServiceManager.isAdmin(new XulServiceCallback<Boolean>() {
+    datasourceServiceManager.isAdmin(new XulServiceCallback<Boolean>() {
       public void error(String message, Throwable error) {
       }
       public void success(Boolean retVal) {
@@ -330,14 +331,14 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   @SuppressWarnings("unused")
   private void showAdminDialog(final JavaScriptObject callback) {
     
-    final DialogListener<IGenericDatasourceInfo> listener = new DialogListener<IGenericDatasourceInfo>(){
+    final DialogListener<IDatasourceInfo> listener = new DialogListener<IDatasourceInfo>(){
       public void onDialogCancel() {
         adminDialog.removeDialogListener(this);
         asyncConstructorDone = false;
         notifyCallbackCancel(callback);
       }
 
-      public void onDialogAccept(final IGenericDatasourceInfo genericDatasourceInfo) {
+      public void onDialogAccept(final IDatasourceInfo genericDatasourceInfo) {
         adminDialog.removeDialogListener(this);
         asyncConstructorDone = false;
         notifyCallbackSuccess(callback, genericDatasourceInfo.getId(), genericDatasourceInfo.getType());
@@ -396,11 +397,11 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   }
 
 
-  private void showAdminDialog(final DialogListener<IGenericDatasourceInfo> listener) {
+  private void showAdminDialog(final DialogListener<IDatasourceInfo> listener) {
     if(adminDialog == null) {
       final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener = getAdminDialogListener(listener);
       asyncConstructorDone = false;
-      adminDialog = new GwtDatasourceAdminDialog(genericDatasourceServiceManager, constructorListener);
+      adminDialog = new GwtDatasourceAdminDialog(datasourceServiceManager, constructorListener);
     } else {
       adminDialog.addDialogListener(listener);
       adminDialog.showDialog();
@@ -452,7 +453,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   }
   
-  private AsyncConstructorListener<GwtDatasourceAdminDialog> getAdminDialogListener(final DialogListener<IGenericDatasourceInfo> listener){
+  private AsyncConstructorListener<GwtDatasourceAdminDialog> getAdminDialogListener(final DialogListener<IDatasourceInfo> listener){
     return new AsyncConstructorListener<GwtDatasourceAdminDialog>() {
 
      public void asyncConstructorDone(GwtDatasourceAdminDialog dialog) {

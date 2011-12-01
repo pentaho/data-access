@@ -25,14 +25,14 @@
    <!-- this is used by the datasource service -->
    <bean id="connectionServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl"/>
 
-   <bean id="datasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceImpl"/>
+   <bean id="datasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
 
    <bean id="csvDatasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
 
   <webservice
     id="DatasourceService"
     type="xml,gwt"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceImpl"/>
+    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
     
   <webservice
     id="joinSelectionService"

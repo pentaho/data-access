@@ -65,7 +65,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidation
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
@@ -83,9 +83,9 @@ import org.pentaho.platform.util.web.SimpleUrlFactory;
 
 import com.thoughtworks.xstream.XStream;
 
-public class DatasourceServiceImpl implements IDatasourceService {
+public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   
-  private static final Log logger = LogFactory.getLog(DatasourceServiceImpl.class);
+  private static final Log logger = LogFactory.getLog(DSWDatasourceServiceImpl.class);
 
   private IDataAccessPermissionHandler dataAccessPermHandler;
 
@@ -101,10 +101,10 @@ public class DatasourceServiceImpl implements IDatasourceService {
 
   private GeoContext geoContext;
 
-  public DatasourceServiceImpl() {
+  public DSWDatasourceServiceImpl() {
     this(new ConnectionServiceImpl());
   }
-  public DatasourceServiceImpl(IConnectionService connectionService) {
+  public DSWDatasourceServiceImpl(IConnectionService connectionService) {
     this.connectionService = connectionService;
     metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, null);
     String dataAccessClassName = null;

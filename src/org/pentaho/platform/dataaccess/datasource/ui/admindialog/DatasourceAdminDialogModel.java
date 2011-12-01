@@ -3,36 +3,36 @@ package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.platform.api.datasource.IGenericDatasourceInfo;
+import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class DatasourceAdminDialogModel extends XulEventSourceAdapter {
 
-  private List<IGenericDatasourceInfo> datasourceList;
+  private List<IDatasourceInfo> datasourceList;
 
   public DatasourceAdminDialogModel() {
-    datasourceList = new ArrayList<IGenericDatasourceInfo>();
+    datasourceList = new ArrayList<IDatasourceInfo>();
   }
-  public void addDatasource(IGenericDatasourceInfo datasource) {
+  public void addDatasource(IDatasourceInfo datasource) {
     datasourceList.add(datasource);
     this.firePropertyChange("datasourceList", null, datasourceList); //$NON-NLS-1$
   }
 
-  public void removeDatasource(IGenericDatasourceInfo datasource) {
+  public void removeDatasource(IDatasourceInfo datasource) {
     datasourceList.remove(datasource);
     this.firePropertyChange("datasourceList", null, datasourceList); //$NON-NLS-1$
   }
 
   
   @Bindable
-  public List<IGenericDatasourceInfo> getDatasourcesList() {
+  public List<IDatasourceInfo> getDatasourcesList() {
     return datasourceList;
   }
 
   @Bindable
-  public void setDatasourcesList(List<IGenericDatasourceInfo> datasourceList) {
-    this.datasourceList = new ArrayList<IGenericDatasourceInfo>(datasourceList);
+  public void setDatasourcesList(List<IDatasourceInfo> datasourceList) {
+    this.datasourceList = new ArrayList<IDatasourceInfo>(datasourceList);
     this.firePropertyChange("datasourceList", null, datasourceList); //$NON-NLS-1$
   }
 

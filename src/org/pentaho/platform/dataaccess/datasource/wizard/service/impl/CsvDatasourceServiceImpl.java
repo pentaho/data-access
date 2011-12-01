@@ -64,7 +64,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   private Log logger = LogFactory.getLog(CsvDatasourceServiceImpl.class);
 
   private ModelerService modelerService = new ModelerService();
-  private DatasourceServiceImpl datasourceService = new DatasourceServiceImpl();
+  private DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();
 
   private ModelerWorkspace modelerWorkspace;
 

@@ -60,7 +60,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidationException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceInMemoryServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
@@ -75,11 +75,11 @@ import com.thoughtworks.xstream.XStream;
  * lower-level BusinessData instances. (BusinessData instances are stored in IDatasources.) They are not currently being
  * kept in sync. I propose that the service only deals with IDatasources from a caller perspective.
  */
-public class InMemoryDatasourceServiceImpl implements IDatasourceService {
+public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   public static final IMetadataDomainRepository METADATA_DOMAIN_REPO = new InMemoryMetadataDomainRepository();
 
-  private static final Log logger = LogFactory.getLog(InMemoryDatasourceServiceImpl.class);
+  private static final Log logger = LogFactory.getLog(InMemoryDSWDatasourceServiceImpl.class);
 
   public static final String DEFAULT_UPLOAD_FILEPATH_FILE_NAME = "debug_upload_filepath.properties"; //$NON-NLS-1$
 
@@ -94,10 +94,10 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
   private IConnectionService connectionService;
 
 
-  public InMemoryDatasourceServiceImpl() {
+  public InMemoryDSWDatasourceServiceImpl() {
     this(new InMemoryConnectionServiceImpl());
   }
-  public InMemoryDatasourceServiceImpl(IConnectionService connectionService) {
+  public InMemoryDSWDatasourceServiceImpl(IConnectionService connectionService) {
     this.connectionService = connectionService;
     // this needs to share the same one as MQL editor...
     metadataDomainRepository = METADATA_DOMAIN_REPO;

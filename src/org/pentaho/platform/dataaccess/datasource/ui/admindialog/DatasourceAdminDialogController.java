@@ -2,8 +2,8 @@ package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
 import java.util.List;
 
-import org.pentaho.platform.api.datasource.IGenericDatasourceInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncGenericDatasourceServiceManager;
+import org.pentaho.platform.api.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -13,7 +13,7 @@ import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
-public class DatasourceAdminDialogController extends AbstractXulDialogController<IGenericDatasourceInfo> {
+public class DatasourceAdminDialogController extends AbstractXulDialogController<IDatasourceInfo> {
 
   // ~ Static fields/initializers ======================================================================================
 
@@ -21,7 +21,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
   private BindingFactory bf;
   
-  private IXulAsyncGenericDatasourceServiceManager datasourceServiceManager;
+  private IXulAsyncDatasourceServiceManager datasourceServiceManager;
 
   private DatasourceAdminDialogModel datasourceAdminDialogModel = new DatasourceAdminDialogModel();
 
@@ -65,17 +65,17 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     this.bf = bf;
   }
 
-  public void setGenericDatasourceServiceManager(final IXulAsyncGenericDatasourceServiceManager datasourceServiceManager) {
+  public void setDatasourceServiceManager(final IXulAsyncDatasourceServiceManager datasourceServiceManager) {
     this.datasourceServiceManager = datasourceServiceManager;
   }
   
   private void refreshDatasourceList() {
-    datasourceServiceManager.getAll(new XulServiceCallback<List<IGenericDatasourceInfo>>() {
+    datasourceServiceManager.getAll(new XulServiceCallback<List<IDatasourceInfo>>() {
       public void error(final String message, final Throwable error) {
       
       }
 
-      public void success(final List<IGenericDatasourceInfo> datasourceInfoList) {
+      public void success(final List<IDatasourceInfo> datasourceInfoList) {
         datasourceAdminDialogModel.setDatasourcesList(datasourceInfoList);
       }
     });
@@ -93,7 +93,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   }
 
   @Override
-  protected IGenericDatasourceInfo getDialogResult() {
+  protected IDatasourceInfo getDialogResult() {
     return datasourceAdminDialogModel.getDatasourcesList().get(datasourceAdminDialogModel.getSelectedIndex());
   }
 
