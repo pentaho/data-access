@@ -25,7 +25,7 @@ import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
@@ -48,7 +48,7 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
   public static final int DEFAULT_CSV_TABLE_ROW_COUNT = 7;
   private DatasourceMessages datasourceMessages;
   private XulDialog datasourceDialog;
-  private IXulAsyncDatasourceService service;
+  private IXulAsyncDSWDatasourceService service;
   public static final int RELATIONAL_TAB = 0;
   public static final int CSV_TAB = 1;
   private DatasourceModel datasourceModel;
@@ -251,11 +251,11 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
     return true;
   }
 
-  public IXulAsyncDatasourceService getService() {
+  public IXulAsyncDSWDatasourceService getService() {
     return service;
   }
 
-  public void setService(IXulAsyncDatasourceService service) {
+  public void setService(IXulAsyncDSWDatasourceService service) {
     this.service = service;
   }
 

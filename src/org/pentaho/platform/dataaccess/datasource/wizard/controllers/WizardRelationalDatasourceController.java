@@ -29,7 +29,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -70,7 +70,7 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
   private XulDialog previewResultsDialog = null;
 
-  private IXulAsyncDatasourceService service;
+  private IXulAsyncDSWDatasourceService service;
 
   private DatasourceModel datasourceModel;
 
@@ -340,11 +340,11 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
     previewResultsDialog.hide();
   }
 
-  public IXulAsyncDatasourceService getService() {
+  public IXulAsyncDSWDatasourceService getService() {
     return service;
   }
 
-  public void setService(IXulAsyncDatasourceService service) {
+  public void setService(IXulAsyncDSWDatasourceService service) {
     this.service = service;
   }
 

@@ -34,9 +34,9 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardRelat
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -54,7 +54,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
   public static final int DEFAULT_RELATIONAL_TABLE_ROW_COUNT = 5;
   private DatasourceModel datasourceModel;
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
   XulTextbox datasourceNameTextBox = null;
   XulButton okButton = null;
   XulButton cancelButton = null;
@@ -68,7 +68,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource, boolean isFinishable) {
 	  super(parentDatasource);
 	  this.datasourceModel = datasourceModel;
-	  this.datasourceService = new DatasourceServiceGwtImpl();
+	  this.datasourceService = new DSWDatasourceServiceGwtImpl();
 	  this.connectionService = new ConnectionServiceGwtImpl();
 	  this.isFinishable = isFinishable;
   }
@@ -156,11 +156,11 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     datasourceModel.setDatasourceType(DatasourceType.SQL);
   }
 
-  public IXulAsyncDatasourceService getDatasourceService() {
+  public IXulAsyncDSWDatasourceService getDatasourceService() {
     return datasourceService;
   }
 
-  public void setDatasourceService(IXulAsyncDatasourceService datasourceService) {
+  public void setDatasourceService(IXulAsyncDSWDatasourceService datasourceService) {
     this.datasourceService = datasourceService;
   }
 

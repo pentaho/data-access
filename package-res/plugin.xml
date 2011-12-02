@@ -10,7 +10,7 @@
    </static-paths>
    
    <overlays>
-	    <overlay id="startup.dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages.properties">
+	    <overlay id="startup.dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages.properties" loadatstart="false">
 			<menubar id="managemenu">
 				<menuitem id="manageDatasourceItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />				
 			</menubar>
@@ -29,6 +29,7 @@
 
    <bean id="csvDatasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
 
+     
   <webservice
     id="DatasourceService"
     type="xml,gwt"

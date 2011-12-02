@@ -15,7 +15,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTOUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -48,10 +48,10 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   private XulDomContainer container;
   private boolean finishable;
 
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
   private IWizardModel wizardModel;
 
-  public CsvDatasource(DatasourceModel datasourceModel, IXulAsyncDatasourceService datasourceService, ICsvDatasourceServiceAsync csvDatasourceService){
+  public CsvDatasource(DatasourceModel datasourceModel, IXulAsyncDSWDatasourceService datasourceService, ICsvDatasourceServiceAsync csvDatasourceService){
     this.datasourceModel = datasourceModel;
     this.datasourceService = datasourceService;
     this.csvDatasourceService = csvDatasourceService;
