@@ -34,7 +34,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.WizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
@@ -81,7 +81,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   private IXulAsyncConnectionService connectionService;
   private boolean checkHasAccess;
 
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
 
   private DatasourceMessages datasourceMessages;
 
@@ -307,7 +307,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     return connectionService;
   }
 
-  public IXulAsyncDatasourceService getDatasourceService() {
+  public IXulAsyncDSWDatasourceService getDatasourceService() {
     return datasourceService;
   }
 
@@ -315,7 +315,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     return wizardController;
   }
 
-  public void setDatasourceService(IXulAsyncDatasourceService datasourceService) {
+  public void setDatasourceService(IXulAsyncDSWDatasourceService datasourceService) {
     this.datasourceService = datasourceService;
   }
 
