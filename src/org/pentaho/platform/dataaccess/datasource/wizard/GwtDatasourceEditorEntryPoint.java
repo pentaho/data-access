@@ -33,13 +33,13 @@ import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceM
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceManagerGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -62,7 +62,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private EmbeddedWizard wizard;
   // TODO: make this lazily loaded when the modelerMessages issue is fixed
   private ModelerDialog modeler;
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
   private IXulAsyncConnectionService connectionService;
   private IXulAsyncDatasourceServiceManager datasourceServiceManager;
   private ICsvDatasourceServiceAsync csvService;
@@ -84,7 +84,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
       public void success(Boolean retVal) {
         isAdmin = retVal;
-        datasourceService = new DatasourceServiceGwtImpl();
+        datasourceService = new DSWDatasourceServiceGwtImpl();
         // only init the app if the user has permissions
 
         datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
@@ -99,33 +99,29 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
               connectionService = new ConnectionServiceGwtImpl();
               csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
               setupPrivilegedNativeHooks(GwtDatasourceEditorEntryPoint.this);
+              loadOverlay("startup.dataaccess");
             }
-            timer = new Timer() {
-               @Override
-              public void run() {
-                if(doesMenuItemExist("manageDatasourceItem")) {
-                  setMenuItemEnabled("manageDatasourceItem", isAdmin || hasPermissions);
-                  setMenuItemEnabled("newDatasourceItem", isAdmin || hasPermissions);
-                  timer.cancel(); 
-                } else {
-                  timer.schedule(1000);
-                }
-              }};
-            timer.schedule(1000);
             initDashboardButtons(retVal);
           }
         });        
       }
     });
   }
-  private native boolean doesMenuItemExist(String menuItem) /*-{
-    return window.top.mantle_doesMenuItemExist(menuItem)
+  private native static void loadOverlay( String overlayId) /*-{
+    if(!$wnd.mantle_loadOverlay){
+      setTimeout(function(){
+         @org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::loadOverlay(Ljava/lang/String;)(overlayId);
+      }, 200);
+      return;
+    }
+    $wnd.mantle_loadOverlay(overlayId)
+  }-*/;
 
+  private native void removeOverlay(String overlayId) /*-{
+    if($wnd.mantle_removeOverlay)
+      $wnd.mantle_removeOverlay(overlayId)
   }-*/;
-  private native void setMenuItemEnabled(String menuItem, boolean enabled) /*-{
-    window.top.mantle_setMenuItemEnabled(menuItem, enabled)
-  }-*/;
-  
+
   public native void initDashboardButtons(boolean val) /*-{
     if($wnd.initDataAccess){
       $wnd.initDataAccess(val);
