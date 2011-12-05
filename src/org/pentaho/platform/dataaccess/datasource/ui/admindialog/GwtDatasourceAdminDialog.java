@@ -21,6 +21,8 @@
 package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
 import org.pentaho.platform.api.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogController;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogController;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
@@ -44,6 +46,10 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
   protected IXulAsyncDatasourceServiceManager genericDatasourceServiceManager;
 
   protected AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener;
+  
+  protected MetadataImportDialogController metadataImportDialogController;
+
+  protected AnalysisImportDialogController analysisImportDialogController;
 
   private boolean initialized;
 
@@ -86,7 +92,14 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
       datasourceAdminDialogController.setBindingFactory(bf);
       datasourceAdminDialogController.setDatasourceServiceManager(genericDatasourceServiceManager);
       container.addEventHandler(datasourceAdminDialogController);
-
+      
+      metadataImportDialogController = new MetadataImportDialogController();
+      metadataImportDialogController.setBindingFactory(bf);
+   	  container.addEventHandler(metadataImportDialogController);
+   	  
+   	  analysisImportDialogController = new AnalysisImportDialogController();
+   	  analysisImportDialogController.setBindingFactory(bf);
+  	  container.addEventHandler(analysisImportDialogController);
 
       runner.initialize();
 
@@ -99,6 +112,9 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
       }
       
       datasourceAdminDialogController.onDialogReady();
+      metadataImportDialogController.init();
+      analysisImportDialogController.init();
+      
     } catch (Exception e) {
       e.printStackTrace();
     }
