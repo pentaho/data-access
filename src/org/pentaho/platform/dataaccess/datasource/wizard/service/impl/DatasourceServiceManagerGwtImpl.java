@@ -8,7 +8,6 @@ import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -18,8 +17,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServiceManager{
 
-
-  String getAllURL = getWebAppRoot() + "api/datasourcemgr/datasource/ids"; //$NON-NLS-1$
+  String getAllURL = getWebAppRoot() + "plugin/data-access/api/datasource/listIds"; //$NON-NLS-1$
   
   String isAdminURL = getWebAppRoot() + "api/repo/files/canAdminister"; //$NON-NLS-1$
   @Override

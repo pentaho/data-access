@@ -14,11 +14,11 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
@@ -54,7 +54,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
   private EmbeddedWizard wizard;
   private ModelerDialog modeler;
   private IXulAsyncConnectionService connectionService;
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
   private ICsvDatasourceServiceAsync csvService;
   private AsyncConstructorListener constructorListener;
   private static ModelerDialog instance;
@@ -158,7 +158,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
       }
     });
 
-    datasourceService = new DatasourceServiceGwtImpl();
+    datasourceService = new DSWDatasourceServiceGwtImpl();
     connectionService = new ConnectionServiceGwtImpl();
     csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     

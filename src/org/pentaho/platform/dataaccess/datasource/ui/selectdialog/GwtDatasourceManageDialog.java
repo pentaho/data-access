@@ -1,7 +1,7 @@
 package org.pentaho.platform.dataaccess.datasource.ui.selectdialog;
 
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
 
@@ -15,7 +15,7 @@ import com.google.gwt.core.client.GWT;
  * To change this template use File | Settings | File Templates.
  */
 public class GwtDatasourceManageDialog extends GwtDatasourceSelectionDialog {
-  public GwtDatasourceManageDialog(final IXulAsyncDatasourceService datasourceService,
+  public GwtDatasourceManageDialog(final IXulAsyncDSWDatasourceService datasourceService,
                                    final EmbeddedWizard gwtDatasourceEditor,
                                    final AsyncConstructorListener<GwtDatasourceSelectionDialog> constructorListener) {
     this.context = "manage";
