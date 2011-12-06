@@ -2,27 +2,29 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 import org.pentaho.ui.xul.components.XulFileUpload;
 import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class ImportDialogController extends AbstractXulEventHandler {
 
-	private XulDialog dialog;
-	private XulDialog uploadDialog;
+	private XulDialog importDialog;
+	private XulDialog fileUploadDialog;
 	private XulTextbox uploadedFile;
 	private XulFileUpload fileUpload;
+	private XulDeck importDeck;
 
 	public void init() {
-		uploadDialog = (XulDialog) document.getElementById("fileImportEditorWindow"); //$NON-NLS-1$
-
-		dialog = (XulDialog) document.getElementById("importDialog"); //$NON-NLS-1$
+		fileUploadDialog = (XulDialog) document.getElementById("fileUploadDialog"); //$NON-NLS-1$
+		importDeck = (XulDeck) document.getElementById("importDeck"); //$NON-NLS-1$
+		importDialog = (XulDialog) document.getElementById("importDialog"); //$NON-NLS-1$
 		fileUpload = (XulFileUpload) document.getElementById("fileUpload"); //$NON-NLS-1$
 	}
 
 	@Bindable
-	public void showFileImportDialog() {
-		uploadDialog.show();
+	public void showFileUploadDialog() {
+		fileUploadDialog.show();
 	}
 
 	@Bindable
@@ -38,13 +40,7 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	public void uploadFile() {
 		try {
 			String selectedFile = fileUpload.getSeletedFile();
-			String fileTextBox = null;
-			if (selectedFile.endsWith(".xmi")) {
-				fileTextBox = "metadataFile";
-			} else if (selectedFile.endsWith(".xml")) {
-				fileTextBox = "analysisFile";
-			}
-			uploadedFile = (XulTextbox) document.getElementById(fileTextBox);
+			uploadedFile = (XulTextbox) document.getElementById("uploadedFile");
 			uploadedFile.setValue(selectedFile);
 		} catch (Exception e) {
 
@@ -54,7 +50,7 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	@Bindable
 	public void closeUpload() {
-		uploadDialog.hide();
+		fileUploadDialog.hide();
 	}
 
 	@Override
@@ -62,8 +58,18 @@ public class ImportDialogController extends AbstractXulEventHandler {
 		return "importDialogController";
 	}
 
+	public void reset() {
+		XulTextbox fileTextBox = (XulTextbox) document.getElementById("uploadedFile");
+		fileTextBox.setValue("");
+	}
+
 	@Bindable
 	public void closeDialog() {
-		dialog.hide();
+		importDialog.hide();
+	}
+
+	public void show(int index) {
+		importDeck.setSelectedIndex(index);
+		importDialog.show();
 	}
 }

@@ -1,16 +1,20 @@
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulTextbox;
-import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class MetadataImportDialogController extends AbstractXulEventHandler {
 
-	private XulDialog dialog;
 	private BindingFactory bf;
 	private ImportDialogController importDialogController;
+	private XulButton plusButton;
+	private XulButton minusButton;
+	private XulTree localizedBundlesTree;
+	private XulTextbox domainIdText;
 
 	public MetadataImportDialogController(ImportDialogController importDialogController) {
 		this.importDialogController = importDialogController;
@@ -18,27 +22,24 @@ public class MetadataImportDialogController extends AbstractXulEventHandler {
 
 	public void init() {
 
-		dialog = (XulDialog) document.getElementById("metadataImportDialog"); //$NON-NLS-1$
+		plusButton = (XulButton) document.getElementById("plusButton"); //$NON-NLS-1$
+		minusButton = (XulButton) document.getElementById("minusButton"); //$NON-NLS-1$
+		localizedBundlesTree = (XulTree) document.getElementById("localizedBundlesTree"); //$NON-NLS-1$
+		domainIdText = (XulTextbox) document.getElementById("domainIdText"); //$NON-NLS-1$
 	}
 
 	public void setBindingFactory(final BindingFactory bf) {
 		this.bf = bf;
 	}
 
-	@Bindable
-	public void showDialog() {
-		XulTextbox fileTextBox = (XulTextbox) document.getElementById("metadataFile");
-		fileTextBox.setValue("");
-		dialog.show();
-	}
-
-	@Bindable
-	public void closeDialog() {
-		dialog.hide();
-	}
-
 	@Override
 	public String getName() {
 		return "metadataImportDialogController";
+	}
+
+	@Bindable
+	public void showDialog() {
+		importDialogController.reset();
+		importDialogController.show(0);
 	}
 }
