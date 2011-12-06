@@ -20,6 +20,7 @@ public class ImportDialogController extends AbstractXulEventHandler {
 		importDeck = (XulDeck) document.getElementById("importDeck"); //$NON-NLS-1$
 		importDialog = (XulDialog) document.getElementById("importDialog"); //$NON-NLS-1$
 		fileUpload = (XulFileUpload) document.getElementById("fileUpload"); //$NON-NLS-1$
+		uploadedFile = (XulTextbox) document.getElementById("uploadedFile");
 	}
 
 	@Bindable
@@ -40,7 +41,6 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	public void uploadFile() {
 		try {
 			String selectedFile = fileUpload.getSeletedFile();
-			uploadedFile = (XulTextbox) document.getElementById("uploadedFile");
 			uploadedFile.setValue(selectedFile);
 		} catch (Exception e) {
 
@@ -59,8 +59,7 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	}
 
 	public void reset() {
-		XulTextbox fileTextBox = (XulTextbox) document.getElementById("uploadedFile");
-		fileTextBox.setValue("");
+		uploadedFile.setValue("");
 	}
 
 	@Bindable
