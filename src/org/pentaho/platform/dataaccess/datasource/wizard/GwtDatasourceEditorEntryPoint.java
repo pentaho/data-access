@@ -417,10 +417,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
 
     	public void asyncConstructorDone(GwtImportDialog dialog) {
-	        if (!asyncConstructorDone) {
-	          dialog.showMetadataImportDialog();
-	        }
-	        asyncConstructorDone = true;
+          dialog.showMetadataImportDialog();
 	    }
 	};
     
@@ -435,10 +432,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 	    final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
 
 	    	public void asyncConstructorDone(GwtImportDialog dialog) {
-		        if (!asyncConstructorDone) {
-		          dialog.showAnalysisImportDialog();
-		        }
-		        asyncConstructorDone = true;
+	          dialog.showAnalysisImportDialog();
 		    }
 		};
 	    
@@ -502,7 +496,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
        dialog.removeDialogListener(listener);
        dialog.addDialogListener(listener);
        if (!asyncConstructorDone) {
-    	 //initializeImportDialogs();
          dialog.showDialog();
        }
        asyncConstructorDone = true;
