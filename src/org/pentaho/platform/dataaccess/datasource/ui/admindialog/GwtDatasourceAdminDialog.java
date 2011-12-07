@@ -21,9 +21,6 @@
 package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
 import org.pentaho.platform.api.datasource.IDatasourceInfo;
-import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogController;
-import org.pentaho.platform.dataaccess.datasource.ui.importing.ImportDialogController;
-import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogController;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
@@ -48,10 +45,6 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
 
   protected AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener;
   
-  protected MetadataImportDialogController metadataImportDialogController;
-
-  protected AnalysisImportDialogController analysisImportDialogController;
-
   private boolean initialized;
 
   // ~ Constructors ====================================================================================================
@@ -94,17 +87,6 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
       datasourceAdminDialogController.setDatasourceServiceManager(genericDatasourceServiceManager);
       container.addEventHandler(datasourceAdminDialogController);
       
-      ImportDialogController importDialogController = new ImportDialogController();
-  	  container.addEventHandler(importDialogController);
-      
-      metadataImportDialogController = new MetadataImportDialogController(importDialogController);
-      metadataImportDialogController.setBindingFactory(bf);
-   	  container.addEventHandler(metadataImportDialogController);
-   	  
-   	  analysisImportDialogController = new AnalysisImportDialogController(importDialogController);
-   	  analysisImportDialogController.setBindingFactory(bf);
-  	  container.addEventHandler(analysisImportDialogController);
-  	  
       runner.initialize();
 
       runner.start();
@@ -116,10 +98,6 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
       }
       
       datasourceAdminDialogController.onDialogReady();
-      importDialogController.init();
-      metadataImportDialogController.init();
-      analysisImportDialogController.init();
-      
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -29,12 +29,12 @@ import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.GwtDatasourceAdminDialog;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.GwtImportDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceManageDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
@@ -71,6 +71,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private GwtDatasourceManageDialog manageDialog;
   private GwtDatasourceSelectionDialog selectDialog ;
   private GwtDatasourceAdminDialog adminDialog;
+  private GwtImportDialog importDialog;
   private boolean asyncConstructorDone;
   private boolean hasPermissions;
   private boolean isAdmin;
@@ -174,7 +175,15 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     $wnd.pho.showDatasourceManageDialog = function(callback) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)("manage", "false", callback);
     }
+    
+    
+    $wnd.pho.showMetadataImportDialog = function() {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showMetadataImportDialog()();
+    }
 
+    $wnd.pho.showAnalysisImportDialog = function() {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showAnalysisImportDialog()();
+    }
   }-*/;
 
   public void showConfirm(final JavaScriptObject callback, String message, String title, String okText, String cancelText) throws XulException{
@@ -404,6 +413,43 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     }
   }
   
+  private void showMetadataImportDialog() {
+    final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
+
+    	public void asyncConstructorDone(GwtImportDialog dialog) {
+	        if (!asyncConstructorDone) {
+	          dialog.showMetadataImportDialog();
+	        }
+	        asyncConstructorDone = true;
+	    }
+	};
+    
+    if(importDialog == null){
+    	importDialog = new GwtImportDialog(constructorListener);
+    } else {
+    	importDialog.showMetadataImportDialog();
+    }
+  }
+  
+  private void showAnalysisImportDialog() {
+	    final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
+
+	    	public void asyncConstructorDone(GwtImportDialog dialog) {
+		        if (!asyncConstructorDone) {
+		          dialog.showAnalysisImportDialog();
+		        }
+		        asyncConstructorDone = true;
+		    }
+		};
+	    
+	    if(importDialog == null){
+	    	importDialog = new GwtImportDialog(constructorListener);
+	    } else {
+	    	importDialog.showAnalysisImportDialog();
+	    }
+  }
+
+  
   private void showSelectionDialog(final String context, final boolean selectDs, final DialogListener<LogicalModelSummary> listener) {
     if (selectDs) {
       // selection dialog
@@ -456,6 +502,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
        dialog.removeDialogListener(listener);
        dialog.addDialogListener(listener);
        if (!asyncConstructorDone) {
+    	 //initializeImportDialogs();
          dialog.showDialog();
        }
        asyncConstructorDone = true;
