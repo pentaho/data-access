@@ -29,15 +29,15 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 public class MetadataImportDialogController extends AbstractXulEventHandler implements IImportPerspective {
 
 	private BindingFactory bf;
-	private XulButton plusButton;
-	private XulButton minusButton;
+	private XulButton addButton;
+	private XulButton removeButton;
 	private XulTree localizedBundlesTree;
 	private XulTextbox domainIdText;
 
 	public void init() {
 
-		plusButton = (XulButton) document.getElementById("plusButton"); //$NON-NLS-1$
-		minusButton = (XulButton) document.getElementById("minusButton"); //$NON-NLS-1$
+		addButton = (XulButton) document.getElementById("addButton"); //$NON-NLS-1$
+		removeButton = (XulButton) document.getElementById("removeButton"); //$NON-NLS-1$
 		localizedBundlesTree = (XulTree) document.getElementById("localizedBundlesTree"); //$NON-NLS-1$
 		domainIdText = (XulTextbox) document.getElementById("domainIdText"); //$NON-NLS-1$
 	}

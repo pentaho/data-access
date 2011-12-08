@@ -4,41 +4,30 @@
   xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
   height="600" width="800">
   
-  <dialog id="importDialog" width="550" height="215" title="${importDialog.IMPORT_TITLE}" buttonlabelcancel="${importDialog.ACCEPT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
+  <dialog id="importDialog" width="395" height="215" title="" buttonlabelaccept="${importDialog.IMPORT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
    <vbox>
-     <spacer height="10"/>
-     <hbox>
-	     <spacer width="5"/>
-	     <label id="fileLabel" value="${importDialog.FILE}:"/>
-             <spacer width="80"/>
-	     <textbox id="uploadedFile" value="" disabled="true" height="20" width="350"/>
-	     <button id="importButton" label="..." onclick="importDialogController.showFileUploadDialog()" />
-     </hbox>	
+     <vbox>
+	     <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
+             <hbox>
+		     <textbox id="uploadedFile" value="" disabled="true" height="20" width="350"/>
+		     <button id="importButton" height="22" label="..." onclick="importDialogController.showFileUploadDialog()" />
+             </hbox> 
+     </vbox>	
      
      <deck id="importDeck">
      	<vbox>
-     		<hbox>	
-     			<spacer width="5"/>
-     			<label id="fileLabel" value="${importDialog.METADATA} ------------------------------------------------------------------------------------"/>
-     		</hbox>	
+     		<hbox><label id="domainIdLabel" value="${importDialog.DOMAIN_ID}"/></hbox>
+     		<hbox><textbox id="domainIdText" value="" height="20" width="400"/></hbox>
      		<hbox>
-     			<spacer width="35"/>	
-     			<label id="domainIdLabel" value="${importDialog.DOMAIN_ID}"/>
-     			<spacer width="9"/>
-     			<textbox id="domainIdText" value="" height="20" width="400"/>
-     		</hbox>	
-     		<hbox>
-     			<spacer width="113"/>
      			<label id="localizationBundlesLabel" value="${importDialog.LOC_BUNDLES}"/>
-     			<spacer width="195"/>  
-     			<button id="plusButton" label="${importDialog.PLUS}"/>
-     			<button id="minusButton" label="${importDialog.MINUS}"/>
+     			<spacer width="246"/>  
+     			<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png"/>
+     			<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png"/>
      		</hbox>
      		<hbox>
-     			<spacer width="113"/>	
      			<tree id="localizedBundlesTree" seltype="single" width="400" height="150">
      				<treecols id="csvModelDataTableCols">
-     					<treecol flex="1" id="csvColumnIncludeTreeCol" label="${importDialog.RES_BUNDLES}" editable="false" type="text"/>
+     					<treecol flex="1" id="csvColumnIncludeTreeCol" label="${importDialog.FILE_NAME}" editable="false" type="text"/>
      				</treecols>
      				<treechildren id="modelDataRows"/>
      			</tree>
@@ -46,37 +35,30 @@
      	</vbox>
      
 	    <vbox>
-	    	<hbox>	
-	     		<spacer width="5"/>
-	     		<label id="fileLabel" value="${importDialog.ANALYSIS} ------------------------------------------------------------------------------------"/>
-	     	</hbox>	
-	        <hbox>
-	        	<spacer width="10"/>
-	        	<radiogroup id="basicOrAdvancedRadioGroup" padding="0">
-	        		<radio id="basicRadio" checked="true" value="BASIC" label="${importDialog.BASIC}"/>
-	        		<radio id="advancedRadio" value="ADVANCED" label="${importDialog.ADVANCED}" />
-	        	</radiogroup>
-	        	<hbox>
-	        		<hbox>
-	        			<label id="datasourceLabel" value="${importDialog.DATA_SOURCE}"/>
-	        			<menulist id="dataSourceListDropDown" width="204">
-	        				<menupopup>
-	        					<menuitem label="SampleData"/>
-	        				</menupopup>
-	        			</menulist>  
-	        		</hbox>
-	        	</hbox>
-	        </hbox>
-	        <hbox>
-	        	<spacer width="113"/>	
+	    
+	        <hbox><label id="datasourceLabel" value="${importDialog.DATA_SOURCE}"/></hbox>
+	    		<hbox>
+				<menulist id="dataSourceListDropDown" width="400">
+					<menupopup>
+						<menuitem label="SampleData"/>
+					</menupopup>
+				</menulist>  
+			</hbox>
+			<hbox>
+ 				<label id="localizationBundlesLabel" value="${importDialog.PARAMETERS}"/>
+ 				<spacer width="288"/>  
+ 				<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png"/>
+ 				<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png"/>
+ 			</hbox>
+			<hbox>
 	        	<tree id="parametersTree" seltype="single" width="400" height="150">
 	        		<treecols id="csvModelDataTableCols">
-	        			<treecol flex="1" id="paramCol" label="${importDialog.PARAMETER}" editable="false" type="text"/>
+	        			<treecol flex="1" id="paramCol" label="${importDialog.NAME}" editable="false" type="text"/>
 	        			<treecol flex="1" id="valueCol" label="${importDialog.VALUE}" editable="false" type="text"/>
 	        			</treecols>
 	        			<treechildren id="modelDataRows"/>
 	        	</tree>
-	        </hbox>
+	       		</hbox>
 	 	</vbox>
     </deck> 
    </vbox>

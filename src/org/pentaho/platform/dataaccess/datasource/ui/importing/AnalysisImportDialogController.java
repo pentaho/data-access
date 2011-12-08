@@ -22,21 +22,23 @@
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
-import org.pentaho.ui.xul.components.XulRadioGroup;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 public class AnalysisImportDialogController extends AbstractXulEventHandler implements IImportPerspective {
 
 	private BindingFactory bf;
-	private XulRadioGroup basicOrAdvancedRadioGroup;
 	private XulMenuList dataSourceListDropDown;
 	private XulTree parametersTree;
+	private XulButton addButton;
+	private XulButton removeButton;
 
 	public void init() {
 
-		basicOrAdvancedRadioGroup = (XulRadioGroup) document.getElementById("basicOrAdvancedRadioGroup"); //$NON-NLS-1$
+		addButton = (XulButton) document.getElementById("addButton"); //$NON-NLS-1$
+		removeButton = (XulButton) document.getElementById("removeButton"); //$NON-NLS-1$
 		dataSourceListDropDown = (XulMenuList) document.getElementById("dataSourceListDropDown"); //$NON-NLS-1$
 		parametersTree = (XulTree) document.getElementById("parametersTree"); //$NON-NLS-1$
 	}
