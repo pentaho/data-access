@@ -218,7 +218,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private native void executeJavaScript(String script) /*-{
     try{
       var callback = "{ onCancel: function(){} ,onOk: function(){$wnd.pho.refreshDatasourceList();},onReady: function(){}}";
-      var updatedScript script.replace(/\{callback\}/g, callback);
+      var updatedScript = script.replace(/\{callback\}/g, callback);
       eval(updatedScript);
     } catch (e){
       $wnd.pho.showDatasourceAdminErrorDialog("Error", e.message);
