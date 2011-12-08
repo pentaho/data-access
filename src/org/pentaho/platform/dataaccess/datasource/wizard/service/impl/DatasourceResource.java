@@ -24,12 +24,14 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import javax.ws.rs.Produces;
 
@@ -53,22 +55,36 @@ public class DatasourceResource {
   }
 
   @GET
-  @Path("/listIds")
+  @Path("/ids")
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
   public List<DatasourceInfo> getDatasources() throws PentahoAccessControlException {
     List<DatasourceInfo> infoList = new ArrayList<DatasourceInfo>();
     for(IDatasourceInfo datasourceInfo:datasourceServiceManager.getIds()) {
-      infoList.add(new DatasourceInfo(datasourceInfo.getName(), datasourceInfo.getId(), datasourceInfo.getType())); 
+      infoList.add(new DatasourceInfo(datasourceInfo.getName(), datasourceInfo.getId(), datasourceInfo.getType(), datasourceInfo.isEditable(), datasourceInfo.isRemovable(), datasourceInfo.isImportable(), datasourceInfo.isExportable())); 
     }
     return infoList;
   }
 
   @GET
-  @Path("/listTypes")
+  @Path("/types")
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
   public JaxbList<String> getDatasourcesTypes() {
     return new JaxbList<String>(datasourceServiceManager.getTypes());
   }
 
+  @GET
+  @Path("{pathId : .+}/editor")
+  @Produces( { TEXT_PLAIN })
+  public String getNewUI(@PathParam("pathId")String pathId) throws PentahoAccessControlException {
+    if(pathId != null && pathId.indexOf(':') >= 0) {
+      int index = pathId.indexOf(':');
+      String name = pathId.substring(0, index);
+      String type = pathId.substring(index+1);
+      return datasourceServiceManager.getService(pathId).getEditUI();
+    } else {
+      return datasourceServiceManager.getService(pathId).getNewUI();      
+    }
+  }
+  
   
 }
