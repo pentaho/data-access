@@ -23,10 +23,23 @@ public class DSWDatasourceService implements IDatasourceService{
   IModelerService modelerService;
   public final static String EXT = ".xmi";
   public final static String TYPE = "Data Source Wizard";
-
+  
+  String defaultNewUI = "$wnd.pho.openDatasourceEditor({callback})";
+  String defaultEditUI = "$wnd.pho.openEditDatasourceEditor({domainId}, {modelId}, {perspective} {callback})";
+  boolean editable;
+  boolean removable;
+  boolean importable;
+  boolean exportable;
+  String newUI;
+  String editUI;
+  
   public  DSWDatasourceService() {
     dswService = new DSWDatasourceServiceImpl();
     modelerService = new ModelerService();
+    this.editable = true;
+    this.removable = true;
+    this.importable = false;
+    this.exportable = true;
   }
 
   @Override
@@ -73,7 +86,7 @@ public class DSWDatasourceService implements IDatasourceService{
             if( index >=0) {
               name = id.substring(0, index);
             }
-            datasourceList.add(new DatasourceInfo(name, summary.getDomainId(), TYPE));
+            datasourceList.add(new DatasourceInfo(name, summary.getDomainId(), TYPE, editable, removable, importable, exportable));
           }
         }
       }
@@ -89,6 +102,30 @@ public class DSWDatasourceService implements IDatasourceService{
   public boolean exists(String id) throws PentahoAccessControlException {
     // TODO Auto-generated method stub
     return false;
+  }
+  @Override
+  public void registerNewUI(String newUI) throws PentahoAccessControlException {
+    this.newUI = newUI;    
+  }
+  @Override
+  public void registerEditUI(String editUI) throws PentahoAccessControlException {
+    this.editUI = editUI;
+  }
+  @Override
+  public String getNewUI() throws PentahoAccessControlException {
+    if(newUI == null) {
+      return defaultNewUI;
+    } else {
+      return newUI;
+    }
+  }
+  @Override
+  public String getEditUI() throws PentahoAccessControlException {
+    if(newUI == null) {
+      return defaultNewUI;
+    } else {
+      return newUI;
+    }
   }
 
 }

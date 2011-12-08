@@ -30,17 +30,30 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   String id;
 
   String type;
+  
+  boolean editable;
+  
+  boolean removable;
+  
+  boolean importable;
+  
+  boolean exportable;
+  
 
   public DatasourceInfo() {
     super();
     // TODO Auto-generated constructor stub
   }
 
-  public DatasourceInfo(String name, String id, String type) {
+  public DatasourceInfo(String name, String id, String type, boolean editable, boolean removable, boolean importable, boolean exportable) {
     super();
     this.name = name;
     this.id = id;
     this.type = type;
+    this.editable = editable;
+    this.removable = removable;
+    this.importable = importable;
+    this.exportable = exportable;
   }
   
   @Bindable
@@ -65,6 +78,26 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   @SuppressWarnings("nls")
   @Override
   public String toString() {
-    return "GenericDatasourceInfo [id=" + id + ", type=" + type + "]";
+    return "DatasourceInfo [id=" + id + ", type=" + type + "]";
+  }
+
+  @Override
+  public boolean isEditable() {
+    return this.editable;
+  }
+
+  @Override
+  public boolean isRemovable() {
+    return this.removable ;
+  }
+
+  @Override
+  public boolean isImportable() {
+    return this.importable;
+  }
+
+  @Override
+  public boolean isExportable() {
+    return this.exportable;
   }
 }

@@ -1,5 +1,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
@@ -14,12 +15,24 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.xml.client.Document;
+import com.google.gwt.xml.client.Element;
+import com.google.gwt.xml.client.Node;
+import com.google.gwt.xml.client.NodeList;
+import com.google.gwt.xml.client.XMLParser;
 
 public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServiceManager{
 
-  String getAllURL = getWebAppRoot() + "plugin/data-access/api/datasource/listIds"; //$NON-NLS-1$
+  String getAllURL = getWebAppRoot() + "plugin/data-access/api/datasource/ids"; //$NON-NLS-1$
   
   String isAdminURL = getWebAppRoot() + "api/repo/files/canAdminister"; //$NON-NLS-1$
+  
+  String getTypesURL = getWebAppRoot() + "plugin/data-access/api/datasource/types"; //$NON-NLS-1$
+  
+  String getUIURL = getWebAppRoot() + "plugin/data-access/api/datasource/";//$NON-NLS-1$
+  String UIUrlFragment = "/editor";  //$NON-NLS-1$
+  
+  
   @Override
   public void getAll(final XulServiceCallback<List<IDatasourceInfo>> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
@@ -100,4 +113,143 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   }
   return "";
 }-*/;
+  @Override
+  public void getTypes(final XulServiceCallback<List<String>> xulCallback) {
+    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+      public void execute(final AsyncCallback callback) {
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getTypesURL);
+        try {
+          requestBuilder.sendRequest(null, new RequestCallback() {
+            @Override
+            public void onError(Request request, Throwable exception) {
+              xulCallback.error(exception.getLocalizedMessage(), exception);
+            }
+
+            @Override
+            public void onResponseReceived(Request request, Response response) {
+              if (response.getStatusCode() == Response.SC_OK) {
+                List<String> types = new ArrayList<String>();
+                Document document = (Document) XMLParser.parse(response.getText());
+                Element element = document.getDocumentElement();
+                Node node = element.getFirstChild();
+                boolean done = false;
+                do {
+                    try {
+                    types.add(getNodeValueByTagName(node, "Item"));
+                    node = (node.getNextSibling() != null) ? node.getNextSibling() : null;
+  
+                    if(node == null) {
+                      done = true;
+                    }
+                  } catch(Exception e) {
+                    done = true;
+                  }
+                } while(!done);
+                callback.onSuccess(types);
+              }
+            }
+
+          });
+        } catch (RequestException e) {
+          xulCallback.error(e.getLocalizedMessage(), e);
+        }        
+      }
+    }, new AsyncCallback<List<String>>() {
+
+      public void onFailure(Throwable arg0) {
+        xulCallback.error(arg0.getLocalizedMessage(), arg0);
+      }
+
+      public void onSuccess(List<String> arg0) {
+        xulCallback.success(arg0);
+      }
+
+    });
+  }
+  
+ 
+  /*
+   * Get Node Value of the element matching the tag name
+   */
+  private String getNodeValueByTagName(Node node, String tagName) {
+    if(node != null && node.getFirstChild() != null) {
+      return node.getFirstChild().getNodeValue();
+    } else {
+      return null;
+    }
+  }
+  @Override
+  public void getNewUI(final String datasourceType, final XulServiceCallback<String> xulCallback) {
+    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+      public void execute(final AsyncCallback callback) {
+        
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUIURL + datasourceType + UIUrlFragment);
+        try {
+          requestBuilder.sendRequest(null, new RequestCallback() {
+            @Override
+            public void onError(Request request, Throwable exception) {
+              xulCallback.error(exception.getLocalizedMessage(), exception);
+            }
+
+            @Override
+            public void onResponseReceived(Request request, Response response) {
+              if (response.getStatusCode() == Response.SC_OK) {
+                callback.onSuccess(response.getText());
+              }
+            }
+
+          });
+        } catch (RequestException e) {
+          xulCallback.error(e.getLocalizedMessage(), e);
+        }        
+      }
+    }, new AsyncCallback<String>() {
+
+      public void onFailure(Throwable arg0) {
+        xulCallback.error(arg0.getLocalizedMessage(), arg0);
+      }
+
+      public void onSuccess(String arg0) {
+        xulCallback.success(arg0);
+      }
+
+    });
+  }
+  @Override
+  public void getEditUI(final String datasourceType, final String datasourceName, final XulServiceCallback<String> xulCallback) {
+    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+      public void execute(final AsyncCallback callback) {
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getUIURL + datasourceName + ":" + datasourceType + UIUrlFragment);
+        try {
+          requestBuilder.sendRequest(null, new RequestCallback() {
+            @Override
+            public void onError(Request request, Throwable exception) {
+              xulCallback.error(exception.getLocalizedMessage(), exception);
+            }
+
+            @Override
+            public void onResponseReceived(Request request, Response response) {
+              if (response.getStatusCode() == Response.SC_OK) {
+                callback.onSuccess(response.getText());
+              }
+            }
+
+          });
+        } catch (RequestException e) {
+          xulCallback.error(e.getLocalizedMessage(), e);
+        }        
+      }
+    }, new AsyncCallback<String>() {
+
+      public void onFailure(Throwable arg0) {
+        xulCallback.error(arg0.getLocalizedMessage(), arg0);
+      }
+
+      public void onSuccess(String arg0) {
+        xulCallback.success(arg0);
+      }
+
+    });
+  }
+  
 }
