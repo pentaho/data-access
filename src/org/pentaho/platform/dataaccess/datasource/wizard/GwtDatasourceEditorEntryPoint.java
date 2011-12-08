@@ -21,7 +21,12 @@
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
 
+import java.util.List;
+
 import org.pentaho.agilebi.modeler.ModelerPerspective;
+import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.database.model.IDatabaseType;
+import org.pentaho.database.util.DatabaseTypeHelper;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPane;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPaneNativeListener;
 import org.pentaho.metadata.model.Domain;
@@ -41,6 +46,10 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasou
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceManagerGwtImpl;
+import org.pentaho.ui.database.event.DatabaseDialogListener;
+import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
+import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseConnectionService;
+import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseDialectService;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -57,7 +66,7 @@ import com.google.gwt.user.client.Timer;
 /**
  * Creates the singleton datasource wizard and sets up native JavaScript functions to show the wizard.
  */
-public class GwtDatasourceEditorEntryPoint implements EntryPoint {
+public class GwtDatasourceEditorEntryPoint implements EntryPoint, DatabaseDialogListener  {
 
   private EmbeddedWizard wizard;
   // TODO: make this lazily loaded when the modelerMessages issue is fixed
@@ -67,6 +76,8 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private IXulAsyncDatasourceServiceManager datasourceServiceManager;
   private ICsvDatasourceServiceAsync csvService;
   private GwtDatasourceSelectionDialog gwtDatasourceSelectionDialog;
+  private GwtDatabaseDialog gwtDatabaseDialog;
+  private DatabaseTypeHelper databaseTypeHelper;
   private EmbeddedWizard gwtDatasourceEditor;
   private GwtDatasourceManageDialog manageDialog;
   private GwtDatasourceSelectionDialog selectDialog ;
@@ -76,7 +87,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private boolean hasPermissions;
   private boolean isAdmin;
   private Timer timer;
-
+  private GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
+  private GwtXulAsyncDatabaseDialectService dialectService = new GwtXulAsyncDatabaseDialectService();
+  
   public void onModuleLoad() {
     datasourceServiceManager = new DatasourceServiceManagerGwtImpl();
     
@@ -107,6 +120,17 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         });        
       }
     });
+    
+    XulServiceCallback<List<IDatabaseType>> callback = new XulServiceCallback<List<IDatabaseType>>() {
+      public void error(String message, Throwable error) {
+        error.printStackTrace();
+      }
+
+      public void success(List<IDatabaseType> retVal) {
+        databaseTypeHelper = new DatabaseTypeHelper(retVal);
+      }
+    };
+    dialectService.getDatabaseTypes(callback);
   }
   private native static void loadOverlay( String overlayId) /*-{
     if(!$wnd.mantle_loadOverlay){
@@ -140,8 +164,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     $wnd.pho.showDatasourceSelectionDialog = function(context, callback) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(context,"true", callback);
     }
-
-
+    $wnd.pho.showDatabaseDialog = function() {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showDatabaseDialog()();
+    }
     $wnd.gwtConfirm = function(message, callback, options){
       var title = options.title || $wnd.pho_messages.getMessage("prompt","Prompt");
       var accept = options.acceptLabel || $wnd.pho_messages.getMessage("okButton","OK");
@@ -226,7 +251,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     final DialogListener<Domain> listener = new DialogListener<Domain>(){
       public void onDialogCancel() {
         wizard.removeDialogListener(this);
-        notifyCallbackCancel(callback);
+        if(callback != null) {
+          notifyCallbackCancel(callback);          
+        }
       }
       public void onDialogAccept(final Domain domain) {
         wizard.removeDialogListener(this);
@@ -234,7 +261,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         notifyCallbackSuccess(callback, true, transport);
       }
       public void onDialogReady() {
-        notifyCallbackReady(callback);
+        if(callback != null) {
+          notifyCallbackCancel(callback);          
+        }
       }
     };
 
@@ -282,7 +311,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     final DialogListener<Domain> listener = new DialogListener<Domain>(){
       public void onDialogCancel() {
         modeler.removeDialogListener(this);
-        notifyCallbackCancel(callback);
+        if(callback != null) {
+          notifyCallbackCancel(callback);          
+        }
       }
       public void onDialogAccept(final Domain domain) {
         modeler.removeDialogListener(this);
@@ -290,7 +321,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         notifyCallbackSuccess(callback, true, transport);
       }
       public void onDialogReady() {
-        notifyCallbackReady(callback);
+        if(callback != null) {
+          notifyCallbackCancel(callback);          
+        }
       }
     };
 
@@ -504,6 +537,27 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
  }
 
+
+  private void showDatabaseDialog() {
+    if(gwtDatabaseDialog != null){
+      gwtDatabaseDialog.setDatabaseConnection(null);
+      gwtDatabaseDialog.show();
+    } else {
+      gwtDatabaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
+          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
+    }
+  }
+
+  private void showEditDatabaseDialog(String databaseId) {
+    if(gwtDatabaseDialog != null){
+      gwtDatabaseDialog.setDatabaseConnection(null);
+      gwtDatabaseDialog.show();
+    } else {
+      gwtDatabaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
+          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
+    }
+  }
+  
   private native void notifyCallbackSuccess(JavaScriptObject callback, String domainId,
     String modelId, String modelName) /*-{
    callback.onFinish(domainId, modelId, modelName);
@@ -544,4 +598,17 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private native void notifyDialogCallbackError(JavaScriptObject callback, String error)/*-{
     callback.onError(error);
   }-*/;
+  @Override
+  public void onDialogAccept(IDatabaseConnection arg0) {
+    // TODO Auto-generated method stub
+    
+  }
+  @Override
+  public void onDialogCancel() {
+    
+  }
+  @Override
+  public void onDialogReady() {
+    gwtDatabaseDialog.show();
+  }
 }

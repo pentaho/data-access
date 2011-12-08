@@ -9,36 +9,38 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class DatasourceAdminDialogModel extends XulEventSourceAdapter {
 
-  private List<IDatasourceInfo> datasourceList;
+  private List<IDatasourceInfo> datasources;
+  private List<String> datasourceTypes;
+  private IDatasourceInfo selectedDatasource;
+  private int selectedIndex = -1;
+  
+  
 
   public DatasourceAdminDialogModel() {
-    datasourceList = new ArrayList<IDatasourceInfo>();
+    datasources = new ArrayList<IDatasourceInfo>();
   }
   public void addDatasource(IDatasourceInfo datasource) {
-    datasourceList.add(datasource);
-    this.firePropertyChange("datasourceList", null, datasourceList); //$NON-NLS-1$
+    datasources.add(datasource);
+    this.firePropertyChange("datasources", null, datasources); //$NON-NLS-1$
   }
 
   public void removeDatasource(IDatasourceInfo datasource) {
-    datasourceList.remove(datasource);
-    this.firePropertyChange("datasourceList", null, datasourceList); //$NON-NLS-1$
+    datasources.remove(datasource);
+    this.firePropertyChange("datasources", null, datasources); //$NON-NLS-1$
   }
 
   
   @Bindable
   public List<IDatasourceInfo> getDatasourcesList() {
-    return datasourceList;
+    return datasources;
   }
 
   @Bindable
   public void setDatasourcesList(List<IDatasourceInfo> datasourceList) {
-    this.datasourceList = new ArrayList<IDatasourceInfo>(datasourceList);
-    this.firePropertyChange("datasourceList", null, datasourceList); //$NON-NLS-1$
+    this.datasources = new ArrayList<IDatasourceInfo>(datasourceList);
+    this.firePropertyChange("datasources", null, datasourceList); //$NON-NLS-1$
   }
 
-  private int selectedIndex = -1;
-  
-  
   @Bindable
   public void setSelectedIndex(final int selectedIndex) {
     this.selectedIndex = selectedIndex;
@@ -49,5 +51,27 @@ public class DatasourceAdminDialogModel extends XulEventSourceAdapter {
   @Bindable
   public int getSelectedIndex() {
     return selectedIndex;
+  }
+  
+  @Bindable
+  public void setDatasourceTypeList(List<String> datasourceTypes) {
+    this.datasourceTypes = new ArrayList<String>(datasourceTypes);
+    this.firePropertyChange("datasourceTypes", null, datasourceTypes); //$NON-NLS-1$
+  }
+  
+  @Bindable
+  public List<String> getDatasourceTypeList() {
+    return datasourceTypes;
+  }
+  
+  @Bindable
+  public void setSelectedDatasource(IDatasourceInfo selectedDatasource) {
+    this.selectedDatasource = selectedDatasource;
+    this.firePropertyChange("selectedDatasource", null, selectedDatasource); //$NON-NLS-1$
+  }
+  
+  @Bindable
+  public IDatasourceInfo getSelectedDatasource() {
+    return selectedDatasource;
   }
 }

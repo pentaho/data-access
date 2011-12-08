@@ -12,19 +12,19 @@
   <dialog id="datasourceAdminDialog" buttonlabelcancel="${datasourceAdminDialog.close}" buttons="cancel"
     buttonalign="right" title="${datasourceAdminDialog.title}" width="500" height="215"
     ondialogcancel="datasourceAdminDialogController.onDialogCancel()">
-    <!--
+
         <hbox flex="1">
-	        <label id="datasourcesLabel" value="${datasourceAdminDialog.DATASOURCES_LABEL}"/>
+        	<label value="${datasourceAdminDialog.Available}" tooltiptext="${datasourceAdminDialog.Available}" />
 	        <spacer flex="1"/>
-	        <button id="importButton" label="${datasourceAdminDialog.IMPORT}" disabled="true" onclick="datasourceAdminDialogController.import()" />
-	        <button id="exportButton" label="${datasourceAdminDialog.EXPORT}" disabled="true" onclick="datasourceAdminDialogController.export()" />
-	        <spacer flex="1"/>
-	        <button id="addButton" label="${datasourceAdminDialog.ADD}" disabled="true" onclick="datasourceAdminDialogController.add()" />
-	        <button id="editButton" label="${datasourceAdminDialog.EDIT}" disabled="true" onclick="datasourceAdminDialogController.edit()" />
-	        <button id="removeButton" label="${datasourceAdminDialog.REMOVE}" disabled="true" onclick="datasourceAdminDialogController.remove()" />
-	        <button id="sortButton" label="${datasourceAdminDialog.SORT}" disabled="true" onclick="datasourceAdminDialogController.sort()" />
+			<menulist id="datasourceTypeMenuList" disabled="false"  editable="false" oncommand="datasourceAdminDialogController.launchNewUI()">
+				<menupopup>
+				</menupopup>
+			</menulist>
+	        <button id="editDatasourceButton" image="images/edit.png" tooltiptext="${datasourceAdminDialog.EDIT}" pen:disabledimage="images/edit_disabled.png"  disabled="true" onclick="datasourceAdminDialogController.edit()" />
+   	        <button id="exportDatasourceButton" image="images/export.png" tooltiptext="${datasourceAdminDialog.EXPORT}" pen:disabledimage="images/export_disabled.png" disabled="true" onclick="datasourceAdminDialogController.export()" />
+	        <button id="removeDatasourceButton" image="images/remove.png" tooltiptext="${datasourceAdminDialog.REMOVE}" pen:disabledimage="images/remove_disabled.png" disabled="true" onclick="datasourceAdminDialogController.remove()" />
         </hbox>
-   -->    
+   
 		<tree height="175" id="datasourcesListTable" seltype="single">
 			<treecols id="datasourcesListCols">
 				<treecol id="datasourceName" label="${datasourcesListCols.datasourceName}" flex="1" pen:binding="name" editable="false" type="text" sortActive="true" sortDirection="ASCENDING"/>
@@ -33,5 +33,13 @@
 			<treechildren id="datasourcesListRows"/>
 		</tree>
   </dialog>
-
+	<!--  ###############################################################################   -->
+	<!--     ERROR DIALOG: Dialog to display error text                                     -->
+	<!--  ###############################################################################   -->
+	<dialog id="datasourceAdminErrorDialog" title="${datasourceAdminErrorDialog.errorOccurred}" buttonlabelaccept="${datasourceAdminErrorDialog.CLOSE}" buttons="accept" ondialogaccept="datasourceAdminDialogController.closeErrorDialog()" width="400" height="100" buttonalign="right">
+	  <vbox id="datasourceAdminErrorDialogContainer">
+		  <label id="datasourceAdminErrorLabel" value="${datasourceAdminErrorDialog.errorOccurred}"/>
+	  </vbox>
+	</dialog>
 </window>
+

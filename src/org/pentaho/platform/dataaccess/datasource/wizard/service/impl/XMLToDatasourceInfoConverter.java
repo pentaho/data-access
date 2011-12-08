@@ -31,16 +31,17 @@ public class XMLToDatasourceInfoConverter {
       NodeList nodeList = element.getChildNodes();
       for(int i=0;i<nodeList.getLength();i++) {
         Element ele = (Element) nodeList.item(i);
-        IDatasourceInfo info = new DatasourceInfo(getName(ele), getId(ele), getType(ele));
+        boolean editable = Boolean.parseBoolean(getNodeValueByTagName(ele, "editable"));
+        boolean removable = Boolean.parseBoolean(getNodeValueByTagName(ele, "removable"));
+        boolean importable = Boolean.parseBoolean(getNodeValueByTagName(ele, "importable"));
+        boolean exportable = Boolean.parseBoolean(getNodeValueByTagName(ele, "exportable"));
+        
+        IDatasourceInfo info = new DatasourceInfo(getName(ele), getId(ele), getType(ele), editable, removable, importable, exportable);
         datasourceInfoList.add(info);
       }
       return datasourceInfoList;
     }
-    
-    private Element getDatasourceInfoElement(Node node) {
-      Element element = (Element) node;
-      return (Element) getNodeByTagName(element, "genericDatasourceInfo");
-    }
+
     /*
      * Return the first name that matched the tagName. Starting from the 
      * current element location
