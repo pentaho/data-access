@@ -38,9 +38,9 @@
 	    
 	        <hbox><label id="datasourceLabel" value="${importDialog.DATA_SOURCE}"/></hbox>
 	    		<hbox>
-				<menulist id="dataSourceListDropDown" width="400">
+				<menulist id="connectionList" pen:binding="name" width="400">
 					<menupopup>
-						<menuitem label="SampleData"/>
+						<menuitem label="DummyConnection"/>
 					</menupopup>
 				</menulist>  
 			</hbox>

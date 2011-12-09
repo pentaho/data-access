@@ -23,4 +23,5 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 public interface IImportPerspective {
 	public void processImport();
+	public void show();
 }

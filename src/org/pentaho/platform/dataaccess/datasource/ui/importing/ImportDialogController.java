@@ -46,10 +46,10 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	}
 
 	public void init() {
-		fileUploadDialog = (XulDialog) document.getElementById("fileUploadDialog"); //$NON-NLS-1$
-		importDeck = (XulDeck) document.getElementById("importDeck"); //$NON-NLS-1$
-		importDialog = (XulDialog) document.getElementById("importDialog"); //$NON-NLS-1$
-		fileUpload = (XulFileUpload) document.getElementById("fileUpload"); //$NON-NLS-1$
+		fileUploadDialog = (XulDialog) document.getElementById("fileUploadDialog");
+		importDeck = (XulDeck) document.getElementById("importDeck");
+		importDialog = (XulDialog) document.getElementById("importDialog");
+		fileUpload = (XulFileUpload) document.getElementById("fileUpload");
 		uploadedFile = (XulTextbox) document.getElementById("uploadedFile");
 	}
 
@@ -107,8 +107,8 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	public void show(int index) {
 		reset();
-		activeImportPerspective = importPerspectives.get(index);
 		importDeck.setSelectedIndex(index);
-		importDialog.show();
+		activeImportPerspective = importPerspectives.get(index);
+		activeImportPerspective.show();
 	}
 }

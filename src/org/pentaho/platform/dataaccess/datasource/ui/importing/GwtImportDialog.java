@@ -41,7 +41,7 @@ public class GwtImportDialog implements IXulLoaderCallback {
 	public GwtImportDialog(final AsyncConstructorListener<GwtImportDialog> constructorListener) {
 		this.constructorListener = constructorListener;
 		try {
-			AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "importDialog.xul", GWT.getModuleBaseURL() + "importDialog", this); //$NON-NLS-1$//$NON-NLS-2$
+			AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "importDialog.xul", GWT.getModuleBaseURL() + "importDialog", this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
