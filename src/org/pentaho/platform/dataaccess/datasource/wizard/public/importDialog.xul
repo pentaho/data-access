@@ -15,8 +15,10 @@
      </vbox>	
      
      <deck id="importDeck">
+     
+  	    <!-- METADATA IMPORT -->
      	<vbox>
-     		<hbox><label id="domainIdLabel" value="${importDialog.DOMAIN_ID}"/></hbox>
+     		<hbox><label id="domainIdLabel" value="${importDialog.DOMAIN_ID}:"/></hbox>
      		<hbox><textbox id="domainIdText" value="" height="20" width="400"/></hbox>
      		<hbox>
      			<label id="localizationBundlesLabel" value="${importDialog.LOC_BUNDLES}"/>
@@ -33,10 +35,10 @@
      			</tree>
      		</hbox>
      	</vbox>
-     
+     	
+     	<!-- ANALYSIS IMPORT -->
 	    <vbox>
-	    
-	        <hbox><label id="datasourceLabel" value="${importDialog.DATA_SOURCE}"/></hbox>
+	        <hbox><label id="datasourceLabel" value="${importDialog.DATA_SOURCE}:"/></hbox>
 	    		<hbox>
 				<menulist id="connectionList" pen:binding="name" width="400">
 					<menupopup>
@@ -47,25 +49,34 @@
 			<hbox>
  				<label id="localizationBundlesLabel" value="${importDialog.PARAMETERS}"/>
  				<spacer width="288"/>  
- 				<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png"/>
+ 				<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="analysisImportDialogController.openParametersDialog()"/>
  				<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png"/>
  			</hbox>
 			<hbox>
-	        	<tree id="parametersTree" seltype="single" width="400" height="150">
-	        		<treecols id="csvModelDataTableCols">
-	        			<treecol flex="1" id="paramCol" label="${importDialog.NAME}" editable="false" type="text"/>
-	        			<treecol flex="1" id="valueCol" label="${importDialog.VALUE}" editable="false" type="text"/>
-	        			</treecols>
-	        			<treechildren id="modelDataRows"/>
+	        	<tree id="analysisParametersTree" seltype="single" width="400" height="150">
+	        		<treecols id="parametersTableCols">
+	        			<treecol flex="1" id="paramCol" label="${importDialog.NAME}" pen:binding="name" editable="false" type="text"/>
+	        			<treecol flex="1" id="valueCol" label="${importDialog.VALUE}" pen:binding="value" editable="false" type="text"/>
+	        		</treecols>
+	        		<treechildren id="parametersListRows"/>
 	        	</tree>
-	       		</hbox>
+	       	</hbox>
 	 	</vbox>
+	 	
     </deck> 
    </vbox>
   </dialog>
   
-  <dialog id="fileUploadDialog" title="${importDialog.UPLOAD_FILE}"
-    orient="vertical" height="140" width="325">
+  <!-- PARAMETERS DIALOG -->
+  <dialog id="analysisParametersDialog" width="320" height="140" title="${importDialog.PARAMETERS}" buttonlabelaccept="${importDialog.ACCEPT}" buttonlabelcancel="${importDialog.CANCEL}" buttons="accept,cancel" ondialogaccept="analysisImportDialogController.saveParameter()" ondialogcancel="analysisImportDialogController.closeParametersDialog()">
+  	<vbox>
+  		<hbox><label id="nameLabel" value="${importDialog.NAME}:"/><textbox id="paramNameTextBox" value="" height="20" width="300"/></hbox>
+  		<hbox><label id="valueLabel" value="${importDialog.VALUE}:"/><textbox id="paramValueTextBox" value="" height="20" width="300"/></hbox>
+  	</vbox>
+  </dialog>
+
+  <!-- FILE UPLOAD DIALOG -->
+  <dialog id="fileUploadDialog" title="${importDialog.UPLOAD_FILE}" orient="vertical" height="140" width="325">
     <vbox id="mainBox">
       <hbox>
         <vbox flex="1">

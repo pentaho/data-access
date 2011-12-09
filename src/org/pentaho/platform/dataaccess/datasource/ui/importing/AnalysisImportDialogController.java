@@ -32,9 +32,11 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.stereotype.Bindable;
 
 import com.google.gwt.user.client.Window;
 
@@ -42,29 +44,37 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 
 	private BindingFactory bf;
 	private XulMenuList connectionList;
-	private XulTree parametersTree;
+	private XulTree analysisParametersTree;
 	private XulButton addButton;
 	private XulButton removeButton;
 	private XulDialog importDialog;
+	private XulDialog analysisParametersDialog;
 	private ResourceBundle resBundle;
-	private ImportGuiStateModel guiStateModel;
+	private ImportDialogModel importDialogModel;
 	private IXulAsyncConnectionService connectionService;
+	private XulTextbox paramNameTextBox;
+	private XulTextbox paramValueTextBox;
 
 	public void init() {
 		try {
 			resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
 			connectionService = new ConnectionServiceGwtImpl();
-			guiStateModel = new ImportGuiStateModel();
+			importDialogModel = new ImportDialogModel();
 			addButton = (XulButton) document.getElementById("addButton");
 			removeButton = (XulButton) document.getElementById("removeButton");
 			connectionList = (XulMenuList) document.getElementById("connectionList");
-			parametersTree = (XulTree) document.getElementById("parametersTree");
+			analysisParametersTree = (XulTree) document.getElementById("analysisParametersTree");
 			importDialog = (XulDialog) document.getElementById("importDialog");
+			analysisParametersDialog = (XulDialog) document.getElementById("analysisParametersDialog");
+			paramNameTextBox = (XulTextbox) document.getElementById("paramNameTextBox");
+			paramValueTextBox = (XulTextbox) document.getElementById("paramValueTextBox");
 
 			bf.setBindingType(Binding.Type.ONE_WAY);
-			Binding connectionListBinding = bf.createBinding(guiStateModel, "connectionList", connectionList, "elements");
+			Binding connectionListBinding = bf.createBinding(importDialogModel, "connectionList", connectionList, "elements");
+			Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters", analysisParametersTree, "elements");
 
 			connectionListBinding.fireSourceChanged();
+			analysisParametersBinding.fireSourceChanged();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,18 +90,35 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 	private void reloadConnections() {
 		if (connectionService != null) {
 			connectionService.getConnections(new XulServiceCallback<List<Connection>>() {
-
 				public void error(String message, Throwable error) {
 					error.printStackTrace();
 					Window.alert(message);
 				}
 
 				public void success(List<Connection> connections) {
-					guiStateModel.setConnectionList(connections);
+					importDialogModel.setConnectionList(connections);
 				}
-
 			});
 		}
+	}
+
+	@Bindable
+	public void saveParameter() {
+		// TODO PENDING VALIDATE PARAMETER
+		String paramName = paramNameTextBox.getValue();
+		String paramValue = paramValueTextBox.getValue();
+		importDialogModel.addParameter(paramName, paramValue);
+		closeParametersDialog();
+	}
+
+	@Bindable
+	public void closeParametersDialog() {
+		analysisParametersDialog.hide();
+	}
+
+	@Bindable
+	public void openParametersDialog() {
+		analysisParametersDialog.show();
 	}
 
 	public void show() {

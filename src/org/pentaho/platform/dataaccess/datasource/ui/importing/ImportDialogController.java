@@ -31,6 +31,8 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import com.google.gwt.user.client.Window;
+
 public class ImportDialogController extends AbstractXulEventHandler {
 
 	private XulDialog importDialog;
@@ -64,14 +66,6 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	@Bindable
 	public void uploadSuccess() {
-	}
-
-	@Bindable
-	public void uploadFailure() {
-	}
-
-	@Bindable
-	public void uploadFile() {
 		try {
 			String selectedFile = fileUpload.getSeletedFile();
 			uploadedFile.setValue(selectedFile);
@@ -79,6 +73,16 @@ public class ImportDialogController extends AbstractXulEventHandler {
 			e.printStackTrace();
 		}
 		closeUpload();
+	}
+
+	@Bindable
+	public void uploadFailure() {
+		Window.alert("Upload Failure.");
+	}
+
+	@Bindable
+	public void uploadFile() {
+		fileUpload.submit();
 	}
 
 	@Bindable
