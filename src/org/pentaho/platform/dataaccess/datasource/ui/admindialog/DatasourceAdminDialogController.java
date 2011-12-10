@@ -1,11 +1,11 @@
 package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.platform.api.datasource.IDatasourceInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
+import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
@@ -14,8 +14,9 @@ import org.pentaho.ui.xul.binding.BindingExceptionHandler;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
-import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -26,7 +27,6 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   // ~ Static fields/initializers ======================================================================================
 
   // ~ Instance fields =================================================================================================
-  public final static String ADD_A_DATASOURCE = "Add Data source";
   private BindingFactory bf;
   
   private IXulAsyncDatasourceServiceManager datasourceServiceManager;
@@ -38,8 +38,10 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private XulDialog datasourceAdminErrorDialog;
   private XulLabel datasourceAdminErrorLabel = null;
   
-  private XulMenuList datasourceTypeMenuList;
-
+  //private XulMenuList datasourceTypeMenuList;
+  
+  private XulButton datasourceAddButton;
+  private XulMenupopup datasourceTypeMenuPopup;
   private XulButton exportDatasourceButton;
   private XulButton editDatasourceButton;
   private XulButton removeDatasourceButton;
@@ -64,14 +66,17 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     datasourceAdminDialog = (XulDialog) document.getElementById("datasourceAdminDialog"); //$NON-NLS-1$
     datasourceAdminErrorDialog = (XulDialog) document.getElementById("datasourceAdminErrorDialog"); //$NON-NLS-1$
     datasourceAdminErrorLabel = (XulLabel) document.getElementById("datasourceAdminErrorLabel");//$NON-NLS-1$
-    datasourceTypeMenuList = (XulMenuList) document.getElementById("datasourceTypeMenuList");//$NON-NLS-1$
+    //datasourceTypeMenuList = (XulMenuList) document.getElementById("datasourceTypeMenuList");//$NON-NLS-1$
+    datasourceAddButton = (XulButton) document.getElementById("datasourceAddButton"); //$NON-NLS-1$
+    datasourceTypeMenuPopup = (XulMenupopup) document.getElementById("datasourceTypeMenuPopup"); //$NON-NLS-1$
     exportDatasourceButton = (XulButton) document.getElementById("exportDatasourceButton"); //$NON-NLS-1$
     editDatasourceButton = (XulButton) document.getElementById("editDatasourceButton"); //$NON-NLS-1$
     removeDatasourceButton = (XulButton) document.getElementById("removeDatasourceButton"); //$NON-NLS-1$
 
     bf.setBindingType(Binding.Type.ONE_WAY);
     try {
-      Binding datasourceBinding = bf.createBinding(datasourceAdminDialogModel, "datasourceTypes", datasourceTypeMenuList, "elements");
+      //Binding datasourceBinding = bf.createBinding(datasourceAdminDialogModel, "datasourceTypes", datasourceTypeMenuList, "elements");
+      
       BindingConvertor<IDatasourceInfo, Boolean> removeDatasourceButtonConvertor = new BindingConvertor<IDatasourceInfo, Boolean>() {
         @Override
         public Boolean sourceToTarget(final IDatasourceInfo datasourceInfo) {
@@ -189,20 +194,33 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       
       }
 
-      public void success(final List<String> types) {
-        List<String> updatedTypeList = new ArrayList<String>();
-        updatedTypeList.add(ADD_A_DATASOURCE);
-        updatedTypeList.addAll(types);
-        datasourceAdminDialogModel.setDatasourceTypeList(updatedTypeList);
+      public void success(final List<String> datasourceTypes) {
+        // Clear out the current component list
+        List<XulComponent> components = datasourceTypeMenuPopup.getChildNodes();
+        for(XulComponent component:components) {
+          datasourceTypeMenuPopup.removeComponent(component);
+        }
+
+        for(String datasourceType:datasourceTypes) {
+          XulMenuitem menuItem;
+          try {
+            menuItem = (XulMenuitem) document.createElement("menuitem");
+            menuItem.setLabel(datasourceType);
+            menuItem.setCommand(getName() + ".launchNewUI(\""+ datasourceType + "\")");
+            menuItem.setId(datasourceType);
+            datasourceTypeMenuPopup.addChild(menuItem);
+          } catch (XulException e) {
+            throw new RuntimeException(e);
+          }
+        }
+        datasourceAdminDialogModel.setDatasourceTypeList(datasourceTypes);
       }
     });
   }
   
   
   @Bindable
-  public void launchNewUI() {
-    String datasourceType = datasourceTypeMenuList.getSelectedItem();
-    if(!datasourceType.equals(ADD_A_DATASOURCE)) {
+  public void launchNewUI(String datasourceType) {
       datasourceServiceManager.getNewUI(datasourceType, new XulServiceCallback<String>() {
         public void error(final String message, final Throwable error) {
         
@@ -212,7 +230,6 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           executeJavaScript(javascriptString);
         }
       });
-    }
   }
 
   private native void executeJavaScript(String script) /*-{

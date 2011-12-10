@@ -9,6 +9,9 @@
     <button label="Open Datasources List Dialog" tooltiptext="Open Datasources Management Dialog" onclick="datasourceAdminDialogController.showDialog()" />
   </hbox>
 
+  <!--  ###############################################################################   -->
+  <!--     DATASOURCE ADMIN DIALOG: Dialog to manage datasources in the platformm         -->
+  <!--  ###############################################################################   -->
   <dialog id="datasourceAdminDialog" buttonlabelcancel="${datasourceAdminDialog.close}" buttons="cancel"
     buttonalign="right" title="${datasourceAdminDialog.title}" width="500" height="215"
     ondialogcancel="datasourceAdminDialogController.onDialogCancel()">
@@ -16,12 +19,14 @@
         <hbox flex="1">
         	<label value="${datasourceAdminDialog.Available}" tooltiptext="${datasourceAdminDialog.Available}" />
 	        <spacer flex="1"/>
-			<menulist id="datasourceTypeMenuList" disabled="false"  editable="false" oncommand="datasourceAdminDialogController.launchNewUI()">
-				<menupopup>
-				</menupopup>
-			</menulist>
 	        <button id="editDatasourceButton" image="images/edit.png" tooltiptext="${datasourceAdminDialog.EDIT}" pen:disabledimage="images/edit_disabled.png"  disabled="true" onclick="datasourceAdminDialogController.edit()" />
+	        <label id="spacer-label" width="3" />
+	        <button id="datasourceAddButton" image="images/add_combo.png">
+       			<menupopup id="datasourceTypeMenuPopup"/>
+     		</button>
+     		<label id="spacer-label" width="3" />
    	        <button id="exportDatasourceButton" image="images/export.png" tooltiptext="${datasourceAdminDialog.EXPORT}" pen:disabledimage="images/export_disabled.png" disabled="true" onclick="datasourceAdminDialogController.export()" />
+   	        <label id="spacer-label" width="3" />
 	        <button id="removeDatasourceButton" image="images/remove.png" tooltiptext="${datasourceAdminDialog.REMOVE}" pen:disabledimage="images/remove_disabled.png" disabled="true" onclick="datasourceAdminDialogController.remove()" />
         </hbox>
    
@@ -33,13 +38,15 @@
 			<treechildren id="datasourcesListRows"/>
 		</tree>
   </dialog>
-	<!--  ###############################################################################   -->
-	<!--     ERROR DIALOG: Dialog to display error text                                     -->
-	<!--  ###############################################################################   -->
-	<dialog id="datasourceAdminErrorDialog" title="${datasourceAdminErrorDialog.errorOccurred}" buttonlabelaccept="${datasourceAdminErrorDialog.CLOSE}" buttons="accept" ondialogaccept="datasourceAdminDialogController.closeErrorDialog()" width="400" height="100" buttonalign="right">
-	  <vbox id="datasourceAdminErrorDialogContainer">
-		  <label id="datasourceAdminErrorLabel" value="${datasourceAdminErrorDialog.errorOccurred}"/>
-	  </vbox>
-	</dialog>
+  
+  <!--  ###############################################################################   -->
+  <!--     ERROR DIALOG: Dialog to display error text                                     -->
+  <!--  ###############################################################################   -->
+  <dialog id="datasourceAdminErrorDialog" title="${datasourceAdminErrorDialog.errorOccurred}" buttonlabelaccept="${datasourceAdminErrorDialog.CLOSE}" buttons="accept" ondialogaccept="datasourceAdminDialogController.closeErrorDialog()" width="400" height="100" buttonalign="right">
+    <vbox id="datasourceAdminErrorDialogContainer">
+	  <label id="datasourceAdminErrorLabel" value="${datasourceAdminErrorDialog.errorOccurred}"/>
+    </vbox>
+  </dialog>
+
 </window>
 

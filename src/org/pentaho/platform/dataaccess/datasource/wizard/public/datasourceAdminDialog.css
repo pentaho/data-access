@@ -4,4 +4,10 @@ background-color: transparent;
 
 #datasourcesListTable {
 background-color: white;
+padding-left: 3px;
+padding-right: 3px;
+}
+
+.gwt-PopupPanel {
+    z-index: 2101;
 }
