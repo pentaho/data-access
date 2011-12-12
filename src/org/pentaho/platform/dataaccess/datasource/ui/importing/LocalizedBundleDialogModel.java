@@ -18,13 +18,29 @@
  * Created December 08, 2011
  * @author Ezequiel Cuellar
  */
-
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
-public interface IImportPerspective {
-	public void processImport();
+import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.stereotype.Bindable;
 
-	public void show();
+public class LocalizedBundleDialogModel extends XulEventSourceAdapter {
 
-	public void uploadCallback(Object fileName);
+	private String fileName;
+
+	public LocalizedBundleDialogModel() {
+	}
+
+	public LocalizedBundleDialogModel(String fileName) {
+		this.fileName = fileName;
+	}
+
+	@Bindable
+	public String getFileName() {
+		return fileName;
+	}
+
+	@Bindable
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 }

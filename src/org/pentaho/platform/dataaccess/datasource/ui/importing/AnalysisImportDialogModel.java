@@ -28,12 +28,12 @@ import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-public class ImportDialogModel extends XulEventSourceAdapter {
+public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 
 	private List<Connection> connectionList;
 	private List<ParameterDialogModel> analysisParameters;
 
-	public ImportDialogModel() {
+	public AnalysisImportDialogModel() {
 		connectionList = new ArrayList<Connection>();
 		analysisParameters = new ArrayList<ParameterDialogModel>();
 	}

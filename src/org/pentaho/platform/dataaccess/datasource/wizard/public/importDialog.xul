@@ -10,7 +10,7 @@
 	     <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
              <hbox>
 		     <textbox id="uploadedFile" value="" disabled="true" height="20" width="350"/>
-		     <button id="importButton" height="22" label="..." onclick="importDialogController.showFileUploadDialog()" />
+		     <button id="importButton" height="22" label="..." onclick="importDialogController.showFileUploadDialog(false)" />
              </hbox> 
      </vbox>	
      
@@ -23,15 +23,15 @@
      		<hbox>
      			<label id="localizationBundlesLabel" value="${importDialog.LOC_BUNDLES}"/>
      			<spacer width="246"/>  
-     			<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png"/>
-     			<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png"/>
+     			<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="importDialogController.showFileUploadDialog(true)"/>
+     			<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png" onclick="metadataImportDialogController.removeLocalizedBundle()"/>
      		</hbox>
      		<hbox>
      			<tree id="localizedBundlesTree" seltype="single" width="400" height="150">
      				<treecols id="csvModelDataTableCols">
-     					<treecol flex="1" id="csvColumnIncludeTreeCol" label="${importDialog.FILE_NAME}" editable="false" type="text"/>
+     					<treecol flex="1" id="csvColumnIncludeTreeCol" label="${importDialog.FILE_NAME}" pen:binding="fileName" editable="false" type="text"/>
      				</treecols>
-     				<treechildren id="modelDataRows"/>
+     				<treechildren id="localizedBundlesListRows"/>
      			</tree>
      		</hbox>
      	</vbox>

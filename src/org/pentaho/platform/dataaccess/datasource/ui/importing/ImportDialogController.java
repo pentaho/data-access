@@ -42,6 +42,7 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	private XulDeck importDeck;
 	private Map<Integer, IImportPerspective> importPerspectives;
 	private IImportPerspective activeImportPerspective;
+	private boolean uploadingToActivePerspective;
 
 	public ImportDialogController() {
 		importPerspectives = new HashMap<Integer, IImportPerspective>();
@@ -60,7 +61,9 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	}
 
 	@Bindable
-	public void showFileUploadDialog() {
+	public void showFileUploadDialog(boolean uploadingToActivePerspective) {
+		fileUpload.setSelectedFile("");
+		this.uploadingToActivePerspective = uploadingToActivePerspective;
 		fileUploadDialog.show();
 	}
 
@@ -68,7 +71,11 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	public void uploadSuccess() {
 		try {
 			String selectedFile = fileUpload.getSeletedFile();
-			uploadedFile.setValue(selectedFile);
+			if (uploadingToActivePerspective) {
+				activeImportPerspective.uploadCallback(selectedFile);
+			} else {
+				uploadedFile.setValue(selectedFile);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -82,9 +89,9 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	@Bindable
 	public void uploadFile() {
-	    fileUpload.addParameter("file_name", fileUpload.getSeletedFile());
-	    fileUpload.addParameter("mark_temporary", "true"); 
-	    fileUpload.addParameter("unzip", "true"); 
+		fileUpload.addParameter("file_name", fileUpload.getSeletedFile());
+		fileUpload.addParameter("mark_temporary", "true");
+		fileUpload.addParameter("unzip", "true");
 		fileUpload.submit();
 	}
 
@@ -98,7 +105,9 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	}
 
 	private void reset() {
+		fileUpload.setSelectedFile("");
 		uploadedFile.setValue("");
+		uploadingToActivePerspective = false;
 	}
 
 	@Bindable

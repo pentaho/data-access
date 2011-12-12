@@ -50,7 +50,7 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 	private XulDialog importDialog;
 	private XulDialog analysisParametersDialog;
 	private ResourceBundle resBundle;
-	private ImportDialogModel importDialogModel;
+	private AnalysisImportDialogModel importDialogModel;
 	private IXulAsyncConnectionService connectionService;
 	private XulTextbox paramNameTextBox;
 	private XulTextbox paramValueTextBox;
@@ -59,7 +59,7 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 		try {
 			resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
 			connectionService = new ConnectionServiceGwtImpl();
-			importDialogModel = new ImportDialogModel();
+			importDialogModel = new AnalysisImportDialogModel();
 			addButton = (XulButton) document.getElementById("addButton");
 			removeButton = (XulButton) document.getElementById("removeButton");
 			connectionList = (XulMenuList) document.getElementById("connectionList");
@@ -102,6 +102,9 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 				}
 			});
 		}
+	}
+	
+	public void uploadCallback(Object fileName) {
 	}
 
 	@Bindable
