@@ -43,6 +43,16 @@ public class ImportDialogModel extends XulEventSourceAdapter {
 		this.firePropertyChange("analysisParameters", null, analysisParameters);
 	}
 
+	public void removeParameter(int paramIndex) {
+		analysisParameters.remove(paramIndex);
+		this.firePropertyChange("analysisParameters", null, analysisParameters);
+	}
+	
+	public void removeAllParameters() {
+		analysisParameters.clear();
+		this.firePropertyChange("analysisParameters", null, analysisParameters);
+	}
+
 	@Bindable
 	public List<ParameterDialogModel> getAnalysisParameters() {
 		return analysisParameters;

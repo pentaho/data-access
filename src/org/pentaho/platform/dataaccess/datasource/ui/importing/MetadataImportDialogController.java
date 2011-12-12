@@ -28,6 +28,8 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
+import com.google.gwt.user.client.Window;
+
 public class MetadataImportDialogController extends AbstractXulEventHandler implements IImportPerspective {
 
 	private BindingFactory bf;
@@ -48,6 +50,7 @@ public class MetadataImportDialogController extends AbstractXulEventHandler impl
 	}
 
 	public void processImport() {
+		Window.alert("pending");
 	}
 
 	private void reset() {

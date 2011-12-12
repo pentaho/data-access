@@ -81,10 +81,12 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 	}
 
 	public void processImport() {
+		Window.alert("pending");
 	}
 
 	private void reset() {
 		reloadConnections();
+		importDialogModel.removeAllParameters();
 	}
 
 	private void reloadConnections() {
@@ -103,12 +105,24 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 	}
 
 	@Bindable
-	public void saveParameter() {
-		// TODO PENDING VALIDATE PARAMETER
+	public void removeParameter() {
+		int[] selectedRows = analysisParametersTree.getSelectedRows();
+		if (selectedRows.length == 1) {
+			importDialogModel.removeParameter(selectedRows[0]);
+		}
+	}
+
+	private void resetParametersDialog() {
+		paramNameTextBox.setValue("");
+		paramValueTextBox.setValue("");
+	}
+
+	@Bindable
+	public void addParameter() {
 		String paramName = paramNameTextBox.getValue();
 		String paramValue = paramValueTextBox.getValue();
 		importDialogModel.addParameter(paramName, paramValue);
-		closeParametersDialog();
+		resetParametersDialog();
 	}
 
 	@Bindable
@@ -118,6 +132,7 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 
 	@Bindable
 	public void openParametersDialog() {
+		resetParametersDialog();
 		analysisParametersDialog.show();
 	}
 

@@ -82,6 +82,9 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	@Bindable
 	public void uploadFile() {
+	    fileUpload.addParameter("file_name", fileUpload.getSeletedFile());
+	    fileUpload.addParameter("mark_temporary", "true"); 
+	    fileUpload.addParameter("unzip", "true"); 
 		fileUpload.submit();
 	}
 
