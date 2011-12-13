@@ -32,6 +32,7 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 
 	private List<Connection> connectionList;
 	private List<ParameterDialogModel> analysisParameters;
+	private String uploadedFile;
 
 	public AnalysisImportDialogModel() {
 		connectionList = new ArrayList<Connection>();
@@ -47,10 +48,18 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 		analysisParameters.remove(paramIndex);
 		this.firePropertyChange("analysisParameters", null, analysisParameters);
 	}
-	
+
 	public void removeAllParameters() {
 		analysisParameters.clear();
 		this.firePropertyChange("analysisParameters", null, analysisParameters);
+	}
+
+	public String getUploadedFile() {
+		return uploadedFile;
+	}
+
+	public void setUploadedFile(String uploadedFile) {
+		this.uploadedFile = uploadedFile;
 	}
 
 	@Bindable

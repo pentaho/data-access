@@ -26,5 +26,7 @@ public interface IImportPerspective {
 
 	public void show();
 
-	public void uploadCallback(Object fileName);
+	public void genericUploadCallback(String uploadedFile);
+	
+	public void concreteUploadCallback(String fileName, String uploadedFile);
 }

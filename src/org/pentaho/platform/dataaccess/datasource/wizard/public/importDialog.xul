@@ -10,7 +10,7 @@
 	     <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
              <hbox>
 		     <textbox id="uploadedFile" value="" disabled="true" height="20" width="350"/>
-		     <button id="importButton" height="22" label="..." onclick="importDialogController.showFileUploadDialog(false)" />
+		     <button id="importButton" height="22" label="..." onclick="importDialogController.showFileUploadDialog(true)" />
              </hbox> 
      </vbox>	
      
@@ -23,7 +23,7 @@
      		<hbox>
      			<label id="localizationBundlesLabel" value="${importDialog.LOC_BUNDLES}"/>
      			<spacer width="246"/>  
-     			<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="importDialogController.showFileUploadDialog(true)"/>
+     			<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="importDialogController.showFileUploadDialog(false)"/>
      			<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png" onclick="metadataImportDialogController.removeLocalizedBundle()"/>
      		</hbox>
      		<hbox>

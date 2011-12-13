@@ -103,8 +103,12 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 			});
 		}
 	}
+
+	public void concreteUploadCallback(String fileName, String uploadedFile) {
+	}
 	
-	public void uploadCallback(Object fileName) {
+	public void genericUploadCallback(String uploadedFile) {
+		importDialogModel.setUploadedFile(uploadedFile);
 	}
 
 	@Bindable

@@ -37,14 +37,15 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	private XulDialog importDialog;
 	private XulDialog fileUploadDialog;
-	private XulTextbox uploadedFile;
+	private XulTextbox uploadedFileTextbox;
 	private XulFileUpload fileUpload;
 	private XulDeck importDeck;
 	private Map<Integer, IImportPerspective> importPerspectives;
 	private IImportPerspective activeImportPerspective;
-	private boolean uploadingToActivePerspective;
+	private boolean isGenericUpload;
 
 	public ImportDialogController() {
+		isGenericUpload = true;
 		importPerspectives = new HashMap<Integer, IImportPerspective>();
 	}
 
@@ -53,7 +54,7 @@ public class ImportDialogController extends AbstractXulEventHandler {
 		importDeck = (XulDeck) document.getElementById("importDeck");
 		importDialog = (XulDialog) document.getElementById("importDialog");
 		fileUpload = (XulFileUpload) document.getElementById("fileUpload");
-		uploadedFile = (XulTextbox) document.getElementById("uploadedFile");
+		uploadedFileTextbox = (XulTextbox) document.getElementById("uploadedFile");
 	}
 
 	public void addImportPerspective(int index, IImportPerspective importPerspective) {
@@ -61,20 +62,21 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	}
 
 	@Bindable
-	public void showFileUploadDialog(boolean uploadingToActivePerspective) {
+	public void showFileUploadDialog(boolean isGenericUpload) {
 		fileUpload.setSelectedFile("");
-		this.uploadingToActivePerspective = uploadingToActivePerspective;
+		this.isGenericUpload = isGenericUpload;
 		fileUploadDialog.show();
 	}
 
 	@Bindable
-	public void uploadSuccess() {
+	public void uploadSuccess(String uploadedFile) {
 		try {
 			String selectedFile = fileUpload.getSeletedFile();
-			if (uploadingToActivePerspective) {
-				activeImportPerspective.uploadCallback(selectedFile);
+			if (isGenericUpload) {
+				uploadedFileTextbox.setValue(selectedFile);
+				activeImportPerspective.genericUploadCallback(uploadedFile);
 			} else {
-				uploadedFile.setValue(selectedFile);
+				activeImportPerspective.concreteUploadCallback(selectedFile, uploadedFile);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,8 +85,8 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	}
 
 	@Bindable
-	public void uploadFailure() {
-		Window.alert("Upload Failure.");
+	public void uploadFailure(Throwable error) {
+		Window.alert(error.getMessage());
 	}
 
 	@Bindable
@@ -106,8 +108,8 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	private void reset() {
 		fileUpload.setSelectedFile("");
-		uploadedFile.setValue("");
-		uploadingToActivePerspective = false;
+		uploadedFileTextbox.setValue("");
+		isGenericUpload = true;
 	}
 
 	@Bindable

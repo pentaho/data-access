@@ -52,16 +52,16 @@ public class MetadataImportDialogController extends AbstractXulEventHandler impl
 			localizedBundlesTree = (XulTree) document.getElementById("localizedBundlesTree");
 			domainIdText = (XulTextbox) document.getElementById("domainIdText");
 			importDialog = (XulDialog) document.getElementById("importDialog");
-			
+
 			bf.setBindingType(Binding.Type.ONE_WAY);
 			Binding localizedBundlesBinding = bf.createBinding(importDialogModel, "localizedBundles", localizedBundlesTree, "elements");
-			
+
 			localizedBundlesBinding.fireSourceChanged();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Bindable
 	public void removeLocalizedBundle() {
 		int[] selectedRows = localizedBundlesTree.getSelectedRows();
@@ -78,8 +78,12 @@ public class MetadataImportDialogController extends AbstractXulEventHandler impl
 		importDialogModel.removeAllLocalizedBundles();
 	}
 
-	public void uploadCallback(Object fileName) {
-		importDialogModel.addLocalizedBundle(fileName);
+	public void concreteUploadCallback(String fileName, String uploadedFile) {
+		importDialogModel.addLocalizedBundle(fileName, uploadedFile);
+	}
+
+	public void genericUploadCallback(String uploadedFile) {
+		importDialogModel.setUploadedFile(uploadedFile);
 	}
 
 	public void show() {

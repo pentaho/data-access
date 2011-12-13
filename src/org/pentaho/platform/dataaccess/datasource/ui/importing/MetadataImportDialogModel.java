@@ -29,13 +29,14 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class MetadataImportDialogModel extends XulEventSourceAdapter {
 
 	private List<LocalizedBundleDialogModel> localizedBundles;
+	private String uploadedFile;
 
 	public MetadataImportDialogModel() {
 		localizedBundles = new ArrayList<LocalizedBundleDialogModel>();
 	}
 
-	public void addLocalizedBundle(Object value) {
-		localizedBundles.add(new LocalizedBundleDialogModel(value.toString()));
+	public void addLocalizedBundle(String fileName, String uploadedFile) {
+		localizedBundles.add(new LocalizedBundleDialogModel(fileName, uploadedFile));
 		this.firePropertyChange("localizedBundles", null, localizedBundles);
 	}
 
@@ -47,6 +48,14 @@ public class MetadataImportDialogModel extends XulEventSourceAdapter {
 	public void removeAllLocalizedBundles() {
 		localizedBundles.clear();
 		this.firePropertyChange("localizedBundles", null, localizedBundles);
+	}
+
+	public String getUploadedFile() {
+		return uploadedFile;
+	}
+
+	public void setUploadedFile(String uploadedFile) {
+		this.uploadedFile = uploadedFile;
 	}
 
 	@Bindable
