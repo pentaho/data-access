@@ -24,6 +24,7 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 import java.util.List;
 
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
@@ -106,7 +107,7 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 
 	public void concreteUploadCallback(String fileName, String uploadedFile) {
 	}
-	
+
 	public void genericUploadCallback(String uploadedFile) {
 		importDialogModel.setUploadedFile(uploadedFile);
 	}
@@ -128,8 +129,10 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 	public void addParameter() {
 		String paramName = paramNameTextBox.getValue();
 		String paramValue = paramValueTextBox.getValue();
-		importDialogModel.addParameter(paramName, paramValue);
-		resetParametersDialog();
+		if (!StringUtils.isEmpty(paramName) && !StringUtils.isEmpty(paramValue)) {
+			importDialogModel.addParameter(paramName, paramValue);
+			resetParametersDialog();
+		}
 	}
 
 	@Bindable
