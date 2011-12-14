@@ -46,6 +46,8 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasou
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceManagerGwtImpl;
+import org.pentaho.platform.datasource.Datasource;
+import org.pentaho.platform.datasource.DatasourceInfo;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
 import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseConnectionService;
@@ -62,11 +64,12 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 
 /**
  * Creates the singleton datasource wizard and sets up native JavaScript functions to show the wizard.
  */
-public class GwtDatasourceEditorEntryPoint implements EntryPoint, DatabaseDialogListener  {
+public class GwtDatasourceEditorEntryPoint implements EntryPoint  {
 
   private EmbeddedWizard wizard;
   // TODO: make this lazily loaded when the modelerMessages issue is fixed
@@ -78,6 +81,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint, DatabaseDialog
   private GwtDatasourceSelectionDialog gwtDatasourceSelectionDialog;
   private GwtDatabaseDialog gwtDatabaseDialog;
   private DatabaseTypeHelper databaseTypeHelper;
+  private DatabaseConnectionConverter databaseConnectionConverter;
   private EmbeddedWizard gwtDatasourceEditor;
   private GwtDatasourceManageDialog manageDialog;
   private GwtDatasourceSelectionDialog selectDialog ;
@@ -89,7 +93,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint, DatabaseDialog
   private Timer timer;
   private GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
   private GwtXulAsyncDatabaseDialectService dialectService = new GwtXulAsyncDatabaseDialectService();
-  
+
   public void onModuleLoad() {
     datasourceServiceManager = new DatasourceServiceManagerGwtImpl();
     
@@ -128,6 +132,8 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint, DatabaseDialog
 
       public void success(List<IDatabaseType> retVal) {
         databaseTypeHelper = new DatabaseTypeHelper(retVal);
+        databaseConnectionConverter = new DatabaseConnectionConverter(databaseTypeHelper);
+
       }
     };
     dialectService.getDatabaseTypes(callback);
@@ -164,8 +170,8 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint, DatabaseDialog
     $wnd.pho.showDatasourceSelectionDialog = function(context, callback) {
       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(context,"true", callback);
     }
-    $wnd.pho.showDatabaseDialog = function() {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showDatabaseDialog()();
+    $wnd.pho.showDatabaseDialog = function(callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showDatabaseDialog(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
     }
     $wnd.gwtConfirm = function(message, callback, options){
       var title = options.title || $wnd.pho_messages.getMessage("prompt","Prompt");
@@ -538,23 +544,69 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint, DatabaseDialog
  }
 
 
-  private void showDatabaseDialog() {
+  private void showDatabaseDialog(final JavaScriptObject callback) {
     if(gwtDatabaseDialog != null){
       gwtDatabaseDialog.setDatabaseConnection(null);
       gwtDatabaseDialog.show();
     } else {
       gwtDatabaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
+          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", new DatabaseDialogListener() {//$NON-NLS-1$
+        @Override
+        public void onDialogAccept(final IDatabaseConnection databaseConnection) {
+          DatasourceInfo datasourceInfo = new DatasourceInfo(databaseConnection.getName(), databaseConnection.getName(), "JDBC");
+          Datasource datasource = new Datasource(datasourceInfo, databaseConnectionConverter.convertToXml(databaseConnection));
+          datasourceServiceManager.add(datasource, true, new XulServiceCallback<String>() {
+
+            @Override
+            public void success(String retVal) {
+              notifyDialogCallbackSuccess(callback, retVal);
+            }
+
+            @Override
+            public void error(String message, Throwable error) {
+              notifyDialogCallbackError(callback, message);
+              
+            }
+          });
+        }
+        @Override
+        public void onDialogCancel() {
+          notifyDialogCallbackCancel(callback);  
+        }
+        @Override
+        public void onDialogReady() {
+          gwtDatabaseDialog.show();
+        }
+      }); 
     }
   }
 
-  private void showEditDatabaseDialog(String databaseId) {
+  private void showEditDatabaseDialog(final JavaScriptObject callback, final String databaseId) {
     if(gwtDatabaseDialog != null){
       gwtDatabaseDialog.setDatabaseConnection(null);
       gwtDatabaseDialog.show();
     } else {
       gwtDatabaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
+          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", new DatabaseDialogListener() {//$NON-NLS-1$
+            
+            @Override
+            public void onDialogReady() {
+              // TODO Auto-generated method stub
+              
+            }
+            
+            @Override
+            public void onDialogCancel() {
+              // TODO Auto-generated method stub
+              
+            }
+            
+            @Override
+            public void onDialogAccept(IDatabaseConnection arg0) {
+              // TODO Auto-generated method stub
+              
+            }
+          }); 
     }
   }
   
@@ -598,17 +650,5 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint, DatabaseDialog
   private native void notifyDialogCallbackError(JavaScriptObject callback, String error)/*-{
     callback.onError(error);
   }-*/;
-  @Override
-  public void onDialogAccept(IDatabaseConnection arg0) {
-    // TODO Auto-generated method stub
-    
-  }
-  @Override
-  public void onDialogCancel() {
-    
-  }
-  @Override
-  public void onDialogReady() {
-    gwtDatabaseDialog.show();
-  }
+
 }
