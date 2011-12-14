@@ -25,19 +25,32 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.MediaType.WILDCARD;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import org.pentaho.platform.api.datasource.DatasourceServiceException;
+import org.pentaho.platform.api.datasource.IDatasource;
 import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.platform.api.datasource.IDatasourceServiceManager;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.datasource.Datasource;
 import org.pentaho.platform.datasource.DatasourceInfo;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -48,6 +61,7 @@ import org.pentaho.platform.web.http.api.resources.JaxbList;
 public class DatasourceResource {
 
   protected IDatasourceServiceManager datasourceServiceManager;
+  public final static String PATH_SEPERATOR = ":";
   
   public DatasourceResource() {
     super();
@@ -86,5 +100,63 @@ public class DatasourceResource {
     }
   }
   
+
+  @DELETE
+  @Path("{pathId : .+}")
+  @Consumes({ APPLICATION_JSON, APPLICATION_XML })
+  @Produces("text/plain")
+  public Response removeDatasource(@PathParam("pathId")String pathId) throws PentahoAccessControlException {
+    StringTokenizer tokenizer = new StringTokenizer(pathId, PATH_SEPERATOR);
+    if(tokenizer.countTokens() > 2) {
+      return Response.status(NOT_FOUND).build();
+    }
+    String id = tokenizer.nextToken();
+    String type = tokenizer.nextToken();
+    try {
+      datasourceServiceManager.getService(type).remove(id);
+      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+    } catch (DatasourceServiceException e) {
+      return Response.serverError().entity(e.toString()).build();
+    }
+  }
+
   
+  @PUT
+  @Path("{pathId : .+}")
+  @Consumes({ APPLICATION_JSON, APPLICATION_XML })
+  @Produces("text/plain")
+  public Response addDatasource(@PathParam("pathId")String pathId, String datasourceXml, @QueryParam("overwrite")boolean overwrite) throws PentahoAccessControlException {
+    StringTokenizer tokenizer = new StringTokenizer(pathId, PATH_SEPERATOR);
+    if(tokenizer.countTokens() > 2) {
+      return Response.status(NOT_FOUND).build();
+    }
+    String name = tokenizer.nextToken();
+    String type = tokenizer.nextToken();
+    try {
+      datasourceServiceManager.getService(type).add(datasourceXml, overwrite);
+      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+    } catch (DatasourceServiceException e) {
+      return Response.serverError().entity(e.toString()).build();
+    }
+  }
+
+  
+  @POST
+  @Path("{pathId : .+}")
+  @Consumes({ APPLICATION_JSON, APPLICATION_XML })
+  @Produces("text/plain")
+  public Response updateDatasource(@PathParam("pathId")String pathId, String datasourceXml) throws PentahoAccessControlException {
+    StringTokenizer tokenizer = new StringTokenizer(pathId, PATH_SEPERATOR);
+    if(tokenizer.countTokens() > 2) {
+      return Response.status(NOT_FOUND).build();
+    }
+    String name = tokenizer.nextToken();
+    String type = tokenizer.nextToken();
+    try {
+      datasourceServiceManager.getService(type).update(datasourceXml);
+      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+    } catch (DatasourceServiceException e) {
+      return Response.serverError().entity(e.toString()).build();
+    }
+  }
 }

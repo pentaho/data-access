@@ -7,6 +7,7 @@ import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
 import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
+import org.pentaho.platform.datasource.Datasource;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 import com.google.gwt.http.client.Request;
@@ -23,6 +24,7 @@ import com.google.gwt.xml.client.XMLParser;
 
 public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServiceManager{
 
+  
   String getAllURL = getWebAppRoot() + "plugin/data-access/api/datasource/ids"; //$NON-NLS-1$
   
   String isAdminURL = getWebAppRoot() + "api/repo/files/canAdminister"; //$NON-NLS-1$
@@ -30,8 +32,10 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   String getTypesURL = getWebAppRoot() + "plugin/data-access/api/datasource/types"; //$NON-NLS-1$
   
   String getUIURL = getWebAppRoot() + "plugin/data-access/api/datasource/";//$NON-NLS-1$
+  
   String UIUrlFragment = "/editor";  //$NON-NLS-1$
   
+  String datasourceUrl = getWebAppRoot() + "plugin/data-access/api/datasource/{name}:{type}?overwrite={overwrite}";//$NON-NLS-1$
   
   @Override
   public void getAll(final XulServiceCallback<List<IDatasourceInfo>> xulCallback) {
@@ -250,6 +254,61 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
       }
 
     });
+  }
+  @Override
+  public void add(final Datasource datasource, final boolean overwrite, final XulServiceCallback<String> xulCallback) {
+    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+      public void execute(final AsyncCallback callback) {
+        IDatasourceInfo info = datasource.getDatasourceInfo();
+        String id = info.getId();
+        String type = info.getType();
+        
+        datasourceUrl = datasourceUrl.replaceAll("{type}", type);
+        datasourceUrl = datasourceUrl.replaceAll("{name}", id);
+        datasourceUrl = datasourceUrl.replaceAll("{overwrite}", Boolean.toString(overwrite));
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.PUT, datasourceUrl);
+        requestBuilder.setHeader("accept", "text/*");
+        requestBuilder.setHeader("Content-Type", "application/xml");
+        try {
+          requestBuilder.sendRequest(datasource.getDatasource(), new RequestCallback() {
+            @Override
+            public void onError(Request request, Throwable exception) {
+              xulCallback.error(exception.getLocalizedMessage(), exception);
+            }
+
+            @Override
+            public void onResponseReceived(Request request, Response response) {
+              if (response.getStatusCode() == Response.SC_OK) {
+                callback.onSuccess(response.getText());
+              }
+            }
+
+          });
+        } catch (RequestException e) {
+          xulCallback.error(e.getLocalizedMessage(), e);
+        }        
+      }
+    }, new AsyncCallback<String>() {
+
+      public void onFailure(Throwable arg0) {
+        xulCallback.error(arg0.getLocalizedMessage(), arg0);
+      }
+
+      public void onSuccess(String arg0) {
+        xulCallback.success(arg0);
+      }
+
+    });
+  }
+  @Override
+  public void remove(String id, XulServiceCallback<String> callback) {
+    // TODO Auto-generated method stub
+    
+  }
+  @Override
+  public void update(Datasource datasource, XulServiceCallback<String> callback) {
+    // TODO Auto-generated method stub
+    
   }
   
 }

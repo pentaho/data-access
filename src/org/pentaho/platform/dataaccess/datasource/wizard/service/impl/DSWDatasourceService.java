@@ -7,14 +7,11 @@ import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.api.datasource.DatasourceServiceException;
-import org.pentaho.platform.api.datasource.IDatasource;
 import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.platform.api.datasource.IDatasourceService;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.dataaccess.datasource.DSWDatasource;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
-
 import org.pentaho.platform.datasource.DatasourceInfo;
 
 public class DSWDatasourceService implements IDatasourceService{
@@ -48,12 +45,12 @@ public class DSWDatasourceService implements IDatasourceService{
   }
 
   @Override
-  public void add(IDatasource datasource, boolean overwrite) throws DatasourceServiceException {
+  public void add(String datasourceXml, boolean overwrite) throws DatasourceServiceException {
 
   }
 
   @Override
-  public IDatasource get(String id) {
+  public String get(String id) {
     return null;
   }
 
@@ -64,7 +61,7 @@ public class DSWDatasourceService implements IDatasourceService{
   }
 
   @Override
-  public void update(IDatasource datasource) throws DatasourceServiceException {
+  public void update(String datasourceXml) throws DatasourceServiceException {
     // TODO Auto-generated method stub
     
   }
