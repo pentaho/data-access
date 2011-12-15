@@ -60,6 +60,7 @@ public class AnalysisDatasourceService {
 	@Produces("text/plain")
 	public Response importAnalysisDatasource(@QueryParam("analysisFile") String analysisFile, @QueryParam("databaseConnection") String databaseConnection) throws PentahoAccessControlException {
 		try {
+			mondrianCatalogService.importSchema(analysisFile, databaseConnection);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.toString()).build();
