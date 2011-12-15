@@ -33,6 +33,7 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	private List<Connection> connectionList;
 	private List<ParameterDialogModel> analysisParameters;
 	private String uploadedFile;
+	private Connection connection;
 
 	public AnalysisImportDialogModel() {
 		connectionList = new ArrayList<Connection>();
@@ -84,5 +85,17 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 		List<Connection> previousValue = connectionList;
 		this.connectionList = value;
 		this.firePropertyChange("connectionList", previousValue, value);
+	}
+
+	@Bindable
+	public Connection getConnection() {
+		return connection;
+	}
+
+	@Bindable
+	public void setConnection(Connection value) {
+		Connection previousValue = connection;
+		connection = value;
+		firePropertyChange("connection", previousValue, value);
 	}
 }

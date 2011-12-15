@@ -71,6 +71,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			paramValueTextBox = (XulTextbox) document.getElementById("paramValueTextBox");
 
 			bf.setBindingType(Binding.Type.ONE_WAY);
+			bf.createBinding(connectionList, "selectedItem", importDialogModel, "connection");
 			Binding connectionListBinding = bf.createBinding(importDialogModel, "connectionList", connectionList, "elements");
 			Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters", analysisParametersTree, "elements");
 

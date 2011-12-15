@@ -45,6 +45,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDat
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.AnalysisDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceManagerGwtImpl;
@@ -210,12 +211,12 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint  {
     }
     
     
-    $wnd.pho.showMetadataImportDialog = function() {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showMetadataImportDialog()();
+    $wnd.pho.showMetadataImportDialog = function(callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showMetadataImportDialog(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
     }
 
-    $wnd.pho.showAnalysisImportDialog = function() {
-      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showAnalysisImportDialog()();
+    $wnd.pho.showAnalysisImportDialog = function(callback) {
+      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showAnalysisImportDialog(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
     }
   }-*/;
 
@@ -454,15 +455,14 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint  {
     }
   }
   
-  private void showMetadataImportDialog() {
-	 //TODO this method must be: showMetadataImportDialog(final JavaScriptObject callback)
+  private void showMetadataImportDialog(final JavaScriptObject callback) {
 	 final DialogListener<MetadataImportDialogModel> listener = new DialogListener<MetadataImportDialogModel>(){
 		  
           public void onDialogCancel() {
           }
           
           public void onDialogAccept(final MetadataImportDialogModel value) {
-        	  Window.alert("MetdataImport - " + value.getUploadedFile());
+        	  Window.alert("MetdataImport - pending");
           }
           
           public void onDialogReady() {
@@ -483,32 +483,28 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint  {
     }
   }
   
-  private void showAnalysisImportDialog() {
-	  	//TODO this method must be: showAnalysisImportDialog(final JavaScriptObject callback)
+  private void showAnalysisImportDialog(final JavaScriptObject callback) {
 	  	final DialogListener<AnalysisImportDialogModel> listener = new DialogListener<AnalysisImportDialogModel>(){
 		  
           public void onDialogCancel() {
           }
 
-          public void onDialogAccept(final AnalysisImportDialogModel value) {
-        	  Window.alert("AnalysisImport - " + value.getUploadedFile());
-
-        	 /* 
-        	  DatasourceInfo datasourceInfo = new DatasourceInfo("", "", "Analysis");
-              Datasource datasource = new Datasource(datasourceInfo, "AnalysisImportDialogModel XML here."); //databaseConnectionConverter.convertToXml(databaseConnection));
-              datasourceServiceManager.add(datasource, true, new XulServiceCallback<String>() {
+          public void onDialogAccept(final AnalysisImportDialogModel importDialogModel) {
+        	  
+        	  AnalysisDatasourceServiceGwtImpl service = new AnalysisDatasourceServiceGwtImpl();
+        	  service.importAnalysisDatasource(importDialogModel.getUploadedFile(), importDialogModel.getConnection().getName(), new XulServiceCallback<String>() {
 
                 @Override
                 public void success(String retVal) {
-                  //notifyDialogCallbackSuccess(callback, retVal);
+                  notifyDialogCallbackSuccess(callback, retVal);
                 }
 
                 @Override
                 public void error(String message, Throwable error) {
-                  //notifyDialogCallbackError(callback, message);
+                  notifyDialogCallbackError(callback, message);
                 }
               });        	  
-        	  */
+        	  
           }
           
           public void onDialogReady() {
