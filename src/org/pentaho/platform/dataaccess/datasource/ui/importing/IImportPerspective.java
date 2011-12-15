@@ -22,11 +22,14 @@
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 public interface IImportPerspective {
-	public void processImport();
 
-	public void show();
+	public void onDialogAccept();
+	
+	public void onDialogCancel();
+
+	public void showDialog();
 
 	public void genericUploadCallback(String uploadedFile);
-	
+
 	public void concreteUploadCallback(String fileName, String uploadedFile);
 }

@@ -27,12 +27,10 @@ import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
-import com.google.gwt.user.client.Window;
-
-public class MetadataImportDialogController extends AbstractXulEventHandler implements IImportPerspective {
+public class MetadataImportDialogController extends AbstractXulDialogController<MetadataImportDialogModel> implements IImportPerspective {
 
 	private BindingFactory bf;
 	private XulButton addButton;
@@ -62,16 +60,20 @@ public class MetadataImportDialogController extends AbstractXulEventHandler impl
 		}
 	}
 
+	public XulDialog getDialog() {
+		return importDialog;
+	}
+
+	public MetadataImportDialogModel getDialogResult() {
+		return importDialogModel;
+	}
+
 	@Bindable
 	public void removeLocalizedBundle() {
 		int[] selectedRows = localizedBundlesTree.getSelectedRows();
 		if (selectedRows.length == 1) {
 			importDialogModel.removeLocalizedBundle(selectedRows[0]);
 		}
-	}
-
-	public void processImport() {
-		Window.alert("pending");
 	}
 
 	private void reset() {
@@ -86,10 +88,10 @@ public class MetadataImportDialogController extends AbstractXulEventHandler impl
 		importDialogModel.setUploadedFile(uploadedFile);
 	}
 
-	public void show() {
+	public void showDialog() {
 		reset();
 		importDialog.setTitle(resBundle.getString("importDialog.IMPORT_METADATA", "Import Metadata"));
-		importDialog.show();
+		super.showDialog();
 	}
 
 	public void setBindingFactory(final BindingFactory bf) {

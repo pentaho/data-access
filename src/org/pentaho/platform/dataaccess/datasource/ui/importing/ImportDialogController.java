@@ -35,7 +35,6 @@ import com.google.gwt.user.client.Window;
 
 public class ImportDialogController extends AbstractXulEventHandler {
 
-	private XulDialog importDialog;
 	private XulDialog fileUploadDialog;
 	private XulTextbox uploadedFileTextbox;
 	private XulFileUpload fileUpload;
@@ -52,7 +51,6 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	public void init() {
 		fileUploadDialog = (XulDialog) document.getElementById("fileUploadDialog");
 		importDeck = (XulDeck) document.getElementById("importDeck");
-		importDialog = (XulDialog) document.getElementById("importDialog");
 		fileUpload = (XulFileUpload) document.getElementById("fileUpload");
 		uploadedFileTextbox = (XulTextbox) document.getElementById("uploadedFile");
 	}
@@ -114,12 +112,12 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	@Bindable
 	public void closeDialog() {
-		importDialog.hide();
+		activeImportPerspective.onDialogCancel();
 	}
 
 	@Bindable
 	public void acceptDialog() {
-		activeImportPerspective.processImport();
+		activeImportPerspective.onDialogAccept();
 		closeDialog();
 	}
 
@@ -127,6 +125,6 @@ public class ImportDialogController extends AbstractXulEventHandler {
 		reset();
 		importDeck.setSelectedIndex(index);
 		activeImportPerspective = importPerspectives.get(index);
-		activeImportPerspective.show();
+		activeImportPerspective.showDialog();
 	}
 }

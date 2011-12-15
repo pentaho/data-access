@@ -36,12 +36,12 @@ import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
 import com.google.gwt.user.client.Window;
 
-public class AnalysisImportDialogController extends AbstractXulEventHandler implements IImportPerspective {
+public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements IImportPerspective {
 
 	private BindingFactory bf;
 	private XulMenuList connectionList;
@@ -81,8 +81,12 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 		}
 	}
 
-	public void processImport() {
-		Window.alert("pending");
+	public XulDialog getDialog() {
+		return importDialog;
+	}
+
+	public AnalysisImportDialogModel getDialogResult() {
+		return importDialogModel;
 	}
 
 	private void reset() {
@@ -146,10 +150,10 @@ public class AnalysisImportDialogController extends AbstractXulEventHandler impl
 		analysisParametersDialog.show();
 	}
 
-	public void show() {
+	public void showDialog() {
 		reset();
 		importDialog.setTitle(resBundle.getString("importDialog.IMPORT_MONDRIAN", "Import Mondrian"));
-		importDialog.show();
+		super.showDialog();
 	}
 
 	public void setBindingFactory(final BindingFactory bf) {

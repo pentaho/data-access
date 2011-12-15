@@ -28,6 +28,7 @@ import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
 import org.pentaho.ui.xul.gwt.util.IXulLoaderCallback;
+import org.pentaho.ui.xul.util.DialogController.DialogListener;
 
 import com.google.gwt.core.client.GWT;
 
@@ -38,7 +39,7 @@ public class GwtImportDialog implements IXulLoaderCallback {
 	private AsyncConstructorListener<GwtImportDialog> constructorListener;
 	private ImportDialogController importDialogController;
 
-	public GwtImportDialog(final AsyncConstructorListener<GwtImportDialog> constructorListener) {
+	public GwtImportDialog(AsyncConstructorListener<GwtImportDialog> constructorListener) {
 		this.constructorListener = constructorListener;
 		try {
 			AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "importDialog.xul", GWT.getModuleBaseURL() + "importDialog", this);
@@ -82,11 +83,13 @@ public class GwtImportDialog implements IXulLoaderCallback {
 		}
 	}
 
-	public void showMetadataImportDialog() {
+	public void showMetadataImportDialog(DialogListener<MetadataImportDialogModel> listener) {
+		metadataImportDialogController.addDialogListener(listener);
 		importDialogController.show(0);
 	}
 
-	public void showAnalysisImportDialog() {
+	public void showAnalysisImportDialog(DialogListener<AnalysisImportDialogModel> listener) {
+		analysisImportDialogController.addDialogListener(listener);
 		importDialogController.show(1);
 	}
 

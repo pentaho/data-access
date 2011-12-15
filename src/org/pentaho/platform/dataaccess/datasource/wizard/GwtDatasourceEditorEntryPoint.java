@@ -34,7 +34,9 @@ import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.GwtDatasourceAdminDialog;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogModel;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.GwtImportDialog;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogModel;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceManageDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
@@ -453,32 +455,77 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint  {
   }
   
   private void showMetadataImportDialog() {
+	 //TODO this method must be: showMetadataImportDialog(final JavaScriptObject callback)
+	 final DialogListener<MetadataImportDialogModel> listener = new DialogListener<MetadataImportDialogModel>(){
+		  
+          public void onDialogCancel() {
+          }
+          
+          public void onDialogAccept(final MetadataImportDialogModel value) {
+        	  Window.alert("MetdataImport - " + value.getUploadedFile());
+          }
+          
+          public void onDialogReady() {
+          }
+    };	  
+    
     final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
 
     	public void asyncConstructorDone(GwtImportDialog dialog) {
-          dialog.showMetadataImportDialog();
+          dialog.showMetadataImportDialog(listener);
 	    }
 	};
     
     if(importDialog == null){
     	importDialog = new GwtImportDialog(constructorListener);
     } else {
-    	importDialog.showMetadataImportDialog();
+    	importDialog.showMetadataImportDialog(listener);
     }
   }
   
   private void showAnalysisImportDialog() {
+	  	//TODO this method must be: showAnalysisImportDialog(final JavaScriptObject callback)
+	  	final DialogListener<AnalysisImportDialogModel> listener = new DialogListener<AnalysisImportDialogModel>(){
+		  
+          public void onDialogCancel() {
+          }
+
+          public void onDialogAccept(final AnalysisImportDialogModel value) {
+        	  Window.alert("AnalysisImport - " + value.getUploadedFile());
+
+        	 /* 
+        	  DatasourceInfo datasourceInfo = new DatasourceInfo("", "", "Analysis");
+              Datasource datasource = new Datasource(datasourceInfo, "AnalysisImportDialogModel XML here."); //databaseConnectionConverter.convertToXml(databaseConnection));
+              datasourceServiceManager.add(datasource, true, new XulServiceCallback<String>() {
+
+                @Override
+                public void success(String retVal) {
+                  //notifyDialogCallbackSuccess(callback, retVal);
+                }
+
+                @Override
+                public void error(String message, Throwable error) {
+                  //notifyDialogCallbackError(callback, message);
+                }
+              });        	  
+        	  */
+          }
+          
+          public void onDialogReady() {
+          }
+        };
+	  
 	    final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
 
 	    	public void asyncConstructorDone(GwtImportDialog dialog) {
-	          dialog.showAnalysisImportDialog();
+	          dialog.showAnalysisImportDialog(listener);
 		    }
 		};
 	    
 	    if(importDialog == null){
 	    	importDialog = new GwtImportDialog(constructorListener);
 	    } else {
-	    	importDialog.showAnalysisImportDialog();
+	    	importDialog.showAnalysisImportDialog(listener);
 	    }
   }
 
