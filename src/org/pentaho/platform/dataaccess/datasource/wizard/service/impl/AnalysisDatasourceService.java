@@ -55,12 +55,13 @@ public class AnalysisDatasourceService {
 		mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, "IMondrianCatalogService", PentahoSessionHolder.getSession());
 	}
 
-	@GET
+	@PUT
 	@Path("/import")
+	@Consumes({ APPLICATION_JSON, APPLICATION_XML })	
 	@Produces("text/plain")
-	public Response importAnalysisDatasource(@QueryParam("analysisFile") String analysisFile, @QueryParam("databaseConnection") String databaseConnection) throws PentahoAccessControlException {
+	public Response importAnalysisDatasource(String parameters, @QueryParam("analysisFile") String analysisFile, @QueryParam("databaseConnection") String databaseConnection) throws PentahoAccessControlException {
 		try {
-			mondrianCatalogService.importSchema(analysisFile, databaseConnection);
+			mondrianCatalogService.importSchema(analysisFile, databaseConnection, parameters);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.toString()).build();

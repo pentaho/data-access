@@ -28,6 +28,10 @@ import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+
 public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 
 	private List<Connection> connectionList;
@@ -97,5 +101,16 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 		Connection previousValue = connection;
 		connection = value;
 		firePropertyChange("connection", previousValue, value);
+	}
+
+	public String getParameters() {
+		JSONArray parameters = new JSONArray();
+		for (ParameterDialogModel currentParameter : analysisParameters) {
+			JSONObject parameterItem = new JSONObject();
+			parameterItem.put("name", new JSONString(currentParameter.getName()));
+			parameterItem.put("value", new JSONString(currentParameter.getValue()));
+			parameters.set(analysisParameters.indexOf(currentParameter), parameterItem);
+		}
+		return parameters.toString();
 	}
 }

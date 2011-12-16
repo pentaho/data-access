@@ -490,9 +490,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint  {
           }
 
           public void onDialogAccept(final AnalysisImportDialogModel importDialogModel) {
-        	  
+
         	  AnalysisDatasourceServiceGwtImpl service = new AnalysisDatasourceServiceGwtImpl();
-        	  service.importAnalysisDatasource(importDialogModel.getUploadedFile(), importDialogModel.getConnection().getName(), new XulServiceCallback<String>() {
+        	  service.importAnalysisDatasource(importDialogModel.getUploadedFile(), importDialogModel.getConnection().getName(), importDialogModel.getParameters(), new XulServiceCallback<String>() {
 
                 @Override
                 public void success(String retVal) {

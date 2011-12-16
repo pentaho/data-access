@@ -37,16 +37,18 @@ public class AnalysisDatasourceServiceGwtImpl {
 
   String datasourceUrl = getWebAppRoot() + "plugin/data-access/api/mondrian/import?analysisFile={analysisFile}&databaseConnection={databaseConnection}";//$NON-NLS-1$
   
-  public void importAnalysisDatasource(final String analysisFile, final String databaseConnection, final XulServiceCallback<String> xulCallback) {
+  public void importAnalysisDatasource(final String analysisFile, final String databaseConnection, final String parameters, final XulServiceCallback<String> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(final AsyncCallback callback) {
     	  
         datasourceUrl = datasourceUrl.replaceAll("{analysisFile}", analysisFile);
         datasourceUrl = datasourceUrl.replaceAll("{databaseConnection}", databaseConnection);
 
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, datasourceUrl);
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.PUT, datasourceUrl);
+        requestBuilder.setHeader("accept", "text/*");
+        requestBuilder.setHeader("Content-Type", "application/xml");
         try {
-          requestBuilder.sendRequest(null, new RequestCallback() {
+          requestBuilder.sendRequest(parameters, new RequestCallback() {
             @Override
             public void onError(Request request, Throwable exception) {
               xulCallback.error(exception.getLocalizedMessage(), exception);
