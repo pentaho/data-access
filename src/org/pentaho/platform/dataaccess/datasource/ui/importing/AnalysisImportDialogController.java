@@ -62,6 +62,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private XulRadio availableRadio;
 	private XulRadio manualRadio;
 
+	private static final Integer PARAMETER_MODE = 1;
+	private static final Integer DATASOURCE_MODE = 0;
+
 	public void init() {
 		try {
 			resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
@@ -105,7 +108,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private void reset() {
 		reloadConnections();
 		importDialogModel.removeAllParameters();
-		setPreference(0);
+		setPreference(DATASOURCE_MODE);
 	}
 
 	private void reloadConnections() {
@@ -122,7 +125,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			});
 		}
 	}
-	
+
 	public boolean isValid() {
 		return true;
 	}
@@ -135,9 +138,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	}
 
 	@Bindable
-	public void setPreference(Integer index) {
-		analysisPreferencesDeck.setSelectedIndex(index);
-		importDialogModel.setParameterMode(index == 1);
+	public void setPreference(Integer preference) {
+		analysisPreferencesDeck.setSelectedIndex(preference);
+		importDialogModel.setParameterMode(preference == PARAMETER_MODE);
 	}
 
 	@Bindable
