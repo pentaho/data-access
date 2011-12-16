@@ -32,7 +32,6 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -44,13 +43,12 @@ import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
 import com.google.gwt.user.client.Window;
 
+@SuppressWarnings("all")
 public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements IImportPerspective {
 
 	private BindingFactory bf;
 	private XulMenuList connectionList;
 	private XulTree analysisParametersTree;
-	private XulButton addButton;
-	private XulButton removeButton;
 	private XulDialog importDialog;
 	private XulDialog analysisParametersDialog;
 	private ResourceBundle resBundle;
@@ -59,7 +57,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private XulTextbox paramNameTextBox;
 	private XulTextbox paramValueTextBox;
 	private XulDeck analysisPreferencesDeck;
-	private XulRadio availableRadio;
+	private XulRadio availableRadio;	
 	private XulRadio manualRadio;
 
 	private static final Integer PARAMETER_MODE = 1;
@@ -70,8 +68,6 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
 			connectionService = new ConnectionServiceGwtImpl();
 			importDialogModel = new AnalysisImportDialogModel();
-			addButton = (XulButton) document.getElementById("addButton");
-			removeButton = (XulButton) document.getElementById("removeButton");
 			connectionList = (XulMenuList) document.getElementById("connectionList");
 			analysisParametersTree = (XulTree) document.getElementById("analysisParametersTree");
 			importDialog = (XulDialog) document.getElementById("importDialog");
@@ -79,13 +75,12 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			paramNameTextBox = (XulTextbox) document.getElementById("paramNameTextBox");
 			paramValueTextBox = (XulTextbox) document.getElementById("paramValueTextBox");
 			analysisPreferencesDeck = (XulDeck) document.getElementById("analysisPreferencesDeck");
-			availableRadio = (XulRadio) document.getElementById("availableRadio");
+			availableRadio = (XulRadio) document.getElementById("availableRadio");			
 			manualRadio = (XulRadio) document.getElementById("manualRadio");
 
 			bf.setBindingType(Binding.Type.ONE_WAY);
 			bf.createBinding(connectionList, "selectedItem", importDialogModel, "connection");
-			bf.createBinding(availableRadio, "checked", this, "preference", new PreferencesBindingConvertor(availableRadio));
-			bf.createBinding(manualRadio, "checked", this, "preference", new PreferencesBindingConvertor(manualRadio));
+			bf.createBinding(manualRadio, "checked", this, "preference", new PreferencesBindingConvertor());
 
 			Binding connectionListBinding = bf.createBinding(importDialogModel, "connectionList", connectionList, "elements");
 			Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters", analysisParametersTree, "elements");
@@ -109,6 +104,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		reloadConnections();
 		importDialogModel.removeAllParameters();
 		importDialogModel.setUploadedFile(null);
+		availableRadio.setSelected(true);
 		setPreference(DATASOURCE_MODE);
 	}
 
@@ -165,7 +161,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		String paramValue = paramValueTextBox.getValue();
 		if (!StringUtils.isEmpty(paramName) && !StringUtils.isEmpty(paramValue)) {
 			importDialogModel.addParameter(paramName, paramValue);
-			if(importDialogModel.getSelectedAnalysisParameter() != null) {
+			if (importDialogModel.getSelectedAnalysisParameter() != null) {
 				closeParametersDialog();
 			}
 			resetParametersDialog();
@@ -211,22 +207,16 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
 	class PreferencesBindingConvertor extends BindingConvertor<Boolean, Integer> {
 
-		private XulRadio source;
-
-		public PreferencesBindingConvertor(XulRadio source) {
-			this.source = source;
-		}
-
 		public Integer sourceToTarget(Boolean value) {
-			int result = -1;
+			int result = 0;
 			if (value) {
-				result = Integer.parseInt(this.source.getValue());
+				result = 1;
 			}
 			return result;
 		}
 
 		public Boolean targetToSource(Integer value) {
-			return false;
+			return true;
 		}
 	}
 }

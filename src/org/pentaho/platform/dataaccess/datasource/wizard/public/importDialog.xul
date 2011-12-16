@@ -8,10 +8,10 @@
    <vbox>
      <vbox>
 	     <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
-             <hbox>
-		     <textbox id="uploadedFile" value="" disabled="true" height="20" width="350"/>
+         <hbox>
+             <textbox id="uploadedFile" value="" disabled="true" height="20" width="350"/>
 		     <button id="importButton" height="22" label="..." onclick="importDialogController.showFileUploadDialog(true)" />
-             </hbox> 
+         </hbox> 
      </vbox>	
      
      <deck id="importDeck">
@@ -39,11 +39,12 @@
      	<!-- ANALYSIS IMPORT -->
 	    <vbox>
 	    	<radiogroup id="analysisPreferencesRadioGroup" padding="0">
-	    		<radio id="availableRadio" checked="true" value="0" label="${importDialog.SELECT_AVAILABLE_RADIO}"/>
+	    		<radio id="availableRadio" value="0" checked="true" label="${importDialog.SELECT_AVAILABLE_RADIO}"/>
 	    		<radio id="manualRadio" value="1" label="${importDialog.ENTER_MANUAL_RADIO}" />
 	    	</radiogroup>
 	    	
 	    	<deck id="analysisPreferencesDeck">
+	    		<!-- DATASOURCE_MODE -->
 		    	<vbox>
 			        <hbox><label id="datasourceLabel" value="${importDialog.DATA_SOURCE}:"/></hbox>
 			    		<hbox>
@@ -54,6 +55,7 @@
 						</menulist>  
 					</hbox>
 				</vbox>
+				<!-- PARAMETER_MODE -->
 				<vbox>
 					<hbox>
 		 				<label id="localizationBundlesLabel" value="${importDialog.PARAMETERS}"/>
