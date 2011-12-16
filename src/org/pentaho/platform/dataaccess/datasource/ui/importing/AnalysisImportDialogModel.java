@@ -38,6 +38,7 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	private List<ParameterDialogModel> analysisParameters;
 	private String uploadedFile;
 	private Connection connection;
+	private boolean isParameterMode;
 
 	public AnalysisImportDialogModel() {
 		connectionList = new ArrayList<Connection>();
@@ -104,13 +105,21 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	}
 
 	public String getParameters() {
-		JSONArray parameters = new JSONArray();
-		for (ParameterDialogModel currentParameter : analysisParameters) {
-			JSONObject parameterItem = new JSONObject();
-			parameterItem.put("name", new JSONString(currentParameter.getName()));
-			parameterItem.put("value", new JSONString(currentParameter.getValue()));
-			parameters.set(analysisParameters.indexOf(currentParameter), parameterItem);
+		String result = "";
+		if (isParameterMode) {
+			JSONArray parameters = new JSONArray();
+			for (ParameterDialogModel currentParameter : analysisParameters) {
+				JSONObject parameterItem = new JSONObject();
+				parameterItem.put("name", new JSONString(currentParameter.getName()));
+				parameterItem.put("value", new JSONString(currentParameter.getValue()));
+				parameters.set(analysisParameters.indexOf(currentParameter), parameterItem);
+			}
+			result = parameters.toString();
 		}
-		return parameters.toString();
+		return result;
+	}
+
+	public void setParameterMode(boolean value) {
+		isParameterMode = value;
 	}
 }

@@ -30,10 +30,13 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnec
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -55,6 +58,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private IXulAsyncConnectionService connectionService;
 	private XulTextbox paramNameTextBox;
 	private XulTextbox paramValueTextBox;
+	private XulDeck analysisPreferencesDeck;
+	private XulRadio availableRadio;
+	private XulRadio manualRadio;
 
 	public void init() {
 		try {
@@ -69,9 +75,15 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			analysisParametersDialog = (XulDialog) document.getElementById("analysisParametersDialog");
 			paramNameTextBox = (XulTextbox) document.getElementById("paramNameTextBox");
 			paramValueTextBox = (XulTextbox) document.getElementById("paramValueTextBox");
+			analysisPreferencesDeck = (XulDeck) document.getElementById("analysisPreferencesDeck");
+			availableRadio = (XulRadio) document.getElementById("availableRadio");
+			manualRadio = (XulRadio) document.getElementById("manualRadio");
 
 			bf.setBindingType(Binding.Type.ONE_WAY);
 			bf.createBinding(connectionList, "selectedItem", importDialogModel, "connection");
+			bf.createBinding(availableRadio, "checked", this, "preference", new PreferencesBindingConvertor(availableRadio));
+			bf.createBinding(manualRadio, "checked", this, "preference", new PreferencesBindingConvertor(manualRadio));
+
 			Binding connectionListBinding = bf.createBinding(importDialogModel, "connectionList", connectionList, "elements");
 			Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters", analysisParametersTree, "elements");
 
@@ -93,6 +105,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private void reset() {
 		reloadConnections();
 		importDialogModel.removeAllParameters();
+		setPreference(0);
 	}
 
 	private void reloadConnections() {
@@ -109,12 +122,22 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			});
 		}
 	}
+	
+	public boolean isValid() {
+		return true;
+	}
 
 	public void concreteUploadCallback(String fileName, String uploadedFile) {
 	}
 
 	public void genericUploadCallback(String uploadedFile) {
 		importDialogModel.setUploadedFile(uploadedFile);
+	}
+
+	@Bindable
+	public void setPreference(Integer index) {
+		analysisPreferencesDeck.setSelectedIndex(index);
+		importDialogModel.setParameterMode(index == 1);
 	}
 
 	@Bindable
@@ -146,6 +169,10 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	}
 
 	@Bindable
+	public void editParameter() {
+	}
+
+	@Bindable
 	public void openParametersDialog() {
 		resetParametersDialog();
 		analysisParametersDialog.show();
@@ -163,5 +190,26 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
 	public String getName() {
 		return "analysisImportDialogController";
+	}
+
+	class PreferencesBindingConvertor extends BindingConvertor<Boolean, Integer> {
+
+		private XulRadio source;
+
+		public PreferencesBindingConvertor(XulRadio source) {
+			this.source = source;
+		}
+
+		public Integer sourceToTarget(Boolean value) {
+			int result = -1;
+			if (value) {
+				result = Integer.parseInt(this.source.getValue());
+			}
+			return result;
+		}
+
+		public Boolean targetToSource(Integer value) {
+			return false;
+		}
 	}
 }

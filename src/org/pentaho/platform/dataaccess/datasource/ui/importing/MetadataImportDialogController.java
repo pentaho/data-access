@@ -67,6 +67,10 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 	public MetadataImportDialogModel getDialogResult() {
 		return importDialogModel;
 	}
+	
+	public boolean isValid() {
+		return true;
+	}
 
 	@Bindable
 	public void removeLocalizedBundle() {

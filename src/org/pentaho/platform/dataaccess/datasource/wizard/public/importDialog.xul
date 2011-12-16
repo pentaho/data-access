@@ -4,7 +4,7 @@
   xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
   height="600" width="800">
   
-  <dialog id="importDialog" width="395" height="215" title="" buttonlabelaccept="${importDialog.IMPORT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
+  <dialog id="importDialog" width="395" height="400" title="" buttonlabelaccept="${importDialog.IMPORT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
    <vbox>
      <vbox>
 	     <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
@@ -27,7 +27,7 @@
      			<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png" onclick="metadataImportDialogController.removeLocalizedBundle()"/>
      		</hbox>
      		<hbox>
-     			<tree id="localizedBundlesTree" seltype="single" width="400" height="150">
+     			<tree id="localizedBundlesTree" seltype="single" width="402" height="150">
      				<treecols id="csvModelDataTableCols">
      					<treecol flex="1" id="csvColumnIncludeTreeCol" label="${importDialog.FILE_NAME}" pen:binding="fileName" editable="false" type="text"/>
      				</treecols>
@@ -38,29 +38,41 @@
      	
      	<!-- ANALYSIS IMPORT -->
 	    <vbox>
-	        <hbox><label id="datasourceLabel" value="${importDialog.DATA_SOURCE}:"/></hbox>
-	    		<hbox>
-				<menulist id="connectionList" pen:binding="name" width="400">
-					<menupopup>
-						<menuitem label="DummyConnection"/>
-					</menupopup>
-				</menulist>  
-			</hbox>
-			<hbox>
- 				<label id="localizationBundlesLabel" value="${importDialog.PARAMETERS}"/>
- 				<spacer width="288"/>  
- 				<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="analysisImportDialogController.openParametersDialog()"/>
- 				<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png" onclick="analysisImportDialogController.removeParameter()"/>
- 			</hbox>
-			<hbox>
-	        	<tree id="analysisParametersTree" seltype="single" width="400" height="150">
-	        		<treecols id="parametersTableCols">
-	        			<treecol flex="1" id="paramCol" label="${importDialog.NAME}" pen:binding="name" editable="false" type="text"/>
-	        			<treecol flex="1" id="valueCol" label="${importDialog.VALUE}" pen:binding="value" editable="false" type="text"/>
-	        		</treecols>
-	        		<treechildren id="parametersListRows"/>
-	        	</tree>
-	       	</hbox>
+	    	<radiogroup id="analysisPreferencesRadioGroup" padding="0">
+	    		<radio id="availableRadio" checked="true" value="0" label="${importDialog.SELECT_AVAILABLE_RADIO}"/>
+	    		<radio id="manualRadio" value="1" label="${importDialog.ENTER_MANUAL_RADIO}" />
+	    	</radiogroup>
+	    	
+	    	<deck id="analysisPreferencesDeck">
+		    	<vbox>
+			        <hbox><label id="datasourceLabel" value="${importDialog.DATA_SOURCE}:"/></hbox>
+			    		<hbox>
+						<menulist id="connectionList" pen:binding="name" width="400">
+							<menupopup>
+								<menuitem label="DummyConnection"/>
+							</menupopup>
+						</menulist>  
+					</hbox>
+				</vbox>
+				<vbox>
+					<hbox>
+		 				<label id="localizationBundlesLabel" value="${importDialog.PARAMETERS}"/>
+		 				<spacer width="270"/>  
+						<button id="addButton" image="images/edit.png" disabledimage="images/add_disabled.png" onclick="analysisImportDialogController.openParametersDialog()"/>
+		 				<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="analysisImportDialogController.openParametersDialog()"/>
+		 				<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png" onclick="analysisImportDialogController.removeParameter()"/>
+		 			</hbox>
+					<hbox>
+			        	<tree id="analysisParametersTree" seltype="single" width="402" height="150">
+			        		<treecols id="parametersTableCols">
+			        			<treecol flex="1" id="paramCol" label="${importDialog.NAME}" pen:binding="name" editable="false" type="text"/>
+			        			<treecol flex="1" id="valueCol" label="${importDialog.VALUE}" pen:binding="value" editable="false" type="text"/>
+			        		</treecols>
+			        		<treechildren id="parametersListRows"/>
+			        	</tree>
+			       	</hbox>
+		       	</vbox>
+	       	</deck>
 	 	</vbox>
 	 	
     </deck> 

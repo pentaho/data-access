@@ -117,8 +117,10 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	@Bindable
 	public void acceptDialog() {
-		activeImportPerspective.onDialogAccept();
-		closeDialog();
+		if(activeImportPerspective.isValid()) {
+			activeImportPerspective.onDialogAccept();
+			closeDialog();
+		}
 	}
 
 	public void show(int index) {
