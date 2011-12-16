@@ -58,7 +58,7 @@
 					<hbox>
 		 				<label id="localizationBundlesLabel" value="${importDialog.PARAMETERS}"/>
 		 				<spacer width="270"/>  
-						<button id="addButton" image="images/edit.png" disabledimage="images/add_disabled.png" onclick="analysisImportDialogController.openParametersDialog()"/>
+						<button id="addButton" image="images/edit.png" disabledimage="images/add_disabled.png" onclick="analysisImportDialogController.editParameter()"/>
 		 				<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="analysisImportDialogController.openParametersDialog()"/>
 		 				<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png" onclick="analysisImportDialogController.removeParameter()"/>
 		 			</hbox>

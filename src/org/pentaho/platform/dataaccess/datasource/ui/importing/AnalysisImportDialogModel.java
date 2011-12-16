@@ -39,6 +39,7 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	private String uploadedFile;
 	private Connection connection;
 	private boolean isParameterMode;
+	private ParameterDialogModel selectedAnalysisParameter;
 
 	public AnalysisImportDialogModel() {
 		connectionList = new ArrayList<Connection>();
@@ -46,7 +47,13 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	}
 
 	public void addParameter(String name, String value) {
-		analysisParameters.add(new ParameterDialogModel(name, value));
+
+		if (selectedAnalysisParameter == null) {
+			analysisParameters.add(new ParameterDialogModel(name, value));
+		} else {
+			selectedAnalysisParameter.setName(name);
+			selectedAnalysisParameter.setValue(value);
+		}
 		this.firePropertyChange("analysisParameters", null, analysisParameters);
 	}
 
@@ -121,5 +128,25 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 
 	public void setParameterMode(boolean value) {
 		isParameterMode = value;
+	}
+
+	public boolean isValid() {
+		boolean isValid = true;
+		if (isParameterMode) {
+			isValid = analysisParameters.size() > 0;
+		}
+		return isValid && uploadedFile != null && connection != null;
+	}
+
+	public void setSelectedAnalysisParameter(int index) {
+		if (index > -1) {
+			selectedAnalysisParameter = analysisParameters.get(index);
+		} else {
+			selectedAnalysisParameter = null;
+		}
+	}
+
+	public ParameterDialogModel getSelectedAnalysisParameter() {
+		return selectedAnalysisParameter;
 	}
 }

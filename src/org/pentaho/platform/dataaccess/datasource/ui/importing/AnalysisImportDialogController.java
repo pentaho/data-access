@@ -108,6 +108,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private void reset() {
 		reloadConnections();
 		importDialogModel.removeAllParameters();
+		importDialogModel.setUploadedFile(null);
 		setPreference(DATASOURCE_MODE);
 	}
 
@@ -127,7 +128,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	}
 
 	public boolean isValid() {
-		return true;
+		return importDialogModel.isValid();
 	}
 
 	public void concreteUploadCallback(String fileName, String uploadedFile) {
@@ -154,6 +155,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private void resetParametersDialog() {
 		paramNameTextBox.setValue("");
 		paramValueTextBox.setValue("");
+		importDialogModel.setSelectedAnalysisParameter(-1);
+		analysisParametersTree.clearSelection();
 	}
 
 	@Bindable
@@ -162,6 +165,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		String paramValue = paramValueTextBox.getValue();
 		if (!StringUtils.isEmpty(paramName) && !StringUtils.isEmpty(paramValue)) {
 			importDialogModel.addParameter(paramName, paramValue);
+			if(importDialogModel.getSelectedAnalysisParameter() != null) {
+				closeParametersDialog();
+			}
 			resetParametersDialog();
 		}
 	}
@@ -173,6 +179,14 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
 	@Bindable
 	public void editParameter() {
+		int[] selectedRows = analysisParametersTree.getSelectedRows();
+		if (selectedRows.length == 1) {
+			importDialogModel.setSelectedAnalysisParameter(selectedRows[0]);
+			ParameterDialogModel parameter = importDialogModel.getSelectedAnalysisParameter();
+			paramNameTextBox.setValue(parameter.getName());
+			paramValueTextBox.setValue(parameter.getValue());
+			analysisParametersDialog.show();
+		}
 	}
 
 	@Bindable
