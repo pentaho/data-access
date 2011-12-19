@@ -24,139 +24,108 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import org.pentaho.platform.api.datasource.DatasourceServiceException;
-import org.pentaho.platform.api.datasource.IDatasource;
-import org.pentaho.platform.api.datasource.IDatasourceInfo;
-import org.pentaho.platform.api.datasource.IDatasourceServiceManager;
-import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.datasource.Datasource;
-import org.pentaho.platform.datasource.DatasourceInfo;
+import org.pentaho.agilebi.modeler.services.IModelerService;
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 
 @Path("/data-access/api/datasource")
 public class DatasourceResource {
 
-  protected IDatasourceServiceManager datasourceServiceManager;
-  public final static String PATH_SEPERATOR = ":";
+  protected IMetadataDomainRepository metadataDomainRepository;
+  protected IMondrianCatalogService mondrianCatalogService;
+  IDSWDatasourceService dswService;
+  IModelerService modelerService;
+  public static final String METADATA_EXT = ".xmi";
   
   public DatasourceResource() {
     super();
-    datasourceServiceManager = PentahoSystem.get(IDatasourceServiceManager.class, PentahoSessionHolder.getSession());
+    metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, PentahoSessionHolder.getSession());
+    mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, PentahoSessionHolder.getSession());
+    dswService = new DSWDatasourceServiceImpl();
+    modelerService = new ModelerService();
+    
   }
 
   @GET
-  @Path("/ids")
+  @Path("/analysis/ids")
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
-  public List<DatasourceInfo> getDatasources() throws PentahoAccessControlException {
-    List<DatasourceInfo> infoList = new ArrayList<DatasourceInfo>();
-    for(IDatasourceInfo datasourceInfo:datasourceServiceManager.getIds()) {
-      infoList.add(new DatasourceInfo(datasourceInfo.getName(), datasourceInfo.getId(), datasourceInfo.getType(), datasourceInfo.isEditable(), datasourceInfo.isRemovable(), datasourceInfo.isImportable(), datasourceInfo.isExportable())); 
+  public JaxbList<String> getAnalysisDatasourceIds() {
+    List<String> analysisIds = new ArrayList<String>();
+    for(MondrianCatalog mondrianCatalog: mondrianCatalogService.listCatalogs(PentahoSessionHolder.getSession(), true)) {
+      String domainId = mondrianCatalog.getName() + METADATA_EXT;
+      Domain domain = metadataDomainRepository.getDomain(domainId);
+      if(domain == null) {
+        analysisIds.add(mondrianCatalog.getName());
+      }
     }
-    return infoList;
+    return new JaxbList<String>(analysisIds);
   }
 
   @GET
-  @Path("/types")
+  @Path("/metadata/ids")
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
-  public JaxbList<String> getDatasourcesTypes() {
-    return new JaxbList<String>(datasourceServiceManager.getTypes());
+  public JaxbList<String> getMetadataDatasourceIds() {
+    List<String> metadataIds = new ArrayList<String>();
+    for(String id:metadataDomainRepository.getDomainIds()) {
+        if(isMetadataDatasource(id)) {
+          metadataIds.add(id);
+        }
+    }
+    return new JaxbList<String>(metadataIds);
   }
-
-  @GET
-  @Path("{pathId : .+}/editor")
-  @Produces( { TEXT_PLAIN })
-  public String getNewUI(@PathParam("pathId")String pathId) throws PentahoAccessControlException {
-    if(pathId != null && pathId.indexOf(':') >= 0) {
-      int index = pathId.indexOf(':');
-      String name = pathId.substring(0, index);
-      String type = pathId.substring(index+1);
-      return datasourceServiceManager.getService(pathId).getEditUI();
+  
+  private boolean isMetadataDatasource(String id) {
+    Domain domain = metadataDomainRepository.getDomain(id);
+    List<LogicalModel> logicalModelList = domain.getLogicalModels();
+    if(logicalModelList != null && logicalModelList.size() >= 1) {
+      LogicalModel logicalModel = logicalModelList.get(0);
+      Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
+      if(property == null) {
+        return true;    
+      } 
     } else {
-      return datasourceServiceManager.getService(pathId).getNewUI();      
+      return true;
     }
+    return false;
   }
   
-
-  @DELETE
-  @Path("{pathId : .+}")
-  @Consumes({ APPLICATION_JSON, APPLICATION_XML })
-  @Produces("text/plain")
-  public Response removeDatasource(@PathParam("pathId")String pathId) throws PentahoAccessControlException {
-    StringTokenizer tokenizer = new StringTokenizer(pathId, PATH_SEPERATOR);
-    if(tokenizer.countTokens() > 2) {
-      return Response.status(NOT_FOUND).build();
-    }
-    String id = tokenizer.nextToken();
-    String type = tokenizer.nextToken();
+  @GET
+  @Path("/dsw/ids")
+  @Produces( { APPLICATION_XML, APPLICATION_JSON })
+  public JaxbList<String> getDSWDatasourceIds() {
+    List<String> datasourceList = new ArrayList<String>();
     try {
-      datasourceServiceManager.getService(type).remove(id);
-      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
-    } catch (DatasourceServiceException e) {
-      return Response.serverError().entity(e.toString()).build();
+      for(LogicalModelSummary summary:dswService.getLogicalModels(null)) {
+        Domain domain = modelerService.loadDomain(summary.getDomainId());
+        List<LogicalModel> logicalModelList = domain.getLogicalModels();
+        if(logicalModelList != null && logicalModelList.size() >= 1) {
+          LogicalModel logicalModel = logicalModelList.get(0);
+          Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
+          if(property != null) {
+            datasourceList.add(summary.getDomainId());
+          }
+        }
+      }
+    } catch (Throwable e) {
+      return null;
     }
-  }
-
-  
-  @PUT
-  @Path("{pathId : .+}")
-  @Consumes({ APPLICATION_JSON, APPLICATION_XML })
-  @Produces("text/plain")
-  public Response addDatasource(@PathParam("pathId")String pathId, String datasourceXml, @QueryParam("overwrite")boolean overwrite) throws PentahoAccessControlException {
-    StringTokenizer tokenizer = new StringTokenizer(pathId, PATH_SEPERATOR);
-    if(tokenizer.countTokens() > 2) {
-      return Response.status(NOT_FOUND).build();
-    }
-    String name = tokenizer.nextToken();
-    String type = tokenizer.nextToken();
-    try {
-      datasourceServiceManager.getService(type).add(datasourceXml, overwrite);
-      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
-    } catch (DatasourceServiceException e) {
-      return Response.serverError().entity(e.toString()).build();
-    }
-  }
-
-  
-  @POST
-  @Path("{pathId : .+}")
-  @Consumes({ APPLICATION_JSON, APPLICATION_XML })
-  @Produces("text/plain")
-  public Response updateDatasource(@PathParam("pathId")String pathId, String datasourceXml) throws PentahoAccessControlException {
-    StringTokenizer tokenizer = new StringTokenizer(pathId, PATH_SEPERATOR);
-    if(tokenizer.countTokens() > 2) {
-      return Response.status(NOT_FOUND).build();
-    }
-    String name = tokenizer.nextToken();
-    String type = tokenizer.nextToken();
-    try {
-      datasourceServiceManager.getService(type).update(datasourceXml);
-      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
-    } catch (DatasourceServiceException e) {
-      return Response.serverError().entity(e.toString()).build();
-    }
+    return new JaxbList<String>(datasourceList);
   }
 }

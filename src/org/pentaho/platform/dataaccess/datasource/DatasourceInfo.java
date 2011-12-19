@@ -15,7 +15,6 @@
 package org.pentaho.platform.dataaccess.datasource;
 
 
-import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 

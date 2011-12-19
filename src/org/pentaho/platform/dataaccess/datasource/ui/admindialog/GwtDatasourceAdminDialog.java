@@ -20,7 +20,11 @@
  */
 package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
-import org.pentaho.platform.api.datasource.IDatasourceInfo;
+import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
@@ -42,17 +46,30 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
   protected DatasourceAdminDialogController datasourceAdminDialogController;
 
   protected IXulAsyncDatasourceServiceManager genericDatasourceServiceManager;
+  
+  protected IXulAsyncConnectionService connectionService;
+  
+  protected IModelerServiceAsync modelerService;
+  
+  private IXulAsyncDSWDatasourceService dswService;
 
   protected AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener;
+  
+  private GwtDatasourceEditorEntryPoint entryPoint;
   
   private boolean initialized;
 
   // ~ Constructors ====================================================================================================
 
   public GwtDatasourceAdminDialog(final IXulAsyncDatasourceServiceManager genericDatasourceServiceManager,
+      IXulAsyncConnectionService connectionService, IModelerServiceAsync modelerService, IXulAsyncDSWDatasourceService dswService, GwtDatasourceEditorEntryPoint entryPoint, 
       final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener) {
     this.genericDatasourceServiceManager = genericDatasourceServiceManager;
+    this.connectionService = connectionService;
+    this.modelerService = modelerService;
+    this.dswService = dswService;
     this.constructorListener = constructorListener;
+    this.entryPoint = entryPoint;
     try {
       AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "datasourceAdminDialog.xul", GWT.getModuleBaseURL() + "datasourceAdminDialog", this); //$NON-NLS-1$//$NON-NLS-2$
     } catch (Exception e) {
@@ -85,6 +102,10 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
       datasourceAdminDialogController = new DatasourceAdminDialogController();
       datasourceAdminDialogController.setBindingFactory(bf);
       datasourceAdminDialogController.setDatasourceServiceManager(genericDatasourceServiceManager);
+      datasourceAdminDialogController.setConnectionService(connectionService);
+      datasourceAdminDialogController.setModelerService(modelerService);
+      datasourceAdminDialogController.setDSWService(dswService);
+      datasourceAdminDialogController.setEntryPoint(entryPoint);
       container.addEventHandler(datasourceAdminDialogController);
       
       runner.initialize();

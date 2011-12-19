@@ -315,6 +315,12 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
       @Override
       public void onDialogReady() {
       }
+
+      @Override
+      public void onDialogError(String errorMessage) {
+        // TODO Auto-generated method stub
+        
+      }
     });
   }
 
