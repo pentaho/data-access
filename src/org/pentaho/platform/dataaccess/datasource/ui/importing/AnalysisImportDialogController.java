@@ -148,28 +148,22 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		}
 	}
 
-	private void resetParametersDialog() {
-		paramNameTextBox.setValue("");
-		paramValueTextBox.setValue("");
-		importDialogModel.setSelectedAnalysisParameter(-1);
-		analysisParametersTree.clearSelection();
-	}
-
 	@Bindable
 	public void addParameter() {
 		String paramName = paramNameTextBox.getValue();
 		String paramValue = paramValueTextBox.getValue();
 		if (!StringUtils.isEmpty(paramName) && !StringUtils.isEmpty(paramValue)) {
 			importDialogModel.addParameter(paramName, paramValue);
-			if (importDialogModel.getSelectedAnalysisParameter() != null) {
-				closeParametersDialog();
-			}
-			resetParametersDialog();
+			closeParametersDialog();
 		}
 	}
 
 	@Bindable
 	public void closeParametersDialog() {
+		paramNameTextBox.setValue("");
+		paramValueTextBox.setValue("");
+		importDialogModel.setSelectedAnalysisParameter(-1);
+		analysisParametersTree.clearSelection();
 		analysisParametersDialog.hide();
 	}
 
@@ -187,7 +181,6 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
 	@Bindable
 	public void openParametersDialog() {
-		resetParametersDialog();
 		analysisParametersDialog.show();
 	}
 

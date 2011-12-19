@@ -82,7 +82,7 @@
   </dialog>
   
   <!-- PARAMETERS DIALOG -->
-  <dialog id="analysisParametersDialog" width="320" height="180" title="${importDialog.PARAMETERS}" buttonlabelaccept="${importDialog.ADD}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="analysisImportDialogController.addParameter()" ondialogcancel="analysisImportDialogController.closeParametersDialog()">
+  <dialog id="analysisParametersDialog" width="320" height="180" title="${importDialog.PARAMETERS}" buttonlabelaccept="${importDialog.OK}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="analysisImportDialogController.addParameter()" ondialogcancel="analysisImportDialogController.closeParametersDialog()">
   	<vbox>
   		<label id="nameLabel" value="${importDialog.NAME}:"/>
 		<textbox id="paramNameTextBox" value="" height="20" width="300"/>
