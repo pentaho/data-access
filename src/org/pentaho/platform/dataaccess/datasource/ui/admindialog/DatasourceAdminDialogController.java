@@ -2,8 +2,23 @@ package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
 import java.util.List;
 
-import org.pentaho.platform.api.datasource.IDatasourceInfo;
+import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
+import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.DSWUIDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.IUIDatasourceAdminService;
+import org.pentaho.platform.dataaccess.datasource.JdbcDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.MetadataUIDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.MondrianUIDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.UIDatasourceServiceManager;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogModel;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
+import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -22,7 +37,7 @@ import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
-public class DatasourceAdminDialogController extends AbstractXulDialogController<IDatasourceInfo> implements BindingExceptionHandler {
+public class DatasourceAdminDialogController extends AbstractXulDialogController<IDatasourceInfo> implements BindingExceptionHandler{
 
   // ~ Static fields/initializers ======================================================================================
 
@@ -30,7 +45,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private BindingFactory bf;
   
   private IXulAsyncDatasourceServiceManager datasourceServiceManager;
-
+  private IXulAsyncConnectionService connectionService;
+  private IModelerServiceAsync modelerService;
+  private IXulAsyncDSWDatasourceService dswService;
   private DatasourceAdminDialogModel datasourceAdminDialogModel = new DatasourceAdminDialogModel();
 
   private XulDialog datasourceAdminDialog;
@@ -50,12 +67,13 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private Binding removeDatasourceButtonBinding;
   private Binding exportDatasourceButtonBinding;
   
+  private GwtDatabaseDialog databaseDialog;
   private boolean administrator;
   XulTree datasourceTable = null;
 
   XulTreeCols datasourceTreeCols = null;
-
-
+  UIDatasourceServiceManager manager;
+  private GwtDatasourceEditorEntryPoint entryPoint;
   /**
    * Sets up bindings.
    */
@@ -144,7 +162,15 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       editDatasourceButtonBinding.fireSourceChanged();
       exportDatasourceButtonBinding.fireSourceChanged();
       setupNativeHooks(this);
-    } catch (Exception e) {
+      // Initialize UI Datasource Service Manager
+      manager = new UIDatasourceServiceManager();
+      // Register Builtin datasources
+      manager.registerService(new JdbcDatasourceService(connectionService));
+      manager.registerService(new MondrianUIDatasourceService(datasourceServiceManager));
+      manager.registerService(new MetadataUIDatasourceService(datasourceServiceManager));
+      manager.registerService(new DSWUIDatasourceService(datasourceServiceManager));
+
+      } catch (Exception e) {
       System.out.println(e.getMessage());
       e.printStackTrace();
     }
@@ -175,26 +201,37 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   public void setDatasourceServiceManager(final IXulAsyncDatasourceServiceManager datasourceServiceManager) {
     this.datasourceServiceManager = datasourceServiceManager;
   }
-  
-  private void refreshDatasourceList() {
-    datasourceServiceManager.getAll(new XulServiceCallback<List<IDatasourceInfo>>() {
-      public void error(final String message, final Throwable error) {
-      
-      }
 
-      public void success(final List<IDatasourceInfo> datasourceInfoList) {
-        datasourceAdminDialogModel.setDatasourcesList(datasourceInfoList);
-      }
-    });
+  public void setConnectionService(final IXulAsyncConnectionService connectionService) {
+    this.connectionService = connectionService;
+  }
+  
+  public void setModelerService(final IModelerServiceAsync modelerService) {
+    this.modelerService = modelerService;
+  }
+
+  public void setDSWService(final IXulAsyncDSWDatasourceService dswService) {
+    this.dswService = dswService;
+  }
+
+  private void refreshDatasourceList() {
+    datasourceAdminDialogModel.setDatasourcesList(null);
+      manager.getIds(new XulServiceCallback<List<IDatasourceInfo>>() {
+  
+        @Override
+        public void success(List<IDatasourceInfo> infoList) {
+          datasourceAdminDialogModel.setDatasourcesList(infoList);
+        }
+  
+        @Override
+        public void error(String message, Throwable error) {
+          openErrorDialog("Error", message + error.getMessage());
+        }
+      });
   }
   
   private void getDatasourceTypes() {
-    datasourceServiceManager.getTypes(new XulServiceCallback<List<String>>() {
-      public void error(final String message, final Throwable error) {
-      
-      }
-
-      public void success(final List<String> datasourceTypes) {
+        List<String> datasourceTypes = manager.getTypes();
         // Clear out the current component list
         List<XulComponent> components = datasourceTypeMenuPopup.getChildNodes();
         for(XulComponent component:components) {
@@ -214,22 +251,123 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           }
         }
         datasourceAdminDialogModel.setDatasourceTypeList(datasourceTypes);
-      }
-    });
   }
   
   
   @Bindable
   public void launchNewUI(String datasourceType) {
-      datasourceServiceManager.getNewUI(datasourceType, new XulServiceCallback<String>() {
-        public void error(final String message, final Throwable error) {
-        
-        }
+      IUIDatasourceAdminService service = manager.getService(datasourceType);
+      String newUI = service.getNewUI();
+      if(newUI != null && newUI.length() > 0) {
+        if(newUI.indexOf("builtin:") >= 0) {
+          if(service.getType().equals(JdbcDatasourceService.TYPE)) {
+            entryPoint.showDatabaseDialog(new DialogListener<IDatabaseConnection>() {
 
-        public void success(final String javascriptString) {
-          executeJavaScript(javascriptString);
+              @Override
+              public void onDialogAccept(IDatabaseConnection returnValue) {
+                refreshDatasourceList();
+              }
+
+              @Override
+              public void onDialogCancel() {
+                // TODO Auto-generated method stub
+                
+              }
+
+              @Override
+              public void onDialogReady() {
+                // TODO Auto-generated method stub
+                
+              }
+
+              @Override
+              public void onDialogError(String errorMessage) {
+                openErrorDialog("Error", errorMessage);
+              }
+            });
+          } else if (service.getType().equals(MondrianUIDatasourceService.TYPE)){
+            entryPoint.showAnalysisImportDialog(new DialogListener<AnalysisImportDialogModel>() {
+
+              @Override
+              public void onDialogAccept(AnalysisImportDialogModel returnValue) {
+                refreshDatasourceList();
+              }
+
+              @Override
+              public void onDialogCancel() {
+                // TODO Auto-generated method stub
+                
+              }
+
+              @Override
+              public void onDialogReady() {
+                // TODO Auto-generated method stub
+                
+              }
+
+              @Override
+              public void onDialogError(String errorMessage) {
+                // TODO Auto-generated method stub
+                
+              }
+            });
+          } else if (service.getType().equals(MetadataUIDatasourceService.TYPE)){
+            entryPoint.showMetadataImportDialog(new DialogListener<MetadataImportDialogModel>() {
+
+              @Override
+              public void onDialogAccept(MetadataImportDialogModel returnValue) {
+                refreshDatasourceList();
+              }
+
+              @Override
+              public void onDialogCancel() {
+                // TODO Auto-generated method stub
+                
+              }
+
+              @Override
+              public void onDialogReady() {
+                // TODO Auto-generated method stub
+                
+              }
+
+              @Override
+              public void onDialogError(String errorMessage) {
+                openErrorDialog("Error", errorMessage);
+              }
+            });
+          } else if (service.getType().equals(DSWUIDatasourceService.TYPE)){
+            entryPoint.showWizard(false, new DialogListener<Domain>() {
+
+              @Override
+              public void onDialogAccept(Domain returnValue) {
+                refreshDatasourceList();
+              }
+
+              @Override
+              public void onDialogCancel() {
+                // TODO Auto-generated method stub
+                
+              }
+
+              @Override
+              public void onDialogReady() {
+                // TODO Auto-generated method stub
+                
+              }
+
+              @Override
+              public void onDialogError(String errorMessage) {
+                openErrorDialog("Error", errorMessage);
+              }
+            });
+          }
+        } else if(newUI.indexOf("javascript:") >= 0) {
+          String script = newUI.substring(newUI.indexOf(":") + 1);
+          executeJavaScript(script);
         }
-      });
+        		
+      }
   }
 
   private native void executeJavaScript(String script) /*-{
@@ -246,16 +384,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Bindable
   public void launchEditUI() {
     IDatasourceInfo datasourceInfo = datasourceAdminDialogModel.getSelectedDatasource();
-    
-    datasourceServiceManager.getEditUI(datasourceInfo.getType(), datasourceInfo.getName(), new XulServiceCallback<String>() {
-      public void error(final String message, final Throwable error) {
-      
-      }
 
-      public void success(final String javascriptString) {
-        System.out.println("JavaScriptString is = " + javascriptString);
-      }
-    });
   }
 
   @Override
@@ -287,6 +416,10 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     if (!datasourceAdminErrorDialog.isHidden()) {
       datasourceAdminErrorDialog.hide();
     }
+  }
+  
+  public void setEntryPoint(GwtDatasourceEditorEntryPoint entryPoint) {
+    this.entryPoint = entryPoint;
   }
   
   @Override

@@ -3,13 +3,13 @@ package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.platform.api.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class DatasourceAdminDialogModel extends XulEventSourceAdapter {
 
-  private List<IDatasourceInfo> datasources;
+  private List<IDatasourceInfo> datasources = new ArrayList<IDatasourceInfo>();
   private List<String> datasourceTypes;
   private IDatasourceInfo selectedDatasource;
   private int selectedIndex = -1;
@@ -37,8 +37,15 @@ public class DatasourceAdminDialogModel extends XulEventSourceAdapter {
 
   @Bindable
   public void setDatasourcesList(List<IDatasourceInfo> datasourceList) {
-    this.datasources = new ArrayList<IDatasourceInfo>(datasourceList);
-    this.firePropertyChange("datasources", null, datasourceList); //$NON-NLS-1$
+    List<IDatasourceInfo> previousList =  getPreviousDatasourceList();
+    this.datasources.clear();
+    this.firePropertyChange("datasources", previousList, datasourceList); //$NON-NLS-1$
+  }
+  
+  private List<IDatasourceInfo> getPreviousDatasourceList() {
+    List<IDatasourceInfo> previous = new ArrayList<IDatasourceInfo>();
+    previous.addAll(this.datasources);
+    return previous;
   }
 
   @Bindable
