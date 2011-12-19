@@ -439,6 +439,11 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       }
       public void onDialogReady() {
       }
+      @Override
+      public void onDialogError(String errorMessage) {
+        // TODO Auto-generated method stub
+        
+      }
     };
     final Domain domain = summary.getDomain();
   

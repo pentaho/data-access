@@ -2,8 +2,6 @@
 
 <plugin title="Pentaho Data Access" loader="OVERRIDING" name="data-access">
 
-   <lifecycle-listener class="org.pentaho.platform.dataaccess.listener.DataaccessLifecycleListener"/>
-   
    <static-paths>
      <!-- this translates to /pentaho/content/data-access-plugin/resources/* -->
      <static-path url="/data-access/resources" localFolder="resources"/>

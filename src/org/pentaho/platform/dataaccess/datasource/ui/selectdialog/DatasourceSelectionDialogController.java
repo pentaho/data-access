@@ -333,6 +333,12 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
       public void onDialogReady() {
         enableWaitCursor(false);
       }
+
+      @Override
+      public void onDialogError(String errorMessage) {
+        // TODO Auto-generated method stub
+        
+      }
     });
     datasourceEditor.showDialog();
   }
@@ -351,6 +357,11 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
           }
           public void onDialogReady() {
             enableWaitCursor(false);
+          }
+          @Override
+          public void onDialogError(String errorMessage) {
+            // TODO Auto-generated method stub
+            
           }
         };
         LogicalModelSummary logicalModelSummary = getDialogResult();

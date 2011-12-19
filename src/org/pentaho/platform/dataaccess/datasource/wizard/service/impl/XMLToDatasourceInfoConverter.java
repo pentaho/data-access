@@ -3,8 +3,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.platform.api.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.DatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
