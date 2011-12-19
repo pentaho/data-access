@@ -115,14 +115,10 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	public String getParameters() {
 		String result = "";
 		if (isParameterMode) {
-			JSONArray parameters = new JSONArray();
 			for (ParameterDialogModel currentParameter : analysisParameters) {
-				JSONObject parameterItem = new JSONObject();
-				parameterItem.put("name", new JSONString(currentParameter.getName()));
-				parameterItem.put("value", new JSONString(currentParameter.getValue()));
-				parameters.set(analysisParameters.indexOf(currentParameter), parameterItem);
+				result = result + currentParameter.getName() + "=" + currentParameter.getValue() + ";";
 			}
-			result = parameters.toString();
+			result = result.substring(0, result.length() - 1);
 		}
 		return result;
 	}

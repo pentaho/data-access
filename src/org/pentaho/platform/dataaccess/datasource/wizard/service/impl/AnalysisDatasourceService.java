@@ -57,7 +57,7 @@ public class AnalysisDatasourceService {
 
 	@PUT
 	@Path("/import")
-	@Consumes({ APPLICATION_JSON, APPLICATION_XML })	
+	@Consumes({ TEXT_PLAIN })	
 	@Produces("text/plain")
 	public Response importAnalysisDatasource(String parameters, @QueryParam("analysisFile") String analysisFile, @QueryParam("databaseConnection") String databaseConnection) throws PentahoAccessControlException {
 		try {

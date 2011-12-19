@@ -46,7 +46,7 @@ public class AnalysisDatasourceServiceGwtImpl {
 
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.PUT, datasourceUrl);
         requestBuilder.setHeader("accept", "text/*");
-        requestBuilder.setHeader("Content-Type", "application/xml");
+        requestBuilder.setHeader("Content-Type", "text/plain");
         try {
           requestBuilder.sendRequest(parameters, new RequestCallback() {
             @Override
