@@ -286,10 +286,10 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
               }
             });
           } else if (service.getType().equals(MondrianUIDatasourceService.TYPE)){
-            entryPoint.showAnalysisImportDialog(new DialogListener<AnalysisImportDialogModel>() {
+            entryPoint.showAnalysisImportDialog(new DialogListener() {
 
               @Override
-              public void onDialogAccept(AnalysisImportDialogModel returnValue) {
+              public void onDialogAccept(Object returnValue) {
                 refreshDatasourceList();
               }
 
