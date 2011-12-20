@@ -573,18 +573,52 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     showAnalysisImportDialog(listener);
   }
   
-  public void showAnalysisImportDialog(final DialogListener<AnalysisImportDialogModel> listener) {
+  public void showAnalysisImportDialog(final DialogListener listener) {
+	    final DialogListener<AnalysisImportDialogModel> importDialoglistener = new DialogListener<AnalysisImportDialogModel>(){
+	        
+	        public void onDialogCancel() {
+	        }
+
+	        public void onDialogAccept(final AnalysisImportDialogModel importDialogModel) {
+
+	       AnalysisDatasourceServiceGwtImpl service = new AnalysisDatasourceServiceGwtImpl();
+	       service.importAnalysisDatasource(importDialogModel.getUploadedFile(), 
+	           importDialogModel.getConnection().getName(), importDialogModel.getParameters(), new XulServiceCallback<String>() {
+
+	              @Override
+	              public void success(String retVal) {
+	            	  listener.onDialogAccept(retVal);
+	              }
+
+	              @Override
+	              public void error(String message, Throwable error) {
+	            	  listener.onDialogError(message);
+	              }
+	            });
+	      
+	        }
+	        
+	        public void onDialogReady() {
+	        }
+
+	        @Override
+	        public void onDialogError(String errorMessage) {
+	        	listener.onDialogError(errorMessage);
+	          
+	        }
+	      };
+	  
      final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
   
        public void asyncConstructorDone(GwtImportDialog dialog) {
-         dialog.showAnalysisImportDialog(listener);
+         dialog.showAnalysisImportDialog(importDialoglistener);
        }
      };
   
      if(importDialog == null){
          importDialog = new GwtImportDialog(constructorListener);
      } else {
-         importDialog.showAnalysisImportDialog(listener);
+         importDialog.showAnalysisImportDialog(importDialoglistener);
      }
   }
 
