@@ -6,13 +6,19 @@
   
   <dialog id="importDialog" width="395" height="400" title="" buttonlabelaccept="${importDialog.IMPORT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
    <vbox>
-     <vbox>
-	     <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
-         <hbox>
-             <textbox id="uploadedFile" value="" disabled="true" height="20" width="350"/>
-		     <button id="importButton" height="22" label="..." onclick="importDialogController.showFileUploadDialog(true)" />
-         </hbox> 
-     </vbox>	
+
+     <deck id="uploadDeck">
+	     <vbox>
+	         <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
+	         <hbox>
+	             <textbox id="uploadedFile" value="" disabled="true" height="20" width="350"/>
+		     <button id="importButton" height="22" label="..." onclick="importDialogController.openFileUpload(true)"/>
+	         </hbox> 
+	     </vbox>	
+	     <vbox id="hiddenFileUpload">
+			 <pen:fileupload id="fileUpload" action="../../../../../UploadService" onuploadsuccess="importDialogController.uploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" flex="1" height="26" width="480" size="160"/>
+	     </vbox>	
+     </deck>
      
      <deck id="importDeck">
      
@@ -23,7 +29,7 @@
      		<hbox>
      			<label id="localizationBundlesLabel" value="${importDialog.LOC_BUNDLES}"/>
      			<spacer width="246"/>  
-     			<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="importDialogController.showFileUploadDialog(false)"/>
+     			<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="importDialogController.openFileUpload(false)"/>
      			<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png" onclick="metadataImportDialogController.removeLocalizedBundle()"/>
      		</hbox>
      		<hbox>
@@ -89,30 +95,6 @@
   		<label id="valueLabel" value="${importDialog.VALUE}:"/>
 		<textbox id="paramValueTextBox" value="" height="20" width="300"/>
   	</vbox>
-  </dialog>
-
-  <!-- FILE UPLOAD DIALOG -->
-  <dialog id="fileUploadDialog" title="${importDialog.UPLOAD_FILE}" orient="vertical" height="140" width="325">
-    <vbox id="mainBox">
-      <hbox>
-        <vbox flex="1">
-          <label id="nameLabel" value="${importDialog.FILE}" />
-          <pen:fileupload id="fileUpload"
-            action="../../../../../UploadService" onuploadsuccess="importDialogController.uploadSuccess()"
-            onuploadfailure="importDialogController.uploadFailure()" flex="1"
-            height="26" width="480" size="160" />
-        </vbox>
-        <spacer flex="1" />
-      </hbox>
-
-      <hbox id="controller_panel">
-        <spacer flex="1" /> 
-        <button id="okButton" label="${importDialog.UPLOAD}" disabled="false"
-          onclick="importDialogController.uploadFile()" />
-        <button id="cancelButton" label="${importDialog.CANCEL}"
-          onclick="importDialogController.closeUpload()" />
-      </hbox>
-    </vbox>
   </dialog>
 
 </window>

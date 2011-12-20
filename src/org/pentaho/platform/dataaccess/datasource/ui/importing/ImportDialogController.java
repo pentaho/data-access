@@ -21,13 +21,15 @@
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.ui.xul.components.XulFileUpload;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDeck;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -35,7 +37,6 @@ import com.google.gwt.user.client.Window;
 
 public class ImportDialogController extends AbstractXulEventHandler {
 
-	private XulDialog fileUploadDialog;
 	private XulTextbox uploadedFileTextbox;
 	private XulFileUpload fileUpload;
 	private XulDeck importDeck;
@@ -49,21 +50,31 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	}
 
 	public void init() {
-		fileUploadDialog = (XulDialog) document.getElementById("fileUploadDialog");
 		importDeck = (XulDeck) document.getElementById("importDeck");
 		fileUpload = (XulFileUpload) document.getElementById("fileUpload");
 		uploadedFileTextbox = (XulTextbox) document.getElementById("uploadedFile");
+		fileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
 	}
 
 	public void addImportPerspective(int index, IImportPerspective importPerspective) {
 		importPerspectives.put(index, importPerspective);
 	}
+	
+	public String getName() {
+		return "importDialogController";
+	}
+	
+	public void show(int index) {
+		reset();
+		importDeck.setSelectedIndex(index);
+		activeImportPerspective = importPerspectives.get(index);
+		activeImportPerspective.showDialog();
+	}
 
-	@Bindable
-	public void showFileUploadDialog(boolean isGenericUpload) {
+	private void reset() {
 		fileUpload.setSelectedFile("");
-		this.isGenericUpload = isGenericUpload;
-		fileUploadDialog.show();
+		uploadedFileTextbox.setValue("");
+		isGenericUpload = true;
 	}
 
 	@Bindable
@@ -79,35 +90,11 @@ public class ImportDialogController extends AbstractXulEventHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		closeUpload();
 	}
 
 	@Bindable
 	public void uploadFailure(Throwable error) {
 		Window.alert(error.getMessage());
-	}
-
-	@Bindable
-	public void uploadFile() {
-		fileUpload.addParameter("file_name", fileUpload.getSeletedFile());
-		fileUpload.addParameter("mark_temporary", "true");
-		fileUpload.addParameter("unzip", "true");
-		fileUpload.submit();
-	}
-
-	@Bindable
-	public void closeUpload() {
-		fileUploadDialog.hide();
-	}
-
-	public String getName() {
-		return "importDialogController";
-	}
-
-	private void reset() {
-		fileUpload.setSelectedFile("");
-		uploadedFileTextbox.setValue("");
-		isGenericUpload = true;
 	}
 
 	@Bindable
@@ -122,11 +109,28 @@ public class ImportDialogController extends AbstractXulEventHandler {
 			closeDialog();
 		}
 	}
-
-	public void show(int index) {
-		reset();
-		importDeck.setSelectedIndex(index);
-		activeImportPerspective = importPerspectives.get(index);
-		activeImportPerspective.showDialog();
+	
+	@Bindable
+	public void openFileUpload(boolean isGenericUpload) {
+		fileUpload.setSelectedFile("");
+		this.isGenericUpload = isGenericUpload;
+		openNativeFileUploadChooser();
+	}
+	
+	private native void openNativeFileUploadChooser()/*-{
+	  var fileUploadComponent = $doc.getElementById('hiddenFileUpload').getElementsByTagName('input').item(0);
+	  fileUploadComponent.click();
+	}-*/;	
+	
+	class FileUploadPropertyChangeListener implements PropertyChangeListener {
+		public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+			String value = fileUpload.getSeletedFile();
+			if(!StringUtils.isEmpty(value)) {
+				fileUpload.addParameter("file_name", fileUpload.getSeletedFile());
+				fileUpload.addParameter("mark_temporary", "true");
+				fileUpload.addParameter("unzip", "true");
+				fileUpload.submit();
+			}
+	    }
 	}
 }
