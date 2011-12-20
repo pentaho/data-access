@@ -27,6 +27,8 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.MediaType.WILDCARD;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
+import java.io.File;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -61,7 +63,11 @@ public class AnalysisDatasourceService {
 	@Produces("text/plain")
 	public Response importAnalysisDatasource(String parameters, @QueryParam("analysisFile") String analysisFile, @QueryParam("databaseConnection") String databaseConnection) throws PentahoAccessControlException {
 		try {
-			mondrianCatalogService.importSchema(analysisFile, databaseConnection, parameters);
+		    String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
+		    String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
+		    File mondrianFile = new File(sysTmpDir + File.separatorChar + analysisFile);
+
+		    mondrianCatalogService.importSchema(mondrianFile, databaseConnection, parameters);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.toString()).build();
