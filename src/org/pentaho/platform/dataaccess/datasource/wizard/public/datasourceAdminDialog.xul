@@ -17,7 +17,6 @@
     ondialogcancel="datasourceAdminDialogController.onDialogCancel()">
 
         <hbox flex="1">
-        	<label value="${datasourceAdminDialog.Available}" tooltiptext="${datasourceAdminDialog.Available}" />
 	        <spacer flex="1"/>
 	        <button id="editDatasourceButton" image="images/edit.png" tooltiptext="${datasourceAdminDialog.EDIT}" pen:disabledimage="images/edit_disabled.png"  disabled="true" onclick="datasourceAdminDialogController.edit()" />
 	        <label id="spacer-label" width="3" />
