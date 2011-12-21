@@ -32,6 +32,7 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -59,7 +60,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private XulDeck analysisPreferencesDeck;
 	private XulRadio availableRadio;	
 	private XulRadio manualRadio;
-
+	private XulButton acceptButton;
+	
 	private static final Integer PARAMETER_MODE = 1;
 	private static final Integer DATASOURCE_MODE = 0;
 
@@ -77,7 +79,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			analysisPreferencesDeck = (XulDeck) document.getElementById("analysisPreferencesDeck");
 			availableRadio = (XulRadio) document.getElementById("availableRadio");			
 			manualRadio = (XulRadio) document.getElementById("manualRadio");
-
+			acceptButton = (XulButton) document.getElementById("importDialog_accept");
+			acceptButton.setDisabled(true);
+			
 			bf.setBindingType(Binding.Type.ONE_WAY);
 			bf.createBinding(connectionList, "selectedItem", importDialogModel, "connection");
 			bf.createBinding(manualRadio, "checked", this, "preference", new PreferencesBindingConvertor());
@@ -105,6 +109,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		importDialogModel.removeAllParameters();
 		importDialogModel.setUploadedFile(null);
 		availableRadio.setSelected(true);
+		acceptButton.setDisabled(true);
 		setPreference(DATASOURCE_MODE);
 	}
 
@@ -128,16 +133,19 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	}
 
 	public void concreteUploadCallback(String fileName, String uploadedFile) {
+		acceptButton.setDisabled(!importDialogModel.isValid());
 	}
 
 	public void genericUploadCallback(String uploadedFile) {
 		importDialogModel.setUploadedFile(uploadedFile);
+		acceptButton.setDisabled(!importDialogModel.isValid());
 	}
 
 	@Bindable
 	public void setPreference(Integer preference) {
 		analysisPreferencesDeck.setSelectedIndex(preference);
 		importDialogModel.setParameterMode(preference == PARAMETER_MODE);
+		acceptButton.setDisabled(!importDialogModel.isValid());
 	}
 
 	@Bindable
@@ -145,6 +153,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		int[] selectedRows = analysisParametersTree.getSelectedRows();
 		if (selectedRows.length == 1) {
 			importDialogModel.removeParameter(selectedRows[0]);
+			acceptButton.setDisabled(!importDialogModel.isValid());
 		}
 	}
 
@@ -155,6 +164,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		if (!StringUtils.isEmpty(paramName) && !StringUtils.isEmpty(paramValue)) {
 			importDialogModel.addParameter(paramName, paramValue);
 			closeParametersDialog();
+			acceptButton.setDisabled(!importDialogModel.isValid());
 		}
 	}
 
