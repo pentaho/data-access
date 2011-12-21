@@ -28,10 +28,8 @@ import java.util.Map;
 
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.ui.xul.components.XulFileUpload;
-import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDeck;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -42,8 +40,6 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	private XulTextbox uploadedFileTextbox;
 	private XulFileUpload fileUpload;
 	private XulDeck importDeck;
-	private XulDialog errorDialog;
-	private XulLabel errorLabel;
 	private Map<Integer, IImportPerspective> importPerspectives;
 	private IImportPerspective activeImportPerspective;
 	private boolean isGenericUpload;
@@ -57,8 +53,6 @@ public class ImportDialogController extends AbstractXulEventHandler {
 		importDeck = (XulDeck) document.getElementById("importDeck");
 		fileUpload = (XulFileUpload) document.getElementById("fileUpload");
 		uploadedFileTextbox = (XulTextbox) document.getElementById("uploadedFile");
-		errorDialog = (XulDialog) document.getElementById("errorDialog");
-		errorLabel = (XulLabel) document.getElementById("errorLabel");
 		fileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
 	}
 
@@ -113,9 +107,6 @@ public class ImportDialogController extends AbstractXulEventHandler {
 		if(activeImportPerspective.isValid()) {
 			activeImportPerspective.onDialogAccept();
 			closeDialog();
-		} else {
-			errorLabel.setValue(activeImportPerspective.getErrors());
-			errorDialog.show();
 		}
 	}
 	
@@ -124,11 +115,6 @@ public class ImportDialogController extends AbstractXulEventHandler {
 		fileUpload.setSelectedFile("");
 		this.isGenericUpload = isGenericUpload;
 		openNativeFileUploadChooser();
-	}
-	
-	@Bindable
-	public void closeErrorDialog() {
-		errorDialog.hide();
 	}
 	
 	private native void openNativeFileUploadChooser()/*-{

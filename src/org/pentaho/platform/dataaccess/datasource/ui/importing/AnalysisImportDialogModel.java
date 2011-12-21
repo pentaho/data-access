@@ -24,15 +24,9 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
-import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
 
 public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 
@@ -42,11 +36,8 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	private Connection connection;
 	private boolean isParameterMode;
 	private ParameterDialogModel selectedAnalysisParameter;
-	private ResourceBundle resBundle;
-	private StringBuffer errors;
 
-	public AnalysisImportDialogModel(ResourceBundle bundle) {
-		resBundle = bundle;
+	public AnalysisImportDialogModel() {
 		connectionList = new ArrayList<Connection>();
 		analysisParameters = new ArrayList<ParameterDialogModel>();
 	}
@@ -133,21 +124,11 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	}
 
 	public boolean isValid() {
-		errors = new StringBuffer();
-		if(isParameterMode && analysisParameters.size() == 0) {
-			errors.append("-" + resBundle.getString("importDialog.PARAMETERS_ERROR") + "\n");
+		boolean isValid = true;
+		if (isParameterMode) {
+			isValid = analysisParameters.size() > 0;
 		}
-		if(uploadedFile == null) {
-			errors.append("-" + resBundle.getString("importDialog.FILE_ERROR") + "\n");
-		}
-		if(connection == null) {
-			errors.append("-" + resBundle.getString("importDialog.CONNECTION_ERROR") + "\n");
-		}
-		return StringUtils.isEmpty(errors.toString());
-	}
-	
-	public String getErrors() {
-		return errors.toString();
+		return isValid && uploadedFile != null && connection != null;
 	}
 
 	public void setSelectedAnalysisParameter(int index) {
