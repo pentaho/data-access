@@ -96,5 +96,11 @@
 		<textbox id="paramValueTextBox" value="" height="20" width="300"/>
   	</vbox>
   </dialog>
+  
+  <dialog id="errorDialog" title="${importDialog.ERROR}" buttonlabelaccept="${importDialog.CLOSE}" buttons="accept" ondialogaccept="importDialogController.closeErrorDialog()" width="250" height="80" buttonalign="right">
+  	<vbox id="errorDialogContainer">
+  		<label id="errorLabel" width="250" height="80" multiline="true" pre="true"/>
+  	</vbox>
+  </dialog>
 
-</window>
+ </window>

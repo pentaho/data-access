@@ -34,4 +34,6 @@ public interface IImportPerspective {
 	public void concreteUploadCallback(String fileName, String uploadedFile);
 	
 	public boolean isValid();
+	
+	public String getErrors();
 }

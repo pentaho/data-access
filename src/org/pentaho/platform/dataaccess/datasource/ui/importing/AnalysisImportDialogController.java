@@ -67,7 +67,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		try {
 			resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
 			connectionService = new ConnectionServiceGwtImpl();
-			importDialogModel = new AnalysisImportDialogModel();
+			importDialogModel = new AnalysisImportDialogModel(resBundle);
 			connectionList = (XulMenuList) document.getElementById("connectionList");
 			analysisParametersTree = (XulTree) document.getElementById("analysisParametersTree");
 			importDialog = (XulDialog) document.getElementById("importDialog");
@@ -125,6 +125,10 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
 	public boolean isValid() {
 		return importDialogModel.isValid();
+	}
+	
+	public String getErrors() {
+		return importDialogModel.getErrors();
 	}
 
 	public void concreteUploadCallback(String fileName, String uploadedFile) {
