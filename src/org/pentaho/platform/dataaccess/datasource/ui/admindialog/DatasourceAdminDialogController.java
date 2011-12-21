@@ -307,8 +307,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
               @Override
               public void onDialogError(String errorMessage) {
-                // TODO Auto-generated method stub
-                
+            	  openErrorDialog("Error", errorMessage);
               }
             });
           } else if (service.getType().equals(MetadataUIDatasourceService.TYPE)){

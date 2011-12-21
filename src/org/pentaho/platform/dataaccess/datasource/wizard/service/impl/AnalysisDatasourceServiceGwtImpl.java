@@ -30,6 +30,7 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 @SuppressWarnings("all")
@@ -58,6 +59,9 @@ public class AnalysisDatasourceServiceGwtImpl {
             public void onResponseReceived(Request request, Response response) {
               if (response.getStatusCode() == Response.SC_OK) {
                 callback.onSuccess(response.getText());
+              } 
+              if (response.getStatusCode() == Response.SC_INTERNAL_SERVER_ERROR) {
+            	xulCallback.error(response.getText(), new Exception(response.getText()));  
               }
             }
 
