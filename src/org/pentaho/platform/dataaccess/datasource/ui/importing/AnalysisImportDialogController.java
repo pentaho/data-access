@@ -21,6 +21,8 @@
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
@@ -61,6 +63,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private XulRadio availableRadio;	
 	private XulRadio manualRadio;
 	private XulButton acceptButton;
+	private XulButton parametersAcceptButton;
 	
 	private static final Integer PARAMETER_MODE = 1;
 	private static final Integer DATASOURCE_MODE = 0;
@@ -75,12 +78,18 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			importDialog = (XulDialog) document.getElementById("importDialog");
 			analysisParametersDialog = (XulDialog) document.getElementById("analysisParametersDialog");
 			paramNameTextBox = (XulTextbox) document.getElementById("paramNameTextBox");
+			paramNameTextBox.addPropertyChangeListener(new ParametersChangeListener());
 			paramValueTextBox = (XulTextbox) document.getElementById("paramValueTextBox");
+			paramValueTextBox.addPropertyChangeListener(new ParametersChangeListener());
 			analysisPreferencesDeck = (XulDeck) document.getElementById("analysisPreferencesDeck");
 			availableRadio = (XulRadio) document.getElementById("availableRadio");			
 			manualRadio = (XulRadio) document.getElementById("manualRadio");
+			
 			acceptButton = (XulButton) document.getElementById("importDialog_accept");
 			acceptButton.setDisabled(true);
+			
+			parametersAcceptButton = (XulButton) document.getElementById("analysisParametersDialog_accept");
+			parametersAcceptButton.setDisabled(true);
 			
 			bf.setBindingType(Binding.Type.ONE_WAY);
 			bf.createBinding(connectionList, "selectedItem", importDialogModel, "connection");
@@ -207,7 +216,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	public String getName() {
 		return "analysisImportDialogController";
 	}
-
+	
 	class PreferencesBindingConvertor extends BindingConvertor<Boolean, Integer> {
 
 		public Integer sourceToTarget(Boolean value) {
@@ -220,6 +229,14 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
 		public Boolean targetToSource(Integer value) {
 			return true;
+		}
+	}
+	
+	class ParametersChangeListener implements PropertyChangeListener {
+		
+		public void propertyChange(PropertyChangeEvent evt) {
+			boolean isDisabled = StringUtils.isEmpty(paramNameTextBox.getValue()) || StringUtils.isEmpty(paramValueTextBox.getValue());
+			parametersAcceptButton.setDisabled(isDisabled);
 		}
 	}
 }
