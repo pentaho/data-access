@@ -3,8 +3,6 @@ package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
-import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.DSWUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.IUIDatasourceAdminService;
@@ -12,8 +10,6 @@ import org.pentaho.platform.dataaccess.datasource.JdbcDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.MetadataUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.UIDatasourceServiceManager;
-import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogModel;
-import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
@@ -74,6 +70,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   XulTreeCols datasourceTreeCols = null;
   UIDatasourceServiceManager manager;
   private GwtDatasourceEditorEntryPoint entryPoint;
+  private DialogListener adminDatasourceListener;
   /**
    * Sets up bindings.
    */
@@ -163,6 +160,31 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       exportDatasourceButtonBinding.fireSourceChanged();
       setupNativeHooks(this);
       // Initialize UI Datasource Service Manager
+      adminDatasourceListener = new DialogListener() {
+
+        @Override
+        public void onDialogAccept(Object returnValue) {
+          refreshDatasourceList();
+        }
+
+        @Override
+        public void onDialogCancel() {
+          // TODO Auto-generated method stub
+          
+        }
+
+        @Override
+        public void onDialogReady() {
+          // TODO Auto-generated method stub
+          
+        }
+
+        @Override
+        public void onDialogError(String errorMessage) {
+          openErrorDialog("Error", errorMessage);
+        }
+      };
+      
       manager = new UIDatasourceServiceManager();
       // Register Builtin datasources
       manager.registerService(new JdbcDatasourceService(connectionService));
@@ -261,105 +283,13 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       if(newUI != null && newUI.length() > 0) {
         if(newUI.indexOf("builtin:") >= 0) {
           if(service.getType().equals(JdbcDatasourceService.TYPE)) {
-            entryPoint.showDatabaseDialog(new DialogListener<IDatabaseConnection>() {
-
-              @Override
-              public void onDialogAccept(IDatabaseConnection returnValue) {
-                refreshDatasourceList();
-              }
-
-              @Override
-              public void onDialogCancel() {
-                // TODO Auto-generated method stub
-                
-              }
-
-              @Override
-              public void onDialogReady() {
-                // TODO Auto-generated method stub
-                
-              }
-
-              @Override
-              public void onDialogError(String errorMessage) {
-                openErrorDialog("Error", errorMessage);
-              }
-            });
+            entryPoint.showDatabaseDialog(adminDatasourceListener);
           } else if (service.getType().equals(MondrianUIDatasourceService.TYPE)){
-            entryPoint.showAnalysisImportDialog(new DialogListener() {
-
-              @Override
-              public void onDialogAccept(Object returnValue) {
-                refreshDatasourceList();
-              }
-
-              @Override
-              public void onDialogCancel() {
-                // TODO Auto-generated method stub
-                
-              }
-
-              @Override
-              public void onDialogReady() {
-                // TODO Auto-generated method stub
-                
-              }
-
-              @Override
-              public void onDialogError(String errorMessage) {
-            	  openErrorDialog("Error", errorMessage);
-              }
-            });
+            entryPoint.showAnalysisImportDialog(adminDatasourceListener);
           } else if (service.getType().equals(MetadataUIDatasourceService.TYPE)){
-            entryPoint.showMetadataImportDialog(new DialogListener<MetadataImportDialogModel>() {
-
-              @Override
-              public void onDialogAccept(MetadataImportDialogModel returnValue) {
-                refreshDatasourceList();
-              }
-
-              @Override
-              public void onDialogCancel() {
-                // TODO Auto-generated method stub
-                
-              }
-
-              @Override
-              public void onDialogReady() {
-                // TODO Auto-generated method stub
-                
-              }
-
-              @Override
-              public void onDialogError(String errorMessage) {
-                openErrorDialog("Error", errorMessage);
-              }
-            });
+            entryPoint.showMetadataImportDialog(adminDatasourceListener);
           } else if (service.getType().equals(DSWUIDatasourceService.TYPE)){
-            entryPoint.showWizard(false, new DialogListener<Domain>() {
-
-              @Override
-              public void onDialogAccept(Domain returnValue) {
-                refreshDatasourceList();
-              }
-
-              @Override
-              public void onDialogCancel() {
-                // TODO Auto-generated method stub
-                
-              }
-
-              @Override
-              public void onDialogReady() {
-                // TODO Auto-generated method stub
-                
-              }
-
-              @Override
-              public void onDialogError(String errorMessage) {
-                openErrorDialog("Error", errorMessage);
-              }
-            });
+            entryPoint.showWizard(false, adminDatasourceListener);
           }
         } else if(newUI.indexOf("javascript:") >= 0) {
           String script = newUI.substring(newUI.indexOf(":") + 1);

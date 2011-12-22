@@ -29,6 +29,7 @@ import org.pentaho.database.util.DatabaseTypeHelper;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardConnectionController.ConnectionSetter;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
@@ -40,11 +41,12 @@ import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.util.DialogController.DialogListener;
 
 import com.google.gwt.core.client.GWT;
 
 //TODO: move to the relational datasource package
-public class ConnectionController extends AbstractXulEventHandler implements DatabaseDialogListener {
+public class ConnectionController extends AbstractXulEventHandler {
 
 
   private IXulAsyncConnectionService service;
@@ -74,7 +76,11 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
   DatabaseTypeHelper databaseTypeHelper;
 
   Connection currentConnection;
+  
+  DialogListener listener;
 
+  ConnectionSetter connectionSetter = new ConnectionSetter();
+  
   public ConnectionController() {
   }
 
@@ -240,7 +246,9 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
       saveConnectionConfirmationDialog.hide();
     }
 
-    if (datasourceModel.isEditing() == false) {
+    service.getConnectionByName(currentConnection.getName(), new XulServiceCallback<Connection>() {
+      public void error(String message, Throwable error) {
+        // Connection not found. Create a new one.
         service.addConnection(currentConnection, new XulServiceCallback<Boolean>() {
           public void error(String message, Throwable error) {
             displayErrorMessage(error);
@@ -249,8 +257,13 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
           public void success(Boolean value) {
             try {
               if (value) {
-                datasourceModel.getGuiStateModel().addConnection(currentConnection);
-                datasourceModel.setSelectedRelationalConnection(currentConnection);
+                if(listener == null) {
+                  datasourceModel.getGuiStateModel().addConnection(currentConnection);
+                  datasourceModel.setSelectedRelationalConnection(currentConnection);
+                } else {
+                  listener.onDialogAccept(value);
+                  datasourceModel.setEditing(false);
+                }
               } else {
                 openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
                     .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
@@ -261,31 +274,40 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
             }
           }
         });
-    } else {
-      service.updateConnection(currentConnection, new XulServiceCallback<Boolean>() {
+      }
 
-        public void error(String message, Throwable error) {
-          displayErrorMessage(error);
-        }
+      public void success(Connection value) {
+        // Connection found. Update it.
+        service.updateConnection(currentConnection, new XulServiceCallback<Boolean>() {
 
-        public void success(Boolean value) {
-          try {
-            if (value) {
-              openSuccesDialog(MessageHandler.getString("SUCCESS"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.CONNECTION_UPDATED"));//$NON-NLS-1$
-              datasourceModel.getGuiStateModel().updateConnection(currentConnection);
-              datasourceModel.setSelectedRelationalConnection(currentConnection);
-            } else {
-              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION"));//$NON-NLS-1$
-            }
-
-          } catch (Exception e) {
+          public void error(String message, Throwable error) {
+            displayErrorMessage(error);
           }
-        }
-      });
-    }
+
+          public void success(Boolean value) {
+            try {
+              if (value) {
+                if(listener == null) {
+                  openSuccesDialog(MessageHandler.getString("SUCCESS"), MessageHandler//$NON-NLS-1$
+                    .getString("ConnectionController.CONNECTION_UPDATED"));//$NON-NLS-1$
+                  datasourceModel.getGuiStateModel().updateConnection(currentConnection);
+                  datasourceModel.setSelectedRelationalConnection(currentConnection);
+                } else {
+                  listener.onDialogAccept(value);
+                  datasourceModel.setEditing(false);
+                }
+              } else {
+                openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
+                    .getString("ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION"));//$NON-NLS-1$
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
+      }
+    });
   }
+
 
   public IXulAsyncConnectionService getService() {
     return service;
@@ -313,31 +335,9 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
     errorDialog.show();
   }
 
-  @Bindable
-  public void onDialogAccept(IDatabaseConnection arg0) {
-    service.convertToConnection(arg0, new XulServiceCallback<Connection>() {
-      public void error(String message, Throwable error) {
-        displayErrorMessage(error);
-      }
-      public void success(Connection retVal) {
-        currentConnection = retVal;
-        addConnection();
-      }
-    });
-  }
-
-  @Bindable
-  public void onDialogCancel() {
-    // do nothing
-  }
-
-  @Bindable
-  public void onDialogReady() {
-    if (datasourceModel.isEditing() == false) {
-      showAddConnectionDialog();
-    } else {
-      showEditConnectionDialog();
-    }
+  public void showAddConnectionDialog(DialogListener listener) {
+    this.listener = listener;
+    showAddConnectionDialog();
   }
 
   @Bindable
@@ -347,10 +347,26 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
       databaseDialog.setDatabaseConnection(null);
       databaseDialog.show();
     } else {
-      databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
+      if(databaseTypeHelper == null) {
+        XulServiceCallback<List<IDatabaseType>> callback = new XulServiceCallback<List<IDatabaseType>>() {
+          public void error(String message, Throwable error) {
+            error.printStackTrace();
+          }
+
+          public void success(List<IDatabaseType> retVal) {
+            databaseTypeHelper = new DatabaseTypeHelper(retVal);
+            databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
+                GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+          }
+        };
+        dialectService.getDatabaseTypes(callback);
+      } else {
+        databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
+            GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+      }
     }
   }
+
 
   @Bindable
   public void showEditConnectionDialog() {
@@ -368,7 +384,7 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
       });
     } else {
       databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-    		  GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", this); //$NON-NLS-1$
+    		  GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
     }
   }
 
@@ -384,6 +400,43 @@ public class ConnectionController extends AbstractXulEventHandler implements Dat
     removeConfirmationDialog.hide();
   }
 
+
+  class ConnectionSetter implements DatabaseDialogListener {
+
+    /* (non-Javadoc)
+     * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogAccept(org.pentaho.database.model.IDatabaseConnection)
+     */
+    public void onDialogAccept(IDatabaseConnection connection) {
+      service.convertToConnection(connection, new XulServiceCallback<Connection>() {
+        public void error(String message, Throwable error) {
+          displayErrorMessage(error);
+        }
+        public void success(Connection retVal) {
+          currentConnection = retVal;
+          addConnection();
+        }
+      });
+    }
+
+    /* (non-Javadoc)
+     * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogCancel()
+     */
+    public void onDialogCancel() {
+      // do nothing
+    }
+
+    /* (non-Javadoc)
+     * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogReady()
+     */
+    public void onDialogReady() {
+      if (datasourceModel.isEditing() == false) {
+        showAddConnectionDialog();  
+      } else {
+        showEditConnectionDialog();
+      }
+    }
+    
+  }
 
   public void reloadConnections(){
     if (service != null) {

@@ -212,6 +212,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
    */
   public void showDialog() {
     this.modelerDialogListener = null;
+    if(connectionController != null) {
+      connectionController.reloadConnections();      
+    }
+
     if (datasourceModel.getGuiStateModel().getConnections() == null
         || datasourceModel.getGuiStateModel().getConnections().size() <= 0) {
       checkInitialized();
@@ -333,10 +337,11 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
     datasourceMessages = new GwtDatasourceMessages();
     datasourceMessages.setMessageBundle(resBundle);
-
     MessageHandler.getInstance().setMessages(datasourceMessages);
+
     connectionController = new ConnectionController();
     connectionController.setService(connectionService);
+    mainWizardContainer.addEventHandler(connectionController);
 
     summaryDialogController.setBindingFactory(bf);
     mainWizardContainer.addEventHandler(summaryDialogController);
@@ -508,5 +513,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   public void setReportingOnlyValid(boolean reportingOnlyValid){
     this.reportingOnlyValid = reportingOnlyValid;
+  }
+  
+  public ConnectionController getConnectionController() {
+    return connectionController;
   }
 }
