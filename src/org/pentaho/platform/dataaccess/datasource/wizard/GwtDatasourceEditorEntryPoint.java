@@ -34,7 +34,6 @@ import org.pentaho.gwt.widgets.client.dialogs.GlassPane;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPaneNativeListener;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.GwtDatasourceAdminDialog;
@@ -43,7 +42,9 @@ import org.pentaho.platform.dataaccess.datasource.ui.importing.GwtImportDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogModel;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceManageDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
@@ -499,7 +500,28 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     }
   }
   private void showMetadataImportDialog(final JavaScriptObject callback) {
-    final DialogListener<MetadataImportDialogModel> listener = new DialogListener<MetadataImportDialogModel>(){
+    final DialogListener listener = new DialogListener(){
+
+      public void onDialogCancel() {
+      }
+      
+      public void onDialogAccept(final Object value) {
+      }
+      
+      public void onDialogReady() {
+      }
+
+      @Override
+      public void onDialogError(String errorMessage) {
+        // TODO Auto-generated method stub
+        
+      }
+    };
+    showMetadataImportDialog(listener);
+  }
+
+  public void showMetadataImportDialog(final DialogListener listener) {
+    final DialogListener<MetadataImportDialogModel> metadataImportListener = new DialogListener<MetadataImportDialogModel>(){
 
       public void onDialogCancel() {
       }
@@ -517,22 +539,18 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         
       }
     };
-    showMetadataImportDialog(listener);
-  }
-
-  public void showMetadataImportDialog(final DialogListener<MetadataImportDialogModel> listener) {
     
     final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
 
       public void asyncConstructorDone(GwtImportDialog dialog) {
-          dialog.showMetadataImportDialog(listener);
+          dialog.showMetadataImportDialog(metadataImportListener);
       }
     };
     
     if(importDialog == null){
      importDialog = new GwtImportDialog(constructorListener);
     } else {
-     importDialog.showMetadataImportDialog(listener);
+     importDialog.showMetadataImportDialog(metadataImportListener);
     }
   }
   
@@ -711,49 +729,11 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   }
 
   public void showDatabaseDialog(final DialogListener<IDatabaseConnection> listener) {
-    if(gwtDatabaseDialog != null){
-      gwtDatabaseDialog.setDatabaseConnection(null);
-      gwtDatabaseDialog.show();
-    } else {
-      gwtDatabaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", new DatabaseDialogListener() {//$NON-NLS-1$
-        @Override
-        public void onDialogAccept(final IDatabaseConnection databaseConnection) {
-          connectionService.convertToConnection(databaseConnection, new XulServiceCallback<Connection>() {
-
-            @Override
-            public void success(Connection connection) {
-              connectionService.addConnection(connection, new XulServiceCallback<Boolean>(){
-
-                @Override
-                public void success(Boolean retVal) {
-                  listener.onDialogAccept(databaseConnection);
-                }
-
-                @Override
-                public void error(String message, Throwable error) {
-                  listener.onDialogError(message);
-                }
-                  
-              });
-            }
-
-            @Override
-            public void error(String message, Throwable error) {
-              listener.onDialogError(message);
-            }
-          });
-        }
-        @Override
-        public void onDialogCancel() {
-          listener.onDialogCancel();
-        }
-        @Override
-        public void onDialogReady() {
-          gwtDatabaseDialog.show();
-        }
-      });
-    }
+      ConnectionController connectionController = wizard.getConnectionController();
+      connectionController.init();
+      DatasourceModel datasourceModel = new DatasourceModel();
+      connectionController.setDatasourceModel(datasourceModel);
+      connectionController.showAddConnectionDialog(listener);
   }
 
   private void showEditDatabaseDialog(final JavaScriptObject callback, final String databaseId) {

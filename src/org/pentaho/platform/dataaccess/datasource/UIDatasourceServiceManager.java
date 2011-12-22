@@ -12,8 +12,13 @@ public class UIDatasourceServiceManager {
 
   Map<String, IUIDatasourceAdminService> serviceMap = new HashMap<String, IUIDatasourceAdminService>();
   
-  
+ // private native void setupPrivilegedNativeHooks(UIDatasourceServiceManager manager)/*-{
+ //   $wnd.pho.datasourceManager.registerService = function(jsDatasourceService) {
+ //     manager.@org.pentaho.platform.dataaccess.datasource.UIDatasourceServiceManager::registerService(Lorg/pentaho/platform/dataaccess/datasource/JSUIDatasourceService;)(jsDatasourceService);
+ //   }
+ // }-*/;
   public UIDatasourceServiceManager() {
+ //   setupPrivilegedNativeHooks(this);
   }
   public UIDatasourceServiceManager(List<IUIDatasourceAdminService> services) {
     for(IUIDatasourceAdminService  service:services) {
@@ -21,6 +26,10 @@ public class UIDatasourceServiceManager {
     }
   }
 
+ // private void registerService(JSUIDatasourceService jsDatasourceService) {
+ //  registerService(jsDatasourceService);
+ // }
+  
   public void registerService(IUIDatasourceAdminService service) {
     serviceMap.put(service.getType(), service);
   }
