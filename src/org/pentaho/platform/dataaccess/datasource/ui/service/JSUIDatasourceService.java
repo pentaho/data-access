@@ -1,8 +1,10 @@
-package org.pentaho.platform.dataaccess.datasource;
+package org.pentaho.platform.dataaccess.datasource.ui.service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.platform.dataaccess.datasource.DatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 import com.google.gwt.core.client.JavaScriptObject;

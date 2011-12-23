@@ -1,4 +1,4 @@
-package org.pentaho.platform.dataaccess.datasource;
+package org.pentaho.platform.dataaccess.datasource.ui.service;
 
 public interface AdminDatasourceListener<T> {
 

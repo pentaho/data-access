@@ -1,4 +1,4 @@
-package org.pentaho.platform.dataaccess.datasource;
+package org.pentaho.platform.dataaccess.datasource.ui.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,19 +6,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.gwt.widgets.client.ui.ICallback;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 public class UIDatasourceServiceManager {
 
   Map<String, IUIDatasourceAdminService> serviceMap = new HashMap<String, IUIDatasourceAdminService>();
   
- // private native void setupPrivilegedNativeHooks(UIDatasourceServiceManager manager)/*-{
- //   $wnd.pho.datasourceManager.registerService = function(jsDatasourceService) {
- //     manager.@org.pentaho.platform.dataaccess.datasource.UIDatasourceServiceManager::registerService(Lorg/pentaho/platform/dataaccess/datasource/JSUIDatasourceService;)(jsDatasourceService);
- //   }
- // }-*/;
+  private native void setupPrivilegedNativeHooks(UIDatasourceServiceManager manager)/*-{
+    $wnd.pho.registerUIDatasourceService = function(jsDatasourceService) {
+      manager.@org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager::registerService(Lorg/pentaho/platform/dataaccess/datasource/ui/service/IUIDatasourceAdminService;)(jsDatasourceService);
+    }
+  }-*/;
   public UIDatasourceServiceManager() {
- //   setupPrivilegedNativeHooks(this);
+    setupPrivilegedNativeHooks(this);
   }
   public UIDatasourceServiceManager(List<IUIDatasourceAdminService> services) {
     for(IUIDatasourceAdminService  service:services) {
@@ -26,10 +27,6 @@ public class UIDatasourceServiceManager {
     }
   }
 
- // private void registerService(JSUIDatasourceService jsDatasourceService) {
- //  registerService(jsDatasourceService);
- // }
-  
   public void registerService(IUIDatasourceAdminService service) {
     serviceMap.put(service.getType(), service);
   }
