@@ -43,12 +43,12 @@ public class JSDatasourceInfo extends JavaScriptObject implements IDatasourceInf
 
   @Override
   public final boolean isEditable() {
-    return isEditable();
+    return isDatasourceEditable();
   }
 
   @Override
   public final boolean isRemovable() {
-    return isRemovable();
+    return isDatasourceRemovable();
   }
 
   @Override
