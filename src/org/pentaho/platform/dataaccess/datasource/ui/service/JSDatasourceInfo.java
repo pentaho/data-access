@@ -1,5 +1,7 @@
-package org.pentaho.platform.dataaccess.datasource;
+package org.pentaho.platform.dataaccess.datasource.ui.service;
 
+
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 
 import com.google.gwt.core.client.JavaScriptObject;
 

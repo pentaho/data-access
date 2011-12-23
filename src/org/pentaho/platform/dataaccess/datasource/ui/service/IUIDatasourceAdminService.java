@@ -17,10 +17,11 @@
  * @created Nov 12, 2011 
  * @author Ramaiz Mansoor
  */
-package org.pentaho.platform.dataaccess.datasource;
+package org.pentaho.platform.dataaccess.datasource.ui.service;
 
 import java.util.List;
 
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 public interface IUIDatasourceAdminService {
