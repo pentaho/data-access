@@ -53,7 +53,7 @@
     </latitude>
 
     <longitude>
-      <aliases>long, lng, longitude</aliases>
+      <aliases>long, lon, lng, longitude</aliases>
     </longitude>
   </geo>
 
