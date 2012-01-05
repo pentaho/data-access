@@ -7,18 +7,12 @@
   <dialog id="importDialog" width="395" height="400" title="" buttonlabelaccept="${importDialog.IMPORT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
    <vbox>
 
-     <deck id="uploadDeck">
-	     <vbox>
-	         <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
-	         <hbox>
-	             <textbox id="uploadedFile" value="" disabled="true" height="20" width="350"/>
-		     <button id="importButton" height="22" label="..." onclick="importDialogController.openFileUpload(true)"/>
-	         </hbox> 
-	     </vbox>	
-	     <vbox id="hiddenFileUpload">
-			 <pen:fileupload id="fileUpload" action="../../../../../UploadService" onuploadsuccess="importDialogController.uploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" flex="1" height="26" width="480" size="160"/>
-	     </vbox>	
-     </deck>
+     <vbox>
+         <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
+         <hbox>
+             <pen:fileupload id="genericFileUpload" action="../../../../../UploadService" onuploadsuccess="importDialogController.genericUploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" height="22" width="400" />
+         </hbox> 
+     </vbox>
      
      <deck id="importDeck">
      
@@ -29,7 +23,7 @@
      		<hbox>
      			<label id="localizationBundlesLabel" value="${importDialog.LOC_BUNDLES}"/>
      			<spacer width="246"/>  
-     			<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="importDialogController.openFileUpload(false)"/>
+     			<pen:fileupload id="concreteFileUpload" action="../../../../../UploadService" image="images/add.png" disabledimage="images/add_disabled.png" onuploadsuccess="importDialogController.concreteUploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" height="10" width="10" />
      			<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png" onclick="metadataImportDialogController.removeLocalizedBundle()"/>
      		</hbox>
      		<hbox>
