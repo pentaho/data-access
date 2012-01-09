@@ -42,6 +42,8 @@ import org.pentaho.platform.dataaccess.datasource.ui.importing.GwtImportDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogModel;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceManageDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
+import org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService;
+import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
@@ -232,7 +234,15 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   $wnd.pho.showAnalysisImportDialog = function(callback) {
     wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showAnalysisImportDialog(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
   }
+  
+  $wnd.pho.registerUIDatasourceService = function(jsDatasourceService) {
+    wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::registerDatasourceService(Lorg/pentaho/platform/dataaccess/datasource/ui/service/IUIDatasourceAdminService;)(jsDatasourceService);
+  }
 }-*/;
+
+  private void registerDatasourceService(IUIDatasourceAdminService datasourceService) {
+    UIDatasourceServiceManager.getInstance().registerService(datasourceService);
+  }
 
   public void showConfirm(final JavaScriptObject callback, String message, String title, String okText, String cancelText) throws XulException{
     XulConfirmBox confirm = (XulConfirmBox) wizard.getMainWizardContainer().getDocumentRoot().createElement("confirmbox");

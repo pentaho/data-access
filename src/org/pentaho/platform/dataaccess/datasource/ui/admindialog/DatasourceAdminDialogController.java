@@ -185,7 +185,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         }
       };
       
-      manager = new UIDatasourceServiceManager();
+      manager = UIDatasourceServiceManager.getInstance();
       // Register Builtin datasources
       manager.registerService(new JdbcDatasourceService(connectionService));
       manager.registerService(new MondrianUIDatasourceService(datasourceServiceManager));

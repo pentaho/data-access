@@ -12,15 +12,18 @@ import org.pentaho.ui.xul.XulServiceCallback;
 public class UIDatasourceServiceManager {
 
   Map<String, IUIDatasourceAdminService> serviceMap = new HashMap<String, IUIDatasourceAdminService>();
+  private static UIDatasourceServiceManager instance;
   
-  private native void setupPrivilegedNativeHooks(UIDatasourceServiceManager manager)/*-{
-    $wnd.pho.registerUIDatasourceService = function(jsDatasourceService) {
-      manager.@org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager::registerService(Lorg/pentaho/platform/dataaccess/datasource/ui/service/IUIDatasourceAdminService;)(jsDatasourceService);
-    }
-  }-*/;
-  public UIDatasourceServiceManager() {
-    setupPrivilegedNativeHooks(this);
+  private UIDatasourceServiceManager() {
   }
+
+  public static UIDatasourceServiceManager getInstance() {
+    if (instance == null) {
+      instance = new UIDatasourceServiceManager();
+    }
+    return instance;
+  }
+  
   public UIDatasourceServiceManager(List<IUIDatasourceAdminService> services) {
     for(IUIDatasourceAdminService  service:services) {
       registerService(service);
