@@ -52,6 +52,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 			importDialog = (XulDialog) document.getElementById("importDialog");
 
 			bf.setBindingType(Binding.Type.ONE_WAY);
+			bf.createBinding(domainIdText, "value", importDialogModel, "domainId");
 			Binding localizedBundlesBinding = bf.createBinding(importDialogModel, "localizedBundles", localizedBundlesTree, "elements");
 
 			localizedBundlesBinding.fireSourceChanged();

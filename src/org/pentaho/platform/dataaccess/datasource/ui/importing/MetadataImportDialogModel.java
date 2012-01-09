@@ -30,9 +30,18 @@ public class MetadataImportDialogModel extends XulEventSourceAdapter {
 
 	private List<LocalizedBundleDialogModel> localizedBundles;
 	private String uploadedFile;
+	private String domainId;
 
 	public MetadataImportDialogModel() {
 		localizedBundles = new ArrayList<LocalizedBundleDialogModel>();
+	}
+
+	public String getDomainId() {
+		return domainId;
+	}
+
+	public void setDomainId(String domainId) {
+		this.domainId = domainId;
 	}
 
 	public void addLocalizedBundle(String fileName, String uploadedFile) {
@@ -68,5 +77,14 @@ public class MetadataImportDialogModel extends XulEventSourceAdapter {
 		List<LocalizedBundleDialogModel> previousValue = localizedBundles;
 		this.localizedBundles = value;
 		this.firePropertyChange("localizedBundles", previousValue, value);
+	}
+	
+	public String getLocalizedBundleEntries() {
+		String result = "";
+		for (LocalizedBundleDialogModel currentParameter : localizedBundles) {
+			result = result + currentParameter.getFileName() + "=" + currentParameter.getUploadedFile() + ";";
+		}
+		result = result.substring(0, result.length() - 1);
+		return result;
 	}
 }

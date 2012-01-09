@@ -54,6 +54,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.AnalysisDa
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceManagerGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceServiceGwtImpl;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
 import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseConnectionService;
@@ -499,60 +500,92 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       adminDialog.showDialog();
     }
   }
+ 
   private void showMetadataImportDialog(final JavaScriptObject callback) {
-    final DialogListener listener = new DialogListener(){
+	    final DialogListener<MetadataImportDialogModel> listener = new DialogListener<MetadataImportDialogModel>(){
+	      
+	      public void onDialogCancel() {
+	      }
 
-      public void onDialogCancel() {
-      }
-      
-      public void onDialogAccept(final Object value) {
-      }
-      
-      public void onDialogReady() {
-      }
+	      public void onDialogAccept(final MetadataImportDialogModel importDialogModel) {
 
-      @Override
-      public void onDialogError(String errorMessage) {
-        // TODO Auto-generated method stub
-        
-      }
-    };
-    showMetadataImportDialog(listener);
-  }
+	     MetadataDatasourceServiceGwtImpl service = new MetadataDatasourceServiceGwtImpl();
+	     service.importMetadataDatasource(importDialogModel.getDomainId(), 
+	         importDialogModel.getUploadedFile(), importDialogModel.getLocalizedBundleEntries(), new XulServiceCallback<String>() {
 
-  public void showMetadataImportDialog(final DialogListener listener) {
-    final DialogListener<MetadataImportDialogModel> metadataImportListener = new DialogListener<MetadataImportDialogModel>(){
+	            @Override
+	            public void success(String retVal) {
+	              notifyDialogCallbackSuccess(callback, retVal);
+	            }
 
-      public void onDialogCancel() {
-      }
-      
-      public void onDialogAccept(final MetadataImportDialogModel value) {
-     Window.alert("MetdataImport - pending");
-      }
-      
-      public void onDialogReady() {
-      }
+	            @Override
+	            public void error(String message, Throwable error) {
+	              notifyDialogCallbackError(callback, message);
+	            }
+	          });
+	    
+	      }
+	      
+	      public void onDialogReady() {
+	      }
 
-      @Override
-      public void onDialogError(String errorMessage) {
-        // TODO Auto-generated method stub
-        
-      }
-    };
-    
-    final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
+	      @Override
+	      public void onDialogError(String errorMessage) {
+	        // TODO Auto-generated method stub
+	        
+	      }
+	    };
+	    showAnalysisImportDialog(listener);
+	  }
+	  
+	  public void showMetadataImportDialog(final DialogListener listener) {
+		    final DialogListener<MetadataImportDialogModel> importDialoglistener = new DialogListener<MetadataImportDialogModel>(){
+		        
+		        public void onDialogCancel() {
+		        }
 
-      public void asyncConstructorDone(GwtImportDialog dialog) {
-          dialog.showMetadataImportDialog(metadataImportListener);
-      }
-    };
-    
-    if(importDialog == null){
-     importDialog = new GwtImportDialog(constructorListener);
-    } else {
-     importDialog.showMetadataImportDialog(metadataImportListener);
-    }
-  }
+		        public void onDialogAccept(final MetadataImportDialogModel importDialogModel) {
+
+		       MetadataDatasourceServiceGwtImpl service = new MetadataDatasourceServiceGwtImpl();
+		       service.importMetadataDatasource(importDialogModel.getDomainId(), 
+		           importDialogModel.getUploadedFile(), importDialogModel.getLocalizedBundleEntries(), new XulServiceCallback<String>() {
+
+		              @Override
+		              public void success(String retVal) {
+		            	  listener.onDialogAccept(retVal);
+		              }
+
+		              @Override
+		              public void error(String message, Throwable error) {
+		            	  listener.onDialogError(message);
+		              }
+		            });
+		      
+		        }
+		        
+		        public void onDialogReady() {
+		        }
+
+		        @Override
+		        public void onDialogError(String errorMessage) {
+		        	listener.onDialogError(errorMessage);
+		          
+		        }
+		      };
+		  
+	     final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
+	  
+	       public void asyncConstructorDone(GwtImportDialog dialog) {
+	         dialog.showMetadataImportDialog(importDialoglistener);
+	       }
+	     };
+	  
+	     if(importDialog == null){
+	         importDialog = new GwtImportDialog(constructorListener);
+	     } else {
+	         importDialog.showMetadataImportDialog(importDialoglistener);
+	     }
+	  }  
   
   private void showAnalysisImportDialog(final JavaScriptObject callback) {
     final DialogListener<AnalysisImportDialogModel> listener = new DialogListener<AnalysisImportDialogModel>(){
