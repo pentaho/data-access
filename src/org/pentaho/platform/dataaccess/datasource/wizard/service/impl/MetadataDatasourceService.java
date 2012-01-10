@@ -34,7 +34,7 @@ public class MetadataDatasourceService {
 	
 	@PUT
 	@Path("/import")
-	@Consumes({ APPLICATION_JSON, APPLICATION_XML })	
+	@Consumes({ TEXT_PLAIN })	
 	@Produces("text/plain")
 	public Response importMetadataDatasource(String localizeBundleEntries, @QueryParam("domainId") String domainId, @QueryParam("metadataFile") String metadataFile) throws PentahoAccessControlException {
 		try {
@@ -58,7 +58,8 @@ public class MetadataDatasourceService {
 				for(String language : languages) {
 					if(fileName.endsWith(language + ".properties")) {
 						locale = new Locale(language);
-					}
+						break;
+					} 
 				}
 				
 				FileInputStream bundleFileInputStream = new FileInputStream(sysTmpDir + File.separatorChar + file);

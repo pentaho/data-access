@@ -23,6 +23,7 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -41,7 +42,7 @@ public class MetadataImportDialogModel extends XulEventSourceAdapter {
 	}
 
 	public void setDomainId(String domainId) {
-		this.domainId = domainId;
+	    this.domainId = domainId;
 	}
 
 	public void addLocalizedBundle(String fileName, String uploadedFile) {
@@ -86,5 +87,9 @@ public class MetadataImportDialogModel extends XulEventSourceAdapter {
 		}
 		result = result.substring(0, result.length() - 1);
 		return result;
+	}
+	
+	public boolean isValid() {
+		return uploadedFile != null && !StringUtils.isEmpty(domainId);
 	}
 }

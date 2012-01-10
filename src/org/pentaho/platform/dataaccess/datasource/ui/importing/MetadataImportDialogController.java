@@ -20,7 +20,11 @@
  */
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
@@ -35,6 +39,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 	private BindingFactory bf;
 	private XulButton addButton;
 	private XulButton removeButton;
+	private XulButton acceptButton;
 	private XulTree localizedBundlesTree;
 	private XulTextbox domainIdText;
 	private XulDialog importDialog;
@@ -49,10 +54,13 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 			removeButton = (XulButton) document.getElementById("removeButton");
 			localizedBundlesTree = (XulTree) document.getElementById("localizedBundlesTree");
 			domainIdText = (XulTextbox) document.getElementById("domainIdText");
+			domainIdText.addPropertyChangeListener(new DomainIdChangeListener());
 			importDialog = (XulDialog) document.getElementById("importDialog");
+			
+			acceptButton = (XulButton) document.getElementById("importDialog_accept");
+			acceptButton.setDisabled(true);
 
 			bf.setBindingType(Binding.Type.ONE_WAY);
-			bf.createBinding(domainIdText, "value", importDialogModel, "domainId");
 			Binding localizedBundlesBinding = bf.createBinding(importDialogModel, "localizedBundles", localizedBundlesTree, "elements");
 
 			localizedBundlesBinding.fireSourceChanged();
@@ -70,7 +78,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 	}
 	
 	public boolean isValid() {
-		return true;
+		return importDialogModel.isValid();
 	}
 
 	@Bindable
@@ -83,6 +91,8 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
 	private void reset() {
 		importDialogModel.removeAllLocalizedBundles();
+		acceptButton.setDisabled(true);
+		domainIdText.setValue("");
 	}
 
 	public void concreteUploadCallback(String fileName, String uploadedFile) {
@@ -91,6 +101,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
 	public void genericUploadCallback(String uploadedFile) {
 		importDialogModel.setUploadedFile(uploadedFile);
+		acceptButton.setDisabled(!isValid());
 	}
 
 	public void showDialog() {
@@ -105,5 +116,13 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
 	public String getName() {
 		return "metadataImportDialogController";
+	}
+	
+    class DomainIdChangeListener implements PropertyChangeListener {
+		
+		public void propertyChange(PropertyChangeEvent evt) {
+			importDialogModel.setDomainId(evt.getNewValue().toString());
+			acceptButton.setDisabled(!isValid());
+		}
 	}
 }

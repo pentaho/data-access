@@ -142,19 +142,19 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	}
 
 	public void concreteUploadCallback(String fileName, String uploadedFile) {
-		acceptButton.setDisabled(!importDialogModel.isValid());
+		acceptButton.setDisabled(!isValid());
 	}
 
 	public void genericUploadCallback(String uploadedFile) {
 		importDialogModel.setUploadedFile(uploadedFile);
-		acceptButton.setDisabled(!importDialogModel.isValid());
+		acceptButton.setDisabled(!isValid());
 	}
 
 	@Bindable
 	public void setPreference(Integer preference) {
 		analysisPreferencesDeck.setSelectedIndex(preference);
 		importDialogModel.setParameterMode(preference == PARAMETER_MODE);
-		acceptButton.setDisabled(!importDialogModel.isValid());
+		acceptButton.setDisabled(!isValid());
 	}
 
 	@Bindable
@@ -162,7 +162,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		int[] selectedRows = analysisParametersTree.getSelectedRows();
 		if (selectedRows.length == 1) {
 			importDialogModel.removeParameter(selectedRows[0]);
-			acceptButton.setDisabled(!importDialogModel.isValid());
+			acceptButton.setDisabled(!isValid());
 		}
 	}
 
@@ -173,7 +173,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		if (!StringUtils.isEmpty(paramName) && !StringUtils.isEmpty(paramValue)) {
 			importDialogModel.addParameter(paramName, paramValue);
 			closeParametersDialog();
-			acceptButton.setDisabled(!importDialogModel.isValid());
+			acceptButton.setDisabled(!isValid());
 		}
 	}
 
