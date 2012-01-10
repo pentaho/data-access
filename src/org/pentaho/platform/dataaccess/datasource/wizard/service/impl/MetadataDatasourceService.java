@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -31,41 +33,52 @@ import org.pentaho.platform.repository.pmd.PentahoMetadataDomainRepository;
 
 @Path("/data-access/api/metadata")
 public class MetadataDatasourceService {
+
+	private static final String LANG = "[a-z]{2}";
+	private static final String LANG_CC = LANG + "_[A-Z]{2}";
+	private static final String LANG_CC_EXT = LANG_CC + "_[^/]+";
+
+	private static final Pattern[] patterns = new Pattern[] {
+	    Pattern.compile("(" + LANG + ").properties$"),
+	    Pattern.compile("(" + LANG_CC + ").properties$"),
+	    Pattern.compile("(" + LANG_CC_EXT + ").properties$"),
+	    Pattern.compile("([^/]+)_(" + LANG + ")\\.properties$"),
+	    Pattern.compile("([^/]+)_(" + LANG_CC + ")\\.properties$"),
+	    Pattern.compile("([^/]+)_(" + LANG_CC_EXT + ")\\.properties$"),
+	};	
 	
 	@PUT
 	@Path("/import")
-	@Consumes({ TEXT_PLAIN })	
+	@Consumes({ TEXT_PLAIN })
 	@Produces("text/plain")
 	public Response importMetadataDatasource(String localizeBundleEntries, @QueryParam("domainId") String domainId, @QueryParam("metadataFile") String metadataFile) throws PentahoAccessControlException {
 		try {
-			
-		    String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
-		    String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
+
+			String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
+			String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
 			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
 			FileInputStream metadataInputStream = new FileInputStream(sysTmpDir + File.separatorChar + metadataFile);
-			//metadataImporter.storeDomain(metadataInputStream, domainId, true);
-			
+			metadataImporter.storeDomain(metadataInputStream, domainId, true);
+
 			StringTokenizer bundleEntriesParam = new StringTokenizer(localizeBundleEntries, ";");
-			while(bundleEntriesParam.hasMoreTokens()) {
+			while (bundleEntriesParam.hasMoreTokens()) {
 				String localizationBundleElement = bundleEntriesParam.nextToken();
 				StringTokenizer localizationBundle = new StringTokenizer(localizationBundleElement, "=");
-				String fileName = localizationBundle.nextToken();
-				String file = localizationBundle.nextToken();
-				
-				
-				Locale locale = null;
-				String[] languages = Locale.getISOLanguages();
-				for(String language : languages) {
-					if(fileName.endsWith(language + ".properties")) {
-						locale = new Locale(language);
-						break;
-					} 
+				String localizationFileName = localizationBundle.nextToken();
+				String localizationFile = localizationBundle.nextToken();
+
+				if (localizationFileName.endsWith(".properties")) {
+					for (final Pattern propertyBundlePattern : patterns) {
+						final Matcher propertyBundleMatcher = propertyBundlePattern.matcher(localizationFileName);
+						if (propertyBundleMatcher.matches()) {
+							FileInputStream bundleFileInputStream = new FileInputStream(sysTmpDir + File.separatorChar + localizationFile);
+							metadataImporter.addLocalizationFile(domainId, propertyBundleMatcher.group(2), bundleFileInputStream, true);
+							break;
+						}
+					}
 				}
-				
-				FileInputStream bundleFileInputStream = new FileInputStream(sysTmpDir + File.separatorChar + file);
-				//metadataImporter.addLocalizationFile(domainId, locale.toString(), bundleFileInputStream, true);
 			}
-			
+
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
 		} catch (Exception e) {
 			return Response.serverError().entity(e.toString()).build();
