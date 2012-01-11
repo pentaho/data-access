@@ -1,34 +1,25 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
-import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.messages.Messages;
 import org.pentaho.platform.repository.pmd.PentahoMetadataDomainRepository;
 
 @Path("/data-access/api/metadata")
@@ -81,7 +72,7 @@ public class MetadataDatasourceService {
 
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
 		} catch (Exception e) {
-			return Response.serverError().entity(e.toString()).build();
+			return Response.serverError().entity(Messages.getInstance().getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
 	}
 }
