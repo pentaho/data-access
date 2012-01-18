@@ -39,7 +39,9 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
+import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
@@ -59,6 +61,8 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private MultitableGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private SchemaSelection schemaSelection;
+	private XulDialog waitingDialog;
+	private XulLabel waitingLabel;
 
 	public TablesSelectionStep(MultitableGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
@@ -94,6 +98,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
 			public void success(List tables) {
 				joinGuiModel.processAvailableTables(tables);
+				closeWaitingDialog();
 			}
 		});
 	}
@@ -150,6 +155,8 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
 		this.factTables = (XulMenuList<JoinTableModel>) document.getElementById("factTables");
 		this.schemas = (XulMenuList<String>) document.getElementById("schemas");
+	    this.waitingDialog = (XulDialog) document.getElementById("waitingDialog"); 
+	    this.waitingLabel = (XulLabel) document.getElementById("waitingDialogLabel");
 		super.init(wizardModel);
 	}
 
@@ -261,9 +268,19 @@ public class TablesSelectionStep extends AbstractWizardStep {
     checkValidState();
 	}
 	
+	public void closeWaitingDialog() {
+	    waitingDialog.hide();
+	}
+	
+	public void showWaitingDialog() {
+	    waitingLabel.setValue(MessageHandler.getString("multitable.FETCHING_TABLE_INFO")); //$NON-NLS-1$
+	    waitingDialog.show();
+	}
+	
 	class SchemaSelection implements PropertyChangeListener {
 		public void propertyChange(PropertyChangeEvent evt) {
 			if(evt.getNewValue() instanceof String) {
+				showWaitingDialog();
 				IConnection connection = ((MultiTableDatasource) parentDatasource).getConnection();
 				processAvailableTables(connection, schemas.getValue());
 			}
