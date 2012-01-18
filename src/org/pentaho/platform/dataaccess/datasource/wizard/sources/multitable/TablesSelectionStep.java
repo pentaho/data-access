@@ -273,7 +273,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	}
 	
 	public void showWaitingDialog() {
-	    waitingLabel.setValue(MessageHandler.getString("multitable.FETCHING_TABLE_INFO")); //$NON-NLS-1$
+	    waitingLabel.setValue(MessageHandler.getString("multitable.FETCHING_TABLE_INFO")); 
 	    waitingDialog.show();
 	}
 	

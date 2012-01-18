@@ -204,16 +204,16 @@
 				      <hbox>
 					      <vbox id="schemaTableVbox">
 				          	<label value="${multitable.SCHEMA}" tooltiptext=""/>
-							  	<menulist id="schemas" width="204">
+							  	<menulist id="schemas" width="295">
 						  		<menupopup>
 									<menuitem label=""/>
 								</menupopup>
 						  	</menulist>  
 				          </vbox>
-				          <spacer width="122"/>
+				          <spacer width="30"/>
 				      	  <vbox id="factTableVbox">
 				          	<label value="${multitable.FACT_TABLE}" tooltiptext=""/>
-   						  	<menulist id="factTables" pen:binding="name" width="204">
+   						  	<menulist id="factTables" pen:binding="name" width="295">
 						  		<menupopup>
 									<menuitem label=""/>
 								</menupopup>

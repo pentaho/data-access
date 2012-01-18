@@ -238,9 +238,14 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	public void processAvailableTables(List<String> tables) {
 
 		List<JoinTableModel> joinTables = new ArrayList<JoinTableModel>();
-		for (String table : tables) {
+		mainLoop: for (String table : tables) {
 			JoinTableModel joinTable = new JoinTableModel();
 			joinTable.setName(table);
+			for(JoinTableModel selectedTable : selectedTables.getChildren()) {
+				if(selectedTable.equals(joinTable)) {
+					continue mainLoop;
+				}
+			} 			
 			joinTables.add(joinTable);
 		}
 
