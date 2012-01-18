@@ -21,11 +21,13 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
@@ -49,10 +51,10 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.Conn
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoBase;
-
-import com.thoughtworks.xstream.XStream;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+
+import com.thoughtworks.xstream.XStream;
 
 public class MultitableDatasourceService extends PentahoBase implements IGwtJoinSelectionService {
 	
@@ -100,17 +102,36 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		iDatabaseConnection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
 		return DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
   }
+	
+	public List<String> retrieveSchemas(IConnection connection) throws DatasourceServiceException {
+		List<String> schemas = new ArrayList<String>();
+		try {
+			DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
+			Database database = new Database(null, databaseMeta);
+		    database.connect();
+		    Map<String, Collection<String>> tableMap = database.getTableMap(null);
+		    Set<String> schemaNames = tableMap.keySet();
+		    schemas.addAll(schemaNames);
+		    database.disconnect();
+		} catch (KettleDatabaseException e) {
+	      logger.error("Error creating database object", e);
+	      throw new DatasourceServiceException(e);
+	    } catch (ConnectionServiceException e) {
+	      logger.error("Error getting database meta", e);
+	      throw new DatasourceServiceException(e);
+	    }
+		return schemas;
+	}
 
-	public List<String> getDatabaseTables(IConnection connection) throws DatasourceServiceException {
+	public List<String> getDatabaseTables(IConnection connection, String schema) throws DatasourceServiceException {
     try{
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       Database database = new Database(null, databaseMeta);
       database.connect();
-
-      String[] tableNames = database.getTablenames(true);
+      String[] tableNames = database.getTablenames(schema, true);
       List<String> tables = new ArrayList<String>();
       tables.addAll(Arrays.asList(tableNames));
-      tables.addAll(Arrays.asList(database.getViews(true)));
+      tables.addAll(Arrays.asList(database.getViews(schema, true)));
       database.disconnect();
       return tables;
     } catch (KettleDatabaseException e) {

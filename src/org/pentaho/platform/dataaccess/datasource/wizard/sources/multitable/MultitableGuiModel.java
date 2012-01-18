@@ -40,6 +40,7 @@ import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class MultitableGuiModel extends XulEventSourceAdapter {
 
+	private List<String> schemas;
 	private AbstractModelList<JoinRelationshipModel> joins;
 	private AbstractModelList<JoinTableModel> selectedTables;
 	private AbstractModelList<JoinTableModel> availableTables;
@@ -62,6 +63,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		this.leftJoinTable = new JoinTableModel();
 		this.rightJoinTable = new JoinTableModel();
 		this.selectedJoin = new JoinRelationshipModel();
+		this.schemas = new AbstractModelList<String>();
 	}
 
 	@Bindable
@@ -72,6 +74,18 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	@Bindable
 	public void setAvailableTables(AbstractModelList<JoinTableModel> availableTables) {
 		this.availableTables.setChildren(availableTables);
+	}
+	
+	@Bindable
+	public void setSchemas(List<String> schemas) {
+		List<String> previousValue = this.schemas;
+		this.schemas = schemas;
+		this.firePropertyChange("schemas", previousValue, schemas);
+	}
+	
+	@Bindable
+	public List<String> getSchemas() {
+		return this.schemas;
 	}
 
 	@Bindable
@@ -338,6 +352,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		this.joins.clear();
 		this.leftJoinTable.reset();
 		this.rightJoinTable.reset();
+		this.schemas.clear();
 	}
 
 }

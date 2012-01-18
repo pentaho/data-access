@@ -29,7 +29,9 @@ import org.pentaho.ui.xul.XulServiceCallback;
 
 public interface IXulAsyncJoinSelectionService {
 
-	void getDatabaseTables(IConnection connection, XulServiceCallback<List> callback);
+	void getDatabaseTables(IConnection connection, String schema, XulServiceCallback<List> callback);
+	
+	void retrieveSchemas(IConnection connection, XulServiceCallback<List> callback);
 
 	void getTableFields(String table, IConnection connection, XulServiceCallback<List> callback);
 

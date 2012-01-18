@@ -19,7 +19,8 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
-import java.lang.reflect.InvocationTargetException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -39,14 +40,13 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulMenuList;
-import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 public class TablesSelectionStep extends AbstractWizardStep {
 
 	protected static final String JOIN_STEP_PANEL_ID = "joinSelectionWindow";
@@ -55,21 +55,39 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private XulListbox availableTables;
 	private XulListbox selectedTables;
 	private XulMenuList<JoinTableModel> factTables;
+	private XulMenuList<String> schemas;
 	private MultitableGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
+	private SchemaSelection schemaSelection;
 
 	public TablesSelectionStep(MultitableGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
+		this.schemaSelection = new SchemaSelection();
 	}
 
 	public String getName() {
 		return "joinSelectionStepController";
 	}
+	
+	public void retrieveSchemas(final IConnection connection) {
+		joinSelectionServiceGwtImpl.retrieveSchemas(connection, new XulServiceCallback<List>() {
+			public void error(String message, Throwable error) {
+				error.printStackTrace();
+			}
 
-	public void processAvailableTables(IConnection connection) {
-		joinSelectionServiceGwtImpl.getDatabaseTables(connection, new XulServiceCallback<List>() {
+			public void success(List schemaValues) {
+				schemas.removePropertyChangeListener(schemaSelection);
+				joinGuiModel.setSchemas(schemaValues);
+				processAvailableTables(connection, schemaValues.size() > 0 ? schemaValues.get(0).toString() : null);
+				schemas.addPropertyChangeListener(schemaSelection);
+			}
+		});
+	}
+
+	private void processAvailableTables(IConnection connection, String schema) {
+		joinSelectionServiceGwtImpl.getDatabaseTables(connection, schema, new XulServiceCallback<List>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
 			}
@@ -131,6 +149,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		this.availableTables = (XulListbox) document.getElementById("availableTables");
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
 		this.factTables = (XulMenuList<JoinTableModel>) document.getElementById("factTables");
+		this.schemas = (XulMenuList<String>) document.getElementById("schemas");
 		super.init(wizardModel);
 	}
 
@@ -152,6 +171,21 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
 			@Override
 			public AbstractModelList<JoinTableModel> targetToSource(final Collection<JoinTableModel> list) {
+				return null;
+			}
+		});
+		
+		bf.createBinding(this.joinGuiModel, "schemas", this.schemas, "elements", new BindingConvertor<List<String>, Collection<String>>() {
+
+			@Override
+			public Collection<String> sourceToTarget(List<String> list) {
+				List<String> tables = new ArrayList<String>();
+				tables.addAll(list);
+				return tables;
+			}
+
+			@Override
+			public List<String> targetToSource(final Collection<String> list) {
 				return null;
 			}
 		});
@@ -225,5 +259,14 @@ public class TablesSelectionStep extends AbstractWizardStep {
     super.stepActivatingForward();
 
     checkValidState();
+	}
+	
+	class SchemaSelection implements PropertyChangeListener {
+		public void propertyChange(PropertyChangeEvent evt) {
+			if(evt.getNewValue() instanceof String) {
+				IConnection connection = ((MultiTableDatasource) parentDatasource).getConnection();
+				processAvailableTables(connection, schemas.getValue());
+			}
+		}
 	}
 }
