@@ -238,15 +238,14 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 				// TODO: investigate a better way around this race condition.
 				// This service is being called twice on edit as is
 				
-				//TODO PENDING..... MUST PASS A SCHEMA INSTEAD OF NULL!!!!!!!
+				//TODO PENDING..... MUST PASS A SCHEMA INSTEAD OF NULL???
 				joinSelectionServiceGwtImpl.getDatabaseTables(connection, null, new XulServiceCallback<List>() {
 					public void error(String message, Throwable error) {
 						error.printStackTrace();
 					}
 
 					public void success(List tables) {
-						joinGuiModel.processAvailableTables(tables);
-						joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
+						joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO, tables);
 						tablesSelectionStep.setValid(true);
 						if(joinGuiModel.isDoOlap()) {
 							tablesSelectionStep.setFactTable(joinGuiModel.getFactTable());

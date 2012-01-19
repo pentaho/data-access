@@ -302,24 +302,50 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	}
 	
 
-	public void populateJoinGuiModel(Domain domain, MultiTableDatasourceDTO dto) {
+	public void populateJoinGuiModel(Domain domain, MultiTableDatasourceDTO dto, List tables) {
  
-		// existing joinTableModels will not have fields. We can add these from
-		// the domain.
-		addFieldsToTables(domain, this.availableTables);
-
-		// Populate "selectedTables" from availableTables using
-		// logicalRelationships.
+		// Populate "selectedTables" from availableTables using logicalRelationships.
 		AbstractModelList<JoinTableModel> selectedTablesList = new AbstractModelList<JoinTableModel>();
 		for (String selectedTable : dto.getSelectedTables()) {
-			this.selectTable(selectedTable, selectedTablesList);
+			this.selectTable(selectedTable, selectedTablesList, tables);
 		}
 		this.selectedTables.addAll(selectedTablesList);
-		this.joins.addAll(dto.getSchemaModel().getJoins());
+
+		// Populates joins.  
+		this.computeJoins(dto);
+		
+		// Populate fact table.
 		this.setDoOlap(dto.isDoOlap());
 		if(dto.isDoOlap()) {
-			this.setFactTable(dto.getSchemaModel().getFactTable());
+			for(JoinTableModel table : this.selectedTables) {
+				if(table.getName().endsWith(dto.getSchemaModel().getFactTable().getName())) {
+					this.setFactTable(table);		
+					break;
+				}
+			}
 		}
+		
+		// Populate available tables discarding selected tables.
+		this.processAvailableTables(tables);
+		
+		// Existing joinTableModels will not have fields. We can add these from the domain.
+		this.addFieldsToTables(domain, this.availableTables);
+	}
+	
+	private void computeJoins(MultiTableDatasourceDTO dto) {
+		for(JoinRelationshipModel join : dto.getSchemaModel().getJoins()) {
+			for(JoinTableModel selectedTable : this.selectedTables) {
+				if(selectedTable.getName().endsWith(join.getLeftKeyFieldModel().getParentTable().getName())) {
+					join.getLeftKeyFieldModel().getParentTable().setName(selectedTable.getName());
+				}
+			}
+			for(JoinTableModel selectedTable : this.selectedTables) {
+				if(selectedTable.getName().endsWith(join.getRightKeyFieldModel().getParentTable().getName())) {
+					join.getRightKeyFieldModel().getParentTable().setName(selectedTable.getName());
+				}
+			}			
+		}
+		this.joins.addAll(dto.getSchemaModel().getJoins());
 	}
 
 	private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
@@ -341,11 +367,13 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		}
 	}
 
-	private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList) {
-		for (JoinTableModel table : this.availableTables) {
-			if (table.getName().equals(selectedTable)) {
+	private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList, List databaseTables) {
+		for (Object table : databaseTables) {
+			if (table.toString().endsWith("." + selectedTable)) {
 				if (!selectedTablesList.contains(table)) {
-					selectedTablesList.add(table);
+					JoinTableModel joinTable = new JoinTableModel();
+					joinTable.setName(table.toString());
+					selectedTablesList.add(joinTable);
 				}
 			}
 		}
