@@ -67,4 +67,14 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
     return editUI;
   }
 
+
+  /* (non-Javadoc)
+   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#export(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
+   */
+  @Override
+  public void export(IDatasourceInfo dsInfo) {
+    datasourceService.export(dsInfo);
+    
+  }
+
 }

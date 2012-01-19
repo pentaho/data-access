@@ -33,4 +33,6 @@ public interface IUIDatasourceAdminService {
   public String getNewUI() ;
   
   public String getEditUI();
+
+  public void export(IDatasourceInfo dsInfo);
 }

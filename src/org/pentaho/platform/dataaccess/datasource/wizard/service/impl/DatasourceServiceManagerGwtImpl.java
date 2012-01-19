@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.ui.service.DSWUIDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 
@@ -13,6 +17,7 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
@@ -27,7 +32,6 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   String getDSWDatasourceIdsURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/ids"; //$NON-NLS-1$
   
   String isAdminURL = getWebAppRoot() + "api/repo/files/canAdminister"; //$NON-NLS-1$
-  
   
   @Override
   public void getAnalysisDatasourceIds(final XulServiceCallback<List<String>> xulCallback) {
@@ -216,6 +220,22 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
       }
 
     });
+  }
+
+  /* (non-Javadoc)
+   * @see org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager#export(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
+   */
+  @Override
+  public void export(IDatasourceInfo dsInfo) {
+    String exportURL = null;
+    if (dsInfo.getType() == MetadataUIDatasourceService.TYPE) {
+      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + dsInfo.getId() + "/download";
+    } else if (dsInfo.getType() == MondrianUIDatasourceService.TYPE) {
+      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + dsInfo.getId() + "/download";
+    } else if (dsInfo.getType() == DSWUIDatasourceService.TYPE) {
+      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + dsInfo.getId() + "/download";
+    }
+    Window.open(exportURL, "_new", "");
   }
 
 }
