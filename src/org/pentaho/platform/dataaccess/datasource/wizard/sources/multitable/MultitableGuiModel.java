@@ -369,7 +369,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 
 	private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList, List databaseTables) {
 		for (Object table : databaseTables) {
-			if (table.toString().endsWith("." + selectedTable)) {
+			if (table.toString().endsWith(selectedTable)) {
 				if (!selectedTablesList.contains(table)) {
 					JoinTableModel joinTable = new JoinTableModel();
 					joinTable.setName(table.toString());
