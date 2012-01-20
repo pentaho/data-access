@@ -23,7 +23,6 @@ import java.util.List;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
-import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncJoinSelectionService;
@@ -79,11 +78,28 @@ public class JoinSelectionServiceGwtImpl implements IXulAsyncJoinSelectionServic
 
 	}
 
-	public void getDatabaseTables(final IConnection connection, final XulServiceCallback<List> xulCallback) {
+	public void getDatabaseTables(final IConnection connection, final String schema, final XulServiceCallback<List> xulCallback) {
 
 		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
 			public void execute(AsyncCallback callback) {
-				SERVICE.getDatabaseTables(connection, callback);
+				SERVICE.getDatabaseTables(connection, schema, callback);
+			}
+		}, new AsyncCallback<List>() {
+			public void onFailure(Throwable arg0) {
+				xulCallback.error(arg0.getLocalizedMessage(), arg0);
+			}
+
+			public void onSuccess(List arg0) {
+				xulCallback.success(arg0);
+			}
+		});
+	}
+	
+	public void retrieveSchemas(final IConnection connection,  final XulServiceCallback<List> xulCallback) {
+
+		AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
+			public void execute(AsyncCallback callback) {
+				SERVICE.retrieveSchemas(connection, callback);
 			}
 		}, new AsyncCallback<List>() {
 			public void onFailure(Throwable arg0) {
