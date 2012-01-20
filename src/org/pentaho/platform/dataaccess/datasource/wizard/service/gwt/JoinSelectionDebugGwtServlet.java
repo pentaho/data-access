@@ -60,11 +60,17 @@ public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implement
 		return databaseMeta;
 	}
 
-	public List<String> getDatabaseTables(IConnection connection) throws Exception {
+	public List<String> getDatabaseTables(IConnection connection, String schema) throws Exception {
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
 		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
-		return service.getDatabaseTables(connection);
+		return service.getDatabaseTables(connection, schema);
 	}
+	
+	public List<String> retrieveSchemas(IConnection connection) throws Exception {
+		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
+		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
+		return service.retrieveSchemas(connection);
+	}	
 
 	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IConnection connection) throws Exception {
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
