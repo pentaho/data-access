@@ -31,7 +31,8 @@
    
 		<tree height="175" id="datasourcesListTable" seltype="single">
 			<treecols id="datasourcesListCols">
-				<treecol id="datasourceName" label="${datasourcesListCols.datasourceName}" flex="1" pen:binding="name" editable="false" type="text" sortActive="true" sortDirection="ASCENDING"/>
+				<!-- Sorting was removed from the code below because it was messing up the set/getSelectedDatasource() methods in the DatasourceAdminDialogModel class -->
+				<treecol id="datasourceName" label="${datasourcesListCols.datasourceName}" flex="1" pen:binding="name" editable="false" type="text" />
 				<treecol id="datasourceType" label="${datasourcesListCols.datasourceType}" flex="1" pen:binding="type" editable="false" type="text" />
 			</treecols>
 			<treechildren id="datasourcesListRows"/>

@@ -70,7 +70,15 @@ public class UIDatasourceServiceManager {
     }
   }
 
-
+  public void exportDatasource(IDatasourceInfo dsInfo) {
+    for(IUIDatasourceAdminService service:serviceMap.values()) {
+      if (service.getType().equals(dsInfo.getType()) && dsInfo.isExportable()) {
+        service.export(dsInfo);
+        break;
+      }
+    }
+  }
+  
   public List<String> getTypes() {
     return new ArrayList<String>(serviceMap.keySet());
   }
