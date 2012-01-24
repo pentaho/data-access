@@ -33,6 +33,8 @@ import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
+import com.google.gwt.user.client.Window;
+
 public class DatasourceAdminDialogController extends AbstractXulDialogController<IDatasourceInfo> implements BindingExceptionHandler{
 
   // ~ Static fields/initializers ======================================================================================
@@ -354,5 +356,11 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Override
   public void handleException(BindingException t) {
     t.printStackTrace();
+  }
+  
+  @Bindable
+  public void export() {
+    IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
+    manager.exportDatasource(dsInfo);
   }
 }

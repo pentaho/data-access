@@ -55,4 +55,13 @@ public class JSUIDatasourceService extends JavaScriptObject implements IUIDataso
   private final native String getDelegateType() /*-{
     return this.type;
   }-*/;
+  
+  /* (non-Javadoc)
+   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#export(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
+   */
+  @Override
+  public void export(IDatasourceInfo dsInfo) {
+    // TODO Auto-generated method stub
+    
+  }
 }
