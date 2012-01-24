@@ -7,6 +7,8 @@ import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import com.google.gwt.user.client.Window;
+
 public class DatasourceAdminDialogModel extends XulEventSourceAdapter {
 
   private List<IDatasourceInfo> datasources = new ArrayList<IDatasourceInfo>();
