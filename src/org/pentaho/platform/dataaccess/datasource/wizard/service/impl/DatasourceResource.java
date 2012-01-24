@@ -24,30 +24,51 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import static javax.ws.rs.core.MediaType.WILDCARD;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.IOUtils;
 import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
+import org.pentaho.platform.repository.pmd.IPentahoMetadataDomainRepositoryExporter;
+import org.pentaho.platform.repository2.unified.fileio.RepositoryFileInputStream;
+import org.pentaho.platform.repository2.unified.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 
 @Path("/data-access/api/datasource")
 public class DatasourceResource {
-
+  public static final String APPLICATION_ZIP = "application/zip"; //$NON-NLS-1$
+  
   protected IMetadataDomainRepository metadataDomainRepository;
   protected IMondrianCatalogService mondrianCatalogService;
   IDSWDatasourceService dswService;
@@ -132,5 +153,101 @@ public class DatasourceResource {
       return null;
     }
     return new JaxbList<String>(datasourceList);
+  }
+  
+  @GET
+  @Path("/metadata/{metadataId : .+}/download")
+  @Produces(WILDCARD)
+  public Response doGetMetadataFilesAsDownload(@PathParam("metadataId") String metadataId) {
+    if (! (metadataDomainRepository instanceof IPentahoMetadataDomainRepositoryExporter)) {
+      return Response.serverError().build();
+    }
+    Map<String, InputStream> fileData = ((IPentahoMetadataDomainRepositoryExporter)metadataDomainRepository).getDomainFilesData(metadataId);
+    return createAttachment(fileData, metadataId);
+  }
+
+  @GET
+  @Path("/analysis/{analysisId : .+}/download")
+  @Produces(WILDCARD)
+  public Response doGetAnalysisFilesAsDownload(@PathParam("analysisId") String analysisId) {
+    MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
+    Map<String, InputStream> fileData = helper.getModrianSchemaFiles(analysisId);
+    
+    return createAttachment(fileData, analysisId);
+  }
+  
+  @GET
+  @Path("/dsw/{dswId : .+}/download")
+  @Produces(WILDCARD)
+  public Response doGetDSWFilesAsDownload(@PathParam("dswId") String dswId) {
+    // First get the metadata files;
+    Map<String, InputStream> fileData = ((IPentahoMetadataDomainRepositoryExporter)metadataDomainRepository).getDomainFilesData(dswId); 
+  
+    // Then get the corresponding mondrian files
+    Domain domain = metadataDomainRepository.getDomain(dswId);
+    LogicalModel logicalModel = domain.getLogicalModels().get(0);
+    if (logicalModel.getProperty("MondrianCatalogRef") != null) {
+      MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
+      String catalogRef = (String)logicalModel.getProperty("MondrianCatalogRef");
+      fileData.putAll(helper.getModrianSchemaFiles(catalogRef));
+    }
+
+    return createAttachment(fileData, dswId);
+  }
+  
+  
+  private Response createAttachment(Map<String, InputStream> fileData, String domainId) {
+    String quotedFileName = null;
+    final InputStream is;
+    if (fileData.size() > 1) { // we've got more than one file so we want to zip them up and send them
+      File zipFile = null;
+      try {
+        zipFile = File.createTempFile("datasourceExport", ".zip");
+        zipFile.deleteOnExit();
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
+        for (String fileName : fileData.keySet()) {
+          InputStream zipEntryIs = null;
+          try {
+            ZipEntry entry = new ZipEntry(fileName);
+            zos.putNextEntry(entry);
+            zipEntryIs = fileData.get(fileName);
+            IOUtils.copy(zipEntryIs, zos);
+          } catch (Exception e) {
+            continue;
+          } finally {
+            zos.closeEntry();
+            if (zipEntryIs != null) {
+              zipEntryIs.close();
+            }
+          }
+        }
+        zos.close();
+        is = new FileInputStream(zipFile);
+      } catch (IOException ioe) {
+        return Response.serverError().entity(ioe.toString()).build();
+      }
+      StreamingOutput streamingOutput = new StreamingOutput() {
+        public void write(OutputStream output) throws IOException {
+          IOUtils.copy(is, output);
+        }
+      };
+      quotedFileName = "\"" + domainId + ".zip\""; //$NON-NLS-1$//$NON-NLS-2$
+      return Response.ok(streamingOutput, APPLICATION_ZIP).header("Content-Disposition", "attachment; filename=" + quotedFileName).build();
+    } else if (fileData.size() == 1) {  // we've got a single metadata file so we just return that.
+      String fileName = (String) fileData.keySet().toArray()[0];
+      quotedFileName = "\"" + domainId + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+      is = fileData.get(fileName);
+      String mimeType = MediaType.TEXT_PLAIN;
+      if (is instanceof RepositoryFileInputStream) {
+        mimeType = ((RepositoryFileInputStream)is).getMimeType();
+      }
+      StreamingOutput streamingOutput = new StreamingOutput() {
+        public void write(OutputStream output) throws IOException {
+          IOUtils.copy(is, output);
+        }
+      };
+      return Response.ok(streamingOutput, mimeType).header("Content-Disposition", "attachment; filename=" + quotedFileName).build();
+    }
+    return Response.serverError().build();
   }
 }

@@ -8,6 +8,8 @@ import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 
+import com.google.gwt.user.client.Window;
+
 public class MetadataUIDatasourceService implements IUIDatasourceAdminService{
   
   public static final String TYPE = "Metadata";
@@ -57,6 +59,14 @@ public class MetadataUIDatasourceService implements IUIDatasourceAdminService{
   @Override
   public String getEditUI() {
     return editUI;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#export(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
+   */
+  @Override
+  public void export(IDatasourceInfo dsInfo) {
+    datasourceService.export(dsInfo);   
   }
 
 }
