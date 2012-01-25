@@ -409,7 +409,13 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     }
     List<LogicalModelSummary> logicalModelSummaries = new ArrayList<LogicalModelSummary>();
     for (String domainId : getMetadataDomainRepository().getDomainIds()) {
-      Domain domain = getMetadataDomainRepository().getDomain(domainId);
+      Domain domain;
+      try {
+        domain = getMetadataDomainRepository().getDomain(domainId);
+      } catch (Exception e) {
+        logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0021_UNABLE_TO_PROCESS_LOGICAL_MODEL", domainId), e);
+        continue;
+      }
 
       String locale = LocaleHelper.getLocale().toString();
       String locales[] = new String[domain.getLocales().size()];

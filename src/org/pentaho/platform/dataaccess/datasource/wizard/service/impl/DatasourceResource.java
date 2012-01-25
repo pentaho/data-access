@@ -53,7 +53,6 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -67,13 +66,15 @@ import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 @Path("/data-access/api/datasource")
 public class DatasourceResource {
+
+  private static final String MONDRIAN_CATALOG_REF = "MondrianCatalogRef"; //$NON-NLS-1$
   public static final String APPLICATION_ZIP = "application/zip"; //$NON-NLS-1$
   
   protected IMetadataDomainRepository metadataDomainRepository;
   protected IMondrianCatalogService mondrianCatalogService;
   IDSWDatasourceService dswService;
   IModelerService modelerService;
-  public static final String METADATA_EXT = ".xmi";
+  public static final String METADATA_EXT = ".xmi"; //$NON-NLS-1$
   
   public DatasourceResource() {
     super();
@@ -118,7 +119,13 @@ public class DatasourceResource {
   }
   
   private boolean isMetadataDatasource(String id) {
-    Domain domain = metadataDomainRepository.getDomain(id);
+    Domain domain;
+    try { 
+      domain = metadataDomainRepository.getDomain(id);
+    } catch (Exception e) { // If we can't load the domain then we MUST return false
+      return false;
+    }
+    
     List<LogicalModel> logicalModelList = domain.getLogicalModels();
     if(logicalModelList != null && logicalModelList.size() >= 1) {
       LogicalModel logicalModel = logicalModelList.get(0);
@@ -186,9 +193,9 @@ public class DatasourceResource {
     // Then get the corresponding mondrian files
     Domain domain = metadataDomainRepository.getDomain(dswId);
     LogicalModel logicalModel = domain.getLogicalModels().get(0);
-    if (logicalModel.getProperty("MondrianCatalogRef") != null) {
+    if (logicalModel.getProperty(MONDRIAN_CATALOG_REF) != null) {
       MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
-      String catalogRef = (String)logicalModel.getProperty("MondrianCatalogRef");
+      String catalogRef = (String)logicalModel.getProperty(MONDRIAN_CATALOG_REF);
       fileData.putAll(helper.getModrianSchemaFiles(catalogRef));
     }
 
@@ -202,7 +209,7 @@ public class DatasourceResource {
     if (fileData.size() > 1) { // we've got more than one file so we want to zip them up and send them
       File zipFile = null;
       try {
-        zipFile = File.createTempFile("datasourceExport", ".zip");
+        zipFile = File.createTempFile("datasourceExport", ".zip"); //$NON-NLS-1$ //$NON-NLS-2$
         zipFile.deleteOnExit();
         ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile));
         for (String fileName : fileData.keySet()) {
@@ -232,7 +239,7 @@ public class DatasourceResource {
         }
       };
       quotedFileName = "\"" + domainId + ".zip\""; //$NON-NLS-1$//$NON-NLS-2$
-      return Response.ok(streamingOutput, APPLICATION_ZIP).header("Content-Disposition", "attachment; filename=" + quotedFileName).build();
+      return Response.ok(streamingOutput, APPLICATION_ZIP).header("Content-Disposition", "attachment; filename=" + quotedFileName).build(); //$NON-NLS-1$ //$NON-NLS-2$
     } else if (fileData.size() == 1) {  // we've got a single metadata file so we just return that.
       String fileName = (String) fileData.keySet().toArray()[0];
       quotedFileName = "\"" + domainId + "\""; //$NON-NLS-1$ //$NON-NLS-2$
@@ -246,7 +253,7 @@ public class DatasourceResource {
           IOUtils.copy(is, output);
         }
       };
-      return Response.ok(streamingOutput, mimeType).header("Content-Disposition", "attachment; filename=" + quotedFileName).build();
+      return Response.ok(streamingOutput, mimeType).header("Content-Disposition", "attachment; filename=" + quotedFileName).build(); //$NON-NLS-1$ //$NON-NLS-2$
     }
     return Response.serverError().build();
   }
