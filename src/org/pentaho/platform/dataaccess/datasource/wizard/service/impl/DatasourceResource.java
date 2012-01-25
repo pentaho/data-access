@@ -105,15 +105,10 @@ public class DatasourceResource {
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
   public JaxbList<String> getMetadataDatasourceIds() {
     List<String> metadataIds = new ArrayList<String>();
-    try {
-		Thread.sleep(100);
-		for(String id:metadataDomainRepository.getDomainIds()) {
-		    if(isMetadataDatasource(id)) {
-		      metadataIds.add(id);
-		    }
-		}
-	} catch (InterruptedException e) {
-		e.printStackTrace();
+	for(String id:metadataDomainRepository.getDomainIds()) {
+	    if(isMetadataDatasource(id)) {
+	      metadataIds.add(id);
+	    }
 	}
     return new JaxbList<String>(metadataIds);
   }
