@@ -20,10 +20,12 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
@@ -318,7 +320,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		this.setDoOlap(dto.isDoOlap());
 		if(dto.isDoOlap()) {
 			for(JoinTableModel table : this.selectedTables) {
-				if(table.getName().endsWith(dto.getSchemaModel().getFactTable().getName())) {
+				if(tablesAreEqual(table.getName(), dto.getSchemaModel().getFactTable().getName())) {
 					this.setFactTable(table);		
 					break;
 				}
@@ -335,12 +337,12 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	private void computeJoins(MultiTableDatasourceDTO dto) {
 		for(JoinRelationshipModel join : dto.getSchemaModel().getJoins()) {
 			for(JoinTableModel selectedTable : this.selectedTables) {
-				if(selectedTable.getName().endsWith(join.getLeftKeyFieldModel().getParentTable().getName())) {
+				if(tablesAreEqual(selectedTable.getName(), join.getLeftKeyFieldModel().getParentTable().getName())) {
 					join.getLeftKeyFieldModel().getParentTable().setName(selectedTable.getName());
 				}
 			}
 			for(JoinTableModel selectedTable : this.selectedTables) {
-				if(selectedTable.getName().endsWith(join.getRightKeyFieldModel().getParentTable().getName())) {
+				if(tablesAreEqual(selectedTable.getName(), join.getRightKeyFieldModel().getParentTable().getName())) {
 					join.getRightKeyFieldModel().getParentTable().setName(selectedTable.getName());
 				}
 			}			
@@ -351,7 +353,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
 
 		String locale = LocalizedString.DEFAULT_LOCALE;
-    Outter:
+		Outter:
 		for (JoinTableModel table : availableTables) {
 			for (LogicalTable tbl : domain.getLogicalModels().get(0).getLogicalTables()) {
 				if(tbl.getPhysicalTable().getProperty("target_table").equals(table.getName())){
@@ -369,7 +371,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 
 	private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList, List databaseTables) {
 		for (Object table : databaseTables) {
-			if (table.toString().endsWith(selectedTable)) {
+			if (tablesAreEqual(table.toString(), selectedTable)) {
 				if (!selectedTablesList.contains(table)) {
 					JoinTableModel joinTable = new JoinTableModel();
 					joinTable.setName(table.toString());
@@ -387,5 +389,26 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		this.rightJoinTable.reset();
 		this.schemas.clear();
 	}
-
+	
+	private boolean tablesAreEqual(String table1, String table2) {
+		String tableName1 = getSchemaTablePair(table1)[1];
+		String tableName2 = getSchemaTablePair(table2)[1];
+		return tableName1.equals(tableName2);
+	}
+	
+	private String[] getSchemaTablePair(String table) {
+		if(table.indexOf(".") < 0){
+	      return new String[]{"",table};
+	    }
+	    String[] pair = new String[2];
+	    String[] parts = table.split("\\.");
+	    pair[0] = parts[0];
+		    
+	    String tableName = "";
+	    for(int i = 1; i < parts.length; i++) {
+	    	tableName = tableName + "." + parts[i];
+	    }
+	    pair[1] = tableName.substring(1);
+	    return pair;
+	}
 }
