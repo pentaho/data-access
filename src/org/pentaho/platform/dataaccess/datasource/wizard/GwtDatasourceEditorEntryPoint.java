@@ -42,7 +42,11 @@ import org.pentaho.platform.dataaccess.datasource.ui.importing.GwtImportDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogModel;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceManageDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
+import org.pentaho.platform.dataaccess.datasource.ui.service.DSWUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService;
+import org.pentaho.platform.dataaccess.datasource.ui.service.JdbcDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
@@ -158,6 +162,14 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
     };
     dialectService.getDatabaseTypes(callback);
+    
+    UIDatasourceServiceManager manager = UIDatasourceServiceManager.getInstance();
+    manager.registerService(new JdbcDatasourceService(connectionService));
+    manager.registerService(new MondrianUIDatasourceService(datasourceServiceManager));
+    manager.registerService(new MetadataUIDatasourceService(datasourceServiceManager));
+    manager.registerService(new DSWUIDatasourceService(datasourceServiceManager));
+    manager.getIds(null);
+    
   }
   private native static void loadOverlay( String overlayId) /*-{
   if(!$wnd.mantle_loadOverlay){

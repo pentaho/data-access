@@ -188,13 +188,8 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       };
       
       manager = UIDatasourceServiceManager.getInstance();
-      // Register Builtin datasources
-      manager.registerService(new JdbcDatasourceService(connectionService));
-      manager.registerService(new MondrianUIDatasourceService(datasourceServiceManager));
-      manager.registerService(new MetadataUIDatasourceService(datasourceServiceManager));
-      manager.registerService(new DSWUIDatasourceService(datasourceServiceManager));
 
-      } catch (Exception e) {
+    } catch (Exception e) {
       System.out.println(e.getMessage());
       e.printStackTrace();
     }
@@ -244,7 +239,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   
         @Override
         public void success(List<IDatasourceInfo> infoList) {
+          DatasourceAdminDialogController.super.showDialog();
           datasourceAdminDialogModel.setDatasourcesList(infoList);
+          getDatasourceTypes();
         }
   
         @Override
@@ -320,9 +317,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
   @Override
   public void showDialog() {    
-    super.showDialog();
     refreshDatasourceList();
-    getDatasourceTypes();
   }
 
   @Override

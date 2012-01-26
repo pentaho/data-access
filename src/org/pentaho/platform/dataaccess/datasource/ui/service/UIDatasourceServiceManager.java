@@ -49,7 +49,9 @@ public class UIDatasourceServiceManager {
       public void onHandle(Void o) {
         counter++;
         if (counter >= asyncCallCount) {
-          mainCallback.success(datasourceList);
+        	if(mainCallback != null) { 
+        		mainCallback.success(datasourceList);
+        	}
         }
       }
     };
@@ -64,7 +66,9 @@ public class UIDatasourceServiceManager {
  
           @Override
           public void error(String message, Throwable error) {
-            mainCallback.error(message, error);
+        	  if(mainCallback != null) {
+        		  mainCallback.error(message, error);
+        	  }
           }
         });
     }
