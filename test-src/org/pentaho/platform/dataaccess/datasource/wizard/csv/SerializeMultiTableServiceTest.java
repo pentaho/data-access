@@ -72,7 +72,7 @@ public class SerializeMultiTableServiceTest {
 	    DatabaseMeta database = getDatabaseMeta();
 		MultiTableModelerSource multiTable = new MultiTableModelerSource(database, getSchema(), database.getName(), Arrays.asList("CUSTOMERS","PRODUCTS","CUSTOMERNAME","PRODUCTCODE"));
 		Domain domain = multiTable.generateDomain();
-	    
+
 	    List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
 		OlapDimension dimension = new OlapDimension();
 		dimension.setName("test");//$NON-NLS-1$

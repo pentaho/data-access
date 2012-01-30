@@ -154,12 +154,15 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getSchemaModel(), dto.getDatasourceName(), dto.getSelectedTables(), geoContext);
       Domain domain = multiTable.generateDomain(dto.isDoOlap());
-      domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(dto));
-      domain.getLogicalModels().get(0).setProperty("DatasourceType", "MULTI-TABLE-DS");
 
-      // BISERVER-6450 - add security settings to the logical model
-      applySecurity(domain.getLogicalModels().get(0));
+      String modelState = serializeModelState(dto);
+      for(LogicalModel lm : domain.getLogicalModels()) {
+        lm.setProperty("datasourceModel", modelState);
+        lm.setProperty("DatasourceType", "MULTI-TABLE-DS");
 
+        // BISERVER-6450 - add security settings to the logical model
+        applySecurity(lm);
+      }
       modelerService.serializeModels(domain, dto.getDatasourceName(), dto.isDoOlap());
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
@@ -246,7 +249,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
     
   protected boolean isSecurityEnabled() {
     Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
-        || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
+        || ((getPermittedUserList() != null && getPermittedUserList().size() > 0));
     return securityEnabled;
   }
 
