@@ -51,6 +51,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private XulDialog datasourceAdminDialog;
   
   private XulDialog datasourceAdminErrorDialog;
+  private XulDialog removeDatasourceConfirmationDialog;
   private XulLabel datasourceAdminErrorLabel = null;
   
   //private XulMenuList datasourceTypeMenuList;
@@ -82,6 +83,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     datasourceTreeCols = (XulTreeCols) document.getElementById("datasourcesListCols"); //$NON-NLS-1$
     datasourceAdminDialog = (XulDialog) document.getElementById("datasourceAdminDialog"); //$NON-NLS-1$
     datasourceAdminErrorDialog = (XulDialog) document.getElementById("datasourceAdminErrorDialog"); //$NON-NLS-1$
+    removeDatasourceConfirmationDialog = (XulDialog) document.getElementById("removeDatasourceConfirmationDialog"); //$NON-NLS-1$
     datasourceAdminErrorLabel = (XulLabel) document.getElementById("datasourceAdminErrorLabel");//$NON-NLS-1$
     //datasourceTypeMenuList = (XulMenuList) document.getElementById("datasourceTypeMenuList");//$NON-NLS-1$
     datasourceAddButton = (XulButton) document.getElementById("datasourceAddButton"); //$NON-NLS-1$
@@ -357,5 +359,37 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   public void export() {
     IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
     manager.exportDatasource(dsInfo);
+  }
+  
+  @Bindable
+  public void remove() {
+    removeDatasourceConfirmationDialog.show();
+  }
+  
+  @Bindable
+  public void removeDatasourceAccept() {
+    final IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
+    manager.remove(dsInfo, new XulServiceCallback<Boolean>() {
+
+      @Override
+      public void error(String message, Throwable error) {
+        Window.alert("Error removing: " + dsInfo.getId() + ".  Error =" + error.getLocalizedMessage());
+      }
+
+      @Override
+      public void success(Boolean retVal) {
+        if (retVal) {
+          refreshDatasourceList();
+        } else {
+          Window.alert("Could Not remove: " + dsInfo.getId());
+        }
+      }
+    });
+    removeDatasourceConfirmationDialog.hide();
+  }
+  
+  @Bindable
+  public void removeDatasourceCancel() {
+    removeDatasourceConfirmationDialog.hide();
   }
 }

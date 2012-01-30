@@ -35,4 +35,6 @@ public interface IUIDatasourceAdminService {
   public String getEditUI();
 
   public void export(IDatasourceInfo dsInfo);
+
+  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback);
 }
