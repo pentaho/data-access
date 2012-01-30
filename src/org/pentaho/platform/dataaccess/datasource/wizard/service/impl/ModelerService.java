@@ -29,9 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
-import org.pentaho.agilebi.modeler.IModelerSource;
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.*;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.services.IModelerService;
@@ -173,8 +171,11 @@ public class ModelerService extends PentahoBase implements IModelerService {
 
       ISolutionRepository repository = PentahoSystem.get(ISolutionRepository.class, session);
       
-      LogicalModel lModel = domain.getLogicalModels().get(0);
+      LogicalModel lModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
       String catName = lModel.getName(Locale.getDefault().toString());
+
+      // strip off the _olap suffix for the catalog ref
+      catName = catName.replace(BaseModelerWorkspaceHelper.OLAP_SUFFIX, "");
 
       cleanseExistingCatalog(catName, session);
       if(doOlap){
@@ -195,6 +196,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
       if(doOlap){
         MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
         String mondrianSchema = exporter.createMondrianModelXML();
+
         Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
         byte[] schemaBytes = schemaDoc.asXML().getBytes("UTF-8"); //$NON-NLS-1$
 

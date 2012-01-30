@@ -216,6 +216,11 @@ public class DatasourceServiceImpl implements IDatasourceService {
         }
       }
 
+      // if there is another logical model, it is the OLAP model
+      if(domain.getLogicalModels().size() > 1) {
+        logicalModel = domain.getLogicalModels().get(1);
+      }
+
       // if associated mondrian file, delete
       if (logicalModel.getProperty("MondrianCatalogRef") != null) {
         // remove Mondrian schema
@@ -224,7 +229,10 @@ public class DatasourceServiceImpl implements IDatasourceService {
         service.removeCatalog(catalogRef, PentahoSessionHolder.getSession());
       }
 
-      metadataDomainRepository.removeModel(domainId, logicalModel.getId());
+      for(LogicalModel lm : domain.getLogicalModels()) {
+        metadataDomainRepository.removeModel(domainId, lm.getId());
+      }
+
     } catch (MondrianCatalogServiceException me) {
       logger.error(Messages.getErrorString(
           "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage()), me);//$NON-NLS-1$
