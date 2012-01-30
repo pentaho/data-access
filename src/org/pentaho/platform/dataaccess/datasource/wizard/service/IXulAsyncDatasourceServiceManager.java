@@ -12,4 +12,5 @@ public interface IXulAsyncDatasourceServiceManager {
   void getMetadataDatasourceIds(XulServiceCallback<List<String>> callback);
   void getDSWDatasourceIds(XulServiceCallback<List<String>> callback);
   void export(IDatasourceInfo dsInfo);
+  void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback);
 }

@@ -23,6 +23,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service;
 import java.util.List;
 
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.ui.xul.XulServiceCallback;
 
