@@ -9,6 +9,8 @@ import org.pentaho.gwt.widgets.client.ui.ICallback;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulServiceCallback;
 
+import com.google.gwt.user.client.Window;
+
 public class UIDatasourceServiceManager {
 
   Map<String, IUIDatasourceAdminService> serviceMap = new HashMap<String, IUIDatasourceAdminService>();
@@ -83,7 +85,20 @@ public class UIDatasourceServiceManager {
     }
   }
   
+  /**
+   * @param dsInfo
+   */
+  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
+    for(IUIDatasourceAdminService service:serviceMap.values()) {
+      if (service.getType().equals(dsInfo.getType()) && dsInfo.isExportable()) {
+        service.remove(dsInfo, callback);
+        break;
+      }
+    }
+  }
+
   public List<String> getTypes() {
     return new ArrayList<String>(serviceMap.keySet());
   }
+
 }

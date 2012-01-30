@@ -238,4 +238,56 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
     Window.open(exportURL, "_new", "");
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
+   */
+  @Override
+  public void remove(IDatasourceInfo dsInfo, final XulServiceCallback<Boolean> xulCallback) {
+    final String removeURL;
+    if (dsInfo.getType() == MetadataUIDatasourceService.TYPE) {
+      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + dsInfo.getId() + "/remove";
+    } else if (dsInfo.getType() == MondrianUIDatasourceService.TYPE) {
+      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + dsInfo.getId() + "/remove";
+    } else if (dsInfo.getType() == DSWUIDatasourceService.TYPE) {
+      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + dsInfo.getId() + "/remove";
+    } else {
+      removeURL = null;
+    }
+    
+    Window.alert("Calling Service with URL: " + removeURL);
+    
+    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand<Boolean>() {
+      public void execute(final AsyncCallback<Boolean> callback) {
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, removeURL);
+        try {
+          requestBuilder.sendRequest(null, new RequestCallback() {
+            @Override
+            public void onError(Request request, Throwable exception) {
+              callback.onFailure(exception);
+            }
+
+            @Override
+            public void onResponseReceived(Request request, Response response) {
+              callback.onSuccess(response.getStatusCode() == Response.SC_OK);
+            }
+
+          });
+        } catch (RequestException e) {
+          xulCallback.error(e.getLocalizedMessage(), e);
+        }        
+      }
+    }, new AsyncCallback<Boolean>() {
+
+      public void onFailure(Throwable arg0) {
+        xulCallback.error(arg0.getLocalizedMessage(), arg0);
+      }
+
+      public void onSuccess(Boolean arg0) {
+        xulCallback.success(Boolean.TRUE);
+      }
+
+    });
+
+  }
+
 }

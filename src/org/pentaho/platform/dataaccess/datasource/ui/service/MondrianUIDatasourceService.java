@@ -66,5 +66,12 @@ public class MondrianUIDatasourceService implements IUIDatasourceAdminService{
   public void export(IDatasourceInfo dsInfo) {
     datasourceService.export(dsInfo);
   }
+  /* (non-Javadoc)
+   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
+   */
+  @Override
+  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
+    datasourceService.remove(dsInfo, callback);
+  }
 
 }

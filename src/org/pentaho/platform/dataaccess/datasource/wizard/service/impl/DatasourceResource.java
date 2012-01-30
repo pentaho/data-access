@@ -39,6 +39,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -202,7 +203,38 @@ public class DatasourceResource {
     return createAttachment(fileData, dswId);
   }
   
+  @POST
+  @Path("/metadata/{metadataId : .+}/remove")
+  @Produces(WILDCARD)
+  public Response doRemoveMetadata(@PathParam("metadataId") String metadataId) {
+    metadataDomainRepository.removeDomain(metadataId);
+    return Response.ok().build();
+  }
   
+  @POST
+  @Path("/analysis/{analysisId : .+}/remove")
+  @Produces(WILDCARD)
+  public Response doRemoveAnalysis(@PathParam("analysisId") String analysisId) {
+    mondrianCatalogService.removeCatalog(analysisId, PentahoSessionHolder.getSession());
+    return Response.ok().build();
+  }
+  
+  @POST
+  @Path("/dsw/{dswId : .+}/remove")
+  @Produces(WILDCARD)
+  public Response doRemoveDSW(@PathParam("dswId") String dswId) {
+    Domain domain = metadataDomainRepository.getDomain(dswId);
+    LogicalModel logicalModel = domain.getLogicalModels().get(0);
+    if (logicalModel.getProperty(MONDRIAN_CATALOG_REF) != null) {
+      String catalogRef = (String)logicalModel.getProperty(MONDRIAN_CATALOG_REF);
+      mondrianCatalogService.removeCatalog(catalogRef, PentahoSessionHolder.getSession());
+    }
+    metadataDomainRepository.removeDomain(dswId);
+
+    return Response.ok().build();
+  }
+  
+
   private Response createAttachment(Map<String, InputStream> fileData, String domainId) {
     String quotedFileName = null;
     final InputStream is;

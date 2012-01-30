@@ -64,4 +64,12 @@ public class JSUIDatasourceService extends JavaScriptObject implements IUIDataso
     // TODO Auto-generated method stub
     
   }
+  /* (non-Javadoc)
+   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
+   */
+  @Override
+  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
+    // TODO Auto-generated method stub
+    
+  }
 }
