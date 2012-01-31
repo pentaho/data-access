@@ -343,6 +343,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   public void closeErrorDialog() {
     if (!datasourceAdminErrorDialog.isHidden()) {
       datasourceAdminErrorDialog.hide();
+      refreshDatasourceList();
     }
   }
   
