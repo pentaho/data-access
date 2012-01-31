@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
@@ -69,7 +70,7 @@ public class SerializeServiceTest {
 	    model.getWorkspaceHelper().populateDomain(model);
 	    service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
-	    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), model.getModelName());
+	    Assert.assertEquals(domain.getLogicalModels().get(1).getProperty("MondrianCatalogRef"), model.getModelName());
 
 	    File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
 	    File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
@@ -115,7 +116,7 @@ public class SerializeServiceTest {
 	      dimension.setName("test");//$NON-NLS-1$
 	      dimension.setTimeDimension(false);
 	      olapDimensions.add(dimension);
-	      domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
+	      domain.getLogicalModels().get(1).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
 
 	    } catch (Exception e) {
 	      e.printStackTrace();
