@@ -10,22 +10,24 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 
-public class JSUIDatasourceService extends JavaScriptObject implements IUIDatasourceAdminService {
-
+public class JSUIDatasourceService implements IUIDatasourceAdminService {
+  private JavaScriptObject datasourceServiceObject;
   // Overlay types always have protected, zero argument constructors.
-  protected JSUIDatasourceService() {
+  public JSUIDatasourceService(JavaScriptObject datasourceServiceObject) {
+    this.datasourceServiceObject = datasourceServiceObject;
   }
+  
   @Override
   public final String getType() {
-    return getDelegateType();
+    return getDelegateType(this.datasourceServiceObject);
   }
 
   @Override
   public final void getIds(XulServiceCallback<List<IDatasourceInfo>> callback) {
     List<IDatasourceInfo> datasourceInfoList = new ArrayList<IDatasourceInfo>();
-    JsArray<JSDatasourceInfo> infos = getDelegateIds();
+    JsArray<JavaScriptObject> infos = getDelegateIds(this.datasourceServiceObject);
     for(int i=0;i<infos.length();i++) {
-      JSDatasourceInfo info = infos.get(i);
+      JSDatasourceInfo info = new JSDatasourceInfo(infos.get(i));
       datasourceInfoList.add(new DatasourceInfo(info.getName(), info.getName(), info.getType(), info.isEditable(), info.isRemovable(), info.isImportable(), info.isExportable()));
     }
     callback.success(datasourceInfoList);
@@ -33,43 +35,48 @@ public class JSUIDatasourceService extends JavaScriptObject implements IUIDataso
 
   @Override
   public final String getNewUI() {
-    return getDelegateNewUI();
+    return getDelegateNewUI(this.datasourceServiceObject);
   }
 
   @Override
   public final String getEditUI() {
-    return getDelegateEditUI();
+    return getDelegateEditUI(this.datasourceServiceObject);
   }
-
-  private final native JsArray<JSDatasourceInfo> getDelegateIds() /*-{
-    return this.getIds();
-  }-*/;
-  private final native String getDelegateNewUI() /*-{
-    return this.getNewUI();
-  }-*/;
-
-  private final native String getDelegateEditUI() /*-{
-    return this.getEditUI();
-  }-*/;
   
-  private final native String getDelegateType() /*-{
-    return this.type;
-  }-*/;
-  
-  /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#export(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
-   */
   @Override
-  public void export(IDatasourceInfo dsInfo) {
-    // TODO Auto-generated method stub
+  public final void export(IDatasourceInfo dsInfo) {
+    getDelegateExport(this.datasourceServiceObject);
     
   }
-  /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
-   */
+
   @Override
-  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
-    // TODO Auto-generated method stub
-    
+  public final void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
+    getDelegateRemove(this.datasourceServiceObject);
   }
+
+
+  private final native JsArray<JavaScriptObject> getDelegateIds(JavaScriptObject datasourceServiceObject) /*-{
+    return datasourceServiceObject.getIds();
+  }-*/;
+  private final native String getDelegateNewUI(JavaScriptObject datasourceServiceObject) /*-{
+    return datasourceServiceObject.getNewUI();
+  }-*/;
+
+  private final native String getDelegateEditUI(JavaScriptObject datasourceServiceObject) /*-{
+    return datasourceServiceObject.getEditUI();
+  }-*/;
+  
+  private final native String getDelegateType(JavaScriptObject datasourceServiceObject) /*-{
+    return datasourceServiceObject.getType();
+  }-*/;
+  
+  private final native String getDelegateExport(JavaScriptObject datasourceServiceObject) /*-{
+    return datasourceServiceObject.doExport();
+  }-*/;
+
+  private final native String getDelegateRemove(JavaScriptObject datasourceServiceObject) /*-{
+    return datasourceServiceObject.doRemove();
+  }-*/;
+  
+  
 }
