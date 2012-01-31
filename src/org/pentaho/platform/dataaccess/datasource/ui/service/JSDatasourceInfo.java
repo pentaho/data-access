@@ -5,60 +5,62 @@ import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-public class JSDatasourceInfo extends JavaScriptObject implements IDatasourceInfo{
-
-  // Overlay types always have protected, zero argument constructors.
-  protected JSDatasourceInfo() {
+public class JSDatasourceInfo implements IDatasourceInfo{
+  private JavaScriptObject jsDatasourceInfo;
+  
+  public JSDatasourceInfo(JavaScriptObject jsDatasourceInfo) {
+    this.jsDatasourceInfo = jsDatasourceInfo;
   }
+
   // JSNI methods to get datasource info data.
-  public final native String getDatasourceName() /*-{ return this.name; }-*/;
+  private final native String getDatasourceName(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.name; }-*/;
 
-  public final native String getDatasourceId() /*-{ return this.id; }-*/; //
+  private final native String getDatasourceId(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.id; }-*/; 
 
-  public final native String getDatasourceType() /*-{ return this.type; }-*/; 
+  private final native String getDatasourceType(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.type; }-*/; 
 
-  private final native boolean isDatasourceEditable() /*-{ return this.editable; }-*/; //
+  private final native boolean isDatasourceEditable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.editable; }-*/; 
   
-  private final native boolean isDatasourceRemovable() /*-{ return this.removable; }-*/; //
+  private final native boolean isDatasourceRemovable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.removable; }-*/; 
 
-  private final native boolean isDatasourceImportable() /*-{ return this.importable; }-*/; //
+  private final native boolean isDatasourceImportable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.importable; }-*/; 
   
-  private final native boolean isDatasourceExportable() /*-{ return this.exportable; }-*/; //
+  private final native boolean isDatasourceExportable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.exportable; }-*/; 
 
   
   @Override
   public final String getName() {
-    return getDatasourceName();
+    return getDatasourceName(this.jsDatasourceInfo);
   }
 
   @Override
   public final String getId() {
-    return getDatasourceId();
+    return getDatasourceId(this.jsDatasourceInfo);
   }
 
   @Override
   public final String getType() {
-    return getDatasourceType();
+    return getDatasourceType(this.jsDatasourceInfo);
   }
 
   @Override
   public final boolean isEditable() {
-    return isDatasourceEditable();
+    return isDatasourceEditable(this.jsDatasourceInfo);
   }
 
   @Override
   public final boolean isRemovable() {
-    return isDatasourceRemovable();
+    return isDatasourceRemovable(this.jsDatasourceInfo);
   }
 
   @Override
   public final boolean isImportable() {
-    return isDatasourceImportable();
+    return isDatasourceImportable(this.jsDatasourceInfo);
   }
 
   @Override
   public final boolean isExportable() {
-    return isDatasourceExportable();
+    return isDatasourceExportable(this.jsDatasourceInfo);
   }
 
 }

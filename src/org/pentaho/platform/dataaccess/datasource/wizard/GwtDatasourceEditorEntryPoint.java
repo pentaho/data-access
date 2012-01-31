@@ -44,6 +44,7 @@ import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceM
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.service.DSWUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService;
+import org.pentaho.platform.dataaccess.datasource.ui.service.JSUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.JdbcDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
@@ -248,11 +249,12 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   }
   
   $wnd.pho.registerUIDatasourceService = function(jsDatasourceService) {
-    wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::registerDatasourceService(Lorg/pentaho/platform/dataaccess/datasource/ui/service/IUIDatasourceAdminService;)(jsDatasourceService);
+    wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::registerDatasourceService(Lcom/google/gwt/core/client/JavaScriptObject;)(jsDatasourceService);
   }
 }-*/;
 
-  private void registerDatasourceService(IUIDatasourceAdminService datasourceService) {
+  private void registerDatasourceService(JavaScriptObject javascriptObject) {
+    JSUIDatasourceService datasourceService = new JSUIDatasourceService(javascriptObject); 
     UIDatasourceServiceManager.getInstance().registerService(datasourceService);
   }
 
