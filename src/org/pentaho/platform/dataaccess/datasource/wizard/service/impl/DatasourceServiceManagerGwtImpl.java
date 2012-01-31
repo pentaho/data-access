@@ -254,8 +254,6 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
       removeURL = null;
     }
     
-    Window.alert("Calling Service with URL: " + removeURL);
-    
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand<Boolean>() {
       public void execute(final AsyncCallback<Boolean> callback) {
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.POST, removeURL);
