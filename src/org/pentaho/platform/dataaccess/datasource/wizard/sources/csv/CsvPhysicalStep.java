@@ -211,7 +211,9 @@ public class CsvPhysicalStep extends AbstractWizardStep {
     };
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     bf.createBinding(encodingTypeMenuList, "value", datasourceModel.getModelInfo().getFileInfo(), CsvFileInfo.ENCODING, encodingBindingConvertor); //$NON-NLS-1$ //$NON-NLS-2$
-    datasourceModel.getModelInfo().getFileInfo().addPropertyChangeListener(CsvFileInfo.ENCODING, new RefreshPreviewPropertyChangeListener());
+    RefreshPreviewPropertyChangeListener previewChangeListener = new RefreshPreviewPropertyChangeListener();
+    datasourceModel.getModelInfo().getFileInfo().addPropertyChangeListener(CsvFileInfo.ENCODING, previewChangeListener);
+    datasourceModel.getModelInfo().getFileInfo().addPropertyChangeListener(CsvFileInfo.TMP_FILENAME_ATTRIBUTE, previewChangeListener);    
   }
 
   @Override
@@ -229,7 +231,8 @@ public class CsvPhysicalStep extends AbstractWizardStep {
     public void propertyChange(PropertyChangeEvent evt) {
       datasourceModel.getGuiStateModel().setDirty(true);
       try {
-          if(evt.getPropertyName().equals(CsvFileInfo.ENCODING)) {
+          String propName = evt.getPropertyName();
+          if(propName.equals(CsvFileInfo.ENCODING) || propName.equals(CsvFileInfo.TMP_FILENAME_ATTRIBUTE)) {
 
         	  csvDatasourceService.getPreviewRows(datasourceModel.getModelInfo().getFileInfo().getTmpFilename(),
         			  datasourceModel.getModelInfo().getFileInfo().getHeaderRows() > 0,
