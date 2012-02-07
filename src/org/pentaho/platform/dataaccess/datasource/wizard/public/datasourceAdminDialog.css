@@ -1,12 +1,15 @@
 #datasourcesListTable .headerWrapper { 
-background-color: transparent;
+	background-color: transparent;
 }
 
 #datasourcesListTable {
-background-color: white;
-padding: 5px 10px 10px;
+	padding: 5px 10px 10px;
 }
 
 .gwt-PopupPanel {
     z-index: 2101;
+}
+
+#datasourcesListTable .gwt-scrolltable .datawrapper {
+	background-color: white;
 }
