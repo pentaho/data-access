@@ -24,6 +24,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import java.io.File;
+import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -34,9 +35,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.repository2.unified.importexport.legacy.MondrianCatalogRepositoryHelper;
 
 @Path("/data-access/api/mondrian")
 public class AnalysisDatasourceService {
@@ -64,5 +67,23 @@ public class AnalysisDatasourceService {
 			return Response.serverError().entity(e.toString()).build();
 		}
 	}
-
+	
+	@PUT
+	@Path("/addSchema")
+	@Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
+	@Produces("text/plain")
+	public Response addSchema(InputStream mondrianFile, @QueryParam("catalogName") String catalogName, @QueryParam("datasourceInfo") String datasourceInfo) throws PentahoAccessControlException {
+		try {
+			MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
+		    helper.addSchema(mondrianFile, catalogName, datasourceInfo);
+		    
+		    // Flush the Mondrian cache to show imported datasources. 
+	        IMondrianCatalogService mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, "IMondrianCatalogService", PentahoSessionHolder.getSession());
+		    mondrianCatalogService.reInit(PentahoSessionHolder.getSession());
+		    
+			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+		} catch(Exception e) {
+			return Response.serverError().entity(e.toString()).build();
+		}
+	}
 }

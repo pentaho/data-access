@@ -4,6 +4,7 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -92,6 +93,35 @@ public class MetadataDatasourceService {
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
 		} catch (Exception e) {
 			metadataImporter.removeDomain(domainId);
+			return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+		}
+	}
+	
+	
+	@PUT
+	@Path("/storeDomain")
+	@Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
+	@Produces("text/plain")
+	public Response storeDomain(InputStream metadataFile, @QueryParam("domainId") String domainId) throws PentahoAccessControlException {
+		try {
+			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
+			metadataImporter.storeDomain(metadataFile, domainId, true);
+			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+		} catch(Exception e) {
+			return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+		}
+	}
+	
+	@PUT
+	@Path("/addLocalizationFile")
+	@Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
+	@Produces("text/plain")
+	public Response addLocalizationFile(@QueryParam("domainId") String domainId, @QueryParam("locale") String locale, InputStream propertiesFile) throws PentahoAccessControlException {
+		try {
+			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
+			metadataImporter.addLocalizationFile(domainId, locale, propertiesFile, true);
+			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+		} catch(Exception e) {
 			return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
 	}
