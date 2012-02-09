@@ -61,7 +61,7 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
   protected XulImage stepImage;
   protected XulLabel stepLabel;
   protected XulRow stepRow;
-  private boolean activated;
+  protected boolean activated;
   protected IWizardDatasource parentDatasource;
   protected IWizardModel wizardModel;
 

@@ -84,7 +84,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 			public void success(List schemaValues) {
 				schemas.removePropertyChangeListener(schemaSelection);
 				joinGuiModel.setSchemas(schemaValues);
-				processAvailableTables(connection, schemaValues.size() > 0 ? schemaValues.get(0).toString() : null);
+				//processAvailableTables(connection, schemaValues.size() > 0 ? schemaValues.get(0).toString() : null);
 				schemas.addPropertyChangeListener(schemaSelection);
 			}
 		});
@@ -279,7 +279,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	
 	class SchemaSelection implements PropertyChangeListener {
 		public void propertyChange(PropertyChangeEvent evt) {
-			if(evt.getNewValue() instanceof String) {
+			if(evt.getNewValue() instanceof String && TablesSelectionStep.this.activated) {
 				showWaitingDialog();
 				IConnection connection = ((MultiTableDatasource) parentDatasource).getConnection();
 				processAvailableTables(connection, schemas.getValue());

@@ -110,7 +110,10 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 			Database database = new Database(null, databaseMeta);
 		    database.connect();
 		    Map<String, Collection<String>> tableMap = database.getTableMap(null);
-		    Set<String> schemaNames = tableMap.keySet();
+
+        //database.getSchemas()
+
+		      Set<String> schemaNames = tableMap.keySet();
 		    schemas.addAll(schemaNames);
 		    database.disconnect();
 		} catch (KettleDatabaseException e) {
