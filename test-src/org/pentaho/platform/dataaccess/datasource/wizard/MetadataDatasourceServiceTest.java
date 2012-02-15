@@ -34,7 +34,7 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
-import org.pentaho.platform.repository.pmd.PentahoMetadataDomainRepositoryInfo;
+import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepositoryInfo;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.pentaho.test.platform.repository2.unified.MockUnifiedRepository;
 

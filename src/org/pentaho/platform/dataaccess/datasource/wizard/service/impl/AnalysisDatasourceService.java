@@ -39,7 +39,7 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
-import org.pentaho.platform.repository2.unified.importexport.legacy.MondrianCatalogRepositoryHelper;
+import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 
 @Path("/data-access/api/mondrian")
 public class AnalysisDatasourceService {
