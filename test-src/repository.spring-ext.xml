@@ -154,7 +154,7 @@
         class="org.pentaho.platform.repository2.unified.lifecycle.MondrianBackingRepositoryLifecycleManager"
         parent="abstractBackingRepositoryLifecycleManager"/>
   <bean id="metadataRepositoryLifecycleManager"
-        class="org.pentaho.platform.repository.pmd.MetadataRepositoryLifecycleManager"
+        class="org.pentaho.platform.plugin.services.metadata.MetadataRepositoryLifecycleManager"
         parent="abstractBackingRepositoryLifecycleManager"/>
   <bean id="backingRepositoryLifecycleManager"
         class="org.pentaho.platform.repository2.unified.lifecycle.DelegatingBackingRepositoryLifecycleManager">

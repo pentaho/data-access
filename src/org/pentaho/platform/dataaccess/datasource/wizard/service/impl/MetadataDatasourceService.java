@@ -26,7 +26,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.repository.pmd.PentahoMetadataDomainRepository;
+import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 
 @Path("/data-access/api/metadata")
 public class MetadataDatasourceService {
