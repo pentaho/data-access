@@ -34,10 +34,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.security.SecurityHelper;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 
@@ -57,6 +59,7 @@ public class AnalysisDatasourceService {
 	@Produces("text/plain")
 	public Response importAnalysisDatasource(String parameters, @QueryParam("analysisFile") String analysisFile, @QueryParam("databaseConnection") String databaseConnection) throws PentahoAccessControlException {
 		try {
+			validateAccess();
 		    String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
 		    String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
 		    File mondrianFile = new File(sysTmpDir + File.separatorChar + analysisFile);
@@ -74,6 +77,7 @@ public class AnalysisDatasourceService {
 	@Produces("text/plain")
 	public Response addSchema(InputStream mondrianFile, @QueryParam("catalogName") String catalogName, @QueryParam("datasourceInfo") String datasourceInfo) throws PentahoAccessControlException {
 		try {
+			validateAccess();
 			MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
 		    helper.addSchema(mondrianFile, catalogName, datasourceInfo);
 		    
@@ -86,4 +90,14 @@ public class AnalysisDatasourceService {
 			return Response.serverError().entity(e.toString()).build();
 		}
 	}
+	
+	private void validateAccess() throws PentahoAccessControlException {
+		IPentahoSession session = PentahoSessionHolder.getSession();
+		if(session != null) {
+			boolean isAdmin = SecurityHelper.getInstance().isPentahoAdministrator(session);
+			if(!isAdmin) {
+				throw new PentahoAccessControlException("Access Denied");
+			}
+		}
+	}	
 }

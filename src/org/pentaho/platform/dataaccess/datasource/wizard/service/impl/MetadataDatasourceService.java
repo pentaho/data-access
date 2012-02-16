@@ -20,12 +20,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.security.SecurityHelper;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 
 @Path("/data-access/api/metadata")
@@ -56,6 +58,7 @@ public class MetadataDatasourceService {
 		boolean validPropertyFiles = true; 
 		StringBuffer invalidFiles = new StringBuffer();
 		try {
+			validateAccess();
 			String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
 			String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
 			FileInputStream metadataInputStream = new FileInputStream(sysTmpDir + File.separatorChar + metadataFile);
@@ -104,6 +107,7 @@ public class MetadataDatasourceService {
 	@Produces("text/plain")
 	public Response storeDomain(InputStream metadataFile, @QueryParam("domainId") String domainId) throws PentahoAccessControlException {
 		try {
+			validateAccess();
 			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
 			metadataImporter.storeDomain(metadataFile, domainId, true);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
@@ -118,11 +122,22 @@ public class MetadataDatasourceService {
 	@Produces("text/plain")
 	public Response addLocalizationFile(@QueryParam("domainId") String domainId, @QueryParam("locale") String locale, InputStream propertiesFile) throws PentahoAccessControlException {
 		try {
+			validateAccess();
 			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
 			metadataImporter.addLocalizationFile(domainId, locale, propertiesFile, true);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
 		} catch(Exception e) {
 			return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+		}
+	}
+	
+	private void validateAccess() throws PentahoAccessControlException {
+		IPentahoSession session = PentahoSessionHolder.getSession();
+		if(session != null) {
+			boolean isAdmin = SecurityHelper.getInstance().isPentahoAdministrator(session);
+			if(!isAdmin) {
+				throw new PentahoAccessControlException("Access Denied");
+			}
 		}
 	}
 }
