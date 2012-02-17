@@ -144,9 +144,11 @@ public class MetadataDatasourceService {
 	
 	private void validateAccess() throws PentahoAccessControlException {
 		IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
-		boolean isAdmin = policy.isAllowed(ACTION_READ) && policy.isAllowed(ACTION_CREATE) && policy.isAllowed(ACTION_ADMINISTER_SECURITY); 
-		if(!isAdmin) {
-			throw new PentahoAccessControlException("Access Denied");
+		if(policy != null) {
+			boolean isAdmin = policy.isAllowed(ACTION_READ) && policy.isAllowed(ACTION_CREATE) && policy.isAllowed(ACTION_ADMINISTER_SECURITY); 
+			if(!isAdmin) {
+				throw new PentahoAccessControlException("Access Denied");
+			}
 		}
 	}	
 }
