@@ -20,14 +20,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
-import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.security.SecurityHelper;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 
 @Path("/data-access/api/metadata")
@@ -37,6 +36,10 @@ public class MetadataDatasourceService {
 	private static final String LANG_CC = LANG + "_[A-Z]{2}";
 	private static final String LANG_CC_EXT = LANG_CC + "_[^/]+";
 	private static final List<String> ENCODINGS = Arrays.asList("", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR", "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251", "windows-1256", "KOI8-R", "ISO-8859-9");
+	
+	private final String ACTION_READ = "org.pentaho.repository.read"; 
+	private final String ACTION_CREATE = "org.pentaho.repository.create";
+	private final String ACTION_ADMINISTER_SECURITY = "org.pentaho.security.administerSecurity";
 
 	private static final Pattern[] patterns = new Pattern[] {
 	    Pattern.compile("(" + LANG + ").properties$"),
@@ -52,13 +55,18 @@ public class MetadataDatasourceService {
 	@Consumes({ TEXT_PLAIN })
 	@Produces("text/plain")
 	public Response importMetadataDatasource(String localizeBundleEntries, @QueryParam("domainId") String domainId, @QueryParam("metadataFile") String metadataFile) throws PentahoAccessControlException {
+		try {
+			validateAccess();
+		} catch (PentahoAccessControlException e) {
+			return Response.serverError().entity(e.toString()).build();
+		} 
+		
 		IMetadataDomainRepository metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, PentahoSessionHolder.getSession());
 		PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
 		CsvUtils csvUtils = new CsvUtils();
 		boolean validPropertyFiles = true; 
 		StringBuffer invalidFiles = new StringBuffer();
 		try {
-			validateAccess();
 			String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
 			String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
 			FileInputStream metadataInputStream = new FileInputStream(sysTmpDir + File.separatorChar + metadataFile);
@@ -100,7 +108,6 @@ public class MetadataDatasourceService {
 		}
 	}
 	
-	
 	@PUT
 	@Path("/storeDomain")
 	@Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
@@ -111,6 +118,8 @@ public class MetadataDatasourceService {
 			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
 			metadataImporter.storeDomain(metadataFile, domainId, true);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+		} catch (PentahoAccessControlException e) {
+			return Response.serverError().entity(e.toString()).build();
 		} catch(Exception e) {
 			return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
@@ -126,18 +135,18 @@ public class MetadataDatasourceService {
 			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
 			metadataImporter.addLocalizationFile(domainId, locale, propertiesFile, true);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+		} catch (PentahoAccessControlException e) {
+			return Response.serverError().entity(e.toString()).build();
 		} catch(Exception e) {
 			return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
 	}
 	
 	private void validateAccess() throws PentahoAccessControlException {
-		IPentahoSession session = PentahoSessionHolder.getSession();
-		if(session != null) {
-			boolean isAdmin = SecurityHelper.getInstance().isPentahoAdministrator(session);
-			if(!isAdmin) {
-				throw new PentahoAccessControlException("Access Denied");
-			}
+		IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
+		boolean isAdmin = policy.isAllowed(ACTION_READ) && policy.isAllowed(ACTION_CREATE) && policy.isAllowed(ACTION_ADMINISTER_SECURITY); 
+		if(!isAdmin) {
+			throw new PentahoAccessControlException("Access Denied");
 		}
-	}
+	}	
 }

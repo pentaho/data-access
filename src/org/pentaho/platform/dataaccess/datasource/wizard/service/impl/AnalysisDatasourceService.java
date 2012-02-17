@@ -34,12 +34,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.security.SecurityHelper;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 
@@ -47,6 +46,9 @@ import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogR
 public class AnalysisDatasourceService {
 
 	private IMondrianCatalogService mondrianCatalogService;
+	private final String ACTION_READ = "org.pentaho.repository.read"; 
+	private final String ACTION_CREATE = "org.pentaho.repository.create";
+	private final String ACTION_ADMINISTER_SECURITY = "org.pentaho.security.administerSecurity";
 
 	public AnalysisDatasourceService() {
 		super();
@@ -92,12 +94,10 @@ public class AnalysisDatasourceService {
 	}
 	
 	private void validateAccess() throws PentahoAccessControlException {
-		IPentahoSession session = PentahoSessionHolder.getSession();
-		if(session != null) {
-			boolean isAdmin = SecurityHelper.getInstance().isPentahoAdministrator(session);
-			if(!isAdmin) {
-				throw new PentahoAccessControlException("Access Denied");
-			}
+		IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
+		boolean isAdmin = policy.isAllowed(ACTION_READ) && policy.isAllowed(ACTION_CREATE) && policy.isAllowed(ACTION_ADMINISTER_SECURITY); 
+		if(!isAdmin) {
+			throw new PentahoAccessControlException("Access Denied");
 		}
 	}	
 }
