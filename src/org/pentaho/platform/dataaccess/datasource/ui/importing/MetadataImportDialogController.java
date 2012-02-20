@@ -24,10 +24,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
-import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -37,26 +37,24 @@ import org.pentaho.ui.xul.util.AbstractXulDialogController;
 public class MetadataImportDialogController extends AbstractXulDialogController<MetadataImportDialogModel> implements IImportPerspective {
 
 	private BindingFactory bf;
-	private XulButton addButton;
-	private XulButton removeButton;
 	private XulButton acceptButton;
 	private XulTree localizedBundlesTree;
 	private XulTextbox domainIdText;
 	private XulDialog importDialog;
 	private ResourceBundle resBundle;
 	private MetadataImportDialogModel importDialogModel;
+	private XulLabel fileLabel;
 
 	public void init() {
 		try {
 			resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
 			importDialogModel = new MetadataImportDialogModel();
-			addButton = (XulButton) document.getElementById("addButton");
-			removeButton = (XulButton) document.getElementById("removeButton");
 			localizedBundlesTree = (XulTree) document.getElementById("localizedBundlesTree");
 			domainIdText = (XulTextbox) document.getElementById("domainIdText");
 			domainIdText.addPropertyChangeListener(new DomainIdChangeListener());
 			importDialog = (XulDialog) document.getElementById("importDialog");
-			
+			fileLabel = (XulLabel) document.getElementById("fileLabel");
+
 			acceptButton = (XulButton) document.getElementById("importDialog_accept");
 			acceptButton.setDisabled(true);
 
@@ -107,6 +105,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 	public void showDialog() {
 		reset();
 		importDialog.setTitle(resBundle.getString("importDialog.IMPORT_METADATA", "Import Metadata"));
+		fileLabel.setValue(resBundle.getString("importDialog.XMI_FILE", "XMI File") + ":");
 		super.showDialog();
 	}
 

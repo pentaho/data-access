@@ -8,7 +8,7 @@
    <vbox>
 
      <vbox>
-         <hbox><label id="fileLabel" value="${importDialog.FILE}:"/></hbox>
+         <hbox><label id="fileLabel" value=""/></hbox>
          <hbox>
              <pen:fileupload id="genericFileUpload" action="../../../../../UploadService" onuploadsuccess="importDialogController.genericUploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" height="22" width="400" />
          </hbox> 

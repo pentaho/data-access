@@ -35,6 +35,7 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -64,6 +65,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private XulRadio manualRadio;
 	private XulButton acceptButton;
 	private XulButton parametersAcceptButton;
+	private XulLabel fileLabel;
 	
 	private static final Integer PARAMETER_MODE = 1;
 	private static final Integer DATASOURCE_MODE = 0;
@@ -84,6 +86,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			analysisPreferencesDeck = (XulDeck) document.getElementById("analysisPreferencesDeck");
 			availableRadio = (XulRadio) document.getElementById("availableRadio");			
 			manualRadio = (XulRadio) document.getElementById("manualRadio");
+			fileLabel = (XulLabel) document.getElementById("fileLabel");
 			
 			acceptButton = (XulButton) document.getElementById("importDialog_accept");
 			acceptButton.setDisabled(true);
@@ -205,7 +208,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
 	public void showDialog() {
 		reset();
-		importDialog.setTitle(resBundle.getString("importDialog.IMPORT_MONDRIAN", "Import Mondrian"));
+		importDialog.setTitle(resBundle.getString("importDialog.IMPORT_MONDRIAN", "Import Analysis"));
+		fileLabel.setValue(resBundle.getString("importDialog.MONDRIAN_FILE", "Mondrian File") + ":");
 		super.showDialog();
 	}
 
