@@ -264,7 +264,9 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Override
 	public void stepActivatingForward() {
     super.stepActivatingForward();
-
+    if(this.joinGuiModel.getAvailableTables() == null || this.joinGuiModel.getAvailableTables().size() == 0){
+      fetchTables();
+    }
     checkValidState();
 	}
 	
@@ -276,13 +278,17 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	    waitingLabel.setValue(MessageHandler.getString("multitable.FETCHING_TABLE_INFO")); 
 	    waitingDialog.show();
 	}
+
+  protected void fetchTables(){
+    showWaitingDialog();
+    IConnection connection = ((MultiTableDatasource) parentDatasource).getConnection();
+    processAvailableTables(connection, schemas.getValue());
+  }
 	
 	class SchemaSelection implements PropertyChangeListener {
 		public void propertyChange(PropertyChangeEvent evt) {
 			if(evt.getNewValue() instanceof String && TablesSelectionStep.this.activated) {
-				showWaitingDialog();
-				IConnection connection = ((MultiTableDatasource) parentDatasource).getConnection();
-				processAvailableTables(connection, schemas.getValue());
+				fetchTables();
 			}
 		}
 	}
