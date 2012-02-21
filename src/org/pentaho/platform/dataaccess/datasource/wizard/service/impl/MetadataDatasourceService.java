@@ -99,12 +99,12 @@ public class MetadataDatasourceService {
 			}
 
 			if(!validPropertyFiles) {
-				return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_002_PROPERTY_FILES_ERROR") + invalidFiles.toString()).build();	
+				return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_002_PROPERTY_FILES_ERROR") + invalidFiles.toString()).build();	
 			}
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
 		} catch (Exception e) {
 			metadataImporter.removeDomain(domainId);
-			return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
 	}
 	
@@ -121,7 +121,7 @@ public class MetadataDatasourceService {
 		} catch (PentahoAccessControlException e) {
 			return Response.serverError().entity(e.toString()).build();
 		} catch(Exception e) {
-			return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
 	}
 	
@@ -138,7 +138,7 @@ public class MetadataDatasourceService {
 		} catch (PentahoAccessControlException e) {
 			return Response.serverError().entity(e.toString()).build();
 		} catch(Exception e) {
-			return Response.serverError().entity(Messages.getErrorString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
 	}
 	
