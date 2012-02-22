@@ -69,7 +69,7 @@ public class AnalysisDatasourceService {
 		    mondrianCatalogService.importSchema(mondrianFile, databaseConnection, parameters);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
 		} catch (Exception e) {
-			return Response.serverError().entity(e.toString()).build();
+			return Response.serverError().entity(e.getMessage()).build();
 		}
 	}
 	
