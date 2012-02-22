@@ -95,6 +95,9 @@ public class MetadataDatasourceService {
 						validPropertyFiles =  false;
 						invalidFiles.append(localizationFileName);
 					}
+				} else {
+					validPropertyFiles =  false;
+					invalidFiles.append(localizationFileName);
 				}
 			}
 
