@@ -177,7 +177,7 @@ public class DatasourceWebServicesSecurityTest implements ApplicationContextAwar
 		login("joe", "duff", false);
 		AnalysisDatasourceService analysisDatasourceService = new AnalysisDatasourceService();
 		Response res = analysisDatasourceService.importAnalysisDatasource(null, null, null);
-		Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
+		Assert.assertTrue(res.getEntity().equals("Access Denied"));
 		
 		res = analysisDatasourceService.addSchema(null, null, null);
 		Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
