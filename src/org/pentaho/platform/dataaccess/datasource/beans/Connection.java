@@ -33,6 +33,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class Connection extends XulEventSourceAdapter implements IDatabaseConnection {
 
 	private static final long serialVersionUID = 5825649640767205332L;
+	private String id;
 	private String name;
 	private String driverClass;
 	private String username;
@@ -42,6 +43,16 @@ public class Connection extends XulEventSourceAdapter implements IDatabaseConnec
 	public Connection() {
 
 	}
+	 @Bindable
+	public void setId(String id) {
+	    this.id = id;
+	}
+
+	  @Bindable
+	public String getId() {
+	    return id;
+	}
+	  
 
 	@Bindable
 	public void setName(String name) {
