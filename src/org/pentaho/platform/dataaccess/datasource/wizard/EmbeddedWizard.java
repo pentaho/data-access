@@ -164,18 +164,13 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   @Override
   public void onFinish(final IDatasourceSummary summary) {
     this.summary = summary;
-    if(wizardModel.isEditing()){
-      MessageHandler.getInstance().closeWaitingDialog();
-      
+    if(wizardModel.isEditing() && summary.getErrorCount() == 0){
       // biserver-6210 - manage modeler dialog listener separate from the wizard's listener
-      if (modelerDialogListener != null) {
-        modelerDialogListener.onDialogAccept(getDialogResult());
-      }
-      modelerDialogListener = null;
-
+      handleModelerDialog();
       return;
     }
-    summaryDialogController.showSummaryDialog(summary, new XulServiceCallback<IDatasourceSummary>(){
+    final boolean showModelerDecision = !wizardModel.isEditing();
+    summaryDialogController.showSummaryDialog(summary, showModelerDecision, new XulServiceCallback<IDatasourceSummary>(){
       @Override
       public void error(String s, Throwable throwable) {
         MessageHandler.getInstance().showErrorDialog(s, throwable.getMessage());
@@ -183,14 +178,29 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
       @Override
       public void success(IDatasourceSummary iDatasourceSummary) {
-        if(iDatasourceSummary.isShowModeler()){
-          showModelEditor();
+        if(!showModelerDecision) {
+          handleModelerDialog();
+          return;
         } else {
-          onDialogAccept();
+          if(iDatasourceSummary.isShowModeler()){
+            showModelEditor();
+          } else {
+            onDialogAccept();
+          }
         }
         MessageHandler.getInstance().closeWaitingDialog();
       }
     });
+  }
+
+  private void handleModelerDialog() {
+    MessageHandler.getInstance().closeWaitingDialog();
+
+    // biserver-6210 - manage modeler dialog listener separate from the wizard's listener
+    if (modelerDialogListener != null) {
+      modelerDialogListener.onDialogAccept(getDialogResult());
+    }
+    modelerDialogListener = null;
   }
 
   private void checkInitialized() {
