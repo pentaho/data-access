@@ -44,7 +44,7 @@
 	    <dependency org="org.apache.axis2" name="axis2-adb" rev="1.4.1" transitive="false"/>
 	    <dependency org="org.apache.axis2" name="axis2-kernel" rev="1.4.1" transitive="false"/>
         <dependency org="ognl" name="ognl" rev="2.6.9" transitive="false"/> 
-        <dependency org="log4j" name="log4j" rev="1.2.14"/>
+        <dependency org="log4j" name="log4j" rev="1.2.16"/>
         <dependency org="jfree" name="jcommon" rev="1.0.14"/>
         <dependency org="com.ibm.icu" name="icu4j" rev="4_4_1_1"/>
         <dependency org="com.ibm.icu" name="icu4j-charsets" rev="4_4_1_1"/>
