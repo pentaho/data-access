@@ -319,14 +319,8 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       wizard.setDatasourceService(datasourceService);
       wizard.setConnectionService(connectionService);
       wizard.setCsvDatasourceService(csvService);
-      wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
-        public void asyncConstructorDone(EmbeddedWizard source) {
-          showSelectionDialog(context, selectDs, listener);
-        }
-      });
-    } else {
-      showSelectionDialog(context, selectDs, listener);
     }
+    showSelectionDialog(context, selectDs, listener);
   }
 
   private void showSelectionDialog(final String context, final boolean selectDs, final DialogListener<LogicalModelSummary> listener) {
