@@ -321,28 +321,53 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   
   @Bindable
   public void addDatasource() {
+
     enableWaitCursor(true);
-    datasourceEditor.addDialogListener(new DialogListener<Domain>() {
-      public void onDialogAccept(final Domain domain) {
-        refreshDatasources(domain.getId(), domain.getLogicalModels().get(0).getId());
-      }
 
-      public void onDialogCancel() {
-      }
+    if(datasourceEditor.isInitialized()){
+      datasourceEditor.showDialog();
+    } else {
+      datasourceEditor.init(new AsyncConstructorListener<EmbeddedWizard>(){
+        public void asyncConstructorDone(EmbeddedWizard dialog) {
+          enableWaitCursor(true);
+          datasourceEditor.addDialogListener(new DialogListener<Domain>() {
+            public void onDialogAccept(final Domain domain) {
+              refreshDatasources(domain.getId(), domain.getLogicalModels().get(0).getId());
+            }
 
-      public void onDialogReady() {
-        enableWaitCursor(false);
-      }
-    });
-    datasourceEditor.showDialog();
+            public void onDialogCancel() {
+            }
+
+            public void onDialogReady() {
+              enableWaitCursor(false);
+            }
+          });
+          datasourceEditor.showDialog();
+        }
+      });
+    }
+
+
   }
 
   @Bindable
   public void editDatasource() {
 
-    modeler = ModelerDialog.getInstance(new AsyncConstructorListener<ModelerDialog>(){
+    if(datasourceEditor.isInitialized()){
+      showModeler();
+    } else {
+      datasourceEditor.init(new AsyncConstructorListener<EmbeddedWizard>(){
+        public void asyncConstructorDone(EmbeddedWizard dialog) {
+          showModeler();
+        }
+      });
+    }
+    
+    
+  }
+  private void showModeler(){
+    modeler = ModelerDialog.getInstance(datasourceEditor, new AsyncConstructorListener<ModelerDialog>(){
       public void asyncConstructorDone(ModelerDialog dialog) {
-        enableWaitCursor(true);
         final DialogListener<Domain> listener = new DialogListener<Domain>(){
           public void onDialogCancel() {
           }
@@ -358,7 +383,6 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
         dialog.showDialog(logicalModelSummary.getDomainId(), logicalModelSummary.getModelId());
       }
     });
-    
   }
 
   @Bindable
