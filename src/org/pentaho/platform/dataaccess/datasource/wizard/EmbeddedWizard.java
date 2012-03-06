@@ -44,6 +44,7 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulFileUpload;
+import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.gwt.GwtXulRunner;
@@ -241,6 +242,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     /* end of work around */
     
     dialog.show();
+
+    // BISERVER-6473
+    XulTextbox datasourceName = (XulTextbox)mainWizardContainer.getDocumentRoot().getElementById("datasourceName"); //$NON-NLS-1$
+    datasourceName.setFocus();
   }
 
   public void showEditDialog(final Domain domain, DialogListener<Domain> listener) {
