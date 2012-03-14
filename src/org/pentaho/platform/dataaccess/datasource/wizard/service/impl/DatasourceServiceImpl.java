@@ -262,6 +262,13 @@ public class DatasourceServiceImpl implements IDatasourceService {
       sqlConnection.setMaxRows(limit);
       sqlConnection.setReadOnly(true);
       return sqlConnection.executeQuery(BEFORE_QUERY + query + AFTER_QUERY);
+    } catch (SQLException e) { 
+      String error = "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED";
+      if(e.getSQLState().equals("S0021")) { // Column already exists
+    	  error = "DatasourceServiceImpl.ERROR_0021_DUPLICATE_COLUMN_NAMES";
+      }
+	  logger.error(Messages.getErrorString(error));
+	  throw new QueryValidationException(Messages.getString(error));
     } catch (Exception e) {
       logger.error(Messages.getErrorString(
           "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
@@ -520,12 +527,13 @@ public class DatasourceServiceImpl implements IDatasourceService {
 
   @Override
   public QueryDatasourceSummary generateQueryDomain(String name, String query, IConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
-
+	  
     ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), getGeoContext());
     ModelerService modelerService = new ModelerService();
     modelerWorkspace.setModelName(name);
 
     try {
+  	  executeQuery(datasourceDTO.getConnectionName(), query, "1");
       Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
           || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connection.getName(), query,
