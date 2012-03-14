@@ -127,7 +127,6 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
         return connection;
       } else {
         // no connection found, throw an exception
-        logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name));
         throw new ConnectionServiceException(Messages.getErrorString(
           "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name)); //$NON-NLS-1$
       }
