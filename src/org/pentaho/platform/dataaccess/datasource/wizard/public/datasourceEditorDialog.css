@@ -338,3 +338,7 @@ html>body .dialog-content {
 #otherRadio .gwt-TextBox {
   width: 150px;
 }
+
+.dialog-content .pentaho-tabwidget .pentaho-tabwidgetlabel{
+  font-size: .86em;
+}
