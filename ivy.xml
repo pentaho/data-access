@@ -124,7 +124,8 @@
             <artifact name="pentaho-database-gwt" type="source" ext="jar" m:classifier="sources"/>
         </dependency>
 
-		<dependency org="pentaho" name="pentaho-database-model"  rev="${dependency.pentaho-database-model.revision}"  transitive="false" conf="codegen->default"  changing="true">
+        <!-- PDI-7726 - making this available in the default scope, since it is needed for more than just code generation -->
+    	<dependency org="pentaho" name="pentaho-database-model"  rev="${dependency.pentaho-database-model.revision}"  transitive="false" conf="default->default"  changing="true">
             <artifact name="pentaho-database-model"/>
             <artifact name="pentaho-database-model" type="source" ext="jar" m:classifier="sources"/>
         </dependency>	
