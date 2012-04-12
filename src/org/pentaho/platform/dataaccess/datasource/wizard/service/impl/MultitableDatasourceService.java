@@ -100,7 +100,9 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		
 		IDatabaseConnection iDatabaseConnection = this.connectionServiceImpl.convertFromConnection(connection);
 		iDatabaseConnection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
-		return DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
+		DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
+    dbmeta.getDatabaseInterface().setQuoteAllFields(true);
+    return dbmeta;
   }
 	
 	public List<String> retrieveSchemas(IConnection connection) throws DatasourceServiceException {
