@@ -263,12 +263,15 @@ public class DatasourceServiceImpl implements IDatasourceService {
       sqlConnection.setReadOnly(true);
       return sqlConnection.executeQuery(BEFORE_QUERY + query + AFTER_QUERY);
     } catch (SQLException e) { 
-      String error = "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED";
       if(e.getSQLState().equals("S0021")) { // Column already exists
-    	  error = "DatasourceServiceImpl.ERROR_0021_DUPLICATE_COLUMN_NAMES";
+    	  String error = "DatasourceServiceImpl.ERROR_0021_DUPLICATE_COLUMN_NAMES";
+        logger.error(Messages.getErrorString(error));
+        throw new QueryValidationException(Messages.getString(error));
+      } else {
+        logger.error(Messages.getErrorString(
+            "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
+        throw new QueryValidationException(e.getLocalizedMessage(), e);
       }
-	  logger.error(Messages.getErrorString(error));
-	  throw new QueryValidationException(Messages.getString(error));
     } catch (Exception e) {
       logger.error(Messages.getErrorString(
           "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
