@@ -50,6 +50,7 @@
         <dependency org="com.ibm.icu" name="icu4j-charsets" rev="4_4_1_1"/>
 		<dependency org="net.sf.flexjson" name="flexjson" rev="2.1" transitive="false" />
 		<dependency org="org.json" name="json" rev="3.1.1" transitive="false" conf="default->default" />
+		<dependency org="GWT-FX" name="GWT-FX" rev="0.5.0" conf="codegen->default" transitive="false"/>
 		
         <!--  using libbase's CSVTokenizer -->
         <dependency org="${dependency.reporting-library.group}" name="libbase" rev="${dependency.libbase.revision}" changing="true">
