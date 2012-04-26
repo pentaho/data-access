@@ -304,7 +304,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
         try {
           model.refresh(domain);
         } catch (ModelerException e) {
-          showErrorDialog("Error", e.getMessage());
+          showErrorDialog(messages.getString("error"), e.getMessage());
         }
       }
 
