@@ -22,20 +22,20 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 public interface IXulAsyncJoinSelectionService {
 
-	void getDatabaseTables(IConnection connection, String schema, XulServiceCallback<List> callback);
+	void getDatabaseTables(Connection connection, String schema, XulServiceCallback<List> callback);
 	
-	void retrieveSchemas(IConnection connection, XulServiceCallback<List> callback);
+	void retrieveSchemas(Connection connection, XulServiceCallback<List> callback);	
 
-	void getTableFields(String table, IConnection connection, XulServiceCallback<List> callback);
+	void getTableFields(String table, Connection connection, XulServiceCallback<List> callback);
 
-	void serializeJoins(MultiTableDatasourceDTO dto, IConnection connection, XulServiceCallback<IDatasourceSummary> callback);
+	void serializeJoins(MultiTableDatasourceDTO dto, Connection connection, XulServiceCallback<IDatasourceSummary> callback);
 	
 	void deSerializeModelState(String source, XulServiceCallback<MultiTableDatasourceDTO> callback);
 

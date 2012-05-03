@@ -1,7 +1,5 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +7,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
@@ -43,6 +40,9 @@ public class SerializeServiceTest {
 	      // Kettle may already be initialized by another test.
 	    }
 
+	    //StandaloneSession session = new StandaloneSession("0123456789");	    	
+	    //PentahoSessionHolder.setSession(session);
+	    
 	    String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
 	    String path = solutionStorage + ISolutionRepository.SEPARATOR
 	        + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
@@ -71,24 +71,6 @@ public class SerializeServiceTest {
 	    service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
 	    Assert.assertEquals(domain.getLogicalModels().get(1).getProperty("MondrianCatalogRef"), model.getModelName());
-
-	    File xmiFile = new File(path + "test_file.xmi");//$NON-NLS-1$
-	    File mondrianFile = new File(path + "test_file.mondrian.xml");//$NON-NLS-1$
-
-	    assertTrue(xmiFile.exists());
-	    assertTrue(mondrianFile.exists());
-
-	    if (xmiFile.exists()) {
-	      xmiFile.delete();
-	    }
-
-	    if (mondrianFile.exists()) {
-	      mondrianFile.delete();
-	    }
-
-	    //Restores datasources.xml to its original content.
-	    FileUtils.copyFile(olap2, olap1);
-	    olap2.delete();
 	  }
 
 	  private Domain generateModel() {

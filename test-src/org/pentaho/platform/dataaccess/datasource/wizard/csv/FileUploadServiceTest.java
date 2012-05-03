@@ -19,7 +19,9 @@ import javax.servlet.http.HttpSessionContext;
 import org.junit.Test;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.UploadFileDebugServlet;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.core.system.StandaloneSession;
 import org.pentaho.platform.util.UUIDUtil;
 import org.safehaus.uuid.UUID;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -38,6 +40,8 @@ public class FileUploadServiceTest {
   public void testUpload() throws Exception {
 
     PentahoSystemHelper.init();
+    StandaloneSession pSession = new StandaloneSession("12345678901234567890");
+    PentahoSessionHolder.setSession(pSession);
 
     UUID uuid = UUIDUtil.getUUID();
     String fileName = uuid.toString();
