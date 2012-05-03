@@ -19,8 +19,12 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,17 +100,43 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		
 		IDatabaseConnection iDatabaseConnection = this.connectionServiceImpl.convertFromConnection(connection);
 		iDatabaseConnection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
-		return DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
-  }
+		DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
+	    dbmeta.getDatabaseInterface().setQuoteAllFields(true);
+	    return dbmeta;
+  	}
 
-	public List<String> getDatabaseTables(Connection connection) throws DatasourceServiceException {
+	public List<String> retrieveSchemas(Connection connection) throws DatasourceServiceException {
+		List<String> schemas = new ArrayList<String>();
+		try {
+			DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
+			Database database = new Database(null, databaseMeta);
+		    database.connect();
+		    Map<String, Collection<String>> tableMap = database.getTableMap(null);
+
+        //database.getSchemas()
+
+		      Set<String> schemaNames = tableMap.keySet();
+		    schemas.addAll(schemaNames);
+		    database.disconnect();
+		} catch (KettleDatabaseException e) {
+	      logger.error("Error creating database object", e);
+	      throw new DatasourceServiceException(e);
+	    } catch (ConnectionServiceException e) {
+	      logger.error("Error getting database meta", e);
+	      throw new DatasourceServiceException(e);
+	    }
+		return schemas;
+	}
+
+	public List<String> getDatabaseTables(Connection connection, String schema) throws DatasourceServiceException {
     try{
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       Database database = new Database(null, databaseMeta);
       database.connect();
-
-      String[] tableNames = database.getTablenames();
-      List<String> tables = Arrays.asList(tableNames);
+      String[] tableNames = database.getTablenames(schema, true);
+      List<String> tables = new ArrayList<String>();
+      tables.addAll(Arrays.asList(tableNames));
+      tables.addAll(Arrays.asList(database.getViews(schema, true)));
       database.disconnect();
       return tables;
     } catch (KettleDatabaseException e) {
@@ -129,12 +159,15 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getSchemaModel(), dto.getDatasourceName(), dto.getSelectedTables(), geoContext);
       Domain domain = multiTable.generateDomain(dto.isDoOlap());
-      domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(dto));
-      domain.getLogicalModels().get(0).setProperty("DatasourceType", "MULTI-TABLE-DS");
+      
+      String modelState = serializeModelState(dto);
+      for(LogicalModel lm : domain.getLogicalModels()) {
+        lm.setProperty("datasourceModel", modelState);
+        lm.setProperty("DatasourceType", "MULTI-TABLE-DS");
 
-      // BISERVER-6450 - add security settings to the logical model
-      applySecurity(domain.getLogicalModels().get(0));
-
+        // BISERVER-6450 - add security settings to the logical model
+        applySecurity(lm);
+      }
       modelerService.serializeModels(domain, dto.getDatasourceName(), dto.isDoOlap());
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
@@ -221,7 +254,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
     
   protected boolean isSecurityEnabled() {
     Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
-        || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
+        || ((getPermittedUserList() != null && getPermittedUserList().size() > 0));
     return securityEnabled;
   }
 

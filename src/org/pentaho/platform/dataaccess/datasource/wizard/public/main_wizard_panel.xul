@@ -186,31 +186,41 @@
 				        </vbox>
 				      </hbox>
 				      <hbox>
+					    <vbox id="schemaTableVbox">
+				          <label value="${multitable.SCHEMA}" tooltiptext=""/>
+					      <menulist id="schemas" width="295">
+					        <menupopup>
+					          <menuitem label=""/>
+					        </menupopup>
+					      </menulist>  
+				        </vbox>
+				      </hbox>
+				      <hbox>
 				        <vbox>
 				          <label value="${multitable.AVAILABLE_TABLES}" tooltiptext=""/>
-				          <listbox id="availableTables" pen:binding="name" disabled="false" height="370" width="295" seltype="multi"/>
+				          <listbox id="availableTables" pen:binding="name" disabled="false" height="310" width="295" seltype="multi"/>
 				        </vbox>
 				        <vbox>
-				          <spacer height="175"/>
+				          <spacer height="150"/>
 				          <button id="addButton" image="images/move_arrow.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false"/>
 				          <button id="removeButton" image="images/move_arrow_back.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"/>
 				          <spacer flex="1"/>
 				        </vbox>
 				        <vbox>
 				          <label value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
-				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="370" width="295" seltype="multi"/>
+				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="310" width="295" seltype="multi"/>
 				        </vbox>
 				      </hbox>
 				      <hbox>
-				          <spacer width="330"/>
-				      	  <vbox id="factTableVbox">
-				          	<label value="${multitable.FACT_TABLE}" tooltiptext=""/>
-   						  	<menulist id="factTables" pen:binding="name" width="204">
-						  		<menupopup>
-									<menuitem label=""/>
-								</menupopup>
-						  	</menulist>  
-				          </vbox>
+				        <spacer width="335"/>
+				      	<vbox id="factTableVbox">
+				          <label value="${multitable.FACT_TABLE}" tooltiptext=""/>
+   					      <menulist id="factTables" pen:binding="name" width="295">
+					        <menupopup>
+					          <menuitem label=""/>
+					        </menupopup>
+					      </menulist>  
+				        </vbox>
 				      </hbox>
 				  </vbox>
 	              <!--Multi-table STEP 2-->

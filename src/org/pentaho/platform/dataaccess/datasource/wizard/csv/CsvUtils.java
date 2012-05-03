@@ -218,6 +218,9 @@ public class CsvUtils extends PentahoBase {
         
         while (csvt.hasMoreTokens()) {
           String token = csvt.nextToken();
+          if(token != null) {
+        	  token = token.trim();
+          }
           rowData.add(token);
           count++;
         }

@@ -49,6 +49,9 @@ public class SummaryDialogController extends AbstractXulEventHandler {
   }
 
   public void showSummaryDialog(IDatasourceSummary stats, XulServiceCallback<IDatasourceSummary> callback){
+    showSummaryDialog(stats, true, callback);
+  }
+  public void showSummaryDialog(IDatasourceSummary stats, boolean showModelerDecision, XulServiceCallback<IDatasourceSummary> callback){
     summary = stats;
     this.callback = callback;
 
@@ -86,7 +89,7 @@ public class SummaryDialogController extends AbstractXulEventHandler {
 
     //TODO: handle modeler checkbox visibility
     //showModelerCheckboxHider.setVisible(!datasourceModel.getGuiStateModel().isEditing());
-    showModelerCheckboxHider.setVisible(true);
+    showModelerCheckboxHider.setVisible(showModelerDecision);
     summaryDialog.show();
   }
 

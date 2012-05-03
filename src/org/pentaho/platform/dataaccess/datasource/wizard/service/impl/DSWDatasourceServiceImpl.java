@@ -250,6 +250,13 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       sqlConnection.setMaxRows(limit);
       sqlConnection.setReadOnly(true);
       return sqlConnection.executeQuery(BEFORE_QUERY + query + AFTER_QUERY);
+    } catch (SQLException e) { 
+      String error = "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED";
+      if(e.getSQLState().equals("S0021")) { // Column already exists
+        error = "DatasourceServiceImpl.ERROR_0021_DUPLICATE_COLUMN_NAMES";
+      }
+      logger.error(Messages.getErrorString(error));
+      throw new QueryValidationException(Messages.getString(error));      
     } catch (Exception e) {
       logger.error(Messages.getErrorString(
           "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
@@ -413,7 +420,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       try {
         domain = getMetadataDomainRepository().getDomain(domainId);
       } catch (Exception e) {
-        logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0021_UNABLE_TO_PROCESS_LOGICAL_MODEL", domainId), e);
+        logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0022_UNABLE_TO_PROCESS_LOGICAL_MODEL", domainId), e);
         continue;
       }
 
@@ -506,6 +513,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     modelerWorkspace.setModelName(name);
 
     try {
+      executeQuery(datasourceDTO.getConnectionName(), query, "1");	
       Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
           || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connection.getName(), query,

@@ -235,15 +235,13 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 				// and tailing off it's success
 				// TODO: investigate a better way around this race condition.
 				// This service is being called twice on edit as is
-				joinSelectionServiceGwtImpl.getDatabaseTables(connection, new XulServiceCallback<List>() {
+				joinSelectionServiceGwtImpl.getDatabaseTables(connection, null, new XulServiceCallback<List>() {
 					public void error(String message, Throwable error) {
 						error.printStackTrace();
 					}
 
 					public void success(List tables) {
-						joinGuiModel.processAvailableTables(tables);
-						joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO);
-						tablesSelectionStep.setValid(true);
+						joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO, tables);						tablesSelectionStep.setValid(true);
 						if(joinGuiModel.isDoOlap()) {
 							tablesSelectionStep.setFactTable(joinGuiModel.getFactTable());
 						}
@@ -285,6 +283,6 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		this.connection = connection;
 		this.joinGuiModel.reset();
 		this.joinDefinitionsStep.resetComponents();
-		this.tablesSelectionStep.processAvailableTables(connection);
+		this.tablesSelectionStep.retrieveSchemas(connection);
 	}
 }

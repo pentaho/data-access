@@ -17,7 +17,7 @@
   <data-access-staging-jndi>Hibernate</data-access-staging-jndi>
 
   <data-access-datasource-solution-storage>admin</data-access-datasource-solution-storage>
-  <data-access-csv-sample-rows>500</data-access-csv-sample-rows>
+  <data-access-csv-sample-rows>10000</data-access-csv-sample-rows>
   <data-access-datasource-illegal-characters><![CDATA[$<>?&#%^*()!~:;[]{}|]]></data-access-datasource-illegal-characters>
 
   <!-- Geography settings -->
@@ -53,7 +53,7 @@
     </latitude>
 
     <longitude>
-      <aliases>long, lng, longitude</aliases>
+      <aliases>long, lon, lng, longitude</aliases>
     </longitude>
   </geo>
 

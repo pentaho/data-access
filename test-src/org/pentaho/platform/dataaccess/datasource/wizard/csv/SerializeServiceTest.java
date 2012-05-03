@@ -1,7 +1,5 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +20,7 @@ import org.pentaho.platform.api.repository.ISolutionRepository;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
-import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.core.system.StandaloneSession;
 
 public class SerializeServiceTest {
 
@@ -74,7 +70,7 @@ public class SerializeServiceTest {
 	    model.getWorkspaceHelper().populateDomain(model);
 	    service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
-	    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), model.getModelName());
+	    Assert.assertEquals(domain.getLogicalModels().get(1).getProperty("MondrianCatalogRef"), model.getModelName());
 	  }
 
 	  private Domain generateModel() {
@@ -102,7 +98,7 @@ public class SerializeServiceTest {
 	      dimension.setName("test");//$NON-NLS-1$
 	      dimension.setTimeDimension(false);
 	      olapDimensions.add(dimension);
-	      domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
+	      domain.getLogicalModels().get(1).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
 
 	    } catch (Exception e) {
 	      e.printStackTrace();

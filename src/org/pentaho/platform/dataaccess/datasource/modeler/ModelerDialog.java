@@ -110,8 +110,9 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
           messages.getString("ModelEditor.ERROR_0001_SAVING_MODELS"));
     }
     boolean doOlap = true;
-    LogicalModel lModel = model.getDomain().getLogicalModels().get(0);
-    if(lModel.getProperty("MondrianCatalogRef") == null && lModel.getProperty("DUAL_MODELING_SCHEMA") == null){
+    LogicalModel lModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+    if(lModel.getProperty("MondrianCatalogRef") == null &&
+        ( lModel.getProperty("DUAL_MODELING_SCHEMA") == null || "false".equals(lModel.getProperty("DUAL_MODELING_SCHEMA")))){
       doOlap = false;
     }
     service.serializeModels(model.getDomain(), model.getModelName(), doOlap, new XulServiceCallback<String>(){

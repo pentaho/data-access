@@ -29,7 +29,9 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface IGwtJoinSelectionService extends RemoteService {
 
-	List<String> getDatabaseTables(Connection connection) throws Exception;
+	List<String> getDatabaseTables(Connection connection, String schema) throws Exception;
+	
+	List<String> retrieveSchemas(Connection connection) throws Exception;
 
 	List<String> getTableFields(String table, Connection connection) throws Exception;
 

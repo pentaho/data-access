@@ -27,8 +27,10 @@ import mondrian.xmla.DataSourcesConfig.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.IModelerSource;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
@@ -142,11 +144,13 @@ public class ModelerService extends PentahoBase implements IModelerService {
       model.setDomain(domain);
       domain.setId(name + ".xmi");
 
-      LogicalModel businessModel = domain.getLogicalModels().get(0); // schemaMeta.getActiveModel();
-      businessModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
+      LogicalModel lModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+      lModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
 
-      LogicalModel lModel = domain.getLogicalModels().get(0);
       String catName = lModel.getName(Locale.getDefault().toString());
+
+      // strip off the _olap suffix for the catalog ref
+      catName = catName.replace(BaseModelerWorkspaceHelper.OLAP_SUFFIX, "");
 
       if(doOlap){
         lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$

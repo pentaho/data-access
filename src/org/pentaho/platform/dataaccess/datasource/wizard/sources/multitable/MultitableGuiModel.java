@@ -40,6 +40,7 @@ import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class MultitableGuiModel extends XulEventSourceAdapter {
 
+	private List<String> schemas;
 	private AbstractModelList<JoinRelationshipModel> joins;
 	private AbstractModelList<JoinTableModel> selectedTables;
 	private AbstractModelList<JoinTableModel> availableTables;
@@ -62,6 +63,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		this.leftJoinTable = new JoinTableModel();
 		this.rightJoinTable = new JoinTableModel();
 		this.selectedJoin = new JoinRelationshipModel();
+		this.schemas = new AbstractModelList<String>();
 	}
 
 	@Bindable
@@ -72,6 +74,18 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	@Bindable
 	public void setAvailableTables(AbstractModelList<JoinTableModel> availableTables) {
 		this.availableTables.setChildren(availableTables);
+	}
+	
+	@Bindable
+	public void setSchemas(List<String> schemas) {
+		List<String> previousValue = this.schemas;
+		this.schemas = schemas;
+		this.firePropertyChange("schemas", previousValue, schemas);
+	}
+	
+	@Bindable
+	public List<String> getSchemas() {
+		return this.schemas;
 	}
 
 	@Bindable
@@ -224,9 +238,14 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	public void processAvailableTables(List<String> tables) {
 
 		List<JoinTableModel> joinTables = new ArrayList<JoinTableModel>();
-		for (String table : tables) {
+		mainLoop: for (String table : tables) {
 			JoinTableModel joinTable = new JoinTableModel();
 			joinTable.setName(table);
+			for(JoinTableModel selectedTable : selectedTables.getChildren()) {
+				if(selectedTable.equals(joinTable)) {
+					continue mainLoop;
+				}
+			} 			
 			joinTables.add(joinTable);
 		}
 
@@ -283,30 +302,56 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	}
 	
 
-	public void populateJoinGuiModel(Domain domain, MultiTableDatasourceDTO dto) {
+	public void populateJoinGuiModel(Domain domain, MultiTableDatasourceDTO dto, List tables) {
  
-		// existing joinTableModels will not have fields. We can add these from
-		// the domain.
-		addFieldsToTables(domain, this.availableTables);
-
-		// Populate "selectedTables" from availableTables using
-		// logicalRelationships.
+		// Populate "selectedTables" from availableTables using logicalRelationships.
 		AbstractModelList<JoinTableModel> selectedTablesList = new AbstractModelList<JoinTableModel>();
 		for (String selectedTable : dto.getSelectedTables()) {
-			this.selectTable(selectedTable, selectedTablesList);
+			this.selectTable(selectedTable, selectedTablesList, tables);
 		}
 		this.selectedTables.addAll(selectedTablesList);
-		this.joins.addAll(dto.getSchemaModel().getJoins());
+
+		// Populates joins.  
+		this.computeJoins(dto);
+		
+		// Populate fact table.
 		this.setDoOlap(dto.isDoOlap());
 		if(dto.isDoOlap()) {
-			this.setFactTable(dto.getSchemaModel().getFactTable());
+			for(JoinTableModel table : this.selectedTables) {
+				if(tablesAreEqual(table.getName(), dto.getSchemaModel().getFactTable().getName())) {
+					this.setFactTable(table);		
+					break;
+				}
+			}
 		}
+		
+		// Populate available tables discarding selected tables.
+		this.processAvailableTables(tables);
+		
+		// Existing joinTableModels will not have fields. We can add these from the domain.
+		this.addFieldsToTables(domain, this.availableTables);
+	}
+	
+	private void computeJoins(MultiTableDatasourceDTO dto) {
+		for(JoinRelationshipModel join : dto.getSchemaModel().getJoins()) {
+			for(JoinTableModel selectedTable : this.selectedTables) {
+				if(tablesAreEqual(selectedTable.getName(), join.getLeftKeyFieldModel().getParentTable().getName())) {
+					join.getLeftKeyFieldModel().getParentTable().setName(selectedTable.getName());
+				}
+			}
+			for(JoinTableModel selectedTable : this.selectedTables) {
+				if(tablesAreEqual(selectedTable.getName(), join.getRightKeyFieldModel().getParentTable().getName())) {
+					join.getRightKeyFieldModel().getParentTable().setName(selectedTable.getName());
+				}
+			}			
+		}
+		this.joins.addAll(dto.getSchemaModel().getJoins());
 	}
 
 	private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
 
 		String locale = LocalizedString.DEFAULT_LOCALE;
-    Outter:
+		Outter:
 		for (JoinTableModel table : availableTables) {
 			for (LogicalTable tbl : domain.getLogicalModels().get(0).getLogicalTables()) {
 				if(tbl.getPhysicalTable().getProperty("target_table").equals(table.getName())){
@@ -322,11 +367,13 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		}
 	}
 
-	private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList) {
-		for (JoinTableModel table : this.availableTables) {
-			if (table.getName().equals(selectedTable)) {
+	private void selectTable(String selectedTable, AbstractModelList<JoinTableModel> selectedTablesList, List databaseTables) {
+		for (Object table : databaseTables) {
+			if (tablesAreEqual(table.toString(), selectedTable)) {
 				if (!selectedTablesList.contains(table)) {
-					selectedTablesList.add(table);
+					JoinTableModel joinTable = new JoinTableModel();
+					joinTable.setName(table.toString());
+					selectedTablesList.add(joinTable);
 				}
 			}
 		}
@@ -338,6 +385,28 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 		this.joins.clear();
 		this.leftJoinTable.reset();
 		this.rightJoinTable.reset();
+		this.schemas.clear();
 	}
-
+	
+	private boolean tablesAreEqual(String table1, String table2) {
+		String tableName1 = getSchemaTablePair(table1)[1];
+		String tableName2 = getSchemaTablePair(table2)[1];
+		return tableName1.equals(tableName2);
+	}
+	
+	private String[] getSchemaTablePair(String table) {
+		if(table.indexOf(".") < 0){
+	      return new String[]{"",table};
+	    }
+	    String[] pair = new String[2];
+	    String[] parts = table.split("\\.");
+	    pair[0] = parts[0];
+		    
+	    String tableName = "";
+	    for(int i = 1; i < parts.length; i++) {
+	    	tableName = tableName + "." + parts[i];
+	    }
+	    pair[1] = tableName.substring(1);
+	    return pair;
+	}
 }

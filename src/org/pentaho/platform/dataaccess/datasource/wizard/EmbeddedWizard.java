@@ -17,7 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
-import com.google.gwt.user.client.Window;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.gwt.widgets.client.utils.i18n.IResourceBundleLoadCallback;
@@ -44,6 +43,7 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulFileUpload;
+import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.gwt.GwtXulRunner;
@@ -55,6 +55,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 
 
 @SuppressWarnings("unchecked")
@@ -162,18 +163,13 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   @Override
   public void onFinish(final IDatasourceSummary summary) {
     this.summary = summary;
-    if(wizardModel.isEditing()){
-      MessageHandler.getInstance().closeWaitingDialog();
-      
+    if(wizardModel.isEditing() && summary.getErrorCount() == 0){
       // biserver-6210 - manage modeler dialog listener separate from the wizard's listener
-      if (modelerDialogListener != null) {
-        modelerDialogListener.onDialogAccept(getDialogResult());
-      }
-      modelerDialogListener = null;
-
+      handleModelerDialog();
       return;
     }
-    summaryDialogController.showSummaryDialog(summary, new XulServiceCallback<IDatasourceSummary>(){
+    final boolean showModelerDecision = !wizardModel.isEditing();
+    summaryDialogController.showSummaryDialog(summary, showModelerDecision, new XulServiceCallback<IDatasourceSummary>(){
       @Override
       public void error(String s, Throwable throwable) {
         MessageHandler.getInstance().showErrorDialog(s, throwable.getMessage());
@@ -181,14 +177,29 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
       @Override
       public void success(IDatasourceSummary iDatasourceSummary) {
-        if(iDatasourceSummary.isShowModeler()){
-          showModelEditor();
+        if(!showModelerDecision) {
+          handleModelerDialog();
+          return;
         } else {
-          onDialogAccept();
+          if(iDatasourceSummary.isShowModeler()){
+            showModelEditor();
+          } else {
+            onDialogAccept();
+          }
         }
         MessageHandler.getInstance().closeWaitingDialog();
       }
     });
+  }
+
+  private void handleModelerDialog() {
+    MessageHandler.getInstance().closeWaitingDialog();
+
+    // biserver-6210 - manage modeler dialog listener separate from the wizard's listener
+    if (modelerDialogListener != null) {
+      modelerDialogListener.onDialogAccept(getDialogResult());
+    }
+    modelerDialogListener = null;
   }
 
   private void checkInitialized() {
@@ -234,6 +245,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     /* end of work around */
     
     dialog.show();
+
+    // BISERVER-6473
+    XulTextbox datasourceName = (XulTextbox)mainWizardContainer.getDocumentRoot().getElementById("datasourceName"); //$NON-NLS-1$
+    datasourceName.setFocus();
   }
 
   public void showEditDialog(final Domain domain, DialogListener<Domain> listener) {
@@ -391,6 +406,8 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       upload.setAction(GWT.getModuleBaseURL()+ "UploadService"); //$NON-NLS-1$
     }
 
+    initialized = true;
+
     if (asyncConstructorListener != null) {
       asyncConstructorListener.asyncConstructorDone(this);
     }
@@ -517,5 +534,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   
   public ConnectionController getConnectionController() {
     return connectionController;
+  }
+ 
+  public boolean isInitialized() {
+    return initialized;
   }
 }

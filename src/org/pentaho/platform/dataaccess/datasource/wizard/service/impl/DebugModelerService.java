@@ -95,6 +95,7 @@ public class DebugModelerService extends ModelerService {
       }
 
       // Serialize domain to olap schema.
+      lModel = domain.getLogicalModels().get(1);
       MondrianModelExporter exporter = new MondrianModelExporter(lModel, LocalizedString.DEFAULT_LOCALE);
       String mondrianSchema = exporter.createMondrianModelXML();
       Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
