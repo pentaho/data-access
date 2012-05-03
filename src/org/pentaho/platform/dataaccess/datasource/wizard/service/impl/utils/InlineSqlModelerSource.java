@@ -12,8 +12,8 @@ import org.pentaho.metadata.model.SqlPhysicalTable;
 import org.pentaho.metadata.util.ThinModelConverter;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl;
 import org.pentaho.reporting.libraries.base.util.StringUtils;
 
 /**
@@ -25,17 +25,17 @@ public class InlineSqlModelerSource implements ISpoonModelerSource {
   private DatabaseMeta databaseMeta;
   private String query, datasourceName;
   private static Log logger = LogFactory.getLog(InlineSqlModelerSource.class);
-  private IDatasourceService datasourceImpl;
+  private IDSWDatasourceService datasourceImpl;
   private String connectionName;
   private String dbType;
 
 	public static final String SOURCE_TYPE = InlineSqlModelerSource.class.getSimpleName();
 
   public InlineSqlModelerSource( String connectionName, String dbType, String query, String datasourceName){
-    this(new DatasourceServiceImpl(), connectionName, dbType, query, datasourceName);
+    this(new DSWDatasourceServiceImpl(), connectionName, dbType, query, datasourceName);
   }
 
-  public InlineSqlModelerSource( IDatasourceService datasourceService, String connectionName, String dbType, String query, String datasourceName){
+  public InlineSqlModelerSource( IDSWDatasourceService datasourceService, String connectionName, String dbType, String query, String datasourceName){
     this.query = query;
     this.dbType = dbType;
     this.connectionName = connectionName;

@@ -22,7 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.ui.selectdialog;
 
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
 import org.pentaho.ui.xul.gwt.GwtXulRunner;
@@ -31,6 +31,8 @@ import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
 import org.pentaho.ui.xul.gwt.util.IXulLoaderCallback;
 import org.pentaho.ui.xul.util.DialogController;
+
+import com.google.gwt.core.client.GWT;
 
 public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogController<LogicalModelSummary> {
 
@@ -43,7 +45,7 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
   protected String context;
   protected EmbeddedWizard gwtDatasourceEditor;
 
-  protected IXulAsyncDatasourceService datasourceService;
+  protected IXulAsyncDSWDatasourceService datasourceService;
 
   protected AsyncConstructorListener<GwtDatasourceSelectionDialog> constructorListener;
 
@@ -51,7 +53,7 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
 
   // ~ Constructors ====================================================================================================
 
-  public GwtDatasourceSelectionDialog(String context, final IXulAsyncDatasourceService datasourceService,
+  public GwtDatasourceSelectionDialog(String context, final IXulAsyncDSWDatasourceService datasourceService,
       final EmbeddedWizard gwtDatasourceEditor, final AsyncConstructorListener<GwtDatasourceSelectionDialog> constructorListener) {
     this.context = context;
 
@@ -59,7 +61,7 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
     this.datasourceService = datasourceService;
     this.constructorListener = constructorListener;
     try {
-      AsyncXulLoader.loadXulFromUrl("datasourceSelectionDialog.xul", "datasourceSelectionDialog", this); //$NON-NLS-1$//$NON-NLS-2$
+      AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "datasourceSelectionDialog.xul", GWT.getModuleBaseURL() +  "datasourceSelectionDialog", this); //$NON-NLS-1$//$NON-NLS-2$
     } catch (Exception e) {
       e.printStackTrace();
     }

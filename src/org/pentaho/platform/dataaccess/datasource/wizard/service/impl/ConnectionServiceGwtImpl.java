@@ -25,7 +25,7 @@ import java.util.List;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtConnectionServiceAsync;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -82,19 +82,19 @@ public class ConnectionServiceGwtImpl implements IXulAsyncConnectionService {
 
   }
 
-  public void getConnections(final XulServiceCallback<List<IConnection>> xulCallback) {
+  public void getConnections(final XulServiceCallback<List<Connection>> xulCallback) {
 
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
         SERVICE.getConnections(callback);
       }
-    }, new AsyncCallback<List<IConnection>>() {
+    }, new AsyncCallback<List<Connection>>() {
 
       public void onFailure(Throwable arg0) {
         xulCallback.error(arg0.getLocalizedMessage(), arg0);
       }
 
-      public void onSuccess(List<IConnection> arg0) {
+      public void onSuccess(List<Connection> arg0) {
         xulCallback.success(arg0);
       }
 
@@ -102,18 +102,18 @@ public class ConnectionServiceGwtImpl implements IXulAsyncConnectionService {
 
   }
 
-  public void getConnectionByName(final String name, final XulServiceCallback<IConnection> xulCallback) {
+  public void getConnectionByName(final String name, final XulServiceCallback<Connection> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
         SERVICE.getConnectionByName(name, callback);
       }
-    }, new AsyncCallback<IConnection>() {
+    }, new AsyncCallback<Connection>() {
 
       public void onFailure(Throwable arg0) {
         xulCallback.error(arg0.getLocalizedMessage(), arg0);
       }
 
-      public void onSuccess(IConnection arg0) {
+      public void onSuccess(Connection arg0) {
         xulCallback.success(arg0);
       }
 
@@ -121,7 +121,7 @@ public class ConnectionServiceGwtImpl implements IXulAsyncConnectionService {
 
   }
 
-  public void addConnection(final IConnection connection, final XulServiceCallback<Boolean> xulCallback) {
+  public void addConnection(final Connection connection, final XulServiceCallback<Boolean> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
         SERVICE.addConnection(connection, callback);
@@ -139,7 +139,7 @@ public class ConnectionServiceGwtImpl implements IXulAsyncConnectionService {
     });
   }
 
-  public void updateConnection(final IConnection connection, final XulServiceCallback<Boolean> xulCallback) {
+  public void updateConnection(final Connection connection, final XulServiceCallback<Boolean> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
         SERVICE.updateConnection(connection, callback);
@@ -157,7 +157,7 @@ public class ConnectionServiceGwtImpl implements IXulAsyncConnectionService {
     });
   }
 
-  public void deleteConnection(final IConnection connection, final XulServiceCallback<Boolean> xulCallback) {
+  public void deleteConnection(final Connection connection, final XulServiceCallback<Boolean> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
 
@@ -195,7 +195,7 @@ public class ConnectionServiceGwtImpl implements IXulAsyncConnectionService {
     });
   }
 
-  public void testConnection(final IConnection connection, final XulServiceCallback<Boolean> xulCallback) {
+  public void testConnection(final Connection connection, final XulServiceCallback<Boolean> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
 
@@ -214,7 +214,7 @@ public class ConnectionServiceGwtImpl implements IXulAsyncConnectionService {
     });
   }
 
-  public void convertFromConnection(final IConnection databaseConnection,
+  public void convertFromConnection(final Connection databaseConnection,
       final XulServiceCallback<IDatabaseConnection> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
@@ -233,18 +233,18 @@ public class ConnectionServiceGwtImpl implements IXulAsyncConnectionService {
   }
 
   public void convertToConnection(final IDatabaseConnection databaseConnection,
-      final XulServiceCallback<IConnection> xulCallback) {
+      final XulServiceCallback<Connection> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(AsyncCallback callback) {
 
         SERVICE.convertToConnection(databaseConnection, callback);
       }
-    },  new AsyncCallback<IConnection>() {
+    },  new AsyncCallback<Connection>() {
       public void onFailure(Throwable arg0) {
         xulCallback.error(arg0.getLocalizedMessage(), arg0);
       }
 
-      public void onSuccess(IConnection arg0) {
+      public void onSuccess(Connection arg0) {
         xulCallback.success(arg0);
       }
     });

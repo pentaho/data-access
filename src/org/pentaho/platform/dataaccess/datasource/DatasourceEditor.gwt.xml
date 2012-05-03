@@ -26,7 +26,6 @@ This module serves as the Debuging environment and default implementation for in
   <inherits name="org.pentaho.ui.database.DatabaseDialog"/>
   <inherits name="org.pentaho.database.Database"/>
   <inherits name="org.pentaho.reporting.libraries.base.Util" />
-  
     <source path="">    
         <exclude name="**/MQLEditorDebugGwtServlet*"/>
         <exclude name="**/SwingMqlEditor*"/>
@@ -69,7 +68,7 @@ This module serves as the Debuging environment and default implementation for in
         <exclude name="**/service/impl/utils/*"/>
         <exclude name="**/service/impl/ModelerService*"/>
         <exclude name="**/service/impl/DebugModelerService*"/>
-
+        
         <exclude name="**/CsvModelService*"/>
         <exclude name="**/CsvDatasourceServiceImpl*"/>
         <exclude name="**/ConnectionServiceConcrete*"/>
@@ -87,6 +86,7 @@ This module serves as the Debuging environment and default implementation for in
 
     </source>
    <stylesheet src="datasourceEditorDialog.css"/>
+   <stylesheet src="datasourceAdminDialog.css"/>
    <public path="wizard/public"/>
     <entry-point class="org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint"/>
    <!--

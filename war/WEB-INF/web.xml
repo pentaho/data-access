@@ -67,7 +67,7 @@
     <servlet-name>DatasourceService</servlet-name>
     <display-name>DatasourceService</display-name>
     <description>DatasourceService</description>
-    <servlet-class>org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.DatasourceDebugGwtServlet</servlet-class>
+    <servlet-class>org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.DSWDatasourceDebugGwtServlet</servlet-class>
   </servlet>
   
   <servlet>

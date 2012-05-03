@@ -34,7 +34,7 @@ public class SimpleDataAccessPermissionHandler implements IDataAccessPermissionH
   private Log logger = LogFactory.getLog(SimpleDataAccessPermissionHandler.class);
   public boolean hasDataAccessPermission(IPentahoSession session) {
 
-    Authentication auth = SecurityHelper.getAuthentication(session, true);
+    Authentication auth = SecurityHelper.getInstance().getAuthentication(session, true);
     
     IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
     String roles = null;
@@ -49,23 +49,18 @@ public class SimpleDataAccessPermissionHandler implements IDataAccessPermissionH
       logger.debug("Error getting data access plugin settings", e);
     }
     
-    // TODO: delete hardcoded admin this is a fully fledged plugin
-    
-    if (roles == null) {
-      roles = "Admin";
-    }
-
-    String roleArr[] = roles.split(","); //$NON-NLS-1$
-
-    for (String role : roleArr) {
-      for (GrantedAuthority userRole : auth.getAuthorities()) {
-        if (role != null && role.trim().equals(userRole.getAuthority())) {
-          return true;
+    if(roles != null && roles.length() > 0) {
+      String roleArr[] = roles.split(","); //$NON-NLS-1$
+      
+      for (String role : roleArr) {
+        for (GrantedAuthority userRole : auth.getAuthorities()) {
+          if (role != null && role.trim().equals(userRole.getAuthority())) {
+            return true;
+          }
         }
       }
     }
-
-    if (users != null) {
+    if (users != null && users.length() > 0) {
       String userArr[] = users.split(","); //$NON-NLS-1$
       for (String user : userArr) {
         if (user != null && user.trim().equals(auth.getName())) {

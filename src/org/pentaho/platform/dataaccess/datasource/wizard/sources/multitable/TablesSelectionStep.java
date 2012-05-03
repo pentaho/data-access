@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
@@ -75,7 +75,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		return "joinSelectionStepController";
 	}
 	
-	public void retrieveSchemas(final IConnection connection) {
+	public void retrieveSchemas(final Connection connection) {
 		joinSelectionServiceGwtImpl.retrieveSchemas(connection, new XulServiceCallback<List>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
@@ -90,7 +90,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		});
 	}
 
-	private void processAvailableTables(IConnection connection, String schema) {
+	private void processAvailableTables(Connection connection, String schema) {
 		joinSelectionServiceGwtImpl.getDatabaseTables(connection, schema, new XulServiceCallback<List>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
@@ -281,7 +281,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
   protected void fetchTables(){
     showWaitingDialog();
-    IConnection connection = ((MultiTableDatasource) parentDatasource).getConnection();
+    Connection connection = ((MultiTableDatasource) parentDatasource).getConnection();
     processAvailableTables(connection, schemas.getValue());
   }
 	

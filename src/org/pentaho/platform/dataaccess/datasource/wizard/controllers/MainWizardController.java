@@ -20,7 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.SelectDatasourceStep;
 import org.pentaho.ui.xul.XulException;
@@ -55,7 +55,7 @@ import java.util.List;
 public class MainWizardController extends AbstractXulEventHandler implements IWizardController {
 
   private IWizardModel wizardModel;
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
   private SelectDatasourceStep datasourceStep;
   private XulTextbox datasourceName;
   private List<IWizardDatasource> datasources = new ArrayList<IWizardDatasource>();
@@ -121,7 +121,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   private DummyDatasource dummyDatasource = new DummyDatasource();
   private SelectDatasourceStep selectDatasourceStep;
 
-  public MainWizardController(final BindingFactory bf, IWizardModel wizardModel, IXulAsyncDatasourceService datasourceService) {
+  public MainWizardController(final BindingFactory bf, IWizardModel wizardModel, IXulAsyncDSWDatasourceService datasourceService) {
     this.wizardModel = wizardModel;
     this.datasourceService = datasourceService;
     this.steps = new ArrayList<IWizardStep>();
