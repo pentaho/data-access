@@ -1,22 +1,36 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.pentaho.metadata.messages.LocaleHelper;
-import org.pentaho.metadata.model.*;
-import org.pentaho.metadata.model.concept.types.*;
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorTest;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDatasourceServiceImpl;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.pentaho.metadata.messages.LocaleHelper;
+import org.pentaho.metadata.model.Category;
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.SqlDataSource;
+import org.pentaho.metadata.model.SqlPhysicalColumn;
+import org.pentaho.metadata.model.SqlPhysicalModel;
+import org.pentaho.metadata.model.SqlPhysicalTable;
+import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metadata.model.concept.types.DataType;
+import org.pentaho.metadata.model.concept.types.LocaleType;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.concept.types.TargetTableType;
+import org.pentaho.platform.dataaccess.datasource.DatasourceType;
+import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorTest;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDSWDatasourceServiceImpl;
 
 @SuppressWarnings("nls")
 public class DatasourceModelTest {
@@ -41,13 +55,13 @@ public class DatasourceModelTest {
   }
   
   private GuiStateModel contructRelationalModel(GuiStateModel guiStateModel) {
-    IConnection connection = new Connection();
+	Connection connection = new Connection();
     connection.setDriverClass("org.hsqldb.jdbcDriver");
     connection.setName("SampleData");
     connection.setPassword("password");
     connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
     connection.setUsername("pentaho_user");
-    List<IConnection> connectionList = new ArrayList<IConnection>();
+    List<Connection> connectionList = new ArrayList<Connection>();
     connectionList.add(connection);
     guiStateModel.setConnections(connectionList);
     guiStateModel.setPreviewLimit("10");
@@ -159,7 +173,7 @@ public class DatasourceModelTest {
 
     DatasourceModel datasourceModel2 = new DatasourceModel();
 
-    IConnection connection = new Connection();
+    Connection connection = new Connection();
     connection.setDriverClass("org.hsqldb.jdbcDriver");
     connection.setName("SampleData");
     connection.setPassword("password");
@@ -188,7 +202,7 @@ public class DatasourceModelTest {
 
     DatasourceDTO dto = DatasourceDTO.generateDTO(datasourceModel);
     assertNotNull(dto);
-    InMemoryDatasourceServiceImpl service = new InMemoryDatasourceServiceImpl();
+    InMemoryDSWDatasourceServiceImpl service = new InMemoryDSWDatasourceServiceImpl();
     String dtoString = service.serializeModelState(dto);
     assertNotNull(dtoString);
     assertTrue(dtoString.contains("testDatasource"));

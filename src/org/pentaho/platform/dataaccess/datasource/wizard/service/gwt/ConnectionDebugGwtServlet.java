@@ -23,7 +23,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 import java.util.List;
 
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryConnectionServiceImpl;
@@ -63,21 +62,21 @@ public class ConnectionDebugGwtServlet extends RemoteServiceServlet implements I
     return SERVICE;
   }
 
-  public List<IConnection> getConnections()  throws ConnectionServiceException {
+  public List<Connection> getConnections()  throws ConnectionServiceException {
     return getService().getConnections();
   }
-  public IConnection getConnectionByName(String name)  throws ConnectionServiceException {
+  public Connection getConnectionByName(String name)  throws ConnectionServiceException {
     return getService().getConnectionByName(name);
   }
-  public boolean addConnection(IConnection connection)  throws ConnectionServiceException{ 
+  public boolean addConnection(Connection connection)  throws ConnectionServiceException{ 
     return getService().addConnection(connection);
   }
 
-  public boolean updateConnection(IConnection connection)  throws ConnectionServiceException {
+  public boolean updateConnection(Connection connection)  throws ConnectionServiceException {
     return getService().updateConnection(connection);
   }
 
-  public boolean deleteConnection(IConnection connection)  throws ConnectionServiceException {
+  public boolean deleteConnection(Connection connection)  throws ConnectionServiceException {
     return getService().deleteConnection(connection);
   }
     
@@ -85,15 +84,15 @@ public class ConnectionDebugGwtServlet extends RemoteServiceServlet implements I
     return getService().deleteConnection(name);    
   }
 
-  public boolean testConnection(IConnection connection)  throws ConnectionServiceException{
+  public boolean testConnection(Connection connection)  throws ConnectionServiceException{
     return getService().testConnection(connection);
   }
 
-  public IDatabaseConnection convertFromConnection(IConnection connection) throws ConnectionServiceException {
+  public IDatabaseConnection convertFromConnection(Connection connection) throws ConnectionServiceException {
     return getService().convertFromConnection(connection);
   }
 
-  public IConnection convertToConnection(IDatabaseConnection connection) throws ConnectionServiceException {
+  public Connection convertToConnection(IDatabaseConnection connection) throws ConnectionServiceException {
     return getService().convertToConnection(connection);
   }
 }

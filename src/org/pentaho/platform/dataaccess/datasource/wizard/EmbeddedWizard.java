@@ -17,7 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
-import com.google.gwt.user.client.Window;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.gwt.widgets.client.utils.i18n.IResourceBundleLoadCallback;
@@ -34,7 +33,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.WizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
@@ -56,6 +55,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 
 
 @SuppressWarnings("unchecked")
@@ -82,7 +82,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   private IXulAsyncConnectionService connectionService;
   private boolean checkHasAccess;
 
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
 
   private DatasourceMessages datasourceMessages;
 
@@ -119,6 +119,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     }
   }
 
+
   public void init(final AsyncConstructorListener<EmbeddedWizard> constructorListener) {
     asyncConstructorListener = constructorListener;
     setConnectionService(connectionService);
@@ -149,9 +150,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   private void loadXul(){
     bundle = new ResourceBundle("", "modeler", true, this);
-
-    AsyncXulLoader.loadXulFromUrl(MAIN_WIZARD_PANEL, MAIN_WIZARD_PANEL_PACKAGE, EmbeddedWizard.this);
-
+    AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + MAIN_WIZARD_PANEL, GWT.getModuleBaseURL() + MAIN_WIZARD_PANEL_PACKAGE, EmbeddedWizard.this);
   }
 
 
@@ -224,6 +223,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
    */
   public void showDialog() {
     this.modelerDialogListener = null;
+    if(connectionController != null) {
+      connectionController.reloadConnections();      
+    }
+
     if (datasourceModel.getGuiStateModel().getConnections() == null
         || datasourceModel.getGuiStateModel().getConnections().size() <= 0) {
       checkInitialized();
@@ -323,7 +326,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     return connectionService;
   }
 
-  public IXulAsyncDatasourceService getDatasourceService() {
+  public IXulAsyncDSWDatasourceService getDatasourceService() {
     return datasourceService;
   }
 
@@ -331,7 +334,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     return wizardController;
   }
 
-  public void setDatasourceService(IXulAsyncDatasourceService datasourceService) {
+  public void setDatasourceService(IXulAsyncDSWDatasourceService datasourceService) {
     this.datasourceService = datasourceService;
   }
 
@@ -349,10 +352,11 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
     datasourceMessages = new GwtDatasourceMessages();
     datasourceMessages.setMessageBundle(resBundle);
-
     MessageHandler.getInstance().setMessages(datasourceMessages);
+
     connectionController = new ConnectionController();
     connectionController.setService(connectionService);
+    mainWizardContainer.addEventHandler(connectionController);
 
     summaryDialogController.setBindingFactory(bf);
     mainWizardContainer.addEventHandler(summaryDialogController);
@@ -457,6 +461,11 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       }
       public void onDialogReady() {
       }
+      @Override
+      public void onDialogError(String errorMessage) {
+        // TODO Auto-generated method stub
+        
+      }
     };
     final Domain domain = summary.getDomain();
   
@@ -522,7 +531,11 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   public void setReportingOnlyValid(boolean reportingOnlyValid){
     this.reportingOnlyValid = reportingOnlyValid;
   }
-
+  
+  public ConnectionController getConnectionController() {
+    return connectionController;
+  }
+ 
   public boolean isInitialized() {
     return initialized;
   }

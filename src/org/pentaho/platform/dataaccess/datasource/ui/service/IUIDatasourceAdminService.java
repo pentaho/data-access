@@ -12,18 +12,29 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright 2008 - 2009 Pentaho Corporation.  All rights reserved.
+ * Copyright 2005 - 2008 Pentaho Corporation.  All rights reserved.
  *
- *
- * Created July 15, 2009
- * @author rmansoor
+ * @created Nov 12, 2011 
+ * @author Ramaiz Mansoor
  */
-package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
+package org.pentaho.platform.dataaccess.datasource.ui.service;
 
-import com.google.gwt.user.client.rpc.RemoteService;
-     
-/**
- * This is a wrapper class exposing the IDatasourceService as a GWT service.
- */
-public interface IGwtDatasourceService extends IDatasourceService, RemoteService {
+import java.util.List;
+
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
+import org.pentaho.ui.xul.XulServiceCallback;
+
+public interface IUIDatasourceAdminService {
+  
+  public String getType();
+  
+  public void getIds(XulServiceCallback<List<IDatasourceInfo>> callback);
+  
+  public String getNewUI() ;
+  
+  public String getEditUI();
+
+  public void export(IDatasourceInfo dsInfo);
+
+  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback);
 }

@@ -1,22 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin title="Pentaho Data Access" loader="OVERRIDING" name="data-access">
+
    <static-paths>
      <!-- this translates to /pentaho/content/data-access-plugin/resources/* -->
      <static-path url="/data-access/resources" localFolder="resources"/>
    </static-paths>
+   
+   <overlays>
+	    <overlay id="startup.dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages.properties" loadatstart="false">
+			<menubar id="managemenu">
+				<menuitem id="manageDatasourceItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />				
+			</menubar>
+			<menubar id="newmenu">
+				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="window.top.pho.openDatasourceEditor(window.top.datasourceEditorCallback)" />				
+			</menubar>
+	    </overlay>
+	</overlays>
+
+
 
    <!-- this is used by the datasource service -->
    <bean id="connectionServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl"/>
 
-   <bean id="datasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceImpl"/>
+   <bean id="datasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
 
    <bean id="csvDatasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
 
+     
   <webservice
     id="DatasourceService"
     type="xml,gwt"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceImpl"/>
+    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
     
   <webservice
     id="joinSelectionService"
