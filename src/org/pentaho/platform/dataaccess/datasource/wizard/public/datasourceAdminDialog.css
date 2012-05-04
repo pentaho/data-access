@@ -1,0 +1,15 @@
+#datasourcesListTable .headerWrapper { 
+	background-color: transparent;
+}
+
+#datasourcesListTable {
+	padding: 5px 10px 10px;
+}
+
+.gwt-PopupPanel {
+    z-index: 2101;
+}
+
+#datasourcesListTable .gwt-scrolltable .datawrapper {
+	background-color: white;
+}

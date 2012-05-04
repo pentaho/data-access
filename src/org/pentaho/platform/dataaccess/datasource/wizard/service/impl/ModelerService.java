@@ -27,9 +27,11 @@ import mondrian.xmla.DataSourcesConfig.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.pentaho.agilebi.modeler.*;
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.IModelerSource;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.services.IModelerService;
@@ -43,18 +45,12 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.MondrianModelExporter;
-import org.pentaho.metadata.util.XmiParser;
-import org.pentaho.platform.api.engine.IApplicationContext;
-import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
-import org.pentaho.platform.api.repository.ISolutionRepository;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.InlineSqlModelerSource;
-import org.pentaho.platform.engine.core.solution.ActionInfo;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
@@ -117,7 +113,6 @@ public class ModelerService extends PentahoBase implements IModelerService {
     }
   }
 
-
   public Domain generateCSVDomain(String tableName, String datasourceName) throws Exception {
     initKettle();
     try{
@@ -129,7 +124,6 @@ public class ModelerService extends PentahoBase implements IModelerService {
       throw new Exception(e.getLocalizedMessage());
     }
   }
-
 
   public BogoPojo gwtWorkaround ( BogoPojo pojo){
     return new BogoPojo();
@@ -144,77 +138,39 @@ public class ModelerService extends PentahoBase implements IModelerService {
     initKettle();
 
     try {
-      DatasourceServiceImpl datasourceService = new DatasourceServiceImpl();      
+      DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();      
       ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), datasourceService.getGeoContext());
       model.setModelName(name);
       model.setDomain(domain);
-      String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
+      domain.setId(name + ".xmi");
 
-      String metadataLocation = "resources" + ISolutionRepository.SEPARATOR + "metadata"; //$NON-NLS-1$  //$NON-NLS-2$
-
-      String path = solutionStorage + ISolutionRepository.SEPARATOR + metadataLocation + ISolutionRepository.SEPARATOR;
-      domainId = path + name + ".xmi"; //$NON-NLS-1$ 
-      domain.setId(domainId);
-
-      IApplicationContext appContext = PentahoSystem.getApplicationContext();
-      if (appContext != null) {
-        path = PentahoSystem.getApplicationContext().getSolutionPath(path);
-      }
-
-      File pathDir = new File(path);
-      if (!pathDir.exists()) {
-        pathDir.mkdirs();
-      }
-
-      IPentahoObjectFactory pentahoObjectFactory = PentahoSystem.getObjectFactory();
-      IPentahoSession session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
-
-      ISolutionRepository repository = PentahoSystem.get(ISolutionRepository.class, session);
-      
       LogicalModel lModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+      lModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
+
       String catName = lModel.getName(Locale.getDefault().toString());
 
       // strip off the _olap suffix for the catalog ref
       catName = catName.replace(BaseModelerWorkspaceHelper.OLAP_SUFFIX, "");
 
-      cleanseExistingCatalog(catName, session);
       if(doOlap){
         lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
       }
-      XmiParser parser = new XmiParser();
-      String reportXML =  parser.generateXmi(model.getDomain());
-
-      // Serialize domain to xmi.
-      String base = PentahoSystem.getApplicationContext().getSolutionRootPath();
-      String parentPath = ActionInfo.buildSolutionPath(solutionStorage, metadataLocation, ""); //$NON-NLS-1$
-      int status = repository.publish(base, '/' + parentPath, name + ".xmi", reportXML.getBytes("UTF-8"), true); //$NON-NLS-1$  //$NON-NLS-2$
-      if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
-        throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
-      }
-
+            
+      // Stores metadata into JCR.      
+      IMetadataDomainRepository  metadataDomainRep = PentahoSystem.get(IMetadataDomainRepository.class);
+      if(metadataDomainRep != null) {
+    	  metadataDomainRep.storeDomain(model.getDomain(), true);
+      }      
       // Serialize domain to olap schema.
       if(doOlap){
-        MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
+    	MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
         String mondrianSchema = exporter.createMondrianModelXML();
-
-        Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
-        byte[] schemaBytes = schemaDoc.asXML().getBytes("UTF-8"); //$NON-NLS-1$
-
-        status = repository.publish(base, '/' + parentPath, name + ".mondrian.xml", schemaBytes, true); //$NON-NLS-1$
-        if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
-          throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
+        IPentahoSession session = PentahoSessionHolder.getSession();
+        if(session != null) {
+	        session.setAttribute("MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema);
+	        String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
+	        addCatalog(catName, catConnectStr, session);
         }
-
-        // Refresh Metadata
-        PentahoSystem.publish(session, MetadataPublisher.class.getName());
-
-        // Write this catalog to the default Pentaho DataSource and refresh the cache.
-        File file = new File(path + name + ".mondrian.xml"); //$NON-NLS-1$
-        // Need to find a better way to get the connection name instead of using the Id.
-        String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
-        String catDef = "solution:" + solutionStorage + ISolutionRepository.SEPARATOR //$NON-NLS-1$
-            + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR + file.getName(); //$NON-NLS-1$//$NON-NLS-2$
-        addCatalog(catName, catConnectStr, catDef, session);
       }
 
     } catch (Exception e) {
@@ -224,20 +180,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
     return domainId;
   }
   
-  private void cleanseExistingCatalog(String catName, IPentahoSession session) {
-	  
-	  // If mondrian catalog exists delete it to avoid duplicates and orphan entries in the datasources.xml registry.
-	  //IPentahoSession session = PentahoSessionHolder.getSession();
-	  if(session != null) {
-		  IMondrianCatalogService service = PentahoSystem.get(IMondrianCatalogService.class, null);
-	      MondrianCatalog catalog = service.getCatalog(catName, session);
-	      if(catalog != null) {
-	      	  service.removeCatalog(catName, session);
-	      }
-	  }
-  }
-  
-  private void addCatalog(String catName, String catConnectStr, String catDef, IPentahoSession session) {
+  private void addCatalog(String catName, String catConnectStr, IPentahoSession session) {
     
     IMondrianCatalogService mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, "IMondrianCatalogService", session); //$NON-NLS-1$
     
@@ -261,7 +204,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
     MondrianCatalog cat = new MondrianCatalog(
         catName, 
         catConnectStr, 
-        catDef, 
+        "", 
         ds, 
         new MondrianSchema(catName, new ArrayList<MondrianCube>())
       );

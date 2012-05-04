@@ -28,7 +28,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -45,6 +45,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class DatasourceSelectionDialogController extends AbstractXulDialogController<LogicalModelSummary> {
@@ -55,7 +56,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
 
   private BindingFactory bf;
 
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
 
   private DatasourceSelectionDialogModel datasourceSelectionDialogModel = new DatasourceSelectionDialogModel();
 
@@ -285,7 +286,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
     this.bf = bf;
   }
 
-  public void setDatasourceService(final IXulAsyncDatasourceService datasourceService) {
+  public void setDatasourceService(final IXulAsyncDSWDatasourceService datasourceService) {
     this.datasourceService = datasourceService;
   }
 
@@ -341,6 +342,8 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
             public void onDialogReady() {
               enableWaitCursor(false);
             }
+            
+            public void onDialogError(String value) {}
           });
           datasourceEditor.showDialog();
         }
@@ -377,6 +380,8 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
           public void onDialogReady() {
             enableWaitCursor(false);
           }
+          
+          public void onDialogError(String value) {}
         };
         LogicalModelSummary logicalModelSummary = getDialogResult();
         dialog.addDialogListener(listener);

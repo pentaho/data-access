@@ -3,7 +3,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.platform.api.data.DatasourceServiceException;
+import org.pentaho.platform.api.data.DBDatasourceServiceException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService;
 
@@ -44,7 +44,7 @@ public class AgileHelper {
 	      conn.close();
 	    } catch (SQLException e) {
 	      logger.debug("Error determining database type from connection", e);
-	    } catch (DatasourceServiceException e) {
+	    } catch (DBDatasourceServiceException e) {
 	      logger.debug("Error determining database type from connection - getting JNDI connection", e);
 	    }
 	    return dialect;
@@ -90,7 +90,7 @@ public class AgileHelper {
   }
 
 
-  public static Connection getConnection(String jndiName) throws DatasourceServiceException, SQLException {
+  public static Connection getConnection(String jndiName) throws DBDatasourceServiceException, SQLException {
     JndiDatasourceService jndiService = new JndiDatasourceService();
     DataSource ds = jndiService.getDataSource(jndiName);
     return ds.getConnection();

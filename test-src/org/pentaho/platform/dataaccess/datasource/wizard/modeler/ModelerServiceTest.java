@@ -11,8 +11,8 @@ import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDatasourceServiceImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDSWDatasourceServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.InlineSqlModelerSource;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
@@ -63,7 +63,7 @@ public class ModelerServiceTest extends BaseTest {
 
     new ConnectionDebugGwtServlet().getConnections();
 
-    IDatasourceService datasourceService = new InMemoryDatasourceServiceImpl();
+    IDSWDatasourceService datasourceService = new InMemoryDSWDatasourceServiceImpl();
 
     IModelerSource source = new InlineSqlModelerSource(datasourceService, "SampleData", "Hypersonic", "select * from customers", "testModel");
 

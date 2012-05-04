@@ -24,7 +24,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
@@ -34,9 +34,9 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardRelat
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -47,7 +47,6 @@ import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulVbox;
-import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 @SuppressWarnings("unchecked")
@@ -55,7 +54,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
   public static final int DEFAULT_RELATIONAL_TABLE_ROW_COUNT = 5;
   private DatasourceModel datasourceModel;
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
   XulTextbox datasourceNameTextBox = null;
   XulButton okButton = null;
   XulButton cancelButton = null;
@@ -63,13 +62,13 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   private WizardConnectionController connectionController;
   private IXulAsyncConnectionService connectionService;
   private boolean isFinishable = false;
-  private IConnection connection;
+  private Connection connection;
   private ConnectionController databaseConnectionController;
 
   public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource, boolean isFinishable) {
 	  super(parentDatasource);
 	  this.datasourceModel = datasourceModel;
-	  this.datasourceService = new DatasourceServiceGwtImpl();
+	  this.datasourceService = new DSWDatasourceServiceGwtImpl();
 	  this.connectionService = new ConnectionServiceGwtImpl();
 	  this.isFinishable = isFinishable;
   }
@@ -157,11 +156,11 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     datasourceModel.setDatasourceType(DatasourceType.SQL);
   }
 
-  public IXulAsyncDatasourceService getDatasourceService() {
+  public IXulAsyncDSWDatasourceService getDatasourceService() {
     return datasourceService;
   }
 
-  public void setDatasourceService(IXulAsyncDatasourceService datasourceService) {
+  public void setDatasourceService(IXulAsyncDSWDatasourceService datasourceService) {
     this.datasourceService = datasourceService;
   }
 
@@ -260,12 +259,12 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   }
 
   @Bindable
-  public IConnection getConnection() {
+  public Connection getConnection() {
     return connection;
   }
 
   @Bindable
-  public void setConnection(IConnection connection) {
+  public void setConnection(Connection connection) {
     Object prevVal = this.connection == null ? new Object() : null;
     this.connection = connection;
     firePropertyChange("connection", prevVal, connection);

@@ -25,7 +25,7 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -40,7 +40,7 @@ public class DatasourceModel extends XulEventSourceAdapter
   private ModelInfo modelInfo;
   private Domain domain;
   private String datasourceName;
-  private IConnection selectedRelationalConnection;
+  private Connection selectedRelationalConnection;
   private String query;
 
   private boolean editMode;
@@ -91,13 +91,13 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   @Bindable
-  public IConnection getSelectedRelationalConnection() {
+  public Connection getSelectedRelationalConnection() {
     return selectedRelationalConnection;
   }
 
   @Bindable
-  public void setSelectedRelationalConnection(IConnection value) {
-    IConnection previousValue = this.selectedRelationalConnection;
+  public void setSelectedRelationalConnection(Connection value) {
+	  Connection previousValue = this.selectedRelationalConnection;
     this.selectedRelationalConnection = value;
     this.firePropertyChange("selectedRelationalConnection", previousValue, value);
     validate();
@@ -215,7 +215,7 @@ public class DatasourceModel extends XulEventSourceAdapter
     
     // BISERVER-3664: Temporary solution for IE ListBoxs not accepting -1 selectedIndex.
     // Explicitly selecting the first connection object makes all browsers behave the same.
-    IConnection firstConnection = guiStateModel.getConnections().size() > 0 ? guiStateModel.getConnections().get(0) : null;
+    Connection firstConnection = guiStateModel.getConnections().size() > 0 ? guiStateModel.getConnections().get(0) : null;
     setSelectedRelationalConnection(firstConnection);
 
     modelInfo.clearModel();

@@ -45,6 +45,15 @@
 			value="${findbugs.build.cache.dir}/findbugs-${findbugs.version}"
 			description="Where findbugs is installed to" />
 
+  <!--=======================================================================
+      continuous
+
+      Runs a typical continuous integration build including project dist, javadoc, test,
+      and coverage artifacts
+      ====================================================================-->
+  <target name="continuous" depends="clean-all,resolve,dist,cobertura,publish"/>
+
+
 	<target name="install" description="Installs the plugin to your Pentaho BI Server">
 		<unzip src="${dist.dir}/${package.basename}.zip" dest="${pentaho.solutions.dir}/system" overwrite="true">
 		</unzip>
@@ -69,7 +78,6 @@
 			<!--fileset file="${gwt.sdk.dir}/gwt-user*.jar" /-->
 			<fileset file="${codegenlib.dir}/pentaho-database-gwt-${dependency.pentaho-database.revision}.jar" />
 			<fileset file="${codegenlib.dir}/pentaho-modeler-${dependency.pentaho-modeler.revision}.jar" />
-			<fileset file="${codegenlib.dir}/pentaho-database-model-${dependency.pentaho-database-model.revision}.jar" />
 		</copy>
 
 		<copy todir="${approot.stage.dir}" overwrite="true">
@@ -149,5 +157,4 @@
 	<target name="findbugs.clean" description="cleans up any previous findbugs reports">
 		<delete dir="${findbugs.output-dir}"></delete>
 	</target>
-	
 </project>

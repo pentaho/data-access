@@ -2,3 +2,7 @@ test-lib/
 war/WEB-INF/lib/
 bin/
 dist/
+derby.log
+test-res/data/sampledata.log
+test-res/solution1/system/data/sampledata.log
+test-res/solution1/system/olap/tmp_datasources.xml
