@@ -20,12 +20,10 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;

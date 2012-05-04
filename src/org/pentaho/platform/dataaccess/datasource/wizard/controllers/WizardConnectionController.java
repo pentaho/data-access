@@ -26,7 +26,7 @@ import java.util.List;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
@@ -42,6 +42,8 @@ import org.pentaho.ui.xul.containers.XulHbox;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
+
+import com.google.gwt.core.client.GWT;
 
 public class WizardConnectionController extends AbstractXulEventHandler {
 
@@ -75,7 +77,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   
   DatabaseTypeHelper databaseTypeHelper;
 
-  IConnection currentConnection;
+  Connection currentConnection;
   
   ConnectionSetter connectionSetter = new ConnectionSetter();
 
@@ -253,7 +255,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
                     .getString("ConnectionController.CONNECTION_DELETED"));//$NON-NLS-1$
                 datasourceModel.getGuiStateModel().deleteConnection(
                     datasourceModel.getSelectedRelationalConnection().getName());
-                List<IConnection> connections = datasourceModel.getGuiStateModel().getConnections();
+                List<Connection> connections = datasourceModel.getGuiStateModel().getConnections();
                 if (connections != null && connections.size() > 0) {
                   datasourceModel.setSelectedRelationalConnection(connections.get(connections.size() - 1));
                 } else {
@@ -278,7 +280,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
 			saveConnectionConfirmationDialog.hide();
 		}
 
-		connectionService.getConnectionByName(currentConnection.getName(), new XulServiceCallback<IConnection>() {
+		connectionService.getConnectionByName(currentConnection.getName(), new XulServiceCallback<Connection>() {
 			public void error(String message, Throwable error) {
 				// Connection not found. Create a new one.
 				connectionService.addConnection(currentConnection, new XulServiceCallback<Boolean>() {
@@ -303,7 +305,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
 				});
 			}
 
-			public void success(IConnection value) {
+			public void success(Connection value) {
 				// Connection found. Update it.
 				connectionService.updateConnection(currentConnection, new XulServiceCallback<Boolean>() {
 
@@ -350,11 +352,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   
   @Bindable
   public void onDialogAccept(IDatabaseConnection arg0) {
-    connectionService.convertToConnection(arg0, new XulServiceCallback<IConnection>() {
+    connectionService.convertToConnection(arg0, new XulServiceCallback<Connection>() {
       public void error(String message, Throwable error) {
         displayErrorMessage(error);
       }
-      public void success(IConnection retVal) {
+      public void success(Connection retVal) {
         currentConnection = retVal;
         addConnection();
       }
@@ -383,7 +385,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       databaseDialog.show();
     } else {
       databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+    		  GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
     }
   }
 
@@ -391,7 +393,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   public void showEditConnectionDialog() {
     datasourceModel.setEditing(true);
     if(databaseDialog != null){
-      IConnection connection = datasourceModel.getSelectedRelationalConnection();
+      Connection connection = datasourceModel.getSelectedRelationalConnection();
       connectionService.convertFromConnection(connection, new XulServiceCallback<IDatabaseConnection>() {
         public void error(String message, Throwable error) {
           displayErrorMessage(error);
@@ -403,7 +405,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       });
     } else {
       databaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
-          "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+    		  GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
     }
   }
 
@@ -425,11 +427,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
      * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogAccept(org.pentaho.database.model.IDatabaseConnection)
      */
     public void onDialogAccept(IDatabaseConnection connection) {
-      connectionService.convertToConnection(connection, new XulServiceCallback<IConnection>() {
+      connectionService.convertToConnection(connection, new XulServiceCallback<Connection>() {
         public void error(String message, Throwable error) {
           displayErrorMessage(error);
         }
-        public void success(IConnection retVal) {
+        public void success(Connection retVal) {
           currentConnection = retVal;
           addConnection();
         }

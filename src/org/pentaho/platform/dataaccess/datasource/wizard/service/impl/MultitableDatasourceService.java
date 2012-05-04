@@ -42,7 +42,7 @@ import org.pentaho.metadata.model.concept.Concept;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -93,7 +93,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 
   }
 
-	private DatabaseMeta getDatabaseMeta(IConnection connection) throws ConnectionServiceException {
+	private DatabaseMeta getDatabaseMeta(Connection connection) throws ConnectionServiceException {
 		if(this.connectionServiceImpl == null) {
 			return this.databaseMeta;
 		}
@@ -101,11 +101,11 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		IDatabaseConnection iDatabaseConnection = this.connectionServiceImpl.convertFromConnection(connection);
 		iDatabaseConnection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
 		DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
-    dbmeta.getDatabaseInterface().setQuoteAllFields(true);
-    return dbmeta;
-  }
-	
-	public List<String> retrieveSchemas(IConnection connection) throws DatasourceServiceException {
+	    dbmeta.getDatabaseInterface().setQuoteAllFields(true);
+	    return dbmeta;
+  	}
+
+	public List<String> retrieveSchemas(Connection connection) throws DatasourceServiceException {
 		List<String> schemas = new ArrayList<String>();
 		try {
 			DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
@@ -128,7 +128,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		return schemas;
 	}
 
-	public List<String> getDatabaseTables(IConnection connection, String schema) throws DatasourceServiceException {
+	public List<String> getDatabaseTables(Connection connection, String schema) throws DatasourceServiceException {
     try{
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       Database database = new Database(null, databaseMeta);
@@ -148,18 +148,18 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
     }
   }
 
-	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IConnection connection) throws DatasourceServiceException {
+	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, Connection connection) throws DatasourceServiceException {
     try{
       ModelerService modelerService = new ModelerService();
       modelerService.initKettle();
 
-      DatasourceServiceImpl datasourceService = new DatasourceServiceImpl();
+      DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();
       GeoContext geoContext = datasourceService.getGeoContext();
 
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getSchemaModel(), dto.getDatasourceName(), dto.getSelectedTables(), geoContext);
       Domain domain = multiTable.generateDomain(dto.isDoOlap());
-
+      
       String modelState = serializeModelState(dto);
       for(LogicalModel lm : domain.getLogicalModels()) {
         lm.setProperty("datasourceModel", modelState);
@@ -194,7 +194,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		}
 	}
 
-	public List<String> getTableFields(String table, IConnection connection) throws DatasourceServiceException {
+	public List<String> getTableFields(String table, Connection connection) throws DatasourceServiceException {
     try{
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       Database database = new Database(null, databaseMeta);

@@ -1,11 +1,9 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.io.File;
-import java.util.Locale;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
-import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
@@ -54,7 +52,7 @@ public class DebugModelerService extends ModelerService {
     initKettle();
     
     try {
-      DatasourceServiceImpl datasourceService = new DatasourceServiceImpl();
+      DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();
       ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), datasourceService.getGeoContext());
       model.setModelName(name);
       model.setDomain(domain);
@@ -100,7 +98,6 @@ public class DebugModelerService extends ModelerService {
       lModel = domain.getLogicalModels().get(1);
       MondrianModelExporter exporter = new MondrianModelExporter(lModel, LocalizedString.DEFAULT_LOCALE);
       String mondrianSchema = exporter.createMondrianModelXML();
-
       Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
       byte[] schemaBytes = schemaDoc.asXML().getBytes("UTF-8"); //$NON-NLS-1$
 

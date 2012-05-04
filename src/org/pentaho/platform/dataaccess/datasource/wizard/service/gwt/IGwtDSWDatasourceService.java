@@ -15,23 +15,15 @@
  * Copyright 2008 - 2009 Pentaho Corporation.  All rights reserved.
  *
  *
- * Created April 21, 2009
+ * Created July 15, 2009
  * @author rmansoor
  */
-package org.pentaho.platform.dataaccess.datasource;
+package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
-import java.io.Serializable;
-
-public interface IConnection extends Serializable{
-  public String getName();
-  public void setName(String name);
-  public String getDriverClass();
-  public void setDriverClass(String driverClass);
-  public String getUsername();
-  public void setUsername(String username);
-  public String getPassword();
-  public void setPassword(String password);
-  public String getUrl();
-  public void setUrl(String url);
-
+import com.google.gwt.user.client.rpc.RemoteService;
+     
+/**
+ * This is a wrapper class exposing the IDatasourceService as a GWT service.
+ */
+public interface IGwtDSWDatasourceService extends IDSWDatasourceService, RemoteService {
 }

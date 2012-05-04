@@ -55,7 +55,6 @@ import org.dom4j.Node;
 import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
@@ -118,7 +117,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
    * @param connection The connection to be added
    * @return True if the addition was successful
    */
-  public boolean addConnection(IConnection connection) throws ConnectionServiceException {
+  public boolean addConnection(Connection connection) throws ConnectionServiceException {
     String xml = getConnectionXml( connection );
     PostMethod callMethod = new PostMethod( serviceUrl+"/addConnection" ); //$NON-NLS-1$
 
@@ -130,7 +129,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
     return node != null && Boolean.parseBoolean( this.getNodeText(node) );
   }
 
-  public DatabaseConnection convertFromConnection(IConnection connection) throws ConnectionServiceException {
+  public DatabaseConnection convertFromConnection(Connection connection) throws ConnectionServiceException {
     String xml = getConnectionXml( connection );
     PostMethod callMethod = new PostMethod( serviceUrl+"/convertFromConnection" ); //$NON-NLS-1$
 
@@ -228,7 +227,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
     return (DatabaseConnection) results[0];
   }
   
-  public IConnection convertToConnection(IDatabaseConnection arg0) throws ConnectionServiceException {
+  public Connection convertToConnection(IDatabaseConnection arg0) throws ConnectionServiceException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -241,7 +240,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
    * @param connection The connection to be deleted
    * @return True if the deletion was successful
    */
-  public boolean deleteConnection(IConnection connection) throws ConnectionServiceException {
+  public boolean deleteConnection(Connection connection) throws ConnectionServiceException {
     return deleteConnection( connection.getName() );
   }
 
@@ -270,7 +269,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
    * @param connectionName The name of the connection to be returned
    * @return The connection requested
    */
-  public IConnection getConnectionByName(String connectionName) throws ConnectionServiceException {
+  public Connection getConnectionByName(String connectionName) throws ConnectionServiceException {
     PostMethod callMethod = new PostMethod( serviceUrl+"/getConnectionByName" ); //$NON-NLS-1$
 
     // add the xml to the request entity
@@ -339,7 +338,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
    * method is called.
    * @return List of the connections
    */
-  public List<IConnection> getConnections() throws ConnectionServiceException {
+  public List<Connection> getConnections() throws ConnectionServiceException {
     
     PostMethod callMethod = new PostMethod( serviceUrl+"/getConnections" ); //$NON-NLS-1$
 
@@ -347,7 +346,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
     RequestEntity requestEntity = new StringRequestEntity( xml ); 
     callMethod.setRequestEntity( requestEntity );
 
-    List<IConnection> connections = new ArrayList<IConnection>();
+    List<Connection> connections = new ArrayList<Connection>();
 
     // get the result and parse de-serialize it
     Document resultDoc = getResultDocument( callMethod );
@@ -389,7 +388,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
    * @param connection Connection object to be encoded as XML
    * @return XML serialization of the connection object
    */
-  protected String getConnectionXml( IConnection connection ) {
+  protected String getConnectionXml( Connection connection ) {
     Document doc = DocumentHelper.createDocument();
     
     // create a SOAP envelope and specify namespaces
@@ -439,7 +438,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
    * in the server's environment.
    * @param connection The connection to be tested
    */
-  public boolean testConnection(IConnection connection) throws ConnectionServiceException {
+  public boolean testConnection(Connection connection) throws ConnectionServiceException {
     
     String xml = getConnectionXml( connection );
     PostMethod callMethod = new PostMethod( serviceUrl+"/testConnection" ); //$NON-NLS-1$
@@ -452,7 +451,7 @@ public class ConnectionServiceClient implements IConnectionService, ObjectSuppli
     return node != null && Boolean.parseBoolean( this.getNodeText(node) );
   }
 
-  public boolean updateConnection(IConnection connection) throws ConnectionServiceException {
+  public boolean updateConnection(Connection connection) throws ConnectionServiceException {
     String xml = getConnectionXml( connection );
     PostMethod callMethod = new PostMethod( serviceUrl+"/updateConnection" ); //$NON-NLS-1$
 

@@ -20,11 +20,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.metadata.model.Category;
-import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.platform.dataaccess.datasource.IConnection;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
+import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -38,7 +35,7 @@ public class GuiStateModel extends XulEventSourceAdapter {
   private boolean relationalValidated;
   private boolean relationalPreviewValidated;
   private boolean relationalApplyValidated;
-  private List<IConnection> connections = new ArrayList<IConnection>();
+  private List<Connection> connections = new ArrayList<Connection>();
   private String previewLimit = "10"; //$NON-NLS-1$
   private List<LogicalModel> logicalModels;
   private String localeCode;
@@ -50,19 +47,19 @@ public class GuiStateModel extends XulEventSourceAdapter {
   private RelationalModelValidationListenerCollection relationalModelValidationListeners;
 
   @Bindable
-  public List<IConnection> getConnections() {
+  public List<Connection> getConnections() {
     return connections;
   }
 
-  public void addConnection(IConnection connection) {
-    List<IConnection> previousValue = getPreviousValue();
+  public void addConnection(Connection connection) {
+    List<Connection> previousValue = getPreviousValue();
     connections.add(connection);
     this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
   }
 
-  public void updateConnection(IConnection connection) {
-    List<IConnection> previousValue = getPreviousValue();
-    IConnection conn = getConnectionByName(connection.getName());
+  public void updateConnection(Connection connection) {
+    List<Connection> previousValue = getPreviousValue();
+    Connection conn = getConnectionByName(connection.getName());
     conn.setDriverClass(connection.getDriverClass());
     conn.setPassword(connection.getPassword());
     conn.setUrl(connection.getUrl());
@@ -71,22 +68,22 @@ public class GuiStateModel extends XulEventSourceAdapter {
   }
 
   @Bindable
-  private List<IConnection> getPreviousValue() {
-    List<IConnection> previousValue = new ArrayList<IConnection>();
-    for (IConnection conn : connections) {
+  private List<Connection> getPreviousValue() {
+    List<Connection> previousValue = new ArrayList<Connection>();
+    for (Connection conn : connections) {
       previousValue.add(conn);
     }
     return previousValue;
   }
 
-  public void deleteConnection(IConnection connection) {
-    List<IConnection> previousValue = getPreviousValue();
+  public void deleteConnection(Connection connection) {
+    List<Connection> previousValue = getPreviousValue();
     connections.remove(connections.indexOf(connection));
     this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
   }
 
   public void deleteConnection(String name) {
-    for (IConnection connection : connections) {
+    for (Connection connection : connections) {
       if (connection.getName().equals(name)) {
         deleteConnection(connection);
         break;
@@ -95,8 +92,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
   }
 
   @Bindable
-  public void setConnections(List<IConnection> value) {
-    List<IConnection> previousValue = getPreviousValue();
+  public void setConnections(List<Connection> value) {
+    List<Connection> previousValue = getPreviousValue();
     this.connections = value;
     this.firePropertyChange("connections", previousValue, value); //$NON-NLS-1$
   }
@@ -113,8 +110,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
     this.firePropertyChange("previewLimit", previousVal, value); //$NON-NLS-1$
   }
 
-  public IConnection getConnectionByName(String name) {
-    for (IConnection connection : connections) {
+  public Connection getConnectionByName(String name) {
+    for (Connection connection : connections) {
       if (connection.getName().equals(name)) {
         return connection;
       }
@@ -122,8 +119,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
     return null;
   }
 
-  public Integer getConnectionIndex(IConnection conn) {
-    IConnection connection = getConnectionByName(conn.getName());
+  public Integer getConnectionIndex(Connection conn) {
+	  Connection connection = getConnectionByName(conn.getName());
     return connections.indexOf(connection);
   }
 

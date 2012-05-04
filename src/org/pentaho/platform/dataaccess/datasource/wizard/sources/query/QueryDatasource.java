@@ -6,8 +6,8 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -25,10 +25,10 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
   private boolean finishable;
   private QueryPhysicalStep queryStep;
   private DatasourceModel datasourceModel;
-  private IXulAsyncDatasourceService datasourceService;
+  private IXulAsyncDSWDatasourceService datasourceService;
   private IWizardModel wizardModel;
 
-  public QueryDatasource(IXulAsyncDatasourceService datasourceService, DatasourceModel datasourceModel){
+  public QueryDatasource(IXulAsyncDSWDatasourceService datasourceService, DatasourceModel datasourceModel){
     this.datasourceModel = datasourceModel;
     this.datasourceService = datasourceService;
   }
