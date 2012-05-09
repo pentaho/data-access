@@ -26,12 +26,13 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.ICacheManager;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -46,14 +47,11 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepositoryInfo;
 import org.pentaho.platform.repository2.unified.ServerRepositoryPaths;
 import org.pentaho.platform.repository2.unified.jcr.SimpleJcrTestUtils;
-import org.pentaho.platform.security.policy.rolebased.IRoleAuthorizationPolicyRoleBindingDao;
+import org.pentaho.test.platform.MethodTrackingData;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
+import org.pentaho.test.platform.engine.security.MockSecurityHelper;
 import org.pentaho.test.platform.repository2.unified.MockUnifiedRepository;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.extensions.jcr.JcrTemplate;
-import org.springframework.extensions.jcr.SessionFactory;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
@@ -61,13 +59,9 @@ import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/repository.spring.xml", "classpath:/repository-test-override.spring.xml" })
 @SuppressWarnings("nls")
-public class MetadataDatasourceServiceTest extends TestCase implements ApplicationContextAware {
+public class MetadataDatasourceServiceTest extends TestCase  {
 
 	// ~ Instance fields
 	// =================================================================================================
@@ -76,24 +70,18 @@ public class MetadataDatasourceServiceTest extends TestCase implements Applicati
 
 	private IUnifiedRepository repository;
 	
-	private boolean startupCalled;
+	private String repositoryAdminUsername = "pentahoRepoAdmin";
+	
+	private static final String USER_PARAMETER = "user";
 
-	private String repositoryAdminUsername;
-
-	private String tenantAdminAuthorityNamePattern;
-
-	private String tenantAuthenticatedAuthorityNamePattern;
-
-	/**
-	 * Used for state verification and test cleanup.
-	 */
 	private JcrTemplate testJcrTemplate;
+	
 
 	private IBackingRepositoryLifecycleManager manager;
 
-	private IRoleAuthorizationPolicyRoleBindingDao roleBindingDao;
+	private String tenantAdminAuthorityNamePattern = "{0}_Admin";
 
-	private IAuthorizationPolicy authorizationPolicy;
+	private String tenantAuthenticatedAuthorityNamePattern = "{0}_Authenticated";
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -109,7 +97,8 @@ public class MetadataDatasourceServiceTest extends TestCase implements Applicati
 
 	@Before
 	public void setUp() throws Exception {
-
+		Mockery context = new JUnit4Mockery();
+		manager = new MockBackingRepositoryLifecycleManager(new MockSecurityHelper());
 		booter = new MicroPlatform("test-res");
 
 		// Clear up the cache
@@ -120,36 +109,18 @@ public class MetadataDatasourceServiceTest extends TestCase implements Applicati
 		repository = new MockUnifiedRepository(new MockUserProvider());
 		repository.createFolder(repository.getFile("/etc").getId(), new RepositoryFile.Builder("metadata").folder(true).build(), "initialization");
 
+		final IAuthorizationPolicy policy =  context.mock(IAuthorizationPolicy.class);
+		booter.defineInstance(IAuthorizationPolicy.class, policy);
 		booter.defineInstance(IUnifiedRepository.class, repository);
 		booter.start();
-		
-		
-		booter.defineInstance(IAuthorizationPolicy.class, authorizationPolicy);
 		logout();
 		manager.startup();
-		startupCalled = true;
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		clearRoleBindings();
-		// null out fields to get back memory
-		authorizationPolicy = null;
-		loginAsRepositoryAdmin();
-		SimpleJcrTestUtils.deleteItem(testJcrTemplate, ServerRepositoryPaths.getPentahoRootFolderPath());
-		logout();
-		repositoryAdminUsername = null;
-		tenantAdminAuthorityNamePattern = null;
-		tenantAuthenticatedAuthorityNamePattern = null;
-		roleBindingDao = null;
-		authorizationPolicy = null;
-		testJcrTemplate = null;
-		if (startupCalled) {
-			manager.shutdown();
-		}
-
-		// null out fields to get back memory
-		repository = null;		
+		
+		context.checking(new Expectations() {{
+			oneOf (policy); will(returnValue(true));
+			oneOf (policy); will(returnValue(true));
+			oneOf (policy); will(returnValue(true));
+	    }});
 	}
 
 	@Test
@@ -186,21 +157,6 @@ public class MetadataDatasourceServiceTest extends TestCase implements Applicati
 		public List<String> getRoles() {
 			return new ArrayList<String>();
 		}
-	}
-	
-	
-	public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-		manager = (IBackingRepositoryLifecycleManager) applicationContext.getBean("backingRepositoryLifecycleManager");
-		SessionFactory jcrSessionFactory = (SessionFactory) applicationContext.getBean("jcrSessionFactory");
-		testJcrTemplate = new JcrTemplate(jcrSessionFactory);
-		testJcrTemplate.setAllowCreate(true);
-		testJcrTemplate.setExposeNativeSession(true);
-		repositoryAdminUsername = (String) applicationContext.getBean("repositoryAdminUsername");
-		tenantAuthenticatedAuthorityNamePattern = (String) applicationContext.getBean("tenantAuthenticatedAuthorityNamePattern");
-		tenantAdminAuthorityNamePattern = (String) applicationContext.getBean("tenantAdminAuthorityNamePattern");
-		roleBindingDao = (IRoleAuthorizationPolicyRoleBindingDao) applicationContext.getBean("roleAuthorizationPolicyRoleBindingDao");
-		authorizationPolicy = (IAuthorizationPolicy) applicationContext.getBean("authorizationPolicy");
-		repository = (IUnifiedRepository) applicationContext.getBean("unifiedRepository");
 	}
 
 	/**
@@ -254,4 +210,71 @@ public class MetadataDatasourceServiceTest extends TestCase implements Applicati
 	protected void login(final String username, final String tenantId) {
 		login(username, tenantId, false);
 	}
+	
+	private class MockBackingRepositoryLifecycleManager implements IBackingRepositoryLifecycleManager {
+	    public static final String UNIT_TEST_EXCEPTION_MESSAGE = "Unit Test Exception";
+	    private ArrayList<MethodTrackingData> methodTrackerHistory = new ArrayList<MethodTrackingData>();
+	    private boolean throwException = false;
+	    private MockSecurityHelper securityHelper;
+
+	    private MockBackingRepositoryLifecycleManager(final MockSecurityHelper securityHelper) {
+	      assert (null != securityHelper);
+	      this.securityHelper = securityHelper;
+	    }
+
+	    public void startup() {
+	      methodTrackerHistory.add(new MethodTrackingData("startup")
+	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser()));
+	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
+	    }
+
+	    public void shutdown() {
+	      methodTrackerHistory.add(new MethodTrackingData("shutdown")
+	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser()));
+	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
+	    }
+
+	    public void newTenant(final String tenantId) {
+	      methodTrackerHistory.add(new MethodTrackingData("newTenant")
+	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser())
+	          .addParameter("tenantId", tenantId));
+	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
+	    }
+
+	    public void newTenant() {
+	      methodTrackerHistory.add(new MethodTrackingData("newTenant")
+	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser()));
+	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
+	    }
+
+	    public void newUser(final String tenantId, final String username) {
+	      methodTrackerHistory.add(new MethodTrackingData("newUser")
+	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser())
+	          .addParameter("tenantId", tenantId)
+	          .addParameter("username", username));
+	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
+	    }
+
+	    public void newUser() {
+	      methodTrackerHistory.add(new MethodTrackingData("newUser")
+	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser()));
+	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
+	    }
+
+	    public void resetCallHistory() {
+	      this.methodTrackerHistory.clear();
+	    }
+
+	    public boolean isThrowException() {
+	      return throwException;
+	    }
+
+	    public void setThrowException(final boolean throwException) {
+	      this.throwException = throwException;
+	    }
+
+	    public ArrayList<MethodTrackingData> getMethodTrackerHistory() {
+	      return (ArrayList<MethodTrackingData>) methodTrackerHistory.clone();
+	    }
+	  }
 }
