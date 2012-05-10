@@ -48,6 +48,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -129,7 +132,9 @@ public class DatasourceResource {
     
     List<LogicalModel> logicalModelList = domain.getLogicalModels();
     if(logicalModelList != null && logicalModelList.size() >= 1) {
-      LogicalModel logicalModel = logicalModelList.get(0);
+      ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+      model.setDomain(domain);
+      LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
       Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
       if(property == null) {
         return true;    
@@ -144,13 +149,15 @@ public class DatasourceResource {
   @Path("/dsw/ids")
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
   public JaxbList<String> getDSWDatasourceIds() {
+	ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
     List<String> datasourceList = new ArrayList<String>();
     try {
       for(LogicalModelSummary summary:dswService.getLogicalModels(null)) {
         Domain domain = modelerService.loadDomain(summary.getDomainId());
+        model.setDomain(domain);
         List<LogicalModel> logicalModelList = domain.getLogicalModels();
         if(logicalModelList != null && logicalModelList.size() >= 1) {
-          LogicalModel logicalModel = logicalModelList.get(0);
+          LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
           Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
           if(property != null) {
             datasourceList.add(summary.getDomainId());
@@ -193,7 +200,9 @@ public class DatasourceResource {
   
     // Then get the corresponding mondrian files
     Domain domain = metadataDomainRepository.getDomain(dswId);
-    LogicalModel logicalModel = domain.getLogicalModels().get(0);
+    ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+    model.setDomain(domain);
+    LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
     if (logicalModel.getProperty(MONDRIAN_CATALOG_REF) != null) {
       MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
       String catalogRef = (String)logicalModel.getProperty(MONDRIAN_CATALOG_REF);
@@ -224,7 +233,9 @@ public class DatasourceResource {
   @Produces(WILDCARD)
   public Response doRemoveDSW(@PathParam("dswId") String dswId) {
     Domain domain = metadataDomainRepository.getDomain(dswId);
-    LogicalModel logicalModel = domain.getLogicalModels().get(0);
+    ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+    model.setDomain(domain);
+    LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
     if (logicalModel.getProperty(MONDRIAN_CATALOG_REF) != null) {
       String catalogRef = (String)logicalModel.getProperty(MONDRIAN_CATALOG_REF);
       mondrianCatalogService.removeCatalog(catalogRef, PentahoSessionHolder.getSession());

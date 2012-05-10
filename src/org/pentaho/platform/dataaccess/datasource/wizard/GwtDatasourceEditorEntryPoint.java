@@ -50,6 +50,7 @@ import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourc
 import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
@@ -325,6 +326,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         }
       }
       public void onDialogAccept(final Domain domain) {
+    	MessageHandler.getInstance().closeWaitingDialog();  
         wizard.removeDialogListener(this);
         WAQRTransport transport = WAQRTransport.createFromMetadata(domain);
         notifyCallbackSuccess(callback, true, transport);
