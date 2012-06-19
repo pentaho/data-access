@@ -129,7 +129,7 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 			login("joe", "duff", false);
 			String localizeBundleEntries = "index_ja.properties=index_ja.properties;index_de.properties=index_de.properties";
 			MetadataDatasourceService service = new MetadataDatasourceService();
-			service.importMetadataDatasource(localizeBundleEntries, "steel-wheels", "metadata.xmi");
+//			service.importMetadataDatasource(localizeBundleEntries, "steel-wheels", "metadata.xmi");
 			logout();
 		} catch (Exception e) {
 			final RepositoryFile etcMetadata = repository.getFile(PentahoMetadataDomainRepositoryInfo.getMetadataFolderPath());
