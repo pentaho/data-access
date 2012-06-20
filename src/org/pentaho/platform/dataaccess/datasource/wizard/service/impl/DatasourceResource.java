@@ -151,7 +151,7 @@ public class DatasourceResource {
   public JaxbList<String> getDSWDatasourceIds() {
     List<String> datasourceList = new ArrayList<String>();
     try {
-      for(LogicalModelSummary summary:dswService.getLogicalModels(null)) {
+      nextModel: for(LogicalModelSummary summary:dswService.getLogicalModels(null)) {
         Domain domain = modelerService.loadDomain(summary.getDomainId());
         List<LogicalModel> logicalModelList = domain.getLogicalModels();
         if(logicalModelList != null && logicalModelList.size() >= 1) {
@@ -159,6 +159,7 @@ public class DatasourceResource {
         	  Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
         	  if(property != null) {
         		  datasourceList.add(summary.getDomainId());
+        		  continue nextModel;
         	  }
           }
         }
