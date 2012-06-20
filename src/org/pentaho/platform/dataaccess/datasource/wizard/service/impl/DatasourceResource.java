@@ -126,19 +126,19 @@ public class DatasourceResource {
     Domain domain;
     try { 
       domain = metadataDomainRepository.getDomain(id);
+      if(domain == null) return false;
     } catch (Exception e) { // If we can't load the domain then we MUST return false
       return false;
     }
     
     List<LogicalModel> logicalModelList = domain.getLogicalModels();
     if(logicalModelList != null && logicalModelList.size() >= 1) {
-      ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
-      model.setDomain(domain);
-      LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
-      Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
-      if(property == null) {
-        return true;    
-      } 
+      for(LogicalModel logicalModel : logicalModelList) {	
+    	  Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
+    	  if(property == null) {
+    		  return true;    
+    	  } 
+      }
     } else {
       return true;
     }
@@ -149,18 +149,17 @@ public class DatasourceResource {
   @Path("/dsw/ids")
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
   public JaxbList<String> getDSWDatasourceIds() {
-	ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
     List<String> datasourceList = new ArrayList<String>();
     try {
       for(LogicalModelSummary summary:dswService.getLogicalModels(null)) {
         Domain domain = modelerService.loadDomain(summary.getDomainId());
-        model.setDomain(domain);
         List<LogicalModel> logicalModelList = domain.getLogicalModels();
         if(logicalModelList != null && logicalModelList.size() >= 1) {
-          LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
-          Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
-          if(property != null) {
-            datasourceList.add(summary.getDomainId());
+          for(LogicalModel logicalModel : logicalModelList) {	
+        	  Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
+        	  if(property != null) {
+        		  datasourceList.add(summary.getDomainId());
+        	  }
           }
         }
       }
