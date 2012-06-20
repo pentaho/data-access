@@ -193,7 +193,7 @@
     </dependency>
 
     <dependency org="pentaho" name="pentaho-database-model" rev="${dependency.pentaho-database-model.revision}"
-                transitive="false" conf="codegen->default" changing="true">
+                transitive="false" conf="default->default" changing="true">
       <artifact name="pentaho-database-model"/>
       <artifact name="pentaho-database-model" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
