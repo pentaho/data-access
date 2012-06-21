@@ -36,7 +36,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 @SuppressWarnings("all")
 public class MetadataDatasourceServiceGwtImpl {
 
-  String datasourceUrl = getWebAppRoot() + "plugin/data-access/api/metadata/import?domainId={domainId}&metadataFile={metadataFile}";//$NON-NLS-1$
+  String datasourceUrl = getWebAppRoot() + "plugin/data-access/api/metadata/uploadServletImport?domainId={domainId}&metadataFile={metadataFile}";//$NON-NLS-1$
   
   public void importMetadataDatasource(final String domainId, final String metadataFile, final String localizeBundleEntries, final XulServiceCallback<String> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {

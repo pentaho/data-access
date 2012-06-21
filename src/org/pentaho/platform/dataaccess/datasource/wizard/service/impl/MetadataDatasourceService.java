@@ -3,8 +3,11 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
@@ -20,10 +23,13 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
@@ -105,8 +111,73 @@ public class MetadataDatasourceService {
 			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
 	}
-	
-	@PUT
+
+  @PUT
+  @Path("/uploadServletImport")
+  @Consumes({ TEXT_PLAIN })
+  @Produces("text/plain")
+  @Deprecated
+  public Response uploadServletImportMetadataDatasource(String localizeBundleEntries, @QueryParam("domainId") String domainId, @QueryParam("metadataFile") String metadataFile) throws PentahoAccessControlException {
+    try {
+      validateAccess();
+    } catch (PentahoAccessControlException e) {
+      return Response.serverError().entity(e.toString()).build();
+    }
+
+    IMetadataDomainRepository metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, PentahoSessionHolder.getSession());
+    PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
+    CsvUtils csvUtils = new CsvUtils();
+    boolean validPropertyFiles = true;
+    StringBuffer invalidFiles = new StringBuffer();
+    try {
+      String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
+      String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
+      FileInputStream metadataInputStream = new FileInputStream(sysTmpDir + File.separatorChar + metadataFile);
+      metadataImporter.storeDomain(metadataInputStream, domainId, true);
+      metadataDomainRepository.getDomain(domainId);
+
+      StringTokenizer bundleEntriesParam = new StringTokenizer(localizeBundleEntries, ";");
+      while (bundleEntriesParam.hasMoreTokens()) {
+        String localizationBundleElement = bundleEntriesParam.nextToken();
+        StringTokenizer localizationBundle = new StringTokenizer(localizationBundleElement, "=");
+        String localizationFileName = localizationBundle.nextToken();
+        String localizationFile = localizationBundle.nextToken();
+
+        if (localizationFileName.endsWith(".properties")) {
+          String encoding = csvUtils.getEncoding(localizationFile);
+          if(ENCODINGS.contains(encoding)) {
+            for (final Pattern propertyBundlePattern : patterns) {
+              final Matcher propertyBundleMatcher = propertyBundlePattern.matcher(localizationFileName);
+              if (propertyBundleMatcher.matches()) {
+                FileInputStream bundleFileInputStream = new FileInputStream(sysTmpDir + File.separatorChar + localizationFile);
+                metadataImporter.addLocalizationFile(domainId, propertyBundleMatcher.group(2), bundleFileInputStream, true);
+                break;
+              }
+            }
+          } else {
+            validPropertyFiles =  false;
+            invalidFiles.append(localizationFileName);
+          }
+        } else {
+          validPropertyFiles =  false;
+          invalidFiles.append(localizationFileName);
+        }
+      }
+
+      if(!validPropertyFiles) {
+        return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_002_PROPERTY_FILES_ERROR") + invalidFiles.toString()).build();
+      }
+      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+    } catch (Exception e) {
+      metadataImporter.removeDomain(domainId);
+      return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+    }
+  }
+
+
+
+
+  @PUT
 	@Path("/storeDomain")
 	@Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
 	@Produces("text/plain")
