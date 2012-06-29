@@ -262,16 +262,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
         }
       }
 
-    });
-    // test code......
-    // List<IDatasource> datasourceList = new ArrayList<IDatasource>();
-    // IDatasource ds = new Datasource();
-    // ds.setDatasourceName("hello");
-    // datasourceList.add(ds);
-    // ds = new Datasource();
-    // ds.setDatasourceName("goodbye");
-    // datasourceList.add(ds);
-    // DatasourceSelectionDialogController.this.datasourceSelectionDialogModel.setDatasources(datasourceList);
+    });    
   }
 
   /**
