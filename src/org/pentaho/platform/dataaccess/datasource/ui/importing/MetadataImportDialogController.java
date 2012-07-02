@@ -34,6 +34,15 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
+//import com.google.gwt.dom.client.Element;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
+
 public class MetadataImportDialogController extends AbstractXulDialogController<MetadataImportDialogModel> implements IImportPerspective {
 
 	private BindingFactory bf;
@@ -44,7 +53,12 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 	private ResourceBundle resBundle;
 	private MetadataImportDialogModel importDialogModel;
 	private XulLabel fileLabel;
-
+	private FlowPanel mainFormPanel;
+	
+	// GWT controls
+	private FormPanel formPanel;
+	private TextBox formDomainIdText;
+	
 	public void init() {
 		try {
 			resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
@@ -60,11 +74,30 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
 			bf.setBindingType(Binding.Type.ONE_WAY);
 			Binding localizedBundlesBinding = bf.createBinding(importDialogModel, "localizedBundles", localizedBundlesTree, "elements");
-
-			localizedBundlesBinding.fireSourceChanged();
+			createWorkingForm();
+			localizedBundlesBinding.fireSourceChanged();			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void createWorkingForm() {
+    String moduleBaseURL = GWT.getModuleBaseURL();
+    String moduleName = GWT.getModuleName();
+    String contextURL = moduleBaseURL.substring(0, moduleBaseURL.lastIndexOf(moduleName));
+    String importURL = contextURL + "/pentaho/plugin/data-access/api/metadata/import";
+
+	  formPanel = new FormPanel();
+    formPanel.setMethod(FormPanel.METHOD_POST);
+    formPanel.setAction(importURL);
+    formPanel.setVisible(false);
+    mainFormPanel = new FlowPanel();
+    formPanel.add(mainFormPanel);
+    formDomainIdText = new TextBox();
+    formDomainIdText.setName("domainId");
+    mainFormPanel.add(formDomainIdText);
+    
+    RootPanel.get().add(formPanel);
 	}
 
 	public XulDialog getDialog() {
@@ -72,6 +105,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 	}
 
 	public MetadataImportDialogModel getDialogResult() {
+	  formPanel.submit();
 		return importDialogModel;
 	}
 	
@@ -86,7 +120,19 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 			importDialogModel.removeLocalizedBundle(selectedRows[0]);
 		}
 	}
+	
+	@Bindable
+	public void addLocalizedBundle() {
+	  FileUpload localizedBundleUpload = new FileUpload();
+	  localizedBundleUpload.setName("localeFiles");
+	  mainFormPanel.add(localizedBundleUpload);
+	  jsClickUpload(localizedBundleUpload.getElement());
+	}
 
+	native void jsClickUpload(Element uploadElement) /*-{
+	  uploadElement.click();
+	}-*/;
+	
 	private void reset() {
 		importDialogModel.removeAllLocalizedBundles();
 		acceptButton.setDisabled(true);
@@ -120,6 +166,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     class DomainIdChangeListener implements PropertyChangeListener {
 		
 		public void propertyChange(PropertyChangeEvent evt) {
+	    formDomainIdText.setText(evt.getNewValue().toString());
 			importDialogModel.setDomainId(evt.getNewValue().toString());
 			acceptButton.setDisabled(!isValid());
 		}

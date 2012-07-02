@@ -37,7 +37,7 @@ import com.google.gwt.user.client.Window;
 public class ImportDialogController extends AbstractXulEventHandler {
 
 	private XulFileUpload genericFileUpload;
-	private XulFileUpload concreteFileUpload;
+//	private XulFileUpload concreteFileUpload;
 	private XulDeck importDeck;
 	private Map<Integer, IImportPerspective> importPerspectives;
 	private IImportPerspective activeImportPerspective;
@@ -52,8 +52,8 @@ public class ImportDialogController extends AbstractXulEventHandler {
 		genericFileUpload = (XulFileUpload) document.getElementById("genericFileUpload");
 		genericFileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
 
-		concreteFileUpload = (XulFileUpload) document.getElementById("concreteFileUpload");
-		concreteFileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
+//		concreteFileUpload = (XulFileUpload) document.getElementById("concreteFileUpload");
+//		concreteFileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
 	}
 
 	public void addImportPerspective(int index, IImportPerspective importPerspective) {
@@ -73,7 +73,7 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	private void reset() {
 		genericFileUpload.setSelectedFile("");
-		concreteFileUpload.setSelectedFile("");
+//		concreteFileUpload.setSelectedFile("");
 	}
 
 	@Bindable
@@ -87,12 +87,12 @@ public class ImportDialogController extends AbstractXulEventHandler {
 
 	@Bindable
 	public void concreteUploadSuccess(String uploadedFile) {
-		try {
-			String selectedFile = concreteFileUpload.getSeletedFile();
-			activeImportPerspective.concreteUploadCallback(selectedFile, uploadedFile);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			String selectedFile = concreteFileUpload.getSeletedFile();
+//			activeImportPerspective.concreteUploadCallback(selectedFile, uploadedFile);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	@Bindable
