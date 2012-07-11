@@ -25,11 +25,14 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -37,6 +40,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -88,6 +92,7 @@ public class AnalysisDatasourceService {
    * @param databaseConnection
    * @return
    * @throws PentahoAccessControlException
+   * @depricated
    */
   @PUT
   @Path("/import")
@@ -98,15 +103,36 @@ public class AnalysisDatasourceService {
   String databaseConnection) throws PentahoAccessControlException {
     try {
       validateAccess();
+      System.out.println("importAnalysisDatasource " + analysisFile);
       String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
       String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
       File mondrianFile = new File(sysTmpDir + File.separatorChar + analysisFile);
 
       mondrianCatalogService.importSchema(mondrianFile, databaseConnection, parameters);
-      return Response.ok(SUCCESS).type(MediaType.TEXT_PLAIN).build();
+      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
     } catch (Exception e) {
       return Response.serverError().entity(e.getMessage()).build();
     }
+  }
+  
+  @POST
+  @Path("/importFile")
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  public Response importFile( String parameters,
+     @FormDataParam("datasourceName")String datasourceName,
+     @FormDataParam("file") InputStream dataInputStream )
+        throws PentahoAccessControlException {      
+      String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
+      System.out.println("importFile datasourceName:" +datasourceName+ " parms: "+ parameters);
+  
+    try {
+      mondrianCatalogService.importSchema(dataInputStream,datasourceName,parameters);
+    } catch (PlatformImportException e) {
+      e.printStackTrace();
+      statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
+    }
+  
+    return Response.ok(statusCode).type(MediaType.TEXT_PLAIN).build();
   }
 
   /**
@@ -133,27 +159,30 @@ public class AnalysisDatasourceService {
   String overwrite, @FormDataParam("xmlaEnabledFlag")
   String xmlaEnabledFlag) throws PentahoAccessControlException {
     Response response = null;
-    String statusCode= String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
+    String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     try {
       validateAccess();
       boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
       boolean xmlaEnabled = "True".equalsIgnoreCase(xmlaEnabledFlag) ? true : false;
-      System.out.println("importAnalysisSchemaFile " + datasourceName);
+     
+        mondrianCatalogService.importSchema(dataInputStream, datasourceName, overWriteInRepository, xmlaEnabled);
+     
 
-      mondrianCatalogService.importSchema(dataInputStream, datasourceName, overWriteInRepository, xmlaEnabled);
-     statusCode = SUCCESS;
-    } catch (PentahoAccessControlException pac){
+      reInitMondrainCache();
+
+      statusCode = SUCCESS;
+    } catch (PentahoAccessControlException pac) {
       System.out.println(pac.getMessage());
       statusCode = String.valueOf(PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL);
     } catch (PlatformImportException pe) {
       System.out.println("Error importAnalysisSchemaFile " + pe.getMessage() + " status = " + pe.getErrorStatus());
-      statusCode = String.valueOf(pe.getErrorStatus());     
+      statusCode = String.valueOf(pe.getErrorStatus());
     } catch (Exception e) {
       System.out.println("Error importAnalysisSchemaFile " + e.getMessage());
-      statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);     
+      statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     }
-    
-    response =  Response.ok(statusCode).type(MediaType.TEXT_PLAIN).build();
+
+    response = Response.ok(statusCode).type(MediaType.TEXT_PLAIN).build();
     System.out.println("importAnalysisSchemaFile Response " + response);
     return response;
   }
@@ -170,20 +199,11 @@ public class AnalysisDatasourceService {
 
       System.out.println("removeSchemaFile " + datasourceName);
       mondrianCatalogService.removeSchema(datasourceName);
+      reInitMondrainCache();
       return Response.ok(SUCCESS).type(MediaType.TEXT_PLAIN).build();
     } catch (Exception e) {
       return Response.serverError().entity(e.getMessage()).build();
     }
-  }
-
-  private File createFileFromStream(InputStream dataInputStream) throws IOException {
-    BufferedReader in = new BufferedReader(new InputStreamReader(dataInputStream));
-    String currentLine = null;
-    while ((currentLine = in.readLine()) != null) {
-      currentLine += currentLine;
-    }
-    File mondrianFile = new File(currentLine);
-    return mondrianFile;
   }
 
   @PUT
@@ -199,15 +219,19 @@ public class AnalysisDatasourceService {
           PentahoSystem.get(IUnifiedRepository.class));
       helper.addSchema(mondrianFile, catalogName, datasourceInfo);
 
-      // Flush the Mondrian cache to show imported datasources. 
-      IMondrianCatalogService mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class,
-          "IMondrianCatalogService", PentahoSessionHolder.getSession());
-      mondrianCatalogService.reInit(PentahoSessionHolder.getSession());
+      reInitMondrainCache();
 
       return Response.ok(SUCCESS).type(MediaType.TEXT_PLAIN).build();
     } catch (Exception e) {
       return Response.serverError().entity(e.toString()).build();
     }
+  }
+
+  private void reInitMondrainCache() {
+    // Flush the Mondrian cache to show imported datasources. 
+    IMondrianCatalogService mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class,
+        "IMondrianCatalogService", PentahoSessionHolder.getSession());
+    mondrianCatalogService.reInit(PentahoSessionHolder.getSession());
   }
 
   private void validateAccess() throws PentahoAccessControlException {
@@ -219,18 +243,4 @@ public class AnalysisDatasourceService {
     }
   }
 
-  /**
-   * Utility to build a bundle from the data input stream
-   * @param dataInputStream
-   * @param domainId
-   * @return IPlatformImportBundle cast
-   */
-  private IPlatformImportBundle fileIImportBundle(InputStream dataInputStream, String domainId, String mimeType,
-      boolean overWriteInRepository) {
-    RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder().input(dataInputStream)
-        .charSet(UTF_8).hidden(false).mime(mimeType).withParam(DOMAIN_ID, domainId).overwrite(overWriteInRepository);
-
-    return (IPlatformImportBundle) bundleBuilder;
-
-  }
 }
