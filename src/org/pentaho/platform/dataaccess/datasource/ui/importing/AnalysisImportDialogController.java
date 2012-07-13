@@ -84,7 +84,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   // GWT controls
   private FormPanel formPanel;
-
+  private FlowPanel hiddenFormSubmitPanel;
 
   public void init() {
 		try {
@@ -123,8 +123,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       String moduleBaseURL = GWT.getModuleBaseURL();
       String moduleName = GWT.getModuleName();
       String contextURL = moduleBaseURL.substring(0, moduleBaseURL.lastIndexOf(moduleName));
-//    String importURL = contextURL + "/pentaho/plugin/data-access/api/mondrian/importSchema";
-      importURL = contextURL + "/pentaho/plugin/data-access/api/mondrian/importAnalysis";
+      importURL = contextURL + "/pentaho/plugin/data-access/api/mondrian/importSchema";
 
       connectionListBinding.fireSourceChanged();
 			analysisParametersBinding.fireSourceChanged();
@@ -134,7 +133,6 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	}
 
   private void createWorkingForm() {
-    logger.info("********************* createWorkingForm() **************************");
     formPanel = new FormPanel();
     formPanel.setMethod(FormPanel.METHOD_POST);
     formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
@@ -145,30 +143,28 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     analysisUpload.setName("uploadAnalysis");
     analysisUpload.addChangeHandler(new ChangeHandler(){
       public void onChange(ChangeEvent event) {
-        logger.info("********************* FileUpload change event: " + event.getSource());
         setSelectedFile(analysisUpload.getFilename());
         acceptButton.setDisabled(!isValid());
       }
     });
 
+    // Create a hidden panel so we can pass data source parameters
+    // as part of the form submit
+    hiddenFormSubmitPanel = new FlowPanel();
+    hiddenFormSubmitPanel.add(analysisUpload);
 
-    Hidden queryDatasource = new Hidden("datasourceName", "FoodMart");
-    Hidden queryParameters = new Hidden("parameters", "p1");
-    FlowPanel paramsPanel = new FlowPanel();
-    paramsPanel.add(analysisUpload);
-    paramsPanel.add(queryDatasource);
-    paramsPanel.add(queryParameters);
-
-    formPanel.add(paramsPanel);
-//    formPanel.add(analysisUpload);
+    formPanel.add(hiddenFormSubmitPanel);
 
     RootPanel.get().add(formPanel);
   }
 
+  /**
+   * Called by importDialog XUL file.  When user selects a schema file from File Browser
+   * then this is the callback to set the file.  We need to call a native method to
+   * simulate a click on the file browser control.
+   */
   @Bindable
   public void setAnalysisFile() {
-    logger.info("**************** setAnalysisFile() ******************");
-
     jsClickUpload(analysisUpload.getElement());
   }
 
@@ -179,8 +175,6 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   @Bindable
   public void setSelectedFile(String name) {
-    logger.info("************* setSelectedFile() - " + name);
-
     schemaNameLabel.setValue(name);
     importDialogModel.setUploadedFile(name);
 
@@ -201,8 +195,17 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		importDialogModel.setUploadedFile(null);
 		availableRadio.setSelected(true);
 		acceptButton.setDisabled(true);
-		setPreference(DATASOURCE_MODE);
-	}
+    schemaNameLabel.setValue("");
+    setPreference(DATASOURCE_MODE);
+
+    // Remove all previous hidden form parameters otherwise parameters
+    // from a previous import would get included in current form submit
+    for (int i = 0; i < hiddenFormSubmitPanel.getWidgetCount(); i++) {
+      if (hiddenFormSubmitPanel.getWidget(i).getClass().equals(Hidden.class)) {
+        hiddenFormSubmitPanel.remove(hiddenFormSubmitPanel.getWidget(i));
+      }
+    }
+  }
 
 	private void reloadConnections() {
 		if (connectionService != null) {
@@ -228,21 +231,20 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
    */
   @Bindable
   public void onDialogAccept() {
-    logger.info("*************** AnalysisImportDialogController::onDialogAccept() - parameters = " + importDialogModel.getParameters());
+    // If user selects available data source, then pass the datasource as part of the parameters.
+    // If user selects manual data source, pass in whatever parameters they specify even if it is empty.
+    String parameters = importDialogModel.getParameters();
+    if (availableRadio.isSelected()) {
+      parameters = connectionList.getValue();
+    }
 
-//    // Build up the form with parameters or datasource and put to the URL
-//    StringBuffer formUrl = new StringBuffer(importURL);
-//    formUrl.append("?");
-//
-//    if ((importDialogModel.getParameters() != null) && (importDialogModel.getParameters().length() > 0)) {
-//      formUrl.append("parameters=").append(importDialogModel.getParameters());
-//    } else {
-//      formUrl.append("&").append("datasourceName=SampleData");
-//    }
-//
-//      logger.info("************* Going to submit form with URL: " + formUrl.toString());
-      formPanel.setAction(importURL);
-      formPanel.submit();
+    // Parameters would contain either the data source from connectionList drop-down
+    // or the parameters manually entered (even if list is empty)
+    Hidden queryParameters = new Hidden("parameters", parameters);
+    hiddenFormSubmitPanel.add(queryParameters);
+
+    formPanel.setAction(importURL);
+    formPanel.submit();
   }
 
 
