@@ -35,6 +35,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -215,18 +216,16 @@ public class AnalysisDatasourceService {
 
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, String fileName) {
+    String domainId  = null;
     boolean overWriteInRepository = "True".equalsIgnoreCase(getValue(parameters, "overwrite")) ? true : false;
     String xmlaEnabled = getValue(parameters, "xmlaEnabled");
-    String domainId = catalogName;
+    if(catalogName == null || "".equals(catalogName)){
+      domainId = fileName;
+    }
     if (domainId == null || "".equals(domainId)) {
-      domainId = getValue(parameters, "catalogName");
+      domainId = getValue(parameters, catalogName);
     }
     return createPlatformBundle(parameters, dataInputStream, domainId, overWriteInRepository, fileName, xmlaEnabled);
-  }
-
-  private String getValue(String parameters, String string) {
-    // TODO Auto-generated method stub
-    return null;
   }
 
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
@@ -275,5 +274,27 @@ public class AnalysisDatasourceService {
       throw new PentahoAccessControlException(ACCESS_DENIED);
     }
   }
-
+  /**
+   * convert string to property to do a lookup "Provider=Mondrian;DataSource=Pentaho"
+   * @param parameters
+   * @param key
+   * @return
+   */
+  private String getValue(String parameters, String key) {
+    // convert  string list and lookup value
+    String value = null;
+    if (parameters != null && !"".equals(parameters)) {
+      String[] pairs = StringUtils.split(parameters, ";");
+      if (pairs != null) {
+        for (int i = 0; i < pairs.length; i++) {
+          String[] map = StringUtils.split(pairs[i], "=");
+          if (map[0].equalsIgnoreCase(key)) {
+            value = map[1];
+            break;
+          }
+        }
+      }
+    }
+    return value;
+  }
 }
