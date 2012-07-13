@@ -23,13 +23,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -40,19 +35,19 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
-import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServiceException;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
+import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
 @Path("/data-access/api/mondrian")
@@ -76,7 +71,9 @@ public class AnalysisDatasourceService {
 
   private static final String UTF_8 = "UTF-8";
 
-  private static final String mondrianMimeType = "application/vnd.pentaho.mondrian+xml";
+  private static final String MONDRIAN_MIME_TYPE = "application/vnd.pentaho.mondrian+xml";
+
+  public static final IPlatformImporter importer = PentahoSystem.get(IPlatformImporter.class);
 
   public AnalysisDatasourceService() {
     super();
@@ -114,29 +111,9 @@ public class AnalysisDatasourceService {
       return Response.serverError().entity(e.getMessage()).build();
     }
   }
-  
-  @POST
-  @Path("/importFile")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  public Response importFile( String parameters,
-     @FormDataParam("datasourceName")String datasourceName,
-     @FormDataParam("file") InputStream dataInputStream )
-        throws PentahoAccessControlException {      
-      String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
-      System.out.println("importFile datasourceName:" +datasourceName+ " parms: "+ parameters);
-  
-    try {
-      mondrianCatalogService.importSchema(dataInputStream,datasourceName,parameters);
-    } catch (PlatformImportException e) {
-      e.printStackTrace();
-      statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
-    }
-  
-    return Response.ok(statusCode).type(MediaType.TEXT_PLAIN).build();
-  }
 
   /**
-   * This is used by the Schema Workbench to import a mondrian XML schema
+   * This is used by the Schema Workbench to import a mondrian XML analysis
    * @param parameters
    * @param dataInputStream
    * @param datasourceName
@@ -153,9 +130,10 @@ public class AnalysisDatasourceService {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
   public Response importAnalysisSchemaFile(@FormDataParam("parameters")
-  String parameters, @FormDataParam("schemaFile")
-  InputStream dataInputStream, @FormDataParam("datasourceName")
-  String datasourceName, @FormDataParam("overwrite")
+  String parameters, @FormDataParam("uploadAnalysis")
+  InputStream dataInputStream, @FormDataParam("uploadAnalysis")
+  FormDataContentDisposition schemaFileInfo, @FormDataParam("catalogName")
+  String catalogName, @FormDataParam("overwrite")
   String overwrite, @FormDataParam("xmlaEnabledFlag")
   String xmlaEnabledFlag) throws PentahoAccessControlException {
     Response response = null;
@@ -163,14 +141,15 @@ public class AnalysisDatasourceService {
     try {
       validateAccess();
       boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
-      boolean xmlaEnabled = "True".equalsIgnoreCase(xmlaEnabledFlag) ? true : false;
-     
-        mondrianCatalogService.importSchema(dataInputStream, datasourceName, overWriteInRepository, xmlaEnabled);
-     
 
-      reInitMondrainCache();
+      String fileName = schemaFileInfo.getFileName();
+      IPlatformImportBundle bundle = createPlatformBundle(parameters, dataInputStream, catalogName,
+          overWriteInRepository, fileName, xmlaEnabledFlag);
+
+      importer.importFile(bundle);
 
       statusCode = SUCCESS;
+      //TO DO - get better error handling return messages
     } catch (PentahoAccessControlException pac) {
       System.out.println(pac.getMessage());
       statusCode = String.valueOf(PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL);
@@ -187,23 +166,77 @@ public class AnalysisDatasourceService {
     return response;
   }
 
-  @PUT
-  @Path("/removeSchema")
+  /**
+   * New method used by PUC to pass the inputstream, catalogName (optional), and parameters
+   * @param parameters
+   * @param dataInputStream
+   * @param schemaFileInfo
+   * @param catalogName
+   * @return
+   * @throws PentahoAccessControlException
+   */
+  @POST
+  @Path("/importAnalysis")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
-  public Response removeSchemaFile(@FormDataParam("parameters")
-  String parameters, @FormDataParam("datasourceName")
-  String datasourceName) throws PentahoAccessControlException {
+  public Response importAnalysisFile(@FormDataParam("parameters")
+  String parameters, @FormDataParam("uploadAnalysis")
+  InputStream dataInputStream, @FormDataParam("uploadAnalysis")
+  FormDataContentDisposition schemaFileInfo, @FormDataParam("catalogName")
+  String catalogName) throws PentahoAccessControlException {
+
+    Response response = null;
+    String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     try {
       validateAccess();
 
-      System.out.println("removeSchemaFile " + datasourceName);
-      mondrianCatalogService.removeSchema(datasourceName);
-      reInitMondrainCache();
-      return Response.ok(SUCCESS).type(MediaType.TEXT_PLAIN).build();
+      String fileName = schemaFileInfo.getFileName();
+      IPlatformImportBundle bundle = createPlatformBundle(parameters, dataInputStream, catalogName, fileName);
+
+      importer.importFile(bundle);
+
+      statusCode = SUCCESS;
+      //TO DO - get better error handling return messages
+    } catch (PentahoAccessControlException pac) {
+      System.out.println(pac.getMessage());
+      statusCode = String.valueOf(PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL);
+    } catch (PlatformImportException pe) {
+      System.out.println("Error importAnalysisFile " + pe.getMessage() + " status = " + pe.getErrorStatus());
+      statusCode = String.valueOf(pe.getErrorStatus());
     } catch (Exception e) {
-      return Response.serverError().entity(e.getMessage()).build();
+      System.out.println("Error importAnalysisFile " + e.getMessage());
+      statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     }
+
+    response = Response.ok(statusCode).type(MediaType.TEXT_PLAIN).build();
+    System.out.println("importAnalysisFile Response " + response);
+    return response;
+  }
+
+  private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
+      String catalogName, String fileName) {
+    boolean overWriteInRepository = "True".equalsIgnoreCase(getValue(parameters, "overwrite")) ? true : false;
+    String xmlaEnabled = getValue(parameters, "xmlaEnabled");
+    String domainId = catalogName;
+    if (domainId == null || "".equals(domainId)) {
+      domainId = getValue(parameters, "catalogName");
+    }
+    return createPlatformBundle(parameters, dataInputStream, domainId, overWriteInRepository, fileName, xmlaEnabled);
+  }
+
+  private String getValue(String parameters, String string) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
+      String catalogName, boolean overWriteInRepository, String fileName, String xmlaEnabled) {
+    RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder().input(dataInputStream)
+        .charSet(UTF_8).hidden(false).name(fileName).overwrite(overWriteInRepository).mime(MONDRIAN_MIME_TYPE)
+        .withParam("parameters", parameters).withParam("xmlaEnabled", xmlaEnabled).withParam(DOMAIN_ID, catalogName);
+
+    IPlatformImportBundle bundle = bundleBuilder.build();
+    return bundle;
   }
 
   @PUT
