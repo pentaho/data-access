@@ -130,13 +130,13 @@ public class AnalysisDatasourceService {
   @Path("/importSchema")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
-  public Response importAnalysisSchemaFile(@FormDataParam("parameters")
-  String parameters, @FormDataParam("uploadAnalysis")
-  InputStream dataInputStream, @FormDataParam("uploadAnalysis")
-  FormDataContentDisposition schemaFileInfo, @FormDataParam("catalogName")
-  String catalogName, @FormDataParam("overwrite")
-  String overwrite, @FormDataParam("xmlaEnabledFlag")
-  String xmlaEnabledFlag) throws PentahoAccessControlException {
+  public Response importAnalysisSchemaFile(
+      @FormDataParam("parameters") String parameters, 
+      @FormDataParam("uploadAnalysis") InputStream dataInputStream, 
+      @FormDataParam("uploadAnalysis")FormDataContentDisposition schemaFileInfo, 
+      @FormDataParam("catalogName") String catalogName, 
+      @FormDataParam("overwrite") String overwrite, 
+      @FormDataParam("xmlaEnabledFlag") String xmlaEnabledFlag) throws PentahoAccessControlException {
     Response response = null;
     String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     try {
@@ -180,11 +180,11 @@ public class AnalysisDatasourceService {
   @Path("/importAnalysis")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
-  public Response importAnalysisFile(@FormDataParam("parameters")
-  String parameters, @FormDataParam("uploadAnalysis")
-  InputStream dataInputStream, @FormDataParam("uploadAnalysis")
-  FormDataContentDisposition schemaFileInfo, @FormDataParam("catalogName")
-  String catalogName) throws PentahoAccessControlException {
+  public Response importAnalysisFile(
+      @FormDataParam("parameters")String parameters,
+      @FormDataParam("uploadAnalysis")InputStream dataInputStream, 
+      @FormDataParam("uploadAnalysis") FormDataContentDisposition schemaFileInfo, 
+      @FormDataParam("catalogName") String catalogName) throws PentahoAccessControlException {
 
     Response response = null;
     String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
@@ -230,9 +230,12 @@ public class AnalysisDatasourceService {
 
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, boolean overWriteInRepository, String fileName, String xmlaEnabled) {
+    String datasource = getValue(parameters,"Datasource");
     RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder().input(dataInputStream)
         .charSet(UTF_8).hidden(false).name(fileName).overwrite(overWriteInRepository).mime(MONDRIAN_MIME_TYPE)
-        .withParam("parameters", parameters).withParam("xmlaEnabled", xmlaEnabled).withParam(DOMAIN_ID, catalogName);
+        .withParam("parameters", parameters)
+        .withParam("Datasource", datasource)
+        .withParam("xmlaEnabled", xmlaEnabled).withParam(DOMAIN_ID, catalogName);
 
     IPlatformImportBundle bundle = bundleBuilder.build();
     return bundle;
