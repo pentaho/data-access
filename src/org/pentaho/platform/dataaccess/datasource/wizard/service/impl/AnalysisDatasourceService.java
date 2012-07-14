@@ -281,11 +281,13 @@ public class AnalysisDatasourceService {
         .overwrite(overWriteInRepository)
         .mime(MONDRIAN_MIME_TYPE)
         .withParam("parameters", parameters)
+        .withParam("Datasource", datasource)
         .withParam(DOMAIN_ID, catalogName);
     //only pass these if there is no parameters passed
     if(parameters == null || "".equals(parameters)){
-      bundleBuilder.withParam("xmlaEnabled", xmlaEnabled);
-      bundleBuilder.withParam("Datasource", datasource);    
+      bundleBuilder.withParam("xmlaEnabled", xmlaEnabled)
+      .withParam("overwrite", Boolean.valueOf(overWriteInRepository).toString());
+          
       }
     IPlatformImportBundle bundle = bundleBuilder.build();
     return bundle;
