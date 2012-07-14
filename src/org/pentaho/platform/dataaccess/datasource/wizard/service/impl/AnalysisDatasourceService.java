@@ -16,7 +16,14 @@
  *
  *
  * @created Nov 12, 2011
- * @author Ezequiel Cuellar
+ * @author  Ezequiel Cuellar, 
+ *          Tyler Band
+ * @modified: July 11, 2012
+ * 
+ * change notes July 12, 2012
+ * The use of the IPlatformImporter can b e found in the SpringObjects.xml file - the new MondrianImportHanlder is registered
+ * and can be replaced by a new handler in the future without changes to this code. Note: the original code is left in for backwards
+ * compatibility with other existing services (should be replaced in future)
  * 
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -24,6 +31,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
@@ -36,6 +44,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -74,12 +84,15 @@ public class AnalysisDatasourceService {
 
   private static final String MONDRIAN_MIME_TYPE = "application/vnd.pentaho.mondrian+xml";
 
-  public static final IPlatformImporter importer = PentahoSystem.get(IPlatformImporter.class);
+  private static IPlatformImporter importer;
 
+  private static final Log logger = LogFactory.getLog(AnalysisDatasourceService.class);
+  
   public AnalysisDatasourceService() {
     super();
     mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, "IMondrianCatalogService",
-        PentahoSessionHolder.getSession());
+       PentahoSessionHolder.getSession());
+   importer = PentahoSystem.get(IPlatformImporter.class);
 
   }
 
@@ -101,7 +114,6 @@ public class AnalysisDatasourceService {
   String databaseConnection) throws PentahoAccessControlException {
     try {
       validateAccess();
-      System.out.println("importAnalysisDatasource " + analysisFile);
       String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
       String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
       File mondrianFile = new File(sysTmpDir + File.separatorChar + analysisFile);
@@ -141,31 +153,33 @@ public class AnalysisDatasourceService {
     String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     try {
       validateAccess();
-      boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
-
+      boolean overWriteInRepository = determineOverwriteFlag(parameters, overwrite);
       String fileName = schemaFileInfo.getFileName();
+
       IPlatformImportBundle bundle = createPlatformBundle(parameters, dataInputStream, catalogName,
           overWriteInRepository, fileName, xmlaEnabledFlag);
 
       importer.importFile(bundle);
 
       statusCode = SUCCESS;
-      //TO DO - get better error handling return messages
+      
     } catch (PentahoAccessControlException pac) {
-      System.out.println(pac.getMessage());
+      logger.debug(pac.getMessage());
       statusCode = String.valueOf(PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL);
     } catch (PlatformImportException pe) {
-      System.out.println("Error importAnalysisSchemaFile " + pe.getMessage() + " status = " + pe.getErrorStatus());
+      logger.debug("Error importAnalysisSchemaFile " + pe.getMessage() + " status = " + pe.getErrorStatus());
       statusCode = String.valueOf(pe.getErrorStatus());
     } catch (Exception e) {
-      System.out.println("Error importAnalysisSchemaFile " + e.getMessage());
+      logger.debug("Error importAnalysisSchemaFile " + e.getMessage());
       statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     }
 
     response = Response.ok(statusCode).type(MediaType.TEXT_PLAIN).build();
-    System.out.println("importAnalysisSchemaFile Response " + response);
+    logger.debug("importAnalysisSchemaFile Response " + response);
     return response;
   }
+
+  
 
   /**
    * New method used by PUC to pass the inputstream, catalogName (optional), and parameters
@@ -197,50 +211,100 @@ public class AnalysisDatasourceService {
       importer.importFile(bundle);
 
       statusCode = SUCCESS;
-      //TO DO - get better error handling return messages
+
     } catch (PentahoAccessControlException pac) {
-      System.out.println(pac.getMessage());
+      logger.debug(pac.getMessage());
       statusCode = String.valueOf(PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL);
     } catch (PlatformImportException pe) {
-      System.out.println("Error importAnalysisFile " + pe.getMessage() + " status = " + pe.getErrorStatus());
+      logger.debug("Error importAnalysisFile " + pe.getMessage() + " status = " + pe.getErrorStatus());
       statusCode = String.valueOf(pe.getErrorStatus());
     } catch (Exception e) {
-      System.out.println("Error importAnalysisFile " + e.getMessage());
+      logger.debug("Error importAnalysisFile " + e.getMessage());
       statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     }
 
     response = Response.ok(statusCode).type(MediaType.TEXT_PLAIN).build();
-    System.out.println("importAnalysisFile Response " + response);
+    logger.debug("importAnalysisFile Response " + response);
     return response;
   }
 
+  /**
+   * overloaded method to get the values from the parameter before creating the bundle
+   * @param parameters
+   * @param dataInputStream
+   * @param catalogName
+   * @param fileName
+   * @return
+   */
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, String fileName) {
-    String domainId  = null;
+    
     boolean overWriteInRepository = "True".equalsIgnoreCase(getValue(parameters, "overwrite")) ? true : false;
-    String xmlaEnabled = getValue(parameters, "xmlaEnabled");
-    if(catalogName == null || "".equals(catalogName)){
-      domainId = fileName;
-    }
-    if (domainId == null || "".equals(domainId)) {
-      domainId = getValue(parameters, catalogName);
-    }
+    String xmlaEnabled = "True".equals(getValue(parameters, "xmlaEnabled"))?"true":"false";
+    String domainId = determineDomainCatalogName(parameters, catalogName, fileName);
+    
     return createPlatformBundle(parameters, dataInputStream, domainId, overWriteInRepository, fileName, xmlaEnabled);
   }
 
+    /**
+     * helper method to calculate the domain id from the parameters, file name, or pass catalog
+     * @param parameters
+     * @param catalogName
+     * @param fileName
+     * @return
+     */
+  private String determineDomainCatalogName(String parameters, String catalogName, String fileName) {
+    String domainId  =  (getValue(parameters, catalogName) == null)?catalogName:getValue(parameters, catalogName);
+    if(domainId == null 
+        && (catalogName == null || "".equals(catalogName))){
+      domainId = fileName;
+    } 
+    return domainId;
+  }
+  /**
+   * helper method to create the platform bundle used by the Jcr repository
+   * @param parameters
+   * @param dataInputStream
+   * @param catalogName
+   * @param overWriteInRepository
+   * @param fileName
+   * @param xmlaEnabled
+   * @return
+   */
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, boolean overWriteInRepository, String fileName, String xmlaEnabled) {
     String datasource = getValue(parameters,"Datasource");
-    RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder().input(dataInputStream)
-        .charSet(UTF_8).hidden(false).name(fileName).overwrite(overWriteInRepository).mime(MONDRIAN_MIME_TYPE)
+    RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder()
+        .input(dataInputStream)
+        .charSet(UTF_8).hidden(false)
+        .name(fileName)
+        .overwrite(overWriteInRepository)
+        .mime(MONDRIAN_MIME_TYPE)
         .withParam("parameters", parameters)
-        .withParam("Datasource", datasource)
-        .withParam("xmlaEnabled", xmlaEnabled).withParam(DOMAIN_ID, catalogName);
-
+        .withParam(DOMAIN_ID, catalogName);
+    //only pass these if there is no parameters passed
+    if(parameters == null || "".equals(parameters)){
+      bundleBuilder.withParam("xmlaEnabled", xmlaEnabled);
+      bundleBuilder.withParam("Datasource", datasource);    
+      }
     IPlatformImportBundle bundle = bundleBuilder.build();
     return bundle;
   }
-
+  
+  /**
+   * helper method to calculate the overwrite in repos flag from parameters or passed value
+   * @param parameters
+   * @param overwrite
+   * @return
+   */
+  private boolean determineOverwriteFlag(String parameters, String overwrite) {
+    String overwriteStr = getValue(parameters,"overwrite");
+    boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
+    if(overwriteStr != null){
+      overWriteInRepository = "True".equalsIgnoreCase(overwriteStr) ? true : false;
+    }//if there is a conflict - parameters win?
+    return overWriteInRepository;
+  }
   @PUT
   @Path("/addSchema")
   @Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
@@ -299,5 +363,47 @@ public class AnalysisDatasourceService {
       }
     }
     return value;
+  
   }
+  
+  /**
+   * test Main program to validate helper methods and paramegter passing
+   *comment out the constructor of internal import handlers first
+   * @param args
+   */
+  public static void main(String[] args) {
+   String TEST_RES_IMPORT_TEST_FOODMART_XML = "build.xml";
+   String parameters = "Provider=Mondrian;DataSource=FoodMart;XmlaEnabled=true;Overwrite=true";
+   AnalysisDatasourceService mh = new AnalysisDatasourceService();
+   String catalogName= null;
+   String fileName = "FoodMart";
+ 
+   try {
+     //test getValue
+     logger.debug(mh.getValue(parameters, "Provider"));
+     logger.debug(mh.getValue(parameters, "DataSource"));
+     logger.debug(mh.getValue(parameters, "xmlaEnabled"));
+     
+    File importFile = new File(TEST_RES_IMPORT_TEST_FOODMART_XML);
+    InputStream dataInputStream =new FileInputStream(importFile);
+    IPlatformImportBundle bndl = mh.createPlatformBundle(parameters, dataInputStream, catalogName, fileName);
+    logger.debug(bndl.getMimeType());
+    logger.debug(bndl.getProperty("parameters"));
+    logger.debug(bndl.getName());
+    logger.debug(bndl.overwriteInRepossitory());
+    boolean overWriteInRepository = true;
+    String xmlaEnabled = "false";
+    parameters = "";
+    bndl = mh.createPlatformBundle(parameters, dataInputStream, catalogName, overWriteInRepository, fileName, xmlaEnabled);
+    logger.debug("parms:"+bndl.getProperty("parameters"));
+    logger.debug(bndl.getName());
+    logger.debug(bndl.overwriteInRepossitory());
+    logger.debug(bndl.getProperty("xmlaEnabled"));
+    
+    
+     } catch (Exception e) {
+     // TODO Auto-generated catch block
+     e.printStackTrace();
+   }
+ }
 }
