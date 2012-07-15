@@ -64,6 +64,18 @@ import com.sun.jersey.multipart.FormDataParam;
 @Path("/data-access/api/mondrian")
 public class AnalysisDatasourceService {
 
+  private static final String XMLA_ENABLED_FLAG = "xmlaEnabledFlag";
+
+  private static final String CATALOG_NAME = "catalogName";
+
+  private static final String UPLOAD_ANALYSIS = "uploadAnalysis";
+
+  private static final String PARAMETERS = "parameters";
+
+  private static final String OVERWRITE_IN_REPOS = "overwrite";
+
+  private static final String ENABLE_XMLA = "EnableXmla";
+
   private static final String ACCESS_DENIED = "Access Denied";
 
   private static final String SUCCESS = "3";//SUCCESS
@@ -103,7 +115,7 @@ public class AnalysisDatasourceService {
    * @param databaseConnection
    * @return
    * @throws PentahoAccessControlException
-   * @depricated
+   * @Depricated
    */
   @PUT
   @Path("/import")
@@ -118,8 +130,8 @@ public class AnalysisDatasourceService {
       String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
       File mondrianFile = new File(sysTmpDir + File.separatorChar + analysisFile);
 
-      mondrianCatalogService.importSchema(mondrianFile, databaseConnection, parameters);
-      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
+     throw new Exception("Replace this call with /importAnalysis - this function is depricated");
+     
     } catch (Exception e) {
       return Response.serverError().entity(e.getMessage()).build();
     }
@@ -143,12 +155,12 @@ public class AnalysisDatasourceService {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
   public Response importAnalysisSchemaFile(
-      @FormDataParam("parameters") String parameters, 
-      @FormDataParam("uploadAnalysis") InputStream dataInputStream, 
-      @FormDataParam("uploadAnalysis")FormDataContentDisposition schemaFileInfo, 
-      @FormDataParam("catalogName") String catalogName, 
-      @FormDataParam("overwrite") String overwrite, 
-      @FormDataParam("xmlaEnabledFlag") String xmlaEnabledFlag) throws PentahoAccessControlException {
+      @FormDataParam(PARAMETERS) String parameters, 
+      @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream, 
+      @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo, 
+      @FormDataParam(CATALOG_NAME) String catalogName, 
+      @FormDataParam(OVERWRITE_IN_REPOS) String overwrite, 
+      @FormDataParam(XMLA_ENABLED_FLAG) String xmlaEnabledFlag) throws PentahoAccessControlException {
     Response response = null;
     String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     try {
@@ -195,10 +207,10 @@ public class AnalysisDatasourceService {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
   public Response importAnalysisFile(
-      @FormDataParam("parameters")String parameters,
-      @FormDataParam("uploadAnalysis")InputStream dataInputStream, 
-      @FormDataParam("uploadAnalysis") FormDataContentDisposition schemaFileInfo, 
-      @FormDataParam("catalogName") String catalogName) throws PentahoAccessControlException {
+      @FormDataParam(PARAMETERS)String parameters,
+      @FormDataParam(UPLOAD_ANALYSIS)InputStream dataInputStream, 
+      @FormDataParam(UPLOAD_ANALYSIS) FormDataContentDisposition schemaFileInfo, 
+      @FormDataParam(CATALOG_NAME) String catalogName) throws PentahoAccessControlException {
 
     Response response = null;
     String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
@@ -239,7 +251,7 @@ public class AnalysisDatasourceService {
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, String fileName) {
     
-    boolean overWriteInRepository = "True".equalsIgnoreCase(getValue(parameters, "overwrite")) ? true : false;
+    boolean overWriteInRepository = "True".equalsIgnoreCase(getValue(parameters, OVERWRITE_IN_REPOS)) ? true : false;
     String xmlaEnabled = "True".equals(getValue(parameters, "xmlaEnabled"))?"true":"false";
     String domainId = determineDomainCatalogName(parameters, catalogName, fileName);
     
@@ -280,13 +292,13 @@ public class AnalysisDatasourceService {
         .name(fileName)
         .overwrite(overWriteInRepository)
         .mime(MONDRIAN_MIME_TYPE)
-        .withParam("parameters", parameters)
+        .withParam(PARAMETERS, parameters)
         .withParam("Datasource", datasource)
         .withParam(DOMAIN_ID, catalogName);
     //only pass these if there is no parameters passed
     if(parameters == null || "".equals(parameters)){
-      bundleBuilder.withParam("xmlaEnabled", xmlaEnabled)
-      .withParam("overwrite", Boolean.valueOf(overWriteInRepository).toString());
+      bundleBuilder.withParam(ENABLE_XMLA, xmlaEnabled)
+      .withParam(OVERWRITE_IN_REPOS, Boolean.valueOf(overWriteInRepository).toString());
           
       }
     IPlatformImportBundle bundle = bundleBuilder.build();
@@ -300,7 +312,7 @@ public class AnalysisDatasourceService {
    * @return
    */
   private boolean determineOverwriteFlag(String parameters, String overwrite) {
-    String overwriteStr = getValue(parameters,"overwrite");
+    String overwriteStr = getValue(parameters,OVERWRITE_IN_REPOS);
     boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
     if(overwriteStr != null){
       overWriteInRepository = "True".equalsIgnoreCase(overwriteStr) ? true : false;
@@ -311,7 +323,7 @@ public class AnalysisDatasourceService {
   @Path("/addSchema")
   @Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
   @Produces("text/plain")
-  public Response addSchema(InputStream mondrianFile, @QueryParam("catalogName")
+  public Response addSchema(InputStream mondrianFile, @QueryParam(CATALOG_NAME)
   String catalogName, @QueryParam("datasourceInfo")
   String datasourceInfo) throws PentahoAccessControlException {
     try {
@@ -375,7 +387,7 @@ public class AnalysisDatasourceService {
    */
   public static void main(String[] args) {
    String TEST_RES_IMPORT_TEST_FOODMART_XML = "build.xml";
-   String parameters = "Provider=Mondrian;DataSource=FoodMart;XmlaEnabled=true;Overwrite=true";
+   String parameters = "Provider=Mondrian;DataSource=FoodMart;EnableXmla=true;Overwrite=true";
    AnalysisDatasourceService mh = new AnalysisDatasourceService();
    String catalogName= null;
    String fileName = "FoodMart";
@@ -384,23 +396,23 @@ public class AnalysisDatasourceService {
      //test getValue
      logger.debug(mh.getValue(parameters, "Provider"));
      logger.debug(mh.getValue(parameters, "DataSource"));
-     logger.debug(mh.getValue(parameters, "xmlaEnabled"));
+     logger.debug(mh.getValue(parameters, ENABLE_XMLA));
      
     File importFile = new File(TEST_RES_IMPORT_TEST_FOODMART_XML);
     InputStream dataInputStream =new FileInputStream(importFile);
     IPlatformImportBundle bndl = mh.createPlatformBundle(parameters, dataInputStream, catalogName, fileName);
     logger.debug(bndl.getMimeType());
-    logger.debug(bndl.getProperty("parameters"));
+    logger.debug(bndl.getProperty(PARAMETERS));
     logger.debug(bndl.getName());
     logger.debug(bndl.overwriteInRepossitory());
     boolean overWriteInRepository = true;
     String xmlaEnabled = "false";
     parameters = "";
     bndl = mh.createPlatformBundle(parameters, dataInputStream, catalogName, overWriteInRepository, fileName, xmlaEnabled);
-    logger.debug("parms:"+bndl.getProperty("parameters"));
+    logger.debug("parms:"+bndl.getProperty(PARAMETERS));
     logger.debug(bndl.getName());
     logger.debug(bndl.overwriteInRepossitory());
-    logger.debug(bndl.getProperty("xmlaEnabled"));
+    logger.debug(bndl.getProperty(ENABLE_XMLA));
     
     
      } catch (Exception e) {
