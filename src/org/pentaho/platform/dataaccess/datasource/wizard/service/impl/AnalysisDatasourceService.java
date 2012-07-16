@@ -102,7 +102,7 @@ public class AnalysisDatasourceService {
   
   public AnalysisDatasourceService() {
     super();
-    mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, "IMondrianCatalogService",
+   mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, "IMondrianCatalogService",
        PentahoSessionHolder.getSession());
    importer = PentahoSystem.get(IPlatformImporter.class);
 
@@ -266,10 +266,14 @@ public class AnalysisDatasourceService {
      * @return
      */
   private String determineDomainCatalogName(String parameters, String catalogName, String fileName) {
-    String domainId  =  (getValue(parameters, catalogName) == null)?catalogName:getValue(parameters, catalogName);
+    String domainId  =  (getValue(parameters, CATALOG_NAME) == null)?catalogName:getValue(parameters, CATALOG_NAME);
     if(domainId == null 
         && (catalogName == null || "".equals(catalogName))){
-      domainId = fileName;
+      if(fileName.contains(".")){
+        domainId = fileName.substring(0, fileName.indexOf("."));
+      } else {
+        domainId = fileName;
+      }
     } 
     return domainId;
   }
@@ -387,7 +391,7 @@ public class AnalysisDatasourceService {
    */
   public static void main(String[] args) {
    String TEST_RES_IMPORT_TEST_FOODMART_XML = "build.xml";
-   String parameters = "Provider=Mondrian;DataSource=FoodMart;EnableXmla=true;Overwrite=true";
+   String parameters = "Provider=Mondrian;DataSource=SampleData;catalogName=foodMart;EnableXmla=true;Overwrite=true";
    AnalysisDatasourceService mh = new AnalysisDatasourceService();
    String catalogName= null;
    String fileName = "FoodMart";
@@ -413,8 +417,11 @@ public class AnalysisDatasourceService {
     logger.debug(bndl.getName());
     logger.debug(bndl.overwriteInRepossitory());
     logger.debug(bndl.getProperty(ENABLE_XMLA));
-    
-    
+    parameters = "Provider=Mondrian;DataSource=SampleData;catalogName=foobar;EnableXmla=true;Overwrite=true";
+    fileName = "FoodMart.xml";
+    catalogName = null;
+    mh.determineDomainCatalogName(parameters, catalogName, fileName);
+  
      } catch (Exception e) {
      // TODO Auto-generated catch block
      e.printStackTrace();
