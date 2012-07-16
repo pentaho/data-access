@@ -212,7 +212,6 @@ public class AnalysisDatasourceService {
       @FormDataParam(UPLOAD_ANALYSIS) FormDataContentDisposition schemaFileInfo, 
       @FormDataParam(CATALOG_NAME) String catalogName) throws PentahoAccessControlException {
 
-    Response response = null;
     String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     try {
       validateAccess();
@@ -223,21 +222,21 @@ public class AnalysisDatasourceService {
       importer.importFile(bundle);
 
       statusCode = SUCCESS;
-
+      return Response.ok("SUCCESS").status(new Integer(statusCode)).type(MediaType.TEXT_PLAIN).build();
     } catch (PentahoAccessControlException pac) {
       logger.debug(pac.getMessage());
       statusCode = String.valueOf(PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL);
+      return Response.serverError().status(new Integer(statusCode)).entity(pac.toString()).build();
     } catch (PlatformImportException pe) {
       logger.debug("Error importAnalysisFile " + pe.getMessage() + " status = " + pe.getErrorStatus());
       statusCode = String.valueOf(pe.getErrorStatus());
+      return Response.serverError().status(new Integer(statusCode)).entity(pe.toString()).build();
     } catch (Exception e) {
       logger.debug("Error importAnalysisFile " + e.getMessage());
       statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
+      return Response.serverError().status(new Integer(statusCode)).entity(e.toString()).build();
     }
 
-    response = Response.ok().status(new Integer(statusCode)).type(MediaType.TEXT_PLAIN).build();
-    logger.debug("importAnalysisFile Response " + response);
-    return response;
   }
 
   /**
@@ -267,8 +266,7 @@ public class AnalysisDatasourceService {
      */
   private String determineDomainCatalogName(String parameters, String catalogName, String fileName) {
     String domainId  =  (getValue(parameters, CATALOG_NAME) == null)?catalogName:getValue(parameters, CATALOG_NAME);
-    if(domainId == null 
-        && (catalogName == null || "".equals(catalogName))){
+    if(domainId == null || "".equals(domainId)){
       if(fileName.contains(".")){
         domainId = fileName.substring(0, fileName.indexOf("."));
       } else {
