@@ -290,15 +290,16 @@ public class AnalysisDatasourceService {
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, boolean overWriteInRepository, String fileName, String xmlaEnabled) {
     String datasource = getValue(parameters,"Datasource");
+    String domainId = this.determineDomainCatalogName(parameters, catalogName, fileName);
     RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder()
         .input(dataInputStream)
         .charSet(UTF_8).hidden(false)
-        .name(fileName)
+        .name(domainId)
         .overwrite(overWriteInRepository)
         .mime(MONDRIAN_MIME_TYPE)
         .withParam(PARAMETERS, parameters)
         .withParam("Datasource", datasource)
-        .withParam(DOMAIN_ID, catalogName);
+        .withParam(DOMAIN_ID, domainId);
     //only pass these if there is no parameters passed
     if(parameters == null || "".equals(parameters)){
       bundleBuilder.withParam(ENABLE_XMLA, xmlaEnabled)
