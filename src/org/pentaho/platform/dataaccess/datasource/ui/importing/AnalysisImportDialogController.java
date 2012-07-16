@@ -75,9 +75,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private XulLabel fileLabel;
   private FileUpload analysisUpload;
   private XulLabel schemaNameLabel;
-
   private String importURL;
-  private FlowPanel hiddenSubmitPanel;
 
   private static final Integer PARAMETER_MODE = 1;
 	private static final Integer DATASOURCE_MODE = 0;
@@ -123,7 +121,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       String moduleBaseURL = GWT.getModuleBaseURL();
       String moduleName = GWT.getModuleName();
       String contextURL = moduleBaseURL.substring(0, moduleBaseURL.lastIndexOf(moduleName));
-      importURL = contextURL + "/pentaho/plugin/data-access/api/mondrian/importSchema";
+      importURL = contextURL + "/pentaho/plugin/data-access/api/mondrian/importAnalysis";
 
       connectionListBinding.fireSourceChanged();
 			analysisParametersBinding.fireSourceChanged();
@@ -235,7 +233,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     // If user selects manual data source, pass in whatever parameters they specify even if it is empty.
     String parameters = importDialogModel.getParameters();
     if (availableRadio.isSelected()) {
-      parameters = connectionList.getValue();
+      parameters = "Datasource=" + connectionList.getValue();
     }
 
     // Parameters would contain either the data source from connectionList drop-down
@@ -244,18 +242,27 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     hiddenFormSubmitPanel.add(queryParameters);
 
     formPanel.setAction(importURL);
+    formPanel.addFormHandler(new FormHandler() {
+      @Override
+      public void onSubmit(FormSubmitEvent event) {
+      }
+
+      @Override
+      public void onSubmitComplete(FormSubmitCompleteEvent event) {
+        Window.alert("Publish status: " + event.getResults());
+      }
+    });
     formPanel.submit();
   }
 
 
-  // TODO - remove!!!
+  // TODO - this method should be removed after it is removed by MetadataImportDialogController
 	public void concreteUploadCallback(String fileName, String uploadedFile) {
-    logger.info("************** concreteUploadCallback() - filename = " + fileName + ", uploadedFile = " + uploadedFile);
     acceptButton.setDisabled(!isValid());
 	}
 
-  // TODO - remove!!!
-	public void genericUploadCallback(String uploadedFile) {
+  // TODO - this method should be removed after it is removed by MetadataImportDialogController
+  public void genericUploadCallback(String uploadedFile) {
 		importDialogModel.setUploadedFile(uploadedFile);
 		acceptButton.setDisabled(!isValid());
 	}
