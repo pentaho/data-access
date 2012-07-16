@@ -186,7 +186,7 @@ public class AnalysisDatasourceService {
       statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     }
 
-    response = Response.ok(statusCode).type(MediaType.TEXT_PLAIN).build();
+    response = Response.ok().status(new Integer(statusCode)).type(MediaType.TEXT_PLAIN).build();
     logger.debug("importAnalysisSchemaFile Response " + response);
     return response;
   }
@@ -235,7 +235,7 @@ public class AnalysisDatasourceService {
       statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     }
 
-    response = Response.ok(statusCode).type(MediaType.TEXT_PLAIN).build();
+    response = Response.ok().status(new Integer(statusCode)).type(MediaType.TEXT_PLAIN).build();
     logger.debug("importAnalysisFile Response " + response);
     return response;
   }
