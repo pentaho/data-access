@@ -115,12 +115,13 @@ public class AnalysisDatasourceService {
    * @param databaseConnection
    * @return
    * @throws PentahoAccessControlException
-   * @Depricated
+   * 
    */
   @PUT
   @Path("/import")
   @Consumes({ TEXT_PLAIN })
   @Produces("text/plain")
+  @Deprecated
   public Response importAnalysisDatasource(String parameters, @QueryParam("analysisFile")
   String analysisFile, @QueryParam("databaseConnection")
   String databaseConnection) throws PentahoAccessControlException {
@@ -158,7 +159,7 @@ public class AnalysisDatasourceService {
       @FormDataParam(PARAMETERS) String parameters, 
       @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream, 
       @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo, 
-      @FormDataParam(CATALOG_NAME) String catalogName, 
+      @FormDataParam(CATALOG_NAME) String catalogName, //Optional
       @FormDataParam(OVERWRITE_IN_REPOS) String overwrite, 
       @FormDataParam(XMLA_ENABLED_FLAG) String xmlaEnabledFlag) throws PentahoAccessControlException {
     Response response = null;
@@ -170,7 +171,7 @@ public class AnalysisDatasourceService {
 
       IPlatformImportBundle bundle = createPlatformBundle(parameters, dataInputStream, catalogName,
           overWriteInRepository, fileName, xmlaEnabledFlag);
-
+      
       importer.importFile(bundle);
 
       statusCode = SUCCESS;
@@ -206,6 +207,7 @@ public class AnalysisDatasourceService {
   @Path("/importAnalysis")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
+  @Deprecated
   public Response importAnalysisFile(
       @FormDataParam(PARAMETERS)String parameters,
       @FormDataParam(UPLOAD_ANALYSIS)InputStream dataInputStream, 
