@@ -24,7 +24,13 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.logging.Logger;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.*;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
@@ -49,6 +55,7 @@ import com.google.gwt.user.client.Window;
 
 @SuppressWarnings("all")
 public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements IImportPerspective {
+  private static Logger logger = Logger.getLogger("AnalysisImportDialogController");
 
 	private BindingFactory bf;
 	private XulMenuList connectionList;
@@ -66,11 +73,18 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	private XulButton acceptButton;
 	private XulButton parametersAcceptButton;
 	private XulLabel fileLabel;
-	
-	private static final Integer PARAMETER_MODE = 1;
+  private FileUpload analysisUpload;
+  private XulLabel schemaNameLabel;
+  private String importURL;
+
+  private static final Integer PARAMETER_MODE = 1;
 	private static final Integer DATASOURCE_MODE = 0;
 
-	public void init() {
+  // GWT controls
+  private FormPanel formPanel;
+  private FlowPanel hiddenFormSubmitPanel;
+
+  public void init() {
 		try {
 			resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
 			connectionService = new ConnectionServiceGwtImpl();
@@ -87,7 +101,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			availableRadio = (XulRadio) document.getElementById("availableRadio");			
 			manualRadio = (XulRadio) document.getElementById("manualRadio");
 			fileLabel = (XulLabel) document.getElementById("fileLabel");
-			
+      schemaNameLabel = (XulLabel) document.getElementById("schemaNameLabel");
+
 			acceptButton = (XulButton) document.getElementById("importDialog_accept");
 			acceptButton.setDisabled(true);
 			
@@ -101,14 +116,70 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			Binding connectionListBinding = bf.createBinding(importDialogModel, "connectionList", connectionList, "elements");
 			Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters", analysisParametersTree, "elements");
 
-			connectionListBinding.fireSourceChanged();
+      createWorkingForm();
+
+      String moduleBaseURL = GWT.getModuleBaseURL();
+      String moduleName = GWT.getModuleName();
+      String contextURL = moduleBaseURL.substring(0, moduleBaseURL.lastIndexOf(moduleName));
+      importURL = contextURL + "/pentaho/plugin/data-access/api/mondrian/importAnalysis";
+
+      connectionListBinding.fireSourceChanged();
 			analysisParametersBinding.fireSourceChanged();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public XulDialog getDialog() {
+  private void createWorkingForm() {
+    formPanel = new FormPanel();
+    formPanel.setMethod(FormPanel.METHOD_POST);
+    formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
+
+    formPanel.setVisible(false);
+
+    analysisUpload = new FileUpload();
+    analysisUpload.setName("uploadAnalysis");
+    analysisUpload.addChangeHandler(new ChangeHandler(){
+      public void onChange(ChangeEvent event) {
+        setSelectedFile(analysisUpload.getFilename());
+        acceptButton.setDisabled(!isValid());
+      }
+    });
+
+    // Create a hidden panel so we can pass data source parameters
+    // as part of the form submit
+    hiddenFormSubmitPanel = new FlowPanel();
+    hiddenFormSubmitPanel.add(analysisUpload);
+
+    formPanel.add(hiddenFormSubmitPanel);
+
+    RootPanel.get().add(formPanel);
+  }
+
+  /**
+   * Called by importDialog XUL file.  When user selects a schema file from File Browser
+   * then this is the callback to set the file.  We need to call a native method to
+   * simulate a click on the file browser control.
+   */
+  @Bindable
+  public void setAnalysisFile() {
+    jsClickUpload(analysisUpload.getElement());
+  }
+
+  private native void jsClickUpload(Element uploadElement) /*-{
+    uploadElement.click();
+  }-*/;
+
+
+  @Bindable
+  public void setSelectedFile(String name) {
+    schemaNameLabel.setValue(name);
+    importDialogModel.setUploadedFile(name);
+
+    firePropertyChange("selectedFile", null, name); //$NON-NLS-1$
+  }
+
+    public XulDialog getDialog() {
 		return importDialog;
 	}
 
@@ -122,8 +193,17 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		importDialogModel.setUploadedFile(null);
 		availableRadio.setSelected(true);
 		acceptButton.setDisabled(true);
-		setPreference(DATASOURCE_MODE);
-	}
+    schemaNameLabel.setValue("");
+    setPreference(DATASOURCE_MODE);
+
+    // Remove all previous hidden form parameters otherwise parameters
+    // from a previous import would get included in current form submit
+    for (int i = 0; i < hiddenFormSubmitPanel.getWidgetCount(); i++) {
+      if (hiddenFormSubmitPanel.getWidget(i).getClass().equals(Hidden.class)) {
+        hiddenFormSubmitPanel.remove(hiddenFormSubmitPanel.getWidget(i));
+      }
+    }
+  }
 
 	private void reloadConnections() {
 		if (connectionService != null) {
@@ -144,11 +224,52 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 		return importDialogModel.isValid();
 	}
 
+  /**
+   * Called when the accept button is clicked.
+   */
+  @Bindable
+  public void onDialogAccept() {
+    // If user selects available data source, then pass the datasource as part of the parameters.
+    // If user selects manual data source, pass in whatever parameters they specify even if it is empty.
+    String parameters = importDialogModel.getParameters();
+    if (availableRadio.isSelected()) {
+      parameters = "Datasource=" + connectionList.getValue();
+    }
+
+    // Parameters would contain either the data source from connectionList drop-down
+    // or the parameters manually entered (even if list is empty)
+    Hidden queryParameters = new Hidden("parameters", parameters);
+    hiddenFormSubmitPanel.add(queryParameters);
+
+    formPanel.setAction(importURL);
+    formPanel.addFormHandler(new FormHandler() {
+      @Override
+      public void onSubmit(FormSubmitEvent event) {
+      }
+
+      @Override
+      public void onSubmitComplete(FormSubmitCompleteEvent event) {
+        if (event.getResults().contains("SUCCESS")) {
+          // TODO - use a XUL dialog instead of alert
+          Window.alert("Publish successful");
+        } else {
+          String message = event.getResults();
+          message = message.substring(4, message.length() - 6);
+          Window.alert(event.getResults());
+        }
+      }
+    });
+    formPanel.submit();
+  }
+
+
+  // TODO - this method should be removed after it is removed by MetadataImportDialogController
 	public void concreteUploadCallback(String fileName, String uploadedFile) {
-		acceptButton.setDisabled(!isValid());
+    acceptButton.setDisabled(!isValid());
 	}
 
-	public void genericUploadCallback(String uploadedFile) {
+  // TODO - this method should be removed after it is removed by MetadataImportDialogController
+  public void genericUploadCallback(String uploadedFile) {
 		importDialogModel.setUploadedFile(uploadedFile);
 		acceptButton.setDisabled(!isValid());
 	}
@@ -235,7 +356,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 			return true;
 		}
 	}
-	
+
+
 	class ParametersChangeListener implements PropertyChangeListener {
 		
 		public void propertyChange(PropertyChangeEvent evt) {

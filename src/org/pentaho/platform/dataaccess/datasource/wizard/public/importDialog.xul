@@ -7,23 +7,24 @@
   <dialog id="importDialog" width="395" height="400" title="" buttonlabelaccept="${importDialog.IMPORT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
    <vbox>
 
-     <vbox>
-         <hbox><label id="fileLabel" value=""/></hbox>
-         <hbox>
-             <pen:fileupload id="genericFileUpload" action="../../../../../UploadService" onuploadsuccess="importDialogController.genericUploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" height="22" width="400" />
-         </hbox> 
-     </vbox>
-     
      <deck id="importDeck">
      
   	    <!-- METADATA IMPORT -->
      	<vbox>
+			<vbox>
+				<hbox><label id="fileLabel" value="Metadata File:"/></hbox>
+				<hbox>
+					<label id="mondrianNameLabel"/>
+					<button id="uploadMetaButton" label="..." onclick="metadataImportDialogController.setMetadataFile()"/>
+				</hbox> 
+			 </vbox>
+
      		<hbox><label id="domainIdLabel" value="${importDialog.DOMAIN_ID}:"/></hbox>
      		<hbox><textbox id="domainIdText" value="" height="20" width="400"/></hbox>
      		<hbox>
      			<label id="localizationBundlesLabel" value="${importDialog.LOC_BUNDLES}"/>
      			<spacer width="246"/>  
-     			<pen:fileupload id="concreteFileUpload" action="../../../../../UploadService" image="images/add.png" disabledimage="images/add_disabled.png" onuploadsuccess="importDialogController.concreteUploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" height="10" width="10" />
+				<button id="addButton" image="images/add.png" disabledimage="images/add_disabled.png" onclick="metadataImportDialogController.addLocalizedBundle()"/>
      			<button id="removeButton" image="images/remove.png" disabledimage="images/remove_disabled.png" onclick="metadataImportDialogController.removeLocalizedBundle()"/>
      		</hbox>
      		<hbox>
@@ -38,7 +39,14 @@
      	
      	<!-- ANALYSIS IMPORT -->
 	    <vbox>
-	    	<radiogroup id="analysisPreferencesRadioGroup" padding="0">
+			<vbox>
+                <hbox><label id="fileLabel" value="Mondrian File:"/></hbox>
+                <hbox>
+                    <label id="schemaNameLabel" value=""/>
+                    <button id="uploadAnalysisButton" label="..." onclick="analysisImportDialogController.setAnalysisFile()"/>
+                </hbox>
+            </vbox>
+            <radiogroup id="analysisPreferencesRadioGroup" padding="0">
 	    		<radio id="availableRadio" value="0" checked="true" label="${importDialog.SELECT_AVAILABLE_RADIO}"/>
 	    		<radio id="manualRadio" value="1" label="${importDialog.ENTER_MANUAL_RADIO}" />
 	    	</radiogroup>

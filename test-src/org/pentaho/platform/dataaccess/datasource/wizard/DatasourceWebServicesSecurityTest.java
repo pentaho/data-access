@@ -14,6 +14,7 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,7 +137,19 @@ public class DatasourceWebServicesSecurityTest {
 		Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
 		logout();
 	}
-
+	@Test
+  public void testImportAnalysisSchemaFile() throws Exception {
+    login("joe", "duff", false);
+    AnalysisDatasourceService analysisDatasourceService = new AnalysisDatasourceService();
+    String domainId ="testJndiName";
+    InputStream dataInputStream = null;
+    Response res = analysisDatasourceService.importAnalysisSchemaFile(dataInputStream, domainId, "true","false");
+    Assert.assertTrue(res.getEntity().equals("Access Denied"));
+    
+    res = analysisDatasourceService.addSchema(null, null, null);
+    Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
+    logout();
+  }
 	@Test
 	public void testImportMetadataDatasource() throws Exception {
 		login("joe", "duff", false);
