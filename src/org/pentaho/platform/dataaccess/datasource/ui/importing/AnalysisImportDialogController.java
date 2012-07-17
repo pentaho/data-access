@@ -249,7 +249,14 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
       @Override
       public void onSubmitComplete(FormSubmitCompleteEvent event) {
-        Window.alert("Publish status: " + event.getResults());
+        if (event.getResults().contains("SUCCESS")) {
+          // TODO - use a XUL dialog instead of alert
+          Window.alert("Publish successful");
+        } else {
+          String message = event.getResults();
+          message = message.substring(4, message.length() - 6);
+          Window.alert(event.getResults());
+        }
       }
     });
     formPanel.submit();
