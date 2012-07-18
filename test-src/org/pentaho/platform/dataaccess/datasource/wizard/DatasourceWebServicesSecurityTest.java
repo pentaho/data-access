@@ -14,6 +14,7 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,8 @@ import org.springframework.security.providers.UsernamePasswordAuthenticationToke
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
 
+import com.sun.jersey.core.header.FormDataContentDisposition;
+
 /**
  * Integration test. Tests {@link DefaultUnifiedRepository} and
  * {@link IAuthorizationPolicy} fully configured behind Spring Security's method
@@ -93,6 +96,8 @@ public class DatasourceWebServicesSecurityTest {
 	private IUnifiedRepository repo;
 	
 	private MicroPlatform booter;
+
+  private String catalogName;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -129,14 +134,36 @@ public class DatasourceWebServicesSecurityTest {
 	public void testImportAnalysisDatasource() throws Exception {
 		login("joe", "duff", false);
 		AnalysisDatasourceService analysisDatasourceService = new AnalysisDatasourceService();
-		Response res = analysisDatasourceService.importAnalysisDatasource(null, null, null);
-		Assert.assertTrue(res.getEntity().equals("Access Denied"));
 		
-		res = analysisDatasourceService.addSchema(null, null, null);
+		String datasourceName = null;
+    FormDataContentDisposition schemaFileInfo = null;
+    String overwrite ="false";
+    String xmlaEnabledFlag = "false";
+    String parameters = "";
+    Response res = analysisDatasourceService.postMondrainSchema(null, schemaFileInfo, catalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters);
+ 
 		Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
+		Assert.assertTrue(res.getEntity().equals("Access Denied"));
 		logout();
 	}
-
+	@Test
+  public void testPostMondrainSchema() throws Exception {
+    login("joe", "duff", false);
+    AnalysisDatasourceService analysisDatasourceService = new AnalysisDatasourceService();
+    String domainId ="testJndiName";
+    InputStream dataInputStream = null;
+    Response res = null;//analysisDatasourceService.importAnalysisSchemaFile(domainId, dataInputStream, domainId, "true","false");
+    Assert.assertTrue(res.getEntity().equals("Access Denied"));
+    
+    String datasourceName = null;
+    FormDataContentDisposition schemaFileInfo = null;
+    String overwrite ="false";
+    String xmlaEnabledFlag = "false";
+    String parameters = "";
+    res = analysisDatasourceService.postMondrainSchema(dataInputStream, schemaFileInfo, catalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters);
+    Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
+    logout();
+  }
 	@Test
 	public void testImportMetadataDatasource() throws Exception {
 		login("joe", "duff", false);
