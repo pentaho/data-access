@@ -55,7 +55,10 @@ import com.google.gwt.user.client.Window;
 
 @SuppressWarnings("all")
 public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements IImportPerspective {
-  private static Logger logger = Logger.getLogger("AnalysisImportDialogController");
+  
+  private static final String MONDRIAN_PUTSCHEMA_URL = "/pentaho/plugin/data-access/api/mondrian/putSchema";
+
+  private static Logger logger = Logger.getLogger(AnalysisImportDialogController.class.getName());
 
 	private BindingFactory bf;
 	private XulMenuList connectionList;
@@ -121,7 +124,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       String moduleBaseURL = GWT.getModuleBaseURL();
       String moduleName = GWT.getModuleName();
       String contextURL = moduleBaseURL.substring(0, moduleBaseURL.lastIndexOf(moduleName));
-      importURL = contextURL + "/pentaho/plugin/data-access/api/mondrian/importAnalysis";
+      importURL = contextURL + MONDRIAN_PUTSCHEMA_URL;
 
       connectionListBinding.fireSourceChanged();
 			analysisParametersBinding.fireSourceChanged();
