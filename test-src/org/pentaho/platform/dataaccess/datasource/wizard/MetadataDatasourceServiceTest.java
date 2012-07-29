@@ -39,6 +39,7 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.core.mt.Tenant;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -143,8 +144,8 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 	
 	protected void clearRoleBindings() throws Exception {
 		loginAsRepositoryAdmin();
-		SimpleJcrTestUtils.deleteItem(testJcrTemplate, ServerRepositoryPaths.getTenantRootFolderPath("duff") + ".authz");
-		SimpleJcrTestUtils.deleteItem(testJcrTemplate, ServerRepositoryPaths.getTenantRootFolderPath("duff") + ".authz");
+		SimpleJcrTestUtils.deleteItem(testJcrTemplate, ServerRepositoryPaths.getTenantRootFolderPath(new Tenant("duff", true)) + ".authz");
+		SimpleJcrTestUtils.deleteItem(testJcrTemplate, ServerRepositoryPaths.getTenantRootFolderPath(new Tenant("duff", true)) + ".authz");
 	}
 
 	private class MockUserProvider implements MockUnifiedRepository.ICurrentUserProvider {
