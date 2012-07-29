@@ -27,6 +27,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
+import org.pentaho.platform.api.mt.ITenantedPrincipleNameResolver;
+import org.pentaho.platform.core.mt.Tenant;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.security.SecurityHelper;
 import org.springframework.security.Authentication;
@@ -40,6 +42,10 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
     List<String> roleList = new ArrayList<String>();
     Authentication auth = SecurityHelper.getInstance().getAuthentication(session, true);
     IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
+    ITenantedPrincipleNameResolver tenantedUserNameUtils = PentahoSystem.get(ITenantedPrincipleNameResolver.class, "tenantedUserNameUtils", session); 
+    ITenantedPrincipleNameResolver tenantedRoleNameUtils = PentahoSystem.get(ITenantedPrincipleNameResolver.class, "tenantedRoleNameUtils", session);
+    String tenantId = (String) session.getAttribute(IPentahoSession.TENANT_ID_KEY);
+
     String roles = null;
 
     try {
@@ -52,8 +58,9 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
       String roleArr[] = roles.split(","); //$NON-NLS-1$
 
       for (String role : roleArr) {
+        String tenantedRole = tenantedRoleNameUtils.getPrincipleId(new Tenant(tenantId, true), role);
         for (GrantedAuthority userRole : auth.getAuthorities()) {
-          if (role != null && role.trim().equals(userRole.getAuthority())) {
+          if (tenantedRole != null && tenantedRole.trim().equals(userRole.getAuthority())) {
             roleList.add(role);
           }
         }
@@ -62,9 +69,13 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
     return roleList;
   }
 
+  @Override
   public List<String> getPermittedUserList(IPentahoSession session) {
     List<String> userList = new ArrayList<String>();
     IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
+    ITenantedPrincipleNameResolver tenantedUserNameUtils = PentahoSystem.get(ITenantedPrincipleNameResolver.class, "tenantedUserNameUtils", session); 
+    ITenantedPrincipleNameResolver tenantedRoleNameUtils = PentahoSystem.get(ITenantedPrincipleNameResolver.class, "tenantedRoleNameUtils", session);
+    String tenantId = (String) session.getAttribute(IPentahoSession.TENANT_ID_KEY);
     String users = null;
 
     try {
@@ -76,7 +87,8 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
     if (users != null && users.length() > 0) {
       String userArr[] = users.split(","); //$NON-NLS-1$
       for (String user : userArr) {
-        if (user != null && user.trim().length() > 0) {
+        String tenantedUser = tenantedUserNameUtils.getPrincipleId(new Tenant(tenantId, true), user);
+        if (tenantedUser != null && tenantedUser.trim().length() > 0) {
           userList.add(user);
         }
       }
