@@ -48,6 +48,8 @@ import com.google.gwt.user.client.ui.TextBox;
 public class MetadataImportDialogController extends AbstractXulDialogController<MetadataImportDialogModel> implements
     IImportPerspective {
 
+  private static final String DATA_ACCESS_API_METADATA_IMPORT_URL = "plugin/data-access/api/metadata/import";
+
   private BindingFactory bf;
 
   private XulButton acceptButton;
@@ -97,16 +99,12 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   }
 
   private void createWorkingForm() {
-    String moduleBaseURL = GWT.getModuleBaseURL();
-    String moduleName = GWT.getModuleName();
-    String contextURL = moduleBaseURL.substring(0, moduleBaseURL.lastIndexOf(moduleName));
-    String importURL = contextURL + "/pentaho/plugin/data-access/api/metadata/import";
-
+   
     formPanel = new FormPanel();
     formPanel.setMethod(FormPanel.METHOD_POST);
     formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
-    formPanel.setAction(importURL);
-    formPanel.setVisible(false);
+    formPanel.setAction(DATA_ACCESS_API_METADATA_IMPORT_URL);
+    formPanel.setVisible(true);
 
     mainFormPanel = new FlowPanel();
     formPanel.add(mainFormPanel);

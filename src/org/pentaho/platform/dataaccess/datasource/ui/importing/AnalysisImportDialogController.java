@@ -69,7 +69,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements
     IImportPerspective {
 
-  private static final String MONDRIAN_POSTANALYSIS_URL = "/pentaho/plugin/data-access/api/mondrian/postAnalysis";
+  private static final String MONDRIAN_POSTANALYSIS_URL = "plugin/data-access/api/mondrian/postAnalysis";
 
   private static Logger logger = Logger.getLogger(AnalysisImportDialogController.class.getName());
 
@@ -163,11 +163,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
       createWorkingForm();
       addSubmitHandler();
-      String moduleBaseURL = GWT.getModuleBaseURL();
-      String moduleName = GWT.getModuleName();
-      String contextURL = moduleBaseURL.substring(0, moduleBaseURL.lastIndexOf(moduleName));
-      importURL = contextURL + MONDRIAN_POSTANALYSIS_URL;
-
+  
       connectionListBinding.fireSourceChanged();
       analysisParametersBinding.fireSourceChanged();
     } catch (Exception e) {
@@ -184,6 +180,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
     analysisUpload = new FileUpload();
     analysisUpload.setName("uploadAnalysis");
+    analysisUpload.setVisible(true);   
+    analysisUpload.setStyleName("gwt-FileUpload");
     analysisUpload.addChangeHandler(new ChangeHandler() {
       public void onChange(ChangeEvent event) {
         setSelectedFile(analysisUpload.getFilename());
@@ -279,7 +277,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   public void onDialogAccept() {
     removeHiddenPanels();
     buildAndSetParameters();
-    formPanel.setAction(importURL);
+    formPanel.setAction(MONDRIAN_POSTANALYSIS_URL);
     // Add an event handlers to the formPanel.    
     //make sure this does not get registered twice for each accept       
     formPanel.submit();
@@ -329,7 +327,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private void refreshParentDialog() {
     //send a message to the dialog parent to refresh the datasources
- 
+  
 
   }
 
