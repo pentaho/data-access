@@ -116,7 +116,7 @@
     <dependency org="net.sf.saxon" name="saxon-dom" rev="9.1.0.8" transitive="false" conf="test->default"/>
     <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
     <dependency org="org.jmock" name="jmock-junit4" rev="2.5.1" conf="test->default"/>
-   	<dependency org="org.apache.jackrabbit"    name="jackrabbit-core"            rev="2.4.0" conf="test->default"/>
+   	<dependency org="org.apache.jackrabbit"    name="jackrabbit-core"            rev="2.4.2" conf="test->default" transitive="false"/>
 	<dependency org="org.springframework"          name="spring"                 rev="2.5.6"         transitive="false" conf="test->default"/>
 	<dependency org="org.springframework"          name="se-jcr"                 rev="0.9"           transitive="false" conf="test->default"/>
 	<dependency org="org.springframework"          name="spring-beans"           rev="2.5.6"         transitive="false" conf="test->default"/>
