@@ -36,7 +36,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 @SuppressWarnings("all")
 public class AnalysisDatasourceServiceGwtImpl {
 
-  String datasourceUrl = getWebAppRoot() + "plugin/data-access/api/mondrian/import?analysisFile={analysisFile}&databaseConnection={databaseConnection}";//$NON-NLS-1$
+  String datasourceUrl = getWebAppRoot() + "plugin/data-access/api/mondrian/putSchema?analysisFile={analysisFile}&databaseConnection={databaseConnection}";//$NON-NLS-1$
   
   public void importAnalysisDatasource(final String analysisFile, final String databaseConnection, final String parameters, final XulServiceCallback<String> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {

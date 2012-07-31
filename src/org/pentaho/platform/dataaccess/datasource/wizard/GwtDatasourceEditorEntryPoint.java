@@ -659,6 +659,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 	        public void onDialogAccept(final AnalysisImportDialogModel importDialogModel) {
 
 	       AnalysisDatasourceServiceGwtImpl service = new AnalysisDatasourceServiceGwtImpl();
+	    
 	       service.importAnalysisDatasource(importDialogModel.getUploadedFile(), 
 	           importDialogModel.getConnection().getName(), importDialogModel.getParameters(), new XulServiceCallback<String>() {
 
@@ -694,9 +695,12 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   
      if(importDialog == null){
          importDialog = new GwtImportDialog(constructorListener);
-     } else {
+      } else {
          importDialog.showAnalysisImportDialog(importDialoglistener);
+        
      }
+     if(importDialog!= null && adminDialog != null)
+       importDialog.getAnalysisImportDialogController().setAdminDialogParent(adminDialog.getDatasourceAdminDialogController());
   }
 
   

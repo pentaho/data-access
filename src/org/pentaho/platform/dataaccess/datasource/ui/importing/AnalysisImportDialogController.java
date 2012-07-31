@@ -29,6 +29,10 @@ import java.util.logging.Logger;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
+import org.pentaho.platform.dataaccess.datasource.ui.admindialog.DatasourceAdminDialogController;
+import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
+import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.ui.xul.XulComponent;
@@ -122,6 +126,10 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   protected static final int PUBLISH_SCHEMA_EXISTS_ERROR = 8;
 
   private static SubmitCompleteHandler submitHandler = null;
+   
+  private DatasourceAdminDialogController adminDialog = null;
+  
+  private DatasourceMessages messages = null;
 
   // GWT controls
   private FormPanel formPanel;
@@ -146,7 +154,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       manualRadio = (XulRadio) document.getElementById("manualRadio");
       fileLabel = (XulLabel) document.getElementById("fileLabel");
       schemaNameLabel = (XulLabel) document.getElementById("schemaNameLabel");
-
+       
       acceptButton = (XulButton) document.getElementById("importDialog_accept");
       acceptButton.setDisabled(true);
 
@@ -197,6 +205,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     formPanel.add(hiddenFormSubmitPanel);
 
     RootPanel.get().add(formPanel);
+
   }
 
   /**
@@ -256,7 +265,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       connectionService.getConnections(new XulServiceCallback<List<Connection>>() {
         public void error(String message, Throwable error) {
           error.printStackTrace();
-          Window.alert(message);
+          MessageHandler.getInstance().showErrorDialog(error.getMessage());
         }
 
         public void success(List<Connection> connections) {
@@ -280,7 +289,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     formPanel.setAction(MONDRIAN_POSTANALYSIS_URL);
     // Add an event handlers to the formPanel.    
     //make sure this does not get registered twice for each accept       
-    formPanel.submit();
+    formPanel.submit();    
   }
 
   /**
@@ -327,8 +336,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private void refreshParentDialog() {
     //send a message to the dialog parent to refresh the datasources
-  
-
+    //this is what I want to do but this does not work -
+    if(this.adminDialog != null)
+      this.adminDialog.refreshDataSourceAfterInsert();
   }
 
   /**
@@ -347,19 +357,19 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     int code = new Integer(results).intValue();
     switch (code) {
       case 1:
-        msg = "Publish to server failed";
+        msg =  messages.getString("Mondrian.ERROR_OO1_PUBLISH");
       case 2:
-        msg = "Publish to server general error";
+         msg = messages.getString("Mondrian.ERROR_OO2_PUBLISH");
       case 5:
-        msg = "Username/Password failed";
+        msg = messages.getString("Mondrian.ERROR_OO5_USERNAME_PW");
       case 6:
-        msg = "Publish to datasource exists";
+        msg = messages.getString("Mondrian.ERROR_OO6_Existing_Datasource");
       case 7:
-        msg = "XMLA Catalog Exists";
+        msg = messages.getString("Mondrian.ERROR_OO7_EXISTING_XMLA");
       case 8:
-        msg ="Existing Schema File";
+        msg = messages.getString("Mondrian.ERROR_OO8_EXISTING_SCHEMA");
       default:
-        msg = "General Error ["+results+"]";
+        msg = messages.getString("Mondrian.General Error",results);
         break;
     }
     return msg + " Mondrian File: "+fileName;
@@ -450,7 +460,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       e.printStackTrace();
     }
     confirm.setTitle("Confirmation");
-    confirm.setMessage("Existing Analysis file.  Overwrite Analysis file in repository?");
+    confirm.setMessage(messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA"));
     confirm.setAcceptLabel("Ok");
     confirm.setCancelLabel("Cancel");
     confirm.addDialogCallback(new XulDialogCallback<String>() {
@@ -530,8 +540,17 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       messagebox.setMessage(message);
       int option = messagebox.open();
     } catch (XulException e) {
-      Window.alert(e.getMessage());
+      MessageHandler.getInstance().showErrorDialog(e.getMessage());
     }
 
   }
+
+  public void setAdminDialogParent(DatasourceAdminDialogController adminDialog) {
+    this.adminDialog = adminDialog;
+    
+  }
+  public void setDatasourceMessages( DatasourceMessages datasourceMessages ) {
+    this.messages = datasourceMessages;
+  }
+ 
 }
