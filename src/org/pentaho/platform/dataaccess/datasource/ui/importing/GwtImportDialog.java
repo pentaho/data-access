@@ -21,6 +21,9 @@
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
+import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
+import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
 import org.pentaho.ui.xul.gwt.GwtXulRunner;
@@ -34,66 +37,77 @@ import com.google.gwt.core.client.GWT;
 
 public class GwtImportDialog implements IXulLoaderCallback {
 
-	private MetadataImportDialogController metadataImportDialogController;
-	private AnalysisImportDialogController analysisImportDialogController;
-	private AsyncConstructorListener<GwtImportDialog> constructorListener;
-	private ImportDialogController importDialogController;
+  private MetadataImportDialogController metadataImportDialogController;
 
-	public GwtImportDialog(AsyncConstructorListener<GwtImportDialog> constructorListener) {
-		this.constructorListener = constructorListener;
-		try {
-			AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "importDialog.xul", GWT.getModuleBaseURL() + "importDialog", this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+  private AnalysisImportDialogController analysisImportDialogController;
 
-	public void xulLoaded(GwtXulRunner runner) {
-		try {
-			GwtXulDomContainer container = (GwtXulDomContainer) runner.getXulDomContainers().get(0);
+  private AsyncConstructorListener<GwtImportDialog> constructorListener;
 
-			BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
+  private ImportDialogController importDialogController;
 
-			metadataImportDialogController = new MetadataImportDialogController();
-			metadataImportDialogController.setBindingFactory(bf);
-			container.addEventHandler(metadataImportDialogController);
+  private GwtDatasourceMessages datasourceMessages;
 
-			analysisImportDialogController = new AnalysisImportDialogController();
-			analysisImportDialogController.setBindingFactory(bf);
-			container.addEventHandler(analysisImportDialogController);
+  public GwtImportDialog(AsyncConstructorListener<GwtImportDialog> constructorListener) {
+    this.constructorListener = constructorListener;
+    try {
+      AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "importDialog.xul", GWT.getModuleBaseURL()
+          + "importDialog", this);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-			importDialogController = new ImportDialogController();
-			importDialogController.addImportPerspective(0, metadataImportDialogController);
-			importDialogController.addImportPerspective(1, analysisImportDialogController);
-			container.addEventHandler(importDialogController);
+  public void xulLoaded(GwtXulRunner runner) {
+    try {
+      GwtXulDomContainer container = (GwtXulDomContainer) runner.getXulDomContainers().get(0);
 
-			runner.initialize();
-			runner.start();
+      BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
+      ResourceBundle resBundle = (ResourceBundle) container.getResourceBundles().get(0);
+      datasourceMessages = new GwtDatasourceMessages();
+      datasourceMessages.setMessageBundle(resBundle);
+      MessageHandler.getInstance().setMessages(datasourceMessages);
 
-			importDialogController.init();
-			metadataImportDialogController.init();
-			analysisImportDialogController.init();
+      metadataImportDialogController = new MetadataImportDialogController();
+      metadataImportDialogController.setBindingFactory(bf);
+      container.addEventHandler(metadataImportDialogController);
 
-			if (constructorListener != null) {
-				constructorListener.asyncConstructorDone(this);
-			}
+      analysisImportDialogController = new AnalysisImportDialogController();
+      analysisImportDialogController.setBindingFactory(bf);
+      container.addEventHandler(analysisImportDialogController);
+      analysisImportDialogController.setDatasourceMessages(datasourceMessages);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+      importDialogController = new ImportDialogController();
+      importDialogController.addImportPerspective(0, metadataImportDialogController);
+      importDialogController.addImportPerspective(1, analysisImportDialogController);
+      container.addEventHandler(importDialogController);
 
-	public void showMetadataImportDialog(DialogListener<MetadataImportDialogModel> listener) {
-		metadataImportDialogController.addDialogListener(listener);
-		importDialogController.show(0);
-	}
+      runner.initialize();
+      runner.start();
 
-	public void showAnalysisImportDialog(DialogListener<AnalysisImportDialogModel> listener) {
-		analysisImportDialogController.addDialogListener(listener);
-		importDialogController.show(1);
-	}
+      importDialogController.init();
+      metadataImportDialogController.init();
+      analysisImportDialogController.init();
 
-	public MetadataImportDialogController getMetadataImportDialogController() {
+      if (constructorListener != null) {
+        constructorListener.asyncConstructorDone(this);
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void showMetadataImportDialog(DialogListener<MetadataImportDialogModel> listener) {
+    metadataImportDialogController.addDialogListener(listener);
+    importDialogController.show(0);
+  }
+
+  public void showAnalysisImportDialog(DialogListener<AnalysisImportDialogModel> listener) {
+    analysisImportDialogController.addDialogListener(listener);
+    importDialogController.show(1);
+  }
+
+  public MetadataImportDialogController getMetadataImportDialogController() {
     return metadataImportDialogController;
   }
 
@@ -102,8 +116,8 @@ public class GwtImportDialog implements IXulLoaderCallback {
   }
 
   public void overlayLoaded() {
-	}
+  }
 
-	public void overlayRemoved() {
-	}
+  public void overlayRemoved() {
+  }
 }

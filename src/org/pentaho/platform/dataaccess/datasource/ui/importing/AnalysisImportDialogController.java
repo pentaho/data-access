@@ -30,6 +30,7 @@ import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.DatasourceAdminDialogController;
+import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
@@ -127,6 +128,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   private static SubmitCompleteHandler submitHandler = null;
    
   private DatasourceAdminDialogController adminDialog = null;
+  
+  private DatasourceMessages messages = null;
 
   // GWT controls
   private FormPanel formPanel;
@@ -354,19 +357,19 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     int code = new Integer(results).intValue();
     switch (code) {
       case 1:
-        msg = MessageHandler.getString("Mondrian.ERROR_OO1_PUBLISH");
+        msg =  messages.getString("Mondrian.ERROR_OO1_PUBLISH");
       case 2:
-         msg = MessageHandler.getString("Mondrian.ERROR_OO2_PUBLISH");
+         msg = messages.getString("Mondrian.ERROR_OO2_PUBLISH");
       case 5:
-        msg = MessageHandler.getString("Mondrian.ERROR_OO5_USERNAME_PW");
+        msg = messages.getString("Mondrian.ERROR_OO5_USERNAME_PW");
       case 6:
-        msg = MessageHandler.getString("Mondrian.ERROR_OO6_Existing_Datasource");
+        msg = messages.getString("Mondrian.ERROR_OO6_Existing_Datasource");
       case 7:
-        msg = MessageHandler.getString("Mondrian.ERROR_OO7_EXISTING_XMLA");
+        msg = messages.getString("Mondrian.ERROR_OO7_EXISTING_XMLA");
       case 8:
-        msg = MessageHandler.getString("Mondrian.ERROR_OO8_EXISTING_SCHEMA");
+        msg = messages.getString("Mondrian.ERROR_OO8_EXISTING_SCHEMA");
       default:
-        msg = "General Error ["+results+"]";
+        msg = messages.getString("Mondrian.General Error",results);
         break;
     }
     return msg + " Mondrian File: "+fileName;
@@ -457,7 +460,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       e.printStackTrace();
     }
     confirm.setTitle("Confirmation");
-    confirm.setMessage(MessageHandler.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA"));
+    confirm.setMessage(messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA"));
     confirm.setAcceptLabel("Ok");
     confirm.setCancelLabel("Cancel");
     confirm.addDialogCallback(new XulDialogCallback<String>() {
@@ -545,6 +548,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   public void setAdminDialogParent(DatasourceAdminDialogController adminDialog) {
     this.adminDialog = adminDialog;
     
+  }
+  public void setDatasourceMessages( DatasourceMessages datasourceMessages ) {
+    this.messages = datasourceMessages;
   }
  
 }
