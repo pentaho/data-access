@@ -9,11 +9,6 @@
 .gwt-PopupPanel {
     z-index: 2101;
 }
-.gwt-FileUpload {
-	position:absolute; 
-	top: -1000px; 
-	left: -1000px;
-}
 
 #datasourcesListTable .gwt-scrolltable .datawrapper {
 	background-color: white;
