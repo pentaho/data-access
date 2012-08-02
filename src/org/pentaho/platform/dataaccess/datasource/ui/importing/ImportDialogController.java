@@ -49,8 +49,12 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	public void init() {
 		importDeck = (XulDeck) document.getElementById("importDeck");
 
-		genericFileUpload = (XulFileUpload) document.getElementById("genericFileUpload");
-		genericFileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
+		try {
+  		genericFileUpload = (XulFileUpload) document.getElementById("genericFileUpload");
+  		genericFileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
+		} catch (Exception e) {
+		  // Gobble this up if there isn't one in the document.
+		}
 
 //		concreteFileUpload = (XulFileUpload) document.getElementById("concreteFileUpload");
 //		concreteFileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
@@ -72,7 +76,9 @@ public class ImportDialogController extends AbstractXulEventHandler {
 	}
 
 	private void reset() {
-		genericFileUpload.setSelectedFile("");
+	  if (genericFileUpload != null) {
+	    genericFileUpload.setSelectedFile("");
+	  }
 //		concreteFileUpload.setSelectedFile("");
 	}
 

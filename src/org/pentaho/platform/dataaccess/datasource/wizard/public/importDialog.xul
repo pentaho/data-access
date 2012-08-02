@@ -6,24 +6,15 @@
   
   <dialog id="importDialog" width="395" height="400" title="" buttonlabelaccept="${importDialog.IMPORT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
    <vbox>
-
-     <vbox>
-         <hbox><label id="fileLabel" value=""/></hbox>
-         <hbox>
-             <pen:fileupload id="genericFileUpload" action="../../../../../UploadService" onuploadsuccess="importDialogController.genericUploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" height="22" width="400" />
-         </hbox> 
-     </vbox>
-     
      <deck id="importDeck">
      
   	    <!-- METADATA IMPORT -->
-     	<vbox>
+     	<vbox id="metadataImportCard">
 			<vbox>
 				<hbox><label id="fileLabel" value=""/></hbox>
 				<hbox>
-					<!-- <pen:fileupload id="genericFileUpload" action="../../../../../UploadService" onuploadsuccess="importDialogController.genericUploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" height="22" width="400" /> -->
-					<label id="uploadFile"/>
-					<button id="uploadMetaButton" label="..." onclick="metadataImportDialogController.setMetadataFile()/>
+					<label id="uploadFileLabel" value="${importDialog.SELECT_METAFILE_LABEL}"/>
+					<button id="uploadMetaButton" label="..." onclick="metadataImportDialogController.setMetadataFile()" />
 				</hbox> 
 			 </vbox>
 

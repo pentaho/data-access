@@ -43,7 +43,6 @@ import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDia
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceManageDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.service.DSWUIDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.JSUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.JdbcDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourceService;
@@ -72,14 +71,17 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
-import org.pentaho.ui.xul.util.DialogController.DialogListener;
 import org.pentaho.ui.xul.util.XulDialogCallback;
+import org.pentaho.ui.xul.util.DialogController.DialogListener;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 /**
 * Creates the singleton datasource wizard and sets up native JavaScript functions to show the wizard.
@@ -571,22 +573,22 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 		        }
 
 		        public void onDialogAccept(final MetadataImportDialogModel importDialogModel) {
+		          FormPanel metaDataFormPanel = importDialog.getMetadataImportDialogController().getFormPanel();
+              metaDataFormPanel.removeFromParent();
+              RootPanel.get().add(metaDataFormPanel);
+		          metaDataFormPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 
-		       MetadataDatasourceServiceGwtImpl service = new MetadataDatasourceServiceGwtImpl();
-		       service.importMetadataDatasource(importDialogModel.getDomainId(), 
-		           importDialogModel.getUploadedFile(), importDialogModel.getLocalizedBundleEntries(), new XulServiceCallback<String>() {
-
-		              @Override
-		              public void success(String retVal) {
-		            	  listener.onDialogAccept(retVal);
-		              }
-
-		              @Override
-		              public void error(String message, Throwable error) {
-		            	  listener.onDialogError(message);
-		              }
-		            });
-		      
+                @Override
+                public void onSubmitComplete(SubmitCompleteEvent event) {
+                  String results = event.getResults();
+                  if (!results.contains("SUCCESS")) {
+                    listener.onDialogError(results);
+                  }
+                  listener.onDialogAccept(null);
+                }
+                
+              });
+		          metaDataFormPanel.submit();
 		        }
 		        
 		        public void onDialogReady() {
@@ -594,8 +596,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
 		        @Override
 		        public void onDialogError(String errorMessage) {
-		        	listener.onDialogError(errorMessage);
-		          
+		        	listener.onDialogError(errorMessage);		          
 		        }
 		      };
 		  

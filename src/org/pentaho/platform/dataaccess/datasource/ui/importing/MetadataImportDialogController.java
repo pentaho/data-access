@@ -31,144 +31,193 @@ import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
+import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
-//import com.google.gwt.dom.client.Element;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class MetadataImportDialogController extends AbstractXulDialogController<MetadataImportDialogModel> implements IImportPerspective {
+  /**
+   * 
+   */
+  private static final String METADATA_IMPORT_URL = "plugin/data-access/api/metadata/postimport";
+  private static Integer FILE_UPLOAD_SUFFIX = 0;
+  private BindingFactory bf;
+  private XulButton acceptButton;
+  private XulTree localizedBundlesTree;
+  private XulTextbox domainIdText;
+  private XulLabel metaFileLocation;
+  private XulDialog importDialog;
+  private ResourceBundle resBundle;
+  private MetadataImportDialogModel importDialogModel;
+  private XulLabel fileLabel;
+  private FlowPanel mainFormPanel;
+  private FlowPanel propertiesFileImportPanel;
+  private XulVbox hiddenArea;
+  
+  // GWT controls
+  private FormPanel formPanel;
+  private FileUpload metadataFileUpload;
+  private TextBox formDomainIdText;
+  
+  public void init() {
+    try {
+      resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
+      importDialogModel = new MetadataImportDialogModel();
+      localizedBundlesTree = (XulTree) document.getElementById("localizedBundlesTree");
+      domainIdText = (XulTextbox) document.getElementById("domainIdText");
+      domainIdText.addPropertyChangeListener(new DomainIdChangeListener());
+      importDialog = (XulDialog) document.getElementById("importDialog");
+      fileLabel = (XulLabel) document.getElementById("fileLabel");
+      metaFileLocation = (XulLabel) document.getElementById("uploadFileLabel");
+      acceptButton = (XulButton) document.getElementById("importDialog_accept");
+      hiddenArea = (XulVbox)document.getElementById("metadataImportCard");
+      acceptButton.setDisabled(true);
 
-	private BindingFactory bf;
-	private XulButton acceptButton;
-	private XulTree localizedBundlesTree;
-	private XulTextbox domainIdText;
-	private XulDialog importDialog;
-	private ResourceBundle resBundle;
-	private MetadataImportDialogModel importDialogModel;
-	private XulLabel fileLabel;
-	private FlowPanel mainFormPanel;
-	
-	// GWT controls
-	private FormPanel formPanel;
-	private TextBox formDomainIdText;
-	
-	public void init() {
-		try {
-			resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
-			importDialogModel = new MetadataImportDialogModel();
-			localizedBundlesTree = (XulTree) document.getElementById("localizedBundlesTree");
-			domainIdText = (XulTextbox) document.getElementById("domainIdText");
-			domainIdText.addPropertyChangeListener(new DomainIdChangeListener());
-			importDialog = (XulDialog) document.getElementById("importDialog");
-			fileLabel = (XulLabel) document.getElementById("fileLabel");
-
-			acceptButton = (XulButton) document.getElementById("importDialog_accept");
-			acceptButton.setDisabled(true);
-
-			bf.setBindingType(Binding.Type.ONE_WAY);
-			Binding localizedBundlesBinding = bf.createBinding(importDialogModel, "localizedBundles", localizedBundlesTree, "elements");
-			createWorkingForm();
-			localizedBundlesBinding.fireSourceChanged();			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void createWorkingForm() {
-    String moduleBaseURL = GWT.getModuleBaseURL();
-    String moduleName = GWT.getModuleName();
-    String contextURL = moduleBaseURL.substring(0, moduleBaseURL.lastIndexOf(moduleName));
-    String importURL = contextURL + "/pentaho/plugin/data-access/api/metadata/import";
-
-	  formPanel = new FormPanel();
+      bf.setBindingType(Binding.Type.ONE_WAY);
+      Binding localizedBundlesBinding = bf.createBinding(importDialogModel, "localizedBundles", localizedBundlesTree, "elements");
+      localizedBundlesBinding.fireSourceChanged();      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
+  private void createWorkingForm() {
+    String importURL = METADATA_IMPORT_URL;
+    
+    formPanel = new FormPanel();
     formPanel.setMethod(FormPanel.METHOD_POST);
+    formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
     formPanel.setAction(importURL);
-    formPanel.setVisible(false);
+    formPanel.getElement().getStyle().setProperty("position", "absolute");
+    formPanel.getElement().getStyle().setProperty("visibility", "hidden");
+    formPanel.getElement().getStyle().setProperty("overflow", "hidden");
+    formPanel.getElement().getStyle().setProperty("clip", "rect(0px,0px,0px,0px)");
     mainFormPanel = new FlowPanel();
+    propertiesFileImportPanel = new FlowPanel();
+    mainFormPanel.add(propertiesFileImportPanel);
     formPanel.add(mainFormPanel);
     formDomainIdText = new TextBox();
     formDomainIdText.setName("domainId");
     mainFormPanel.add(formDomainIdText);
-    
-    RootPanel.get().add(formPanel);
-	}
+    metadataFileUpload = new FileUpload();
+    metadataFileUpload.setName("metadataFile");
+    metadataFileUpload.getElement().setId("metaFileUpload");
+    metadataFileUpload.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        metaFileLocation.setValue(((FileUpload)event.getSource()).getFilename());
+        importDialogModel.setUploadedFile(((FileUpload)event.getSource()).getFilename());
+      }      
+    });
+    mainFormPanel.add(metadataFileUpload);
+    VerticalPanel vp = (VerticalPanel)hiddenArea.getManagedObject();
+    vp.add(formPanel);
+  }
 
-	public XulDialog getDialog() {
-		return importDialog;
-	}
+  public XulDialog getDialog() {
+    return importDialog;
+  }
 
-	public MetadataImportDialogModel getDialogResult() {
-	  formPanel.submit();
-		return importDialogModel;
-	}
-	
-	public boolean isValid() {
-		return importDialogModel.isValid();
-	}
+  public MetadataImportDialogModel getDialogResult() {
+    return importDialogModel;
+  }
+  
+  public boolean isValid() {
+    return importDialogModel.isValid();
+  }
 
-	@Bindable
-	public void removeLocalizedBundle() {
-		int[] selectedRows = localizedBundlesTree.getSelectedRows();
-		if (selectedRows.length == 1) {
-			importDialogModel.removeLocalizedBundle(selectedRows[0]);
-		}
-	}
-	
-	@Bindable
-	public void addLocalizedBundle() {
-	  FileUpload localizedBundleUpload = new FileUpload();
-	  localizedBundleUpload.setName("localeFiles");
-	  mainFormPanel.add(localizedBundleUpload);
-	  jsClickUpload(localizedBundleUpload.getElement());
-	}
+  @Bindable
+  public void setMetadataFile() {
+     jsClickUpload(metadataFileUpload.getElement().getId());
+  }
+  
+  @Bindable
+  public void removeLocalizedBundle() {
+    int[] selectedRows = localizedBundlesTree.getSelectedRows();
+    if (selectedRows.length == 1) {
+      propertiesFileImportPanel.remove(selectedRows[0]);
+      importDialogModel.removeLocalizedBundle(selectedRows[0]);
+    }
+  }
+  
+  @Bindable
+  public void addLocalizedBundle() {
+    final FileUpload localizedBundleUpload = new FileUpload();
+    localizedBundleUpload.setName("localeFiles");
+    localizedBundleUpload.getElement().setId("propertyFileUpload" + FILE_UPLOAD_SUFFIX++);
+    localizedBundleUpload.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        String fileName = ((FileUpload)event.getSource()).getFilename();
+        if (fileName == null || fileName.length()<1) {  // Trying to detect a cancel
+          propertiesFileImportPanel.remove(localizedBundleUpload);
+        } else {
+          importDialogModel.addLocalizedBundle(fileName, fileName);
+        }
+      }      
+    });
+    propertiesFileImportPanel.add(localizedBundleUpload);
+    jsClickUpload(localizedBundleUpload.getElement().getId());
+  }
 
-	native void jsClickUpload(Element uploadElement) /*-{
-	  uploadElement.click();
-	}-*/;
-	
-	private void reset() {
-		importDialogModel.removeAllLocalizedBundles();
-		acceptButton.setDisabled(true);
-		domainIdText.setValue("");
-	}
+  native void jsClickUpload(String uploadElement) /*-{
+    $doc.getElementById(uploadElement).click();
+  }-*/;
+  
+  private void reset() {
+    metaFileLocation.setValue(resBundle.getString("importDialog.SELECT_METAFILE_LABEL", "Browse for metadata file"));
+    importDialogModel.removeAllLocalizedBundles();
+    VerticalPanel gwtHiddenArea = (VerticalPanel)hiddenArea.getManagedObject();
+    if (formPanel != null && gwtHiddenArea.getWidgetIndex(formPanel) != -1) {
+      gwtHiddenArea.remove(formPanel);
+    }
+    acceptButton.setDisabled(true);
+    domainIdText.setValue("");
+  }
 
-	public void concreteUploadCallback(String fileName, String uploadedFile) {
-		importDialogModel.addLocalizedBundle(fileName, uploadedFile);
-	}
+  public void concreteUploadCallback(String fileName, String uploadedFile) {
+    importDialogModel.addLocalizedBundle(fileName, uploadedFile);
+  }
 
-	public void genericUploadCallback(String uploadedFile) {
-		importDialogModel.setUploadedFile(uploadedFile);
-		acceptButton.setDisabled(!isValid());
-	}
+  public void genericUploadCallback(String uploadedFile) {
+    importDialogModel.setUploadedFile(uploadedFile);
+    acceptButton.setDisabled(!isValid());
+  }
 
-	public void showDialog() {
-		reset();
-		importDialog.setTitle(resBundle.getString("importDialog.IMPORT_METADATA", "Import Metadata"));
-		fileLabel.setValue(resBundle.getString("importDialog.XMI_FILE", "XMI File") + ":");
-		super.showDialog();
-	}
+  public void showDialog() {
+    reset();
+    importDialog.setTitle(resBundle.getString("importDialog.IMPORT_METADATA", "Import Metadata"));
+    fileLabel.setValue(resBundle.getString("importDialog.XMI_FILE", "XMI File") + ":");
+    super.showDialog();
+    createWorkingForm();
+  }
 
-	public void setBindingFactory(final BindingFactory bf) {
-		this.bf = bf;
-	}
+  public void setBindingFactory(final BindingFactory bf) {
+    this.bf = bf;
+  }
 
-	public String getName() {
-		return "metadataImportDialogController";
-	}
-	
-    class DomainIdChangeListener implements PropertyChangeListener {
-		
-		public void propertyChange(PropertyChangeEvent evt) {
-	    formDomainIdText.setText(evt.getNewValue().toString());
-			importDialogModel.setDomainId(evt.getNewValue().toString());
-			acceptButton.setDisabled(!isValid());
-		}
-	}
+  public String getName() {
+    return "metadataImportDialogController";
+  }
+  
+  public FormPanel getFormPanel() {
+    return formPanel;
+  }
+  
+  class DomainIdChangeListener implements PropertyChangeListener {
+    public void propertyChange(PropertyChangeEvent evt) {
+      formDomainIdText.setText(evt.getNewValue().toString());
+      importDialogModel.setDomainId(evt.getNewValue().toString());
+      acceptButton.setDisabled(!isValid());
+    }
+  }
+
 }

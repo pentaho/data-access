@@ -98,4 +98,11 @@ public class GwtImportDialog implements IXulLoaderCallback {
 
 	public void overlayRemoved() {
 	}
+
+  /**
+   * @return
+   */
+  public MetadataImportDialogController getMetadataImportDialogController() {
+    return metadataImportDialogController;
+  }
 }
