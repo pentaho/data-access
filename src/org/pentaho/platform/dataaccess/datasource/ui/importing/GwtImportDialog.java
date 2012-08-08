@@ -93,16 +93,17 @@ public class GwtImportDialog implements IXulLoaderCallback {
 		importDialogController.show(1);
 	}
 
+  public MetadataImportDialogController getMetadataImportDialogController() {
+    return metadataImportDialogController;
+  }
+
+  public AnalysisImportDialogController getAnalysisImportDialogController() {
+    return analysisImportDialogController;
+  }
+
 	public void overlayLoaded() {
 	}
 
 	public void overlayRemoved() {
 	}
-
-  /**
-   * @return
-   */
-  public MetadataImportDialogController getMetadataImportDialogController() {
-    return metadataImportDialogController;
-  }
 }
