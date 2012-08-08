@@ -36,58 +36,101 @@ import com.google.gwt.user.client.Window;
 
 public class ImportDialogController extends AbstractXulEventHandler {
 
-  //	private XulFileUpload genericFileUpload;
-  //	private XulFileUpload concreteFileUpload;
-  private XulDeck importDeck;
+	private XulFileUpload genericFileUpload;
+//	private XulFileUpload concreteFileUpload;
+	private XulDeck importDeck;
+	private Map<Integer, IImportPerspective> importPerspectives;
+	private IImportPerspective activeImportPerspective;
 
-  private Map<Integer, IImportPerspective> importPerspectives;
+	public ImportDialogController() {
+		importPerspectives = new HashMap<Integer, IImportPerspective>();
+	}
 
-  private IImportPerspective activeImportPerspective;
+	public void init() {
+		importDeck = (XulDeck) document.getElementById("importDeck");
 
-  public ImportDialogController() {
-    importPerspectives = new HashMap<Integer, IImportPerspective>();
-  }
+		try {
+  		genericFileUpload = (XulFileUpload) document.getElementById("genericFileUpload");
+  		genericFileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
+		} catch (Exception e) {
+		  // Gobble this up if there isn't one in the document.
+		}
 
-  public void init() {
-    importDeck = (XulDeck) document.getElementById("importDeck");
-  }
+//		concreteFileUpload = (XulFileUpload) document.getElementById("concreteFileUpload");
+//		concreteFileUpload.addPropertyChangeListener(new FileUploadPropertyChangeListener());
+	}
 
-  public void addImportPerspective(int index, IImportPerspective importPerspective) {
-    importPerspectives.put(index, importPerspective);
-  }
+	public void addImportPerspective(int index, IImportPerspective importPerspective) {
+		importPerspectives.put(index, importPerspective);
+	}
 
-  public String getName() {
-    return "importDialogController";
-  }
+	public String getName() {
+		return "importDialogController";
+	}
 
-  public void show(int index) {
-    reset();
-    importDeck.setSelectedIndex(index);
-    activeImportPerspective = importPerspectives.get(index);
-    activeImportPerspective.showDialog();
-  }
+	public void show(int index) {
+		reset();
+		importDeck.setSelectedIndex(index);
+		activeImportPerspective = importPerspectives.get(index);
+		activeImportPerspective.showDialog();
+	}
 
-  private void reset() {
-    //		genericFileUpload.setSelectedFile("");
-    //		concreteFileUpload.setSelectedFile("");
-  }
+	private void reset() {
+	  if (genericFileUpload != null) {
+	    genericFileUpload.setSelectedFile("");
+	  }
+//		concreteFileUpload.setSelectedFile("");
+	}
 
-  @Bindable
-  public void uploadFailure(Throwable error) {
-    error.printStackTrace();
-    Window.alert(error.getMessage());
-  }
+	@Bindable
+	public void genericUploadSuccess(String uploadedFile) {
+		try {
+			activeImportPerspective.genericUploadCallback(uploadedFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-  @Bindable
-  public void closeDialog() {
-    activeImportPerspective.onDialogCancel();
-  }
+	@Bindable
+	public void concreteUploadSuccess(String uploadedFile) {
+//		try {
+//			String selectedFile = concreteFileUpload.getSeletedFile();
+//			activeImportPerspective.concreteUploadCallback(selectedFile, uploadedFile);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+	}
 
-  @Bindable
-  public void acceptDialog() {
-    if (activeImportPerspective.isValid()) {
-      activeImportPerspective.onDialogAccept();
-      closeDialog();
-    }
-  }
+	@Bindable
+	public void uploadFailure(Throwable error) {
+		error.printStackTrace();
+		Window.alert(error.getMessage());
+	}
+
+	@Bindable
+	public void closeDialog() {
+		activeImportPerspective.onDialogCancel();
+	}
+
+	@Bindable
+	public void acceptDialog() {
+		if (activeImportPerspective.isValid()) {
+			activeImportPerspective.onDialogAccept();
+			closeDialog();
+		}
+	}
+
+	class FileUploadPropertyChangeListener implements PropertyChangeListener {
+
+		public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+			XulFileUpload uploadControl = (XulFileUpload) propertyChangeEvent.getSource();
+			String value = uploadControl.getSeletedFile();
+			if (!StringUtils.isEmpty(value)) {
+				uploadControl.addParameter("file_name", uploadControl.getSeletedFile());
+				uploadControl.addParameter("mark_temporary", "true");
+				uploadControl.addParameter("unzip", "true");
+				uploadControl.submit();
+			}
+		}
+	}
 }

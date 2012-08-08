@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -64,6 +65,34 @@ public class MetadataDatasourceService {
 	    Pattern.compile("([^/]+)_(" + LANG_CC_EXT + ")\\.properties$"),
 	};
 
+	
+  /**
+   * @param domainId
+   * @param metadataFile
+   * @param metadataFileInfo
+   * @param localeFiles
+   * @param localeFilesInfo
+   * @return
+   * @throws PentahoAccessControlException
+   * 
+   * A convenience method stubs out to the importMetadataDatasource method so that imports can be called from
+   * a http form which requires a post.
+   */
+  @POST
+  @Path("/postimport")
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @Produces("text/html")
+  public Response importMetadataDatasourceWithPost( @FormDataParam("domainId") String domainId,
+                                            @FormDataParam("metadataFile") InputStream metadataFile,
+                                            @FormDataParam("metadataFile") FormDataContentDisposition metadataFileInfo,
+                                            @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
+                                            @FormDataParam("localeFiles") List<FormDataContentDisposition> localeFilesInfo)
+      throws PentahoAccessControlException {
+    importMetadataDatasource(domainId, metadataFile, metadataFileInfo, localeFiles, localeFilesInfo);
+    return Response.ok("SUCCESS").type(MediaType.TEXT_HTML).build();
+//    return importMetadataDatasource(domainId, metadataFile, metadataFileInfo, localeFiles, localeFilesInfo);
+  }
+	
   @PUT
 	@Path("/import")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
