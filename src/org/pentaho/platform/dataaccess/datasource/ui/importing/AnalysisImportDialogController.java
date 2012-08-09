@@ -31,7 +31,6 @@ import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.DatasourceAdminDialogController;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
-import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
@@ -51,15 +50,15 @@ import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
+import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -68,6 +67,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 @SuppressWarnings("all")
 public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements
@@ -107,11 +107,11 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private XulButton parametersAcceptButton;
 
-  private XulLabel fileLabel;
-
   private FileUpload analysisUpload;
 
   private XulLabel schemaNameLabel;
+
+  private XulLabel analysisFileLabel;
 
   private String importURL;
 
@@ -121,20 +121,21 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private static final Integer DATASOURCE_MODE = 0;
 
-  protected static final CharSequence SUCCESS = "3";//to do - chnage to Integer
+  protected static final String SUCCESS = "3";//to do - chnage to Integer
 
   protected static final int PUBLISH_SCHEMA_EXISTS_ERROR = 8;
 
   private static SubmitCompleteHandler submitHandler = null;
-   
-  private DatasourceAdminDialogController adminDialog = null;
-  
+
   private DatasourceMessages messages = null;
 
-  // GWT controls
+  private XulVbox hiddenArea;
+
   private FormPanel formPanel;
 
-  private FlowPanel hiddenFormSubmitPanel;
+  private FlowPanel mainFormPanel;
+
+  private FileUpload analysisFileUpload;
 
   public void init() {
     try {
@@ -152,9 +153,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       analysisPreferencesDeck = (XulDeck) document.getElementById("analysisPreferencesDeck");
       availableRadio = (XulRadio) document.getElementById("availableRadio");
       manualRadio = (XulRadio) document.getElementById("manualRadio");
-      fileLabel = (XulLabel) document.getElementById("fileLabel");
+      hiddenArea = (XulVbox) document.getElementById("analysisImportCard");
       schemaNameLabel = (XulLabel) document.getElementById("schemaNameLabel");
-       
+      analysisFileLabel = (XulLabel) document.getElementById("analysisFileLabel");
       acceptButton = (XulButton) document.getElementById("importDialog_accept");
       acceptButton.setDisabled(true);
 
@@ -168,44 +169,69 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       Binding connectionListBinding = bf.createBinding(importDialogModel, "connectionList", connectionList, "elements");
       Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters",
           analysisParametersTree, "elements");
-
-      createWorkingForm();
-      addSubmitHandler();
-  
       connectionListBinding.fireSourceChanged();
       analysisParametersBinding.fireSourceChanged();
+
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
   private void createWorkingForm() {
-    formPanel = new FormPanel();
-    formPanel.setMethod(FormPanel.METHOD_POST);
-    formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
+    if (formPanel == null) {
+      formPanel = new FormPanel();
+      formPanel.setMethod(FormPanel.METHOD_POST);
+      formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
+      formPanel.setAction(MONDRIAN_POSTANALYSIS_URL);
+      formPanel.getElement().getStyle().setProperty("position", "absolute");
+      formPanel.getElement().getStyle().setProperty("visibility", "hidden");
+      formPanel.getElement().getStyle().setProperty("overflow", "hidden");
+      formPanel.getElement().getStyle().setProperty("clip", "rect(0px,0px,0px,0px)");
+      mainFormPanel = new FlowPanel();
+      formPanel.add(mainFormPanel);
+      analysisFileUpload = new FileUpload();
+      analysisFileUpload.setName("uploadAnalysis");
+      analysisFileUpload.getElement().setId("analysisFileUpload");
+      analysisFileUpload.addChangeHandler(new ChangeHandler() {
+        @Override
+        public void onChange(ChangeEvent event) {
+          schemaNameLabel.setValue(((FileUpload) event.getSource()).getFilename());
+          importDialogModel.setUploadedFile(((FileUpload) event.getSource()).getFilename());
+          acceptButton.setDisabled(!isValid());
+        }
+      });
 
-    formPanel.setVisible(false);
+      mainFormPanel.add(analysisFileUpload);
 
-    analysisUpload = new FileUpload();
-    analysisUpload.setName("uploadAnalysis");
-    analysisUpload.setVisible(true);   
-    analysisUpload.setStyleName("gwt-FileUpload");
-    analysisUpload.addChangeHandler(new ChangeHandler() {
-      public void onChange(ChangeEvent event) {
-        setSelectedFile(analysisUpload.getFilename());
-        acceptButton.setDisabled(!isValid());
-      }
-    });
+      VerticalPanel vp = (VerticalPanel) hiddenArea.getManagedObject();
+      vp.add(formPanel);
+      //addSubmitHandler(); moved to GwtDataSourceEditorEntryPoint
+    }
+  }
+  /**
+   * Initialize this in the form init() 
+   * return values are numeric -
+   */
 
-    // Create a hidden panel so we can pass data source parameters
-    // as part of the form submit
-    hiddenFormSubmitPanel = new FlowPanel();
-    hiddenFormSubmitPanel.add(analysisUpload);
+  private void addSubmitHandler() {
 
-    formPanel.add(hiddenFormSubmitPanel);
+    if (submitHandler == null) {
+      formPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
+        @Override
+        public void onSubmit(SubmitEvent event) {
 
-    RootPanel.get().add(formPanel);
+        }
+      });
+      submitHandler = new FormPanel.SubmitCompleteHandler() {
 
+        @Override
+        public void onSubmitComplete(SubmitCompleteEvent event) {
+          handleFormPanelEvent(event);
+        }
+
+      };
+      formPanel.addSubmitCompleteHandler(submitHandler);
+    }
   }
 
   /**
@@ -215,12 +241,12 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
    */
   @Bindable
   public void setAnalysisFile() {
-    jsClickUpload(analysisUpload.getElement());
+    jsClickUpload(analysisFileUpload.getElement().getId());
   }
 
-  private native void jsClickUpload(Element uploadElement) /*-{
-                                                           uploadElement.click();
-                                                           }-*/;
+  native void jsClickUpload(String uploadElement) /*-{
+                                                  $doc.getElementById(uploadElement).click();
+                                                  }-*/;
 
   @Bindable
   public void setSelectedFile(String name) {
@@ -239,6 +265,14 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   private void reset() {
+    analysisFileLabel.setValue(resBundle.getString("importDialog.IMPORT_MONDRIAN", "Browse for analysis file"));
+
+    if (formPanel != null && RootPanel.get().getWidgetIndex(formPanel) != -1) {
+      RootPanel.get().remove(formPanel);
+    }
+    formPanel = null;
+    submitHandler = null;
+
     reloadConnections();
     importDialogModel.removeAllParameters();
     importDialogModel.setUploadedFile(null);
@@ -250,12 +284,12 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     removeHiddenPanels();
   }
 
-  private void removeHiddenPanels() {
+  public void removeHiddenPanels() {
     // Remove all previous hidden form parameters otherwise parameters
     // from a previous import would get included in current form submit
-    for (int i = 0; i < hiddenFormSubmitPanel.getWidgetCount(); i++) {
-      if (hiddenFormSubmitPanel.getWidget(i).getClass().equals(Hidden.class)) {
-        hiddenFormSubmitPanel.remove(hiddenFormSubmitPanel.getWidget(i));
+    for (int i = 0; mainFormPanel != null && i < mainFormPanel.getWidgetCount(); i++) {
+      if (mainFormPanel.getWidget(i).getClass().equals(Hidden.class)) {
+        mainFormPanel.remove(mainFormPanel.getWidget(i));
       }
     }
   }
@@ -278,69 +312,31 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   public boolean isValid() {
     return importDialogModel.isValid();
   }
+  
 
-  /**
-   * Called when the accept button is clicked.
-   */
-  @Bindable
-  public void onDialogAccept() {
-    removeHiddenPanels();
-    buildAndSetParameters();
-    formPanel.setAction(MONDRIAN_POSTANALYSIS_URL);
-    // Add an event handlers to the formPanel.    
-    //make sure this does not get registered twice for each accept       
-    formPanel.submit();    
-  }
-
-  /**
-   * Initialize this in the form init() 
-   * return values are numeric -
-   */
-
-  private void addSubmitHandler() {
-
-    if (submitHandler == null) {
-      formPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
-        @Override
-        public void onSubmit(SubmitEvent event) {
-
+  public void handleFormPanelEvent(SubmitCompleteEvent event) {
+    if (event.getResults().contains("SUCCESS") || event.getResults().contains("3")) {
+      showMessagebox(messages.getString("Mondrian.SUCCESS"),
+          "Mondrian Analysis File " + importDialogModel.getUploadedFile() + " has been uploaded");     
+    } else {
+      String message = event.getResults();
+      //message = message.substring(4, message.length() - 6);
+      if (message != null && !"".equals(message) && message.length() == 1) {
+        int code = new Integer(message).intValue();
+        if (code == PUBLISH_SCHEMA_EXISTS_ERROR && !overwrite) {//Existing FIle Dialog
+          overwriteFileDialog();
+        } else {
+          showMessagebox(messages.getString("Mondrian.ERROR"),
+              convertToNLSMessage(event.getResults(), importDialogModel.getUploadedFile()));
         }
-      });
-      submitHandler = new FormPanel.SubmitCompleteHandler() {
-
-        @Override
-        public void onSubmitComplete(SubmitCompleteEvent event) {
-          if (event.getResults().contains("SUCCESS") || event.getResults().contains("3")) {
-            showMessagebox("SUCCESS", "Mondrian Analysis File " + schemaNameLabel.getValue() + " has been uploaded");
-            refreshParentDialog();
-          } else {
-            String message = event.getResults();
-            //message = message.substring(4, message.length() - 6);
-            if (message != null && !"".equals(message) && message.length() == 1) {
-              int code = new Integer(message).intValue();
-              if (code == PUBLISH_SCHEMA_EXISTS_ERROR && !overwrite) {//Existing FIle Dialog
-                overwriteFileDialog();
-              } else {
-                showMessagebox("ERROR", convertToNLSMessage(event.getResults(),schemaNameLabel.getValue()));
-              }
-            } else {
-              showMessagebox("Server Error", convertToNLSMessage(event.getResults(), schemaNameLabel.getValue()));
-            }
-          }
-        }
-
-      };
-      formPanel.addSubmitCompleteHandler(submitHandler);
+      } else {
+        showMessagebox(messages.getString("Mondrian.SERVER_ERROR"),
+            convertToNLSMessage(event.getResults(), importDialogModel.getUploadedFile()));
+      }
     }
   }
 
-  private void refreshParentDialog() {
-    //send a message to the dialog parent to refresh the datasources
-    //this is what I want to do but this does not work -
-    if(this.adminDialog != null)
-      this.adminDialog.refreshDataSourceAfterInsert();
-  }
-
+ 
   /**
    * Convert to $NLS$
    * @param results
@@ -352,14 +348,14 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
         int PUBLISH_XMLA_CATALOG_EXISTS = 7;
         int PUBLISH_SCHEMA_EXISTS_ERROR = 8;
    */
-  private String convertToNLSMessage(String results,String fileName) {
+  public String convertToNLSMessage(String results, String fileName) {
     String msg = results;
     int code = new Integer(results).intValue();
     switch (code) {
       case 1:
-        msg =  messages.getString("Mondrian.ERROR_OO1_PUBLISH");
+        msg = messages.getString("Mondrian.ERROR_OO1_PUBLISH");
       case 2:
-         msg = messages.getString("Mondrian.ERROR_OO2_PUBLISH");
+        msg = messages.getString("Mondrian.ERROR_OO2_PUBLISH");
       case 5:
         msg = messages.getString("Mondrian.ERROR_OO5_USERNAME_PW");
       case 6:
@@ -369,13 +365,13 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       case 8:
         msg = messages.getString("Mondrian.ERROR_OO8_EXISTING_SCHEMA");
       default:
-        msg = messages.getString("Mondrian.General Error",results);
+        msg = messages.getString("Mondrian.General Error", results);
         break;
     }
-    return msg + " Mondrian File: "+fileName;
+    return msg + " Mondrian File: " + fileName;
   }
 
-  private void buildAndSetParameters() {
+  public void buildAndSetParameters() {
     // If user selects available data source, then pass the datasource as part of the parameters.
     // If user selects manual data source, pass in whatever parameters they specify even if it is empty.
     String parameters = importDialogModel.getParameters();
@@ -387,7 +383,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     // Parameters would contain either the data source from connectionList drop-down
     // or the parameters manually entered (even if list is empty)
     Hidden queryParameters = new Hidden("parameters", parameters);
-    hiddenFormSubmitPanel.add(queryParameters);
+    mainFormPanel.add(queryParameters);
+
   }
 
   // TODO - this method should be removed after it is removed by MetadataImportDialogController
@@ -456,8 +453,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     try {
       confirm = (XulConfirmBox) document.createElement("confirmbox");
     } catch (XulException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Window.alert(e.getMessage());
     }
     confirm.setTitle("Confirmation");
     confirm.setMessage(messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA"));
@@ -468,7 +464,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
         if (status == XulDialogCallback.Status.ACCEPT) {
           overwrite = true;
           removeHiddenPanels();
-          buildAndSetParameters();
+          buildAndSetParameters();          
           formPanel.submit();
         }
       }
@@ -488,8 +484,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   public void showDialog() {
     reset();
     importDialog.setTitle(resBundle.getString("importDialog.IMPORT_MONDRIAN", "Import Analysis"));
-    fileLabel.setValue(resBundle.getString("importDialog.MONDRIAN_FILE", "Mondrian File") + ":");
+    analysisFileLabel.setValue(resBundle.getString("importDialog.MONDRIAN_FILE", "Mondrian File") + ":");
     super.showDialog();
+    createWorkingForm();
   }
 
   public void setBindingFactory(final BindingFactory bf) {
@@ -540,17 +537,38 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       messagebox.setMessage(message);
       int option = messagebox.open();
     } catch (XulException e) {
-      MessageHandler.getInstance().showErrorDialog(e.getMessage());
+      Window.alert("Show MessabeBox " + e.getMessage());
     }
 
   }
 
-  public void setAdminDialogParent(DatasourceAdminDialogController adminDialog) {
-    this.adminDialog = adminDialog;
-    
-  }
-  public void setDatasourceMessages( DatasourceMessages datasourceMessages ) {
+  /**
+   * pass localized messages from Entry point initialization
+   * @param datasourceMessages
+   */
+  public void setDatasourceMessages(DatasourceMessages datasourceMessages) {
     this.messages = datasourceMessages;
   }
- 
+
+  /**
+   * allow the GWT Entry to call this panel for onSubmit call
+   * @return
+   */
+  public FormPanel getFormPanel() {
+    return formPanel;
+  }
+
+  /**
+   * helper method for dialog display
+   * @return
+   */
+  public String getFileName() {
+    return this.importDialogModel.getUploadedFile();
+  }
+
+  public void setOverwrite(boolean overwrite) {
+   this.overwrite = overwrite;
+    
+  }
+
 }

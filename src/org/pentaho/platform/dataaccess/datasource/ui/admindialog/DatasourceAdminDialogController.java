@@ -235,22 +235,6 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     this.dswService = dswService;
   }
 
-  public void refreshDataSourceAfterInsert(){
-    datasourceAdminDialogModel.setDatasourcesList(null);
-    manager.getIds(new XulServiceCallback<List<IDatasourceInfo>>() {
-
-      @Override
-      public void success(List<IDatasourceInfo> infoList) {       
-        datasourceAdminDialogModel.setDatasourcesList(infoList);
-        getDatasourceTypes();
-      }
-
-      @Override
-      public void error(String message, Throwable error) {
-        openErrorDialog("Error", message + error.getMessage());
-      }
-    });
-  }
   private void refreshDatasourceList() {
     datasourceAdminDialogModel.setDatasourcesList(null);
       manager.getIds(new XulServiceCallback<List<IDatasourceInfo>>() {
