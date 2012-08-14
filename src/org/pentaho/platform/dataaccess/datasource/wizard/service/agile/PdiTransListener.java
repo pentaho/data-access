@@ -72,4 +72,8 @@ public class PdiTransListener implements TransListener, Runnable {
   public void transIdle(Trans trans) {
 
   }
+
+  public void transStarted(Trans trans) {
+
+  }
 }
