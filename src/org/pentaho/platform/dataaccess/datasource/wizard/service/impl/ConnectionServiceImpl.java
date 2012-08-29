@@ -143,7 +143,8 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
 
     try {
-      datasourceMgmtSvc.createDatasource(convertFromConnection(connection));
+      IDatabaseConnection  conn = convertFromConnection(connection);
+      datasourceMgmtSvc.createDatasource(conn);
       return true;
     } catch (Exception e) {
       logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", connection //$NON-NLS-1$
@@ -259,6 +260,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       conn.setName(connection.getName());
       conn.setUsername(connection.getUsername());
       conn.setPassword(connection.getPassword());
+     
       return conn;
     } catch (ServiceException e) {
       throw new ConnectionServiceException(e);
@@ -289,6 +291,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       conn.setName(connection.getName());
       conn.setUsername(connection.getUsername());
       conn.setPassword(connection.getPassword());
+      conn.setId(connection.getId());
       String url = dialect.getURLWithExtraOptions(connection);
       conn.setUrl(url);
       if (connection.getDatabaseType().getShortName().equals("GENERIC")) { //$NON-NLS-1$

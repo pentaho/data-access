@@ -30,6 +30,7 @@ import org.pentaho.database.model.PartitionDatabaseMeta;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+@XmlRootElement
 public class Connection extends XulEventSourceAdapter implements IDatabaseConnection {
 
 	private static final long serialVersionUID = 5825649640767205332L;
