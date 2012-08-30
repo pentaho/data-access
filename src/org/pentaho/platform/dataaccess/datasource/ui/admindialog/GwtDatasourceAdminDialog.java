@@ -162,9 +162,5 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
     checkInitialized();
     datasourceAdminDialogController.showDialog();
   }
-  
-  public DatasourceAdminDialogController getDatasourceAdminDialogController() {
-    return datasourceAdminDialogController;
-  }
 
 }

@@ -37,6 +37,7 @@ import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.GwtDatasourceAdminDialog;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogController;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogModel;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.GwtImportDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogModel;
@@ -73,11 +74,13 @@ import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
+import org.pentaho.ui.xul.util.XulDialogCallback.Status;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
@@ -88,6 +91,8 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 */
 public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
+  private static final String OVERWRITE_8 = "8";
+  private static final String SUCCESS_3 = "3";
   private EmbeddedWizard wizard;
   // TODO: make this lazily loaded when the modelerMessages issue is fixed
   private ModelerDialog modeler;
@@ -279,7 +284,42 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     });
     confirm.open();
   }
+  /**
+   * used to handle the overwrite in repository message
+   * @param parentFormPanel
+   * @param message
+   * @param controller
+   */
+  public void overwriteFileDialog(final FormPanel parentFormPanel,String message,final AnalysisImportDialogController controller) {
+    //Experiment
+    XulConfirmBox confirm = null;
+    try {
+      confirm = (XulConfirmBox) wizard.getMainWizardContainer().getDocumentRoot().createElement("confirmbox");
+    } catch (XulException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+ 
+    confirm.setTitle("Confirmation");
+    confirm.setMessage(message);
+    confirm.setAcceptLabel("Ok");
+    confirm.setCancelLabel("Cancel");
+    confirm.addDialogCallback(new XulDialogCallback<String>() {
+      public void onClose(XulComponent component, Status status, String value) {
+        if (status == XulDialogCallback.Status.ACCEPT) {
+          controller.setOverwrite(true);
+          controller.removeHiddenPanels();
+          controller.buildAndSetParameters();          
+          parentFormPanel.submit();
+        }
+      }
 
+      public void onError(XulComponent component, Throwable err) {
+        return;
+      }
+    });
+    confirm.open();
+  }
 
   @SuppressWarnings("unused")
   private void addGlassPaneListener(JavaScriptObject obj) {
@@ -573,7 +613,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 		        }
 
 		        public void onDialogAccept(final MetadataImportDialogModel importDialogModel) {
-		          FormPanel metaDataFormPanel = importDialog.getMetadataImportDialogController().getFormPanel();
+		          final FormPanel metaDataFormPanel = importDialog.getMetadataImportDialogController().getFormPanel();
               metaDataFormPanel.removeFromParent();
               RootPanel.get().add(metaDataFormPanel);
 		          metaDataFormPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
@@ -584,6 +624,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
                   if (!results.contains("SUCCESS")) {
                     listener.onDialogError(results);
                   }
+                  metaDataFormPanel.removeFromParent();
                   listener.onDialogAccept(null);
                 }
                 
@@ -658,23 +699,32 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 	        }
 
 	        public void onDialogAccept(final AnalysisImportDialogModel importDialogModel) {
-
-	       AnalysisDatasourceServiceGwtImpl service = new AnalysisDatasourceServiceGwtImpl();
-	    
-	       service.importAnalysisDatasource(importDialogModel.getUploadedFile(), 
-	           importDialogModel.getConnection().getName(), importDialogModel.getParameters(), new XulServiceCallback<String>() {
-
+	          final AnalysisImportDialogController controller = importDialog.getAnalysisImportDialogController();
+	          final FormPanel analysisDataFormPanel = controller.getFormPanel();
+	          controller.removeHiddenPanels();
+	          controller.buildAndSetParameters();
+	          analysisDataFormPanel.removeFromParent();
+	          RootPanel.get().add(analysisDataFormPanel);
+	          analysisDataFormPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+	             
 	              @Override
-	              public void success(String retVal) {
-	            	  listener.onDialogAccept(retVal);
-	              }
-
-	              @Override
-	              public void error(String message, Throwable error) {
-	            	  listener.onDialogError(message);
-	              }
+                public void onSubmitComplete(SubmitCompleteEvent event) {
+	                String results = event.getResults();
+	                String message = controller.convertToNLSMessage(results, controller.getFileName());
+                  
+                  if (!SUCCESS_3.equals(results)) {
+                    if(OVERWRITE_8.equals(results)){
+                      overwriteFileDialog(analysisDataFormPanel,message,controller);
+                    } else {
+                      listener.onDialogError(message);
+                    }
+                  } else {
+                    analysisDataFormPanel.removeFromParent();
+                    listener.onDialogAccept(null);
+                  }
+                }                
 	            });
-	      
+	          analysisDataFormPanel.submit();
 	        }
 	        
 	        public void onDialogReady() {
@@ -696,12 +746,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   
      if(importDialog == null){
          importDialog = new GwtImportDialog(constructorListener);
-      } else {
+     } else {
          importDialog.showAnalysisImportDialog(importDialoglistener);
-        
      }
-     if(importDialog!= null && adminDialog != null)
-       importDialog.getAnalysisImportDialogController().setAdminDialogParent(adminDialog.getDatasourceAdminDialogController());
   }
 
   

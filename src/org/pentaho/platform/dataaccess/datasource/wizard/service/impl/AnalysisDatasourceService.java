@@ -248,10 +248,14 @@ public class AnalysisDatasourceService {
     if(domainId == null || "".equals(domainId)){
       if(fileName.contains(".")){
         domainId = fileName.substring(0, fileName.indexOf("."));
-      } else {
-        domainId = fileName;
+      } else {       
+          domainId = fileName;       
       }
-    } 
+    } else{
+      if(domainId.contains(".")){
+        domainId =  domainId.substring(0, domainId.indexOf("."));
+      } 
+    }
     return domainId;
   }
   /**
