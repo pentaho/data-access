@@ -225,5 +225,11 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 		public JoinTableModel targetToSource(List value) {
 			return null;
 		}
-	}	
+	}
+
+  @Override
+  public void refresh() {
+    // TODO Auto-generated method stub
+    
+  }	
 }

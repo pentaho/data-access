@@ -201,6 +201,8 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
       database.connect();
 
       String query = databaseMeta.getSQLQueryFields(table);
+      // Setting the query limit to 1 before executing the query
+      database.setQueryLimit(1);
       database.getRows(query, 1);
       String[] tableFields = database.getReturnRowMeta().getFieldNames();
 

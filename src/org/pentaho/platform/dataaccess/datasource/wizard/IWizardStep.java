@@ -114,4 +114,6 @@ public interface IWizardStep extends XulEventHandler, XulEventSource {
   public boolean isDisabled();
   
   void deactivate();
+  
+  void refresh();
 }
