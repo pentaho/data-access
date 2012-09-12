@@ -315,7 +315,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     this.connectionService = service;
     if(connectionController != null){
       connectionController.setService(service);
-      connectionController.reloadConnections();
+      //connectionController.reloadConnections();
     }
   }
 
