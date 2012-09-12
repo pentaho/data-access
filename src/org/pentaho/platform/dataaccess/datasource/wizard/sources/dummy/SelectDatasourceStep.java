@@ -95,6 +95,7 @@ public class SelectDatasourceStep extends AbstractWizardStep {
     this.datasource.addPropertyChangeListener(finishableListener);
 
     this.datasourceDeck.setSelectedIndex(datasourceDeck.getChildNodes().indexOf(datasource.getSteps().get(0).getUIComponent()));
+    datasource.getSteps().get(0).refresh();
     firePropertyChange("valid", !isValid(), isValid());
   }
 
@@ -157,6 +158,12 @@ public class SelectDatasourceStep extends AbstractWizardStep {
     } else {
       return superReturn;
     }
+  }
+
+  @Override
+  public void refresh() {
+    // TODO Auto-generated method stub
+    
   }
 
 }

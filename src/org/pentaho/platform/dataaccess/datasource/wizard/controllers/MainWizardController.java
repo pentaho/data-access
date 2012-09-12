@@ -164,6 +164,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       // update the controller panel
       final XulDeck deck = (XulDeck) document.getElementById(CONTENT_DECK_ELEMENT_ID);
       deck.setSelectedIndex(deck.getChildNodes().indexOf(activatingWizardStep.getUIComponent()));
+      activatingWizardStep.refresh();
 
       if (activeStep > oldActiveStep) {
         activatingWizardStep.stepActivatingForward();
@@ -208,7 +209,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
 
     Binding datasourceBinding = bf.createBinding(wizardModel, "datasources", datatypeMenuList, "elements");
-    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
+    bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(datatypeMenuList, "selectedItem", wizardModel, "selectedDatasource");
 
 

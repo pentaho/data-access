@@ -352,4 +352,10 @@ public class CsvPhysicalStep extends AbstractWizardStep {
     CsvFileInfo fileInfo = datasourceModel.getModelInfo().getFileInfo();
     csvTextPreview.setValue(fileInfo.formatSampleContents());
   }
+
+  @Override
+  public void refresh() {
+    // TODO Auto-generated method stub
+    
+  }
 }

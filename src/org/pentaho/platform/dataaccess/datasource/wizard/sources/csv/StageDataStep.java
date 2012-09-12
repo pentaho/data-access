@@ -330,5 +330,11 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
     successLabel.setValue(message);
     successDialog.show();
   }
+
+  @Override
+  public void refresh() {
+    // TODO Auto-generated method stub
+    
+  }
   
 }
