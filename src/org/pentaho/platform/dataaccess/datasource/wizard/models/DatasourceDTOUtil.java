@@ -12,7 +12,9 @@ public class DatasourceDTOUtil {
     dto.setCsvModelInfo(model.getModelInfo());
     dto.setDatasourceType(model.getDatasourceType());
     dto.setQuery(model.getQuery());
-    dto.setConnectionName(model.getSelectedRelationalConnection().getName());
+    if(model.getSelectedRelationalConnection() != null){
+    	dto.setConnectionName(model.getSelectedRelationalConnection().getName());
+    }
     return dto;
   }
 
