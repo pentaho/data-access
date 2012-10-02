@@ -22,8 +22,12 @@
 
   <!-- Geography settings -->
   <geo>
-    <roles>continent, country, state, city, postal_code</roles>
+    <roles>territory, continent, country, state, city, postal_code</roles>
     <dimension-name>Geography</dimension-name>
+
+    <territory>
+      <aliases>territory</aliases>
+    </territory>
 
     <continent>
       <aliases>continent</aliases>
