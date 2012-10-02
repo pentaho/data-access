@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
   <!-- roles with data access permissions -->
-  <data-access-roles>TenantAdmin</data-access-roles>
+  <data-access-roles>Admin</data-access-roles>
   <!-- users with data access permissions -->
   <!--
   <data-access-users></data-access-users>
    -->
   <!-- roles with datasource view permissions -->
-  <data-access-view-roles>Authenticated,TenantAdmin</data-access-view-roles>
+  <data-access-view-roles>Authenticated,Admin</data-access-view-roles>
   <!-- users with datasource view permissions -->
   <data-access-view-users>suzy</data-access-view-users>
   <!-- default view acls for user or role -->
@@ -22,8 +22,12 @@
 
   <!-- Geography settings -->
   <geo>
-    <roles>continent, country, state, city, postal_code</roles>
+    <roles>territory, continent, country, state, city, postal_code</roles>
     <dimension-name>Geography</dimension-name>
+
+    <territory>
+      <aliases>territory</aliases>
+    </territory>
 
     <continent>
       <aliases>continent</aliases>
