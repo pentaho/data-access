@@ -159,10 +159,12 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     dialog.hide();
     datasourceModel.clearModel();
     wizardController.setActiveStep(0);
+    wizardController.resetSelectedDatasource();
   }
 
   @Override
   public void onFinish(final IDatasourceSummary summary) {
+    wizardController.resetSelectedDatasource();
     this.summary = summary;
     if(wizardModel.isEditing() && summary.getErrorCount() == 0){
       // biserver-6210 - manage modeler dialog listener separate from the wizard's listener

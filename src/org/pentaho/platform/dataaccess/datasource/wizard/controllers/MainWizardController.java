@@ -36,6 +36,8 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import com.google.gwt.user.client.Window;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
@@ -253,6 +255,10 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     }
 
 
+  }
+  
+  public void resetSelectedDatasource() {
+	  datatypeMenuList.setSelectedIndex(0);
   }
 
   @Bindable
