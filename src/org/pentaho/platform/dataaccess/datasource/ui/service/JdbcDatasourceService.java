@@ -56,7 +56,7 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
   }
 
   @Override
-  public String getEditUI() {
+  public String getEditUI(IDatasourceInfo dsInfo) {
     return editUI;
   }
   

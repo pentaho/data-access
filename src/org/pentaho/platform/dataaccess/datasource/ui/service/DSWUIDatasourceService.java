@@ -63,7 +63,7 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
   }
 
   @Override
-  public String getEditUI() {
+  public String getEditUI(IDatasourceInfo dsInfo) {
     return editUI;
   }
 
