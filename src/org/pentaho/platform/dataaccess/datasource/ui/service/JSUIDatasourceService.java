@@ -39,19 +39,20 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
   }
 
   @Override
-  public final String getEditUI() {
-    return getDelegateEditUI(this.datasourceServiceObject);
+  public final String getEditUI(IDatasourceInfo dsInfo) {
+    return getDelegateEditUI(this.datasourceServiceObject, dsInfo.getId());
   }
   
   @Override
   public final void export(IDatasourceInfo dsInfo) {
-    getDelegateExport(this.datasourceServiceObject);
+    getDelegateExport(this.datasourceServiceObject, dsInfo.getId());
     
   }
 
   @Override
   public final void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
-    getDelegateRemove(this.datasourceServiceObject);
+    XulServiceCallbackJavascriptObject xulServiceCallbackJsObject = new XulServiceCallbackJavascriptObject(callback);
+    getDelegateRemove(this.datasourceServiceObject, dsInfo.getId(), xulServiceCallbackJsObject.getJavascriptObject());
   }
 
 
@@ -62,21 +63,20 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
     return datasourceServiceObject.getNewUI();
   }-*/;
 
-  private final native String getDelegateEditUI(JavaScriptObject datasourceServiceObject) /*-{
-    return datasourceServiceObject.getEditUI();
+  private final native String getDelegateEditUI(JavaScriptObject datasourceServiceObject, String id) /*-{
+    return datasourceServiceObject.getEditUI(id);
   }-*/;
   
   private final native String getDelegateType(JavaScriptObject datasourceServiceObject) /*-{
     return datasourceServiceObject.getType();
   }-*/;
   
-  private final native String getDelegateExport(JavaScriptObject datasourceServiceObject) /*-{
-    return datasourceServiceObject.doExport();
+  private final native String getDelegateExport(JavaScriptObject datasourceServiceObject, String id) /*-{
+    return datasourceServiceObject.doExport(id);
   }-*/;
 
-  private final native String getDelegateRemove(JavaScriptObject datasourceServiceObject) /*-{
-    return datasourceServiceObject.doRemove();
+  private final native String getDelegateRemove(JavaScriptObject datasourceServiceObject, String id, JavaScriptObject callback) /*-{
+    return datasourceServiceObject.doRemove(id, callback);
   }-*/;
-  
-  
+
 }
