@@ -283,6 +283,5 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		this.connection = connection;
 		this.joinGuiModel.reset();
 		this.joinDefinitionsStep.resetComponents();
-		this.tablesSelectionStep.retrieveSchemas(connection);
 	}
 }
