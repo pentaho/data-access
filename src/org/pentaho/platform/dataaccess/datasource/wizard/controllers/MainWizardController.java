@@ -36,6 +36,8 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import com.google.gwt.user.client.Window;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
@@ -164,6 +166,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       // update the controller panel
       final XulDeck deck = (XulDeck) document.getElementById(CONTENT_DECK_ELEMENT_ID);
       deck.setSelectedIndex(deck.getChildNodes().indexOf(activatingWizardStep.getUIComponent()));
+      activatingWizardStep.refresh();
 
       if (activeStep > oldActiveStep) {
         activatingWizardStep.stepActivatingForward();
@@ -208,7 +211,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
 
     Binding datasourceBinding = bf.createBinding(wizardModel, "datasources", datatypeMenuList, "elements");
-    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
+    bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(datatypeMenuList, "selectedItem", wizardModel, "selectedDatasource");
 
 
@@ -252,6 +255,10 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     }
 
 
+  }
+  
+  public void resetSelectedDatasource() {
+	  datatypeMenuList.setSelectedIndex(0);
   }
 
   @Bindable

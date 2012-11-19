@@ -114,7 +114,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     databaseConnectionController = new ConnectionController();
     databaseConnectionController.setDatasourceModel(datasourceModel);
     databaseConnectionController.setService(connectionService);
-    databaseConnectionController.reloadConnections();
+    //databaseConnectionController.reloadConnections();
 
     WizardRelationalDatasourceController relationalDatasourceController = new WizardRelationalDatasourceController();
 
@@ -268,5 +268,10 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     Object prevVal = this.connection == null ? new Object() : null;
     this.connection = connection;
     firePropertyChange("connection", prevVal, connection);
+  }
+
+  @Override
+  public void refresh() {
+    reloadConnections();
   }
 }

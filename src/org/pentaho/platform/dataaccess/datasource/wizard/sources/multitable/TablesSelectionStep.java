@@ -292,4 +292,21 @@ public class TablesSelectionStep extends AbstractWizardStep {
 			}
 		}
 	}
+
+  @Override
+  public void refresh() {
+    Connection connection = ((MultiTableDatasource) parentDatasource).getConnection();
+    joinSelectionServiceGwtImpl.retrieveSchemas(connection, new XulServiceCallback<List>() {
+      public void error(String message, Throwable error) {
+        error.printStackTrace();
+      }
+
+      public void success(List schemaValues) {
+        schemas.removePropertyChangeListener(schemaSelection);
+        joinGuiModel.setSchemas(schemaValues);
+        schemas.addPropertyChangeListener(schemaSelection);
+        fetchTables();
+      }
+    });
+  }
 }
