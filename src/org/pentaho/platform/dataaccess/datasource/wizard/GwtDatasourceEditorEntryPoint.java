@@ -376,7 +376,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
       public void onDialogReady() {
         if(callback != null) {
-          notifyCallbackCancel(callback);
+          notifyCallbackReady(callback);
         }
       }
       @Override
@@ -444,7 +444,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
       public void onDialogReady() {
         if(callback != null) {
-          notifyCallbackCancel(callback);
+          notifyCallbackReady(callback);
         }
       }
       @Override
