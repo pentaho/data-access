@@ -448,7 +448,11 @@ public class ConnectionController extends AbstractXulEventHandler {
         }
 
         public void success(List<Connection> connections) {
-          datasourceModel.getGuiStateModel().setConnections(connections);
+          if(datasourceModel != null) {
+        	  if(datasourceModel.getGuiStateModel() != null) {
+        		  datasourceModel.getGuiStateModel().setConnections(connections);
+        	  }
+          }
         }
 
       });
