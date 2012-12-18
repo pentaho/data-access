@@ -44,7 +44,7 @@ public  class ConnectionServiceHelper {
   public static String getConnectionPassword(String connectionName, String password) throws ConnectionServiceException {
     try {
       IDatabaseConnection datasource = datasourceMgmtSvc.getDatasourceByName(connectionName);
-      if (datasource != null && !hasPasswordChanged(password)) {
+      if (datasource != null  && !hasPasswordChanged(password)) {
         return datasource.getPassword();
       } else {
         return password;
@@ -58,7 +58,10 @@ public  class ConnectionServiceHelper {
   }
   
   private static boolean hasPasswordChanged(String password) {
-    if (password != null && password.length() > 0) {
+    if (password != null) {
+      if (password.length() < 1) { // empty password change
+        return true;
+      }
       for (char character : password.toCharArray()) {
         if (character != PASSWORD_REPLACE_CHAR) {
           return true;
