@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.tree.DefaultElement;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
@@ -182,7 +183,9 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     try {
       // first load the model
       Domain domain = metadataDomainRepository.getDomain(domainId);
-      LogicalModel logicalModel = domain.getLogicalModels().get(0);
+      ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+      model.setDomain(domain);
+      LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
       String modelState = (String) logicalModel.getProperty("datasourceModel");
     	
       // if CSV, drop the staged table
