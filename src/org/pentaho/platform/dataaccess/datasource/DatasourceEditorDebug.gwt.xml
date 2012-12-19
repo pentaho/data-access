@@ -36,7 +36,7 @@ This module serves as the Debuging environment and default implementation for in
         <exclude name="**/ModelSerializer*"/>
         <exclude name="**/CWMStartup*"/>
         <exclude name="**/ConnectionDebugGwtServlet*"/>
-        <exclude name="**/DatasourceDebugGwtServlet*"/>
+        <!--<exclude name="**/DatasourceDebugGwtServlet*"/>-->
         <exclude name="**/SwingDatasourceEditor*"/>
         <exclude name="**/SwingDatasourceSelectionDialog*"/>
         <exclude name="**/ConnectionServiceImpl*"/>
@@ -63,6 +63,7 @@ This module serves as the Debuging environment and default implementation for in
         <exclude name="**/ConnectionServiceHelper*"/>
         <exclude name="**/DatasourceServiceHelper*"/>
     	<exclude name="**/DataAccessDatabaseConnectionService*"/>
+    	<exclude name="**/DataAccessDatabaseDialectService*"/>
         <exclude name="**/Messages*"/>
         <exclude name="**/service/agile/*"/>
         <exclude name="**/service/impl/utils/*"/>
@@ -88,7 +89,7 @@ This module serves as the Debuging environment and default implementation for in
    <stylesheet src="datasourceEditorDialog.css"/>
    <stylesheet src="datasourceAdminDialog.css"/>
    <public path="wizard/public"/>
-    <entry-point class="org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint"/>
+    <entry-point class="org.pentaho.platform.dataaccess.datasource.wizard.debug.DebugGwtDatasourceEditorEntryPoint"/>
    <!--
   <servlet path="/databaseConnectionService" class="org.pentaho.ui.database.gwt.GwtDatabaseConnectionServlet" />
   <servlet path="/ConnectionService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet" />
