@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="gwt" name="GWT">
+      <configuration>
+        <setting name="compilerMaxHeapSize" value="256" />
+        <setting name="gwtScriptOutputStyle" value="DETAILED" />
+        <setting name="gwtSdkUrl" value="file://$USER_HOME$/jars/gwt-2.4.0" />
+        <setting name="webFacet" value="Web" />
+        <packaging>
+          <module name="org.pentaho.platform.dataaccess.datasource.DatasourceEditorDebug" enabled="false" />
+          <module name="org.pentaho.platform.dataaccess.datasource.DatasourceEditorModule" enabled="false" />
+        </packaging>
+      </configuration>
+    </facet>
+    <facet type="web" name="Web">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/web2/WEB-INF/web.xml" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/war" relative="/" />
+        </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/src" />
+        </sourceRoots>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -10,26 +37,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="api" />
-    <orderEntry type="module" module-name="core" />
-    <orderEntry type="module" module-name="extensions" />
-    <orderEntry type="module" module-name="repository" />
-    <orderEntry type="module" module-name="scheduler" />
-    <orderEntry type="module-library" scope="TEST">
-      <library name="test-lib">
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/test-lib" />
-          <root url="file://$MODULE_DIR$/test-lib" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/test-lib" />
-          <root url="file://$MODULE_DIR$/test-lib" />
-        </SOURCES>
-        <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" type="SOURCES" />
-      </library>
-    </orderEntry>
+    <orderEntry type="module" module-name="pentaho-xul-gwt" />
+    <orderEntry type="module" module-name="pentaho-modeler" />
     <orderEntry type="module-library">
       <library name="lib">
         <CLASSES>
@@ -45,6 +54,22 @@
         <jarDirectory url="file://$MODULE_DIR$/war/WEB-INF/lib" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library name="test-lib">
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/test-lib" />
+          <root url="file://$MODULE_DIR$/test-lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/test-lib" />
+          <root url="file://$MODULE_DIR$/test-lib" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="gwt-user" level="project" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
