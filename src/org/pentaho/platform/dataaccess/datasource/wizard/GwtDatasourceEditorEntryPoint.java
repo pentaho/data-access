@@ -117,15 +117,22 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
   private GwtXulAsyncDatabaseDialectService dialectService = new GwtXulAsyncDatabaseDialectService();
 
+  private IServiceFactory serviceFactory = new ServiceFactory();
+
+  protected IServiceFactory getServiceFactory() {
+    return serviceFactory;
+  }
+
   public void onModuleLoad() {
-    datasourceServiceManager = new DatasourceServiceManagerGwtImpl();
+    datasourceServiceManager = getServiceFactory().createDatasourceServiceManager();
     datasourceServiceManager.isAdmin(new XulServiceCallback<Boolean>() {
       public void error(String message, Throwable error) {
+
       }
       public void success(Boolean retVal) {
         isAdmin = retVal;
-        datasourceService = new DSWDatasourceServiceGwtImpl();
-        modelerService = new GwtModelerServiceImpl();
+        datasourceService = getServiceFactory().createDatasourceService();
+        modelerService = getServiceFactory().createModelerService();
         BogoPojo bogo = new BogoPojo();
         modelerService.gwtWorkaround(bogo, new XulServiceCallback<BogoPojo>(){
           public void success(BogoPojo retVal) {
@@ -177,7 +184,12 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     manager.registerService(new MondrianUIDatasourceService(datasourceServiceManager));
     manager.registerService(new MetadataUIDatasourceService(datasourceServiceManager));
     manager.registerService(new DSWUIDatasourceService(datasourceServiceManager));
-    manager.getIds(null);
+
+    try {
+      manager.getIds(null);
+    } catch (NullPointerException npe) {
+      // when in debug mode, there are no dbs
+    }
     
   }
   private native static void loadOverlay( String overlayId) /*-{
@@ -453,6 +465,8 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
     };
 
+    showWizardEdit(domainId, modelId, perspective, relationalOnlyValid, listener);
+
   }
 
 
@@ -637,7 +651,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
 		        @Override
 		        public void onDialogError(String errorMessage) {
-		        	listener.onDialogError(errorMessage);		          
+		        	listener.onDialogError(errorMessage);
 		        }
 		      };
 		  
