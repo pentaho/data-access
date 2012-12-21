@@ -29,7 +29,7 @@
         <exclude name="**/ModelSerializer*"/>
         <exclude name="**/CWMStartup*"/>
         <exclude name="**/ConnectionDebugGwtServlet*"/>
-        <exclude name="**/DatasourceDebugGwtServlet*"/>
+        <!--<exclude name="**/DatasourceDebugGwtServlet*"/>-->
         <exclude name="**/SwingDatasourceEditor*"/>
         <exclude name="**/SwingDatasourceSelectionDialog*"/>
         <exclude name="**/ConnectionServiceImpl*"/>
@@ -82,7 +82,7 @@
   <stylesheet src="datasourceEditorDialog.css"/>
   <stylesheet src="datasourceAdminDialog.css"/>
   <public path="wizard/public"/>
-  <servlet path="/ConnectionService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet" />
-  <servlet path="/DatasourceService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.DatasourceDebugGwtServlet" />
-  <servlet path="/UploadService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.UploadFileDebugServlet" />
+  <!--<servlet path="/ConnectionService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet" />-->
+  <!--<servlet path="/DatasourceService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.DSWDatasourceDebugGwtServlet" />-->
+  <!--<servlet path="/UploadService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.UploadFileDebugServlet" />-->
 </module>
