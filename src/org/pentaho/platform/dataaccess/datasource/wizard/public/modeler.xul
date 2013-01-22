@@ -254,6 +254,7 @@
       <hbox flex="1">
         <checkbox id="is_time_dimension" />
         <label value="${is_time_dimension}" />
+        <spacer flex="1"/>
       </hbox>
     </groupbox>
           </vbox>
@@ -396,6 +397,7 @@
       <hbox flex="1">
         <checkbox id="has_unique_members" />
         <label value="${has_unique_members}" />
+        <spacer flex="1"/>
       </hbox>
 
       <label value="${source_column}:" flex="1"/>
