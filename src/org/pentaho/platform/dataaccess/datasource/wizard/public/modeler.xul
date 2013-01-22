@@ -254,6 +254,7 @@
       <hbox flex="1">
         <checkbox id="is_time_dimension" />
         <label value="${is_time_dimension}" />
+        <spacer flex="1"/>
       </hbox>
     </groupbox>
           </vbox>
@@ -396,6 +397,7 @@
       <hbox flex="1">
         <checkbox id="has_unique_members" />
         <label value="${has_unique_members}" />
+        <spacer flex="1"/>
       </hbox>
 
       <label value="${source_column}:" flex="1"/>
@@ -454,16 +456,17 @@
           <label id="time_level_format_label" value="${time_format}:"/>
           <button
             image="images/help_link2.png"
-            onclick="modeler.showHelp('${time_format_help_url}')"
+            tooltiptext="View data formatting documentation in Pentaho Infocenter."
           />
         </hbox>
         <menulist id="time_level_format" editable="true">
           <menupopup>
-            <menuitem label="[yyyy]"/>
-            <menuitem label="[yyyy].[q]"/>
-            <menuitem label="[yyyy].[q].[M]"/>
-            <menuitem label="[yyyy].[q].[M].[w]"/>
-            <menuitem label="[yyyy].[q].[M].[w].[yyyy-MM-dd]"/>
+            <menuitem label=""/>
+            <menuitem label="yyyy"/>
+            <menuitem label="q"/>
+            <menuitem label="M"/>
+            <menuitem label="w"/>
+            <menuitem label="yyyy-MM-dd"/>
           </menupopup>
         </menulist>
       </vbox>
