@@ -183,6 +183,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     IModelerWorkspaceHelper workspacehelper = model.getWorkspaceHelper();
 
     controller = new ModelerController(model);
+    controller.setUriHandler(new GwtUriHandler());
     controller.setWorkspaceHelper(workspacehelper);
 //    controller.setMessages(messages);
     final BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
