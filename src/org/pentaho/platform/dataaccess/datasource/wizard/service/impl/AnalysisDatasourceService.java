@@ -296,7 +296,7 @@ public class AnalysisDatasourceService {
         .input(dataInputStream)
         .charSet(UTF_8).hidden(false)
         .name(domainId)
-        .overwrite(overWriteInRepository)
+        .overwriteFile(overWriteInRepository)
         .mime(MONDRIAN_MIME_TYPE)
         .withParam(PARAMETERS, parameters)        
         .withParam(DOMAIN_ID, domainId);
