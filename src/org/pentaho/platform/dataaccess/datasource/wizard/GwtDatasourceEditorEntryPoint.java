@@ -36,6 +36,7 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
+import org.pentaho.platform.dataaccess.datasource.modeler.GwtUriHandler;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.GwtDatasourceAdminDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogController;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogModel;
@@ -116,6 +117,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private Timer timer;
   private GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
   private GwtXulAsyncDatabaseDialectService dialectService = new GwtXulAsyncDatabaseDialectService();
+  private GwtUriHandler uriHandler = new GwtUriHandler();
 
   private IServiceFactory serviceFactory = new ServiceFactory();
 
@@ -420,7 +422,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
           modelerPerspective = ModelerPerspective.valueOf(modelPerspective);
         } catch (IllegalArgumentException e) {
           modelerPerspective = ModelerPerspective.REPORTING;
-  }
+        }
         dialog.addDialogListener(listener);
         dialog.showDialog(domainId, modelId, modelerPerspective);
       }

@@ -181,14 +181,25 @@ public class DatasourceWebServicesSecurityTest {
 		logout();
 	}
 	
+	/*
+	 * RPB: Removed this test. It does not seem to test anything particular that has to do with the data access plugin.
 	@Test
 	public void testRepositoryImportResource() throws Exception {
 		login("joe", "duff", false);
 		RepositoryImportResource repositoryImportResource = new RepositoryImportResource();
-		Response res = repositoryImportResource.doPostImport(null, null, null);
+		Response res = repositoryImportResource.doPostImport(
+		  (String)null, 
+		  (InputStream)null, 
+		  (String)null, 
+		  (String)null, 
+		  (String)null, 
+		  (String)null, 
+		  (FormDataContentDisposition)null
+		);
 		Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
 		logout();
 	}
+	*/
 
 	protected void login(final String username, final String tenantId, final boolean tenantAdmin) {
 		StandaloneSession pentahoSession = new StandaloneSession(username);
