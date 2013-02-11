@@ -28,11 +28,8 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
@@ -43,10 +40,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.io.IOUtils;
+import mondrian.olap.Util.PropertyList;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,9 +53,6 @@ import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
@@ -134,7 +127,7 @@ public class AnalysisDatasourceService {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
   public Response putMondrianSchema(     
-      @FormDataParam(UPLOAD_ANALYSIS) InputStream orgDataInputStream, 
+      @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream, 
       @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo, 
       @FormDataParam(CATALOG_NAME) String catalogName, //Optional
       @FormDataParam(DATASOURCE_NAME) String datasourceName, //Optional
@@ -144,8 +137,6 @@ public class AnalysisDatasourceService {
     Response response = null;
     String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
     try {
-    	ByteArrayInputStream dataInputStream = new ByteArrayInputStream(IOUtils.toByteArray(orgDataInputStream));
-      dataInputStream.mark(Integer.MAX_VALUE);
       validateAccess();
       String fileName = schemaFileInfo.getFileName();
       processMondrianImport(dataInputStream, catalogName, overwrite, xmlaEnabledFlag, parameters, fileName);
@@ -240,7 +231,7 @@ public class AnalysisDatasourceService {
     
     boolean overWriteInRepository = "True".equalsIgnoreCase(getValue(parameters, OVERWRITE_IN_REPOS)) ? true : false;
     String xmlaEnabled = "True".equals(getValue(parameters, "xmlaEnabled"))?"true":"false";
-    String domainId = determineDomainCatalogName(dataInputStream, parameters, catalogName, fileName);
+    String domainId = determineDomainCatalogName(parameters, catalogName, fileName);
     
     return createPlatformBundle(parameters, dataInputStream, domainId, overWriteInRepository, fileName, xmlaEnabled);
   }
@@ -252,21 +243,18 @@ public class AnalysisDatasourceService {
      * @param fileName
      * @return Look up name from parameters or file name or passed in catalog name
      */
-  private String determineDomainCatalogName(InputStream dataInputStream, String parameters, String catalogName, String fileName) {
+  private String determineDomainCatalogName(String parameters, String catalogName, String fileName) {
     String domainId  =  (getValue(parameters, CATALOG_NAME) == null)?catalogName:getValue(parameters, CATALOG_NAME);
     if(domainId == null || "".equals(domainId)){
-	    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	    try {
-		    DocumentBuilder builder = factory.newDocumentBuilder();
-		    Document document = builder.parse(dataInputStream);
-		    NodeList schemas = document.getElementsByTagName("Schema");
-		    Node schema = schemas.item(0);
-		    Node name = schema.getAttributes().getNamedItem("name");
-		    domainId = name.getTextContent();
-		    dataInputStream.reset();
-	    } catch (Exception e) {
-	    	
-	    }
+      if(fileName.contains(".")){
+        domainId = fileName.substring(0, fileName.indexOf("."));
+      } else {       
+          domainId = fileName;       
+      }
+    } else{
+      if(domainId.contains(".")){
+        domainId =  domainId.substring(0, domainId.indexOf("."));
+      } 
     }
     return domainId;
   }
@@ -283,7 +271,7 @@ public class AnalysisDatasourceService {
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, boolean overWriteInRepository, String fileName, String xmlaEnabled) {
     String datasource = getValue(parameters,"Datasource");
-    String domainId = this.determineDomainCatalogName(dataInputStream, parameters, catalogName, fileName);
+    String domainId = this.determineDomainCatalogName(parameters, catalogName, fileName);
     String sep = ";";
     if(StringUtils.isEmpty(parameters)){       
       parameters="Provider=mondrian";
@@ -296,7 +284,7 @@ public class AnalysisDatasourceService {
         .input(dataInputStream)
         .charSet(UTF_8).hidden(false)
         .name(domainId)
-        .overwriteFile(overWriteInRepository)
+//        .overwrite(overWriteInRepository)
         .mime(MONDRIAN_MIME_TYPE)
         .withParam(PARAMETERS, parameters)        
         .withParam(DOMAIN_ID, domainId);
@@ -346,17 +334,4 @@ public class AnalysisDatasourceService {
     return propertyList.get(key);   
   }
   
-  public class ReUsableInputStream extends BufferedInputStream {
-
-		public ReUsableInputStream(InputStream in) {
-			super(in);
-			super.mark(Integer.MAX_VALUE);
-		}
-
-		@Override
-		public void close() throws IOException {
-		 super.reset();
-		}
-  }
 }
-  
