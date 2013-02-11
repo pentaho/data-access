@@ -14,5 +14,6 @@
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.AnalysisDatasourceService"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceService"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionService"/>
-  
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseDialectService"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.PentahoJAXBContextResolver"/>
 </beans>
