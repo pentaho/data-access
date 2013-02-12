@@ -23,9 +23,9 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.SqlPhysicalModel;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
@@ -169,15 +169,15 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
     List<Binding> bindingsThatNeedInitialized = new ArrayList<Binding>();
     
-    BindingConvertor<Connection, Boolean> buttonConvertor = new BindingConvertor<Connection, Boolean>() {
+    BindingConvertor<IDatabaseConnection, Boolean> buttonConvertor = new BindingConvertor<IDatabaseConnection, Boolean>() {
 
       @Override
-      public Boolean sourceToTarget(Connection value) {
+      public Boolean sourceToTarget(IDatabaseConnection value) {
         return !(value == null);
       }
 
       @Override
-      public Connection targetToSource(Boolean value) {
+      public IDatabaseConnection targetToSource(Boolean value) {
         return null;
       }
 
@@ -192,10 +192,10 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
         "selectedRelationalConnection", removeConnectionButton, "!disabled", buttonConvertor); //$NON-NLS-1$ //$NON-NLS-2$
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     bf.createBinding(datasourceModel,
-        "selectedRelationalConnection", connections, "selectedIndex", new BindingConvertor<Connection, Integer>() { //$NON-NLS-1$ //$NON-NLS-2$
+        "selectedRelationalConnection", connections, "selectedIndex", new BindingConvertor<IDatabaseConnection, Integer>() { //$NON-NLS-1$ //$NON-NLS-2$
 
           @Override
-          public Integer sourceToTarget(Connection connection) {
+          public Integer sourceToTarget(IDatabaseConnection connection) {
             if (connection != null) {
               return datasourceModel.getGuiStateModel().getConnectionIndex(connection);
             } else {
@@ -205,7 +205,7 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
           }
 
           @Override
-          public Connection targetToSource(Integer value) {
+          public IDatabaseConnection targetToSource(Integer value) {
             if (value >= 0) {
               return datasourceModel.getGuiStateModel().getConnections().get(value);
             } else {

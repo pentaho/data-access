@@ -24,11 +24,8 @@ import java.util.List;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-/**
- * UI Admin service to manage datasource in the datasource admin dialog
- * @author rmansoor
- *
- */
+import com.google.gwt.http.client.RequestCallback;
+
 public interface IUIDatasourceAdminService {
   
   /**
@@ -62,10 +59,6 @@ public interface IUIDatasourceAdminService {
    */
   public void export(IDatasourceInfo dsInfo);
 
-  /**
-   * Remove the selected datasource.
-   * @param dsInfo
-   * @param callback
-   */
-  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback);
+  public void remove(IDatasourceInfo dsInfo, Object callback);
+
 }

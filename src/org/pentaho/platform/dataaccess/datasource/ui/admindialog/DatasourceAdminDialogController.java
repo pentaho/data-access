@@ -11,7 +11,7 @@ import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourc
 import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
+//import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
@@ -33,6 +33,9 @@ import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
 
 public class DatasourceAdminDialogController extends AbstractXulDialogController<IDatasourceInfo> implements BindingExceptionHandler{
@@ -43,7 +46,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private BindingFactory bf;
   
   private IXulAsyncDatasourceServiceManager datasourceServiceManager;
-  private IXulAsyncConnectionService connectionService;
+//  private IXulAsyncConnectionService connectionService;
   private IModelerServiceAsync modelerService;
   private IXulAsyncDSWDatasourceService dswService;
   private DatasourceAdminDialogModel datasourceAdminDialogModel = new DatasourceAdminDialogModel();
@@ -223,9 +226,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     this.datasourceServiceManager = datasourceServiceManager;
   }
 
-  public void setConnectionService(final IXulAsyncConnectionService connectionService) {
-    this.connectionService = connectionService;
-  }
+//  public void setConnectionService(final IXulAsyncConnectionService connectionService) {
+//    this.connectionService = connectionService;
+//  }
   
   public void setModelerService(final IModelerServiceAsync modelerService) {
     this.modelerService = modelerService;
@@ -370,16 +373,16 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Bindable
   public void removeDatasourceAccept() {
     final IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
-    manager.remove(dsInfo, new XulServiceCallback<Boolean>() {
+    manager.remove(dsInfo, new RequestCallback() {
 
       @Override
-      public void error(String message, Throwable error) {
-        Window.alert("Error removing: " + dsInfo.getId() + ".  Error =" + error.getLocalizedMessage());
+      public void onError(Request request, Throwable exception) {
+        Window.alert("Error removing: " + dsInfo.getId() + ".  Error =" + exception.getLocalizedMessage());
       }
 
       @Override
-      public void success(Boolean retVal) {
-        if (retVal) {
+      public void onResponseReceived(Request request, Response response) {
+        if (response.getStatusCode() == Response.SC_OK) {
           refreshDatasourceList();
         } else {
           Window.alert("Could Not remove: " + dsInfo.getId());

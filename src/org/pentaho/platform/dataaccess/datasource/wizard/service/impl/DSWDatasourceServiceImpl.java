@@ -39,6 +39,7 @@ import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.commons.connection.IPentahoResultSet;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.InlineEtlPhysicalModel;
 import org.pentaho.metadata.model.LogicalModel;
@@ -54,7 +55,6 @@ import org.pentaho.platform.api.engine.IPentahoUrlFactory;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
@@ -98,14 +98,14 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   private static final String AFTER_QUERY = ") tbl"; //$NON-NLS-1$
 
-  private IConnectionService connectionService;
+  private ConnectionServiceImpl connectionService;
 
   private GeoContext geoContext;
 
   public DSWDatasourceServiceImpl() {
     this(new ConnectionServiceImpl());
   }
-  public DSWDatasourceServiceImpl(IConnectionService connectionService) {
+  public DSWDatasourceServiceImpl(ConnectionServiceImpl connectionService) {
     this.connectionService = connectionService;
     metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, null);
     String dataAccessClassName = null;
@@ -509,7 +509,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
 
   @Override
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, Connection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, IDatabaseConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
 
     ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), getGeoContext());
     ModelerService modelerService = new ModelerService();
@@ -521,7 +521,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
           || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connection.getName(), query,
           10, PentahoSessionHolder.getSession());
-      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connectionService.convertFromConnection(connection).getDatabaseType().getShortName(), resultSet.getColumnTypes(), resultSet.getColumns(), query,
+      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connection.getDatabaseType().getShortName(), resultSet.getColumnTypes(), resultSet.getColumns(), query,
           securityEnabled, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
               .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
       Domain domain = sqlModelGenerator.generate();

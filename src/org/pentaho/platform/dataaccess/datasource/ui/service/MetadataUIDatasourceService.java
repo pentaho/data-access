@@ -8,6 +8,7 @@ import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 
+import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.user.client.Window;
 
 public class MetadataUIDatasourceService implements IUIDatasourceAdminService{
@@ -72,7 +73,7 @@ public class MetadataUIDatasourceService implements IUIDatasourceAdminService{
    * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
    */
   @Override
-  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
+  public void remove(IDatasourceInfo dsInfo, Object callback) {
     datasourceService.remove(dsInfo, callback);
   }
 

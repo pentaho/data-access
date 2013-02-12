@@ -44,7 +44,7 @@ public  class ConnectionServiceHelper {
   public static String getConnectionPassword(String connectionName, String password) throws ConnectionServiceException {
     try {
       IDatabaseConnection datasource = datasourceMgmtSvc.getDatasourceByName(connectionName);
-      if (datasource != null  && !hasPasswordChanged(password)) {
+      if (datasource != null && !hasPasswordChanged(password)) {
         return datasource.getPassword();
       } else {
         return password;

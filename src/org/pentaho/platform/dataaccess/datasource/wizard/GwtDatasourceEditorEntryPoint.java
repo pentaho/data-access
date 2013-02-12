@@ -36,7 +36,6 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
-import org.pentaho.platform.dataaccess.datasource.modeler.GwtUriHandler;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.GwtDatasourceAdminDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogController;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogModel;
@@ -54,27 +53,24 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionC
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.AnalysisDatasourceServiceGwtImpl;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceManagerGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceServiceGwtImpl;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
-import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseConnectionService;
 import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseDialectService;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
-import org.pentaho.ui.xul.util.XulDialogCallback;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
+import org.pentaho.ui.xul.util.XulDialogCallback;
 import org.pentaho.ui.xul.util.XulDialogCallback.Status;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -83,9 +79,10 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.RootPanel;
+//import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseConnectionService;
 
 /**
 * Creates the singleton datasource wizard and sets up native JavaScript functions to show the wizard.
@@ -98,7 +95,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   // TODO: make this lazily loaded when the modelerMessages issue is fixed
   private ModelerDialog modeler;
   private IXulAsyncDSWDatasourceService datasourceService;
-  private IXulAsyncConnectionService connectionService;
+//  private IXulAsyncConnectionService connectionService;
   private IModelerServiceAsync modelerService;
   private IXulAsyncDatasourceServiceManager datasourceServiceManager;
   private ICsvDatasourceServiceAsync csvService;
@@ -115,26 +112,18 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private boolean hasPermissions;
   private boolean isAdmin;
   private Timer timer;
-  private GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
+//  private GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
   private GwtXulAsyncDatabaseDialectService dialectService = new GwtXulAsyncDatabaseDialectService();
-  private GwtUriHandler uriHandler = new GwtUriHandler();
-
-  private IServiceFactory serviceFactory = new ServiceFactory();
-
-  protected IServiceFactory getServiceFactory() {
-    return serviceFactory;
-  }
 
   public void onModuleLoad() {
-    datasourceServiceManager = getServiceFactory().createDatasourceServiceManager();
+    datasourceServiceManager = new DatasourceServiceManagerGwtImpl();
     datasourceServiceManager.isAdmin(new XulServiceCallback<Boolean>() {
       public void error(String message, Throwable error) {
-
       }
       public void success(Boolean retVal) {
         isAdmin = retVal;
-        datasourceService = getServiceFactory().createDatasourceService();
-        modelerService = getServiceFactory().createModelerService();
+        datasourceService = new DSWDatasourceServiceGwtImpl();
+        modelerService = new GwtModelerServiceImpl();
         BogoPojo bogo = new BogoPojo();
         modelerService.gwtWorkaround(bogo, new XulServiceCallback<BogoPojo>(){
           public void success(BogoPojo retVal) {
@@ -157,7 +146,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
             hasPermissions = retVal;
             setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
             if (isAdmin || hasPermissions) {
-              connectionService = new ConnectionServiceGwtImpl();
+//              connectionService = new ConnectionServiceGwtImpl();
               csvService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
               setupPrivilegedNativeHooks(GwtDatasourceEditorEntryPoint.this);
               loadOverlay("startup.dataaccess");
@@ -182,16 +171,11 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     dialectService.getDatabaseTypes(callback);
     
     UIDatasourceServiceManager manager = UIDatasourceServiceManager.getInstance();
-    manager.registerService(new JdbcDatasourceService(connectionService));
+    manager.registerService(new JdbcDatasourceService());
     manager.registerService(new MondrianUIDatasourceService(datasourceServiceManager));
     manager.registerService(new MetadataUIDatasourceService(datasourceServiceManager));
     manager.registerService(new DSWUIDatasourceService(datasourceServiceManager));
-
-    try {
-      manager.getIds(null);
-    } catch (NullPointerException npe) {
-      // when in debug mode, there are no dbs
-    }
+    manager.getIds(null);
     
   }
   private native static void loadOverlay( String overlayId) /*-{
@@ -346,7 +330,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     if(wizard == null){
       wizard = new EmbeddedWizard(false);
       wizard.setDatasourceService(datasourceService);
-      wizard.setConnectionService(connectionService);
+//      wizard.setConnectionService(connectionService);
       wizard.setCsvDatasourceService(csvService);
       wizard.setReportingOnlyValid(relationalOnlyValid);
       wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
@@ -422,7 +406,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
           modelerPerspective = ModelerPerspective.valueOf(modelPerspective);
         } catch (IllegalArgumentException e) {
           modelerPerspective = ModelerPerspective.REPORTING;
-        }
+  }
         dialog.addDialogListener(listener);
         dialog.showDialog(domainId, modelId, modelerPerspective);
       }
@@ -466,8 +450,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         notifyCallbackError(callback, errorMessage);
       }
     };
-
-    showWizardEdit(domainId, modelId, perspective, relationalOnlyValid, listener);
 
   }
 
@@ -553,7 +535,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       wizard = new EmbeddedWizard(false);
 
       wizard.setDatasourceService(datasourceService);
-      wizard.setConnectionService(connectionService);
+//      wizard.setConnectionService(connectionService);
       wizard.setCsvDatasourceService(csvService);
       wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
         public void asyncConstructorDone(EmbeddedWizard source) {
@@ -578,7 +560,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     if(adminDialog == null) {
       final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener = getAdminDialogListener(listener);
       asyncConstructorDone = false;
-      adminDialog = new GwtDatasourceAdminDialog(datasourceServiceManager, connectionService, modelerService, datasourceService, this, constructorListener);
+      adminDialog = new GwtDatasourceAdminDialog(datasourceServiceManager, modelerService, datasourceService, this, constructorListener);
     } else {
       adminDialog.addDialogListener(listener);
       adminDialog.showDialog();
@@ -653,7 +635,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
 		        @Override
 		        public void onDialogError(String errorMessage) {
-		        	listener.onDialogError(errorMessage);
+		        	listener.onDialogError(errorMessage);		          
 		        }
 		      };
 		  
@@ -868,7 +850,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       gwtDatabaseDialog.setDatabaseConnection(null);
       gwtDatabaseDialog.show();
     } else {
-      gwtDatabaseDialog = new GwtDatabaseDialog(connService, databaseTypeHelper,
+      gwtDatabaseDialog = new GwtDatabaseDialog(databaseTypeHelper,
           GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", new DatabaseDialogListener() {//$NON-NLS-1$
             
             @Override
