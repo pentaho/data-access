@@ -39,12 +39,16 @@ import org.pentaho.commons.connection.IPentahoMetaData;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.commons.connection.marshal.MarshallableResultSet;
 import org.pentaho.commons.connection.marshal.MarshallableRow;
+import org.pentaho.database.DatabaseDialectException;
+import org.pentaho.database.IDatabaseDialect;
+import org.pentaho.database.dialect.GenericDatabaseDialect;
+import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.platform.api.engine.IPentahoSession;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 import org.pentaho.platform.plugin.services.connections.sql.SQLMetaData;
@@ -60,19 +64,24 @@ public class DatasourceInMemoryServiceHelper {
    * @throws DatasourceServiceException
    */
   public static java.sql.Connection getDataSourceConnection(String connectionName) throws DatasourceServiceException {
-	Connection connection = null;
+	IDatabaseConnection connection = null;
     try {
-      connection = ConnectionDebugGwtServlet.SERVICE.getConnectionByName(connectionName);
+      ConnectionServiceImpl service = new ConnectionServiceImpl();
+      connection = service.getConnectionByName(connectionName);
     } catch (ConnectionServiceException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
     }
     java.sql.Connection conn = null;
 
+    DatabaseDialectService dialectService = new DatabaseDialectService();
+    IDatabaseDialect dialect = dialectService.getDialect(connection);
     String driverClass = null;
-    if (connection != null) {
-      driverClass = connection.getDriverClass();
-    }
+    if (connection.getDatabaseType().getShortName().equals("GENERIC")) {
+      driverClass = connection.getAttributes().get(GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS);
+    } else {
+      driverClass = dialect.getNativeDriver();
+    }      
     if (StringUtils.isEmpty(driverClass)) {
       logger.error(Messages.getErrorString("DatasourceInMemoryServiceHelper.ERROR_0001_CONNECTION_ATTEMPT_FAILED"));//$NON-NLS-1$
       throw new DatasourceServiceException(Messages.getErrorString("DatasourceInMemoryServiceHelper.ERROR_0001_CONNECTION_ATTEMPT_FAILED")); //$NON-NLS-1$
@@ -102,20 +111,34 @@ public class DatasourceInMemoryServiceHelper {
     }
     try {
       DriverManager.registerDriver(driver);
-      conn = DriverManager.getConnection(connection.getUrl(), connection.getUsername(), connection.getPassword());
+      conn = DriverManager.getConnection(dialect.getURLWithExtraOptions(connection), connection.getUsername(), connection.getPassword());
       return conn;
     } catch (SQLException e) {
       logger.error(Messages.getErrorString("DatasourceInMemoryServiceHelper.ERROR_0004_UNABLE_TO_CONNECT"), e);//$NON-NLS-1$
+      throw new DatasourceServiceException(Messages.getErrorString("DatasourceInMemoryServiceHelper.ERROR_0004_UNABLE_TO_CONNECT"), e); //$NON-NLS-1$
+    } catch (DatabaseDialectException e) {
       throw new DatasourceServiceException(Messages.getErrorString("DatasourceInMemoryServiceHelper.ERROR_0004_UNABLE_TO_CONNECT"), e); //$NON-NLS-1$
     }
   }
 
   public static SQLConnection getConnection(String connectionName) throws DatasourceServiceException {
-	Connection connection = null;
+	IDatabaseConnection connection = null;
     try {
-      connection = ConnectionDebugGwtServlet.SERVICE.getConnectionByName(connectionName);
-      return new SQLConnection(connection.getDriverClass(), connection.getUrl(), connection.getUsername(), connection.getPassword(), null);
+      ConnectionServiceImpl service = new ConnectionServiceImpl();
+      connection = service.getConnectionByName(connectionName);
+      DatabaseDialectService dialectService = new DatabaseDialectService();
+      IDatabaseDialect dialect = dialectService.getDialect(connection);
+      String driverClass = null;
+      if (connection.getDatabaseType().getShortName().equals("GENERIC")) {
+        driverClass = connection.getAttributes().get(GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS);
+      } else {
+        driverClass = dialect.getNativeDriver();
+      }      
+
+      return new SQLConnection(driverClass, dialect.getURLWithExtraOptions(connection), connection.getUsername(), connection.getPassword(), null);
     } catch (ConnectionServiceException e1) {
+      return null;
+    } catch (DatabaseDialectException e) {
       return null;
     }
   }

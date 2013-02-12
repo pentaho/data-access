@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
@@ -58,7 +58,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	private QueryPhysicalStep connectionSelectionStep;
 	private TablesSelectionStep tablesSelectionStep;
 	private JoinDefinitionsStep joinDefinitionsStep;
-	private Connection connection;
+	private IDatabaseConnection connection;
 	private BindingFactory bf;
 	private IWizardModel wizardModel;
 	private JoinValidator validator;
@@ -274,12 +274,12 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	}
 
 	@Bindable
-	public Connection getConnection() {
+	public IDatabaseConnection getConnection() {
 		return connection;
 	}
 
 	@Bindable
-	public void setConnection(Connection connection) {
+	public void setConnection(IDatabaseConnection connection) {
 		this.connection = connection;
 		this.joinGuiModel.reset();
 		this.joinDefinitionsStep.resetComponents();

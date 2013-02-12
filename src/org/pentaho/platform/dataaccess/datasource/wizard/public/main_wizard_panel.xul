@@ -67,7 +67,7 @@
 										<button id="addConnection" image="images/add.png" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="images/add_disabled.png" onclick="connectionController.showAddConnectionDialog()" disabled="false"/>
 										<button id="removeConnection" image="images/remove.png" pen:disabledimage="images/remove_disabled.png" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="connectionController.showRemoveConnectionDialog()" disabled="true"/>
 									</hbox>
-									<listbox id="connectionList" pen:binding="name" disabled="true" height="275" width="180"/>
+									<listbox id="connectionList" pen:binding="modelName" disabled="true" height="275" width="180"/>
 									<vbox id="metadata" flex="1">
 									    <label value="${multitable.REPORTING_METADATA_GROUP_LABEL}" tooltiptext=""/>
 										<radiogroup id="metadataRadioGrup" padding="0">

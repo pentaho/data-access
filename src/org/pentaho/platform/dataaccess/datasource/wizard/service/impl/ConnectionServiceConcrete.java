@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.database.model.DatabaseConnection;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 
 /**
@@ -38,31 +38,30 @@ public class ConnectionServiceConcrete {
   private ConnectionServiceImpl service = new ConnectionServiceImpl();
 
   public ConnectionServiceConcrete() {
-    service = new ConnectionServiceImpl();
   }
 
-  public List<Connection> getConnections() throws ConnectionServiceException {
-    List<Connection> iConnections = service.getConnections();
-    List<Connection> connections = new ArrayList<Connection>();
-    for( Connection iConnection : iConnections ) {
-      connections.add( (Connection) iConnection );
+  public List<DatabaseConnection> getConnections() throws ConnectionServiceException {
+    List<IDatabaseConnection> iConnections = service.getConnections();
+    List<DatabaseConnection> connections = new ArrayList<DatabaseConnection>();
+    for( IDatabaseConnection iConnection : iConnections ) {
+      connections.add((DatabaseConnection) iConnection );
     }
     return connections;
   }
 
-  public Connection getConnectionByName(String name) throws ConnectionServiceException {
-    return (Connection) service.getConnectionByName(name);
+  public DatabaseConnection getConnectionByName(String name) throws ConnectionServiceException {
+    return (DatabaseConnection) service.getConnectionByName(name);
   }
 
-  public boolean addConnection(Connection connection) throws ConnectionServiceException {
+  public boolean addConnection(DatabaseConnection connection) throws ConnectionServiceException {
     return service.addConnection(connection);
   }
 
-  public boolean updateConnection(Connection connection) throws ConnectionServiceException {
+  public boolean updateConnection(DatabaseConnection connection) throws ConnectionServiceException {
     return service.updateConnection(connection);
   }
 
-  public boolean deleteConnection(Connection connection) throws ConnectionServiceException {
+  public boolean deleteConnection(DatabaseConnection connection) throws ConnectionServiceException {
     return service.deleteConnection(connection);
   }
 
@@ -70,15 +69,7 @@ public class ConnectionServiceConcrete {
     return service.deleteConnection(name);
   }
 
-  public boolean testConnection(Connection connection) throws ConnectionServiceException {
+  public boolean testConnection(DatabaseConnection connection) throws ConnectionServiceException {
     return service.testConnection(connection);
-  }
-
-  public DatabaseConnection convertFromConnection(Connection connection) throws ConnectionServiceException {
-      return (DatabaseConnection) service.convertFromConnection(connection);
-  }
-
-  public Connection convertToConnection(DatabaseConnection connection) throws ConnectionServiceException {
-    return (Connection) service.convertToConnection(connection);
   }
 }

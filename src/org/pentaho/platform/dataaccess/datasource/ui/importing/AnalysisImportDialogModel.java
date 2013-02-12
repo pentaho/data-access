@@ -24,21 +24,21 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 
-	private List<Connection> connectionList;
+	private List<IDatabaseConnection> connectionList;
 	private List<ParameterDialogModel> analysisParameters;
 	private String uploadedFile;
-	private Connection connection;
+	private IDatabaseConnection connection;
 	private boolean isParameterMode;
 	private ParameterDialogModel selectedAnalysisParameter;
 
 	public AnalysisImportDialogModel() {
-		connectionList = new ArrayList<Connection>();
+		connectionList = new ArrayList<IDatabaseConnection>();
 		analysisParameters = new ArrayList<ParameterDialogModel>();
 	}
 
@@ -85,25 +85,25 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	}
 
 	@Bindable
-	public List<Connection> getConnectionList() {
+	public List<IDatabaseConnection> getConnectionList() {
 		return connectionList;
 	}
 
 	@Bindable
-	public void setConnectionList(List<Connection> value) {
-		List<Connection> previousValue = connectionList;
+	public void setConnectionList(List<IDatabaseConnection> value) {
+		List<IDatabaseConnection> previousValue = connectionList;
 		this.connectionList = value;
 		this.firePropertyChange("connectionList", previousValue, value);
 	}
 
 	@Bindable
-	public Connection getConnection() {
+	public IDatabaseConnection getConnection() {
 		return connection;
 	}
 
 	@Bindable
-	public void setConnection(Connection value) {
-		Connection previousValue = connection;
+	public void setConnection(IDatabaseConnection value) {
+	  IDatabaseConnection previousValue = connection;
 		connection = value;
 		firePropertyChange("connection", previousValue, value);
 	}

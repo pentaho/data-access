@@ -9,6 +9,7 @@ import org.pentaho.ui.xul.XulServiceCallback;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.http.client.RequestCallback;
 
 public class JSUIDatasourceService implements IUIDatasourceAdminService {
   private JavaScriptObject datasourceServiceObject;
@@ -49,9 +50,12 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
     
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo, java.lang.Object)
+   */
   @Override
-  public final void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
-    XulServiceCallbackJavascriptObject xulServiceCallbackJsObject = new XulServiceCallbackJavascriptObject(callback);
+  public void remove(IDatasourceInfo dsInfo, Object callback) {
+    XulServiceCallbackJavascriptObject xulServiceCallbackJsObject = new XulServiceCallbackJavascriptObject((XulServiceCallback<Boolean>) callback);
     getDelegateRemove(this.datasourceServiceObject, dsInfo.getId(), xulServiceCallbackJsObject.getJavascriptObject());
   }
 
@@ -78,5 +82,4 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
   private final native String getDelegateRemove(JavaScriptObject datasourceServiceObject, String id, JavaScriptObject callback) /*-{
     return datasourceServiceObject.doRemove(id, callback);
   }-*/;
-
 }

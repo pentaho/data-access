@@ -20,8 +20,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -35,7 +35,7 @@ public class GuiStateModel extends XulEventSourceAdapter {
   private boolean relationalValidated;
   private boolean relationalPreviewValidated;
   private boolean relationalApplyValidated;
-  private List<Connection> connections = new ArrayList<Connection>();
+  private List<IDatabaseConnection> connections = new ArrayList<IDatabaseConnection>();
   private String previewLimit = "10"; //$NON-NLS-1$
   private List<LogicalModel> logicalModels;
   private String localeCode;
@@ -47,43 +47,63 @@ public class GuiStateModel extends XulEventSourceAdapter {
   private RelationalModelValidationListenerCollection relationalModelValidationListeners;
 
   @Bindable
-  public List<Connection> getConnections() {
+  public List<IDatabaseConnection> getConnections() {
     return connections;
   }
 
-  public void addConnection(Connection connection) {
-    List<Connection> previousValue = getPreviousValue();
+  public void addConnection(IDatabaseConnection connection) {
+    List<IDatabaseConnection> previousValue = getPreviousValue();
     connections.add(connection);
     this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
   }
 
-  public void updateConnection(Connection connection) {
-    List<Connection> previousValue = getPreviousValue();
-    Connection conn = getConnectionByName(connection.getName());
-    conn.setDriverClass(connection.getDriverClass());
+  public void updateConnection(IDatabaseConnection connection) {
+    List<IDatabaseConnection> previousValue = getPreviousValue();
+    IDatabaseConnection conn = getConnectionByName(connection.getName());
+    conn.setAccessType(connection.getAccessType());
+    conn.setConnectionPoolingProperties(connection.getConnectionPoolingProperties());
+    conn.setConnectSql(connection.getConnectSql());
+    conn.setDatabaseName(connection.getDatabaseName());
+    conn.setDatabasePort(connection.getDatabasePort());
+    conn.setDatabaseType(connection.getDatabaseType());
+    conn.setDataTablespace(connection.getDataTablespace());
+    conn.setForcingIdentifiersToLowerCase(connection.isForcingIdentifiersToLowerCase());
+    conn.setForcingIdentifiersToUpperCase(connection.isForcingIdentifiersToUpperCase());
+    conn.setHostname(connection.getHostname());
+    conn.setIndexTablespace(connection.getIndexTablespace());
+    conn.setInformixServername(connection.getInformixServername());
+    conn.setInitialPoolSize(connection.getInitialPoolSize());
+    conn.setMaximumPoolSize(connection.getMaximumPoolSize());
+    conn.setPartitioned(connection.isPartitioned());
+    conn.setPartitioningInformation(connection.getPartitioningInformation());
     conn.setPassword(connection.getPassword());
-    conn.setUrl(connection.getUrl());
+    conn.setQuoteAllFields(connection.isQuoteAllFields());
+    conn.setSQLServerInstance(connection.getSQLServerInstance());
+    conn.setStreamingResults(connection.isStreamingResults());
     conn.setUsername(connection.getUsername());
+    conn.setUsingConnectionPool(connection.isUsingConnectionPool());
+    conn.setUsingDoubleDecimalAsSchemaTableSeparator(connection.isUsingDoubleDecimalAsSchemaTableSeparator());
+    
     this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
   }
 
   @Bindable
-  private List<Connection> getPreviousValue() {
-    List<Connection> previousValue = new ArrayList<Connection>();
-    for (Connection conn : connections) {
+  private List<IDatabaseConnection> getPreviousValue() {
+    List<IDatabaseConnection> previousValue = new ArrayList<IDatabaseConnection>();
+    for (IDatabaseConnection conn : connections) {
       previousValue.add(conn);
     }
     return previousValue;
   }
 
-  public void deleteConnection(Connection connection) {
-    List<Connection> previousValue = getPreviousValue();
+  public void deleteConnection(IDatabaseConnection connection) {
+    List<IDatabaseConnection> previousValue = getPreviousValue();
     connections.remove(connections.indexOf(connection));
     this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
   }
 
   public void deleteConnection(String name) {
-    for (Connection connection : connections) {
+    for (IDatabaseConnection connection : connections) {
       if (connection.getName().equals(name)) {
         deleteConnection(connection);
         break;
@@ -92,8 +112,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
   }
 
   @Bindable
-  public void setConnections(List<Connection> value) {
-    List<Connection> previousValue = getPreviousValue();
+  public void setConnections(List<IDatabaseConnection> value) {
+    List<IDatabaseConnection> previousValue = getPreviousValue();
     this.connections = value;
     this.firePropertyChange("connections", previousValue, value); //$NON-NLS-1$
   }
@@ -110,8 +130,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
     this.firePropertyChange("previewLimit", previousVal, value); //$NON-NLS-1$
   }
 
-  public Connection getConnectionByName(String name) {
-    for (Connection connection : connections) {
+  public IDatabaseConnection getConnectionByName(String name) {
+    for (IDatabaseConnection connection : connections) {
       if (connection.getName().equals(name)) {
         return connection;
       }
@@ -119,8 +139,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
     return null;
   }
 
-  public Integer getConnectionIndex(Connection conn) {
-	  Connection connection = getConnectionByName(conn.getName());
+  public Integer getConnectionIndex(IDatabaseConnection conn) {
+    IDatabaseConnection connection = getConnectionByName(conn.getName());
     return connections.indexOf(connection);
   }
 

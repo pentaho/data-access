@@ -242,7 +242,7 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
    * @see org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
    */
   @Override
-  public void remove(IDatasourceInfo dsInfo, final XulServiceCallback<Boolean> xulCallback) {
+  public void remove(IDatasourceInfo dsInfo, final Object xulCallback) {
     final String removeURL;
     if (dsInfo.getType() == MetadataUIDatasourceService.TYPE) {
       removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + dsInfo.getId() + "/remove";
@@ -271,17 +271,17 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
 
           });
         } catch (RequestException e) {
-          xulCallback.error(e.getLocalizedMessage(), e);
+          ((XulServiceCallback<Boolean>)xulCallback).error(e.getLocalizedMessage(), e);
         }        
       }
     }, new AsyncCallback<Boolean>() {
 
       public void onFailure(Throwable arg0) {
-        xulCallback.error(arg0.getLocalizedMessage(), arg0);
+        ((XulServiceCallback<Boolean>)xulCallback).error(arg0.getLocalizedMessage(), arg0);
       }
 
       public void onSuccess(Boolean arg0) {
-        xulCallback.success(Boolean.TRUE);
+        ((XulServiceCallback<Boolean>)xulCallback).success(Boolean.TRUE);
       }
 
     });

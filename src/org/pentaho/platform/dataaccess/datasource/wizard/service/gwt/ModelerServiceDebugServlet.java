@@ -56,12 +56,7 @@ public class ModelerServiceDebugServlet extends RemoteServiceServlet implements 
   public Domain loadDomain(String id) throws Exception{
     XmiParser parser = new XmiParser();
     try {
-      // can set this with so it's available at runtime with a commandline arg ==> -Dtest-res-path=/somePath/to/test-res
-      String path = System.getProperty("test-res-path");
-
-      if(path == null) path = "test-res";
-
-      return parser.parseXmi(new FileInputStream(new File(path + "/" + id + ".xmi")));
+      return parser.parseXmi(new FileInputStream(new File("test-res/" + id + ".xmi")));
     } catch (Exception e) {
       e.printStackTrace();
       throw e;

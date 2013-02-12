@@ -23,20 +23,18 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.ui.admindialog.DatasourceAdminDialogController;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
+import org.pentaho.ui.database.event.IConnectionAutoBeanFactory;
+import org.pentaho.ui.database.event.IDatabaseConnectionList;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -55,10 +53,17 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -67,7 +72,10 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.RootPanel;
+//import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
 @SuppressWarnings("all")
 public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements
@@ -91,7 +99,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private AnalysisImportDialogModel importDialogModel;
 
-  private IXulAsyncConnectionService connectionService;
+//  private IXulAsyncConnectionService connectionService;
 
   private XulTextbox paramNameTextBox;
 
@@ -137,10 +145,13 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private FileUpload analysisFileUpload;
 
+  protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
+
   public void init() {
     try {
+      connectionAutoBeanFactory = GWT.create(IConnectionAutoBeanFactory.class);
       resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
-      connectionService = new ConnectionServiceGwtImpl();
+//      connectionService = new ConnectionServiceGwtImpl();
       importDialogModel = new AnalysisImportDialogModel();
       connectionList = (XulMenuList) document.getElementById("connectionList");
       analysisParametersTree = (XulTree) document.getElementById("analysisParametersTree");
@@ -295,17 +306,26 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   private void reloadConnections() {
-    if (connectionService != null) {
-      connectionService.getConnections(new XulServiceCallback<List<Connection>>() {
-        public void error(String message, Throwable error) {
-          error.printStackTrace();
-          MessageHandler.getInstance().showErrorDialog(error.getMessage());
+    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode("http://localhost:8080/pentaho/plugin/data-access/api/connection/list"));
+    listConnectionBuilder.setHeader("Content-Type", "application/json");
+    try {
+      listConnectionBuilder.sendRequest(null, new RequestCallback() {
+        
+        @Override
+        public void onError(Request request, Throwable exception) {
+          exception.printStackTrace();
+          MessageHandler.getInstance().showErrorDialog(exception.getMessage());
         }
-
-        public void success(List<Connection> connections) {
-          importDialogModel.setConnectionList(connections);
+       
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory, IDatabaseConnectionList.class, response.getText());
+          importDialogModel.setConnectionList(bean.as().getDatabaseConnections());
         }
-      });
+     });
+    } catch (RequestException e) {
+      MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"),
+        "DatasourceEditor.ERROR_0004_CONNECTION_SERVICE_NULL");
     }
   }
 
@@ -313,7 +333,6 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     return importDialogModel.isValid();
   }
   
-
   public void handleFormPanelEvent(SubmitCompleteEvent event) {
     if (event.getResults().contains("SUCCESS") || event.getResults().contains("3")) {
       showMessagebox(messages.getString("Mondrian.SUCCESS"),

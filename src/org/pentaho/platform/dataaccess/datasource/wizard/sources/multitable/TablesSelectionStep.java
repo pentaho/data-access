@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
@@ -75,7 +75,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		return "joinSelectionStepController";
 	}
 	
-	public void retrieveSchemas(final Connection connection) {
+	public void retrieveSchemas(final IDatabaseConnection connection) {
 		joinSelectionServiceGwtImpl.retrieveSchemas(connection, new XulServiceCallback<List>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
@@ -90,7 +90,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		});
 	}
 
-	private void processAvailableTables(Connection connection, String schema) {
+	private void processAvailableTables(IDatabaseConnection connection, String schema) {
 		joinSelectionServiceGwtImpl.getDatabaseTables(connection, schema, new XulServiceCallback<List>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
@@ -281,7 +281,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
   protected void fetchTables(){
     showWaitingDialog();
-    Connection connection = ((MultiTableDatasource) parentDatasource).getConnection();
+    IDatabaseConnection connection = ((MultiTableDatasource) parentDatasource).getConnection();
     processAvailableTables(connection, schemas.getValue());
   }
 	
@@ -295,7 +295,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 
   @Override
   public void refresh() {
-    Connection connection = ((MultiTableDatasource) parentDatasource).getConnection();
+    IDatabaseConnection connection = ((MultiTableDatasource) parentDatasource).getConnection();
     joinSelectionServiceGwtImpl.retrieveSchemas(connection, new XulServiceCallback<List>() {
       public void error(String message, Throwable error) {
         error.printStackTrace();

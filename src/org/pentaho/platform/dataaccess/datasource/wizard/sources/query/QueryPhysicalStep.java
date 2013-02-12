@@ -23,8 +23,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.query;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
@@ -33,9 +33,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardConne
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardRelationalDatasourceController;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 import org.pentaho.ui.xul.XulComponent;
@@ -60,17 +58,17 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   XulButton cancelButton = null;
   private XulTree csvDataTable = null;
   private WizardConnectionController connectionController;
-  private IXulAsyncConnectionService connectionService;
+//  private IXulAsyncConnectionService connectionService;
   private boolean isFinishable = false;
-  private Connection connection;
+  private IDatabaseConnection connection;
   private ConnectionController databaseConnectionController;
 
   public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource, boolean isFinishable) {
-	  super(parentDatasource);
-	  this.datasourceModel = datasourceModel;
-	  this.datasourceService = new DSWDatasourceServiceGwtImpl();
-	  this.connectionService = new ConnectionServiceGwtImpl();
-	  this.isFinishable = isFinishable;
+    super(parentDatasource);
+    this.datasourceModel = datasourceModel;
+    this.datasourceService = new DSWDatasourceServiceGwtImpl();
+//    this.connectionService = new ConnectionServiceGwtImpl();
+    this.isFinishable = isFinishable;
   }
   
   public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource) {
@@ -89,7 +87,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 	XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
 	connectionsVbox.setVisible(false);
 
-		XulListbox connections = (XulListbox) document.getElementById("connectionList");
+    XulListbox connections = (XulListbox) document.getElementById("connectionList");
     connections.setWidth(180);
     connections.setHeight(325);
   }
@@ -107,14 +105,14 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     connectionController = new WizardConnectionController(document);
     connectionController.setDatasourceModel(datasourceModel);
 
-    connectionController.setConnectionService(connectionService);
+//    connectionController.setConnectionService(connectionService);
     getXulDomContainer().addEventHandler(connectionController);
     connectionController.init();
 
     databaseConnectionController = new ConnectionController();
     databaseConnectionController.setDatasourceModel(datasourceModel);
-    databaseConnectionController.setService(connectionService);
-    //databaseConnectionController.reloadConnections();
+//    databaseConnectionController.setService(connectionService);
+    databaseConnectionController.reloadConnections();
 
     WizardRelationalDatasourceController relationalDatasourceController = new WizardRelationalDatasourceController();
 
@@ -132,13 +130,13 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   public void initialize() {
   }
 
-  public IXulAsyncConnectionService getConnectionService() {
-    return connectionService;
-  }
-
-  public void setConnectionService(IXulAsyncConnectionService connectionService) {
-    this.connectionService = connectionService;
-  }
+//  public IXulAsyncConnectionService getConnectionService() {
+//    return connectionService;
+//  }
+//
+//  public void setConnectionService(IXulAsyncConnectionService connectionService) {
+//    this.connectionService = connectionService;
+//  }
 
   public String getName() {
     return "datasourceController"; //$NON-NLS-1$
@@ -259,12 +257,12 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   }
 
   @Bindable
-  public Connection getConnection() {
+  public IDatabaseConnection getConnection() {
     return connection;
   }
 
   @Bindable
-  public void setConnection(Connection connection) {
+  public void setConnection(IDatabaseConnection connection) {
     Object prevVal = this.connection == null ? new Object() : null;
     this.connection = connection;
     firePropertyChange("connection", prevVal, connection);
