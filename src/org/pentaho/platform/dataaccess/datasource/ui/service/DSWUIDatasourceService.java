@@ -82,7 +82,7 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
    * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
    */
   @Override
-  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
+  public void remove(IDatasourceInfo dsInfo, Object callback) {
     datasourceService.remove(dsInfo, callback);
   }
 

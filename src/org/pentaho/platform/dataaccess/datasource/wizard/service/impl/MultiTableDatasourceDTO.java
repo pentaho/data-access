@@ -23,14 +23,14 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.models.SchemaModel;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
+import org.pentaho.database.model.IDatabaseConnection;
 
 public class MultiTableDatasourceDTO implements Serializable {
 
 	private static final long serialVersionUID = 1368165523678535182L;
 
 	private String datasourceName;
-	private Connection selectedConnection;
+	private IDatabaseConnection selectedConnection;
 	private SchemaModel schemaModel;
 	private List<String> selectedTables;
 	private boolean doOlap;
@@ -54,11 +54,11 @@ public class MultiTableDatasourceDTO implements Serializable {
 		this.schemaModel = schemaModel;
 	}
 
-	public Connection getSelectedConnection() {
+	public IDatabaseConnection getSelectedConnection() {
 		return selectedConnection;
 	}
 
-	public void setSelectedConnection(Connection selectedConnection) {
+	public void setSelectedConnection(IDatabaseConnection selectedConnection) {
 		this.selectedConnection = selectedConnection;
 	}
 

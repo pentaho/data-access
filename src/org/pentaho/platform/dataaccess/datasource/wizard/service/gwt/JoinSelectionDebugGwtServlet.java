@@ -27,7 +27,6 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultitableDatasourceService;
@@ -48,10 +47,8 @@ public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implement
 		}
 	}
 	
-	private DatabaseMeta getDatabaseMeta(Connection connection) throws Exception {
-		ConnectionDebugGwtServlet connectionServiceImpl = new ConnectionDebugGwtServlet();
-		IDatabaseConnection iDatabaseConnection = connectionServiceImpl.convertFromConnection(connection);
-		DatabaseMeta databaseMeta = DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
+	private DatabaseMeta getDatabaseMeta(IDatabaseConnection connection) throws Exception {
+			DatabaseMeta databaseMeta = DatabaseUtil.convertToDatabaseMeta(connection);
 		
 		if(connection.getName().equals("SampleData")) {
 			databaseMeta.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
@@ -60,24 +57,25 @@ public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implement
 		return databaseMeta;
 	}
 
-	public List<String> getDatabaseTables(Connection connection, String schema) throws Exception {
+	public List<String> getDatabaseTables(IDatabaseConnection connection, String schema) throws Exception {
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
 		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
 		return service.getDatabaseTables(connection, schema);
 	}
 	
-	public List<String> retrieveSchemas(Connection connection) throws Exception {
+	public List<String> retrieveSchemas(IDatabaseConnection connection) throws Exception {
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
 		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
 		return service.retrieveSchemas(connection);
 	}
-	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, Connection connection) throws Exception {
+	
+	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IDatabaseConnection connection) throws Exception {
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
 		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
 		return service.serializeJoins(dto, connection);
 	}
 
-	public List<String> getTableFields(String table, Connection connection) throws Exception {
+	public List<String> getTableFields(String table, IDatabaseConnection connection) throws Exception {
 		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
 		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
 		return service.getTableFields(table, connection);

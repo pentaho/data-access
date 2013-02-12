@@ -1,7 +1,14 @@
 package org.pentaho.platform.dataaccess.datasource.modeler;
 
-import com.google.gwt.core.client.GWT;
-import org.pentaho.agilebi.modeler.*;
+import org.pentaho.agilebi.modeler.ColResolverController;
+import org.pentaho.agilebi.modeler.IModelerMessages;
+import org.pentaho.agilebi.modeler.IModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.ModelerController;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
+import org.pentaho.agilebi.modeler.ModelerUiHelper;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
@@ -12,12 +19,9 @@ import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -33,6 +37,9 @@ import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
 import org.pentaho.ui.xul.gwt.util.IXulLoaderCallback;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
+
+import com.google.gwt.core.client.GWT;
+//import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 
 /**
  * User: nbaker
@@ -53,7 +60,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
 
   private EmbeddedWizard wizard;
   private ModelerDialog modeler;
-  private IXulAsyncConnectionService connectionService;
+//  private IXulAsyncConnectionService connectionService;
   private IXulAsyncDSWDatasourceService datasourceService;
   private ICsvDatasourceServiceAsync csvService;
   private AsyncConstructorListener constructorListener;
@@ -160,14 +167,14 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     });
 
     datasourceService = new DSWDatasourceServiceGwtImpl();
-    connectionService = new ConnectionServiceGwtImpl();
+//    connectionService = new ConnectionServiceGwtImpl();
     csvService =  (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
     
     if(wizard == null){
       wizard = new EmbeddedWizard(false);
 
       wizard.setDatasourceService(datasourceService);
-      wizard.setConnectionService(connectionService);
+//      wizard.setConnectionService(connectionService);
       wizard.setCsvDatasourceService(csvService);
       wizard.init(null);
     }
@@ -183,7 +190,6 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     IModelerWorkspaceHelper workspacehelper = model.getWorkspaceHelper();
 
     controller = new ModelerController(model);
-    controller.setUriHandler(new GwtUriHandler());
     controller.setWorkspaceHelper(workspacehelper);
 //    controller.setMessages(messages);
     final BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());

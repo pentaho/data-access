@@ -2,12 +2,13 @@
 <overlay 
   xmlns="http://www.pentaho.org/there.is.only.xul">
   <listbox id="deck-options-list" flex="0" width="100"  height="400"/>
-  <listitem id="advanced-item" removeelement="true"/>
-  <listitem id="pooling-item" removeelement="true"/>
+  
+  <listitem id="advanced-item" removeelement="false"/>
+  <listitem id="pooling-item" removeelement="false"/>
   <listitem id="cluster-item" removeelement="true"/>
-
-  <groupbox id="advanced-group-box" removeelement="true"/>
-  <groupbox id="pooling-group" removeelement="true"/>
+  
+  <groupbox id="advanced-group-box" removeelement="false"/>
+  <groupbox id="pooling-group" removeelement="false"/>
   <groupbox id="place-holder-box-2" removeelement="true"/>
   
   <listbox id="connection-type-list" flex="0" width="250" height="175"/>

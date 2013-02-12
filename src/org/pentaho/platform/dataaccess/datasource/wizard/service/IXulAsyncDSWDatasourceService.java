@@ -23,9 +23,9 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
@@ -45,7 +45,7 @@ public interface IXulAsyncDSWDatasourceService {
 
   public void listDatasourceNames(XulServiceCallback<List<String>> callback);
 
-  void generateQueryDomain(String name, String query, Connection connection, DatasourceDTO datasourceDTO, XulServiceCallback<IDatasourceSummary> callback);
+  void generateQueryDomain(String name, String query, IDatabaseConnection connection, DatasourceDTO datasourceDTO, XulServiceCallback<IDatasourceSummary> callback);
   void getDatasourceIllegalCharacters(XulServiceCallback<String> callback);
   void getGeoContext(XulServiceCallback<GeoContext> callback);
 }

@@ -32,7 +32,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardDatas
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.WizardModel;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
+//import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
@@ -79,7 +79,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   //TODO: need to move this to the relational data source
   private ConnectionController connectionController;
 
-  private IXulAsyncConnectionService connectionService;
+//  private IXulAsyncConnectionService connectionService;
   private boolean checkHasAccess;
 
   private IXulAsyncDSWDatasourceService datasourceService;
@@ -122,7 +122,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   public void init(final AsyncConstructorListener<EmbeddedWizard> constructorListener) {
     asyncConstructorListener = constructorListener;
-    setConnectionService(connectionService);
+//    setConnectionService(connectionService);
     setDatasourceService(datasourceService);
 
     wizardModel.addDatasource(new CsvDatasource(datasourceModel, datasourceService, csvDatasourceService));
@@ -316,17 +316,17 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     return mainWizardContainer;
   }
 
-  public void setConnectionService(IXulAsyncConnectionService service) {
-    this.connectionService = service;
-    if(connectionController != null){
-      connectionController.setService(service);
-      //connectionController.reloadConnections();
-    }
-  }
+//  public void setConnectionService(IXulAsyncConnectionService service) {
+//    this.connectionService = service;
+//    if(connectionController != null){
+//      connectionController.setService(service);
+//      connectionController.reloadConnections();
+//    }
+//  }
 
-  public IXulAsyncConnectionService getConnectionService() {
-    return connectionService;
-  }
+//  public IXulAsyncConnectionService getConnectionService() {
+//    return connectionService;
+//  }
 
   public IXulAsyncDSWDatasourceService getDatasourceService() {
     return datasourceService;
@@ -357,7 +357,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     MessageHandler.getInstance().setMessages(datasourceMessages);
 
     connectionController = new ConnectionController();
-    connectionController.setService(connectionService);
+//    connectionController.setService(connectionService);
     mainWizardContainer.addEventHandler(connectionController);
 
     summaryDialogController.setBindingFactory(bf);

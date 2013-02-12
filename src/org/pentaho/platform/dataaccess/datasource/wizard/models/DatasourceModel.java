@@ -20,12 +20,12 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -40,7 +40,7 @@ public class DatasourceModel extends XulEventSourceAdapter
   private ModelInfo modelInfo;
   private Domain domain;
   private String datasourceName;
-  private Connection selectedRelationalConnection;
+  private IDatabaseConnection selectedRelationalConnection;
   private String query;
 
   private boolean editMode;
@@ -91,13 +91,13 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   @Bindable
-  public Connection getSelectedRelationalConnection() {
+  public IDatabaseConnection getSelectedRelationalConnection() {
     return selectedRelationalConnection;
   }
 
   @Bindable
-  public void setSelectedRelationalConnection(Connection value) {
-	  Connection previousValue = this.selectedRelationalConnection;
+  public void setSelectedRelationalConnection(IDatabaseConnection value) {
+    IDatabaseConnection previousValue = this.selectedRelationalConnection;
     this.selectedRelationalConnection = value;
     this.firePropertyChange("selectedRelationalConnection", previousValue, value);
     validate();
@@ -215,7 +215,7 @@ public class DatasourceModel extends XulEventSourceAdapter
     
     // BISERVER-3664: Temporary solution for IE ListBoxs not accepting -1 selectedIndex.
     // Explicitly selecting the first connection object makes all browsers behave the same.
-    Connection firstConnection = guiStateModel.getConnections().size() > 0 ? guiStateModel.getConnections().get(0) : null;
+    IDatabaseConnection firstConnection = guiStateModel.getConnections().size() > 0 ? guiStateModel.getConnections().get(0) : null;
     setSelectedRelationalConnection(firstConnection);
 
     modelInfo.clearModel();

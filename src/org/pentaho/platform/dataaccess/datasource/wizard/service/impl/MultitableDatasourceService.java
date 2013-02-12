@@ -42,7 +42,6 @@ import org.pentaho.metadata.model.concept.Concept;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -93,19 +92,18 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 
   }
 
-	private DatabaseMeta getDatabaseMeta(Connection connection) throws ConnectionServiceException {
+	private DatabaseMeta getDatabaseMeta(IDatabaseConnection connection) throws ConnectionServiceException {
 		if(this.connectionServiceImpl == null) {
 			return this.databaseMeta;
 		}
 		
-		IDatabaseConnection iDatabaseConnection = this.connectionServiceImpl.convertFromConnection(connection);
-		iDatabaseConnection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
-		DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta(iDatabaseConnection);
+		connection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
+		DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta(connection);
 	    dbmeta.getDatabaseInterface().setQuoteAllFields(true);
 	    return dbmeta;
   	}
 
-	public List<String> retrieveSchemas(Connection connection) throws DatasourceServiceException {
+	public List<String> retrieveSchemas(IDatabaseConnection connection) throws DatasourceServiceException {
 		List<String> schemas = new ArrayList<String>();
 		try {
 			DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
@@ -128,7 +126,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		return schemas;
 	}
 
-	public List<String> getDatabaseTables(Connection connection, String schema) throws DatasourceServiceException {
+	public List<String> getDatabaseTables(IDatabaseConnection connection, String schema) throws DatasourceServiceException {
     try{
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       Database database = new Database(null, databaseMeta);
@@ -148,7 +146,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
     }
   }
 
-	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, Connection connection) throws DatasourceServiceException {
+	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IDatabaseConnection connection) throws DatasourceServiceException {
     try{
       ModelerService modelerService = new ModelerService();
       modelerService.initKettle();
@@ -194,7 +192,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		}
 	}
 
-	public List<String> getTableFields(String table, Connection connection) throws DatasourceServiceException {
+	public List<String> getTableFields(String table, IDatabaseConnection connection) throws DatasourceServiceException {
     try{
       DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
       Database database = new Database(null, databaseMeta);

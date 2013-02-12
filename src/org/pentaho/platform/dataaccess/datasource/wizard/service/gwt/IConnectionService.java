@@ -23,7 +23,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 import java.util.List;
 
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 
 /**
@@ -31,13 +30,11 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServi
  * is also used by the Datasource Service to map a name to an IConnection. 
  */
 public interface IConnectionService {
-  List<Connection> getConnections() throws ConnectionServiceException;
-  Connection getConnectionByName(String name) throws ConnectionServiceException;
-  boolean addConnection(Connection connection) throws ConnectionServiceException;
-  boolean updateConnection(Connection connection) throws ConnectionServiceException;
-  boolean deleteConnection(Connection connection) throws ConnectionServiceException;
+  List<IDatabaseConnection> getConnections() throws ConnectionServiceException;
+  IDatabaseConnection getConnectionByName(String name) throws ConnectionServiceException;
+  boolean addConnection(IDatabaseConnection connection) throws ConnectionServiceException;
+  boolean updateConnection(IDatabaseConnection connection) throws ConnectionServiceException;
+  boolean deleteConnection(IDatabaseConnection connection) throws ConnectionServiceException;
   boolean deleteConnection(String name) throws ConnectionServiceException;
-  boolean testConnection(Connection connection) throws ConnectionServiceException;
-  Connection convertToConnection(IDatabaseConnection connection) throws ConnectionServiceException;
-  IDatabaseConnection convertFromConnection(Connection connection) throws ConnectionServiceException;
+  boolean testConnection(IDatabaseConnection connection) throws ConnectionServiceException;
 }

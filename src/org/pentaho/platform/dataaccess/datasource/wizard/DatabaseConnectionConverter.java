@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.util.DatabaseTypeHelper;
 
@@ -108,7 +109,7 @@ public class DatabaseConnectionConverter {
     databaseConnection.setUsername(getNodeValueByTagName(element, "username"));
     databaseConnection.setDatabasePort(getNodeValueByTagName(element, "port"));
     databaseConnection.setAccessType(DatabaseAccessType.getAccessTypeByName(getNodeValueByTagName(element, "accessType")));
-    databaseConnection.setDatabaseType(databaseTypeHelper.getDatabaseTypeByShortName(getNodeValueByTagName(element, "databaseType")));
+    databaseConnection.setDatabaseType((DatabaseType) databaseTypeHelper.getDatabaseTypeByShortName(getNodeValueByTagName(element, "databaseType")));
     databaseConnection.setPassword(getNodeValueByTagName(element, "password"));
     databaseConnection.setInformixServername(getNodeValueByTagName(element, "serverName"));
     for(Node node :getNodesByTagName(element, "attributes")) {

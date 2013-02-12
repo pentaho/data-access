@@ -40,6 +40,7 @@ import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.commons.connection.IPentahoResultSet;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.InlineEtlPhysicalModel;
 import org.pentaho.metadata.model.LogicalModel;
@@ -53,7 +54,6 @@ import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
@@ -91,13 +91,13 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
 
 
   private IMetadataDomainRepository metadataDomainRepository;
-  private IConnectionService connectionService;
+  private ConnectionServiceImpl connectionService;
 
 
   public InMemoryDSWDatasourceServiceImpl() {
-    this(new InMemoryConnectionServiceImpl());
+    this(new ConnectionServiceImpl());
   }
-  public InMemoryDSWDatasourceServiceImpl(IConnectionService connectionService) {
+  public InMemoryDSWDatasourceServiceImpl(ConnectionServiceImpl connectionService) {
     this.connectionService = connectionService;
     // this needs to share the same one as MQL editor...
     metadataDomainRepository = METADATA_DOMAIN_REPO;
@@ -357,7 +357,7 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
 
   @Override
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, Connection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, IDatabaseConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
 
     ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), getGeoContext());
     ModelerService modelerService = new ModelerService();
@@ -369,7 +369,7 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
           || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
       SerializedResultSet resultSet = DatasourceInMemoryServiceHelper.getSerializeableResultSet(connection.getName(), query,
           Integer.parseInt("10"), null);
-      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connectionService.convertFromConnection(connection).getDatabaseType().getShortName(),
+      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connection.getDatabaseType().getShortName(),
            resultSet.getColumnTypes(), resultSet.getColumns(),query, securityEnabled,
           getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), "joe");
       Domain domain = sqlModelGenerator.generate();

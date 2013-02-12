@@ -10,29 +10,34 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
  *
- * @created Aug 17, 2012 
+ * @created Dec 7, 2012 
  * @author wseyler
  */
 
 
-package org.pentaho.platform.dataaccess.datasource.beans;
+package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author wseyler
  *
  */
-public interface IConnection {
-  public void setId(String id);
-  public String getId();
-  public void setName(String name);
-  public String getName();
-  public void setDriverClass(String driverClass);
-  public String getDriverClass();
-  public void setUsername(String username);
-  public String getUsername();
-  public void setPassword(String password);
-  public String getPassword();
-  public void setUrl(String url);
-  public String getUrl();
+@XmlRootElement
+public class StringArrayWrapper {
+  public StringArrayWrapper() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
+
+  public String[] items;
+
+  public String[] getItems() {
+    return items;
+  }
+
+  public void setArray(String[] items) {
+    this.items = items;
+  }
+  
 }
