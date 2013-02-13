@@ -459,10 +459,6 @@ public class ConnectionController extends AbstractXulEventHandler {
         @Override
         public void onResponseReceived(Request request, Response response) {
           String responseText = response.getText();
-          Window.alert("Before - " + responseText);
-          responseText = responseText.replaceAll("\"true\"", "true");
-          responseText = responseText.replaceAll("\"false\"", "false");
-          Window.alert("After - " + responseText);
           AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory, IDatabaseConnectionList.class, responseText);
           datasourceModel.getGuiStateModel().setConnections(bean.as().getDatabaseConnections());
         }
