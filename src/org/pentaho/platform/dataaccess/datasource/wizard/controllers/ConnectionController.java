@@ -23,7 +23,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
@@ -43,14 +42,12 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
@@ -459,10 +456,6 @@ public class ConnectionController extends AbstractXulEventHandler {
         @Override
         public void onResponseReceived(Request request, Response response) {
           String responseText = response.getText();
-          Window.alert("Before - " + responseText);
-          responseText = responseText.replaceAll("\"true\"", "true");
-          responseText = responseText.replaceAll("\"false\"", "false");
-          Window.alert("After - " + responseText);
           AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory, IDatabaseConnectionList.class, responseText);
           datasourceModel.getGuiStateModel().setConnections(bean.as().getDatabaseConnections());
         }
