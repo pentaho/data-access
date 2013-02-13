@@ -146,7 +146,7 @@ public class AnalysisDatasourceService {
       statusCode = String.valueOf(PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL);
     } catch (PlatformImportException pe) {
       logger.error("Error putMondrianSchema " + pe.getMessage() + " status = " + pe.getErrorStatus());
-      statusCode = String.valueOf(pe.getErrorStatus());
+      statusCode = String.valueOf(PlatformImportException.PUBLISH_SCHEMA_EXISTS_ERROR);
     } catch (Exception e) {
       logger.error("Error putMondrianSchema " + e.getMessage());
       statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
@@ -284,7 +284,7 @@ public class AnalysisDatasourceService {
         .input(dataInputStream)
         .charSet(UTF_8).hidden(false)
         .name(domainId)
-//        .overwrite(overWriteInRepository)
+        .overwriteFile(overWriteInRepository)
         .mime(MONDRIAN_MIME_TYPE)
         .withParam(PARAMETERS, parameters)        
         .withParam(DOMAIN_ID, domainId);
