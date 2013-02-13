@@ -1,24 +1,18 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.modeler;
 
-import org.junit.Before;
+import java.io.File;
+
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.IModelerSource;
-import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.api.engine.IApplicationContext;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDSWDatasourceServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.InlineSqlModelerSource;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
 import org.pentaho.test.platform.engine.core.BaseTest;
-
-import java.io.File;
 
 /**
  * User: nbaker
@@ -61,7 +55,7 @@ public class ModelerServiceTest extends BaseTest {
   @Test
   public void testGenerateDomainFromInlineSql() throws Exception{
 
-    new ConnectionDebugGwtServlet().getConnections();
+    new ConnectionService().getConnections();
 
     IDSWDatasourceService datasourceService = new InMemoryDSWDatasourceServiceImpl();
 
