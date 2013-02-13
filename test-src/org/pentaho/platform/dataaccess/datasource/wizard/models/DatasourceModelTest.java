@@ -11,6 +11,9 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.pentaho.database.model.DatabaseAccessType;
+import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.messages.LocaleHelper;
 import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
@@ -28,7 +31,6 @@ import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.concept.types.TargetTableType;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorTest;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDSWDatasourceServiceImpl;
 
@@ -55,13 +57,14 @@ public class DatasourceModelTest {
   }
   
   private GuiStateModel contructRelationalModel(GuiStateModel guiStateModel) {
-	Connection connection = new Connection();
-    connection.setDriverClass("org.hsqldb.jdbcDriver");
+    IDatabaseConnection connection = new DatabaseConnection();
+    connection.setAccessType(DatabaseAccessType.NATIVE);
+//    connection.setDriverClass("org.hsqldb.jdbcDriver");
     connection.setName("SampleData");
     connection.setPassword("password");
-    connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
+//    connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
     connection.setUsername("pentaho_user");
-    List<Connection> connectionList = new ArrayList<Connection>();
+    List<IDatabaseConnection> connectionList = new ArrayList<IDatabaseConnection>();
     connectionList.add(connection);
     guiStateModel.setConnections(connectionList);
     guiStateModel.setPreviewLimit("10");
@@ -173,11 +176,12 @@ public class DatasourceModelTest {
 
     DatasourceModel datasourceModel2 = new DatasourceModel();
 
-    Connection connection = new Connection();
-    connection.setDriverClass("org.hsqldb.jdbcDriver");
+    IDatabaseConnection connection = new DatabaseConnection();
+    connection.setAccessType(DatabaseAccessType.NATIVE);
+//    connection.setDriverClass("org.hsqldb.jdbcDriver");
     connection.setName("SampleData");
     connection.setPassword("password");
-    connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
+//    connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
     connection.setUsername("pentaho_user");
     datasourceModel2.getGuiStateModel().setConnections(Collections.singletonList(connection));
 

@@ -4,7 +4,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.JSONObject;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
+import org.pentaho.database.model.DatabaseAccessType;
+import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.IDatabaseConnection;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -27,7 +29,7 @@ public class TestDataSourceResource {
   private static Client client = null;
 
   public static void main(String[] args) {
-    Connection conn = getConnectionByName(CONNECTION_NAME);
+    IDatabaseConnection conn = getConnectionByName(CONNECTION_NAME);
     
     if(conn == null)
       add();
@@ -42,7 +44,7 @@ public class TestDataSourceResource {
 
   private static void update() {
     init();
-    Connection connection = createConnectionObject();
+    IDatabaseConnection connection = createConnectionObject();
     String conn = (new JSONObject(connection)).toString();
     System.out.println(conn);
     try {
@@ -58,7 +60,7 @@ public class TestDataSourceResource {
   private static void delete() {
     init();
     WebResource resource = client.resource(delete_url);
-    Connection connection = createConnectionObject();
+    IDatabaseConnection connection = createConnectionObject();
     String conn = (new JSONObject(connection)).toString();
     System.out.println(conn);
     try {
@@ -82,7 +84,7 @@ public class TestDataSourceResource {
 
   private static void add() {
     init();
-    Connection connection = createConnectionObject();
+    IDatabaseConnection connection = createConnectionObject();
     String conn = (new JSONObject(connection)).toString();
     System.out.println(conn);
     try {
@@ -95,33 +97,34 @@ public class TestDataSourceResource {
     }
   }
 
-  private static Connection createConnectionObject() {  
-    Connection connection = new Connection();
-    connection.setDriverClass("org.hsqldb.jdbcDriver");
-    connection.setUrl("jdbc:hsqldb:hsql://localhost:9001/sampledata");
+  private static IDatabaseConnection createConnectionObject() {  
+    IDatabaseConnection connection = new DatabaseConnection();
+    connection.setAccessType(DatabaseAccessType.NATIVE);
+//    connection.setDriverClass("org.hsqldb.jdbcDriver");
+//    connection.setUrl("jdbc:hsqldb:hsql://localhost:9001/sampledata");
     connection.setUsername("pentaho_user");
     connection.setPassword("password");
     connection.setName(CONNECTION_NAME);
     return connection;
   }
 
-  private static Connection getConnectionByName(String aConnecitonName) {
+  private static IDatabaseConnection getConnectionByName(String aConnecitonName) {
     ClientConfig clientConfig = new DefaultClientConfig();
     Client client = Client.create(clientConfig);
-    Connection connection = null;
+    IDatabaseConnection connection = null;
     WebResource resource = client.resource(getURL);
     try {
       connection = resource.type(MediaType.APPLICATION_JSON)
           .type(MediaType.APPLICATION_XML).entity(aConnecitonName)
-          .get(Connection.class);
+          .get(DatabaseConnection.class);
     } catch (Exception ex) {
       ex.printStackTrace();
     }
     return connection;
   }
 
-  private static Connection createConnection(String name) {
-    Connection conn = new Connection();
+  private static IDatabaseConnection createConnection(String name) {
+    IDatabaseConnection conn = new DatabaseConnection();
     conn.setName(name);
     return conn;
   }

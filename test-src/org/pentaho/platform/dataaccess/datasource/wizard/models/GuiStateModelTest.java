@@ -6,6 +6,9 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.pentaho.database.model.DatabaseAccessType;
+import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.messages.LocaleHelper;
 import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
@@ -22,7 +25,6 @@ import org.pentaho.metadata.model.concept.types.LocaleType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.concept.types.TargetTableType;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
-import org.pentaho.platform.dataaccess.datasource.beans.Connection;
 
 
 @SuppressWarnings("nls")
@@ -33,13 +35,14 @@ public class GuiStateModelTest {
     GuiStateModel guiStateModel = new GuiStateModel();
     Assert.assertEquals(0, guiStateModel.getConnections().size());
     Assert.assertEquals(false, guiStateModel.isRelationalValidated());
-    Connection connection = new Connection();
-    connection.setDriverClass("org.hsqldb.jdbcDriver");
+    IDatabaseConnection connection = new DatabaseConnection();
+    connection.setAccessType(DatabaseAccessType.NATIVE);
+//    connection.setDriverClass("org.hsqldb.jdbcDriver");
     connection.setName("SampleData");
     connection.setPassword("password");
-    connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
+//    connection.setUrl("jdbc:hsqldb:file:test-res/solution1/system/data/sampledata");
     connection.setUsername("pentaho_user");
-    List<Connection> connectionList = new ArrayList<Connection>();
+    List<IDatabaseConnection> connectionList = new ArrayList<IDatabaseConnection>();
     connectionList.add(connection);
     guiStateModel.setConnections(connectionList);
     guiStateModel.setPreviewLimit("10");
