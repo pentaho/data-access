@@ -5,6 +5,16 @@
   
   <listitem id="advanced-item" removeelement="false"/>
   <listitem id="pooling-item" removeelement="false"/>
+  
+  <!-- Remove pooling parameters from the pooling tab -->
+  <label id="pool-parameter-description-label" removeelement="true"/>
+  <tree id="pool-parameter-tree" removeelement="true"/>
+  <button id="restore-defaults-button" removeelement="true"/>
+  <label id="pooling-description-label" removeelement="true"/>
+  <textbox id="pooling-description" removeelement="true"/>
+  
+  <!-- End remove pooling parameters -->
+  
   <listitem id="cluster-item" removeelement="true"/>
   
   <groupbox id="advanced-group-box" removeelement="false"/>
@@ -20,5 +30,4 @@
   <groupbox id="database-options-box" height="350" flex="0" width="268" />
   <textbox id="connection-name-text" width="545" />
   <vbox flex="0" id="main-container" height="400" />
-
 </overlay>
