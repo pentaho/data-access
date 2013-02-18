@@ -23,13 +23,14 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
-import org.pentaho.platform.dataaccess.datasource.ui.admindialog.DatasourceAdminDialogController;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.database.event.IConnectionAutoBeanFactory;
 import org.pentaho.ui.database.event.IDatabaseConnectionList;
@@ -62,7 +63,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -72,10 +72,10 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.RootPanel;
-//import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+//import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 
 @SuppressWarnings("all")
 public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements
@@ -174,18 +174,43 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       parametersAcceptButton.setDisabled(true);
 
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(connectionList, "selectedItem", importDialogModel, "connection");
-      bf.createBinding(manualRadio, "checked", this, "preference", new PreferencesBindingConvertor());
+      bf.createBinding(connectionList, "selectedIndex", importDialogModel, "connection", new BindingConvertor<Integer, IDatabaseConnection>() {
+          @Override
+          public Integer targetToSource(IDatabaseConnection connection) {
+            return -1;
+          }
 
-      Binding connectionListBinding = bf.createBinding(importDialogModel, "connectionList", connectionList, "elements");
-      Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters",
-          analysisParametersTree, "elements");
-      connectionListBinding.fireSourceChanged();
+          @Override
+          public IDatabaseConnection sourceToTarget(Integer value) {
+            if (value >= 0) {
+              return importDialogModel.getConnectionList().get(value);
+            }
+            return null;
+          }
+      });
+
+      bf.createBinding(manualRadio, "checked", this, "preference", new PreferencesBindingConvertor());
+      bf.createBinding(this, "connectionNames", connectionList, "elements");
+      
+      Binding domainBinding = bf.createBinding(importDialogModel, "connectionList", this, "relationalConnections");
+      Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters", analysisParametersTree, "elements");
+      domainBinding.fireSourceChanged();
       analysisParametersBinding.fireSourceChanged();
+      
 
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+  
+  @Bindable
+  public void setRelationalConnections(List<IDatabaseConnection> connections) {
+    List<String> names = new ArrayList<String>();
+    for (IDatabaseConnection conn : connections) {
+      names.add(conn.getName());
+    }
+
+    firePropertyChange("connectionNames", null, names);
   }
 
   private void createWorkingForm() {
