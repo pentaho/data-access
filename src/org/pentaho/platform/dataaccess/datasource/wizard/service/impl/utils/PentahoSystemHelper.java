@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.engine.core.system.PathBasedSystemSettings;
+import org.pentaho.platform.engine.core.system.PentahoRequestContextHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
 import org.pentaho.platform.engine.core.system.objfac.StandaloneSpringPentahoObjectFactory;
@@ -40,7 +41,7 @@ public class PentahoSystemHelper {
       if (PentahoSystem.getApplicationContext() == null) {
         StandaloneApplicationContext applicationContext = new StandaloneApplicationContext(getSolutionPath(), ""); //$NON-NLS-1$
         // set the base url assuming there is a running server on port 8080
-        applicationContext.setFullyQualifiedServerURL(getBaseUrl());
+        applicationContext.setFullyQualifiedServerURL(PentahoRequestContextHolder.getRequestContext().getContextPath());
         String inContainer = System.getProperty("incontainer", "false"); //$NON-NLS-1$ //$NON-NLS-2$
         if (inContainer.equalsIgnoreCase("false")) { //$NON-NLS-1$
           // Setup simple-jndi for datasources
@@ -61,10 +62,6 @@ public class PentahoSystemHelper {
     } catch (Exception e) {
       logger.error(e);
     }
-  }
-
-  public static String getBaseUrl() {
-    return "http://localhost:8080/pentaho/"; //$NON-NLS-1$
   }
 
   public static String getSolutionPath() {

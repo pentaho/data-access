@@ -213,6 +213,21 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     firePropertyChange("connectionNames", null, names);
   }
 
+  public static String getBaseURL() {
+    String moduleUrl = GWT.getModuleBaseURL();
+    //
+    //Set the base url appropriately based on the context in which we are running this client
+    //
+    if (moduleUrl.indexOf("content") > -1) {
+      //we are running the client in the context of a BI Server plugin, so 
+      //point the request to the GWT rpc proxy servlet
+      String baseUrl = moduleUrl.substring(0, moduleUrl.indexOf("content"));
+      return baseUrl + "plugin/data-access/api/connection/";
+    }
+
+    return moduleUrl + "plugin/data-access/api/connection/";
+  }
+  
   private void createWorkingForm() {
     if (formPanel == null) {
       formPanel = new FormPanel();
@@ -331,7 +346,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   private void reloadConnections() {
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode("http://localhost:8080/pentaho/plugin/data-access/api/connection/list"));
+    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"));
     listConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       listConnectionBuilder.sendRequest(null, new RequestCallback() {
