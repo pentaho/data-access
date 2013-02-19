@@ -12,7 +12,7 @@
   <button id="restore-defaults-button" removeelement="true"/>
   <label id="pooling-description-label" removeelement="true"/>
   <textbox id="pooling-description" removeelement="true"/>
-  
+  <groupbox id="pooling-size-group" height="200"/>
   <!-- End remove pooling parameters -->
   
   <listitem id="cluster-item" removeelement="true"/>
