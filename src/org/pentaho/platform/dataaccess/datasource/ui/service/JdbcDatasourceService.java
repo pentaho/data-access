@@ -6,11 +6,8 @@ import java.util.List;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.dataaccess.datasource.DatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.database.event.IConnectionAutoBeanFactory;
 import org.pentaho.ui.database.event.IDatabaseConnectionList;
-//import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 import com.google.gwt.core.client.GWT;
@@ -20,7 +17,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Window;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
@@ -44,9 +40,24 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
     return TYPE;
   }
 
+  public static String getBaseURL() {
+    String moduleUrl = GWT.getModuleBaseURL();
+    //
+    //Set the base url appropriately based on the context in which we are running this client
+    //
+    if (moduleUrl.indexOf("content") > -1) {
+      //we are running the client in the context of a BI Server plugin, so 
+      //point the request to the GWT rpc proxy servlet
+      String baseUrl = moduleUrl.substring(0, moduleUrl.indexOf("content"));
+      return baseUrl + "plugin/data-access/api/connection/";
+    }
+
+    return moduleUrl + "plugin/data-access/api/connection/";
+  }
+  
   @Override
   public void getIds(final XulServiceCallback<List<IDatasourceInfo>> callback) {
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode("http://localhost:8080/pentaho/plugin/data-access/api/connection/list"));
+    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"));
     listConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       listConnectionBuilder.sendRequest(null, new RequestCallback() {
@@ -100,7 +111,7 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
    */
   @Override
   public void remove(IDatasourceInfo dsInfo, Object callback) {
-    RequestBuilder deleteConnectionBuilder = new RequestBuilder(RequestBuilder.DELETE, URL.encode("http://localhost:8080/pentaho/plugin/data-access/api/connection/deletebyname?name=" + dsInfo.getName())); 
+    RequestBuilder deleteConnectionBuilder = new RequestBuilder(RequestBuilder.DELETE, URL.encode(getBaseURL() + "deletebyname?name=" + dsInfo.getName())); 
     try {
       deleteConnectionBuilder.sendRequest(null, (RequestCallback) callback);
     } catch (RequestException e) {
