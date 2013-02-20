@@ -8,28 +8,34 @@ import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-public class DSWUIDatasourceService implements IUIDatasourceAdminService{
+public class DSWUIDatasourceService implements IUIDatasourceAdminService {
   private IXulAsyncDatasourceServiceManager datasourceService;
-  public final static String EXT = ".xmi";
-  public final static String TYPE = "Data Source Wizard";
+
+  public final static String EXT = ".xmi"; //$NON-NLS-1$
+
+  public final static String TYPE = "Data Source Wizard"; //$NON-NLS-1$
+
   private boolean editable = true;
+
   private boolean removable = true;
+
   private boolean importable = false;
+
   private boolean exportable = true;
-  private String newUI = "builtin:";
-  private String editUI= "builtin:";
+
+  private String newUI = "builtin:"; //$NON-NLS-1$
+
+  private String editUI = "builtin:"; //$NON-NLS-1$
+
   @Override
   public String getType() {
     return TYPE;
   }
 
-
   public DSWUIDatasourceService(IXulAsyncDatasourceServiceManager datasourceService) {
     this.datasourceService = datasourceService;
   }
 
-
-  
   @Override
   public void getIds(final XulServiceCallback<List<IDatasourceInfo>> callback) {
     datasourceService.getDSWDatasourceIds(new XulServiceCallback<List<String>>() {
@@ -37,15 +43,8 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
       @Override
       public void success(List<String> ids) {
         List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
-        for(String id:ids) {
-          String name = null;
-          if(id != null && id.length() > 0) {
-            int index = id.indexOf(EXT);
-            if( index >=0) {
-              name = id.substring(0, index);
-            }
-            datasourceInfos.add(new DatasourceInfo(name, id, TYPE, editable, removable, importable, exportable));          
-          }
+        for (String id : ids) {
+          datasourceInfos.add(new DatasourceInfo(id, id, TYPE, editable, removable, importable, exportable));
         }
         callback.success(datasourceInfos);
       }
@@ -67,16 +66,14 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
     return editUI;
   }
 
-
   /* (non-Javadoc)
    * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#export(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
    */
   @Override
   public void export(IDatasourceInfo dsInfo) {
     datasourceService.export(dsInfo);
-    
-  }
 
+  }
 
   /* (non-Javadoc)
    * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
