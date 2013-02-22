@@ -44,7 +44,14 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService {
       public void success(List<String> ids) {
         List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
         for (String id : ids) {
-          datasourceInfos.add(new DatasourceInfo(id, id, TYPE, editable, removable, importable, exportable));
+
+          // Strips the ext from the id, in case the id has the ext
+          String name = new String(id);
+          if (name.endsWith(EXT)) {
+            name = name.replace(EXT, "").trim(); //$NON-NLS-1$
+          }
+
+          datasourceInfos.add(new DatasourceInfo(name, id, TYPE, editable, removable, importable, exportable));
         }
         callback.success(datasourceInfos);
       }
