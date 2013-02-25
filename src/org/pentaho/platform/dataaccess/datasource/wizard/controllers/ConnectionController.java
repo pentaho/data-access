@@ -21,9 +21,13 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
@@ -460,12 +464,86 @@ public class ConnectionController extends AbstractXulEventHandler {
         public void onResponseReceived(Request request, Response response) {
           AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory,
               IDatabaseConnectionList.class, response.getText());
-          datasourceModel.getGuiStateModel().setConnections(bean.as().getDatabaseConnections());
+          List<IDatabaseConnection> connectionBeanList = bean.as().getDatabaseConnections();
+          List<IDatabaseConnection> connectionImplList = new ArrayList<IDatabaseConnection>();
+          for (IDatabaseConnection connectionBean : connectionBeanList) {
+            connectionImplList.add(connectionBeanToImpl(connectionBean));
+          }
+          
+          datasourceModel.getGuiStateModel().setConnections(connectionImplList);
         }
       });
     } catch (RequestException e) {
       MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), "DatasourceEditor.ERROR_0004_CONNECTION_SERVICE_NULL");
     }
+  }
+
+  /**
+   * @param connectionBean
+   * @return
+   */
+  protected IDatabaseConnection connectionBeanToImpl(IDatabaseConnection connectionBean) {
+    DatabaseConnection connectionImpl = new DatabaseConnection();
+    connectionImpl.setAccessType(connectionBean.getAccessType());
+    connectionImpl.setAccessTypeValue(connectionImpl.getAccessType().toString());
+    connectionImpl.setAttributes(mapBeanToImpl(connectionBean.getAttributes()));
+    connectionImpl.setConnectionPoolingProperties(mapBeanToImpl(connectionBean.getConnectionPoolingProperties()));
+    connectionImpl.setConnectSql(connectionBean.getConnectSql());
+    connectionImpl.setDatabaseName(connectionBean.getDatabaseName());
+    connectionImpl.setDatabaseType(dbTypeBeanToImpl(connectionBean.getDatabaseType()));
+    connectionImpl.setDataTablespace(connectionBean.getDataTablespace());
+    connectionImpl.setForcingIdentifiersToLowerCase(connectionBean.isForcingIdentifiersToLowerCase());
+    connectionImpl.setForcingIdentifiersToUpperCase(connectionBean.isForcingIdentifiersToUpperCase());
+    connectionImpl.setHostname(connectionBean.getHostname());
+    connectionImpl.setId(connectionBean.getId());
+    connectionImpl.setIndexTablespace(connectionBean.getIndexTablespace());
+    connectionImpl.setInformixServername(connectionBean.getInformixServername());
+    connectionImpl.setInitialPoolSize(connectionBean.getInitialPoolSize());
+    connectionImpl.setMaximumPoolSize(connectionBean.getMaximumPoolSize());
+    connectionImpl.setName(connectionBean.getName());
+    connectionImpl.setPartitioned(connectionBean.isPartitioned());
+    connectionImpl.setPartitioningInformation(connectionBean.getPartitioningInformation());
+    connectionImpl.setPassword(connectionBean.getPassword());
+    connectionImpl.setQuoteAllFields(connectionBean.isQuoteAllFields());
+    connectionImpl.setSQLServerInstance(connectionBean.getSQLServerInstance());
+    connectionImpl.setStreamingResults(connectionBean.isStreamingResults());
+    connectionImpl.setUsername(connectionBean.getUsername());
+    connectionImpl.setUsingConnectionPool(connectionBean.isUsingConnectionPool());
+    connectionImpl.setUsingDoubleDecimalAsSchemaTableSeparator(connectionBean.isUsingDoubleDecimalAsSchemaTableSeparator());
+
+    return connectionImpl;
+  }
+
+  /**
+   * @param databaseType
+   * @return
+   */
+  private IDatabaseType dbTypeBeanToImpl(IDatabaseType databaseTypeBean) {
+    DatabaseType databaseTypeImpl = new DatabaseType();
+    
+    databaseTypeImpl.setDefaultDatabasePort(databaseTypeBean.getDefaultDatabasePort());
+    databaseTypeImpl.setExtraOptionsHelpUrl(databaseTypeBean.getExtraOptionsHelpUrl());
+    databaseTypeImpl.setName(databaseTypeBean.getName());
+    databaseTypeImpl.setShortName(databaseTypeBean.getShortName());
+    databaseTypeImpl.setSupportedAccessTypes(listBeanToImpl(databaseTypeBean.getSupportedAccessTypes()));
+    
+    return databaseTypeImpl;
+  }
+
+  /**
+   * @param supportedAccessTypes
+   * @return
+   */
+  private List<DatabaseAccessType> listBeanToImpl(List<DatabaseAccessType> supportedAccessTypes) {
+    return new ArrayList<DatabaseAccessType>(supportedAccessTypes);
+  }
+
+  /**
+   * @param map
+   * @return
+   */
+  private Map<String, String> mapBeanToImpl(Map<String, String> map) {
+    return new HashMap<String, String>(map);
   }
 
   public static String getBaseURL() {
