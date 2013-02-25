@@ -27,4 +27,5 @@
   <groupbox id="database-options-box" height="350" flex="0" width="268" />
   <textbox id="connection-name-text" width="545" />
   <vbox flex="0" id="main-container" height="400" />
+  
 </overlay>
