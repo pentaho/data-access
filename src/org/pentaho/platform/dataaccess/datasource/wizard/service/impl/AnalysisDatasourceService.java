@@ -28,8 +28,8 @@
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
@@ -40,9 +40,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
-import mondrian.olap.Util.PropertyList;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,6 +54,8 @@ import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
@@ -231,7 +234,7 @@ public class AnalysisDatasourceService {
     
     boolean overWriteInRepository = "True".equalsIgnoreCase(getValue(parameters, OVERWRITE_IN_REPOS)) ? true : false;
     String xmlaEnabled = "True".equals(getValue(parameters, "xmlaEnabled"))?"true":"false";
-    String domainId = determineDomainCatalogName(parameters, catalogName, fileName);
+    String domainId = determineDomainCatalogName(parameters, catalogName, fileName, dataInputStream);
     
     return createPlatformBundle(parameters, dataInputStream, domainId, overWriteInRepository, fileName, xmlaEnabled);
   }
@@ -243,8 +246,31 @@ public class AnalysisDatasourceService {
      * @param fileName
      * @return Look up name from parameters or file name or passed in catalog name
      */
-  private String determineDomainCatalogName(String parameters, String catalogName, String fileName) {
-    String domainId  =  (getValue(parameters, CATALOG_NAME) == null)?catalogName:getValue(parameters, CATALOG_NAME);
+  private String determineDomainCatalogName(String parameters, String catalogName, String fileName, InputStream inputStream) {
+   /*
+    * Try to resolve the domainId out of the mondrian schema name. 
+    * If not present then use the catalog name parameter or finally the file name.
+    * */ 
+	  
+    String domainId = null;
+	try {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+	    org.w3c.dom.Document document = builder.parse(inputStream);
+	    NodeList schemas = document.getElementsByTagName("Schema");
+	    Node schema = schemas.item(0);
+	    if(schema != null) { 
+	    	Node name = schema.getAttributes().getNamedItem("name");
+	    	domainId = name.getTextContent();
+	    	if(domainId != null && !"".equals(domainId)) {
+	    		return domainId;
+	    	}
+	    }
+	} catch (Exception e) {
+		logger.error(e);
+	}  
+    
+    domainId  =  (getValue(parameters, CATALOG_NAME) == null)?catalogName:getValue(parameters, CATALOG_NAME);
     if(domainId == null || "".equals(domainId)){
       if(fileName.contains(".")){
         domainId = fileName.substring(0, fileName.indexOf("."));
@@ -270,8 +296,16 @@ public class AnalysisDatasourceService {
    */
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, boolean overWriteInRepository, String fileName, String xmlaEnabled) {
+	  
+	byte[] bytes = null;  
+	try {  
+		bytes = IOUtils.toByteArray(dataInputStream);
+	} catch(IOException e) {
+		logger.error(e);
+	}
+	  
     String datasource = getValue(parameters,"Datasource");
-    String domainId = this.determineDomainCatalogName(parameters, catalogName, fileName);
+    String domainId = this.determineDomainCatalogName(parameters, catalogName, fileName, new ByteArrayInputStream(bytes));
     String sep = ";";
     if(StringUtils.isEmpty(parameters)){       
       parameters="Provider=mondrian";
@@ -281,7 +315,7 @@ public class AnalysisDatasourceService {
     }
 
     RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder()
-        .input(dataInputStream)
+        .input(new ByteArrayInputStream(bytes))
         .charSet(UTF_8).hidden(false)
         .name(domainId)
         .overwriteFile(overWriteInRepository)
