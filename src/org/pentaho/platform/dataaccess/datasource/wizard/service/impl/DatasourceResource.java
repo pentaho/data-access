@@ -135,14 +135,14 @@ public class DatasourceResource {
     if(logicalModelList != null && logicalModelList.size() >= 1) {
       for(LogicalModel logicalModel : logicalModelList) {	
     	  Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
-    	  if(property == null) {
-    		  return true;    
+    	  if(property != null) {
+    		  return false;    
     	  } 
       }
+      return true;
     } else {
       return true;
     }
-    return false;
   }
   
   @GET
