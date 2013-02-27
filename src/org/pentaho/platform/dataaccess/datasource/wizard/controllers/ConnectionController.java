@@ -31,6 +31,7 @@ import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
+import org.pentaho.platform.dataaccess.datasource.beans.AutobeanUtilities;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
@@ -467,7 +468,7 @@ public class ConnectionController extends AbstractXulEventHandler {
           List<IDatabaseConnection> connectionBeanList = bean.as().getDatabaseConnections();
           List<IDatabaseConnection> connectionImplList = new ArrayList<IDatabaseConnection>();
           for (IDatabaseConnection connectionBean : connectionBeanList) {
-            connectionImplList.add(connectionBeanToImpl(connectionBean));
+            connectionImplList.add(AutobeanUtilities.connectionBeanToImpl(connectionBean));
           }
           
           datasourceModel.getGuiStateModel().setConnections(connectionImplList);
@@ -476,74 +477,6 @@ public class ConnectionController extends AbstractXulEventHandler {
     } catch (RequestException e) {
       MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), "DatasourceEditor.ERROR_0004_CONNECTION_SERVICE_NULL");
     }
-  }
-
-  /**
-   * @param connectionBean
-   * @return
-   */
-  protected IDatabaseConnection connectionBeanToImpl(IDatabaseConnection connectionBean) {
-    DatabaseConnection connectionImpl = new DatabaseConnection();
-    connectionImpl.setAccessType(connectionBean.getAccessType());
-    connectionImpl.setAccessTypeValue(connectionImpl.getAccessType().toString());
-    connectionImpl.setAttributes(mapBeanToImpl(connectionBean.getAttributes()));
-    connectionImpl.setConnectionPoolingProperties(mapBeanToImpl(connectionBean.getConnectionPoolingProperties()));
-    connectionImpl.setConnectSql(connectionBean.getConnectSql());
-    connectionImpl.setDatabaseName(connectionBean.getDatabaseName());
-    connectionImpl.setDatabaseType(dbTypeBeanToImpl(connectionBean.getDatabaseType()));
-    connectionImpl.setDataTablespace(connectionBean.getDataTablespace());
-    connectionImpl.setForcingIdentifiersToLowerCase(connectionBean.isForcingIdentifiersToLowerCase());
-    connectionImpl.setForcingIdentifiersToUpperCase(connectionBean.isForcingIdentifiersToUpperCase());
-    connectionImpl.setHostname(connectionBean.getHostname());
-    connectionImpl.setId(connectionBean.getId());
-    connectionImpl.setIndexTablespace(connectionBean.getIndexTablespace());
-    connectionImpl.setInformixServername(connectionBean.getInformixServername());
-    connectionImpl.setInitialPoolSize(connectionBean.getInitialPoolSize());
-    connectionImpl.setMaximumPoolSize(connectionBean.getMaximumPoolSize());
-    connectionImpl.setName(connectionBean.getName());
-    connectionImpl.setPartitioned(connectionBean.isPartitioned());
-    connectionImpl.setPartitioningInformation(connectionBean.getPartitioningInformation());
-    connectionImpl.setPassword(connectionBean.getPassword());
-    connectionImpl.setQuoteAllFields(connectionBean.isQuoteAllFields());
-    connectionImpl.setSQLServerInstance(connectionBean.getSQLServerInstance());
-    connectionImpl.setStreamingResults(connectionBean.isStreamingResults());
-    connectionImpl.setUsername(connectionBean.getUsername());
-    connectionImpl.setUsingConnectionPool(connectionBean.isUsingConnectionPool());
-    connectionImpl.setUsingDoubleDecimalAsSchemaTableSeparator(connectionBean.isUsingDoubleDecimalAsSchemaTableSeparator());
-
-    return connectionImpl;
-  }
-
-  /**
-   * @param databaseType
-   * @return
-   */
-  private IDatabaseType dbTypeBeanToImpl(IDatabaseType databaseTypeBean) {
-    DatabaseType databaseTypeImpl = new DatabaseType();
-    
-    databaseTypeImpl.setDefaultDatabasePort(databaseTypeBean.getDefaultDatabasePort());
-    databaseTypeImpl.setExtraOptionsHelpUrl(databaseTypeBean.getExtraOptionsHelpUrl());
-    databaseTypeImpl.setName(databaseTypeBean.getName());
-    databaseTypeImpl.setShortName(databaseTypeBean.getShortName());
-    databaseTypeImpl.setSupportedAccessTypes(listBeanToImpl(databaseTypeBean.getSupportedAccessTypes()));
-    
-    return databaseTypeImpl;
-  }
-
-  /**
-   * @param supportedAccessTypes
-   * @return
-   */
-  private List<DatabaseAccessType> listBeanToImpl(List<DatabaseAccessType> supportedAccessTypes) {
-    return new ArrayList<DatabaseAccessType>(supportedAccessTypes);
-  }
-
-  /**
-   * @param map
-   * @return
-   */
-  private Map<String, String> mapBeanToImpl(Map<String, String> map) {
-    return new HashMap<String, String>(map);
   }
 
   public static String getBaseURL() {
@@ -561,155 +494,6 @@ public class ConnectionController extends AbstractXulEventHandler {
     return moduleUrl + "plugin/data-access/api/connection/";
   }
 
-//  public static List<Connection> deserializeConnections(String json) {
-//    IConnection[] jsonConnections = deserializeConnectionsFromJson(json);
-//    ArrayList<Connection> connections = new ArrayList<Connection>();
-//    for (IConnection jsonConnection : jsonConnections) {
-//      connections.add(jsoConnectionToConnection(jsonConnection));
-//    }
-//    return connections;
-//  }
-
-//  public static Connection deserializeConnection(String json) {
-//    IConnection[] jsonConnection = deserializeConnectionsFromJson(json);
-//    return jsoConnectionToConnection(jsonConnection[0]);
-//  }
-
-//  private static Connection jsoConnectionToConnection(IConnection jsoConnection) {
-//    Connection connection = new Connection();
-//    connection.setDriverClass(jsoConnection.getDriverClass());
-//    connection.setId(jsoConnection.getId());
-//    connection.setName(jsoConnection.getName());
-//    connection.setPassword(jsoConnection.getPassword());
-//    connection.setUrl(jsoConnection.getUrl());
-//    connection.setUsername(jsoConnection.getUsername());
-//    return connection;
-//  }
-
-//  private static final native IConnection[] deserializeConnectionsFromJson(String json)/*-{
-//		var jso;
-//		jso = eval('(' + json + ')').connection;
-//		if (jso instanceof Array) {
-//			return jso;
-//		} else {
-//			var arr = new Array();
-//			arr.push(jso);
-//			return arr;
-//		}
-//  }-*/;
-
-//  public static final String serializeConnectionToJson(IConnection connection) {
-//    JsoConnection jsoConnection = (JsoConnection) JavaScriptObject.createObject();
-//    jsoConnection.setDriverClass(connection.getDriverClass());
-//    jsoConnection.setId(connection.getId());
-//    jsoConnection.setName(connection.getName());
-//    jsoConnection.setPassword(connection.getPassword());
-//    jsoConnection.setUrl(connection.getUrl());
-//    jsoConnection.setUsername(connection.getUsername());
-//
-//    return new JSONObject(jsoConnection).toString();
-//  }
-
-//  public static class JsoConnection extends JavaScriptObject implements IConnection {
-//    protected JsoConnection() {
-//    }
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#setDriverClass(java.lang.String)
-//     */
-//    @Override
-//    public final native void setDriverClass(String driverClass) /*-{
-//			this.driverClass = driverClass;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#getDriverClass()
-//     */
-//    @Override
-//    public final native String getDriverClass() /*-{
-//			return this.driverClass;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#setId(java.lang.String)
-//     */
-//    @Override
-//    public final native void setId(String id) /*-{
-//			this.id = id;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#getId()
-//     */
-//    @Override
-//    public final native String getId() /*-{
-//			return this.id;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#setName(java.lang.String)
-//     */
-//    @Override
-//    public final native void setName(String name) /*-{
-//			this.name = name;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#getName()
-//     */
-//    @Override
-//    public final native String getName() /*-{
-//			return this.name;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#setPassword(java.lang.String)
-//     */
-//    @Override
-//    public final native void setPassword(String password) /*-{
-//			this.password = password;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#getPassword()
-//     */
-//    @Override
-//    public final native String getPassword() /*-{
-//			return this.password;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#setUrl(java.lang.String)
-//     */
-//    @Override
-//    public final native void setUrl(String url) /*-{
-//			this.url = url;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#getUrl()
-//     */
-//    @Override
-//    public final native String getUrl() /*-{
-//			return this.url;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#setUsername(java.lang.String)
-//     */
-//    @Override
-//    public final native void setUsername(String username) /*-{
-//			this.username = username;
-//    }-*/;
-//
-//    /* (non-Javadoc)
-//     * @see org.pentaho.platform.dataaccess.datasource.beans.IConnection#getUsername()
-//     */
-//    @Override
-//    public final native String getUsername() /*-{
-//			return this.username;
-//    }-*/;
-//  }
 
   class DatabaseConnectionSetter implements DatabaseDialogListener {
 
