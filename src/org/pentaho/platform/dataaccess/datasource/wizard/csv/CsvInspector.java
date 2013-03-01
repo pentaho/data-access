@@ -2,19 +2,9 @@ package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 
 public class CsvInspector {
-
-  protected LogWriter log;
-
-  public CsvInspector() {
-    
-    log = LogWriter.getInstance();
-    
-  }
   
   public int determineFileFormat( String line ) {
     
