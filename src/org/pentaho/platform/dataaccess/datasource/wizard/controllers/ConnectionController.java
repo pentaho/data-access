@@ -406,35 +406,41 @@ public class ConnectionController extends AbstractXulEventHandler {
       databaseDialog.setDatabaseConnection(null);
       databaseDialog.show();
     } else {
-      if (databaseTypeHelper == null) {
-        XulServiceCallback<List<IDatabaseType>> callback = new XulServiceCallback<List<IDatabaseType>>() {
-          public void error(String message, Throwable error) {
-            Window.alert(message + ":  " + error.getLocalizedMessage());
-            //error.printStackTrace();
-          }
-
-          public void success(List<IDatabaseType> retVal) {
-            databaseTypeHelper = new DatabaseTypeHelper(retVal);
-            databaseDialog = new GwtDatabaseDialog(databaseTypeHelper, GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
-          }
-        };
-        dialectService.getDatabaseTypes(callback);
-      } else {
-        databaseDialog = new GwtDatabaseDialog(databaseTypeHelper, GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
-      }
+      createNewDatabaseDialog();
     }
   }
+  
 
+  private void createNewDatabaseDialog() {
+    if (databaseTypeHelper == null) {
+      XulServiceCallback<List<IDatabaseType>> callback = new XulServiceCallback<List<IDatabaseType>>() {
+        public void error(String message, Throwable error) {
+          Window.alert(message + ":  " + error.getLocalizedMessage());
+          //error.printStackTrace();
+        }
+
+        public void success(List<IDatabaseType> retVal) {
+          databaseTypeHelper = new DatabaseTypeHelper(retVal);
+          databaseDialog = new GwtDatabaseDialog(databaseTypeHelper, GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+        }
+      };
+      dialectService.getDatabaseTypes(callback);
+    } else {
+      databaseDialog = new GwtDatabaseDialog(databaseTypeHelper, GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+    }
+  }
+  
+  @SuppressWarnings("deprecation")
   @Bindable
   public void showEditConnectionDialog() {
-    datasourceModel.setEditing(true);
+    connectionSetter = new DatabaseConnectionSetter(null);
+    datasourceModel.setEditing(true); 
     if(databaseDialog != null) {
-      IDatabaseConnection connection = datasourceModel.getSelectedRelationalConnection();
+      IDatabaseConnection connection = datasourceModel.getSelectedRelationalConnection(); 
       databaseDialog.setDatabaseConnection(connection);
       databaseDialog.show();
     } else {
-      databaseDialog = new GwtDatabaseDialog(databaseTypeHelper,
-          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+      createNewDatabaseDialog();
     }
   }
 

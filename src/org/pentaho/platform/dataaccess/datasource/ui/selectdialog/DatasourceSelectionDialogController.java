@@ -180,13 +180,14 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
       };
       removeDatasourceButtonBinding = bf.createBinding(DatasourceSelectionDialogController.this.datasourceSelectionDialogModel, "selectedIndex", //$NON-NLS-1$
           removeDatasourceButton, "!disabled", removeDatasourceButtonConvertor); //$NON-NLS-1$
+
       BindingConvertor<Integer, Boolean> editDatasourceButtonConvertor = new BindingConvertor<Integer, Boolean>() {
         @Override
         public Boolean sourceToTarget(final Integer value) {
           return 
-              value > -1 && administrator && 
-              datasourceSelectionDialogModel.getLogicalModelSummaries().get(value).getModelId().equals("MODEL_1") //$NON-NLS-1$
-          ;
+              value > -1 && administrator;
+              //&& datasourceSelectionDialogModel.getLogicalModelSummaries().get(value).getModelId().equals("MODEL_1") //$NON-NLS-1$
+          //;
         }
 
         @Override
@@ -196,7 +197,6 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
       };
       editDatasourceButtonBinding = bf.createBinding(DatasourceSelectionDialogController.this.datasourceSelectionDialogModel, "selectedIndex", //$NON-NLS-1$
           editDatasourceButton, "!disabled", editDatasourceButtonConvertor); //$NON-NLS-1$
-
       
       datasourceListbox.setSelectedIndex(-1);
       // workaround for bug in some XulListbox implementations (doesn't fire event on setSelectedIndex call)
