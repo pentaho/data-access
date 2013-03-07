@@ -23,7 +23,7 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 public class JdbcDatasourceService implements IUIDatasourceAdminService{
   
   public static final String TYPE = "JDBC";
-  private boolean editable = false;
+  private boolean editable = true;
   private boolean removable = true;
   private boolean importable = true;
   private boolean exportable = true;

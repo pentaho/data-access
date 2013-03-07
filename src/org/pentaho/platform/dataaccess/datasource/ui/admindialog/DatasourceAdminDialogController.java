@@ -52,7 +52,6 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private DatasourceAdminDialogModel datasourceAdminDialogModel = new DatasourceAdminDialogModel();
 
   private XulDialog datasourceAdminDialog;
-  
   private XulDialog datasourceAdminErrorDialog;
   private XulDialog removeDatasourceConfirmationDialog;
   private XulLabel datasourceAdminErrorLabel = null;
@@ -110,7 +109,8 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           throw new UnsupportedOperationException();
         }
       };
-
+      
+      //setup binding to disable edit datasource button until user selects a datasource
       BindingConvertor<IDatasourceInfo, Boolean> editDatasourceButtonConvertor = new BindingConvertor<IDatasourceInfo, Boolean>() {
         @Override
         public Boolean sourceToTarget(final IDatasourceInfo datasourceInfo) {
@@ -368,6 +368,12 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Bindable
   public void remove() {
     removeDatasourceConfirmationDialog.show();
+  }
+  
+  @Bindable
+  public void edit() {
+    IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
+    entryPoint.showEditDatabaseDialog(null, dsInfo.getId());
   }
   
   @Bindable
