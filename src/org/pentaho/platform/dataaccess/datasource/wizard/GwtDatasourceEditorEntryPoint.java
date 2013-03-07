@@ -32,7 +32,9 @@ import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPane;
 import org.pentaho.gwt.widgets.client.dialogs.GlassPaneNativeListener;
+import org.pentaho.gwt.widgets.client.filechooser.JsonToRepositoryFileTreeConverter;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
@@ -53,6 +55,8 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionC
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
@@ -62,6 +66,8 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasou
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceServiceManagerGwtImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceServiceGwtImpl;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
+import org.pentaho.ui.database.event.IConnectionAutoBeanFactory;
+import org.pentaho.ui.database.event.IDatabaseConnectionList;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
 import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseDialectService;
 import org.pentaho.ui.xul.XulComponent;
@@ -69,20 +75,28 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
+import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
 import org.pentaho.ui.xul.util.XulDialogCallback;
-import org.pentaho.ui.xul.util.XulDialogCallback.Status;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.RootPanel;
-//import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseConnectionService;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 
 /**
 * Creates the singleton datasource wizard and sets up native JavaScript functions to show the wizard.
@@ -114,6 +128,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   private Timer timer;
 //  private GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
   private GwtXulAsyncDatabaseDialectService dialectService = new GwtXulAsyncDatabaseDialectService();
+  private IConnectionAutoBeanFactory connectionAutoBeanFactory = GWT.create(IConnectionAutoBeanFactory.class);
 
   public void onModuleLoad() {
     datasourceServiceManager = new DatasourceServiceManagerGwtImpl();
@@ -844,33 +859,40 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       connectionController.setDatasourceModel(datasourceModel);
       connectionController.showAddConnectionDialog(listener);
   }
+  
+  public void showEditDatabaseDialog(final JavaScriptObject callback, final String databaseName) {
+    String url = ConnectionController.getBaseURL() + "get";
+    url = url + "?name=" + databaseName;
+    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+    builder.setHeader("Accept", "application/json");
 
-  private void showEditDatabaseDialog(final JavaScriptObject callback, final String databaseId) {
-    if(gwtDatabaseDialog != null){
-      gwtDatabaseDialog.setDatabaseConnection(null);
-      gwtDatabaseDialog.show();
-    } else {
-      gwtDatabaseDialog = new GwtDatabaseDialog(databaseTypeHelper,
-          GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", new DatabaseDialogListener() {//$NON-NLS-1$
-            
-            @Override
-            public void onDialogReady() {
-              // TODO Auto-generated method stub
-              
-            }
-            
-            @Override
-            public void onDialogCancel() {
-              // TODO Auto-generated method stub
-              
-            }
-            
-            @Override
-            public void onDialogAccept(IDatabaseConnection arg0) {
-              // TODO Auto-generated method stub
-              
-            }
-          });
+    try {
+      builder.sendRequest(null, new RequestCallback() {
+        
+        public void onError(Request request, Throwable exception) {
+          Window.alert(exception.toString());
+        }
+        
+        @SuppressWarnings("deprecation")
+        public void onResponseReceived(Request request, Response response) {
+          IDatabaseConnection conn = null;
+          if (response.getStatusCode() == Response.SC_OK) {
+            AutoBean<IDatabaseConnection> bean = AutoBeanCodex.decode(connectionAutoBeanFactory,
+                IDatabaseConnection.class, response.getText());
+            conn = bean.as();
+          }
+
+          ConnectionController connectionController = wizard.getConnectionController();
+          connectionController.init();
+          DatasourceModel datasourceModel = new DatasourceModel();
+          datasourceModel.setSelectedRelationalConnection(conn); 
+
+          connectionController.setDatasourceModel(datasourceModel);
+          connectionController.showEditConnectionDialog();
+         }
+      });
+    } catch (Exception e) {
+      Window.alert("Cannot edit datasource");
     }
   }
   
