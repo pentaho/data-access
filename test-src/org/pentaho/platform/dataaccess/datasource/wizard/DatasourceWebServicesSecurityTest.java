@@ -37,6 +37,7 @@ import org.pentaho.platform.api.engine.ICacheManager;
 import org.pentaho.platform.api.engine.IPentahoDefinableObjectFactory.Scope;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IUserRoleListService;
+import org.pentaho.platform.api.mt.ITenant;
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.util.IPasswordService;
@@ -251,10 +252,10 @@ public class DatasourceWebServicesSecurityTest {
 	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
 	    }
 
-	    public void newTenant(final String tenantId) {
+	    public void newTenant(final ITenant tenant) {
 	      methodTrackerHistory.add(new MethodTrackingData("newTenant")
 	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser())
-	          .addParameter("tenantId", tenantId));
+	          .addParameter("tenant", tenant));
 	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
 	    }
 
@@ -264,10 +265,10 @@ public class DatasourceWebServicesSecurityTest {
 	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
 	    }
 
-	    public void newUser(final String tenantId, final String username) {
+	    public void newUser(final ITenant tenant, final String username) {
 	      methodTrackerHistory.add(new MethodTrackingData("newUser")
 	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser())
-	          .addParameter("tenantId", tenantId)
+	          .addParameter("tenant", tenant)
 	          .addParameter("username", username));
 	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
 	    }
