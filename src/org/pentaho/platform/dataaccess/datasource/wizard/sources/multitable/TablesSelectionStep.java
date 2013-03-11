@@ -63,12 +63,14 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private SchemaSelection schemaSelection;
 	private XulDialog waitingDialog;
 	private XulLabel waitingLabel;
+	private MultiTableDatasource mtdatasource;
 
 	public TablesSelectionStep(MultitableGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
 		this.joinGuiModel = joinGuiModel;
 		this.joinSelectionServiceGwtImpl = joinSelectionServiceGwtImpl;
 		this.schemaSelection = new SchemaSelection();
+		this.mtdatasource = parentDatasource;
 	}
 
 	public String getName() {
@@ -79,6 +81,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		joinSelectionServiceGwtImpl.retrieveSchemas(connection, new XulServiceCallback<List>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
+				mtdatasource.displayErrors(new JoinError(message,error.getMessage()));
 			}
 
 			public void success(List schemaValues) {
@@ -94,6 +97,8 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		joinSelectionServiceGwtImpl.getDatabaseTables(connection, schema, new XulServiceCallback<List>() {
 			public void error(String message, Throwable error) {
 				error.printStackTrace();
+				mtdatasource.displayErrors(new JoinError(message,error.getMessage()));
+				closeWaitingDialog();
 			}
 
 			public void success(List tables) {
@@ -223,6 +228,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
       bf.createBinding(joinGuiModel, "doOlap", "factTableVbox", "visible").fireSourceChanged();
     } catch (Exception e) {
       e.printStackTrace();
+      mtdatasource.displayErrors(new JoinError(e.getMessage(),e.getMessage()));
     }
   }
 
@@ -299,6 +305,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
     joinSelectionServiceGwtImpl.retrieveSchemas(connection, new XulServiceCallback<List>() {
       public void error(String message, Throwable error) {
         error.printStackTrace();
+        mtdatasource.displayErrors(new JoinError(message,error.getMessage()));
       }
 
       public void success(List schemaValues) {

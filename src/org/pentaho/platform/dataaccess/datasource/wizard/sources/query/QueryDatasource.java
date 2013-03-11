@@ -1,6 +1,8 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.query;
 
+import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.beans.AutobeanUtilities;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
@@ -59,8 +61,8 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
     String name = datasourceModel.getDatasourceName().replace(".", "_").replace(" ", "_");
     String query = datasourceModel.getQuery();
 
-       
-    datasourceService.generateQueryDomain(name, query, datasourceModel.getSelectedRelationalConnection(), DatasourceDTOUtil.generateDTO(datasourceModel), callback);
+    DatabaseConnection conn = (DatabaseConnection)AutobeanUtilities.connectionBeanToImpl(datasourceModel.getSelectedRelationalConnection());
+    datasourceService.generateQueryDomain(name, query, conn , DatasourceDTOUtil.generateDTO(datasourceModel), callback);
   }
 
   @Override
