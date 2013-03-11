@@ -43,7 +43,9 @@ public class AutobeanUtilities {
   public static IDatabaseConnection connectionBeanToImpl(IDatabaseConnection connectionBean) {
     DatabaseConnection connectionImpl = new DatabaseConnection();
     connectionImpl.setAccessType(connectionBean.getAccessType());
-    connectionImpl.setAccessTypeValue(connectionImpl.getAccessType().toString());
+    if (connectionImpl.getAccessType() != null) {
+      connectionImpl.setAccessTypeValue(connectionImpl.getAccessType().toString());
+    }
     connectionImpl.setAttributes(mapBeanToImpl(connectionBean.getAttributes()));
     connectionImpl.setConnectionPoolingProperties(mapBeanToImpl(connectionBean.getConnectionPoolingProperties()));
     connectionImpl.setConnectSql(connectionBean.getConnectSql());

@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
@@ -93,7 +93,7 @@ public class DSWDatasourceDebugGwtServlet extends RemoteServiceServlet implement
     return SERVICE.listDatasourceNames();
   }
 
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, IDatabaseConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain(String name, String query, DatabaseConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
     try {
       return SERVICE.generateQueryDomain(name, query, connection, datasourceDTO);
     } catch (DatasourceServiceException e) {
