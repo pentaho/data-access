@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
@@ -126,7 +126,7 @@ public interface IDSWDatasourceService {
 
   public List<String> listDatasourceNames() throws IOException;
 
-  QueryDatasourceSummary generateQueryDomain(String name, String query, IDatabaseConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException;
+  QueryDatasourceSummary generateQueryDomain(String name, String query, DatabaseConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException;
   
   /**
    * Returns a list of illegal characters in a string that are not allowed in a Data Source name
