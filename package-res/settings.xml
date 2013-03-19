@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
   <!-- roles with data access permissions -->
-  <data-access-roles>Admin</data-access-roles>
+  <data-access-roles>Administrator</data-access-roles>
   <!-- users with data access permissions -->
   <!--
   <data-access-users></data-access-users>
    -->
   <!-- roles with datasource view permissions -->
-  <data-access-view-roles>Authenticated,Admin</data-access-view-roles>
+  <data-access-view-roles>Authenticated,Administrator</data-access-view-roles>
   <!-- users with datasource view permissions -->
   <data-access-view-users>suzy</data-access-view-users>
   <!-- default view acls for user or role -->
