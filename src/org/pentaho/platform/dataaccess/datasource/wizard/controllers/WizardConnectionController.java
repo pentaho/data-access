@@ -22,9 +22,17 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+
+import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
+import org.pentaho.database.model.PartitionDatabaseMeta;
 import org.pentaho.database.util.DatabaseTypeHelper;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
@@ -96,6 +104,44 @@ public class WizardConnectionController extends AbstractXulEventHandler {
     init();
   }
 
+  protected AutoBean<IDatabaseConnection> createIDatabaseConnectionBean(IDatabaseConnection connection){
+    AutoBean<IDatabaseConnection> bean = connectionAutoBeanFactory.iDatabaseConnection();
+    IDatabaseConnection connectionBean = bean.as();
+    
+    connectionBean.setId(connection.getId());
+    connectionBean.setAccessType(connection.getAccessType());
+    connectionBean.setDatabaseType(connection.getDatabaseType());
+    connectionBean.setExtraOptions(connection.getExtraOptions());
+    connectionBean.setName(connection.getName());
+    connectionBean.setHostname(connection.getHostname());
+    connectionBean.setDatabaseName(connection.getDatabaseName());
+    connectionBean.setDatabasePort(connection.getDatabasePort());
+    connectionBean.setUsername(connection.getUsername());
+    connectionBean.setPassword(connection.getPassword());
+    connectionBean.setStreamingResults(connection.isStreamingResults());
+    connectionBean.setDataTablespace(connection.getDataTablespace());
+    connectionBean.setIndexTablespace(connection.getIndexTablespace());
+    connectionBean.setSQLServerInstance(connection.getSQLServerInstance());
+    connectionBean.setUsingDoubleDecimalAsSchemaTableSeparator(connection.isUsingDoubleDecimalAsSchemaTableSeparator());
+    connectionBean.setInformixServername(connection.getInformixServername());
+    //connectionBean.addExtraOption(String databaseTypeCode, String option, String value);
+    connectionBean.setAttributes(connection.getAttributes());
+    connectionBean.setChanged(connection.getChanged());
+    connectionBean.setQuoteAllFields(connection.isQuoteAllFields());
+    // advanced option (convert to enum with upper, lower, none?)
+    connectionBean.setForcingIdentifiersToLowerCase(connection.isForcingIdentifiersToLowerCase());
+    connectionBean.setForcingIdentifiersToUpperCase(connection.isForcingIdentifiersToUpperCase());
+    connectionBean.setConnectSql(connection.getConnectSql());
+    connectionBean.setUsingConnectionPool(connection.isUsingConnectionPool());
+    connectionBean.setInitialPoolSize(connection.getInitialPoolSize());
+    connectionBean.setMaximumPoolSize(connection.getMaximumPoolSize());
+    connectionBean.setPartitioned(connection.isPartitioned());
+    connectionBean.setConnectionPoolingProperties(connection.getConnectionPoolingProperties());
+    connectionBean.setPartitioningInformation(connection.getPartitioningInformation());
+    return AutoBeanUtils.getAutoBean(connectionBean); 
+    //return connectionBean;
+  }
+  
   @Bindable
   public void init() {
 
@@ -201,10 +247,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
 
   @Bindable
   public void addConnection() {
-    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, URL.encode(ConnectionController.getBaseURL() + "test"));
+    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, ConnectionController.getServiceURL("test"));
     testConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
-      AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection); 
+      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection); 
+      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
       testConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
 
         @Override
@@ -233,10 +280,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
 
   @Bindable
   public void testConnection() {
-    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, URL.encode(ConnectionController.getBaseURL() + "test"));
+    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, ConnectionController.getServiceURL("test"));
     testConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
-      AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
+      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
+      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
       testConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
 
         @Override
@@ -269,7 +317,12 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   @Bindable
   public void deleteConnection() {
     removeConfirmationDialog.hide();
-    RequestBuilder deleteConnectionBuilder = new RequestBuilder(RequestBuilder.DELETE, URL.encode(ConnectionController.getBaseURL() + "deletebyname?name=" + datasourceModel.getSelectedRelationalConnection().getName()));
+    RequestBuilder deleteConnectionBuilder = new RequestBuilder(
+      RequestBuilder.DELETE, 
+      ConnectionController.getServiceURL("deletebyname", new String[][]{
+        {"name", datasourceModel.getSelectedRelationalConnection().getName()}
+      })
+    );
     try {
       deleteConnectionBuilder.sendRequest(null, new RequestCallback() {
 
@@ -313,16 +366,22 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       saveConnectionConfirmationDialog.hide();
     }
 
-    RequestBuilder getConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(ConnectionController.getBaseURL() + "get?name=" + currentConnection.getName()));
+    RequestBuilder getConnectionBuilder = new RequestBuilder(
+      RequestBuilder.GET, 
+      ConnectionController.getServiceURL("get", new String[][]{
+        {"name", currentConnection.getName()}
+      })
+    );
     getConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       getConnectionBuilder.sendRequest(null, new RequestCallback() {
 
         private void saveNew() {
-          RequestBuilder addConnectionBuilder = new RequestBuilder(RequestBuilder.POST, URL.encode(ConnectionController.getBaseURL() + "add"));
+          RequestBuilder addConnectionBuilder = new RequestBuilder(RequestBuilder.POST, ConnectionController.getServiceURL("add"));
           addConnectionBuilder.setHeader("Content-Type", "application/json");
           try {
-            AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
+            //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
+            AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
             addConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
 
               @Override
@@ -359,10 +418,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
         @Override
         public void onResponseReceived(Request request, Response response) {
           if (response.getStatusCode() == Response.SC_OK) {
-            RequestBuilder updateConnectionBuilder = new RequestBuilder(RequestBuilder.POST, URL.encode(ConnectionController.getBaseURL() + "update"));
+            RequestBuilder updateConnectionBuilder = new RequestBuilder(RequestBuilder.POST, ConnectionController.getServiceURL("update"));
             updateConnectionBuilder.setHeader("Content-Type", "application/json");
             try {
-              AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
+              //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
+              AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
               updateConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
 
                 @Override
@@ -374,7 +434,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
                 public void onResponseReceived(Request request, Response response) {
                   try {
                     if (response.getStatusCode() == Response.SC_OK) {
-                      datasourceModel.getGuiStateModel().addConnection(currentConnection);
+                      datasourceModel.getGuiStateModel().updateConnection(currentConnection);
                       datasourceModel.setSelectedRelationalConnection(currentConnection);
                     } else {
                       openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
@@ -480,7 +540,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
      */
     public void onDialogAccept(IDatabaseConnection connection) {
       currentConnection = connection;
-      addConnection();
+      if (datasourceModel.isEditing()) {
+        saveConnection();
+      } else {
+        addConnection();
+      }
     }
 
     /* (non-Javadoc)
@@ -494,10 +558,10 @@ public class WizardConnectionController extends AbstractXulEventHandler {
      * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogReady()
      */
     public void onDialogReady() {
-      if (datasourceModel.isEditing() == false) {
-        showAddConnectionDialog();  
-      } else {
+      if (datasourceModel.isEditing()) {
         showEditConnectionDialog();
+      } else {
+        showAddConnectionDialog();  
       }
     }
     
