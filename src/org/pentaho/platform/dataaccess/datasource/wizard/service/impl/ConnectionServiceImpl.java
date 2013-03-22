@@ -34,7 +34,10 @@ import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
+import org.pentaho.platform.api.repository.datasource.DuplicateDatasourceException;
+import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
+import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.ConnectionServiceHelper;
@@ -44,6 +47,8 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.connection.PentahoConnectionFactory;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
+
+import com.google.gwt.http.client.Response;
 
 /**
  * ConnectionServiceImpl extends PenahoBase so that it inherits the ILogger functionality.
@@ -89,130 +94,156 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     return dataAccessPermHandler != null
         && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());
   }
+  
+  protected void ensureDataAccessPermission() throws ConnectionServiceException{
+    if (!hasDataAccessPermission()) {
+      String message = Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED"); //$NON-NLS-1$
+      logger.error(message); 
+      throw new ConnectionServiceException(Response.SC_FORBIDDEN, message); //$NON-NLS-1$
+    }
+  }
 
   public List<IDatabaseConnection> getConnections() throws ConnectionServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-      throw new ConnectionServiceException(Messages
-          .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-    }
-
+    ensureDataAccessPermission();
     List<IDatabaseConnection> connectionList = null;
     try {
       connectionList = datasourceMgmtSvc.getDatasources();
-    } catch (DatasourceMgmtServiceException dme) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0002_UNABLE_TO_GET_CONNECTION_LIST", dme //$NON-NLS-1$
-          .getLocalizedMessage()));
-      throw new ConnectionServiceException(Messages.getErrorString(
-          "ConnectionServiceImpl.ERROR_0002_UNABLE_TO_GET_CONNECTION_LIST", dme.getLocalizedMessage()), dme); //$NON-NLS-1$
+    } 
+    catch (DatasourceMgmtServiceException dme) {
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0002_UNABLE_TO_GET_CONNECTION_LIST", //$NON-NLS-1$
+        dme.getLocalizedMessage()
+      );
+      logger.error(message);
+      throw new ConnectionServiceException(message, dme);
     }
     return connectionList;
   }
 
   public IDatabaseConnection getConnectionByName(String name) throws ConnectionServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-      throw new ConnectionServiceException(Messages
-          .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-    }
+    ensureDataAccessPermission();
     try {
-    	IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceByName(name);
-      if (connection != null) {
-        return connection;
-      } else {
-        // no connection found, throw an exception
-        throw new ConnectionServiceException(Messages.getErrorString(
+      IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceByName(name);
+      if (connection == null) {
+        throw new ConnectionServiceException(Response.SC_NOT_FOUND, Messages.getErrorString(
           "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name)); //$NON-NLS-1$
+      } 
+      else {
+        return connection;
       }
-    } catch (DatasourceMgmtServiceException dme) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name, dme //$NON-NLS-1$
-          .getLocalizedMessage()));
-      throw new ConnectionServiceException(Messages.getErrorString(
-          "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name, dme.getLocalizedMessage()), dme); //$NON-NLS-1$
+    } 
+    catch (DatasourceMgmtServiceException dme) {
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
+        dme.getLocalizedMessage()
+      );
+      logger.error(message);
+      throw new ConnectionServiceException(message, dme);
     }
   }
 
   public boolean addConnection(IDatabaseConnection connection) throws ConnectionServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-      throw new ConnectionServiceException(Messages
-          .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-    }
-
+    ensureDataAccessPermission();
     try {
       datasourceMgmtSvc.createDatasource(connection);
       return true;
+    } catch (DuplicateDatasourceException duplicateDatasourceException) {
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", //$NON-NLS-1$
+        connection.getName(),
+        duplicateDatasourceException.getLocalizedMessage()
+      );
+      logger.error(message);
+      throw new ConnectionServiceException(Response.SC_CONFLICT, message, duplicateDatasourceException);
     } catch (Exception e) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", connection //$NON-NLS-1$
-          .getName(), e.getLocalizedMessage()));
-      throw new ConnectionServiceException(Messages.getErrorString(
-          "ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", connection.getName(), e //$NON-NLS-1$
-              .getLocalizedMessage()), e);
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", //$NON-NLS-1$
+        connection.getName(),
+        e.getLocalizedMessage()
+      );
+      logger.error(message);
+      throw new ConnectionServiceException(message, e);
     }
   }
 
   public boolean updateConnection(IDatabaseConnection connection) throws ConnectionServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-      throw new ConnectionServiceException(Messages
-          .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-    }
+    ensureDataAccessPermission();
     try {
       connection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection
           .getPassword()));
       datasourceMgmtSvc.updateDatasourceByName(connection.getName(), connection);
       return true;
-    } catch (Exception e) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION", //$NON-NLS-1$
-          connection.getName(), e.getLocalizedMessage()));
-      throw new ConnectionServiceException(Messages.getErrorString(
-          "ConnectionServiceImpl.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION", connection.getName(), e //$NON-NLS-1$
-              .getLocalizedMessage()), e);
+    } 
+    catch (NonExistingDatasourceException nonExistingDatasourceException) {
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION", //$NON-NLS-1$
+        connection.getName(),
+        nonExistingDatasourceException.getLocalizedMessage()
+      );
+      throw new ConnectionServiceException(Response.SC_NOT_FOUND, message, nonExistingDatasourceException);
+    }
+    catch (Exception e) {
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION", //$NON-NLS-1$
+        connection.getName(),
+        e.getLocalizedMessage()
+      );
+      logger.error(message);
+      throw new ConnectionServiceException(message, e);
     }
   }
 
   public boolean deleteConnection(IDatabaseConnection connection) throws ConnectionServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-      throw new ConnectionServiceException(Messages
-          .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-    }
+    ensureDataAccessPermission();
     try {
       datasourceMgmtSvc.deleteDatasourceByName(connection.getName());
       return true;
+    } 
+    catch (NonExistingDatasourceException nonExistingDatasourceException) {
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+        connection.getName(),
+        nonExistingDatasourceException.getLocalizedMessage()
+      );
+      throw new ConnectionServiceException(Response.SC_NOT_FOUND, message, nonExistingDatasourceException);
     } catch (Exception e) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
-          connection.getName(), e.getLocalizedMessage()));
-      throw new ConnectionServiceException(Messages.getErrorString(
-          "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", connection.getName(), e //$NON-NLS-1$
-              .getLocalizedMessage()), e);
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+        connection.getName(),
+        e.getLocalizedMessage()
+      );
+      logger.error(message);
+      throw new ConnectionServiceException(message, e);
     }
   }
 
   public boolean deleteConnection(String name) throws ConnectionServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-      throw new ConnectionServiceException(Messages
-          .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-    }
-
+    ensureDataAccessPermission();
     try {
       datasourceMgmtSvc.deleteDatasourceByName(name);
       return true;
-    } catch (Exception e) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", name, e //$NON-NLS-1$
-          .getLocalizedMessage()));
-      throw new ConnectionServiceException(Messages.getErrorString(
-          "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", name, e.getLocalizedMessage()), e); //$NON-NLS-1$
+    }
+    catch (NonExistingDatasourceException nonExistingDatasourceException) {
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+        name,
+        nonExistingDatasourceException.getLocalizedMessage()
+      );
+      throw new ConnectionServiceException(Response.SC_NOT_FOUND, message, nonExistingDatasourceException);
+    } 
+    catch (Exception e) {
+      String message = Messages.getErrorString(
+        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+        name,
+        e.getLocalizedMessage()
+      );
+      logger.error(message);
+      throw new ConnectionServiceException(message, e);
     }
   }
 
   public boolean testConnection(IDatabaseConnection connection) throws ConnectionServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-      throw new ConnectionServiceException(Messages
-          .getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-    }
+    ensureDataAccessPermission();
     if (connection != null) {
       if (connection.getPassword() == null) { // Can have an empty password but not a null one
         connection.setPassword(""); //$NON-NLS-1$
@@ -241,9 +272,9 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
         return false;
       }
     } else {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0008_UNABLE_TO_TEST_NULL_CONNECTION")); //$NON-NLS-1$
-      throw new ConnectionServiceException(Messages
-          .getErrorString("ConnectionServiceImpl.ERROR_0008_UNABLE_TO_TEST_NULL_CONNECTION")); //$NON-NLS-1$
+      String message = Messages.getErrorString("ConnectionServiceImpl.ERROR_0008_UNABLE_TO_TEST_NULL_CONNECTION"); //$NON-NLS-1$
+      logger.error(message);
+      throw new ConnectionServiceException(Response.SC_BAD_REQUEST, message); //$NON-NLS-1$
     }
   }
-  }
+}
