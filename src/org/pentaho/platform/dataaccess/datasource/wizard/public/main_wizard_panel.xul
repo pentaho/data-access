@@ -338,11 +338,50 @@
 	<!--     message to the user before saving the connection which has not been succesfully-->
 	<!--     tested                                                                         -->
 	<!--  ###############################################################################   -->
-	<dialog xmlns:pen="http://www.pentaho.org/2008/xul" id="saveConnectionConfirmationDialog" buttonlabelaccept="${dialog.OK}" buttonlabelcancel="${dialog.CANCEL}" buttons="accept,cancel" ondialogcancel="connectionController.closeSaveConnectionConfirmationDialog()" ondialogaccept="connectionController.saveConnection()" buttonalign="right" title="${saveConnectionConfirmationDialog.title}" height="120" width="220">
+	<dialog xmlns:pen="http://www.pentaho.org/2008/xul" 
+	   id="saveConnectionConfirmationDialog" 
+     title="${saveConnectionConfirmationDialog.title}" 
+     buttons="accept,cancel" buttonalign="right" 
+	   buttonlabelaccept="${dialog.OK}" ondialogaccept="connectionController.renameCheck()"
+	   buttonlabelcancel="${dialog.CANCEL}" ondialogcancel="connectionController.closeSaveConnectionConfirmationDialog()" 
+	   height="120" width="220"
+	>
 		<vbox>
 			<label value="${saveConnectionConfirmationDialog.confirmMessage}"/>
 		</vbox>
 	</dialog>
+  <!--  ###############################################################################   -->
+  <!--     RENAME CONNECTION CONFIRMATION DIALOG: Dialog to display the confirmation        -->
+  <!--     message to the user before renaming connection                          -->
+  <!--  ###############################################################################   -->
+  <dialog xmlns:pen="http://www.pentaho.org/2008/xul" 
+    id="renameConnectionConfirmationDialog"
+    title="${renameConnectionConfirmationDialog.title}" 
+    buttons="accept,cancel" buttonalign="right" 
+    buttonlabelaccept="${dialog.OK}" ondialogaccept="connectionController.overwriteCheck()" 
+    buttonlabelcancel="${dialog.CANCEL}" ondialogcancel="connectionController.closeRenameConnectionConfirmationDialog()"
+    height="120" width="220"
+  >
+    <vbox>
+      <label value="${renameConnectionConfirmationDialog.confirmMessage}"/>
+    </vbox>
+  </dialog>
+  <!--  ###############################################################################   -->
+  <!--     OVERWRITE CONNECTION CONFIRMATION DIALOG: Dialog to display the confirmation        -->
+  <!--     message to the user before overwriting the connection                          -->
+  <!--  ###############################################################################   -->
+  <dialog xmlns:pen="http://www.pentaho.org/2008/xul" 
+    id="overwriteConnectionConfirmationDialog"
+    title="${overwriteConnectionConfirmationDialog.title}" 
+    buttons="accept,cancel" buttonalign="right" 
+    buttonlabelaccept="${dialog.OK}" ondialogaccept="connectionController.overwriteConnection()" 
+    buttonlabelcancel="${dialog.CANCEL}" ondialogcancel="connectionController.closeOverwriteConnectionConfirmationDialog()"
+    height="120" width="220"
+  >
+    <vbox>
+      <label value="${overwriteConnectionConfirmationDialog.confirmMessage}"/>
+    </vbox>
+  </dialog>
 	<!--  ###############################################################################   -->
 	<!--     WAITING DIALOG: Dialog to display wait text while the operation is being       -->
 	<!--     performed                                                                      -->
