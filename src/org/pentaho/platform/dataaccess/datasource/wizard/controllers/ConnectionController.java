@@ -176,7 +176,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   @Bindable
   public void addConnection() {
-    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, URL.encode(getBaseURL() + "test"));
+    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, getServiceURL("test"));
     testConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
@@ -208,7 +208,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   @Bindable
   public void testConnection() {
-    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, URL.encode(getBaseURL() + "test"));
+    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, getServiceURL("test"));
     testConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
@@ -244,7 +244,12 @@ public class ConnectionController extends AbstractXulEventHandler {
   @Bindable
   public void deleteConnection() {
     removeConfirmationDialog.hide();
-    RequestBuilder deleteConnectionBuilder = new RequestBuilder(RequestBuilder.DELETE, URL.encode(getBaseURL() + "deletebyname?name=" + datasourceModel.getSelectedRelationalConnection().getName()));
+    RequestBuilder deleteConnectionBuilder = new RequestBuilder(
+      RequestBuilder.DELETE, 
+      getServiceURL("deletebyname", new String[][]{
+        {"name", datasourceModel.getSelectedRelationalConnection().getName()}
+      })
+    );
     try {
       deleteConnectionBuilder.sendRequest(null, new RequestCallback() {
 
@@ -289,13 +294,18 @@ public class ConnectionController extends AbstractXulEventHandler {
       saveConnectionConfirmationDialog.hide();
     }
 
-    RequestBuilder getConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "get?name=" + currentConnection.getName()));
+    RequestBuilder getConnectionBuilder = new RequestBuilder(
+      RequestBuilder.GET, 
+      getServiceURL("get", new String[][]{
+        {"name", currentConnection.getName()}
+      })
+    );
     getConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       getConnectionBuilder.sendRequest(null, new RequestCallback() {
 
         private void saveNew() {
-          RequestBuilder addConnectionBuilder = new RequestBuilder(RequestBuilder.POST, URL.encode(getBaseURL() + "add"));
+          RequestBuilder addConnectionBuilder = new RequestBuilder(RequestBuilder.POST, getServiceURL("add"));
           addConnectionBuilder.setHeader("Content-Type", "application/json");
           try {
             AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
@@ -336,7 +346,7 @@ public class ConnectionController extends AbstractXulEventHandler {
         @Override
         public void onResponseReceived(Request request, Response response) {
           if (response.getStatusCode() == Response.SC_OK) {
-            RequestBuilder updateConnectionBuilder = new RequestBuilder(RequestBuilder.POST, URL.encode(getBaseURL() + "update"));
+            RequestBuilder updateConnectionBuilder = new RequestBuilder(RequestBuilder.POST, getServiceURL("update"));
             updateConnectionBuilder.setHeader("Content-Type", "application/json");
             try {
               AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
@@ -457,7 +467,7 @@ public class ConnectionController extends AbstractXulEventHandler {
   }
 
   public void reloadConnections() {
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"));
+    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, getServiceURL("list"));
     listConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       listConnectionBuilder.sendRequest(null, new RequestCallback() {
@@ -499,8 +509,22 @@ public class ConnectionController extends AbstractXulEventHandler {
 
     return moduleUrl + "plugin/data-access/api/connection/";
   }
+  
+  public static String getServiceURL(String action) {
+    return URL.encode(getBaseURL() + action);
+  }
 
-
+  public static String getServiceURL(String action, String[][] parameters){
+    StringBuilder stringBuilder = new StringBuilder(action);
+    for (int i = 0; i < parameters.length; i++) {
+      stringBuilder.append(i == 0 ? "?" : "&");
+      stringBuilder.append(parameters[i][0]);
+      stringBuilder.append("=");
+      stringBuilder.append(parameters[i][1]);
+    }
+    return getServiceURL(stringBuilder.toString());
+  }
+  
   class DatabaseConnectionSetter implements DatabaseDialogListener {
 
     final DialogListener wrappedListener;

@@ -57,9 +57,12 @@ public class GuiStateModel extends XulEventSourceAdapter {
     this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
   }
 
-  public void updateConnection(IDatabaseConnection connection) {
+  public void updateConnection(String oldName, IDatabaseConnection connection) {
     List<IDatabaseConnection> previousValue = getPreviousValue();
-    IDatabaseConnection conn = getConnectionByName(connection.getName());
+    IDatabaseConnection conn = getConnectionByName(oldName);
+    if (conn == null) return;
+    String newName = connection.getName();
+    conn.setName(newName);
     conn.setAccessType(connection.getAccessType());
     conn.setConnectionPoolingProperties(connection.getConnectionPoolingProperties());
     conn.setConnectSql(connection.getConnectSql());
@@ -84,7 +87,17 @@ public class GuiStateModel extends XulEventSourceAdapter {
     conn.setUsingConnectionPool(connection.isUsingConnectionPool());
     conn.setUsingDoubleDecimalAsSchemaTableSeparator(connection.isUsingDoubleDecimalAsSchemaTableSeparator());
     
+    //Force an update of any views on the connection list.
+    if (!oldName.equals(newName)) {
+      List<IDatabaseConnection> empty = java.util.Collections.EMPTY_LIST;
+      this.firePropertyChange("connections", previousValue, empty); //$NON-NLS-1$
+      previousValue = empty;
+    }
     this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
+  }
+  
+  public void updateConnection(IDatabaseConnection connection) {
+    updateConnection(connection.getName(), connection);
   }
 
   @Bindable
