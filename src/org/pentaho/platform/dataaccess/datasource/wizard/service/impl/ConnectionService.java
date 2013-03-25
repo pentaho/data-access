@@ -28,7 +28,10 @@ import org.pentaho.database.model.IDatabaseConnectionPoolParameter;
 import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.ui.database.event.DefaultDatabaseConnectionList;
 import org.pentaho.ui.database.event.DefaultDatabaseConnectionPoolParameterList;
 import org.pentaho.ui.database.event.IDatabaseConnectionList;
@@ -87,6 +90,7 @@ public class ConnectionService {
   @Consumes({APPLICATION_JSON})
   public Response addConnection(DatabaseConnection connection) throws ConnectionServiceException {
     try {
+      validateAccess();
       boolean success = service.addConnection(connection);
       if (success) {
         return Response.ok().build();
@@ -234,5 +238,20 @@ public class ConnectionService {
       array.setArray(rawValues);
     }
     return array;
+  }
+  
+  /**
+   * internal validation of authorization
+   * @throws PentahoAccessControlException
+   */
+  private void validateAccess() throws PentahoAccessControlException {
+    IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
+    boolean isAdmin = policy.isAllowed(IAuthorizationPolicy.READ_REPOSITORY_CONTENT_ACTION)
+        && policy.isAllowed(IAuthorizationPolicy.CREATE_REPOSITORY_CONTENT_ACTION)
+        && (policy.isAllowed(IAuthorizationPolicy.ADMINISTER_SECURITY_ACTION)
+            || policy.isAllowed(IAuthorizationPolicy.PUBLISH_REPOSITORY_ACTION));
+    if (!isAdmin) {
+      throw new PentahoAccessControlException("Access Denied");
+    }
   }
 }
