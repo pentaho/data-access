@@ -49,12 +49,7 @@ public class MetadataDatasourceService {
 	private static final String LANG_CC = LANG + "_[A-Z]{2}";
 	private static final String LANG_CC_EXT = LANG_CC + "_[^/]+";
 	private static final List<String> ENCODINGS = Arrays.asList("", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR", "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251", "windows-1256", "KOI8-R", "ISO-8859-9");
-	
-	private final String ACTION_READ = "org.pentaho.repository.read"; 
-	private final String ACTION_CREATE = "org.pentaho.repository.create";
-	private final String ACTION_ADMINISTER_SECURITY = "org.pentaho.security.administerSecurity";
-
-  private static final Log logger = LogFactory.getLog(MetadataDatasourceService.class);
+	private static final Log logger = LogFactory.getLog(MetadataDatasourceService.class);
 
 	private static final Pattern[] patterns = new Pattern[] {
 	    Pattern.compile("(" + LANG + ").properties$"),
@@ -246,11 +241,18 @@ public class MetadataDatasourceService {
 		}
 	}
 	
-	private void validateAccess() throws PentahoAccessControlException {
-		IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
-		boolean isAdmin = policy.isAllowed(ACTION_READ) && policy.isAllowed(ACTION_CREATE) && policy.isAllowed(ACTION_ADMINISTER_SECURITY); 
-		if(!isAdmin) {
-			throw new PentahoAccessControlException("Access Denied");
-		}
-	}	
+  /**
+   * internal validation of authorization
+   * @throws PentahoAccessControlException
+   */
+  private void validateAccess() throws PentahoAccessControlException {
+    IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
+    boolean isAdmin = policy.isAllowed(IAuthorizationPolicy.READ_REPOSITORY_CONTENT_ACTION)
+        && policy.isAllowed(IAuthorizationPolicy.CREATE_REPOSITORY_CONTENT_ACTION)
+        && (policy.isAllowed(IAuthorizationPolicy.ADMINISTER_SECURITY_ACTION)
+            || policy.isAllowed(IAuthorizationPolicy.PUBLISH_REPOSITORY_ACTION));
+    if (!isAdmin) {
+      throw new PentahoAccessControlException("Access Denied");
+    }
+  }
 }
