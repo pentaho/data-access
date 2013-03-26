@@ -72,10 +72,10 @@ public class WizardConnectionController extends AbstractXulEventHandler {
 
   private XulDialog removeConfirmationDialog;
 
-  private XulDialog overwriteConnectionConfirmationDialog;
-  
   private XulDialog saveConnectionConfirmationDialog;
 
+  private XulDialog overwriteConnectionConfirmationDialog;
+  
   private XulDialog renameConnectionConfirmationDialog;
   
   private XulDialog errorDialog;
@@ -103,6 +103,8 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   ConnectionSetter connectionSetter = new ConnectionSetter();
 
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
+
+  protected String previousConnectionName, existingConnectionName;
 
   public WizardConnectionController(Document document) {
     this.document = document;
@@ -438,149 +440,6 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   }
   
   @Bindable
-  public void _saveConnection() {
-    if (!saveConnectionConfirmationDialog.isHidden()) {
-      saveConnectionConfirmationDialog.hide();
-    }
-    if (!renameConnectionConfirmationDialog.isHidden()) {
-      this.closeRenameConnectionConfirmationDialog();
-    }
-    if (!overwriteConnectionConfirmationDialog.isHidden()) {
-      overwriteConnectionConfirmationDialog.hide();
-    }
-
-    RequestBuilder getConnectionBuilder = new RequestBuilder(
-      RequestBuilder.GET, 
-      ConnectionController.getServiceURL("get", new String[][]{
-        {"name", currentConnection.getName()}
-      })
-    );
-    getConnectionBuilder.setHeader("Content-Type", "application/json");
-    try {
-      getConnectionBuilder.sendRequest(null, new RequestCallback() {
-
-        private void saveNew() {
-          RequestBuilder addConnectionBuilder = new RequestBuilder(RequestBuilder.POST, ConnectionController.getServiceURL("add"));
-          addConnectionBuilder.setHeader("Content-Type", "application/json");
-          try {
-            //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
-            AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
-            addConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
-
-              @Override
-              public void onError(Request request, Throwable exception) {
-                displayErrorMessage(exception);
-              }
-
-              @Override
-              public void onResponseReceived(Request request, Response response) {
-                try {
-                  if (response.getStatusCode() == Response.SC_OK) {
-                    datasourceModel.getGuiStateModel().addConnection(currentConnection);
-                    datasourceModel.setSelectedRelationalConnection(currentConnection);
-                  } else {
-                    openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                        .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
-                  }
-
-                } catch (Exception e) {
-                  displayErrorMessage(e);
-                }
-              }
-            });
-          } catch (RequestException e) {
-            displayErrorMessage(e);
-          }
-        }
-
-        @Override
-        public void onError(Request request, Throwable exception) {
-          saveNew();
-        }
-
-        @Override
-        public void onResponseReceived(Request request, Response response) {
-          if (response.getStatusCode() == Response.SC_OK) {
-            RequestBuilder updateConnectionBuilder = new RequestBuilder(RequestBuilder.POST, ConnectionController.getServiceURL("update"));
-            updateConnectionBuilder.setHeader("Content-Type", "application/json");
-            try {
-              //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
-              AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
-              updateConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
-
-                @Override
-                public void onError(Request request, Throwable exception) {
-                  displayErrorMessage(exception);
-                }
-
-                @Override
-                public void onResponseReceived(Request request, Response response) {
-                  try {
-                    if (response.getStatusCode() == Response.SC_OK) {
-                      datasourceModel.getGuiStateModel().updateConnection(currentConnection);
-                      datasourceModel.setSelectedRelationalConnection(currentConnection);
-                    } else {
-                      openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                          .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
-                    }
-                  } catch (Exception e) {
-                    displayErrorMessage(e);
-                  }
-                }
-              });
-            } catch (RequestException e) {
-              displayErrorMessage(e);
-            }
-          } 
-          else 
-          if (response.getStatusCode() == Response.SC_NOT_FOUND) {
-            saveNew();
-          }
-          else {
-            openErrorDialog(MessageHandler.getString("ERROR"), response.getStatusText());
-          }
-        }
-      });
-    } catch (RequestException e) {
-      displayErrorMessage(e);
-    }
-  }
-
-  @Bindable
-  public void _addConnection() {
-    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, ConnectionController.getServiceURL("test"));
-    testConnectionBuilder.setHeader("Content-Type", "application/json");
-    try {
-      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection); 
-      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
-      testConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
-
-        @Override
-        public void onError(Request request, Throwable exception) {
-          saveConnectionConfirmationDialog.show();
-        }
-
-        @Override
-        public void onResponseReceived(Request request, Response response) {
-          try {
-            if (response.getStatusCode() == Response.SC_OK) {
-//              addConnectionOverwriteCheck();
-            } else {
-              saveConnectionConfirmationDialog.show();
-            }
-          } catch (Exception e) {
-            displayErrorMessage(e);
-          }
-        }
-
-      });
-    } catch (RequestException e) {
-      saveConnectionConfirmationDialog.show();
-    }
-  }
-
-  
-  @Bindable
   public void testConnection() {
     RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, ConnectionController.getServiceURL("test"));
     testConnectionBuilder.setHeader("Content-Type", "application/json");
@@ -700,8 +559,6 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       showAddConnectionDialog();
     }
   }
-
-  protected String previousConnectionName, existingConnectionName;
 
   @Bindable
   public void showAddConnectionDialog() {
