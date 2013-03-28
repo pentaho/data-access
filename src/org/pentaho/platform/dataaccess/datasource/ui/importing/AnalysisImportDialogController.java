@@ -75,6 +75,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
+
 //import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 
 @SuppressWarnings("all")
@@ -99,7 +100,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private AnalysisImportDialogModel importDialogModel;
 
-//  private IXulAsyncConnectionService connectionService;
+  //  private IXulAsyncConnectionService connectionService;
 
   private XulTextbox paramNameTextBox;
 
@@ -151,7 +152,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     try {
       connectionAutoBeanFactory = GWT.create(IConnectionAutoBeanFactory.class);
       resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
-//      connectionService = new ConnectionServiceGwtImpl();
+      //      connectionService = new ConnectionServiceGwtImpl();
       importDialogModel = new AnalysisImportDialogModel();
       connectionList = (XulMenuList) document.getElementById("connectionList");
       analysisParametersTree = (XulTree) document.getElementById("analysisParametersTree");
@@ -174,35 +175,36 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       parametersAcceptButton.setDisabled(true);
 
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(connectionList, "selectedIndex", importDialogModel, "connection", new BindingConvertor<Integer, IDatabaseConnection>() {
-          @Override
-          public Integer targetToSource(IDatabaseConnection connection) {
-            return -1;
-          }
-
-          @Override
-          public IDatabaseConnection sourceToTarget(Integer value) {
-            if (value >= 0) {
-              return importDialogModel.getConnectionList().get(value);
+      bf.createBinding(connectionList, "selectedIndex", importDialogModel, "connection",
+          new BindingConvertor<Integer, IDatabaseConnection>() {
+            @Override
+            public Integer targetToSource(IDatabaseConnection connection) {
+              return -1;
             }
-            return null;
-          }
-      });
+
+            @Override
+            public IDatabaseConnection sourceToTarget(Integer value) {
+              if (value >= 0) {
+                return importDialogModel.getConnectionList().get(value);
+              }
+              return null;
+            }
+          });
 
       bf.createBinding(manualRadio, "checked", this, "preference", new PreferencesBindingConvertor());
       bf.createBinding(this, "connectionNames", connectionList, "elements");
-      
+
       Binding domainBinding = bf.createBinding(importDialogModel, "connectionList", this, "relationalConnections");
-      Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters", analysisParametersTree, "elements");
+      Binding analysisParametersBinding = bf.createBinding(importDialogModel, "analysisParameters",
+          analysisParametersTree, "elements");
       domainBinding.fireSourceChanged();
       analysisParametersBinding.fireSourceChanged();
-      
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
-  
+
   @Bindable
   public void setRelationalConnections(List<IDatabaseConnection> connections) {
     List<String> names = new ArrayList<String>();
@@ -227,7 +229,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
     return moduleUrl + "plugin/data-access/api/connection/";
   }
-  
+
   private void createWorkingForm() {
     if (formPanel == null) {
       formPanel = new FormPanel();
@@ -259,6 +261,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       //addSubmitHandler(); moved to GwtDataSourceEditorEntryPoint
     }
   }
+
   /**
    * Initialize this in the form init() 
    * return values are numeric -
@@ -350,33 +353,34 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     listConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       listConnectionBuilder.sendRequest(null, new RequestCallback() {
-        
+
         @Override
         public void onError(Request request, Throwable exception) {
           exception.printStackTrace();
           MessageHandler.getInstance().showErrorDialog(exception.getMessage());
         }
-       
+
         @Override
         public void onResponseReceived(Request request, Response response) {
-          AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory, IDatabaseConnectionList.class, response.getText());
+          AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory,
+              IDatabaseConnectionList.class, response.getText());
           importDialogModel.setConnectionList(bean.as().getDatabaseConnections());
         }
-     });
+      });
     } catch (RequestException e) {
       MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"),
-        "DatasourceEditor.ERROR_0004_CONNECTION_SERVICE_NULL");
+          "DatasourceEditor.ERROR_0004_CONNECTION_SERVICE_NULL");
     }
   }
 
   public boolean isValid() {
     return importDialogModel.isValid();
   }
-  
+
   public void handleFormPanelEvent(SubmitCompleteEvent event) {
     if (event.getResults().contains("SUCCESS") || event.getResults().contains("3")) {
       showMessagebox(messages.getString("Mondrian.SUCCESS"),
-          "Mondrian Analysis File " + importDialogModel.getUploadedFile() + " has been uploaded");     
+          "Mondrian Analysis File " + importDialogModel.getUploadedFile() + " has been uploaded");
     } else {
       String message = event.getResults();
       //message = message.substring(4, message.length() - 6);
@@ -395,7 +399,6 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     }
   }
 
- 
   /**
    * Convert to $NLS$
    * @param results
@@ -413,16 +416,22 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     switch (code) {
       case 1:
         msg = messages.getString("Mondrian.ERROR_OO1_PUBLISH");
+        break;
       case 2:
         msg = messages.getString("Mondrian.ERROR_OO2_PUBLISH");
+        break;
       case 5:
         msg = messages.getString("Mondrian.ERROR_OO5_USERNAME_PW");
+        break;
       case 6:
         msg = messages.getString("Mondrian.ERROR_OO6_Existing_Datasource");
+        break;
       case 7:
         msg = messages.getString("Mondrian.ERROR_OO7_EXISTING_XMLA");
+        break;
       case 8:
         msg = messages.getString("Mondrian.ERROR_OO8_EXISTING_SCHEMA");
+        break;
       default:
         msg = messages.getString("Mondrian.General Error", results);
         break;
@@ -523,7 +532,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
         if (status == XulDialogCallback.Status.ACCEPT) {
           overwrite = true;
           removeHiddenPanels();
-          buildAndSetParameters();          
+          buildAndSetParameters();
           formPanel.submit();
         }
       }
@@ -626,8 +635,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   public void setOverwrite(boolean overwrite) {
-   this.overwrite = overwrite;
-    
+    this.overwrite = overwrite;
+
   }
 
 }
