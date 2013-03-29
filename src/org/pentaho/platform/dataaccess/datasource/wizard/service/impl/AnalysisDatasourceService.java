@@ -211,9 +211,9 @@ public class AnalysisDatasourceService {
      //use existing Jersey post method - but translate into text/html for PUC Client
      ResponseBuilder responseBuilder;
      Response response = this.putMondrianSchema(dataInputStream, schemaFileInfo, catalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters);
-     responseBuilder=  Response.ok().status(200);
+     responseBuilder=  Response.ok();
      responseBuilder.entity(String.valueOf(response.getStatus()));
-     
+     responseBuilder.status(200);
      return responseBuilder.build();
   }
 
