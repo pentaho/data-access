@@ -199,7 +199,7 @@ public class DatasourceModelTest {
   @Test
   public void testDatasourceDTOSerialization() throws Exception {
 
-    PentahoSystem.setObjectFactory(new TestObjectFactory());
+    PentahoSystem.registerObjectFactory(new TestObjectFactory());
 
     DatasourceModel datasourceModel = new DatasourceModel();
     datasourceModel.setDatasourceName("testDatasource");
