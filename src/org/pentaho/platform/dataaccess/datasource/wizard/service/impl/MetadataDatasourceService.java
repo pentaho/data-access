@@ -41,6 +41,10 @@ import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainReposi
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
+import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
+import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
+import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
+import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 
 @Path("/data-access/api/metadata")
 public class MetadataDatasourceService {
@@ -247,10 +251,10 @@ public class MetadataDatasourceService {
    */
   private void validateAccess() throws PentahoAccessControlException {
     IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
-    boolean isAdmin = policy.isAllowed(IAuthorizationPolicy.READ_REPOSITORY_CONTENT_ACTION)
-        && policy.isAllowed(IAuthorizationPolicy.CREATE_REPOSITORY_CONTENT_ACTION)
-        && (policy.isAllowed(IAuthorizationPolicy.ADMINISTER_SECURITY_ACTION)
-            || policy.isAllowed(IAuthorizationPolicy.PUBLISH_REPOSITORY_ACTION));
+    boolean isAdmin = policy.isAllowed(RepositoryReadAction.NAME)
+        && policy.isAllowed(RepositoryCreateAction.NAME)
+        && (policy.isAllowed(AdministerSecurityAction.NAME)
+            || policy.isAllowed(PublishAction.NAME));
     if (!isAdmin) {
       throw new PentahoAccessControlException("Access Denied");
     }

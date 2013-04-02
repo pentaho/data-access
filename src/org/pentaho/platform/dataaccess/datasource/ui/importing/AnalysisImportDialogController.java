@@ -430,7 +430,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
         msg = messages.getString("Mondrian.ERROR_OO7_EXISTING_XMLA");
         break;
       case 8:
-        msg = messages.getString("Mondrian.ERROR_OO8_EXISTING_SCHEMA");
+        msg = messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA");
         break;
       default:
         msg = messages.getString("Mondrian.General Error", results);

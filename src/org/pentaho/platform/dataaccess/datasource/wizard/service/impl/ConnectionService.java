@@ -32,6 +32,10 @@ import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
+import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
+import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
+import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 import org.pentaho.ui.database.event.DefaultDatabaseConnectionList;
 import org.pentaho.ui.database.event.DefaultDatabaseConnectionPoolParameterList;
 import org.pentaho.ui.database.event.IDatabaseConnectionList;
@@ -246,10 +250,10 @@ public class ConnectionService {
    */
   private void validateAccess() throws PentahoAccessControlException {
     IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
-    boolean isAdmin = policy.isAllowed(IAuthorizationPolicy.READ_REPOSITORY_CONTENT_ACTION)
-        && policy.isAllowed(IAuthorizationPolicy.CREATE_REPOSITORY_CONTENT_ACTION)
-        && (policy.isAllowed(IAuthorizationPolicy.ADMINISTER_SECURITY_ACTION)
-            || policy.isAllowed(IAuthorizationPolicy.PUBLISH_REPOSITORY_ACTION));
+    boolean isAdmin = policy.isAllowed(RepositoryReadAction.NAME)
+        && policy.isAllowed(RepositoryCreateAction.NAME)
+        && (policy.isAllowed(AdministerSecurityAction.NAME)
+        || policy.isAllowed(PublishAction.NAME));
     if (!isAdmin) {
       throw new PentahoAccessControlException("Access Denied");
     }
