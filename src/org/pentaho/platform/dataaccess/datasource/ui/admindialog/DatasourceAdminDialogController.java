@@ -390,6 +390,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       public void onResponseReceived(Request request, Response response) {
         if (response.getStatusCode() == Response.SC_OK) {
           refreshDatasourceList();
+          editDatasourceButton.setDisabled(true);
         } else {
           Window.alert("Could Not remove: " + dsInfo.getId());
         }
