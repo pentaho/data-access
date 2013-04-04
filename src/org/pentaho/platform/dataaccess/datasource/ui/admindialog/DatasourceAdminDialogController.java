@@ -373,7 +373,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Bindable
   public void edit() {
     IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
-    entryPoint.showEditDatabaseDialog(null, dsInfo.getId());
+    entryPoint.showEditDatabaseDialog(adminDatasourceListener, dsInfo.getId());
   }
   
   @Bindable
