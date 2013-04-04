@@ -74,6 +74,10 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   private XulDialog saveConnectionConfirmationDialog;
 
+  private XulDialog overwriteConnectionConfirmationDialog;
+  
+  private XulDialog renameConnectionConfirmationDialog;
+
   private XulDialog errorDialog;
 
   private XulDialog successDialog;
@@ -98,8 +102,51 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
   
+  protected String previousConnectionName, existingConnectionName;
+
   public ConnectionController() {
     connectionAutoBeanFactory = GWT.create(IConnectionAutoBeanFactory.class);
+  }
+
+  protected void copyDatabaseConnectionProperties(IDatabaseConnection source, IDatabaseConnection target){
+    target.setId(source.getId());
+    target.setAccessType(source.getAccessType());
+    target.setDatabaseType(source.getDatabaseType());
+    target.setExtraOptions(source.getExtraOptions());
+    target.setName(source.getName());
+    target.setHostname(source.getHostname());
+    target.setDatabaseName(source.getDatabaseName());
+    target.setDatabasePort(source.getDatabasePort());
+    target.setUsername(source.getUsername());
+    target.setPassword(source.getPassword());
+    target.setStreamingResults(source.isStreamingResults());
+    target.setDataTablespace(source.getDataTablespace());
+    target.setIndexTablespace(source.getIndexTablespace());
+    target.setSQLServerInstance(source.getSQLServerInstance());
+    target.setUsingDoubleDecimalAsSchemaTableSeparator(source.isUsingDoubleDecimalAsSchemaTableSeparator());
+    target.setInformixServername(source.getInformixServername());
+    //target.addExtraOption(String databaseTypeCode, String option, String value);
+    target.setAttributes(source.getAttributes());
+    target.setChanged(source.getChanged());
+    target.setQuoteAllFields(source.isQuoteAllFields());
+    // advanced option (convert to enum with upper, lower, none?)
+    target.setForcingIdentifiersToLowerCase(source.isForcingIdentifiersToLowerCase());
+    target.setForcingIdentifiersToUpperCase(source.isForcingIdentifiersToUpperCase());
+    target.setConnectSql(source.getConnectSql());
+    target.setUsingConnectionPool(source.isUsingConnectionPool());
+    target.setInitialPoolSize(source.getInitialPoolSize());
+    target.setMaximumPoolSize(source.getMaximumPoolSize());
+    target.setPartitioned(source.isPartitioned());
+    target.setConnectionPoolingProperties(source.getConnectionPoolingProperties());
+    target.setPartitioningInformation(source.getPartitioningInformation());
+  }
+  
+  protected AutoBean<IDatabaseConnection> createIDatabaseConnectionBean(IDatabaseConnection connection){
+    AutoBean<IDatabaseConnection> bean = connectionAutoBeanFactory.iDatabaseConnection();
+    IDatabaseConnection connectionBean = bean.as();
+    copyDatabaseConnectionProperties(connection, connectionBean);
+    return AutoBeanUtils.getAutoBean(connectionBean); 
+    //return connectionBean;
   }
 
   @Bindable
@@ -115,6 +162,8 @@ public class ConnectionController extends AbstractXulEventHandler {
     };
     dialectService.getDatabaseTypes(callback);
     saveConnectionConfirmationDialog = (XulDialog) document.getElementById("saveConnectionConfirmationDialog"); //$NON-NLS-1$
+    overwriteConnectionConfirmationDialog = (XulDialog) document.getElementById("overwriteConnectionConfirmationDialog");
+    renameConnectionConfirmationDialog = (XulDialog) document.getElementById("renameConnectionConfirmationDialog");
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById("errorLabel");//$NON-NLS-1$
     successDialog = (XulDialog) document.getElementById("successDialog"); //$NON-NLS-1$
@@ -170,10 +219,204 @@ public class ConnectionController extends AbstractXulEventHandler {
   }
 
   @Bindable
+  public void handleDialogAccept() {
+    //first, test the connection
+    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, ConnectionController.getServiceURL("test"));
+    testConnectionBuilder.setHeader("Content-Type", "application/json");
+    try {
+      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
+      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
+      testConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+
+        @Override
+        public void onError(Request request, Throwable exception) {
+          saveConnectionConfirmationDialog.show();
+        }
+
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            if (response.getStatusCode() == Response.SC_OK) {
+              //test is ok, now check if we are renaming
+              renameCheck();
+            } else {
+              //confirm if we should continu saving this invalid connection.
+              saveConnectionConfirmationDialog.show();
+            }
+          } catch (Exception e) {
+            displayErrorMessage(e);
+          }
+        }
+
+      });
+    } catch (RequestException e) {
+      displayErrorMessage(e);
+    }
+  }
+  
+  @Bindable
+  public void renameCheck() {
+    if (!saveConnectionConfirmationDialog.isHidden()) closeSaveConnectionConfirmationDialog();
+
+    if (datasourceModel.isEditing() && !previousConnectionName.equals(currentConnection.getName())) {
+      showRenameConnectionConfirmationDialog();
+    }
+    else {
+      overwriteCheck();
+    }
+    
+  }
+  
+  @Bindable
+  public void overwriteCheck() {
+    if (!saveConnectionConfirmationDialog.isHidden()) closeSaveConnectionConfirmationDialog();
+    if (!renameConnectionConfirmationDialog.isHidden()) closeRenameConnectionConfirmationDialog();
+    
+    if (datasourceModel.isEditing() && previousConnectionName.equals(currentConnection.getName())){
+      //if editing and no name change, proceed.
+      updateConnection();
+    }
+    else {
+      //either new connection, or editing involved a name change.
+      RequestBuilder getConnectionBuilder = new RequestBuilder(
+          RequestBuilder.GET, 
+        ConnectionController.getServiceURL("get", new String[][]{
+          {"name", currentConnection.getName()}
+        })
+      );
+      getConnectionBuilder.setHeader("Content-Type", "application/json");
+      try {
+        AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
+        getConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+
+          public void onResponseReceived(Request request, Response response){
+            switch (response.getStatusCode()) {
+              case Response.SC_OK:
+                showOverwriteConnectionConfirmationDialog();
+                break;
+              case Response.SC_NOT_FOUND:
+                saveConnection();
+                break;
+              default:
+                //TODO: error message
+                saveConnection();
+            }
+          }
+          
+          public void onError(Request request, Throwable exception) {
+            displayErrorMessage(exception);
+          }
+          
+        });
+      }
+      catch (Exception e){
+        displayErrorMessage(e);
+      }
+    }
+  }
+  
+  @Bindable
+  public void updateConnection() {
+    RequestBuilder updateConnectionBuilder = new RequestBuilder(RequestBuilder.POST, ConnectionController.getServiceURL("update"));
+    updateConnectionBuilder.setHeader("Content-Type", "application/json");
+    try {
+      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection); 
+      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
+      updateConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+
+        @Override
+        public void onError(Request request, Throwable exception) {
+          displayErrorMessage(exception);
+        }
+
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            if (response.getStatusCode() == Response.SC_OK) {
+              datasourceModel.getGuiStateModel().updateConnection(existingConnectionName, currentConnection);
+              datasourceModel.setSelectedRelationalConnection(currentConnection);
+              DialogListener dialogListener = connectionSetter.getOuterListener();
+              if (dialogListener != null) {
+                dialogListener.onDialogAccept(currentConnection);
+              }
+            } else {
+              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
+                  .getString("ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION"));//$NON-NLS-1$
+            }
+          } catch (Exception e) {
+            displayErrorMessage(e);
+          }
+        }
+
+      });
+    } catch (RequestException e) {
+      displayErrorMessage(e);
+    }
+  }
+
+  @Bindable
+  public void addConnection() {
+    RequestBuilder addConnectionBuilder = new RequestBuilder(RequestBuilder.POST, ConnectionController.getServiceURL("add"));
+    addConnectionBuilder.setHeader("Content-Type", "application/json");
+    try {
+      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection); 
+      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
+      addConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+
+        @Override
+        public void onError(Request request, Throwable exception) {
+          displayErrorMessage(exception);
+        }
+
+        @Override
+        public void onResponseReceived(Request request, Response response) {
+          try {
+            if (response.getStatusCode() == Response.SC_OK) {
+              datasourceModel.getGuiStateModel().addConnection(currentConnection);
+              datasourceModel.setSelectedRelationalConnection(currentConnection);
+              DialogListener dialogListener = connectionSetter.getOuterListener();
+              if (dialogListener != null) {
+                dialogListener.onDialogAccept(currentConnection);
+              }
+            } else {
+              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
+                  .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
+            }
+          } catch (Exception e) {
+            displayErrorMessage(e);
+          }
+        }
+
+      });
+    } catch (RequestException e) {
+      displayErrorMessage(e);
+    }
+  }
+  
+  @Bindable
+  public void overwriteConnection() {
+    if (!saveConnectionConfirmationDialog.isHidden()) closeSaveConnectionConfirmationDialog();
+    if (!renameConnectionConfirmationDialog.isHidden()) closeRenameConnectionConfirmationDialog();
+    if (!overwriteConnectionConfirmationDialog.isHidden()) overwriteConnectionConfirmationDialog.hide();
+    existingConnectionName = currentConnection.getName();
+    updateConnection();
+  }
+  
+  @Bindable
+  public void saveConnection() {
+    if (!saveConnectionConfirmationDialog.isHidden()) closeSaveConnectionConfirmationDialog();
+    if (!renameConnectionConfirmationDialog.isHidden()) closeRenameConnectionConfirmationDialog();
+    if (!overwriteConnectionConfirmationDialog.isHidden()) overwriteConnectionConfirmationDialog.hide();
+    
+    if (datasourceModel.isEditing()) updateConnection();
+    else addConnection();
+  }
+
+  @Bindable
   public void closeSaveConnectionConfirmationDialog() {
     saveConnectionConfirmationDialog.hide();
   }
-
+/*
   @Bindable
   public void addConnection() {
     RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, getServiceURL("test"));
@@ -205,7 +448,7 @@ public class ConnectionController extends AbstractXulEventHandler {
       displayErrorMessage(e);
     }
   }
-
+*/
   @Bindable
   public void testConnection() {
     RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, getServiceURL("test"));
@@ -287,7 +530,7 @@ public class ConnectionController extends AbstractXulEventHandler {
       displayErrorMessage(e);
     }
   }
-
+/*
   @Bindable
   public void saveConnection() {
     if (!saveConnectionConfirmationDialog.isHidden()) {
@@ -384,7 +627,7 @@ public class ConnectionController extends AbstractXulEventHandler {
       displayErrorMessage(e);
     }
   }
-
+*/
   public void addConnectionDialogListener(ConnectionDialogListener listener) {
     if (listeners.contains(listener) == false) {
       listeners.add(listener);
@@ -405,6 +648,8 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   public void showAddConnectionDialog(DialogListener listener) {
 //    this.listener = listener;
+    previousConnectionName = null;
+    existingConnectionName = previousConnectionName;
     connectionSetter = new DatabaseConnectionSetter(listener);
     showAddConnectionDialog();
   }
@@ -443,11 +688,18 @@ public class ConnectionController extends AbstractXulEventHandler {
   @SuppressWarnings("deprecation")
   @Bindable
   public void showEditConnectionDialog() {
-    connectionSetter = new DatabaseConnectionSetter(null);
+    showEditConnectionDialog(null);
+  }
+    
+  @SuppressWarnings("deprecation")
+  public void showEditConnectionDialog(DialogListener dialogListener) {
+    connectionSetter = new DatabaseConnectionSetter(dialogListener);
     datasourceModel.setEditing(true); 
     if(databaseDialog != null) {
       IDatabaseConnection connection = datasourceModel.getSelectedRelationalConnection(); 
       databaseDialog.setDatabaseConnection(connection);
+      previousConnectionName = connection.getName();
+      existingConnectionName = previousConnectionName;
       databaseDialog.show();
     } else {
       createNewDatabaseDialog();
@@ -464,6 +716,24 @@ public class ConnectionController extends AbstractXulEventHandler {
   @Bindable
   public void closeRemoveConfirmationDialog() {
     removeConfirmationDialog.hide();
+  }
+
+  public void showRenameConnectionConfirmationDialog() {
+    renameConnectionConfirmationDialog.show();
+  }
+
+  @Bindable
+  public void closeRenameConnectionConfirmationDialog() {
+    renameConnectionConfirmationDialog.hide();
+  }
+
+  public void showOverwriteConnectionConfirmationDialog() {
+    overwriteConnectionConfirmationDialog.show();
+  }
+
+  @Bindable
+  public void closeOverwriteConnectionConfirmationDialog() {
+    overwriteConnectionConfirmationDialog.hide();
   }
 
   public void reloadConnections() {
@@ -543,7 +813,8 @@ public class ConnectionController extends AbstractXulEventHandler {
      */
     public void onDialogAccept(final IDatabaseConnection connection) {
       currentConnection = connection;
-      addConnection();
+      handleDialogAccept();
+      //if (wrappedListener != null) wrappedListener.onDialogAccept(connection);
     }
 
     /* (non-Javadoc)
@@ -560,7 +831,7 @@ public class ConnectionController extends AbstractXulEventHandler {
       if (datasourceModel.isEditing() == false) {
         showAddConnectionDialog(wrappedListener);
       } else {
-        showEditConnectionDialog();
+        showEditConnectionDialog(wrappedListener);
       }
     }
   }

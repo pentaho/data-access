@@ -52,6 +52,7 @@ import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourc
 import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
@@ -491,6 +492,17 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     });
   }
 
+  private void showAdminDialog(final DialogListener<IDatasourceInfo> listener) {
+    if(adminDialog == null) {
+      final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener = getAdminDialogListener(listener);
+      asyncConstructorDone = false;
+      adminDialog = new GwtDatasourceAdminDialog(datasourceServiceManager, modelerService, datasourceService, this, constructorListener);
+    } else {
+      adminDialog.addDialogListener(listener);
+      adminDialog.showDialog();
+    }
+  }
+ 
 
   @SuppressWarnings("unused")
   private void showAdminDialog(final JavaScriptObject callback) {
@@ -521,11 +533,20 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   }
   
 
+  private void showSelectionOrAdminDialog(
+    final String context, final String selectDatasource, 
+    final JavaScriptObject callback, 
+    final DialogListener<LogicalModelSummary> listener
+  ){
+    if("manage".equals(context) && isAdmin) {
+      showAdminDialog(callback);
+    } else {
+      showSelectionDialog(context, Boolean.valueOf(selectDatasource), listener);
+    }
+  }
+  
   @SuppressWarnings("unused")
   private void showSelectionDialog(final String context, final String selectDatasource, final JavaScriptObject callback) {
-    final boolean selectDs = Boolean.valueOf(selectDatasource);
-
-
     final DialogListener<LogicalModelSummary> listener = new DialogListener<LogicalModelSummary>(){
       public void onDialogCancel() {
         selectDialog.removeDialogListener(this);
@@ -546,6 +567,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         notifyDialogCallbackError(callback, errorMessage);
       }
     };
+    
     if(wizard == null && this.hasPermissions){
       wizard = new EmbeddedWizard(false);
 
@@ -554,34 +576,14 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       wizard.setCsvDatasourceService(csvService);
       wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
         public void asyncConstructorDone(EmbeddedWizard source) {
-          if(context != null && context.equals("manage") && isAdmin) {
-            showAdminDialog(callback);
-          } else {
-          showSelectionDialog(context, selectDs, listener);
-          }
+          showSelectionOrAdminDialog(context, selectDatasource, callback, listener);
         }
       });
     } else {
-      if(context != null && context.equals("manage") && isAdmin) {
-        showAdminDialog(callback);
-      } else {
-        showSelectionDialog(context, selectDs, listener);
-      }
+      showSelectionOrAdminDialog(context, selectDatasource, callback, listener);
     }
   }
 
-
-  private void showAdminDialog(final DialogListener<IDatasourceInfo> listener) {
-    if(adminDialog == null) {
-      final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener = getAdminDialogListener(listener);
-      asyncConstructorDone = false;
-      adminDialog = new GwtDatasourceAdminDialog(datasourceServiceManager, modelerService, datasourceService, this, constructorListener);
-    } else {
-      adminDialog.addDialogListener(listener);
-      adminDialog.showDialog();
-    }
-  }
- 
   private void showMetadataImportDialog(final JavaScriptObject callback) {
 	    final DialogListener<MetadataImportDialogModel> listener = new DialogListener<MetadataImportDialogModel>(){
 	      
@@ -854,15 +856,17 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   public void showDatabaseDialog(final DialogListener<IDatabaseConnection> listener) {
       ConnectionController connectionController = wizard.getConnectionController();
+      //WizardConnectionController connectionController = wizard.getConnectionController();
       connectionController.init();
       DatasourceModel datasourceModel = new DatasourceModel();
       connectionController.setDatasourceModel(datasourceModel);
       connectionController.showAddConnectionDialog(listener);
   }
   
-  public void showEditDatabaseDialog(final JavaScriptObject callback, final String databaseName) {
-    String url = ConnectionController.getBaseURL() + "get";
-    url = url + "?name=" + databaseName;
+  public void showEditDatabaseDialog(final DialogListener dialogListener, final String databaseName) {
+    String url = ConnectionController.getServiceURL("get", new String[][]{
+      {"name", databaseName}
+    });
     RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
     builder.setHeader("Accept", "application/json");
 
@@ -883,12 +887,14 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
           }
 
           ConnectionController connectionController = wizard.getConnectionController();
+          //WizardConnectionController connectionController = wizard.getConnectionController();
           connectionController.init();
-          DatasourceModel datasourceModel = new DatasourceModel();
+          //DatasourceModel datasourceModel = new DatasourceModel();
+          DatasourceModel datasourceModel = connectionController.getDatasourceModel();
           datasourceModel.setSelectedRelationalConnection(conn); 
 
           connectionController.setDatasourceModel(datasourceModel);
-          connectionController.showEditConnectionDialog();
+          connectionController.showEditConnectionDialog(dialogListener);
          }
       });
     } catch (Exception e) {
