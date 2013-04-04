@@ -123,7 +123,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   public void init(final AsyncConstructorListener<EmbeddedWizard> constructorListener) {
     asyncConstructorListener = constructorListener;
 //    setConnectionService(connectionService);
-    setDatasourceService(datasourceService);
+//    setDatasourceService(datasourceService);
 
     wizardModel.addDatasource(new CsvDatasource(datasourceModel, datasourceService, csvDatasourceService));
     wizardModel.addDatasource(new QueryDatasource(datasourceService, datasourceModel));

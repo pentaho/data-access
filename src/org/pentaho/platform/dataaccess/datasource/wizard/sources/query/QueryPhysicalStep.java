@@ -57,7 +57,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   XulButton okButton = null;
   XulButton cancelButton = null;
   private XulTree csvDataTable = null;
-  private WizardConnectionController connectionController;
+  private WizardConnectionController wizardConnectionController;
 //  private IXulAsyncConnectionService connectionService;
   private boolean isFinishable = false;
   private IDatabaseConnection connection;
@@ -102,12 +102,12 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
     datasourceNameTextBox = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
     
-    connectionController = new WizardConnectionController(document);
-    connectionController.setDatasourceModel(datasourceModel);
+    wizardConnectionController = new WizardConnectionController(document);
+    wizardConnectionController.setDatasourceModel(datasourceModel);
 
-//    connectionController.setConnectionService(connectionService);
-    getXulDomContainer().addEventHandler(connectionController);
-    connectionController.init();
+//    wizardConnectionController.setConnectionService(connectionService);
+    getXulDomContainer().addEventHandler(wizardConnectionController);
+    wizardConnectionController.init();
 
     databaseConnectionController = new ConnectionController();
     databaseConnectionController.setDatasourceModel(datasourceModel);
@@ -248,12 +248,12 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 	return super.stepDeactivatingForward();
   }
 
-  public WizardConnectionController getConnectionController() {
-    return connectionController;
+  public WizardConnectionController getWizardConnectionController() {
+    return wizardConnectionController;
   }
 
-  public void setConnectionController(WizardConnectionController connectionController) {
-    this.connectionController = connectionController;
+  public void setWizardConnectionController(WizardConnectionController wizardConnectionController) {
+    this.wizardConnectionController = wizardConnectionController;
   }
 
   @Bindable

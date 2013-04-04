@@ -14,20 +14,31 @@
   <!--  ###############################################################################   -->
   <dialog id="datasourceAdminDialog" buttonlabelcancel="${datasourceAdminDialog.close}" buttons="cancel"
     buttonalign="right" title="${datasourceAdminDialog.title}" width="500" height="215"
-    ondialogcancel="datasourceAdminDialogController.onDialogCancel()">
+    ondialogcancel="datasourceAdminDialogController.onDialogCancel()"
+  >
 
-        <hbox flex="1">
-	        <spacer flex="1"/>
-	        <button id="editDatasourceButton" image="images/edit.png" tooltiptext="${datasourceAdminDialog.EDIT}" pen:disabledimage="images/edit_disabled.png"  disabled="true" onclick="datasourceAdminDialogController.edit()" />
-	        <label id="spacer-label" width="3" />
-	        <button id="datasourceAddButton" image="images/add_combo.png">
-       			<menupopup id="datasourceTypeMenuPopup"/>
-     		</button>
-     		<label id="spacer-label" width="3" />
-   	        <button id="exportDatasourceButton" image="images/export.png" tooltiptext="${datasourceAdminDialog.EXPORT}" pen:disabledimage="images/export_disabled.png" disabled="true" onclick="datasourceAdminDialogController.export()" />
-   	        <label id="spacer-label" width="3" />
-	        <button id="removeDatasourceButton" image="images/remove.png" tooltiptext="${datasourceAdminDialog.REMOVE}" pen:disabledimage="images/remove_disabled.png" disabled="true" onclick="datasourceAdminDialogController.remove()" />
-        </hbox>
+    <hbox flex="1">
+      <spacer flex="1"/>
+      <button 
+       id="editDatasourceButton" 
+       image="images/edit.png" 
+       tooltiptext="${datasourceAdminDialog.EDIT}" 
+       pen:disabledimage="images/edit_disabled.png"  
+       disabled="true" 
+       onclick="datasourceAdminDialogController.edit()"
+      />
+      <label id="spacer-label" width="3" />
+      <button 
+       id="datasourceAddButton" 
+       image="images/add_combo.png"
+      >
+       <menupopup id="datasourceTypeMenuPopup"/>
+      </button>
+      <label id="spacer-label" width="3" />
+        <button id="exportDatasourceButton" image="images/export.png" tooltiptext="${datasourceAdminDialog.EXPORT}" pen:disabledimage="images/export_disabled.png" disabled="true" onclick="datasourceAdminDialogController.export()" />
+        <label id="spacer-label" width="3" />
+      <button id="removeDatasourceButton" image="images/remove.png" tooltiptext="${datasourceAdminDialog.REMOVE}" pen:disabledimage="images/remove_disabled.png" disabled="true" onclick="datasourceAdminDialogController.remove()" />
+    </hbox>
    
 		<tree height="175" id="datasourcesListTable" seltype="single">
 			<treecols id="datasourcesListCols">
