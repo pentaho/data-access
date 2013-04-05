@@ -45,9 +45,7 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
   protected DatasourceAdminDialogController datasourceAdminDialogController;
 
   protected IXulAsyncDatasourceServiceManager genericDatasourceServiceManager;
-  
-//  protected IXulAsyncConnectionService connectionService;
-  
+
   protected IModelerServiceAsync modelerService;
   
   private IXulAsyncDSWDatasourceService dswService;
@@ -64,7 +62,6 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
       IModelerServiceAsync modelerService, IXulAsyncDSWDatasourceService dswService, GwtDatasourceEditorEntryPoint entryPoint, 
       final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener) {
     this.genericDatasourceServiceManager = genericDatasourceServiceManager;
-//    this.connectionService = connectionService;
     this.modelerService = modelerService;
     this.dswService = dswService;
     this.constructorListener = constructorListener;
@@ -101,7 +98,6 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
       datasourceAdminDialogController = new DatasourceAdminDialogController();
       datasourceAdminDialogController.setBindingFactory(bf);
       datasourceAdminDialogController.setDatasourceServiceManager(genericDatasourceServiceManager);
-//      datasourceAdminDialogController.setConnectionService(connectionService);
       datasourceAdminDialogController.setModelerService(modelerService);
       datasourceAdminDialogController.setDSWService(dswService);
       datasourceAdminDialogController.setEntryPoint(entryPoint);

@@ -63,7 +63,8 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private XulButton exportDatasourceButton;
   private XulButton editDatasourceButton;
   private XulButton removeDatasourceButton;
-  
+  private XulButton closeButton;
+
   private Binding editDatasourceButtonBinding; 
   private Binding removeDatasourceButtonBinding;
   private Binding exportDatasourceButtonBinding;
@@ -93,7 +94,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     exportDatasourceButton = (XulButton) document.getElementById("exportDatasourceButton"); //$NON-NLS-1$
     editDatasourceButton = (XulButton) document.getElementById("editDatasourceButton"); //$NON-NLS-1$
     removeDatasourceButton = (XulButton) document.getElementById("removeDatasourceButton"); //$NON-NLS-1$
-
+    closeButton = (XulButton) document.getElementById("datasourceAdminDialog_cancel"); //$NON-NLS-1$
     bf.setBindingType(Binding.Type.ONE_WAY);
     try {
       //Binding datasourceBinding = bf.createBinding(datasourceAdminDialogModel, "datasourceTypes", datasourceTypeMenuList, "elements");
@@ -177,7 +178,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         @Override
         public void onDialogCancel() {
           // TODO Auto-generated method stub
-          
+
         }
 
         @Override
@@ -226,10 +227,6 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     this.datasourceServiceManager = datasourceServiceManager;
   }
 
-//  public void setConnectionService(final IXulAsyncConnectionService connectionService) {
-//    this.connectionService = connectionService;
-//  }
-  
   public void setModelerService(final IModelerServiceAsync modelerService) {
     this.modelerService = modelerService;
   }
@@ -323,6 +320,11 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Override
   public void showDialog() {    
     refreshDatasourceList();
+    /*
+    Clean up styles on show to fix IE bug with button hover
+     */
+    ((com.google.gwt.user.client.ui.Button)closeButton.getManagedObject())
+        .setStyleName("pentaho-button");
   }
 
   @Override
