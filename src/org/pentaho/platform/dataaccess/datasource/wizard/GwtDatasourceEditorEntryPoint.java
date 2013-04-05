@@ -889,8 +889,11 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
           ConnectionController connectionController = wizard.getConnectionController();
           //WizardConnectionController connectionController = wizard.getConnectionController();
           connectionController.init();
-          //DatasourceModel datasourceModel = new DatasourceModel();
           DatasourceModel datasourceModel = connectionController.getDatasourceModel();
+          if (datasourceModel == null) {
+            datasourceModel = new DatasourceModel();
+            connectionController.setDatasourceModel(datasourceModel);
+          }
           datasourceModel.setSelectedRelationalConnection(conn); 
 
           connectionController.setDatasourceModel(datasourceModel);
