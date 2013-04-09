@@ -41,7 +41,10 @@ public class PentahoSystemHelper {
       if (PentahoSystem.getApplicationContext() == null) {
         StandaloneApplicationContext applicationContext = new StandaloneApplicationContext(getSolutionPath(), ""); //$NON-NLS-1$
         // set the base url assuming there is a running server on port 8080
+        if(PentahoRequestContextHolder.getRequestContext() != null) {
         applicationContext.setFullyQualifiedServerURL(PentahoRequestContextHolder.getRequestContext().getContextPath());
+        }
+
         String inContainer = System.getProperty("incontainer", "false"); //$NON-NLS-1$ //$NON-NLS-2$
         if (inContainer.equalsIgnoreCase("false")) { //$NON-NLS-1$
           // Setup simple-jndi for datasources
