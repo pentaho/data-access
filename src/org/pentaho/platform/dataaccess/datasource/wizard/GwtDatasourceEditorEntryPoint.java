@@ -856,7 +856,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   public void showDatabaseDialog(final DialogListener<IDatabaseConnection> listener) {
       ConnectionController connectionController = wizard.getConnectionController();
-      //WizardConnectionController connectionController = wizard.getConnectionController();
       connectionController.init();
       DatasourceModel datasourceModel = new DatasourceModel();
       connectionController.setDatasourceModel(datasourceModel);
@@ -887,15 +886,14 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
           }
 
           ConnectionController connectionController = wizard.getConnectionController();
-          //WizardConnectionController connectionController = wizard.getConnectionController();
           connectionController.init();
           DatasourceModel datasourceModel = connectionController.getDatasourceModel();
           if (datasourceModel == null) {
             datasourceModel = new DatasourceModel();
-            connectionController.setDatasourceModel(datasourceModel);
           }
-          datasourceModel.setSelectedRelationalConnection(conn); 
-
+          datasourceModel.setSelectedRelationalConnection(conn);
+          // This is important for edit mode of datasource model
+          datasourceModel.setEditing(true);
           connectionController.setDatasourceModel(datasourceModel);
           connectionController.showEditConnectionDialog(dialogListener);
          }

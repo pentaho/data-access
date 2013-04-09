@@ -63,9 +63,9 @@
 									<hbox>
 										<label value="${datasourceDialog.Connection}" tooltiptext="${datasourceDialog.ConnectionToolTip}"/>
 										<spacer flex="1"/>
-										<button id="editConnection" image="images/update.png" pen:disabledimage="images/update_disabled.png" tooltiptext="${datasourceDialog.editConnectionImageToolTip}" onclick="connectionController.showEditConnectionDialog()" disabled="true"/>
-										<button id="addConnection" image="images/add.png" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="images/add_disabled.png" onclick="connectionController.showAddConnectionDialog()" disabled="false"/>
-										<button id="removeConnection" image="images/remove.png" pen:disabledimage="images/remove_disabled.png" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="connectionController.showRemoveConnectionDialog()" disabled="true"/>
+										<button id="editConnection" image="images/update.png" pen:disabledimage="images/update_disabled.png" tooltiptext="${datasourceDialog.editConnectionImageToolTip}" onclick="wizardConnectionController.showEditConnectionDialog()" disabled="true"/>
+										<button id="addConnection" image="images/add.png" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="images/add_disabled.png" onclick="wizardConnectionController.showAddConnectionDialog()" disabled="false"/>
+										<button id="removeConnection" image="images/remove.png" pen:disabledimage="images/remove_disabled.png" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true"/>
 									</hbox>
 									<listbox id="connectionList" pen:binding="modelName" disabled="true" height="275" width="180"/>
 									<vbox id="metadata" flex="1">
@@ -325,6 +325,21 @@
 	<!--  ###############################################################################  -->
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul" id="removeConfirmationDialog" buttonlabelaccept="${dialog.OK}"
           buttonlabelcancel="${dialog.CANCEL}" buttons="accept, cancel"
+          ondialogcancel="wizardConnectionController.closeRemoveConfirmationDialog()"
+          ondialogaccept="wizardConnectionController.deleteConnection()" buttonalign="right"
+          title="${removeConfirmationDialog.title}" height="150" width="200"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pentaho.org/2008/xul ">
+    <vbox>
+      <label value="${removeConfirmationDialog.confirmMessage}"/>
+    </vbox>
+  </dialog>
+
+	<!--  ###############################################################################  -->
+	<!--     REMOVE CONNECTION CONFIRMATION DIALOG: Dialog to display the confirmation     -->
+	<!--     message to the user before deleting the selected connection from the list     -->
+	<!--  ###############################################################################  -->
+  <dialog xmlns:pen="http://www.pentaho.org/2008/xul" id="removeConfirmationDialogConnectionController" buttonlabelaccept="${dialog.OK}"
+          buttonlabelcancel="${dialog.CANCEL}" buttons="accept, cancel"
           ondialogcancel="connectionController.closeRemoveConfirmationDialog()"
           ondialogaccept="connectionController.deleteConnection()" buttonalign="right"
           title="${removeConfirmationDialog.title}" height="150" width="200"
@@ -333,6 +348,7 @@
       <label value="${removeConfirmationDialog.confirmMessage}"/>
     </vbox>
   </dialog>
+
 	<!--  ###############################################################################   -->
 	<!--     SAVE CONNECTION CONFIRMATION DIALOG: Dialog to display the confirmation        -->
 	<!--     message to the user before saving the connection which has not been succesfully-->
@@ -340,6 +356,23 @@
 	<!--  ###############################################################################   -->
 	<dialog xmlns:pen="http://www.pentaho.org/2008/xul" 
 	   id="saveConnectionConfirmationDialog" 
+     title="${saveConnectionConfirmationDialog.title}" 
+     buttons="accept,cancel" buttonalign="right" 
+	   buttonlabelaccept="${dialog.OK}" ondialogaccept="wizardConnectionController.renameCheck()"
+	   buttonlabelcancel="${dialog.CANCEL}" ondialogcancel="wizardConnectionController.closeSaveConnectionConfirmationDialog()" 
+	   height="120" width="220"
+	>
+		<vbox>
+			<label value="${saveConnectionConfirmationDialog.confirmMessage}"/>
+		</vbox>
+	</dialog>
+	<!--  ###############################################################################   -->
+	<!--     SAVE CONNECTION CONFIRMATION DIALOG: Dialog to display the confirmation        -->
+	<!--     message to the user before saving the connection which has not been succesfully-->
+	<!--     tested                                                                         -->
+	<!--  ###############################################################################   -->
+	<dialog xmlns:pen="http://www.pentaho.org/2008/xul" 
+	   id="saveConnectionConfirmationDialogConnectionController" 
      title="${saveConnectionConfirmationDialog.title}" 
      buttons="accept,cancel" buttonalign="right" 
 	   buttonlabelaccept="${dialog.OK}" ondialogaccept="connectionController.renameCheck()"
@@ -350,12 +383,30 @@
 			<label value="${saveConnectionConfirmationDialog.confirmMessage}"/>
 		</vbox>
 	</dialog>
+	
   <!--  ###############################################################################   -->
   <!--     RENAME CONNECTION CONFIRMATION DIALOG: Dialog to display the confirmation        -->
   <!--     message to the user before renaming connection                          -->
   <!--  ###############################################################################   -->
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul" 
     id="renameConnectionConfirmationDialog"
+    title="${renameConnectionConfirmationDialog.title}" 
+    buttons="accept,cancel" buttonalign="right" 
+    buttonlabelaccept="${dialog.OK}" ondialogaccept="wizardConnectionController.overwriteCheck()" 
+    buttonlabelcancel="${dialog.CANCEL}" ondialogcancel="wizardConnectionController.closeRenameConnectionConfirmationDialog()"
+    height="120" width="220"
+  >
+    <vbox>
+      <label value="${renameConnectionConfirmationDialog.confirmMessage}"/>
+    </vbox>
+  </dialog>
+
+  <!--  ###############################################################################   -->
+  <!--     RENAME CONNECTION CONFIRMATION DIALOG: Dialog to display the confirmation        -->
+  <!--     message to the user before renaming connection                          -->
+  <!--  ###############################################################################   -->
+  <dialog xmlns:pen="http://www.pentaho.org/2008/xul" 
+    id="renameConnectionConfirmationDialogConnectionController"
     title="${renameConnectionConfirmationDialog.title}" 
     buttons="accept,cancel" buttonalign="right" 
     buttonlabelaccept="${dialog.OK}" ondialogaccept="connectionController.overwriteCheck()" 
@@ -366,12 +417,30 @@
       <label value="${renameConnectionConfirmationDialog.confirmMessage}"/>
     </vbox>
   </dialog>
+
   <!--  ###############################################################################   -->
   <!--     OVERWRITE CONNECTION CONFIRMATION DIALOG: Dialog to display the confirmation        -->
   <!--     message to the user before overwriting the connection                          -->
   <!--  ###############################################################################   -->
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul" 
     id="overwriteConnectionConfirmationDialog"
+    title="${overwriteConnectionConfirmationDialog.title}" 
+    buttons="accept,cancel" buttonalign="right" 
+    buttonlabelaccept="${dialog.OK}" ondialogaccept="wizardConnectionController.overwriteConnection()" 
+    buttonlabelcancel="${dialog.CANCEL}" ondialogcancel="wizardConnectionController.closeOverwriteConnectionConfirmationDialog()"
+    height="120" width="220"
+  >
+    <vbox>
+      <label value="${overwriteConnectionConfirmationDialog.confirmMessage}"/>
+    </vbox>
+  </dialog>
+  
+    <!--  ###############################################################################   -->
+  <!--     OVERWRITE CONNECTION CONFIRMATION DIALOG: Dialog to display the confirmation        -->
+  <!--     message to the user before overwriting the connection                          -->
+  <!--  ###############################################################################   -->
+  <dialog xmlns:pen="http://www.pentaho.org/2008/xul" 
+    id="overwriteConnectionConfirmationDialogConnectionController"
     title="${overwriteConnectionConfirmationDialog.title}" 
     buttons="accept,cancel" buttonalign="right" 
     buttonlabelaccept="${dialog.OK}" ondialogaccept="connectionController.overwriteConnection()" 
@@ -410,11 +479,19 @@
         <label id="error_dialog_details" width="800" height="300" multiline="true" pre="true"/>
       </expandpanel>
     </vbox>
-	</dialog>	
+	</dialog>
 	<!--  ###############################################################################   -->
 	<!--     SUCCESS DIALOG: Dialog to display success text                                 -->
 	<!--  ###############################################################################   -->
-	<dialog id="successDialog" title="${successDialog.successTitle}" buttonlabelaccept="${successDialog.CLOSE}" buttons="accept" ondialogaccept="connectionController.closeSuccessDialog()" width="300" height="100" buttonalign="right">
+	<dialog id="successDialog" title="${successDialog.successTitle}" buttonlabelaccept="${successDialog.CLOSE}" buttons="accept" ondialogaccept="wizardConnectionController.closeSuccessDialog()" width="300" height="100" buttonalign="right">
+	  <vbox>
+		<label id="successLabel" value="${successDialog.successMessage}"/>
+	  </vbox>
+	</dialog>		
+	<!--  ###############################################################################   -->
+	<!--     SUCCESS DIALOG: Dialog to display success text                                 -->
+	<!--  ###############################################################################   -->
+	<dialog id="successDialogConnectionController" title="${successDialog.successTitle}" buttonlabelaccept="${successDialog.CLOSE}" buttons="accept" ondialogaccept="connectionController.closeSuccessDialog()" width="300" height="100" buttonalign="right">
 	  <vbox>
 		<label id="successLabel" value="${successDialog.successMessage}"/>
 	  </vbox>
@@ -422,7 +499,20 @@
 	<!--  ###############################################################################   -->
 	<!--     SUCCESS DIALOG w/DETAILS: Dialog to display success + details message          -->
 	<!--  ###############################################################################   -->
-	<dialog id="successDetailsDialog" title="${successDialog.infoTitle}" buttonlabelaccept="${successDialog.CLOSE}" buttons="accept" ondialogaccept="connectionController.closeSuccessDetailsDialog()" width="300" height="100" padding="50" buttonalign="right">
+	<dialog id="successDetailsDialog" title="${successDialog.infoTitle}" buttonlabelaccept="${successDialog.CLOSE}" buttons="accept" ondialogaccept="wizardConnectionController.closeSuccessDetailsDialog()" width="300" height="100" padding="50" buttonalign="right">
+	  <vbox>
+		<label id="success_details_label" value="${successDialog.successMessage}"/>
+		<button id="toggle_success_details_button" label="Details..." onclick="wizardConnectionController.toggleSuccessDetails()" disabled="false"/>
+		<hbox id="success_details_hider" visible="false">
+			<textbox id="success_dialog_details" width="800" height="300" multiline="true"/>
+		</hbox>
+	  </vbox>
+	</dialog>
+
+	<!--  ###############################################################################   -->
+	<!--     SUCCESS DIALOG w/DETAILS: Dialog to display success + details message          -->
+	<!--  ###############################################################################   -->
+	<dialog id="successDetailsDialogConnectionController" title="${successDialog.infoTitle}" buttonlabelaccept="${successDialog.CLOSE}" buttons="accept" ondialogaccept="connectionController.closeSuccessDetailsDialog()" width="300" height="100" padding="50" buttonalign="right">
 	  <vbox>
 		<label id="success_details_label" value="${successDialog.successMessage}"/>
 		<button id="toggle_success_details_button" label="Details..." onclick="connectionController.toggleSuccessDetails()" disabled="false"/>
@@ -431,7 +521,7 @@
 		</hbox>
 	  </vbox>
 	</dialog>
-
+	
   <!--  ###############################################################################   -->
   <!--     SUMMARY DIALOG w/DETAILS: Dialog to display success + details message          -->
   <!--  ###############################################################################   -->

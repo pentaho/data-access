@@ -243,7 +243,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   }
 
   public String getName() {
-    return "connectionController";//$NON-NLS-1$
+    return "wizardConnectionController";//$NON-NLS-1$
   }
 
   @Bindable

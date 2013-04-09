@@ -43,6 +43,8 @@ import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseDialectService;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.containers.XulHbox;
+import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
@@ -103,11 +105,15 @@ public class ConnectionController extends AbstractXulEventHandler {
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
   
   protected String previousConnectionName, existingConnectionName;
-
-  public ConnectionController() {
+  
+  private XulDialog successDetailsDialog;
+  
+  public ConnectionController(Document document) {
+    this.document = document;
     connectionAutoBeanFactory = GWT.create(IConnectionAutoBeanFactory.class);
+    init();
   }
-
+  
   protected void copyDatabaseConnectionProperties(IDatabaseConnection source, IDatabaseConnection target){
     target.setId(source.getId());
     target.setAccessType(source.getAccessType());
@@ -161,14 +167,15 @@ public class ConnectionController extends AbstractXulEventHandler {
       }
     };
     dialectService.getDatabaseTypes(callback);
-    saveConnectionConfirmationDialog = (XulDialog) document.getElementById("saveConnectionConfirmationDialog"); //$NON-NLS-1$
-    overwriteConnectionConfirmationDialog = (XulDialog) document.getElementById("overwriteConnectionConfirmationDialog");
-    renameConnectionConfirmationDialog = (XulDialog) document.getElementById("renameConnectionConfirmationDialog");
+    saveConnectionConfirmationDialog = (XulDialog) document.getElementById("saveConnectionConfirmationDialogConnectionController"); //$NON-NLS-1$
+    overwriteConnectionConfirmationDialog = (XulDialog) document.getElementById("overwriteConnectionConfirmationDialogConnectionController");
+    renameConnectionConfirmationDialog = (XulDialog) document.getElementById("renameConnectionConfirmationDialogConnectionController");
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById("errorLabel");//$NON-NLS-1$
     successDialog = (XulDialog) document.getElementById("successDialog"); //$NON-NLS-1$
     successLabel = (XulLabel) document.getElementById("successLabel");//$NON-NLS-1$
-    removeConfirmationDialog = (XulDialog) document.getElementById("removeConfirmationDialog"); //$NON-NLS-1$
+    removeConfirmationDialog = (XulDialog) document.getElementById("removeConfirmationDialogConnectionController"); //$NON-NLS-1$
+    successDetailsDialog = (XulDialog) document.getElementById("successDetailsDialogConnectionController"); //$NON-NLS-1$
   }
 
   @Bindable
@@ -199,6 +206,19 @@ public class ConnectionController extends AbstractXulEventHandler {
     }
   }
 
+  
+  @Bindable
+  public void toggleDetails() {
+    XulHbox details = (XulHbox) document.getElementById("details_hider"); //$NON-NLS-1$
+    details.setVisible(!details.isVisible());
+  }
+
+  @Bindable
+  public void toggleSuccessDetails() {
+    XulHbox details = (XulHbox) document.getElementById("success_details_hider"); //$NON-NLS-1$
+    details.setVisible(!details.isVisible());
+  }
+  
   public void setDatasourceModel(DatasourceModel model) {
     this.datasourceModel = model;
   }
@@ -735,6 +755,14 @@ public class ConnectionController extends AbstractXulEventHandler {
   public void closeOverwriteConnectionConfirmationDialog() {
     overwriteConnectionConfirmationDialog.hide();
   }
+  
+  @Bindable
+  public void closeSuccessDetailsDialog() {
+    if (!successDetailsDialog.isHidden()) {
+      successDetailsDialog.hide();
+    }
+  }
+
 
   public void reloadConnections() {
     RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, getServiceURL("list"));
