@@ -109,7 +109,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
     getXulDomContainer().addEventHandler(wizardConnectionController);
     wizardConnectionController.init();
 
-    databaseConnectionController = new ConnectionController();
+    databaseConnectionController = new ConnectionController(document);
     databaseConnectionController.setDatasourceModel(datasourceModel);
 //    databaseConnectionController.setService(connectionService);
     databaseConnectionController.reloadConnections();
