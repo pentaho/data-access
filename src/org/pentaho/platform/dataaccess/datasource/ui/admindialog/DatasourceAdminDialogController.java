@@ -11,12 +11,8 @@ import org.pentaho.platform.dataaccess.datasource.ui.service.JdbcDatasourceServi
 import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
-//import org.pentaho.platform.dataaccess.datasource.wizard.Domain;
-//import org.pentaho.platform.dataaccess.datasource.wizard.DialogListener;
-//import org.pentaho.platform.dataaccess.datasource.wizard.Domain;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
-//import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
@@ -52,7 +48,6 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private BindingFactory bf;
   
   private IXulAsyncDatasourceServiceManager datasourceServiceManager;
-//  private IXulAsyncConnectionService connectionService;
   private IModelerServiceAsync modelerService;
   private IXulAsyncDSWDatasourceService dswService;
   private DatasourceAdminDialogModel datasourceAdminDialogModel = new DatasourceAdminDialogModel();
@@ -61,8 +56,6 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private XulDialog datasourceAdminErrorDialog;
   private XulDialog removeDatasourceConfirmationDialog;
   private XulLabel datasourceAdminErrorLabel = null;
-  
-  //private XulMenuList datasourceTypeMenuList;
   
   private XulButton datasourceAddButton;
   private XulMenupopup datasourceTypeMenuPopup;
@@ -93,7 +86,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     datasourceAdminErrorDialog = (XulDialog) document.getElementById("datasourceAdminErrorDialog"); //$NON-NLS-1$
     removeDatasourceConfirmationDialog = (XulDialog) document.getElementById("removeDatasourceConfirmationDialog"); //$NON-NLS-1$
     datasourceAdminErrorLabel = (XulLabel) document.getElementById("datasourceAdminErrorLabel");//$NON-NLS-1$
-    //datasourceTypeMenuList = (XulMenuList) document.getElementById("datasourceTypeMenuList");//$NON-NLS-1$
+
     datasourceAddButton = (XulButton) document.getElementById("datasourceAddButton"); //$NON-NLS-1$
     datasourceTypeMenuPopup = (XulMenupopup) document.getElementById("datasourceTypeMenuPopup"); //$NON-NLS-1$
     exportDatasourceButton = (XulButton) document.getElementById("exportDatasourceButton"); //$NON-NLS-1$
@@ -101,7 +94,6 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     removeDatasourceButton = (XulButton) document.getElementById("removeDatasourceButton"); //$NON-NLS-1$
     bf.setBindingType(Binding.Type.ONE_WAY);
     try {
-      //Binding datasourceBinding = bf.createBinding(datasourceAdminDialogModel, "datasourceTypes", datasourceTypeMenuList, "elements");
       
       BindingConvertor<IDatasourceInfo, Boolean> removeDatasourceButtonConvertor = new BindingConvertor<IDatasourceInfo, Boolean>() {
         @Override
@@ -384,9 +376,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           for (LogicalModelSummary logicalModelSummary : retVal){
             if (!dsId.equals(logicalModelSummary.getDomainId())) continue;
               entryPoint.showWizardEdit(
-                logicalModelSummary.getDomainId(), //final String domainId, 
-                logicalModelSummary.getModelId(), //final String modelId, 
-                false, //boolean relationalOnlyValid,
+                logicalModelSummary.getDomainId(),
+                logicalModelSummary.getModelId(),
+                false,
                 new DialogListener<Domain> (){
 
                   @Override
