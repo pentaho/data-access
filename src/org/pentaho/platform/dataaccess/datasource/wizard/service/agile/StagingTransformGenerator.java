@@ -423,7 +423,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
 
     try {
       RowMetaInterface prev = transMeta.getPrevStepFields(TABLE_OUTPUT);
-      SQLStatement sqlStatement = meta.getSQLStatements(transMeta, stepMeta, prev);
+      SQLStatement sqlStatement = meta.getSQLStatements(transMeta, stepMeta, prev, null, false, null);
       if (!sqlStatement.hasError()) {
         if (sqlStatement.hasSQL()) {
           // now we can execute the SQL
