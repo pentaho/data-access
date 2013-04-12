@@ -4,12 +4,17 @@ import java.util.List;
 
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.ui.service.DSWUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.JdbcDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
+//import org.pentaho.platform.dataaccess.datasource.wizard.Domain;
+//import org.pentaho.platform.dataaccess.datasource.wizard.DialogListener;
+//import org.pentaho.platform.dataaccess.datasource.wizard.Domain;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
 //import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
@@ -32,6 +37,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
+import org.pentaho.ui.xul.util.DialogController.DialogListener;
 
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
@@ -368,7 +374,69 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Bindable
   public void edit() {
     IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
-    entryPoint.showEditDatabaseDialog(adminDatasourceListener, dsInfo.getId());
+    String type = dsInfo.getType();
+    final String dsId = dsInfo.getId();
+    if (DSWUIDatasourceService.TYPE.equals(type)) {
+      dswService.getLogicalModels(dsId, new XulServiceCallback<List<LogicalModelSummary>>(){
+
+        @Override
+        public void success(List<LogicalModelSummary> retVal) {
+          for (LogicalModelSummary logicalModelSummary : retVal){
+            if (!dsId.equals(logicalModelSummary.getDomainId())) continue;
+              entryPoint.showWizardEdit(
+                logicalModelSummary.getDomainId(), //final String domainId, 
+                logicalModelSummary.getModelId(), //final String modelId, 
+                false, //boolean relationalOnlyValid,
+                new DialogListener<Domain> (){
+
+                  @Override
+                  public void onDialogAccept(
+                      Domain returnValue) {
+                    // TODO Auto-generated method stub
+                    
+                  }
+
+                  @Override
+                  public void onDialogCancel() {
+                    // TODO Auto-generated method stub
+                    
+                  }
+
+                  @Override
+                  public void onDialogReady() {
+                    // TODO Auto-generated method stub
+                    
+                  }
+
+                  @Override
+                  public void onDialogError(String errorMessage) {
+                    // TODO Auto-generated method stub
+                    
+                  }
+                  
+                }
+              );          
+          }
+        }
+
+        @Override
+        public void error(String message, Throwable error) {
+          // TODO Auto-generated method stub
+          
+        }
+        
+      });
+    }
+    else 
+    if (JdbcDatasourceService.TYPE.equals(type)) {
+      entryPoint.showEditDatabaseDialog(
+        adminDatasourceListener, 
+        dsId
+      );
+    }
+    else {
+      
+    }
   }
   
   @Bindable

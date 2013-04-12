@@ -424,9 +424,8 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   }
 
-  public void showWizardEdit(final String domainId, final String modelId, boolean relationalOnlyValid,
-      final DialogListener<Domain> listener) {
-    showWizardEdit(domainId, modelId, ModelerPerspective.REPORTING.name(), relationalOnlyValid, listener);
+  public void showWizardEdit(final String domainId, final String modelId, boolean relationalOnlyValid, final DialogListener<Domain> listener) {
+      showWizardEdit(domainId, modelId, ModelerPerspective.REPORTING.name(), relationalOnlyValid, listener);
   }
 
   public void showWizardEdit(final String domainId, final String modelId, final String perspective,
