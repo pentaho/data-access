@@ -19,13 +19,6 @@ PentahoSystem which is initialized after Spring
   <bean id="ISolutionRepository" class="org.pentaho.platform.repository.solution.filebased.FileBasedSolutionRepository"
         scope="session"/>
 
-  <bean id="IMetadataDomainRepository"
-        class="org.pentaho.platform.repository.pmd.SecurityAwarePentahoMetadataDomainRepository" scope="singleton">
-    <constructor-arg>
-      <ref bean="unifiedRepository"/>
-    </constructor-arg>
-  </bean>
-
   <!-- Data connections.  Connections objects should be accessed through PentahoConnectionFactory,
 not directly from the PentahoObjectFactory. -->
   <bean id="connection-SQL" class="org.pentaho.platform.plugin.services.connections.sql.SQLConnection"
@@ -62,7 +55,6 @@ not directly from the PentahoObjectFactory. -->
         scope="singleton"/>
   <bean id="IPluginResourceLoader" class="org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader"
         scope="singleton"/>
-  <bean id="IDatasourceMgmtService" class="org.pentaho.webservices.test.TestDatasourceMgmtService" scope="prototype"/>
 
   <bean id="ICwmSchemaFactory" class="org.pentaho.pms.factory.CwmSchemaFactory" scope="session"/>
 
