@@ -70,6 +70,7 @@ public class GwtImportDialog implements IXulLoaderCallback {
       metadataImportDialogController = new MetadataImportDialogController();
       metadataImportDialogController.setBindingFactory(bf);
       container.addEventHandler(metadataImportDialogController);
+      metadataImportDialogController.setDatasourceMessages(datasourceMessages);
 
       analysisImportDialogController = new AnalysisImportDialogController();
       analysisImportDialogController.setBindingFactory(bf);
