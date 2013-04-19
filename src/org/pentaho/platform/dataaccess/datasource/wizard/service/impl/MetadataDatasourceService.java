@@ -20,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,19 +33,19 @@ import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.security.SecurityHelper;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
+import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
+
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 @Path("/data-access/api/metadata")
 public class MetadataDatasourceService {
@@ -54,6 +55,9 @@ public class MetadataDatasourceService {
 	private static final String LANG_CC_EXT = LANG_CC + "_[^/]+";
 	private static final List<String> ENCODINGS = Arrays.asList("", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR", "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251", "windows-1256", "KOI8-R", "ISO-8859-9");
 	private static final Log logger = LogFactory.getLog(MetadataDatasourceService.class);
+
+  private static final String OVERWRITE_IN_REPOS = "overwrite";
+  private static final String SUCCESS = "3";
 
 	private static final Pattern[] patterns = new Pattern[] {
 	    Pattern.compile("(" + LANG + ").properties$"),
@@ -84,12 +88,18 @@ public class MetadataDatasourceService {
   public Response importMetadataDatasourceWithPost( @FormDataParam("domainId") String domainId,
                                             @FormDataParam("metadataFile") InputStream metadataFile,
                                             @FormDataParam("metadataFile") FormDataContentDisposition metadataFileInfo,
+                                            @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
                                             @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
                                             @FormDataParam("localeFiles") List<FormDataContentDisposition> localeFilesInfo)
       throws PentahoAccessControlException {
-    importMetadataDatasource(domainId, metadataFile, metadataFileInfo, localeFiles, localeFilesInfo);
-    return Response.ok("SUCCESS").type(MediaType.TEXT_HTML).build();
-//    return importMetadataDatasource(domainId, metadataFile, metadataFileInfo, localeFiles, localeFilesInfo);
+
+    Response response = importMetadataDatasource(domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
+        localeFilesInfo);
+    ResponseBuilder responseBuilder;
+    responseBuilder = Response.ok();
+    responseBuilder.entity(String.valueOf(response.getStatus()));
+    responseBuilder.status(200);
+    return responseBuilder.build();
   }
 	
   @PUT
@@ -99,6 +109,7 @@ public class MetadataDatasourceService {
 	public Response importMetadataDatasource( @FormDataParam("domainId") String domainId,
                                             @FormDataParam("metadataFile") InputStream metadataFile,
                                             @FormDataParam("metadataFile") FormDataContentDisposition metadataFileInfo,
+                                            @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
                                             @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
                                             @FormDataParam("localeFiles") List<FormDataContentDisposition> localeFilesInfo)
       throws PentahoAccessControlException {
@@ -109,10 +120,13 @@ public class MetadataDatasourceService {
 			return Response.serverError().entity(e.toString()).build();
 		}
 
+		boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
+
     RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder()
         .input(metadataFile)
         .charSet("UTF-8")
         .hidden(false)
+        .overwriteFile(overWriteInRepository)
         .mime("text/xmi+xml")
         .withParam("domain-id", domainId);
 
@@ -139,8 +153,16 @@ public class MetadataDatasourceService {
       importer.importFile(bundle);
       IPentahoSession pentahoSession = PentahoSessionHolder.getSession();
       PentahoSystem.publish(pentahoSession, org.pentaho.platform.engine.services.metadata.MetadataPublisher.class.getName());
-      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
-		} catch (Exception e) {
+      return Response.ok().status(new Integer(SUCCESS)).type(MediaType.TEXT_PLAIN).build();
+
+    } catch (PlatformImportException pe) {
+      logger.error("Error import metadata: " + pe.getMessage() + " status = " + pe.getErrorStatus());
+      String statusCode = String.valueOf(PlatformImportException.PUBLISH_SCHEMA_EXISTS_ERROR);
+      Response response = Response.ok().status(new Integer(statusCode)).type(MediaType.TEXT_PLAIN).build();
+
+      return response;
+
+    } catch (Exception e) {
       logger.error(e);
 			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}

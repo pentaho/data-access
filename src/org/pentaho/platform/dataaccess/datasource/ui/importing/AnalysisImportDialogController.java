@@ -80,7 +80,7 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
 @SuppressWarnings("all")
 public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements
-    IImportPerspective {
+    IImportPerspective, IOverwritableController {
 
   private static final String MONDRIAN_POSTANALYSIS_URL = "plugin/data-access/api/mondrian/postAnalysis";
 
