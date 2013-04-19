@@ -24,6 +24,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
+import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
@@ -40,10 +41,11 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class MetadataImportDialogController extends AbstractXulDialogController<MetadataImportDialogModel> implements IImportPerspective {
+public class MetadataImportDialogController extends AbstractXulDialogController<MetadataImportDialogModel> implements IImportPerspective, IOverwritableController {
   /**
    * 
    */
@@ -61,6 +63,8 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private FlowPanel mainFormPanel;
   private FlowPanel propertiesFileImportPanel;
   private XulVbox hiddenArea;
+  private DatasourceMessages messages = null;
+  private boolean overwrite;
   
   // GWT controls
   private FormPanel formPanel;
@@ -181,6 +185,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     }
     acceptButton.setDisabled(true);
     domainIdText.setValue("");
+    overwrite = false;
   }
 
   public void concreteUploadCallback(String fileName, String uploadedFile) {
@@ -218,6 +223,70 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
       importDialogModel.setDomainId(evt.getNewValue().toString());
       acceptButton.setDisabled(!isValid());
     }
+  }
+
+  public void buildAndSetParameters() {
+
+    Hidden overwriteParam = new Hidden("overwrite", String.valueOf(overwrite));
+    mainFormPanel.add(overwriteParam);
+
+  }
+
+  public void removeHiddenPanels() {
+    // Remove all previous hidden form parameters otherwise parameters
+    // from a previous import would get included in current form submit
+    for (int i = 0; mainFormPanel != null && i < mainFormPanel.getWidgetCount(); i++) {
+      if (mainFormPanel.getWidget(i).getClass().equals(Hidden.class)) {
+        mainFormPanel.remove(mainFormPanel.getWidget(i));
+      }
+    }
+  }
+
+  /**
+   * Convert to $NLS$
+   * @param results
+   * @return msg
+   *    int PUBLISH_TO_SERVER_FAILED = 1;
+        int PUBLISH_GENERAL_ERROR = 2;
+        int PUBLISH_DATASOURCE_ERROR = 6;
+        int PUBLISH_USERNAME_PASSWORD_FAIL = 5;
+        int PUBLISH_XMLA_CATALOG_EXISTS = 7;
+        int PUBLISH_SCHEMA_EXISTS_ERROR = 8;
+   */
+  public String convertToNLSMessage(String results, String fileName) {
+    String msg = results;
+    int code = new Integer(results).intValue();
+    switch (code) {
+      case 8:
+        msg = messages.getString("Metadata.OVERWRITE_EXISTING_SCHEMA");
+        break;
+      default:
+        msg = messages.getString("Metadata.Error");
+        break;
+    }
+    return msg + " Metadata File: " + fileName;
+  }
+
+
+  /**
+   * pass localized messages from Entry point initialization
+   * @param datasourceMessages
+   */
+  public void setDatasourceMessages(DatasourceMessages datasourceMessages) {
+    this.messages = datasourceMessages;
+  }
+
+  /**
+   * helper method for dialog display
+   * @return
+   */
+  public String getFileName() {
+    return this.importDialogModel.getUploadedFile();
+  }
+
+  public void setOverwrite(boolean overwrite) {
+    this.overwrite = overwrite;
+
   }
 
 }

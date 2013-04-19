@@ -39,6 +39,8 @@ import org.pentaho.platform.dataaccess.datasource.ui.admindialog.GwtDatasourceAd
 import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogController;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.AnalysisImportDialogModel;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.GwtImportDialog;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.IOverwritableController;
+import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogController;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.MetadataImportDialogModel;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceManageDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.selectdialog.GwtDatasourceSelectionDialog;
@@ -323,7 +325,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
    * @param controller
    */
   public void overwriteFileDialog(final FormPanel parentFormPanel, String message,
-      final AnalysisImportDialogController controller) {
+      final IOverwritableController controller) {
     //Experiment
     XulConfirmBox confirm = null;
     try {
@@ -619,7 +621,10 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
       public void onDialogAccept(final MetadataImportDialogModel importDialogModel) {
 
+        final MetadataImportDialogController controller = importDialog.getMetadataImportDialogController();
+
         MetadataDatasourceServiceGwtImpl service = new MetadataDatasourceServiceGwtImpl();
+
         service.importMetadataDatasource(importDialogModel.getDomainId(), importDialogModel.getUploadedFile(),
             importDialogModel.getLocalizedBundleEntries(), new XulServiceCallback<String>() {
 
@@ -645,7 +650,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
       }
     };
-    showAnalysisImportDialog(listener);
+    showMetadataImportDialog(listener);
   }
 
   public void showMetadataImportDialog(final DialogListener listener) {
@@ -655,19 +660,31 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
 
       public void onDialogAccept(final MetadataImportDialogModel importDialogModel) {
-        final FormPanel metaDataFormPanel = importDialog.getMetadataImportDialogController().getFormPanel();
+
+        final MetadataImportDialogController controller = importDialog.getMetadataImportDialogController();
+        final FormPanel metaDataFormPanel = controller.getFormPanel();
+        controller.removeHiddenPanels();
+        controller.buildAndSetParameters();
         metaDataFormPanel.removeFromParent();
         RootPanel.get().add(metaDataFormPanel);
+
         metaDataFormPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 
           @Override
           public void onSubmitComplete(SubmitCompleteEvent event) {
             String results = event.getResults();
-            if (!results.contains("SUCCESS")) {
-              listener.onDialogError(results);
+            String message = controller.convertToNLSMessage(results, controller.getFileName());
+
+            if (!SUCCESS_3.equals(results)) {
+              if (OVERWRITE_8.equals(results)) {
+                overwriteFileDialog(metaDataFormPanel, message, controller);
+              } else {
+                listener.onDialogError(message);
+              }
+            } else {
+              metaDataFormPanel.removeFromParent();
+              listener.onDialogAccept(null);
             }
-            metaDataFormPanel.removeFromParent();
-            listener.onDialogAccept(null);
           }
 
         });
