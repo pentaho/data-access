@@ -338,3 +338,8 @@ html>body .dialog-content {
 #otherRadio .gwt-TextBox {
   width: 150px;
 }
+
+#field_column_name {
+	width: 230px;
+	overflow: hidden;
+}
