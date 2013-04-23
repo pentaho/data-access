@@ -45,7 +45,7 @@ public class DataAccessPermissionResource
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
   public JaxbList<String> getPermittedRoleList() {
     if (dataAccessViewPermHandler == null) {
-      return null;
+      return new JaxbList<String>();
     }
     return new JaxbList<String>(dataAccessViewPermHandler.getPermittedRoleList(PentahoSessionHolder.getSession()));
   }
@@ -55,7 +55,7 @@ public class DataAccessPermissionResource
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
   public JaxbList<String> getPermittedUserList() {
     if (dataAccessViewPermHandler == null) {
-      return null;
+      return new JaxbList<String>();
     }
     return new JaxbList<String>(dataAccessViewPermHandler.getPermittedUserList(PentahoSessionHolder.getSession()));
   }
