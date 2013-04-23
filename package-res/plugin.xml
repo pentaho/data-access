@@ -9,16 +9,14 @@
    
    <overlays>
 	    <overlay id="startup.dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages.properties" loadatstart="false">
-			<menubar id="managemenu">
-				<menuitem id="manageDatasourceItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />				
+			<menubar id="filemenu">
+			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />
 			</menubar>
 			<menubar id="newmenu">
 				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="window.top.pho.openDatasourceEditor(window.top.datasourceEditorCallback)" />				
 			</menubar>
 	    </overlay>
 	</overlays>
-
-
 
    <!-- this is used by the datasource service -->
    <bean id="connectionServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl"/>
