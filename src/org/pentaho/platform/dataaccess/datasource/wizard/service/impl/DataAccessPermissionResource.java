@@ -1,11 +1,12 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
-import org.pentaho.platform.web.http.api.resources.JaxbList;
+import org.pentaho.platform.web.http.api.resources.StringListWrapper;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -26,36 +27,36 @@ public class DataAccessPermissionResource
   @GET
   @Path("/hasDataAccess")
   @Produces( {APPLICATION_JSON })
-  public Boolean hasDataAccessPermission() {
-    return dataAccessPermHandler != null
-       && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());
+  public Response hasDataAccessPermission() {
+    return Response.ok("" + (dataAccessPermHandler != null
+       && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession()))).build();
   }
 
   @GET
   @Path("/hasDataAccessView")
   @Produces( {APPLICATION_JSON })
-  public Boolean hasDataAccessViewPermission() {
-    return dataAccessViewPermHandler != null
-       && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession());
+  public Response hasDataAccessViewPermission() {
+    return Response.ok("" + (dataAccessViewPermHandler != null
+       && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession()))).build();
   }
 
   @GET
   @Path("/permittedRoles")
   @Produces( {APPLICATION_JSON })
-  public JaxbList<String> getPermittedRoleList() {
+  public StringListWrapper getPermittedRoleList() {
     if (dataAccessViewPermHandler == null) {
-      return new JaxbList<String>();
+      return new StringListWrapper();
     }
-    return new JaxbList<String>(dataAccessViewPermHandler.getPermittedRoleList(PentahoSessionHolder.getSession()));
+    return new StringListWrapper(dataAccessViewPermHandler.getPermittedRoleList(PentahoSessionHolder.getSession()));
   }
 
   @GET
   @Path("/permittedUsers")
   @Produces( {APPLICATION_JSON })
-  public JaxbList<String> getPermittedUserList() {
+  public StringListWrapper getPermittedUserList() {
     if (dataAccessViewPermHandler == null) {
-      return new JaxbList<String>();
+      return new StringListWrapper();
     }
-    return new JaxbList<String>(dataAccessViewPermHandler.getPermittedUserList(PentahoSessionHolder.getSession()));
+    return new StringListWrapper(dataAccessViewPermHandler.getPermittedUserList(PentahoSessionHolder.getSession()));
   }
 }
