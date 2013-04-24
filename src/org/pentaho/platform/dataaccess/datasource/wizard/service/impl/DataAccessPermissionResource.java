@@ -8,7 +8,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 /**
  * @author Rowell Belen
@@ -26,7 +25,7 @@ public class DataAccessPermissionResource
 
   @GET
   @Path("/hasDataAccess")
-  @Produces( { APPLICATION_XML, APPLICATION_JSON })
+  @Produces( {APPLICATION_JSON })
   public Boolean hasDataAccessPermission() {
     return dataAccessPermHandler != null
        && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());
@@ -34,7 +33,7 @@ public class DataAccessPermissionResource
 
   @GET
   @Path("/hasDataAccessView")
-  @Produces( { APPLICATION_XML, APPLICATION_JSON })
+  @Produces( {APPLICATION_JSON })
   public Boolean hasDataAccessViewPermission() {
     return dataAccessViewPermHandler != null
        && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession());
@@ -42,7 +41,7 @@ public class DataAccessPermissionResource
 
   @GET
   @Path("/permittedRoles")
-  @Produces( { APPLICATION_XML, APPLICATION_JSON })
+  @Produces( {APPLICATION_JSON })
   public JaxbList<String> getPermittedRoleList() {
     if (dataAccessViewPermHandler == null) {
       return new JaxbList<String>();
@@ -52,7 +51,7 @@ public class DataAccessPermissionResource
 
   @GET
   @Path("/permittedUsers")
-  @Produces( { APPLICATION_XML, APPLICATION_JSON })
+  @Produces( {APPLICATION_JSON })
   public JaxbList<String> getPermittedUserList() {
     if (dataAccessViewPermHandler == null) {
       return new JaxbList<String>();
