@@ -13,6 +13,7 @@ import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourc
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
@@ -434,22 +435,27 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Bindable
   public void removeDatasourceAccept() {
     final IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
-    manager.remove(dsInfo, new RequestCallback() {
+    manager.remove(dsInfo, new XulServiceCallback<Boolean>() {
 
-      @Override
-      public void onError(Request request, Throwable exception) {
-        Window.alert("Error removing: " + dsInfo.getId() + ".  Error =" + exception.getLocalizedMessage());
-      }
-
-      @Override
-      public void onResponseReceived(Request request, Response response) {
-        if (response.getStatusCode() == Response.SC_OK) {
-          refreshDatasourceList();
-          editDatasourceButton.setDisabled(true);
-        } else {
-          Window.alert("Could Not remove: " + dsInfo.getId());
+       @Override
+       public void success(Boolean isOk) {
+    	   if (isOk) {
+    		   refreshDatasourceList();
+               editDatasourceButton.setDisabled(true);
+           } else {
+        	   Window.alert(
+        			   MessageHandler.getString("datasourceAdminDialogController.COULD_NOT_REMOVE") 
+        			   + ": " + dsInfo.getId());
+           }
         }
-      }
+
+        @Override
+        public void error(String message, Throwable error) {
+        	Window.alert(
+        			MessageHandler.getString("datasourceAdminDialogController.ERROR_REMOVING") 
+        			+  ": " + dsInfo.getId() + "." 
+        					+ MessageHandler.getString("ERROR") + "=" + error.getLocalizedMessage());
+        }
     });
     removeDatasourceConfirmationDialog.hide();
   }

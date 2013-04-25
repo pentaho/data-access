@@ -271,21 +271,21 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
 
           });
         } catch (RequestException e) {
-          ((XulServiceCallback<Boolean>)xulCallback).error(e.getLocalizedMessage(), e);
+          XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>)xulCallback;
+      	  responseCallback.error(e.getLocalizedMessage(), e);
         }        
       }
     }, new AsyncCallback<Boolean>() {
 
-      public void onFailure(Throwable arg0) {
-        ((XulServiceCallback<Boolean>)xulCallback).error(arg0.getLocalizedMessage(), arg0);
+      public void onFailure(Throwable e) {
+    	  XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>)xulCallback;
+    	  responseCallback.error(e.getLocalizedMessage(), e);
       }
 
-      public void onSuccess(Boolean arg0) {
-        ((XulServiceCallback<Boolean>)xulCallback).success(Boolean.TRUE);
+      public void onSuccess(Boolean arg) {
+    	  XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>)xulCallback;
+    	  responseCallback.success(arg);
       }
-
     });
-
   }
-
 }
