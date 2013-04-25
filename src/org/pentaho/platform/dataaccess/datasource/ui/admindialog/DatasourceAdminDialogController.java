@@ -434,22 +434,22 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Bindable
   public void removeDatasourceAccept() {
     final IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
-    manager.remove(dsInfo, new RequestCallback() {
+    manager.remove(dsInfo, new XulServiceCallback<Boolean>() {
 
-      @Override
-      public void onError(Request request, Throwable exception) {
-        Window.alert("Error removing: " + dsInfo.getId() + ".  Error =" + exception.getLocalizedMessage());
-      }
-
-      @Override
-      public void onResponseReceived(Request request, Response response) {
-        if (response.getStatusCode() == Response.SC_OK) {
-          refreshDatasourceList();
-          editDatasourceButton.setDisabled(true);
-        } else {
-          Window.alert("Could Not remove: " + dsInfo.getId());
+       @Override
+       public void success(Boolean isOk) {
+    	   if (isOk) {
+    		   refreshDatasourceList();
+               editDatasourceButton.setDisabled(true);
+           } else {
+        	   Window.alert("Could Not remove: " + dsInfo.getId());
+           }
         }
-      }
+
+        @Override
+        public void error(String message, Throwable error) {
+        	Window.alert("Error removing: " + dsInfo.getId() + ".  Error =" + error.getLocalizedMessage());
+        }
     });
     removeDatasourceConfirmationDialog.hide();
   }
