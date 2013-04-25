@@ -13,6 +13,7 @@ import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourc
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
@@ -442,13 +443,18 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     		   refreshDatasourceList();
                editDatasourceButton.setDisabled(true);
            } else {
-        	   Window.alert("Could Not remove: " + dsInfo.getId());
+        	   Window.alert(
+        			   MessageHandler.getString("datasourceAdminDialogController.COULD_NOT_REMOVE") 
+        			   + ": " + dsInfo.getId());
            }
         }
 
         @Override
         public void error(String message, Throwable error) {
-        	Window.alert("Error removing: " + dsInfo.getId() + ".  Error =" + error.getLocalizedMessage());
+        	Window.alert(
+        			MessageHandler.getString("datasourceAdminDialogController.ERROR_REMOVING") 
+        			+  ": " + dsInfo.getId() + "." 
+        					+ MessageHandler.getString("ERROR") + "=" + error.getLocalizedMessage());
         }
     });
     removeDatasourceConfirmationDialog.hide();
