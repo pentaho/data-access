@@ -88,7 +88,7 @@ public class UIDatasourceServiceManager {
   /**
    * @param dsInfo
    */
-  public void remove(IDatasourceInfo dsInfo, RequestCallback callback) {
+  public void remove(IDatasourceInfo dsInfo, XulServiceCallback<Boolean> callback) {
     for(IUIDatasourceAdminService service:serviceMap.values()) {
       if (service.getType().equals(dsInfo.getType()) && dsInfo.isRemovable()) {
         service.remove(dsInfo, callback);
