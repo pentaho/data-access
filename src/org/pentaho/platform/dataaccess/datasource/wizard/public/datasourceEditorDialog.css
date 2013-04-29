@@ -1,7 +1,7 @@
 .checkbox label{
-    padding-left:3px;
-    font-family: Tahoma, Helvetica, Arial, sans-serif;
-    font-size: 0.85em;
+	padding-left:3px;
+  	font-family: Tahoma, Helvetica, Arial, sans-serif;
+  	font-size: 13px;
 }
 
 aggregation-dialog-checkbox-label {
@@ -117,11 +117,11 @@ aggregation-dialog-checkbox-label {
 }
 
 #enclosureRadioGroup .radio {
-    font-size: .85em;
+	font-size: 13px;
 }
 
 #delimiterRadioGroup .radio {
-    font-size: .85em;
+	font-size: 13px;
 }
 #csvModelDataTable {}
 
@@ -180,7 +180,7 @@ aggregation-dialog-checkbox-label {
 }
 
 #modelerDecision .radio {
-    font-size: .85em;
+	font-size: 13px;
 }
 
 #summaryDialogContainer {
@@ -264,8 +264,8 @@ aggregation-dialog-checkbox-label {
 /* to qualify element selectors with something specific to*/
 /* datasourceEditorDialog*/
 .gwt-DialogBox input, .gwt-DialogBox select {
-       font-size: .85em;
-   }
+  font-size: 13px;
+}
 
 .drop-popup > .popupContent {
     font-size: 16px;
@@ -275,8 +275,8 @@ aggregation-dialog-checkbox-label {
 #datasourceName ,
 #uploadedFile,
 .dataTable .gwt-HTML{
-    font-family: Tahoma, Helvetica, Arial, sans-serif;
-    font-size: .85em;
+  font-family: Tahoma, Helvetica, Arial, sans-serif;
+  font-size: 13px;
 }
 
 #hierarchy_message_label,
@@ -300,7 +300,7 @@ aggregation-dialog-checkbox-label {
     padding: 0px;
 }
 #metadatastep #fieldList {
-    font-size: 1em;
+  font-size: 14px;
 }
 
 #schema-toolbar-groupbox > .vbox {
