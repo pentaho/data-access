@@ -343,3 +343,19 @@ aggregation-dialog-checkbox-label {
 	width: 230px;
 	overflow: hidden;
 }
+
+#sql-text {
+    box-sizing: border-box;
+}
+
+.IE #sql-text {
+    height: 285px !important;
+}
+
+#pooling-description {
+    box-sizing: border-box;
+}
+
+.IE #pooling-description {
+    height: 246px !important;
+}
