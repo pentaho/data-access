@@ -92,7 +92,6 @@ public class MetadataDatasourceService {
                                             @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
                                             @FormDataParam("localeFiles") List<FormDataContentDisposition> localeFilesInfo)
       throws PentahoAccessControlException {
-
     Response response = importMetadataDatasource(domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
         localeFilesInfo);
     ResponseBuilder responseBuilder;
@@ -121,7 +120,6 @@ public class MetadataDatasourceService {
 		}
 
 		boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
-
     RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder()
         .input(metadataFile)
         .charSet("UTF-8")
@@ -148,7 +146,6 @@ public class MetadataDatasourceService {
 
     IPlatformImportBundle bundle = bundleBuilder.build();
     try{
-
       IPlatformImporter importer = PentahoSystem.get(IPlatformImporter.class);
       importer.importFile(bundle);
       IPentahoSession pentahoSession = PentahoSessionHolder.getSession();
