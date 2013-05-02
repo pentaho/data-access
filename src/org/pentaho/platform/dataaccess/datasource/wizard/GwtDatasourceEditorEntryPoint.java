@@ -498,7 +498,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         notifyCallbackError(callback, errorMessage);
       }
     };
-
+    showWizardEdit(domainId, modelId, perspective, relationalOnlyValid, listener);
   }
 
   /**
