@@ -111,10 +111,20 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
    */
   @Override
   public void remove(IDatasourceInfo dsInfo, Object callback) {
+	final XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>) callback;
     RequestBuilder deleteConnectionBuilder = new RequestBuilder(RequestBuilder.DELETE, URL.encode(getBaseURL() + "deletebyname?name=" + dsInfo.getName())); 
     try {
-      deleteConnectionBuilder.sendRequest(null, (RequestCallback) callback);
+      deleteConnectionBuilder.sendRequest(null, new RequestCallback() {
+    	  public void onResponseReceived(Request request, Response response) {
+    		  responseCallback.success(response.getStatusCode() == Response.SC_OK);
+          }
+
+          public void onError(Request request, Throwable error) {
+        	  responseCallback.error(error.getLocalizedMessage(), error);
+          }
+      });
     } catch (RequestException e) {
+    	 responseCallback.error(e.getLocalizedMessage(), e);
     }
   }
 
