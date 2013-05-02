@@ -175,10 +175,8 @@ public class AnalysisDatasourceService {
   private void processMondrianImport(InputStream dataInputStream, String catalogName, String overwrite,
       String xmlaEnabledFlag, String parameters, String fileName) throws PlatformImportException {
     boolean overWriteInRepository = determineOverwriteFlag(parameters, overwrite);
- 
     IPlatformImportBundle bundle = createPlatformBundle(parameters, dataInputStream, catalogName,
         overWriteInRepository, fileName, xmlaEnabledFlag);
-    
     importer.importFile(bundle);
   }
 
@@ -222,24 +220,6 @@ public class AnalysisDatasourceService {
   }
 
   /**
-   * overloaded method to get the values from the parameter before creating the bundle
-   * @param parameters
-   * @param dataInputStream
-   * @param catalogName
-   * @param fileName
-   * @return IPlatformImportBundle
-   */
-  private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
-      String catalogName, String fileName) {
-    
-    boolean overWriteInRepository = "True".equalsIgnoreCase(getValue(parameters, OVERWRITE_IN_REPOS)) ? true : false;
-    String xmlaEnabled = "True".equals(getValue(parameters, "xmlaEnabled"))?"true":"false";
-    String domainId = determineDomainCatalogName(parameters, catalogName, fileName, dataInputStream);
-    
-    return createPlatformBundle(parameters, dataInputStream, domainId, overWriteInRepository, fileName, xmlaEnabled);
-  }
-
-    /**
      * helper method to calculate the domain id from the parameters, file name, or pass catalog
      * @param parameters
      * @param catalogName
