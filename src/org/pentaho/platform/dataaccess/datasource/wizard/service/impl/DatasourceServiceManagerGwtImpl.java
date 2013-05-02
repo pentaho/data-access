@@ -37,7 +37,8 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   public void getAnalysisDatasourceIds(final XulServiceCallback<List<String>> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(final AsyncCallback callback) {
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getAnalysisDatasourceIdsURL);
+    	String cacheBuster = "?ts=" + new java.util.Date().getTime();
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getAnalysisDatasourceIdsURL + cacheBuster);
         try {
           requestBuilder.sendRequest(null, new RequestCallback() {
             @Override
@@ -74,7 +75,8 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   public void getMetadataDatasourceIds(final XulServiceCallback<List<String>> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(final AsyncCallback callback) {
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getMetadataDatasourceIdsURL);
+    	String cacheBuster = "?ts=" + new java.util.Date().getTime();
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getMetadataDatasourceIdsURL + cacheBuster);
         try {
           requestBuilder.sendRequest(null, new RequestCallback() {
             @Override
@@ -189,7 +191,8 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   public void getDSWDatasourceIds(final XulServiceCallback<List<String>> xulCallback) {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(final AsyncCallback callback) {
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getDSWDatasourceIdsURL);
+    	String cacheBuster = "?ts=" + new java.util.Date().getTime();
+        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, getDSWDatasourceIdsURL + cacheBuster);
         try {
           requestBuilder.sendRequest(null, new RequestCallback() {
             @Override
