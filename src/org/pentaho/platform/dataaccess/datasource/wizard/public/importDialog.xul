@@ -4,7 +4,7 @@
   xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
   height="600" width="800">
   
-  <dialog id="importDialog" width="395" height="400" title="" buttonlabelaccept="${importDialog.IMPORT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
+  <dialog id="importDialog" width="395" title="" buttonlabelaccept="${importDialog.IMPORT}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel" ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
    <vbox>
      <deck id="importDeck">
      
