@@ -174,6 +174,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     summaryDialogController.showSummaryDialog(summary, showModelerDecision, new XulServiceCallback<IDatasourceSummary>(){
       @Override
       public void error(String s, Throwable throwable) {
+        MessageHandler.getInstance().closeWaitingDialog();
         MessageHandler.getInstance().showErrorDialog(s, throwable.getMessage());
       }
 

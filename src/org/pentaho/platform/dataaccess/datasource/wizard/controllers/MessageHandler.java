@@ -13,8 +13,6 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  */
 public class MessageHandler extends AbstractXulEventHandler {
 
-  private XulDialog waitingDialog = null;
-  private XulLabel waitingLabel = null;
   private XulDialog errorDialog;
   private XulDialog errorDetailsDialog;
   private DatasourceMessages messages;
@@ -24,13 +22,15 @@ public class MessageHandler extends AbstractXulEventHandler {
   private XulLabel successLabel = null;
 
   private XulDialog wizardDialog;
-  
+
   private boolean showWizardDialog;
 
   public static final String MSG_OPENING_MODELER = "waiting.openingModeler";
   public static final String MSG_GENERAL_WAIT = "waiting.generalWaiting";
   public static final String MSG_STAGING_DATA = "physicalDatasourceDialog.STAGING_DATA"; //$NON-NLS-1$
   public static final String MSG_CREATING_DATA_SOURCE = "waiting.creatingDataSource"; //$NON-NLS-1$
+  public static final String MSG_PLEASE_WAIT = "waiting.title"; //$NON-NLS-1$
+
   private static MessageHandler INSTANCE = new MessageHandler();
 
   private MessageHandler(){
@@ -45,13 +45,11 @@ public class MessageHandler extends AbstractXulEventHandler {
 
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
     errorDetailsDialog = (XulDialog) document.getElementById("errorDetailsDialog"); //$NON-NLS-1$
-      waitingDialog = (XulDialog) document.getElementById("waitingDialog"); //$NON-NLS-1$
-      waitingLabel = (XulLabel) document.getElementById("waitingDialogLabel"); //$NON-NLS-1$
 
     successDialog = (XulDialog) document.getElementById("successDialog"); //$NON-NLS-1$
     successLabel = (XulLabel) document.getElementById("successLabel"); //$NON-NLS-1$
-  }
 
+  }
 
   public void showErrorDialog(String message) {
     showErrorDialog(messages.getString("error"), message);
@@ -120,13 +118,32 @@ public class MessageHandler extends AbstractXulEventHandler {
     showWaitingDialog(messages.getString(MSG_CREATING_DATA_SOURCE));
   }
   public void showWaitingDialog(String msg) {
-    waitingLabel.setValue(msg);
-    waitingDialog.show();
+    showBusyIndicator(getString(MSG_PLEASE_WAIT), msg);
   }
   public void closeWaitingDialog() {
-    waitingDialog.hide();
+    hideBusyIndicator();
   }
-  
+
+  public static native void showBusyIndicator(String title, String message)/*-{
+      $wnd.pen.require([
+        "common-ui/util/BusyIndicator"
+      ],
+
+        function(busy) {
+          busy.show(title, message);
+          });
+
+  }-*/;
+
+  public static native void hideBusyIndicator()/*-{
+    $wnd.pen.require([
+      "common-ui/util/BusyIndicator"
+    ],
+
+        function(busy) {
+          busy.hide();
+        });
+  }-*/;
 
   @Bindable
   public void closeErrorDetailsDialog() {

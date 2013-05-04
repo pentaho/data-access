@@ -41,10 +41,6 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
 
   private XulLabel errorLabel = null;
 
-  private XulDialog waitingDialog = null;
-
-  private XulLabel waitingLabel = null;
-
   private XulDialog successDialog = null;
 
   private XulLabel successLabel = null;
@@ -76,9 +72,6 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
   public void init(IWizardModel wizardModel) throws XulException {
     super.init(wizardModel);
     
-    
-    waitingDialog = (XulDialog) document.getElementById("waitingDialog"); //$NON-NLS-1$
-    waitingLabel = (XulLabel) document.getElementById("waitingDialogLabel"); //$NON-NLS-1$
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById("errorLabel"); //$NON-NLS-1$
     successDialog = (XulDialog) document.getElementById("successDialog"); //$NON-NLS-1$
