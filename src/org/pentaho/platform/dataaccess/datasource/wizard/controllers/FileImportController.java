@@ -37,16 +37,12 @@ public class FileImportController extends AbstractXulEventHandler  {
 
   private XulDialog datasourceDialog;
   
-  private XulDialog waitingDialog;
-
   private XulFileUpload fileUpload;
 
   private XulDialog errorDialog;
 
   private XulLabel errorLabel;
 
-  private XulLabel waitingLabel;
-  
   private XulButton okButton;
   
   private BindingFactory bf;
@@ -67,8 +63,6 @@ public class FileImportController extends AbstractXulEventHandler  {
     
     fileUpload = (XulFileUpload) document.getElementById("fileUpload"); //$NON-NLS-1$
     datasourceDialog = (XulDialog) document.getElementById("fileImportEditorWindow");//$NON-NLS-1$
-    waitingDialog = (XulDialog) document.getElementById("waitingDialog"); //$NON-NLS-1$
-    waitingLabel = (XulLabel) document.getElementById("waitingDialogLabel"); //$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById("errorLabel"); //$NON-NLS-1$
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
     
@@ -109,11 +103,10 @@ public class FileImportController extends AbstractXulEventHandler  {
   }
   
   public void closeWaitingDialog() {
-    waitingDialog.hide();
+    MessageHandler.getInstance().closeWaitingDialog();
   }
   public void showWaitingDialog() {
-    waitingLabel.setValue(messages.getString("fileImportDialog.UPLOADING", fileUpload.getSeletedFile())); //$NON-NLS-1$
-    waitingDialog.show();
+    MessageHandler.getInstance().showWaitingDialog(messages.getString("fileImportDialog.UPLOADING", fileUpload.getSeletedFile())); //$NON-NLS-1$
   }
 
   @Bindable

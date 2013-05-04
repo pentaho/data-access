@@ -784,8 +784,9 @@ public class ConnectionController extends AbstractXulEventHandler {
           for (IDatabaseConnection connectionBean : connectionBeanList) {
             connectionImplList.add(AutobeanUtilities.connectionBeanToImpl(connectionBean));
           }
-          
-          datasourceModel.getGuiStateModel().setConnections(connectionImplList);
+          if(datasourceModel != null) {
+            datasourceModel.getGuiStateModel().setConnections(connectionImplList);
+          }
         }
       });
     } catch (RequestException e) {

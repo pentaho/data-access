@@ -657,12 +657,7 @@
 
     </hbox>
   </dialog>
-	<dialog id="waitingDialog" title="${waitingDialog.waiting}" width="220" height="40">
-		<hbox>
-      <image src="images/large-loading.gif" height="32" width="32" />
-			<label id="waitingDialogLabel" value="${waitingDialog.message}" flex="1"/>
-		</hbox>
-	</dialog>
+
   <dialog id="errorDialog" title="${errorDialog.errorOccurred}" buttonlabelaccept="${errorDialog.OK}" buttons="accept"
           ondialogaccept="modelerDialogController.closeErrorDialog()" width="300" height="100" buttonalign="center">
     <label id="errorLabel" value="${errorDialog.errorOccurred}"/>

@@ -19,6 +19,7 @@ import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
@@ -56,7 +57,6 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
 
   private IModelerMessages messages;
   private XulDialog errorDialog;
-  private XulDialog waitDialog;
 
   private EmbeddedWizard wizard;
   private ModelerDialog modeler;
@@ -233,9 +233,6 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
       }
     });
 
-
-    waitDialog = (XulDialog) document.getElementById("waitingDialog");
-
   }
 
   public void overlayLoaded() {
@@ -277,9 +274,9 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
 
   private void enableWaitCursor(final boolean enable) {
     if (enable) {
-      waitDialog.show();
+      MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString("waiting.generalWaiting"));
     } else {
-      waitDialog.hide();
+      MessageHandler.getInstance().closeWaitingDialog();
     }
   }
 

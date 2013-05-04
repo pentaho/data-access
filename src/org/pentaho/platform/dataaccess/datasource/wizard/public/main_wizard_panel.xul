@@ -451,16 +451,7 @@
       <label value="${overwriteConnectionConfirmationDialog.confirmMessage}"/>
     </vbox>
   </dialog>
-	<!--  ###############################################################################   -->
-	<!--     WAITING DIALOG: Dialog to display wait text while the operation is being       -->
-	<!--     performed                                                                      -->
-	<!--  ###############################################################################   -->
-	<dialog id="waitingDialog" title="${waitingDialog.waiting}" width="220" height="40">
-		<hbox id="waitingForSomethingBox">
-			<image src="images/large-loading.gif" height="32" width="32" />
-			<label id="waitingDialogLabel" value="${waitingDialog.generatingPreview}" flex="1"/>
-		</hbox>
-	</dialog>
+
 	<!--  ###############################################################################   -->
 	<!--     ERROR DIALOG: Dialog to display error text                                     -->
 	<!--  ###############################################################################   -->

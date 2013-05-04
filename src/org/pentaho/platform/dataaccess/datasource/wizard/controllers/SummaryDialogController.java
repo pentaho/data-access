@@ -90,6 +90,7 @@ public class SummaryDialogController extends AbstractXulEventHandler {
     //TODO: handle modeler checkbox visibility
     //showModelerCheckboxHider.setVisible(!datasourceModel.getGuiStateModel().isEditing());
     showModelerCheckboxHider.setVisible(showModelerDecision);
+    MessageHandler.getInstance().closeWaitingDialog();
     summaryDialog.show();
   }
 
