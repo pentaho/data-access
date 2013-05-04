@@ -61,8 +61,6 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private MultitableGuiModel joinGuiModel;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private SchemaSelection schemaSelection;
-	private XulDialog waitingDialog;
-	private XulLabel waitingLabel;
 	private MultiTableDatasource mtdatasource;
 
 	public TablesSelectionStep(MultitableGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
@@ -160,8 +158,6 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		this.selectedTables = (XulListbox) document.getElementById("selectedTables");
 		this.factTables = (XulMenuList<JoinTableModel>) document.getElementById("factTables");
 		this.schemas = (XulMenuList<String>) document.getElementById("schemas");
-	    this.waitingDialog = (XulDialog) document.getElementById("waitingDialog"); 
-	    this.waitingLabel = (XulLabel) document.getElementById("waitingDialogLabel");
 		super.init(wizardModel);
 	}
 
@@ -277,12 +273,11 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	}
 	
 	public void closeWaitingDialog() {
-	    waitingDialog.hide();
+	    MessageHandler.getInstance().closeWaitingDialog();
 	}
 	
 	public void showWaitingDialog() {
-	    waitingLabel.setValue(MessageHandler.getString("multitable.FETCHING_TABLE_INFO")); 
-	    waitingDialog.show();
+	    MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString("multitable.FETCHING_TABLE_INFO"));
 	}
 
   protected void fetchTables(){

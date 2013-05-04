@@ -61,11 +61,8 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
   private XulDialog connectionDialog;
 
-  private XulDialog waitingDialog = null;
-
   private XulDialog applyQueryConfirmationDialog = null;
 
-  private XulLabel waitingDialogLabel = null;
 
   private XulDialog previewResultsDialog = null;
 
@@ -131,8 +128,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
     errorLabel = (XulLabel) document.getElementById("errorLabel");//$NON-NLS-1$    
     applyQueryConfirmationDialog = (XulDialog) document.getElementById("applyQueryConfirmationDialog"); //$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById("errorLabel");//$NON-NLS-1$    
-    waitingDialog = (XulDialog) document.getElementById("waitingDialog"); //$NON-NLS-1$
-    waitingDialogLabel = (XulLabel) document.getElementById("waitingDialogLabel");//$NON-NLS-1$    
     successDialog = (XulDialog) document.getElementById("successDialog"); //$NON-NLS-1$
     successLabel = (XulLabel) document.getElementById("successLabel");//$NON-NLS-1$
     datasourceName = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
@@ -369,28 +364,14 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
     }
   }
 
-  /*  public void showWaitingDialog(String title, String message) {
-      getWaitingDialog().setTitle(title);
-      getWaitingDialog().setMessage(message);
-      getWaitingDialog().show();
-    }
-
-    public void hideWaitingDialog() {
-      getWaitingDialog().hide();
-    }
-  */
-
   @Bindable
   public void showWaitingDialog(String title, String message) {
-    waitingDialog.setTitle(title);
-    waitingDialogLabel.setValue(message);
-    waitingDialog.show();
-
+    MessageHandler.showBusyIndicator(title, message);
   }
 
   @Bindable
   public void hideWaitingDialog() {
-    waitingDialog.hide();
+    MessageHandler.hideBusyIndicator();
   }
 
   public void displayErrorMessage(Throwable th) {
