@@ -63,7 +63,7 @@
   <!--  ###############################################################################   -->
   <dialog id="removeDatasourceConfirmationDialog" buttonlabelaccept="${removeDatasourceConfirmationDialog.ok}" buttonlabelcancel="${removeDatasourceConfirmationDialog.cancel}" buttons="accept, cancel"
     ondialogcancel="datasourceAdminDialogController.removeDatasourceCancel()" ondialogaccept="datasourceAdminDialogController.removeDatasourceAccept()"
-    buttonalign="right" title="${removeDatasourceConfirmationDialog.title}" height="200" width="300">
+    buttonalign="right" title="${removeDatasourceConfirmationDialog.title}" width="300">
     <vbox>
       <label value="${removeDatasourceConfirmationDialog.message}" />
     </vbox>
