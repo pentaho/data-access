@@ -37,4 +37,5 @@ public interface IConnectionService {
   boolean deleteConnection(IDatabaseConnection connection) throws ConnectionServiceException;
   boolean deleteConnection(String name) throws ConnectionServiceException;
   boolean testConnection(IDatabaseConnection connection) throws ConnectionServiceException;
+  boolean isConnectionExist(String connectionName) throws ConnectionServiceException;
 }

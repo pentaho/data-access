@@ -35,7 +35,6 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
 import org.pentaho.platform.api.repository.datasource.DuplicateDatasourceException;
-import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
@@ -277,4 +276,28 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       throw new ConnectionServiceException(Response.SC_BAD_REQUEST, message); //$NON-NLS-1$
     }
   }
+
+  public boolean isConnectionExist(String connectionName)
+      throws ConnectionServiceException {
+    ensureDataAccessPermission();
+
+    try {
+      IDatabaseConnection connection = datasourceMgmtSvc
+          .getDatasourceByName(connectionName);
+      if (connection == null) {
+        return false;
+      }
+      return true;
+
+    } catch (DatasourceMgmtServiceException dme) {
+      String message = Messages
+          .getErrorString(
+              "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
+              dme.getLocalizedMessage());
+      logger.error(message);
+      throw new ConnectionServiceException(message, dme);
+    }
+
+  }
+
 }

@@ -72,4 +72,9 @@ public class ConnectionServiceConcrete {
   public boolean testConnection(DatabaseConnection connection) throws ConnectionServiceException {
     return service.testConnection(connection);
   }
+  
+  public boolean isConnectionExist(String connectionName) throws ConnectionServiceException {
+    return service.isConnectionExist(connectionName);
+  }
+  
 }
