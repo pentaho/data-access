@@ -21,13 +21,8 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.pentaho.database.model.DatabaseAccessType;
-import org.pentaho.database.model.DatabaseConnection;
-import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
@@ -50,14 +45,12 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
@@ -298,16 +291,15 @@ public class ConnectionController extends AbstractXulEventHandler {
     }
     else {
       //either new connection, or editing involved a name change.
-      RequestBuilder getConnectionBuilder = new RequestBuilder(
+
+      RequestBuilder checkConnectionBuilder = new RequestBuilder(
           RequestBuilder.GET, 
-        ConnectionController.getServiceURL("get", new String[][]{
-          {"name", currentConnection.getName()}
-        })
+          getServiceURL("checkexists", new String[][]{{"name", currentConnection.getName()}})
       );
-      getConnectionBuilder.setHeader("Content-Type", "application/json");
+      checkConnectionBuilder.setHeader("Content-Type", "application/json");
+
       try {
-        AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
-        getConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+        checkConnectionBuilder.sendRequest(null, new RequestCallback() {
 
           public void onResponseReceived(Request request, Response response){
             switch (response.getStatusCode()) {
@@ -821,6 +813,7 @@ public class ConnectionController extends AbstractXulEventHandler {
       stringBuilder.append("=");
       stringBuilder.append(parameters[i][1]);
     }
+
     return getServiceURL(stringBuilder.toString());
   }
   
