@@ -753,10 +753,79 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     showAnalysisImportDialog(listener);
   }
 
+  public void showEditAnalysisDialog(final DialogListener listener, final IDatasourceInfo datasourceInfo) {
+	  final DialogListener<AnalysisImportDialogModel> importDialoglistener = new DialogListener<AnalysisImportDialogModel>() {
+
+	      public void onDialogCancel() {
+	          final AnalysisImportDialogController controller = importDialog.getAnalysisImportDialogController();
+	          final FormPanel analysisDataFormPanel = controller.getFormPanel();
+	          controller.removeHiddenPanels();
+	          controller.buildAndSetParameters();
+	          analysisDataFormPanel.removeFromParent();
+	          RootPanel.get().add(analysisDataFormPanel);
+	      }
+
+	      public void onDialogAccept(final AnalysisImportDialogModel importDialogModel) {
+	          final AnalysisImportDialogController controller = importDialog.getAnalysisImportDialogController();
+	          final FormPanel analysisDataFormPanel = controller.getFormPanel();
+	          controller.removeHiddenPanels();
+	          controller.buildAndSetParameters(true);
+	          analysisDataFormPanel.removeFromParent();
+	          RootPanel.get().add(analysisDataFormPanel);
+	          analysisDataFormPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+
+	            @Override
+	            public void onSubmitComplete(SubmitCompleteEvent event) {
+	              String results = event.getResults();
+	              String message = controller.convertToNLSMessage(results, controller.getFileName());
+
+	              if (!SUCCESS_3.equals(results)) {
+	                if (OVERWRITE_8.equals(results)) {
+	                  overwriteFileDialog(analysisDataFormPanel, message, controller);
+	                } else {
+	                  listener.onDialogError(message);
+	                }
+	              } else {
+	                analysisDataFormPanel.removeFromParent();
+	                listener.onDialogAccept(null);
+	              }
+	            }
+	          });
+	          analysisDataFormPanel.submit();
+	      }
+	      
+	      public void onDialogReady() {
+	      }
+	      
+	      public void onDialogError(String errorMessage) {
+	    	  listener.onDialogError(errorMessage);
+	      }
+	  };
+	  
+	  final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
+
+	      public void asyncConstructorDone(GwtImportDialog dialog) {
+	          dialog.showAnalysisImportDialog(importDialoglistener, datasourceInfo);
+	      }
+	  };
+	  
+	  if (importDialog == null) {
+	     importDialog = new GwtImportDialog(constructorListener);
+	  } else {
+	     importDialog.showAnalysisImportDialog(importDialoglistener, datasourceInfo);
+	  }
+  }
+  
   public void showAnalysisImportDialog(final DialogListener listener) {
     final DialogListener<AnalysisImportDialogModel> importDialoglistener = new DialogListener<AnalysisImportDialogModel>() {
 
       public void onDialogCancel() {
+          final AnalysisImportDialogController controller = importDialog.getAnalysisImportDialogController();
+          final FormPanel analysisDataFormPanel = controller.getFormPanel();
+          controller.removeHiddenPanels();
+          controller.buildAndSetParameters();
+          analysisDataFormPanel.removeFromParent();
+          RootPanel.get().add(analysisDataFormPanel);
       }
 
       public void onDialogAccept(final AnalysisImportDialogModel importDialogModel) {
