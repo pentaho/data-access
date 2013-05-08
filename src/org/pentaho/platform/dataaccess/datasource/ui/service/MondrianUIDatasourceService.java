@@ -8,12 +8,10 @@ import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-import com.google.gwt.http.client.RequestCallback;
-
 public class MondrianUIDatasourceService implements IUIDatasourceAdminService{
   
   public static final String TYPE = "Analysis";
-  private boolean editable = false;
+  private boolean editable = true;
   private boolean removable = true;
   private boolean importable = true;
   private boolean exportable = true;

@@ -3,6 +3,7 @@ package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.ui.service.DSWUIDatasourceService;
@@ -11,7 +12,6 @@ import org.pentaho.platform.dataaccess.datasource.ui.service.JdbcDatasourceServi
 import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
-import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
@@ -34,11 +34,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
-import org.pentaho.ui.xul.util.DialogController.DialogListener;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
 
 public class DatasourceAdminDialogController extends AbstractXulDialogController<IDatasourceInfo> implements BindingExceptionHandler{
@@ -307,13 +303,6 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     }
   }-*/;
   
-  
-  @Bindable
-  public void launchEditUI() {
-    IDatasourceInfo datasourceInfo = datasourceAdminDialogModel.getSelectedDatasource();
-
-  }
-
   @Override
   public void showDialog() {    
     refreshDatasourceList();
@@ -427,8 +416,10 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         dsId
       );
     }
-    else {
-      
+    else
+    if (MondrianUIDatasourceService.TYPE.equals(type)) {
+      IDatasourceInfo datasourceInfo = datasourceAdminDialogModel.getSelectedDatasource();	
+      entryPoint.showEditAnalysisDialog(adminDatasourceListener, datasourceInfo);
     }
   }
   
