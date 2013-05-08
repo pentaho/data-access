@@ -186,7 +186,7 @@ public class InMemoryConnectionServiceImpl implements IConnectionService {
     }
   }
 
-  private boolean isConnectionExist(String connectionName) {
+  public boolean isConnectionExist(String connectionName) {
     for (IDatabaseConnection connection : connectionList) {
       if (connection.getName().equals(connectionName)) {
         return true;
