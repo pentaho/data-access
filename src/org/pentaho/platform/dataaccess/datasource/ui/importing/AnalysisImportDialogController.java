@@ -681,49 +681,43 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 	          
 	          public void onResponseReceived(Request request, final Response response) {
 
-		        	Timer timer = new Timer() {
-						public void run() {
-				        	boolean hasParameters = false;
-				        	String responseValue = response.getText();  
-				        	StringTokenizer params = new StringTokenizer(responseValue, ";");
+	        	  boolean hasParameters = false;
+				  String responseValue = response.getText();  
+				  StringTokenizer params = new StringTokenizer(responseValue, ";");
 				        	
-				        	while(params.hasMoreElements()) {
-				        		String paramString = params.nextToken();
-				        		String paramName = paramString.substring(0, paramString.indexOf("="));
-				        		String paramValue = paramString.substring(paramString.indexOf("=") + 1, paramString.length());
+				  while(params.hasMoreElements()) {
+					  String paramString = params.nextToken();
+				      String paramName = paramString.substring(0, paramString.indexOf("="));
+				      String paramValue = paramString.substring(paramString.indexOf("=") + 1, paramString.length());
 				        		
-				        		if(paramName.equalsIgnoreCase("Datasource")) {
-				        			for(IDatabaseConnection connection : importDialogModel.getConnectionList()) {
-				        				if(connection.getName().equals(paramValue)) {
-				        					importDialogModel.setConnection(connection);
-				        					importDialogModel.addParameter(paramName, paramValue);
-				        				}
-				        			}
-				        		} else if(!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
-				        			importDialogModel.addParameter(paramName, paramValue);	
-				        			hasParameters = true;
-				        		}
-				        	}
+				      if(paramName.equalsIgnoreCase("Datasource")) {
+				      	for(IDatabaseConnection connection : importDialogModel.getConnectionList()) {
+				      		if(connection.getName().equals(paramValue)) {
+				      			importDialogModel.setConnection(connection);
+				      			importDialogModel.addParameter(paramName, paramValue);
+				      		}
+				      	}
+				      } else if(!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
+				    	  importDialogModel.addParameter(paramName, paramValue);	
+				   		  hasParameters = true;
+				      }
+				  }
 			
-				        	schemaNameLabel.setValue(datasourceInfo.getId() + ".mondrian.xml");
-				        	importDialogModel.setUploadedFile(datasourceInfo.getId());
+				  schemaNameLabel.setValue(datasourceInfo.getId() + ".mondrian.xml");
+				  importDialogModel.setUploadedFile(datasourceInfo.getId());
 				        	
-			        		if(hasParameters) {
-			        			setPreference(PARAMETER_MODE);
-			        			manualRadio.setSelected(true);
-			        		} else {
-			        			setPreference(DATASOURCE_MODE);
-			        			availableRadio.setSelected(true);
-			        		}
-						}
-		        	};
-		        	timer.schedule(150);
+			      if(hasParameters) {
+			    	  setPreference(PARAMETER_MODE);
+			    	  manualRadio.setSelected(true);
+			      } else {
+			          setPreference(DATASOURCE_MODE);
+			          availableRadio.setSelected(true);
+			      }
 	          }
 	        });
 	      } catch (Exception e) {
 	    	  logger.log(Level.ALL, e.getMessage());
 	      }    
-	      
 	  }
   }
 

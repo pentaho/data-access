@@ -35,6 +35,7 @@ import org.pentaho.ui.xul.gwt.util.IXulLoaderCallback;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 
 public class GwtImportDialog implements IXulLoaderCallback {
 
@@ -47,6 +48,8 @@ public class GwtImportDialog implements IXulLoaderCallback {
   private ImportDialogController importDialogController;
 
   private GwtDatasourceMessages datasourceMessages;
+  
+  private int initial_delay = 150;
   
   public GwtImportDialog(AsyncConstructorListener<GwtImportDialog> constructorListener) {
     this.constructorListener = constructorListener;
@@ -112,7 +115,21 @@ public class GwtImportDialog implements IXulLoaderCallback {
   public void showAnalysisImportDialog(DialogListener<AnalysisImportDialogModel> listener, IDatasourceInfo datasourceInfo) {
 	  analysisImportDialogController.addDialogListener(listener);
       importDialogController.show(1);
-      analysisImportDialogController.editDatasource(datasourceInfo);
+      if(initial_delay == 150) {
+    	  initializeEditDatasource(datasourceInfo);
+      } else {
+    	  analysisImportDialogController.editDatasource(datasourceInfo);
+      }
+  }
+  
+  private void initializeEditDatasource(final IDatasourceInfo datasourceInfo) {
+	  Timer timer = new Timer() {
+		  public void run() {
+			  analysisImportDialogController.editDatasource(datasourceInfo);
+			  initial_delay = 0;
+		  }
+	  };
+	  timer.schedule(initial_delay);
   }
 
   public MetadataImportDialogController getMetadataImportDialogController() {
