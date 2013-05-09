@@ -25,11 +25,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.database.event.IConnectionAutoBeanFactory;
@@ -63,6 +66,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -145,7 +149,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   private FlowPanel mainFormPanel;
 
   private FileUpload analysisFileUpload;
-
+  
+  private XulButton uploadAnalysisButton;
+  
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
 
   public void init() {
@@ -168,6 +174,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       hiddenArea = (XulVbox) document.getElementById("analysisImportCard");
       schemaNameLabel = (XulLabel) document.getElementById("schemaNameLabel");
       analysisFileLabel = (XulLabel) document.getElementById("analysisFileLabel");
+      uploadAnalysisButton = (XulButton) document.getElementById("uploadAnalysisButton");
       acceptButton = (XulButton) document.getElementById("importDialog_accept");
       acceptButton.setDisabled(true);
 
@@ -440,21 +447,33 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   public void buildAndSetParameters() {
+	  buildAndSetParameters(false);  
+  }
+
+  public void buildAndSetParameters(boolean isEditMode) {
+	  
+	if(isEditMode) {  
+	    String file = importDialogModel.getUploadedFile();
+	    if(file != null) {
+	    	mainFormPanel.add(new Hidden("catalogName", file));
+	    }
+	}
+    
     // If user selects available data source, then pass the datasource as part of the parameters.
     // If user selects manual data source, pass in whatever parameters they specify even if it is empty.
     String parameters = importDialogModel.getParameters();
     if (availableRadio.isSelected()) {
       parameters = "Datasource=" + connectionList.getValue();
-      parameters += ";overwrite=" + String.valueOf(overwrite);
+      parameters += ";overwrite=" + String.valueOf(isEditMode ? isEditMode : overwrite);
     }
 
     // Parameters would contain either the data source from connectionList drop-down
     // or the parameters manually entered (even if list is empty)
     Hidden queryParameters = new Hidden("parameters", parameters);
     mainFormPanel.add(queryParameters);
-
   }
-
+  
+  
   // TODO - this method should be removed after it is removed by MetadataImportDialogController
   public void concreteUploadCallback(String fileName, String uploadedFile) {
     acceptButton.setDisabled(!isValid());
@@ -637,6 +656,75 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   public void setOverwrite(boolean overwrite) {
     this.overwrite = overwrite;
 
+  }
+  
+  public void editDatasource(final IDatasourceInfo datasourceInfo) {
+
+	  boolean isEditMode = datasourceInfo != null;
+	  uploadAnalysisButton.setDisabled(isEditMode);
+	  acceptButton.setLabel(isEditMode ? resBundle.getString("importDialog.SAVE") : resBundle.getString("importDialog.IMPORT"));
+
+	  if(isEditMode) {
+		  String url = GWT.getModuleBaseURL();
+		  if (url.indexOf("content") > -1) {
+			  url = url.substring(0, url.indexOf("content"));
+			  url = url + "plugin/data-access/api/datasource/"  + datasourceInfo.getId() + "/getAnalysisDatasourceInfo";
+ 	      }
+		  
+	      RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+	      try {
+	        requestBuilder.sendRequest(null, new RequestCallback() {
+	          
+	          public void onError(Request request, Throwable e) {
+	        	  logger.log(Level.ALL, e.getMessage());
+	          }
+	          
+	          public void onResponseReceived(Request request, final Response response) {
+
+		        	Timer timer = new Timer() {
+						public void run() {
+				        	boolean hasParameters = false;
+				        	String responseValue = response.getText();  
+				        	StringTokenizer params = new StringTokenizer(responseValue, ";");
+				        	
+				        	while(params.hasMoreElements()) {
+				        		String paramString = params.nextToken();
+				        		String paramName = paramString.substring(0, paramString.indexOf("="));
+				        		String paramValue = paramString.substring(paramString.indexOf("=") + 1, paramString.length());
+				        		
+				        		if(paramName.equalsIgnoreCase("Datasource")) {
+				        			for(IDatabaseConnection connection : importDialogModel.getConnectionList()) {
+				        				if(connection.getName().equals(paramValue)) {
+				        					importDialogModel.setConnection(connection);
+				        					importDialogModel.addParameter(paramName, paramValue);
+				        				}
+				        			}
+				        		} else if(!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
+				        			importDialogModel.addParameter(paramName, paramValue);	
+				        			hasParameters = true;
+				        		}
+				        	}
+			
+				        	schemaNameLabel.setValue(datasourceInfo.getId() + ".mondrian.xml");
+				        	importDialogModel.setUploadedFile(datasourceInfo.getId());
+				        	
+			        		if(hasParameters) {
+			        			setPreference(PARAMETER_MODE);
+			        			manualRadio.setSelected(true);
+			        		} else {
+			        			setPreference(DATASOURCE_MODE);
+			        			availableRadio.setSelected(true);
+			        		}
+						}
+		        	};
+		        	timer.schedule(150);
+	          }
+	        });
+	      } catch (Exception e) {
+	    	  logger.log(Level.ALL, e.getMessage());
+	      }    
+	      
+	  }
   }
 
 }

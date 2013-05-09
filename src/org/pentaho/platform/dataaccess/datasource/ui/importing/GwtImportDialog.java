@@ -22,6 +22,7 @@
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -46,7 +47,7 @@ public class GwtImportDialog implements IXulLoaderCallback {
   private ImportDialogController importDialogController;
 
   private GwtDatasourceMessages datasourceMessages;
-
+  
   public GwtImportDialog(AsyncConstructorListener<GwtImportDialog> constructorListener) {
     this.constructorListener = constructorListener;
     try {
@@ -56,7 +57,7 @@ public class GwtImportDialog implements IXulLoaderCallback {
       e.printStackTrace();
     }
   }
-
+  
   public void xulLoaded(GwtXulRunner runner) {
     try {
       GwtXulDomContainer container = (GwtXulDomContainer) runner.getXulDomContainers().get(0);
@@ -88,6 +89,7 @@ public class GwtImportDialog implements IXulLoaderCallback {
       importDialogController.init();
       metadataImportDialogController.init();
       analysisImportDialogController.init();
+      //analysisImportDialogController.editDatasource(datasourceInfo);
 
       if (constructorListener != null) {
         constructorListener.asyncConstructorDone(this);
@@ -102,10 +104,15 @@ public class GwtImportDialog implements IXulLoaderCallback {
     metadataImportDialogController.addDialogListener(listener);
     importDialogController.show(0);
   }
-
+  
   public void showAnalysisImportDialog(DialogListener<AnalysisImportDialogModel> listener) {
-    analysisImportDialogController.addDialogListener(listener);
-    importDialogController.show(1);
+	  showAnalysisImportDialog(listener, null);
+  }
+
+  public void showAnalysisImportDialog(DialogListener<AnalysisImportDialogModel> listener, IDatasourceInfo datasourceInfo) {
+	  analysisImportDialogController.addDialogListener(listener);
+      importDialogController.show(1);
+      analysisImportDialogController.editDatasource(datasourceInfo);
   }
 
   public MetadataImportDialogController getMetadataImportDialogController() {

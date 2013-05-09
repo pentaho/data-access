@@ -62,9 +62,9 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
+import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.repository2.unified.fileio.RepositoryFileInputStream;
-import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 
@@ -245,6 +245,14 @@ public class DatasourceResource {
     return Response.ok().build();
   }
   
+  @GET
+  @Path("/{dswId : .+}/getAnalysisDatasourceInfo")
+  @Produces(WILDCARD)
+  public Response getAnalysisDatasourceInfo(@PathParam("dswId") String dswId) {
+	MondrianCatalog catalog = mondrianCatalogService.getCatalog(dswId, PentahoSessionHolder.getSession());
+	String parameters = catalog.getDataSourceInfo();
+	return Response.ok().entity(parameters).build();
+  }  
 
   private Response createAttachment(Map<String, InputStream> fileData, String domainId) {
     String quotedFileName = null;

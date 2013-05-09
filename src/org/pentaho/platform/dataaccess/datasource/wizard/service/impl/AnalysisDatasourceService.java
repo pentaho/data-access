@@ -31,6 +31,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -49,11 +50,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
+import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
@@ -276,13 +279,21 @@ public class AnalysisDatasourceService {
    */
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, boolean overWriteInRepository, String fileName, String xmlaEnabled) {
-	  
+
+	
 	byte[] bytes = null;  
 	try {  
 		bytes = IOUtils.toByteArray(dataInputStream);
+		if(bytes.length == 0 && catalogName != null) {
+			MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
+			Map<String, InputStream> fileData = helper.getModrianSchemaFiles(catalogName);
+			dataInputStream =  fileData.get("schema.xml");
+			bytes = IOUtils.toByteArray(dataInputStream);
+		}
 	} catch(IOException e) {
 		logger.error(e);
 	}
+
 	  
     String datasource = getValue(parameters, "Datasource");
     String domainId = this.determineDomainCatalogName(parameters, catalogName, fileName, new ByteArrayInputStream(bytes));

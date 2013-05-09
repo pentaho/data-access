@@ -45,7 +45,9 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	public void addParameter(String name, String value) {
 
 		if (selectedAnalysisParameter == null) {
-			analysisParameters.add(new ParameterDialogModel(name, value));
+			if(!containsParameter(name)) {
+				analysisParameters.add(new ParameterDialogModel(name, value));
+			}
 		} else {
 			selectedAnalysisParameter.setName(name);
 			selectedAnalysisParameter.setValue(value);
@@ -117,6 +119,17 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 			result = result.substring(0, result.length() - 1);
 		}
 		return result;
+	}
+	
+	private boolean containsParameter(String name) {
+		boolean containsParameter = false;
+		for(ParameterDialogModel parameter : analysisParameters) {
+			if(parameter.getName().equalsIgnoreCase(name)) {
+				containsParameter = true;
+				break;
+			}
+		}
+		return containsParameter;
 	}
 
 	public void setParameterMode(boolean value) {
