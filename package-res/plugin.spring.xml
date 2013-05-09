@@ -18,4 +18,5 @@
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseDialectService"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.PentahoJAXBContextResolver"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DataAccessPermissionResource"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionReaderWriter"/>
 </beans>
