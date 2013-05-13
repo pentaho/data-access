@@ -55,32 +55,68 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
     return moduleUrl + "plugin/data-access/api/connection/";
   }
   
+  public static String getMetadataBaseURL() {
+    String moduleUrl = GWT.getModuleBaseURL();
+    //
+    //Set the base url appropriately based on the context in which we are running this client
+    //
+    if (moduleUrl.indexOf("content") > -1) {
+      //we are running the client in the context of a BI Server plugin, so 
+      //point the request to the GWT rpc proxy servlet
+      String baseUrl = moduleUrl.substring(0, moduleUrl.indexOf("content"));
+      return baseUrl + "plugin/data-access/api/metadataDA/";
+    }
+
+    return moduleUrl + "plugin/data-access/api/metadataDA/";
+  }
+ 
+  
   @Override
   public void getIds(final XulServiceCallback<List<IDatasourceInfo>> callback) {
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"));
-    listConnectionBuilder.setHeader("Content-Type", "application/json");
+
+    RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getMetadataBaseURL() + "getDatasourcePermissions"));
+    requestBuilder.setHeader("Content-Type", "application/json");
     try {
-      listConnectionBuilder.sendRequest(null, new RequestCallback() {
-        
-        @Override
+      requestBuilder.sendRequest(null, new RequestCallback() {
         public void onError(Request request, Throwable exception) {
-          callback.error(exception.getMessage(), exception);
+            callback.error(exception.getMessage(), exception);
         }
-       
-        @Override
+
         public void onResponseReceived(Request request, Response response) {
-          AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory, IDatabaseConnectionList.class, response.getText());
-          List<IDatabaseConnection> connections = bean.as().getDatabaseConnections();
-          List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
-          for(IDatabaseConnection connection:connections) {
-            datasourceInfos.add(new DatasourceInfo(connection.getName(), connection.getName(), TYPE, editable, removable, importable, exportable));
+
+          if (response.getText().equals("EDIT")) {
+
+                  RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"));
+                  listConnectionBuilder.setHeader("Content-Type", "application/json");
+                  try {
+                      listConnectionBuilder.sendRequest(null, new RequestCallback() {
+
+                      @Override
+                      public void onError(Request request, Throwable exception) {
+                        callback.error(exception.getMessage(), exception);
+                      }
+
+                      @Override
+                      public void onResponseReceived(Request request, Response response) {
+                        AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory, IDatabaseConnectionList.class, response.getText());
+                        List<IDatabaseConnection> connections = bean.as().getDatabaseConnections();
+                        List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
+                        for(IDatabaseConnection connection:connections) {
+                          datasourceInfos.add(new DatasourceInfo(connection.getName(), connection.getName(), TYPE, editable, removable, importable, exportable));
+                        }
+                        callback.success(datasourceInfos);
+                      }
+                   });
+                  } catch (RequestException e) {
+                    callback.error(e.getMessage(), e);
+                  }
           }
-          callback.success(datasourceInfos);
         }
-     });
+      });
     } catch (RequestException e) {
       callback.error(e.getMessage(), e);
     }
+
   }
 
   @Override
@@ -127,7 +163,7 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
     	 responseCallback.error(e.getLocalizedMessage(), e);
     }
   }
-
+  
 //  /* (non-Javadoc)
 //   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
 //   */

@@ -19,11 +19,17 @@
 */
 package org.pentaho.platform.dataaccess.metadata.service;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,6 +65,7 @@ import flexjson.JSONSerializer;
  * @author jamesdixon
  *
  */
+@Path("/data-access/api/metadataDA")
 public class MetadataService extends PentahoBase {
 
   private static final long serialVersionUID = 8481450224870463494L;
@@ -74,6 +81,10 @@ public class MetadataService extends PentahoBase {
    * edit or view metadata models
    * @return
    */
+
+  @GET
+  @Path("/getDatasourcePermissions")
+  @Produces({APPLICATION_JSON})  
   public String getDatasourcePermissions() {
     
     String dataAccessClassName = null;
