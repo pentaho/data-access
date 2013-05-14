@@ -95,7 +95,7 @@ public class DatasourceResource {
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
   public JaxbList<String> getAnalysisDatasourceIds() {
     List<String> analysisIds = new ArrayList<String>();
-    for(MondrianCatalog mondrianCatalog: mondrianCatalogService.listCatalogs(PentahoSessionHolder.getSession(), true)) {
+    for(MondrianCatalog mondrianCatalog: mondrianCatalogService.listCatalogs(PentahoSessionHolder.getSession(), false)) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
       Set<String> ids = metadataDomainRepository.getDomainIds();
       if(ids.contains(domainId) == false){
