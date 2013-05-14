@@ -234,7 +234,9 @@ public class ConnectionService {
     for (IDatabaseDialect dialect : dialectService.getDatabaseDialects()) {
       if (dialect.getNativeDriver() != null && 
           dialect.getNativeDriver().equals(driver)) {
-        return dialect.createNativeConnection(url);
+        if (dialect.getNativeJdbcPre() != null && url.startsWith(dialect.getNativeJdbcPre())) {
+          return dialect.createNativeConnection(url);
+        }
       }
     }
     
