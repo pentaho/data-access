@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -96,8 +97,8 @@ public class DatasourceResource {
     List<String> analysisIds = new ArrayList<String>();
     for(MondrianCatalog mondrianCatalog: mondrianCatalogService.listCatalogs(PentahoSessionHolder.getSession(), true)) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
-      Domain domain = metadataDomainRepository.getDomain(domainId);
-      if(domain == null) {
+      Set<String> ids = metadataDomainRepository.getDomainIds();
+      if(ids.contains(domainId) == false){
         analysisIds.add(mondrianCatalog.getName());
       }
     }
