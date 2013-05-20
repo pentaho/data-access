@@ -21,7 +21,9 @@ import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.DB2DatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.dialect.H2DatabaseDialect;
+import org.pentaho.database.dialect.HiveDatabaseDialect;
 import org.pentaho.database.dialect.HypersonicDatabaseDialect;
+import org.pentaho.database.dialect.ImpalaDatabaseDialect;
 import org.pentaho.database.dialect.MSSQLServerDatabaseDialect;
 import org.pentaho.database.dialect.MSSQLServerNativeDatabaseDialect;
 import org.pentaho.database.dialect.MonetDatabaseDialect;
@@ -55,7 +57,9 @@ public class DatabaseDialectService {
     // temporary until we have a better approach
     registerDatabaseDialect(new OracleDatabaseDialect(), validateClasses);
     registerDatabaseDialect(new MySQLDatabaseDialect(), validateClasses);
+    registerDatabaseDialect(new HiveDatabaseDialect(), validateClasses);
     registerDatabaseDialect(new HypersonicDatabaseDialect(), validateClasses);
+    registerDatabaseDialect(new ImpalaDatabaseDialect(), validateClasses);
     registerDatabaseDialect(new MSSQLServerDatabaseDialect(), validateClasses);
     registerDatabaseDialect(new MSSQLServerNativeDatabaseDialect(), validateClasses);
     registerDatabaseDialect(new DB2DatabaseDialect(), validateClasses);
