@@ -23,19 +23,12 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-
-import org.pentaho.database.model.DatabaseAccessType;
-import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
-import org.pentaho.database.model.PartitionDatabaseMeta;
 import org.pentaho.database.util.DatabaseTypeHelper;
+import org.pentaho.platform.dataaccess.datasource.beans.AutobeanUtilities;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
@@ -57,7 +50,6 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import com.google.web.bindery.autobean.shared.AutoBeanUtils;
@@ -403,8 +395,9 @@ public class WizardConnectionController extends AbstractXulEventHandler {
         public void onResponseReceived(Request request, Response response) {
           try {
             if (response.getStatusCode() == Response.SC_OK) {
-              datasourceModel.getGuiStateModel().addConnection(currentConnection);
-              datasourceModel.setSelectedRelationalConnection(currentConnection);
+              IDatabaseConnection conn = AutobeanUtilities.connectionBeanToImpl(currentConnection);
+              datasourceModel.getGuiStateModel().addConnection(conn);
+              datasourceModel.setSelectedRelationalConnection(conn);
             } else {
               openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
                   .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
