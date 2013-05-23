@@ -23,8 +23,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import mondrian.xmla.DataSourcesConfig.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
@@ -55,7 +53,6 @@ import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCube;
-import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianDataSource;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianSchema;
 
 /**
@@ -64,6 +61,7 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianSchema;
  */
 public class ModelerService extends PentahoBase implements IModelerService {
 
+  private static final long serialVersionUID = 1L;
   private static final Log logger = LogFactory.getLog(ModelerService.class);
   public static final String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
 
@@ -190,22 +188,10 @@ public class ModelerService extends PentahoBase implements IModelerService {
     }
     dsUrl += "Xmla"; //$NON-NLS-1$
     
-    MondrianDataSource ds = new MondrianDataSource(
-        "Provider=Mondrian;DataSource=Pentaho", //$NON-NLS-1$
-        "Pentaho BI Platform Datasources", //$NON-NLS-1$
-        dsUrl, 
-        "Provider=Mondrian", // no default jndi datasource should be specified //$NON-NLS-1$
-        "PentahoXMLA",  //$NON-NLS-1$
-        DataSource.PROVIDER_TYPE_MDP, 
-        DataSource.AUTH_MODE_UNAUTHENTICATED, 
-        null
-      );
-
     MondrianCatalog cat = new MondrianCatalog(
         catName, 
         catConnectStr, 
-        "", 
-        ds, 
+        "",
         new MondrianSchema(catName, new ArrayList<MondrianCube>())
       );
 
