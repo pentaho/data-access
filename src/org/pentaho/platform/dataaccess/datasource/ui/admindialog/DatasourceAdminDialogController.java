@@ -1,5 +1,6 @@
 package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
@@ -237,6 +238,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           DatasourceAdminDialogController.super.showDialog();
           datasourceAdminDialogModel.setDatasourcesList(infoList);
           getDatasourceTypes();
+          exportDatasourceButton.setDisabled(true);
+          editDatasourceButton.setDisabled(true);
+          removeDatasourceButton.setDisabled(true);
         }
   
         @Override
@@ -304,7 +308,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   }-*/;
   
   @Override
-  public void showDialog() {    
+  public void showDialog() {
     refreshDatasourceList();
   }
 
