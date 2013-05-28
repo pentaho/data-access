@@ -165,58 +165,61 @@ public class ModelerService extends PentahoBase implements IModelerService {
       if (!pathDir.exists()) {
         pathDir.mkdirs();
       }
-
+      IPentahoSession origSession = PentahoSessionHolder.getSession();
       IPentahoObjectFactory pentahoObjectFactory = PentahoSystem.getObjectFactory();
-      IPentahoSession session = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
-
-      ISolutionRepository repository = PentahoSystem.get(ISolutionRepository.class, session);
-      
-      LogicalModel lModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
-      String catName = lModel.getName(Locale.getDefault().toString());
-
-      // strip off the _olap suffix for the catalog ref
-      catName = catName.replace(BaseModelerWorkspaceHelper.OLAP_SUFFIX, "");
-
-      cleanseExistingCatalog(catName, session);
-      if(doOlap){
-        lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
+      IPentahoSession trustedSession = pentahoObjectFactory.get(IPentahoSession.class, "systemStartupSession", null); //$NON-NLS-1$
+      PentahoSessionHolder.setSession(trustedSession);
+      try {
+	      ISolutionRepository repository = PentahoSystem.get(ISolutionRepository.class, PentahoSessionHolder.getSession());
+	      
+	      LogicalModel lModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+	      String catName = lModel.getName(Locale.getDefault().toString());
+	
+	      // strip off the _olap suffix for the catalog ref
+	      catName = catName.replace(BaseModelerWorkspaceHelper.OLAP_SUFFIX, "");
+	
+	      cleanseExistingCatalog(catName, PentahoSessionHolder.getSession());
+	      if(doOlap){
+	        lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
+	      }
+	      XmiParser parser = new XmiParser();
+	      String reportXML =  parser.generateXmi(model.getDomain());
+	
+	      // Serialize domain to xmi.
+	      String base = PentahoSystem.getApplicationContext().getSolutionRootPath();
+	      String parentPath = ActionInfo.buildSolutionPath(solutionStorage, metadataLocation, ""); //$NON-NLS-1$
+	      int status = repository.publish(base, '/' + parentPath, name + ".xmi", reportXML.getBytes("UTF-8"), true); //$NON-NLS-1$  //$NON-NLS-2$
+	      if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
+	        throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
+	      }
+	
+	      // Serialize domain to olap schema.
+	      if(doOlap){
+	        MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
+	        String mondrianSchema = exporter.createMondrianModelXML();
+	
+	        Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
+	        byte[] schemaBytes = schemaDoc.asXML().getBytes("UTF-8"); //$NON-NLS-1$
+	
+	        status = repository.publish(base, '/' + parentPath, name + ".mondrian.xml", schemaBytes, true); //$NON-NLS-1$
+	        if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
+	          throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
+	        }
+	
+	        // Refresh Metadata
+	        PentahoSystem.publish(PentahoSessionHolder.getSession(), MetadataPublisher.class.getName());
+	
+	        // Write this catalog to the default Pentaho DataSource and refresh the cache.
+	        File file = new File(path + name + ".mondrian.xml"); //$NON-NLS-1$
+	        // Need to find a better way to get the connection name instead of using the Id.
+	        String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
+	        String catDef = "solution:" + solutionStorage + ISolutionRepository.SEPARATOR //$NON-NLS-1$
+	            + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR + file.getName(); //$NON-NLS-1$//$NON-NLS-2$
+	        addCatalog(catName, catConnectStr, catDef, PentahoSessionHolder.getSession());
+	      }
+      } finally {
+    	  PentahoSessionHolder.setSession(origSession);
       }
-      XmiParser parser = new XmiParser();
-      String reportXML =  parser.generateXmi(model.getDomain());
-
-      // Serialize domain to xmi.
-      String base = PentahoSystem.getApplicationContext().getSolutionRootPath();
-      String parentPath = ActionInfo.buildSolutionPath(solutionStorage, metadataLocation, ""); //$NON-NLS-1$
-      int status = repository.publish(base, '/' + parentPath, name + ".xmi", reportXML.getBytes("UTF-8"), true); //$NON-NLS-1$  //$NON-NLS-2$
-      if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
-        throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
-      }
-
-      // Serialize domain to olap schema.
-      if(doOlap){
-        MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
-        String mondrianSchema = exporter.createMondrianModelXML();
-
-        Document schemaDoc = DocumentHelper.parseText(mondrianSchema);
-        byte[] schemaBytes = schemaDoc.asXML().getBytes("UTF-8"); //$NON-NLS-1$
-
-        status = repository.publish(base, '/' + parentPath, name + ".mondrian.xml", schemaBytes, true); //$NON-NLS-1$
-        if (status != ISolutionRepository.FILE_ADD_SUCCESSFUL) {
-          throw new RuntimeException("Unable to save to repository. Status: " + status); //$NON-NLS-1$
-        }
-
-        // Refresh Metadata
-        PentahoSystem.publish(session, MetadataPublisher.class.getName());
-
-        // Write this catalog to the default Pentaho DataSource and refresh the cache.
-        File file = new File(path + name + ".mondrian.xml"); //$NON-NLS-1$
-        // Need to find a better way to get the connection name instead of using the Id.
-        String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
-        String catDef = "solution:" + solutionStorage + ISolutionRepository.SEPARATOR //$NON-NLS-1$
-            + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR + file.getName(); //$NON-NLS-1$//$NON-NLS-2$
-        addCatalog(catName, catConnectStr, catDef, session);
-      }
-
     } catch (Exception e) {
       logger.error(e);
       throw e;
