@@ -39,7 +39,7 @@
         <label id="spacer-label" width="3" />
       <button id="removeDatasourceButton" image="images/remove.png" tooltiptext="${datasourceAdminDialog.REMOVE}" pen:disabledimage="images/remove_disabled.png" disabled="true" onclick="datasourceAdminDialogController.remove()" />
     </hbox>
-   
+   <hbox id="csvColumnsContent" flex="1" height="175">
 		<tree height="175" width="480" id="datasourcesListTable" seltype="single">
 			<treecols id="datasourcesListCols">
 				<treecol id="datasourceName" label="${datasourcesListCols.datasourceName}" flex="1" pen:binding="name" editable="false" type="text"  sortActive="true" sortDirection="ASCENDING"/>
@@ -47,6 +47,7 @@
 			</treecols>
 			<treechildren id="datasourcesListRows"/>
 		</tree>
+    </hbox>
   </dialog>
   
   <!--  ###############################################################################   -->
