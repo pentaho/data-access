@@ -14,23 +14,16 @@
         <toolbar mode="icons">
           <toolbarspacer flex="1"/>
 
-          <toolbarbutton tooltiptext="${edit_source}" image="images/edit.png" onclick="modelerDialogController.onEditSource()"/>
-          <!--<toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="images/refresh.png" tooltiptext="${refresh}"/>-->
+          <toolbarbutton tooltiptext="${edit_source}" id="edit-icon" image="../../../../mantle/images/spacer.gif" onclick="modelerDialogController.onEditSource()"/>
+          <!--<toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="../../../../mantle/images/spacer.gif" tooltiptext="${refresh}"/>-->
 
           <toolbarseparator/>
-          <toolbarbutton id="autoPopulateButton" image="images/autogen_model.png"
+          <toolbarbutton id="autoPopulateButton" image="../../../../mantle/images/spacer.gif"
                          onclick="modeler.showAutopopulatePrompt()" tooltiptext="${autopopulate_model}"/>
-          <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.addField()"
+          <toolbarbutton id="addField" image="../../../../mantle/images/spacer.gif" onclick="modeler.addField()"
                          tooltiptext="${add}"/>
         </toolbar>
 
-        <!-- TODO: REMOVE THESE BUTTONS -->
-<!--
-        <hbox spacing="0" padding="0">
-          <button id="showReportingOnlyButton" label="reporting only" onclick="modeler.showReportingOnlyMode()" />
-          <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
-        </hbox>
--->
         <tree id="fieldList" height="410" width="258" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy" pen:dropiconsvisible="false">
           <treecols>
             <treecol flex="1" label="" primary="true"
@@ -63,18 +56,18 @@
 
               <vbox id="analyzerModelPanel" height="411" flex="1" spacing="0" padding="0">
                 <toolbar id="schema-toolbar" mode="icons">
-                  <toolbarbutton image="images/ExpandAll.png" onclick="modeler.expandAll()" disabled="false" tooltiptext="${expand_all}"/>
-                  <toolbarbutton image="images/CollapseAll.png" onclick="modeler.collapseAll()" disabled="false" tooltiptext="${collapse_all}"/>
+                  <toolbarbutton id="expand-all" image="../../../../mantle/images/spacer.gif" onclick="modeler.expandAll()" disabled="false" tooltiptext="${expand_all}"/>
+                  <toolbarbutton id="collapse-all" image="../../../../mantle/images/spacer.gif" onclick="modeler.collapseAll()" disabled="false" tooltiptext="${collapse_all}"/>
                   <toolbarspacer flex="1"/>
-                  <toolbarbutton id="measureBtn" image="images/sm_measure_icon.png" onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}"/>
-                  <toolbarbutton id="dimensionBtn" image="images/sm_dim_icon.png" onclick="modeler.showNewDimensionDialog()" disabled="true" tooltiptext="${add_dimension}"/>
-                  <toolbarbutton id="hierarchyBtn" image="images/sm_hierarchy_icon.png" onclick="modeler.showNewHierarchyDialog()" disabled="true" tooltiptext="${add_hiearchy}"/>
-                  <toolbarbutton id="levelBtn" image="images/sm_level_icon.png" onclick="modeler.showNewLevelDialog()" disabled="true" tooltiptext="${add_level}"/>
-                  <toolbarbutton id="memberPropBtn" image="images/sm_member_prop_icon.png" onclick="modeler.showNewMemberPropDialog()" disabled="true" tooltiptext="${add_member_prop}"/>
-                  <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveFieldDown()" tooltiptext="${move_field_down}"/>
-                  <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveFieldUp()" tooltiptext="${move_field_up}"/>
-                  <toolbarbutton image="images/remove.png" onclick="modeler.removeField()" tooltiptext="${remove_field}"/>
-                  <toolbarbutton id="clearModel" image="images/clear_model.png" onclick="modeler.clearFields()"
+                  <toolbarbutton id="measureBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}"/>
+                  <toolbarbutton id="dimensionBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewDimensionDialog()" disabled="true" tooltiptext="${add_dimension}"/>
+                  <toolbarbutton id="hierarchyBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewHierarchyDialog()" disabled="true" tooltiptext="${add_hiearchy}"/>
+                  <toolbarbutton id="levelBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewLevelDialog()" disabled="true" tooltiptext="${add_level}"/>
+                  <toolbarbutton id="memberPropBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewMemberPropDialog()" disabled="true" tooltiptext="${add_member_prop}"/>
+                  <toolbarbutton id="down-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.moveFieldDown()" tooltiptext="${move_field_down}"/>
+                  <toolbarbutton id="up-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.moveFieldUp()" tooltiptext="${move_field_up}"/>
+                  <toolbarbutton id="remove-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.removeField()" tooltiptext="${remove_field}"/>
+                  <toolbarbutton id="clearModel" image="../../../../mantle/images/spacer.gif" onclick="modeler.clearFields()"
                                  tooltiptext="${clearFields}"/>
                 </toolbar>
                 <tree id="dimensionTree" width="405" height="409" editable="false"
@@ -103,15 +96,15 @@
             <tabpanel id="reportingTabPanel" height="409">
               <vbox id="reportingModelPanel" height="409" flex="1" spacing="0" padding="0">
                 <toolbar id="categories-toolbar" mode="icons">
-                  <toolbarbutton image="images/ExpandAll.png" onclick="modeler.expandRelationalAll()" disabled="false" tooltiptext="${expand_all}"/>
-                  <toolbarbutton image="images/CollapseAll.png" onclick="modeler.collapseRelationalAll()" disabled="false" tooltiptext="${collapse_all}"/>
+                  <toolbarbutton id="reporting-expand-all-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.expandRelationalAll()" disabled="false" tooltiptext="${expand_all}"/>
+                  <toolbarbutton id="reporting-collapse-all-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.collapseRelationalAll()" disabled="false" tooltiptext="${collapse_all}"/>
                   <toolbarspacer flex="1"/>
-                  <toolbarbutton id="categoryBtn" image="images/sm_folder_icon.png" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}"/>
-                  <toolbarbutton id="fieldBtn" image="images/fields.png" onclick="modeler.showNewFieldDialog()" disabled="true" tooltiptext="${new_field}"/>
-                  <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveRelationalFieldDown()" tooltiptext="${move_field_down}"/>
-                  <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveRelationalFieldUp()" tooltiptext="${move_field_up}"/>
-                  <toolbarbutton image="images/remove.png" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
-                  <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
+                  <toolbarbutton id="categoryBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}"/>
+                  <toolbarbutton id="fieldBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewFieldDialog()" disabled="true" tooltiptext="${new_field}"/>
+                  <toolbarbutton id="reporting-down-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.moveRelationalFieldDown()" tooltiptext="${move_field_down}"/>
+                  <toolbarbutton id="reporting-up-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.moveRelationalFieldUp()" tooltiptext="${move_field_up}"/>
+                  <toolbarbutton id="reporting-remove-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
+                  <toolbarbutton id="clearRelationalModel" image="../../../../mantle/images/spacer.gif" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
                 </toolbar>
                 <tree id="categoriesTree" width="405" height="403" editable="false" hiddenrootnode="false" preserveselection="true"
                     pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
@@ -161,7 +154,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image src="images/warning.png"/>
+                    <image id="warning-img-0" src="../../../../mantle/images/spacer.gif"/>
                     <label id="messages2label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -181,7 +174,7 @@
               <caption label="${source_column}"/>
               <hbox flex="1">
                 <label id="measure_column_name" value="" flex="1"/>
-                <button image="images/edit.png"
+                <button id="edit-measure-btn" image="../../../../mantle/images/spacer.gif"
                         onclick="modeler.changeColumn()"/>
 
               </hbox>
@@ -231,7 +224,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image src="images/warning.png"/>
+                    <image id="warning-img-1" src="../../../../mantle/images/spacer.gif"/>
                     <label id="dimension_message_label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -267,7 +260,7 @@
                 </columns>
                 <rows>
                   <row>
-                    <image src="images/warning.png"/>
+                    <image id="warning-img-2" src="../../../../mantle/images/spacer.gif"/>
                     <label id="mainnode_message_label" flex="1" multiline="true"
                            value="${undefined_ds}"/>
                   </row>
@@ -311,7 +304,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image src="images/warning.png"/>
+                    <image id="warning-img-3" src="../../../../mantle/images/spacer.gif"/>
                     <label id="hierarchy_message_label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -342,7 +335,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image src="images/warning.png"/>
+                    <image id="warning-img-4" src="../../../../mantle/images/spacer.gif"/>
                     <label id="generic_message_label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -367,7 +360,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image src="images/warning.png"/>
+                    <image id="warning-img-5" src="../../../../mantle/images/spacer.gif"/>
                     <label id="level_message_label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -389,8 +382,7 @@
               <caption label="${source_column}"/>
               <hbox flex="1">
                 <label id="level_source_col" value="" flex="1"/>
-                <button image="images/edit.png"
-                        onclick="modeler.changeColumn()"/>
+                <button id="edit-level-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.changeColumn()"/>
 
               </hbox>
             </groupbox>
@@ -415,17 +407,10 @@
                   <label id="level_ordinal_col" value=""/>
                 </vbox>
                 <vbox>
-                  <button
-                    image="images/edit.png"
-                    onclick="modeler.changeOrdinalColumn()"
-                    />
+                  <button id="edit-ordinal-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.changeOrdinalColumn()" />
                 </vbox>
                 <vbox>
-                  <button
-                    id="clear_ordinal_column"
-                    image="images/remove.png"
-                    onclick="modeler.clearOrdinalColumn()"
-                    />
+                  <button id="clear_ordinal_column" image="../../../../mantle/images/spacer.gif" onclick="modeler.clearOrdinalColumn()" />
                 </vbox>
               </hbox>
 
@@ -442,11 +427,7 @@
 
                 <hbox>
                   <label id="time_level_format_label" value="${time_format}:"/>
-                  <button
-                    image="images/help_link2.png"
-                    tooltiptext="${time_format_help_tooltip}"
-                    onclick="modeler.showHelp('${time_format_help_url}')"
-                    />
+                  <button id="help-btn" image="../../../../mantle/images/spacer.gif" tooltiptext="${time_format_help_tooltip}" onclick="modeler.showHelp('${time_format_help_url}')" />
                 </hbox>
                 <menulist id="time_level_format" editable="true">
                   <menupopup>
@@ -473,7 +454,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image src="images/warning.png" />
+                    <image id="warning-img-6" src="../../../../mantle/images/spacer.gif" />
                     <label id="memberprops_message_label" flex="1" multiline="true"
                       value="This is a test to see how a warning message will appear." />
                   </row>
@@ -494,8 +475,7 @@
               <caption label="${source_column}"/>
               <hbox flex="1">
                 <label id="memberprops_source_col" value="" flex="1"/>
-                <button image="images/edit.png"
-                    onclick="modeler.changeColumn()"  />
+                <button id="edit-member-props-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.changeColumn()"  />
 
               </hbox>
             </groupbox>
@@ -523,8 +503,8 @@
 
                 </columns>
                 <rows>
-                  <row >
-                    <image src="images/warning.png" />
+                  <row>
+                    <image id="warning-img-7" src="../../../../mantle/images/spacer.gif" />
                     <label id="relational_message_label" flex="1" multiline="true"
                       value="${undefined_ds}" />
                   </row>
@@ -554,7 +534,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image src="images/warning.png" />
+                    <image id="warning-img-8" src="../../../../mantle/images/spacer.gif" />
                     <label id="category_message_label" flex="1" multiline="true"
                       value="${test_message}" />
                   </row>
@@ -585,7 +565,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image src="images/warning.png" />
+                    <image id="warning-img-9" src="../../../../mantle/images/spacer.gif" />
                     <label id="fieldmessageslabel" flex="1" multiline="true"
                       value="${test_message}" />
                   </row>
@@ -605,8 +585,7 @@
                 <caption label="${source_column}"/>
                 <hbox flex="1">
                   <label id="field_column_name" value="" flex="1"/>
-                  <button image="images/edit.png"
-                      onclick="modeler.changeColumn()"  />
+                  <button id="edit-change-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.changeColumn()"  />
 
                 </hbox>
               </groupbox>
