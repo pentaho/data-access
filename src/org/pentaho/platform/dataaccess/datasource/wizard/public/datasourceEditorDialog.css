@@ -359,3 +359,247 @@ aggregation-dialog-checkbox-label {
 .IE #pooling-description {
     height: 246px !important;
 }
+
+/* ICON THEMING*/
+
+#analyzerModelPanel #expand-all_img {
+    background-image: url("images/ExpandAll.png");
+    width: 15px;
+    height: 15px;
+}
+
+#analyzerModelPanel #collapse-all_img {
+    background-image: url("images/CollapseAll.png");
+    width: 15px;
+    height: 15px;
+}
+
+#analyzerModelPanel #measureBtn_img {
+    background-image: url("images/sm_measure_icon.png");
+    width: 16px;
+    height: 16px;
+}
+
+#analyzerModelPanel #dimensionBtn_img {
+    background-image: url("images/sm_dim_icon.png");
+    width: 16px;
+    height: 16px;
+}
+
+#analyzerModelPanel #hierarchyBtn_img {
+    background-image: url("images/sm_hierarchy_icon.png");
+    width: 13px;
+    height: 13px;
+}
+
+#analyzerModelPanel #levelBtn_img {
+    background-image: url("images/sm_level_icon.png");
+    width: 16px;
+    height: 16px;
+}
+
+#analyzerModelPanel #memberPropBtn_img {
+    background-image: url("images/sm_member_prop_icon.png");
+    width: 16px;
+    height: 16px;
+}
+
+#analyzerModelPanel #down-btn_img {
+    background-image: url("images/16x16_down.png");
+    width: 16px;
+    height: 16px;
+}
+
+#analyzerModelPanel #up-btn_img {
+    background-image: url("images/16x16_Up.png");
+    width: 16px;
+    height: 16px;
+}
+
+#analyzerModelPanel #remove-btn_img {
+    background-image: url("images/remove.png");
+    width: 16px;
+    height: 16px;
+}
+
+#analyzerModelPanel #clearModel_img {
+    background-image: url("images/clear_model.png");
+    width: 16px;
+    height: 16px;
+}
+
+#reportingTabPanel #categoryBtn_img {
+    background-image: url("images/sm_folder_icon.png");
+    width: 16px;
+    height: 16px;
+}
+
+#reportingTabPanel #reporting-expand-all-btn_img {
+    background-image: url("images/ExpandAll.png");
+    width: 15px;
+    height: 15px;
+}
+
+#reportingTabPanel #reporting-collapse-all-btn_img {
+    background-image: url("images/CollapseAll.png");
+    width: 15px;
+    height: 15px;
+}
+
+#reportingTabPanel #fieldBtn_img {
+    background-image: url("images/fields.png");
+    width: 16px;
+    height: 16px;
+}
+
+#reportingTabPanel #reporting-down-btn_img {
+    background-image: url("images/16x16_down.png");
+    width: 16px;
+    height: 16px;
+}
+
+#reportingTabPanel #reporting-up-btn_img {
+    background-image: url("images/16x16_Up.png");
+    width: 16px;
+    height: 16px;
+}
+
+#reportingTabPanel #reporting-remove-btn_img {
+    background-image: url("images/remove.png");
+    width: 16px;
+    height: 16px;
+}
+
+#reportingTabPanel #clearRelationalModel_img {
+    background-image: url("images/clear_model.png");
+    width: 16px;
+    height: 16px;
+}
+
+.xul-editPanel-content #edit-icon_img {
+    background-image: url("images/edit.png");
+    width: 16px;
+    height: 16px;
+}
+
+.xul-editPanel-content #autoPopulateButton_img {
+    background-image: url("images/autogen_model.png");
+    width: 16px;
+    height: 16px;
+}
+
+.xul-editPanel-content #addField_img {
+    background-image: url("images/insert_to_model.png");
+    width: 16px;
+    height: 16px;
+}
+
+.xul-editPanel-content #refreshButton_img {
+    background-image: url("images/refresh.png");
+    width: 16px;
+    height: 16px;
+}
+
+#edit-measure-btn img {
+    background-image: url("images/edit.png");
+    width: 16px;
+    height: 16px;
+}
+
+#edit-level-btn img {
+    background-image: url("images/edit.png");
+    width: 16px;
+    height: 16px;
+}
+
+/* CHECK */
+
+#edit-ordinal-btn img {
+    background-image: url("images/edit.png");
+    width: 16px;
+    height: 16px;
+}
+
+#edit-change-btn img {
+    background-image: url("images/edit.png");
+    width: 16px;
+    height: 16px;
+}
+
+#clear_ordinal_column img {
+    background-image: url("images/remove.png");
+    width: 16px;
+    height: 16px;
+}
+
+#help-btn img {
+    background-image: url("images/help_link2.png");
+    width: 16px;
+    height: 16px;
+}
+
+#edit-member-props-btn img {
+    background-image: url("images/edit.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-0 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-1 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-2 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-3 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-4 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-5 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-6 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-7 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-8 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
+
+#warning-img-9 {
+    background-image: url("images/warning.png");
+    width: 16px;
+    height: 16px;
+}
