@@ -113,10 +113,25 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 	public String getParameters() {
 		String result = "";
 		if (isParameterMode) {
+	    String sep = ";";
+	    String eq = "=";
+	    String quot = "\"";
+	    String  value;
 			for (ParameterDialogModel currentParameter : analysisParameters) {
-				result = result + currentParameter.getName() + "=" + currentParameter.getValue() + ";";
+			  //add separator if necessary
+        if (!result.isEmpty()) result += sep;
+        //add name / value pair
+			  value = currentParameter.getValue();
+			  //TODO: check if the value contains a quote character. currently not supported.
+			  if (//if the value is not quoted
+			     (!(value.startsWith(quot) && value.endsWith(quot)))
+			      //and the value contains the separator
+			  &&   value.contains(sep)
+			  ) {  //then quote the value:
+			    value = quot + value + quot;
+			  }
+				result = result + currentParameter.getName() + eq + value;
 			}
-			result = result.substring(0, result.length() - 1);
 		}
 		return result;
 	}
