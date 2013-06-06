@@ -26,6 +26,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -655,70 +657,147 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   public void setOverwrite(boolean overwrite) {
     this.overwrite = overwrite;
-
   }
   
+  protected boolean handleParam(StringBuilder name, StringBuilder value) {
+    if (name.length() == 0 && value.length() == 0) return false;
+    boolean hasParameters = false;
+    String paramName = name.toString();
+    String paramValue = value.toString();
+    if(paramName.equalsIgnoreCase("Datasource")) {
+      for(IDatabaseConnection connection : importDialogModel.getConnectionList()) {
+        if(connection.getName().equals(paramValue)) {
+          importDialogModel.setConnection(connection);
+          importDialogModel.addParameter(paramName, paramValue);
+        }
+      }
+    } 
+    else 
+    if(!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
+      importDialogModel.addParameter(paramName, paramValue);
+      hasParameters = true;
+    }
+    name.setLength(0);
+    value.setLength(0);
+    return hasParameters;
+  }
+  
+
   public void editDatasource(final IDatasourceInfo datasourceInfo) {
 
-	  boolean isEditMode = datasourceInfo != null;
-	  uploadAnalysisButton.setDisabled(isEditMode);
-	  acceptButton.setLabel(isEditMode ? resBundle.getString("importDialog.SAVE") : resBundle.getString("importDialog.IMPORT"));
+    boolean isEditMode = datasourceInfo != null;
+    uploadAnalysisButton.setDisabled(isEditMode);
+    acceptButton.setLabel(isEditMode ? resBundle.getString("importDialog.SAVE") : resBundle.getString("importDialog.IMPORT"));
+  
+    if(!isEditMode) return;
+    
+    String url = GWT.getModuleBaseURL();
+    int indexOfContent = url.indexOf("content");
+    if (indexOfContent > -1) {
+      url = url.substring(0, indexOfContent);
+      url = url + "plugin/data-access/api/datasource/" + 
+            datasourceInfo.getId() +
+            "/getAnalysisDatasourceInfo"
+      ;
+    }
+    RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+    try {
+      requestBuilder.sendRequest(null, new RequestCallback() {
 
-	  if(isEditMode) {
-		  String url = GWT.getModuleBaseURL();
-		  if (url.indexOf("content") > -1) {
-			  url = url.substring(0, url.indexOf("content"));
-			  url = url + "plugin/data-access/api/datasource/"  + datasourceInfo.getId() + "/getAnalysisDatasourceInfo";
- 	      }
-		  
-	      RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
-	      try {
-	        requestBuilder.sendRequest(null, new RequestCallback() {
-	          
-	          public void onError(Request request, Throwable e) {
-	        	  logger.log(Level.ALL, e.getMessage());
-	          }
-	          
-	          public void onResponseReceived(Request request, final Response response) {
+        public void onError(Request request, Throwable e) {
+         logger.log(Level.ALL, e.getMessage());
+        }
 
-	        	  boolean hasParameters = false;
-				  String responseValue = response.getText();  
-				  StringTokenizer params = new StringTokenizer(responseValue, ";");
-				        	
-				  while(params.hasMoreElements()) {
-					  String paramString = params.nextToken();
-				      String paramName = paramString.substring(0, paramString.indexOf("="));
-				      String paramValue = paramString.substring(paramString.indexOf("=") + 1, paramString.length());
-				        		
-				      if(paramName.equalsIgnoreCase("Datasource")) {
-				      	for(IDatabaseConnection connection : importDialogModel.getConnectionList()) {
-				      		if(connection.getName().equals(paramValue)) {
-				      			importDialogModel.setConnection(connection);
-				      			importDialogModel.addParameter(paramName, paramValue);
-				      		}
-				      	}
-				      } else if(!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
-				    	  importDialogModel.addParameter(paramName, paramValue);	
-				   		  hasParameters = true;
-				      }
-				  }
-			
-				  schemaNameLabel.setValue(datasourceInfo.getId() + ".mondrian.xml");
-				  importDialogModel.setUploadedFile(datasourceInfo.getId());
-				        	
-			      if(hasParameters) {
-			    	  setPreference(PARAMETER_MODE);
-			    	  manualRadio.setSelected(true);
-			      } else {
-			          setPreference(DATASOURCE_MODE);
-			          availableRadio.setSelected(true);
-			      }
-	          }
-	        });
-	      } catch (Exception e) {
-	    	  logger.log(Level.ALL, e.getMessage());
-	      }    
-	  }
+        public void onResponseReceived(Request request, final Response response) {
+
+          boolean paramHandled, hasParameters = false;
+          String responseValue = response.getText();
+          StringBuilder name = new StringBuilder();
+          StringBuilder value = new StringBuilder();
+          int state = 0;
+          char ch;
+          int i, len = responseValue.length();
+          for (i = 0; i < len; i++) {
+            ch = responseValue.charAt(i);
+            switch (state){
+              case 0: //new name/value pair
+                paramHandled = handleParam(name, value);
+                if (!hasParameters) hasParameters = paramHandled;
+                switch (ch) {
+                  case ';':
+                    break;
+                  default:
+                    state = 1;
+                    name.append(ch);
+                }
+                break;
+              case 1: //looking for equals
+                switch (ch) {
+                  case '=':
+                    state = 2;
+                    break;
+                  default:
+                    name.append(ch);
+                }
+                break;
+              case 2: //about to parse the value
+                switch (ch){
+                  case '"':
+                    state = 3;
+                    break;
+                  case ';':
+                    state = 0;
+                    break;
+                  default:
+                    value.append(ch);
+                    state = 4;
+                }
+                break;
+              case 3: //parse value till closing quote.
+                switch (ch){
+                  case '"':
+                    state = 0;
+                    break;
+                  default:
+                    value.append(ch);
+                }
+                break;
+              case 4:
+                switch (ch) {
+                  case ';':
+                    state = 0;
+                    break;
+                  default:
+                    value.append(ch);
+                }
+                break;
+              default:
+                
+            }
+          }
+          paramHandled = handleParam(name, value);
+          if (!hasParameters) hasParameters = paramHandled;
+          
+          schemaNameLabel.setValue(datasourceInfo.getId() + ".mondrian.xml");
+          importDialogModel.setUploadedFile(datasourceInfo.getId());
+
+          int preference;
+          XulRadio radio;
+          if(hasParameters) {
+            preference = PARAMETER_MODE;
+            radio = manualRadio;
+          } 
+          else {
+            preference = DATASOURCE_MODE;
+            radio = availableRadio;
+          }
+          setPreference(preference);
+          radio.setSelected(true);
+        }
+      });
+    } catch (Exception e) {
+      logger.log(Level.ALL, e.getMessage());
+    }
   }
 
 }
