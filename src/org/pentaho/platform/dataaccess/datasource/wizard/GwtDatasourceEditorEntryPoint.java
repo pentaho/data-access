@@ -361,14 +361,14 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     GlassPane.getInstance().addGlassPaneListener(new GlassPaneNativeListener(obj));
   }
 
-  public void showWizard(final boolean relationalOnlyValid, final DialogListener<Domain> listener) {
+  public void showWizard(final boolean reportingOnlyValid, final DialogListener<Domain> listener) {
 
     if (wizard == null) {
       wizard = new EmbeddedWizard(false);
       wizard.setDatasourceService(datasourceService);
       //      wizard.setConnectionService(connectionService);
       wizard.setCsvDatasourceService(csvService);
-      wizard.setReportingOnlyValid(relationalOnlyValid);
+      wizard.setReportingOnlyValid(reportingOnlyValid);
       wizard.init(new AsyncConstructorListener<EmbeddedWizard>() {
         @Override
         public void asyncConstructorDone(EmbeddedWizard source) {
@@ -378,7 +378,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       });
     } else {
       wizard.addDialogListener(listener);
-      wizard.setReportingOnlyValid(relationalOnlyValid);
+      wizard.setReportingOnlyValid(reportingOnlyValid);
       wizard.showDialog();
     }
   }
@@ -393,7 +393,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   * @param callback
   *
   */
-  private void showWizard(final boolean relationalOnlyValid, final JavaScriptObject callback) {
+  private void showWizard(final boolean reportingOnlyValid, final JavaScriptObject callback) {
 
     final DialogListener<Domain> listener = new DialogListener<Domain>() {
       public void onDialogCancel() {
@@ -422,17 +422,17 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         notifyCallbackError(callback, errorMessage);
       }
     };
-    showWizard(relationalOnlyValid, listener);
+    showWizard(reportingOnlyValid, listener);
 
   }
 
-  public void showWizardEdit(final String domainId, final String modelId, boolean relationalOnlyValid,
+  public void showWizardEdit(final String domainId, final String modelId, boolean reportingOnlyValid,
       final DialogListener<Domain> listener) {
-    showWizardEdit(domainId, modelId, ModelerPerspective.REPORTING.name(), relationalOnlyValid, listener);
+    showWizardEdit(domainId, modelId, ModelerPerspective.REPORTING.name(), reportingOnlyValid, listener);
   }
 
   public void showWizardEdit(final String domainId, final String modelId, final String perspective,
-      boolean relationalOnlyValid, final DialogListener<Domain> listener) {
+      boolean reportingOnlyValid, final DialogListener<Domain> listener) {
     final String modelPerspective;
     if (perspective == null) {
       modelPerspective = ModelerPerspective.REPORTING.name();
@@ -456,9 +456,9 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   }
 
-  private void showWizardEdit(final String domainId, final String modelId, boolean relationalOnlyValid,
+  private void showWizardEdit(final String domainId, final String modelId, boolean reportingOnlyValid,
       final JavaScriptObject callback) {
-    showWizardEdit(domainId, modelId, ModelerPerspective.REPORTING.name(), relationalOnlyValid, callback);
+    showWizardEdit(domainId, modelId, ModelerPerspective.REPORTING.name(), reportingOnlyValid, callback);
   }
 
   /**
@@ -472,7 +472,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   *
   */
   private void showWizardEdit(final String domainId, final String modelId, final String perspective,
-      boolean relationalOnlyValid, final JavaScriptObject callback) {
+      boolean reportingOnlyValid, final JavaScriptObject callback) {
     final DialogListener<Domain> listener = new DialogListener<Domain>() {
       public void onDialogCancel() {
         modeler.removeDialogListener(this);
@@ -498,7 +498,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         notifyCallbackError(callback, errorMessage);
       }
     };
-    showWizardEdit(domainId, modelId, perspective, relationalOnlyValid, listener);
+    showWizardEdit(domainId, modelId, perspective, reportingOnlyValid, listener);
   }
 
   /**
