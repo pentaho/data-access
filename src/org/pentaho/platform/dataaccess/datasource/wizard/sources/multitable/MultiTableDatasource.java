@@ -110,8 +110,10 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
         joinGuiModel.setDoOlap(!wizardModel.isReportingOnlyValid());
 
 	    try {
+	      //RPB: BISERVER-9258. 
+	      
 		    // conditionally hiding the selection of reporting vs reporting+olap in the case where reporting only makes no sense.
-	        bf.createBinding(wizardModel, "reportingOnlyValid", "metadata", "visible").fireSourceChanged();
+	      //bf.createBinding(wizardModel, "reportingOnlyValid", "metadata", "visible").fireSourceChanged();
 	
 		    // Use a binding to keep the radio buttons in sync
 		    bf.setBindingType(Type.BI_DIRECTIONAL);
@@ -123,8 +125,8 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		    bf.createBinding(wizardModel, "reportingOnlyValid", reportingRadio, "checked").fireSourceChanged();
     
 	    } catch (Exception e) {
-	    	e.printStackTrace(); 
-        }
+	      e.printStackTrace(); 
+      }
 
 		this.errorDialog = (XulDialog) document.getElementById("errorDialog");
 		this.errorLabel = (XulLabel) document.getElementById("errorLabel");
