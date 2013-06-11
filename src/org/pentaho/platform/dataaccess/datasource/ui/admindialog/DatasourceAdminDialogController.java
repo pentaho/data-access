@@ -287,7 +287,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           } else if (service.getType().equals(MetadataUIDatasourceService.TYPE)){
             entryPoint.showMetadataImportDialog(adminDatasourceListener);
           } else if (service.getType().equals(DSWUIDatasourceService.TYPE)){
-            entryPoint.showWizard(false, adminDatasourceListener);
+            entryPoint.showWizard(true, adminDatasourceListener);
           }
         } else if(newUI.indexOf("javascript:") >= 0) {
           String script = newUI.substring(newUI.indexOf(":") + 1);
