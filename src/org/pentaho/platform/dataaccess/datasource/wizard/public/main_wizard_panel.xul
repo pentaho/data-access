@@ -63,9 +63,12 @@
 									<hbox>
 										<label value="${datasourceDialog.Connection}" tooltiptext="${datasourceDialog.ConnectionToolTip}"/>
 										<spacer flex="1"/>
-										<button id="editConnection" image="images/update.png" pen:disabledimage="images/update_disabled.png" tooltiptext="${datasourceDialog.editConnectionImageToolTip}" onclick="wizardConnectionController.showEditConnectionDialog()" disabled="true"/>
-										<button id="addConnection" image="images/add.png" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="images/add_disabled.png" onclick="wizardConnectionController.showAddConnectionDialog()" disabled="false"/>
-										<button id="removeConnection" image="images/remove.png" pen:disabledimage="images/remove_disabled.png" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true"/>
+
+										<button id="editConnection" image="../../../../mantle/images/spacer.gif" pen:disabledimage="../../../../mantle/images/spacer.gif" tooltiptext="${datasourceDialog.editConnectionImageToolTip}" onclick="wizardConnectionController.showEditConnectionDialog()" disabled="true" pen:classname="pentaho-updatebutton"/>
+										
+										<button id="addConnection" image="../../../../mantle/images/spacer.gif" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="../../../../mantle/images/spacer.gif" onclick="wizardConnectionController.showAddConnectionDialog()" disabled="false" pen:classname="pentaho-addbutton"/>
+										
+										<button id="removeConnection" image="../../../../mantle/images/spacer.gif" pen:disabledimage="../../../../mantle/images/spacer.gif" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true" pen:classname="pentaho-deletebutton"/>
 									</hbox>
 									<listbox id="connectionList" pen:binding="modelName" disabled="true" height="275" width="180"/>
 									<vbox id="metadata" flex="1">
@@ -80,8 +83,6 @@
 								<vbox id="queryBox" height="400" flex="1">
 									<hbox>
 										<label value="${datasourceDialog.Query}" tooltiptext="${datasourceDialog.QueryToolTip}" flex="1"/>
-										<!--<spacer flex="1"/>-->
-										<!--<button id="editQuery" image="images/update.png" pen:disabledimage="images/update_disabled.png" tooltiptext="${datasourceDialog.editQueryImageToolTip}" onclick="relationalDatasourceController.editQuery()"  disabled="true"/>-->
 									</hbox>
 									<textbox height="332" id="query"  multiline="true" disabled="false"/>
 									<hbox>
@@ -202,8 +203,10 @@
 				        </vbox>
 				        <vbox>
 				          <spacer height="150"/>
-				          <button id="addButton" image="images/move_arrow.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false"/>
-				          <button id="removeButton" image="images/move_arrow_back.png" pen:disabledimage="" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"/>
+				          
+				          <button id="addButton" image="../../../../mantle/images/spacer.gif" pen:disabledimage="../../../../mantle/images/spacer.gif" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false" pen:classname="pentaho-movearrowbutton"/>
+
+				          <button id="removeButton" image="../../../../mantle/images/spacer.gif" pen:disabledimage="../../../../mantle/images/spacer.gif" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false" pen:classname="pentaho-movearrowbackbutton"/>
 				          <spacer flex="1"/>
 				        </vbox>
 				        <vbox>
