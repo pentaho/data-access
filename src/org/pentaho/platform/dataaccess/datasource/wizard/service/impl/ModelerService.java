@@ -22,6 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +50,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.Inli
 import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.security.SecurityHelper;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
@@ -64,7 +66,13 @@ public class ModelerService extends PentahoBase implements IModelerService {
   private static final long serialVersionUID = 1L;
   private static final Log logger = LogFactory.getLog(ModelerService.class);
   public static final String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
+  private SimpleDataAccessPermissionHandler dataAccessPermHandler;
 
+  public ModelerService() {
+    super();
+    dataAccessPermHandler = new SimpleDataAccessPermissionHandler();
+  }
+  
   public Log getLogger() {
     return logger;
   }
@@ -127,53 +135,64 @@ public class ModelerService extends PentahoBase implements IModelerService {
     return new BogoPojo();
   }
 
-  public String serializeModels(Domain domain, String name) throws Exception {
+  public String serializeModels(final Domain domain, final String name) throws Exception {
     return serializeModels(domain, name, true);
   }
 
-  public String serializeModels(Domain domain, String name, boolean doOlap) throws Exception {
+  public String serializeModels(final Domain domain, final String name, final boolean doOlap) throws Exception {
     String domainId = null;
     initKettle();
 
-    try {
-      DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();      
-      ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), datasourceService.getGeoContext());
-      model.setModelName(name);
-      model.setDomain(domain);
-      domain.setId(name + ".xmi");
+    if (dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession())) {
+      SecurityHelper.getInstance().runAsSystem(new Callable<Void>() {
 
-      LogicalModel lModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
-      lModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
+        @Override
+        public Void call() throws Exception {
 
-      String catName = lModel.getName(Locale.getDefault().toString());
+          try {
+            DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();
+            ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), datasourceService
+                .getGeoContext());
+            model.setModelName(name);
+            model.setDomain(domain);
+            domain.setId(name + ".xmi");
 
-      // strip off the _olap suffix for the catalog ref
-      catName = catName.replace(BaseModelerWorkspaceHelper.OLAP_SUFFIX, "");
+            LogicalModel lModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+            lModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
 
-      if(doOlap){
-        lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
-      }
-            
-      // Stores metadata into JCR.      
-      IMetadataDomainRepository  metadataDomainRep = PentahoSystem.get(IMetadataDomainRepository.class);
-      if(metadataDomainRep != null) {
-    	  metadataDomainRep.storeDomain(model.getDomain(), true);
-      }      
-      // Serialize domain to olap schema.
-      if(doOlap){
-    	MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
-        String mondrianSchema = exporter.createMondrianModelXML();
-        IPentahoSession session = PentahoSessionHolder.getSession();
-        if(session != null) {
-	        session.setAttribute("MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema);
-	        String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
-	        addCatalog(catName, catConnectStr, session);
+            String catName = lModel.getName(Locale.getDefault().toString());
+
+            // strip off the _olap suffix for the catalog ref
+            catName = catName.replace(BaseModelerWorkspaceHelper.OLAP_SUFFIX, "");
+
+            if (doOlap) {
+              lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
+            }
+
+            // Stores metadata into JCR.      
+            IMetadataDomainRepository metadataDomainRep = PentahoSystem.get(IMetadataDomainRepository.class);
+            if (metadataDomainRep != null) {
+              metadataDomainRep.storeDomain(model.getDomain(), true);
+            }
+            // Serialize domain to olap schema.
+            if (doOlap) {
+              MondrianModelExporter exporter = new MondrianModelExporter(lModel, Locale.getDefault().toString());
+              String mondrianSchema = exporter.createMondrianModelXML();
+              IPentahoSession session = PentahoSessionHolder.getSession();
+              if (session != null) {
+                session.setAttribute("MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema);
+                String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
+                addCatalog(catName, catConnectStr, session);
+              }
+            }
+
+          } catch (Exception e) {
+            logger.error(e);
+            throw e;
+          }
+          return null;
         }
-      }
-
-    } catch (Exception e) {
-      logger.error(e);
-      throw e;
+      });
     }
     return domainId;
   }
