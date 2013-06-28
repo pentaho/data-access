@@ -56,7 +56,7 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
 
   public static final String XUL_LABEL_TYPE = "label"; //$NON-NLS-1$
 
-  public static final String STEP_IMAGE_SRC = "../../../../mantle/images/spacer.gif"; //$NON-NLS-1$
+  public static final String STEP_IMAGE_SRC = "images/spacer.gif"; //$NON-NLS-1$
 
   public static final String SPACER_IMAGE_SRC = "images/empty_spacer.png"; //$NON-NLS-1$
 
