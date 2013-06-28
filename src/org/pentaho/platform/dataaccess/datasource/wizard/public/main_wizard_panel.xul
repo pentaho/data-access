@@ -64,11 +64,11 @@
 										<label value="${datasourceDialog.Connection}" tooltiptext="${datasourceDialog.ConnectionToolTip}"/>
 										<spacer flex="1"/>
 
-										<button id="editConnection" image="../../../../mantle/images/spacer.gif" pen:disabledimage="../../../../mantle/images/spacer.gif" tooltiptext="${datasourceDialog.editConnectionImageToolTip}" onclick="wizardConnectionController.showEditConnectionDialog()" disabled="true" pen:classname="pentaho-updatebutton"/>
+										<button id="editConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif" tooltiptext="${datasourceDialog.editConnectionImageToolTip}" onclick="wizardConnectionController.showEditConnectionDialog()" disabled="true" pen:classname="pentaho-updatebutton"/>
 										
-										<button id="addConnection" image="../../../../mantle/images/spacer.gif" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="../../../../mantle/images/spacer.gif" onclick="wizardConnectionController.showAddConnectionDialog()" disabled="false" pen:classname="pentaho-addbutton"/>
+										<button id="addConnection" image="images/spacer.gif" tooltiptext="${datasourceDialog.addConnectionImageToolTip}" pen:disabledimage="images/spacer.gif" onclick="wizardConnectionController.showAddConnectionDialog()" disabled="false" pen:classname="pentaho-addbutton"/>
 										
-										<button id="removeConnection" image="../../../../mantle/images/spacer.gif" pen:disabledimage="../../../../mantle/images/spacer.gif" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true" pen:classname="pentaho-deletebutton"/>
+										<button id="removeConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true" pen:classname="pentaho-deletebutton"/>
 									</hbox>
 									<listbox id="connectionList" pen:binding="modelName" disabled="true" height="275" width="180"/>
 									<vbox id="metadata" flex="1">
@@ -204,9 +204,9 @@
 				        <vbox>
 				          <spacer height="150"/>
 				          
-				          <button id="addButton" image="../../../../mantle/images/spacer.gif" pen:disabledimage="../../../../mantle/images/spacer.gif" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false" pen:classname="pentaho-movearrowbutton"/>
+				          <button id="addButton" image="images/spacer.gif" pen:disabledimage="images/spacer.gif" tooltiptext="" onclick="joinSelectionStepController.addSelectedTable()" disabled="false" pen:classname="pentaho-movearrowbutton"/>
 
-				          <button id="removeButton" image="../../../../mantle/images/spacer.gif" pen:disabledimage="../../../../mantle/images/spacer.gif" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false" pen:classname="pentaho-movearrowbackbutton"/>
+				          <button id="removeButton" image="images/spacer.gif" pen:disabledimage="images/spacer.gif" tooltiptext="" onclick="joinSelectionStepController.removeSelectedTable()" disabled="false" pen:classname="pentaho-movearrowbackbutton"/>
 				          <spacer flex="1"/>
 				        </vbox>
 				        <vbox>
