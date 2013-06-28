@@ -70,7 +70,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private FormPanel formPanel;
   private FileUpload metadataFileUpload;
   private TextBox formDomainIdText;
-  
+   
   public void init() {
     try {
       resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get(0);
@@ -256,14 +256,31 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   public String convertToNLSMessage(String results, String fileName) {
     String msg = results;
     int code = new Integer(results).intValue();
+    String messageId;
     switch (code) {
-      case 8:
-        msg = messages.getString("Metadata.OVERWRITE_EXISTING_SCHEMA");
+      case 1: //PUBLISH_TO_SERVER_FAILED = 1;
+        messageId = "Metadata.PUBLISH_TO_SERVER_FAILED";
+        break;
+      case 2: //PUBLISH_GENERAL_ERROR = 2;
+        messageId = "Metadata.PUBLISH_GENERAL_ERROR";
+        break;
+      case 3: //PUBLISH_DATASOURCE_ERROR = 6;
+        messageId = "Metadata.PUBLISH_DATASOURCE_ERROR";
+        break;
+      case 4: //PUBLISH_USERNAME_PASSWORD_FAIL = 5;
+        messageId = "Metadata.PUBLISH_USERNAME_PASSWORD_FAIL";
+        break;
+      case 7: //PUBLISH_XMLA_CATALOG_EXISTS = 7;
+        messageId = "Metadata.PUBLISH_XMLA_CATALOG_EXISTS";
+        break;
+      case 8: //PUBLISH_SCHEMA_EXISTS_ERROR
+        messageId = "Metadata.OVERWRITE_EXISTING_SCHEMA";
         break;
       default:
-        msg = messages.getString("Metadata.Error");
+        messageId = "Metadata.ERROR";
         break;
     }
+    msg = messages.getString(messageId);
     return msg + " Metadata File: " + fileName;
   }
 
