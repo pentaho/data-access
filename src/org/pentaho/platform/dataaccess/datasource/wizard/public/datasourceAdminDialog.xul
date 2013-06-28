@@ -19,20 +19,20 @@
 
     <hbox flex="1">
       <spacer flex="1"/>
-      <button id="editDatasourceButton" image="../../../../mantle/images/spacer.gif" tooltiptext="${datasourceAdminDialog.EDIT}"
-        pen:disabledimage="../../../../mantle/images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.edit()" 
+      <button id="editDatasourceButton" image="images/spacer.gif" tooltiptext="${datasourceAdminDialog.EDIT}"
+        pen:disabledimage="images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.edit()" 
         pen:classname="pentaho-editbutton"/>        
       <label id="spacer-label" width="3" />
 
-      <button id="datasourceAddButton" image="../../../../mantle/images/spacer.gif" pen:classname="pentaho-addcombobutton">
+      <button id="datasourceAddButton" image="images/spacer.gif" pen:classname="pentaho-addcombobutton">
        <menupopup id="datasourceTypeMenuPopup"/>
       </button>
       <label id="spacer-label" width="3" />
       
-      <button id="exportDatasourceButton" image="../../../../mantle/images/spacer.gif" tooltiptext="${datasourceAdminDialog.EXPORT}" pen:disabledimage="../../../../mantle/images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.export()" pen:classname="pentaho-exportbutton" />
+      <button id="exportDatasourceButton" image="images/spacer.gif" tooltiptext="${datasourceAdminDialog.EXPORT}" pen:disabledimage="images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.export()" pen:classname="pentaho-exportbutton" />
         <label id="spacer-label" width="3" />
       
-      <button id="removeDatasourceButton" image="../../../../mantle/images/spacer.gif" tooltiptext="${datasourceAdminDialog.REMOVE}" pen:disabledimage="../../../../mantle/images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.remove()" pen:classname="pentaho-deletebutton"/>
+      <button id="removeDatasourceButton" image="images/spacer.gif" tooltiptext="${datasourceAdminDialog.REMOVE}" pen:disabledimage="images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.remove()" pen:classname="pentaho-deletebutton"/>
     </hbox>
    <hbox id="csvColumnsContent" flex="1" height="175">
 		<tree height="175" width="480" id="datasourcesListTable" seltype="single">

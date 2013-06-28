@@ -24,8 +24,8 @@
      			<label id="localizationBundlesLabel" value="${importDialog.LOC_BUNDLES}"/>
      			<spacer width="246"/>  
      			<!-- <pen:fileupload id="concreteFileUpload" action="../../../../../UploadService" image="images/add.png" disabledimage="images/add_disabled.png" onuploadsuccess="importDialogController.concreteUploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" height="10" width="10" /> -->
-				<button id="addButton" image="../../../../mantle/images/spacer.gif" disabledimage="../../../../mantle/images/spacer.gif" onclick="metadataImportDialogController.addLocalizedBundle()" pen:classname="pentaho-addbutton"/>
-     			<button id="removeButton" image="../../../../mantle/images/spacer.gif" disabledimage="../../../../mantle/images/spacer.gif" onclick="metadataImportDialogController.removeLocalizedBundle()" pen:classname="pentaho-deletebutton"/>
+				<button id="addButton" image="images/spacer.gif" disabledimage="images/spacer.gif" onclick="metadataImportDialogController.addLocalizedBundle()" pen:classname="pentaho-addbutton"/>
+     			<button id="removeButton" image="images/spacer.gif" disabledimage="images/spacer.gif" onclick="metadataImportDialogController.removeLocalizedBundle()" pen:classname="pentaho-deletebutton"/>
      		</hbox>
      		<hbox>
      			<tree id="localizedBundlesTree" seltype="single" width="402" height="150">
@@ -68,9 +68,9 @@
 					<hbox>
 		 				<label id="localizationBundlesLabel" value="${importDialog.PARAMETERS}"/>
 		 				<spacer width="270"/>  
-						<button id="editutton" image="../../../../mantle/images/spacer.gif" disabledimage="../../../../mantle/images/spacer.gif" onclick="analysisImportDialogController.editParameter()" pen:classname="pentaho-editbutton"/>
-		 				<button id="addButton" image="../../../../mantle/images/spacer.gif" disabledimage="../../../../mantle/images/spacer.gif" onclick="analysisImportDialogController.openParametersDialog()" pen:classname="pentaho-addbutton"/>
-		 				<button id="removeButton" image="../../../../mantle/images/spacer.gif" disabledimage="../../../../mantle/images/spacer.gif" onclick="analysisImportDialogController.removeParameter()" pen:classname="pentaho-deletebutton"/>
+						<button id="editutton" image="images/spacer.gif" disabledimage="images/spacer.gif" onclick="analysisImportDialogController.editParameter()" pen:classname="pentaho-editbutton"/>
+		 				<button id="addButton" image="images/spacer.gif" disabledimage="images/spacer.gif" onclick="analysisImportDialogController.openParametersDialog()" pen:classname="pentaho-addbutton"/>
+		 				<button id="removeButton" image="images/spacer.gif" disabledimage="images/spacer.gif" onclick="analysisImportDialogController.removeParameter()" pen:classname="pentaho-deletebutton"/>
 		 			</hbox>
 					<hbox>
 			        	<tree id="analysisParametersTree" seltype="single" width="402" height="150">

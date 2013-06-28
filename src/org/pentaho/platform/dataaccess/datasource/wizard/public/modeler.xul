@@ -14,13 +14,13 @@
         <toolbar mode="icons">
           <toolbarspacer flex="1"/>
 
-          <toolbarbutton tooltiptext="${edit_source}" id="edit-icon" image="../../../../mantle/images/spacer.gif" onclick="modelerDialogController.onEditSource()" pen:classname="penatho-smalleditbutton"/>
-          <!--<toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="../../../../mantle/images/spacer.gif" tooltiptext="${refresh}" pen:classname="pentaho-refreshbutton"/>-->
+          <toolbarbutton tooltiptext="${edit_source}" id="edit-icon" image="images/spacer.gif" onclick="modelerDialogController.onEditSource()" pen:classname="penatho-smalleditbutton"/>
+          <!--<toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="images/spacer.gif" tooltiptext="${refresh}" pen:classname="pentaho-refreshbutton"/>-->
 
           <toolbarseparator/>
-          <toolbarbutton id="autoPopulateButton" image="../../../../mantle/images/spacer.gif"
+          <toolbarbutton id="autoPopulateButton" image="images/spacer.gif"
                          onclick="modeler.showAutopopulatePrompt()" tooltiptext="${autopopulate_model}" pen:classname="pentaho-autopopulatebutton"/>
-          <toolbarbutton id="addField" image="../../../../mantle/images/spacer.gif" onclick="modeler.addField()"
+          <toolbarbutton id="addField" image="images/spacer.gif" onclick="modeler.addField()"
                          tooltiptext="${add}" pen:classname="pentaho-addfieldbutton"/>
         </toolbar>
 
@@ -28,8 +28,8 @@
           <treecols>
             <treecol flex="1" label="" primary="true"
               pen:binding="name" pen:childrenbinding="children"
-              pen:imagebinding="image" editable="false"
-              pen:expandedbinding="expanded"/>
+              pen:imagebinding="image" editable="false" 
+              pen:classnamebinding="classname" pen:expandedbinding="expanded"/>
           </treecols>
           <treechildren>
             <treeitem container="true" open="true">
@@ -56,18 +56,18 @@
 
               <vbox id="analyzerModelPanel" height="411" flex="1" spacing="0" padding="0">
                 <toolbar id="schema-toolbar" mode="icons">
-                  <toolbarbutton id="expand-all" image="../../../../mantle/images/spacer.gif" onclick="modeler.expandAll()" disabled="false" tooltiptext="${expand_all}" pen:classname="pentaho-expandallbutton"/>
-                  <toolbarbutton id="collapse-all" image="../../../../mantle/images/spacer.gif" onclick="modeler.collapseAll()" disabled="false" tooltiptext="${collapse_all}" pen:classname="pentaho-collapseallbutton"/>
+                  <toolbarbutton id="expand-all" image="images/spacer.gif" onclick="modeler.expandAll()" disabled="false" tooltiptext="${expand_all}" pen:classname="pentaho-expandallbutton"/>
+                  <toolbarbutton id="collapse-all" image="images/spacer.gif" onclick="modeler.collapseAll()" disabled="false" tooltiptext="${collapse_all}" pen:classname="pentaho-collapseallbutton"/>
                   <toolbarspacer flex="1"/>
-                  <toolbarbutton id="measureBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}" pen:classname="pentaho-smallmeasurebutton"/>
-                  <toolbarbutton id="dimensionBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewDimensionDialog()" disabled="true" tooltiptext="${add_dimension}" pen:classname="pentaho-smalldimensionbutton"/>
-                  <toolbarbutton id="hierarchyBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewHierarchyDialog()" disabled="true" tooltiptext="${add_hiearchy}" pen:classname="pentaho-smallhierarchybutton"/>
-                  <toolbarbutton id="levelBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewLevelDialog()" disabled="true" tooltiptext="${add_level}" pen:classname="pentaho-smalllevelbutton"/>
-                  <toolbarbutton id="memberPropBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewMemberPropDialog()" disabled="true" tooltiptext="${add_member_prop}" pen:classname="pentaho-smallmemberpropbutton"/>
-                  <toolbarbutton id="down-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.moveFieldDown()" tooltiptext="${move_field_down}" pen:classname="pentaho-downbutton"/>
-                  <toolbarbutton id="up-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.moveFieldUp()" tooltiptext="${move_field_up}" pen:classname="pentaho-upbutton"/>
-                  <toolbarbutton id="remove-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.removeField()" tooltiptext="${remove_field}" pen:classname="pentaho-smallremovebutton"/>
-                  <toolbarbutton id="clearModel" image="../../../../mantle/images/spacer.gif" onclick="modeler.clearFields()"
+                  <toolbarbutton id="measureBtn" image="images/spacer.gif" onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}" pen:classname="pentaho-smallmeasurebutton"/>
+                  <toolbarbutton id="dimensionBtn" image="images/spacer.gif" onclick="modeler.showNewDimensionDialog()" disabled="true" tooltiptext="${add_dimension}" pen:classname="pentaho-smalldimensionbutton"/>
+                  <toolbarbutton id="hierarchyBtn" image="images/spacer.gif" onclick="modeler.showNewHierarchyDialog()" disabled="true" tooltiptext="${add_hiearchy}" pen:classname="pentaho-smallhierarchybutton"/>
+                  <toolbarbutton id="levelBtn" image="images/spacer.gif" onclick="modeler.showNewLevelDialog()" disabled="true" tooltiptext="${add_level}" pen:classname="pentaho-smalllevelbutton"/>
+                  <toolbarbutton id="memberPropBtn" image="images/spacer.gif" onclick="modeler.showNewMemberPropDialog()" disabled="true" tooltiptext="${add_member_prop}" pen:classname="pentaho-smallmemberpropbutton"/>
+                  <toolbarbutton id="down-btn" image="images/spacer.gif" onclick="modeler.moveFieldDown()" tooltiptext="${move_field_down}" pen:classname="pentaho-downbutton"/>
+                  <toolbarbutton id="up-btn" image="images/spacer.gif" onclick="modeler.moveFieldUp()" tooltiptext="${move_field_up}" pen:classname="pentaho-upbutton"/>
+                  <toolbarbutton id="remove-btn" image="images/spacer.gif" onclick="modeler.removeField()" tooltiptext="${remove_field}" pen:classname="pentaho-smallremovebutton"/>
+                  <toolbarbutton id="clearModel" image="images/spacer.gif" onclick="modeler.clearFields()"
                                  tooltiptext="${clearFields}" pen:classname="pentaho-clearmodelbutton"/>
                 </toolbar>
                 <tree id="dimensionTree" width="405" height="409" editable="false"
@@ -80,7 +80,7 @@
                       pen:imagebinding="image" editable="false"
                        pen:disabledbinding="editingDisabled"
                       pen:tooltipbinding="validationMessagesString"
-                      pen:expandedbinding="expanded"/>
+                      pen:expandedbinding="expanded" pen:classnamebinding="classname"/>
                   </treecols>
                   <treechildren>
                     <treeitem container="true" open="true">
@@ -96,15 +96,15 @@
             <tabpanel id="reportingTabPanel" height="409">
               <vbox id="reportingModelPanel" height="409" flex="1" spacing="0" padding="0">
                 <toolbar id="categories-toolbar" mode="icons">
-                  <toolbarbutton id="reporting-expand-all-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.expandRelationalAll()" disabled="false" tooltiptext="${expand_all}" pen:classname="pentaho-expandallbutton"/>
-                  <toolbarbutton id="reporting-collapse-all-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.collapseRelationalAll()" disabled="false" tooltiptext="${collapse_all}" pen:classname="pentaho-collapseallbutton"/>
+                  <toolbarbutton id="reporting-expand-all-btn" image="images/spacer.gif" onclick="modeler.expandRelationalAll()" disabled="false" tooltiptext="${expand_all}" pen:classname="pentaho-expandallbutton"/>
+                  <toolbarbutton id="reporting-collapse-all-btn" image="images/spacer.gif" onclick="modeler.collapseRelationalAll()" disabled="false" tooltiptext="${collapse_all}" pen:classname="pentaho-collapseallbutton"/>
                   <toolbarspacer flex="1"/>
-                  <toolbarbutton id="categoryBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}" pen:classname="pentaho-smallcategorybutton" />
-                  <toolbarbutton id="fieldBtn" image="../../../../mantle/images/spacer.gif" onclick="modeler.showNewFieldDialog()" disabled="true" tooltiptext="${new_field}" pen:classname="pentaho-fieldbutton"/>
-                  <toolbarbutton id="reporting-down-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.moveRelationalFieldDown()" tooltiptext="${move_field_down}" pen:classname="pentaho-downbutton"/>
-                  <toolbarbutton id="reporting-up-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.moveRelationalFieldUp()" tooltiptext="${move_field_up}" pen:classname="pentaho-upbutton"/>
-                  <toolbarbutton id="reporting-remove-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}" pen:classname="pentaho-smallremovebutton"/>
-                  <toolbarbutton id="clearRelationalModel" image="../../../../mantle/images/spacer.gif" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}" pen:classname="pentaho-clearmodelbutton"/>
+                  <toolbarbutton id="categoryBtn" image="images/spacer.gif" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}" pen:classname="pentaho-smallcategorybutton" />
+                  <toolbarbutton id="fieldBtn" image="images/spacer.gif" onclick="modeler.showNewFieldDialog()" disabled="true" tooltiptext="${new_field}" pen:classname="pentaho-fieldbutton"/>
+                  <toolbarbutton id="reporting-down-btn" image="images/spacer.gif" onclick="modeler.moveRelationalFieldDown()" tooltiptext="${move_field_down}" pen:classname="pentaho-downbutton"/>
+                  <toolbarbutton id="reporting-up-btn" image="images/spacer.gif" onclick="modeler.moveRelationalFieldUp()" tooltiptext="${move_field_up}" pen:classname="pentaho-upbutton"/>
+                  <toolbarbutton id="reporting-remove-btn" image="images/spacer.gif" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}" pen:classname="pentaho-smallremovebutton"/>
+                  <toolbarbutton id="clearRelationalModel" image="images/spacer.gif" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}" pen:classname="pentaho-clearmodelbutton"/>
                 </toolbar>
                 <tree id="categoriesTree" width="405" height="403" editable="false" hiddenrootnode="false" preserveselection="true"
                     pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
@@ -115,7 +115,7 @@
                       pen:imagebinding="image" editable="false"
                       pen:disabledbinding="editingDisabled"
                       pen:tooltipbinding="validationMessagesString"
-                      pen:expandedbinding="expanded"/>
+                      pen:expandedbinding="expanded" pen:classnamebinding="classname"/>
                   </treecols>
                   <treechildren>
                     <treeitem container="true" open="true">
@@ -154,7 +154,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image id="warning-img-0" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton"/>
+                    <image id="warning-img-0" src="images/spacer.gif" pen:classname="pentaho-warningbutton"/>
                     <label id="messages2label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -174,7 +174,7 @@
               <caption label="${source_column}"/>
               <hbox flex="1">
                 <label id="measure_column_name" value="" flex="1"/>
-                <button id="edit-measure-btn" image="../../../../mantle/images/spacer.gif"
+                <button id="edit-measure-btn" image="images/spacer.gif"
                         onclick="modeler.changeColumn()" pen:classname="penatho-smalleditbutton"/>
 
               </hbox>
@@ -224,7 +224,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image id="warning-img-1" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton"/>
+                    <image id="warning-img-1" src="images/spacer.gif" pen:classname="pentaho-warningbutton"/>
                     <label id="dimension_message_label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -260,7 +260,7 @@
                 </columns>
                 <rows>
                   <row>
-                    <image id="warning-img-2" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton"/>
+                    <image id="warning-img-2" src="images/spacer.gif" pen:classname="pentaho-warningbutton"/>
                     <label id="mainnode_message_label" flex="1" multiline="true"
                            value="${undefined_ds}"/>
                   </row>
@@ -304,7 +304,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image id="warning-img-3" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton"/>
+                    <image id="warning-img-3" src="images/spacer.gif" pen:classname="pentaho-warningbutton"/>
                     <label id="hierarchy_message_label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -335,7 +335,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image id="warning-img-4" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton"/>
+                    <image id="warning-img-4" src="images/spacer.gif" pen:classname="pentaho-warningbutton"/>
                     <label id="generic_message_label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -360,7 +360,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image id="warning-img-5" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton"/>
+                    <image id="warning-img-5" src="images/spacer.gif" pen:classname="pentaho-warningbutton"/>
                     <label id="level_message_label" flex="1" multiline="true"
                            value="${test_message}"/>
                   </row>
@@ -382,7 +382,7 @@
               <caption label="${source_column}"/>
               <hbox flex="1">
                 <label id="level_source_col" value="" flex="1"/>
-                <button id="edit-level-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.changeColumn()" pen:classname="penatho-smalleditbutton"/>
+                <button id="edit-level-btn" image="images/spacer.gif" onclick="modeler.changeColumn()" pen:classname="penatho-smalleditbutton"/>
 
               </hbox>
             </groupbox>
@@ -407,10 +407,10 @@
                   <label id="level_ordinal_col" value=""/>
                 </vbox>
                 <vbox>
-                  <button id="edit-ordinal-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.changeOrdinalColumn()" pen:classname="penatho-smalleditbutton" />
+                  <button id="edit-ordinal-btn" image="images/spacer.gif" onclick="modeler.changeOrdinalColumn()" pen:classname="penatho-smalleditbutton" />
                 </vbox>
                 <vbox>
-                  <button id="clear_ordinal_column" image="../../../../mantle/images/spacer.gif" onclick="modeler.clearOrdinalColumn()" pen:classname="pentaho-smallremovebutton"/>
+                  <button id="clear_ordinal_column" image="images/spacer.gif" onclick="modeler.clearOrdinalColumn()" pen:classname="pentaho-smallremovebutton"/>
                 </vbox>
               </hbox>
 
@@ -427,7 +427,7 @@
 
                 <hbox>
                   <label id="time_level_format_label" value="${time_format}:"/>
-                  <button id="help-btn" image="../../../../mantle/images/spacer.gif" tooltiptext="${time_format_help_tooltip}" onclick="modeler.showHelp('${time_format_help_url}')" pen:classname="pentaho-helpbutton"/>
+                  <button id="help-btn" image="images/spacer.gif" tooltiptext="${time_format_help_tooltip}" onclick="modeler.showHelp('${time_format_help_url}')" pen:classname="pentaho-helpbutton"/>
                 </hbox>
                 <menulist id="time_level_format" editable="true">
                   <menupopup>
@@ -454,7 +454,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image id="warning-img-6" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton"/>
+                    <image id="warning-img-6" src="images/spacer.gif" pen:classname="pentaho-warningbutton"/>
                     <label id="memberprops_message_label" flex="1" multiline="true"
                       value="This is a test to see how a warning message will appear." />
                   </row>
@@ -475,7 +475,7 @@
               <caption label="${source_column}"/>
               <hbox flex="1">
                 <label id="memberprops_source_col" value="" flex="1"/>
-                <button id="edit-member-props-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.changeColumn()"  pen:classname="penatho-smalleditbutton"/>
+                <button id="edit-member-props-btn" image="images/spacer.gif" onclick="modeler.changeColumn()"  pen:classname="penatho-smalleditbutton"/>
 
               </hbox>
             </groupbox>
@@ -504,7 +504,7 @@
                 </columns>
                 <rows>
                   <row>
-                    <image id="warning-img-7" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton"/>
+                    <image id="warning-img-7" src="images/spacer.gif" pen:classname="pentaho-warningbutton"/>
                     <label id="relational_message_label" flex="1" multiline="true"
                       value="${undefined_ds}" />
                   </row>
@@ -534,7 +534,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image id="warning-img-8" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton" />
+                    <image id="warning-img-8" src="images/spacer.gif" pen:classname="pentaho-warningbutton" />
                     <label id="category_message_label" flex="1" multiline="true"
                       value="${test_message}" />
                   </row>
@@ -565,7 +565,7 @@
                 </columns>
                 <rows>
                   <row flex="1">
-                    <image id="warning-img-9" src="../../../../mantle/images/spacer.gif" pen:classname="pentaho-warningbutton" />
+                    <image id="warning-img-9" src="images/spacer.gif" pen:classname="pentaho-warningbutton" />
                     <label id="fieldmessageslabel" flex="1" multiline="true"
                       value="${test_message}" />
                   </row>
@@ -585,7 +585,7 @@
                 <caption label="${source_column}"/>
                 <hbox flex="1">
                   <label id="field_column_name" value="" flex="1"/>
-                  <button id="edit-change-btn" image="../../../../mantle/images/spacer.gif" onclick="modeler.changeColumn()" pen:classname="penatho-smalleditbutton"/>
+                  <button id="edit-change-btn" image="images/spacer.gif" onclick="modeler.changeColumn()" pen:classname="penatho-smalleditbutton"/>
 
                 </hbox>
               </groupbox>
@@ -652,7 +652,7 @@
           <treecol flex="1" label="" primary="true"
             pen:binding="name" pen:childrenbinding="children"
             pen:imagebinding="image" editable="false"
-            pen:expandedbinding="expanded"/>
+            pen:expandedbinding="expanded" pen:classnamebinding="classname"/>
         </treecols>
         <treechildren>
           <treeitem container="true" open="true">
