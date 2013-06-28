@@ -414,10 +414,12 @@
                 </vbox>
               </hbox>
 
-              <label value="${geo_role}:" />
-              <menulist id="level_geo_role" pen:binding="displayName">
-                  <menupopup/>
-              </menulist>
+              <vbox id="geo_level_elements">
+                <label value="${geo_role}:" />
+                <menulist id="level_geo_role" pen:binding="displayName">
+                    <menupopup/>
+                </menulist>
+              </vbox>
 
               <vbox id="time_level_elements">
                 <label id="time_level_type_label" value="${time_level_type}:" />
