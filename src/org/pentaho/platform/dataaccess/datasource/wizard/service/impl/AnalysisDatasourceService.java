@@ -86,7 +86,7 @@ public class AnalysisDatasourceService {
 
   private static final String ACCESS_DENIED = "Access Denied";
 
-  private static final String SUCCESS = "3";
+  private static final int SUCCESS = 3;
   
   private static final String SUCCESS_MSG = "SUCCESS";
 
@@ -141,24 +141,27 @@ public class AnalysisDatasourceService {
       @FormDataParam(XMLA_ENABLED_FLAG) String xmlaEnabledFlag,
       @FormDataParam(PARAMETERS) String parameters) throws PentahoAccessControlException {
     Response response = null;
-    String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
+    int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
       validateAccess();
       String fileName = schemaFileInfo.getFileName();
+      logger.error("About to import...");
       processMondrianImport(dataInputStream, catalogName, overwrite, xmlaEnabledFlag, parameters, fileName);
+      logger.error("imported.");
       statusCode = SUCCESS;
     } catch (PentahoAccessControlException pac) {
       logger.error(pac.getMessage());
-      statusCode = String.valueOf(PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL);
+      statusCode = PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL;
     } catch (PlatformImportException pe) {
-      logger.error("Error putMondrianSchema " + pe.getMessage() + " status = " + pe.getErrorStatus());
-      statusCode = String.valueOf(PlatformImportException.PUBLISH_SCHEMA_EXISTS_ERROR);
+      logger.error("exception.");
+      statusCode = pe.getErrorStatus();
+      logger.error("Error putMondrianSchema " + pe.getMessage() + " status = " + statusCode);
     } catch (Exception e) {
       logger.error("Error putMondrianSchema " + e.getMessage());
-      statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
+      statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
 
-    response = Response.ok().status(new Integer(statusCode)).type(MediaType.TEXT_PLAIN).build();
+    response = Response.ok().status(statusCode).type(MediaType.TEXT_PLAIN).build();
     logger.debug("putMondrianSchema Response " + response);
     return response;
   }
