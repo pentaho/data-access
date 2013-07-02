@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.database.Database;
@@ -78,6 +79,7 @@ public class CsvTransformGeneratorTest extends BaseTest {
   public void testGoodTransform() throws Exception {    
     IPentahoSession session = new StandaloneSession("test");
     KettleSystemListener.environmentInit(session);
+    String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = System.getProperty("KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL", "N");
     ModelInfo info = createModel();
     CsvTransformGenerator gen = new CsvTransformGenerator(info, getDatabaseMeta());
 
@@ -138,7 +140,12 @@ public class CsvTransformGeneratorTest extends BaseTest {
     assertTrue(cells[1] instanceof Double);
     assertTrue(cells[2] instanceof Long);
     assertTrue(cells[3] instanceof Date);
-    assertTrue(cells[4] == null);
+    if ("Y".equals(KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL)) {
+      assertTrue("".equals(cells[4]));
+    }
+    else {
+      assertTrue(cells[4] == null);
+    }
     assertTrue(cells[5] instanceof Long);
     assertTrue(cells[6] instanceof Double);
     assertTrue(cells[7] instanceof Boolean);
@@ -154,7 +161,14 @@ public class CsvTransformGeneratorTest extends BaseTest {
     assertEquals(testDate.getSeconds(), ((Date) cells[3]).getSeconds());
 
     //    assertEquals( testDate, cells[3] );
-    assertEquals(null, cells[4]); // IfNull value does not seem to work
+    if ("Y".equals(KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL)) {
+      assertEquals("", cells[4]);
+      assertEquals(cells[4], "");
+    }
+    else {
+      assertEquals(null, cells[4]); // IfNull value does not seem to work
+    }
+    
     assertEquals((long) 7, cells[5]);
     assertEquals(237.5714286, cells[6]);
     assertEquals(true, cells[7]);
