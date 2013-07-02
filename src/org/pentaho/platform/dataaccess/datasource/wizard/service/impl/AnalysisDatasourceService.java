@@ -1,14 +1,14 @@
 /*
- * This program is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software 
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
  * Foundation.
  *
- * You should have received a copy of the GNU Lesser General Public License along with this 
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html 
- * or from the Free Software Foundation, Inc., 
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
@@ -16,15 +16,15 @@
  *
  *
  * @created Nov 12, 2011
- * @author  Ezequiel Cuellar, 
+ * @author  Ezequiel Cuellar,
  *          Tyler Band
  * @modified: July 11, 2012
- * 
+ *
  * change notes July 12, 2012
  * The use of the IPlatformImporter can b e found in the SpringObjects.xml file - the new MondrianImportHanlder is registered
  * and can be replaced by a new handler in the future without changes to this code. Note: the original code is left in for backwards
  * compatibility with other existing services (should be replaced in future)
- * 
+ *
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
@@ -75,7 +75,7 @@ public class AnalysisDatasourceService {
   private static final String CATALOG_NAME = "catalogName";
 
   private static final String DATASOURCE_NAME = "datasourceName";
-  
+
   private static final String UPLOAD_ANALYSIS = "uploadAnalysis";
 
   private static final String PARAMETERS = "parameters";
@@ -86,12 +86,12 @@ public class AnalysisDatasourceService {
 
   private static final String ACCESS_DENIED = "Access Denied";
 
-  private static final String SUCCESS = "3";
-  
+  private static final int SUCCESS = 3;
+
   private static final String SUCCESS_MSG = "SUCCESS";
 
   private final String ACTION_ADMINISTER_SECURITY = "org.pentaho.security.administerSecurity";
-  
+
   private static final String DOMAIN_ID = "domain-id";
 
   private static final String UTF_8 = "UTF-8";
@@ -106,17 +106,17 @@ public class AnalysisDatasourceService {
   private static final Log logger = LogFactory.getLog(AnalysisDatasourceService.class);
 
 
-  
+
   public AnalysisDatasourceService() {
     super();
     importer = PentahoSystem.get(IPlatformImporter.class);
 
   }
 
-   
+
   /**
    * This is used by PUC to use a Jersey put to import a Mondrian Schema XML into PUR
-   * @author: tband 
+   * @author: tband
    * date: 7/10/12
    * @param dataInputStream
    * @param schemaFileInfo
@@ -132,16 +132,16 @@ public class AnalysisDatasourceService {
   @Path("/putSchema")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
-  public Response putMondrianSchema(     
-      @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream, 
-      @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo, 
+  public Response putMondrianSchema(
+      @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream,
+      @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo,
       @FormDataParam(CATALOG_NAME) String catalogName, //Optional
       @FormDataParam(DATASOURCE_NAME) String datasourceName, //Optional
-      @FormDataParam(OVERWRITE_IN_REPOS) String overwrite, 
+      @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
       @FormDataParam(XMLA_ENABLED_FLAG) String xmlaEnabledFlag,
       @FormDataParam(PARAMETERS) String parameters) throws PentahoAccessControlException {
     Response response = null;
-    String statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
+    int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
       validateAccess();
       String fileName = schemaFileInfo.getFileName();
@@ -149,16 +149,16 @@ public class AnalysisDatasourceService {
       statusCode = SUCCESS;
     } catch (PentahoAccessControlException pac) {
       logger.error(pac.getMessage());
-      statusCode = String.valueOf(PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL);
+      statusCode = PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL;
     } catch (PlatformImportException pe) {
-      logger.error("Error putMondrianSchema " + pe.getMessage() + " status = " + pe.getErrorStatus());
-      statusCode = String.valueOf(PlatformImportException.PUBLISH_SCHEMA_EXISTS_ERROR);
+      statusCode = pe.getErrorStatus();
+      logger.error("Error putMondrianSchema " + pe.getMessage() + " status = " + statusCode);
     } catch (Exception e) {
       logger.error("Error putMondrianSchema " + e.getMessage());
-      statusCode = String.valueOf(PlatformImportException.PUBLISH_GENERAL_ERROR);
+      statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
 
-    response = Response.ok().status(new Integer(statusCode)).type(MediaType.TEXT_PLAIN).build();
+    response = Response.ok().status(statusCode).type(MediaType.TEXT_PLAIN).build();
     logger.debug("putMondrianSchema Response " + response);
     return response;
   }
@@ -183,12 +183,12 @@ public class AnalysisDatasourceService {
     importer.importFile(bundle);
   }
 
-  
+
 
 
   /**
    * This is used by PUC to use a form post to import a Mondrian Schema XML into PUR
-   * @author: tband 
+   * @author: tband
    * date: 7/10/12
    * @param dataInputStream
    * @param schemaFileInfo
@@ -204,13 +204,13 @@ public class AnalysisDatasourceService {
   @Path("/postAnalysis")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces({"text/plain","text/html"})
- 
+
   public Response postMondrainSchema(
-      @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream, 
-      @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo, 
+      @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream,
+      @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo,
       @FormDataParam(CATALOG_NAME) String catalogName, //Optional
       @FormDataParam(DATASOURCE_NAME) String datasourceName, //Optional
-      @FormDataParam(OVERWRITE_IN_REPOS) String overwrite, 
+      @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
       @FormDataParam(XMLA_ENABLED_FLAG) String xmlaEnabledFlag,
       @FormDataParam(PARAMETERS) String parameters) throws PentahoAccessControlException {
      //use existing Jersey post method - but translate into text/html for PUC Client
@@ -231,39 +231,39 @@ public class AnalysisDatasourceService {
      */
   private String determineDomainCatalogName(String parameters, String catalogName, String fileName, InputStream inputStream) {
    /*
-    * Try to resolve the domainId out of the mondrian schema name. 
+    * Try to resolve the domainId out of the mondrian schema name.
     * If not present then use the catalog name parameter or finally the file name.
-    * */ 
-	  
+    * */
+
     String domainId = null;
-	try {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-	    org.w3c.dom.Document document = builder.parse(inputStream);
-	    NodeList schemas = document.getElementsByTagName("Schema");
-	    Node schema = schemas.item(0);
-	    if(schema != null) { 
-	    	Node name = schema.getAttributes().getNamedItem("name");
-	    	domainId = name.getTextContent();
-	    	if(domainId != null && !"".equals(domainId)) {
-	    		return domainId;
-	    	}
-	    }
-	} catch (Exception e) {
-		logger.error(e);
-	}  
-    
+  try {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
+      org.w3c.dom.Document document = builder.parse(inputStream);
+      NodeList schemas = document.getElementsByTagName("Schema");
+      Node schema = schemas.item(0);
+      if(schema != null) {
+        Node name = schema.getAttributes().getNamedItem("name");
+        domainId = name.getTextContent();
+        if(domainId != null && !"".equals(domainId)) {
+          return domainId;
+        }
+      }
+  } catch (Exception e) {
+    logger.error(e);
+  }
+
     domainId  =  (getValue(parameters, CATALOG_NAME) == null)?catalogName:getValue(parameters, CATALOG_NAME);
     if(domainId == null || "".equals(domainId)){
       if(fileName.contains(".")){
         domainId = fileName.substring(0, fileName.indexOf("."));
-      } else {       
-          domainId = fileName;       
+      } else {
+          domainId = fileName;
       }
     } else{
       if(domainId.contains(".")){
         domainId =  domainId.substring(0, domainId.indexOf("."));
-      } 
+      }
     }
     return domainId;
   }
@@ -280,27 +280,27 @@ public class AnalysisDatasourceService {
   private IPlatformImportBundle createPlatformBundle(String parameters, InputStream dataInputStream,
       String catalogName, boolean overWriteInRepository, String fileName, String xmlaEnabled) {
 
-	
-	byte[] bytes = null;  
-	try {  
-		bytes = IOUtils.toByteArray(dataInputStream);
-		if(bytes.length == 0 && catalogName != null) {
-			MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
-			Map<String, InputStream> fileData = helper.getModrianSchemaFiles(catalogName);
-			dataInputStream =  fileData.get("schema.xml");
-			bytes = IOUtils.toByteArray(dataInputStream);
-		}
-	} catch(IOException e) {
-		logger.error(e);
-	}
 
-	  
+  byte[] bytes = null;
+  try {
+    bytes = IOUtils.toByteArray(dataInputStream);
+    if(bytes.length == 0 && catalogName != null) {
+      MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
+      Map<String, InputStream> fileData = helper.getModrianSchemaFiles(catalogName);
+      dataInputStream =  fileData.get("schema.xml");
+      bytes = IOUtils.toByteArray(dataInputStream);
+    }
+  } catch(IOException e) {
+    logger.error(e);
+  }
+
+
     String datasource = getValue(parameters, "Datasource");
     String domainId = this.determineDomainCatalogName(parameters, catalogName, fileName, new ByteArrayInputStream(bytes));
     String sep = ";";
-    if(StringUtils.isEmpty(parameters)){       
+    if(StringUtils.isEmpty(parameters)){
       parameters="Provider=mondrian";
-          parameters += sep + DATASOURCE_NAME + "="+datasource; 
+          parameters += sep + DATASOURCE_NAME + "="+datasource;
           if(!StringUtils.isEmpty(xmlaEnabled))
             parameters += sep + ENABLE_XMLA+"="+ xmlaEnabled;
     }
@@ -311,16 +311,16 @@ public class AnalysisDatasourceService {
         .name(domainId)
         .overwriteFile(overWriteInRepository)
         .mime(MONDRIAN_MIME_TYPE)
-        .withParam(PARAMETERS, parameters)        
+        .withParam(PARAMETERS, parameters)
         .withParam(DOMAIN_ID, domainId);
       //pass as param if not in parameters string
       if(!StringUtils.isEmpty(xmlaEnabled))
         bundleBuilder.withParam(ENABLE_XMLA, xmlaEnabled);
-      
+
     IPlatformImportBundle bundle = bundleBuilder.build();
     return bundle;
   }
-  
+
   /**
    * helper method to calculate the overwrite in repos flag from parameters or passed value
    * @param parameters
@@ -335,7 +335,7 @@ public class AnalysisDatasourceService {
     }//if there is a conflict - parameters win?
     return overWriteInRepository;
   }
- 
+
   /**
    * internal validation of authorization
    * @throws PentahoAccessControlException
@@ -357,8 +357,8 @@ public class AnalysisDatasourceService {
    * @return
    */
   private String getValue(String parameters, String key) {
-    mondrian.olap.Util.PropertyList propertyList = mondrian.olap.Util.parseConnectString(parameters);    
-    return propertyList.get(key);   
+    mondrian.olap.Util.PropertyList propertyList = mondrian.olap.Util.parseConnectString(parameters);
+    return propertyList.get(key);
   }
-  
+
 }
