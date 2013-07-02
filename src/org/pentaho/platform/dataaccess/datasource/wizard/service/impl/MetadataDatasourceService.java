@@ -153,12 +153,16 @@ public class MetadataDatasourceService {
       return Response.ok().status(new Integer(SUCCESS)).type(MediaType.TEXT_PLAIN).build();
 
     } catch (PlatformImportException pe) {
-      logger.error("Error import metadata: " + pe.getMessage() + " status = " + pe.getErrorStatus());
-      String statusCode = String.valueOf(PlatformImportException.PUBLISH_SCHEMA_EXISTS_ERROR);
-      Response response = Response.ok().status(new Integer(statusCode)).type(MediaType.TEXT_PLAIN).build();
-
+      String msg = pe.getMessage();
+      logger.error("Error import metadata: " + msg + " status = " + pe.getErrorStatus());
+      Throwable throwable = pe.getCause();
+      if (throwable != null) {
+        msg = throwable.getMessage();
+        logger.error("Root cause: " + msg);
+      }
+      int statusCode = pe.getErrorStatus();
+      Response response = Response.ok(msg, MediaType.TEXT_PLAIN).build();
       return response;
-
     } catch (Exception e) {
       logger.error(e);
 			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
