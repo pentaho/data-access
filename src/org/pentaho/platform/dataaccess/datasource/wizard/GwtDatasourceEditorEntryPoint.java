@@ -677,15 +677,15 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
             String results = event.getResults();
             String message = controller.convertToNLSMessage(results, controller.getFileName());
 
-            if (!SUCCESS_3.equals(results)) {
+            if (SUCCESS_3.equals(results)) {
+              metaDataFormPanel.removeFromParent();
+              listener.onDialogAccept(null);
+            } else {
               if (OVERWRITE_8.equals(results)) {
                 overwriteFileDialog(metaDataFormPanel, message, controller);
               } else {
                 listener.onDialogError(message);
               }
-            } else {
-              metaDataFormPanel.removeFromParent();
-              listener.onDialogAccept(null);
             }
           }
 
