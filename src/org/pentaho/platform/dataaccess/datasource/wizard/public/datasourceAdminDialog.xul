@@ -17,7 +17,7 @@
     ondialogcancel="datasourceAdminDialogController.onDialogCancel()"
   >
 
-    <hbox flex="1">
+    <hbox flex="1" id="datasource-button-bar">
       <spacer flex="1"/>
       <button id="editDatasourceButton" image="images/spacer.gif" tooltiptext="${datasourceAdminDialog.EDIT}"
         pen:disabledimage="images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.edit()" 
