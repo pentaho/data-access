@@ -8,7 +8,7 @@
           buttonlabelaccept="${dialog.OK}"
           buttonlabelcancel="${dialog.cancel}">
     <hbox id="metadatastep" flex="1" padding="0" spacing="3" height="425">
-      <editpanel width="260" height="463">
+      <editpanel width="260">
         <caption label="${available}:"/>
 
         <toolbar mode="icons">
@@ -131,7 +131,7 @@
           </tabpanels>
         </tabbox>
 
-        <editpanel width="410" height="463" id="schema-toolbar-groupbox">
+        <editpanel width="410" id="schema-toolbar-groupbox">
           <caption label="${model}" />
           <hbox id="modelPanel" height="413" flex="1" spacing="0" padding="0">
 
@@ -140,7 +140,7 @@
       </deck>
 
 
-      <editpanel type="closable" width="272" height="463" id="propertiesPanel">
+      <editpanel type="closable" width="272" id="propertiesPanel">
         <caption label="${properties}"/>
         <deck id="propertiesdeck">
           <vbox/>
