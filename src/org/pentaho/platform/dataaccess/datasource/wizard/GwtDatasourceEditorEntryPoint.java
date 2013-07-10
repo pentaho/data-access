@@ -428,14 +428,14 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   public void showWizardEdit(final String domainId, final String modelId, boolean reportingOnlyValid,
       final DialogListener<Domain> listener) {
-    showWizardEdit(domainId, modelId, ModelerPerspective.REPORTING.name(), reportingOnlyValid, listener);
+    showWizardEdit(domainId, modelId, ModelerPerspective.ANALYSIS.name(), reportingOnlyValid, listener);
   }
 
   public void showWizardEdit(final String domainId, final String modelId, final String perspective,
       boolean reportingOnlyValid, final DialogListener<Domain> listener) {
     final String modelPerspective;
     if (perspective == null) {
-      modelPerspective = ModelerPerspective.REPORTING.name();
+      modelPerspective = ModelerPerspective.ANALYSIS.name();
     } else {
       modelPerspective = perspective;
     }
@@ -447,7 +447,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
         try {
           modelerPerspective = ModelerPerspective.valueOf(modelPerspective);
         } catch (IllegalArgumentException e) {
-          modelerPerspective = ModelerPerspective.REPORTING;
+          modelerPerspective = ModelerPerspective.ANALYSIS;
         }
         dialog.addDialogListener(listener);
         dialog.showDialog(domainId, modelId, modelerPerspective);
@@ -458,7 +458,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   private void showWizardEdit(final String domainId, final String modelId, boolean reportingOnlyValid,
       final JavaScriptObject callback) {
-    showWizardEdit(domainId, modelId, ModelerPerspective.REPORTING.name(), reportingOnlyValid, callback);
+    showWizardEdit(domainId, modelId, ModelerPerspective.ANALYSIS.name(), reportingOnlyValid, callback);
   }
 
   /**
