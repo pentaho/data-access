@@ -244,21 +244,31 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
   public void showDialog(Domain domain) {
     enableWaitCursor(true);
     model.setDomain(domain);
-    controller.setModelerPerspective(ModelerPerspective.REPORTING);
+    if(model.getLogicalModel(ModelerPerspective.ANALYSIS) != null) {
+      controller.setModelerPerspective(ModelerPerspective.ANALYSIS);
+    } else {
+      controller.setModelerPerspective(ModelerPerspective.REPORTING);
+    }
     controller.resetPropertyForm();
     showDialog();
     enableWaitCursor(false);
   }
 
   public void showDialog(String domainId, String modelId) {
-    showDialog(domainId, modelId, ModelerPerspective.REPORTING);
+    showDialog(domainId, modelId, ModelerPerspective.ANALYSIS);
   }
   public void showDialog(String domainId, String modelId, final ModelerPerspective modelerPerspective) {
     enableWaitCursor(true);
     service.loadDomain(domainId, new XulServiceCallback<Domain>(){
       public void success(Domain retVal) {
         model.setDomain(retVal);
-        controller.setModelerPerspective(modelerPerspective);
+
+        if(model.getLogicalModel(modelerPerspective) != null) {
+          controller.setModelerPerspective(modelerPerspective);
+        } else {
+          controller.setModelerPerspective(ModelerPerspective.REPORTING);
+        }
+
         controller.resetPropertyForm();
         enableWaitCursor(false);
         showDialog();
