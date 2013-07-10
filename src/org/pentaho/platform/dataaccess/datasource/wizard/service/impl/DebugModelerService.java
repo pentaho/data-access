@@ -16,7 +16,7 @@ import org.pentaho.platform.api.engine.IApplicationContext;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
-import org.pentaho.platform.api.repository.ISolutionRepository;
+import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.platform.engine.core.solution.ActionInfo;
@@ -58,9 +58,9 @@ public class DebugModelerService extends ModelerService {
       model.setDomain(domain);
       String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
 
-      String metadataLocation = "resources" + ISolutionRepository.SEPARATOR + "metadata"; //$NON-NLS-1$  //$NON-NLS-2$
+      String metadataLocation = "resources" + RepositoryFile.SEPARATOR + "metadata"; //$NON-NLS-1$  //$NON-NLS-2$
 
-      String path = solutionStorage + ISolutionRepository.SEPARATOR + metadataLocation + ISolutionRepository.SEPARATOR;
+      String path = solutionStorage + RepositoryFile.SEPARATOR + metadataLocation + RepositoryFile.SEPARATOR;
       domainId = path + name + ".xmi"; //$NON-NLS-1$ 
 
       IApplicationContext appContext = PentahoSystem.getApplicationContext();
@@ -75,8 +75,6 @@ public class DebugModelerService extends ModelerService {
 
       IPentahoSession session = getSession();
 
-      ISolutionRepository repository = PentahoSystem.get(ISolutionRepository.class, session);
-
       // Keep a reference to the mondrian catalog
       model.getWorkspaceHelper().populateDomain(model);
 
@@ -87,6 +85,8 @@ public class DebugModelerService extends ModelerService {
       String reportXML =  parser.generateXmi(model.getDomain());
 
       // Serialize domain to xmi.
+      /*
+        DISABLED DUE TO USE OF OLD API
       String base = PentahoSystem.getApplicationContext().getSolutionRootPath();
       String parentPath = ActionInfo.buildSolutionPath(solutionStorage, metadataLocation, ""); //$NON-NLS-1$
       int status = repository.publish(base, '/' + parentPath, name + ".xmi", reportXML.getBytes("UTF-8"), true); //$NON-NLS-1$ //$NON-NLS-2$
@@ -108,13 +108,14 @@ public class DebugModelerService extends ModelerService {
 
       // Refresh Metadata
       PentahoSystem.publish(session, MetadataPublisher.class.getName());
+      */
 
       // Write this catalog to the default Pentaho DataSource and refresh the cache.
       File file = new File(path + name + ".mondrian.xml"); //$NON-NLS-1$  
       // Need to find a better way to get the connection name instead of using the Id.      
       String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$
-      String catDef = "solution:" + solutionStorage + ISolutionRepository.SEPARATOR //$NON-NLS-1$
-          + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR + file.getName(); //$NON-NLS-1$//$NON-NLS-2$
+      String catDef = "solution:" + solutionStorage + RepositoryFile.SEPARATOR //$NON-NLS-1$
+          + "resources" + RepositoryFile.SEPARATOR + "metadata" + RepositoryFile.SEPARATOR + file.getName(); //$NON-NLS-1$//$NON-NLS-2$
       addCatalog(catName, catConnectStr, catDef, session);
       
      

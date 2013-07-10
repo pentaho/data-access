@@ -48,11 +48,11 @@ import org.pentaho.platform.api.engine.ISecurityHelper;
 import org.pentaho.platform.api.engine.ISolutionEngine;
 import org.pentaho.platform.api.mt.ITenant;
 import org.pentaho.platform.api.repository.IClientRepositoryPathsStrategy;
-import org.pentaho.platform.api.repository.ISolutionRepository;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
 import org.pentaho.platform.api.repository.datasource.DuplicateDatasourceException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
+import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
@@ -177,8 +177,8 @@ public class SerializeServiceTest {
     login("suzy", "", false);
 
     String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
-    String path = solutionStorage + ISolutionRepository.SEPARATOR
-        + "resources" + ISolutionRepository.SEPARATOR + "metadata" + ISolutionRepository.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
+    String path = solutionStorage + RepositoryFile.SEPARATOR
+        + "resources" + RepositoryFile.SEPARATOR + "metadata" + RepositoryFile.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
 
     String olapPath = null;
 
@@ -186,7 +186,7 @@ public class SerializeServiceTest {
     if (appContext != null) {
       path = PentahoSystem.getApplicationContext().getSolutionPath(path);
       olapPath = PentahoSystem.getApplicationContext().getSolutionPath(
-          "system" + ISolutionRepository.SEPARATOR + "olap" + ISolutionRepository.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
+          "system" + RepositoryFile.SEPARATOR + "olap" + RepositoryFile.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
     }
 
     File olap1 = new File(olapPath + "datasources.xml"); //$NON-NLS-1$

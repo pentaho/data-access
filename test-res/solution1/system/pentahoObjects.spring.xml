@@ -16,9 +16,6 @@ PentahoSystem which is initialized after Spring
   <bean id="systemStartupSession" class="org.pentaho.platform.engine.security.session.TrustedSystemStartupSession"
         scope="prototype"/>
 
-  <bean id="ISolutionRepository" class="org.pentaho.platform.repository.solution.filebased.FileBasedSolutionRepository"
-        scope="session"/>
-
   <!-- Data connections.  Connections objects should be accessed through PentahoConnectionFactory,
 not directly from the PentahoObjectFactory. -->
   <bean id="connection-SQL" class="org.pentaho.platform.plugin.services.connections.sql.SQLConnection"
