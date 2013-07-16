@@ -16,12 +16,15 @@
       <hbox>
         <label value="${datasourceSelectionDialog.listLabel}" tooltiptext="${datasourceSelectionDialog.listLabel}" />
         <spacer flex="1" />
-        <button id="editDatasource" image="images/edit.png" tooltiptext="${datasourceSelectionDialog.edit}" pen:disabledimage="images/edit_disabled.png"
-          visible="false" disabled="true" onclick="datasourceSelectionDialogController.editDatasource()" />
-        <button id="addDatasource" image="images/add.png" tooltiptext="${datasourceSelectionDialog.add}" pen:disabledimage="images/add_disabled.png"
-          visible="false" onclick="datasourceSelectionDialogController.addDatasource()" />
-        <button id="removeDatasource" image="images/remove.png" tooltiptext="${datasourceSelectionDialog.remove}" pen:disabledimage="images/remove_disabled.png"
-          visible="false" onclick="datasourceSelectionDialogController.removeDatasourceConfirm()" />
+        <button id="editDatasource" image="images/spacer.gif" tooltiptext="${datasourceSelectionDialog.edit}" pen:disabledimage="images/spacer.gif" disabled="true"
+                pen:classname="pentaho-editbutton" onclick="datasourceSelectionDialogController.editDatasource()" />
+
+        <button id="addDatasource" image="images/spacer.gif" tooltiptext="${datasourceSelectionDialog.add}" pen:disabledimage="images/spacer.gif"
+          visible="false" pen:classname="pentaho-addbutton" onclick="datasourceSelectionDialogController.addDatasource()"  />
+
+        <button id="removeDatasource" image="images/spacer.gif" tooltiptext="${datasourceSelectionDialog.remove}" pen:disabledimage="images/spacer.gif"
+          visible="false" pen:classname="pentaho-deletebutton" onclick="datasourceSelectionDialogController.removeDatasourceConfirm()" />
+
       </hbox>
       <listbox id="datasourceListbox" flex="1" rows="6" pen:binding="modelName" seltype="single" height="125" />
     </vbox>
