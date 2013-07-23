@@ -70,7 +70,7 @@
                   <toolbarbutton id="clearModel" image="images/spacer.gif" onclick="modeler.clearFields()"
                                  tooltiptext="${clearFields}" pen:classname="pentaho-clearmodelbutton"/>
                 </toolbar>
-                <tree id="dimensionTree" width="405" height="409" editable="false"
+                <tree id="dimensionTree" width="405" height="403" editable="false"
                   pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
                   pen:ondrop="modeler.onModelTreeDrop()" hiddenrootnode="false" preserveselection="true"
                   pen:dropiconsvisible="false">
