@@ -79,4 +79,14 @@
     id="metadataServiceDA"
     type="xml,gwt"
     class="org.pentaho.platform.dataaccess.metadata.service.MetadataService"/>
+
+  <external-resources>
+    <!--
+     **  Need these css includes here. adding them to the gwt module definition makes the load order unpredictable.
+     **  This unpredictability allows them to supercede the theme css files in some cases.
+     -->
+    <file context="global">content/data-access/resources/gwt/datasourceEditorDialog.css</file>
+    <file context="global">content/data-access/resources/gwt/datasourceAdminDialog.css</file>
+  </external-resources>
+
 </plugin>
