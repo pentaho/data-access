@@ -87,8 +87,6 @@ This module serves as the Debuging environment and default implementation for in
         <exclude name="**/MultitableDatasourceService*"/>
 
     </source>
-   <stylesheet src="datasourceEditorDialog.css"/>
-   <stylesheet src="datasourceAdminDialog.css"/>
    <public path="wizard/public"/>
     <entry-point class="org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint"/>
    <!--
