@@ -85,31 +85,31 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
         public void onResponseReceived(Request request, Response response) {
 
           if (response.getText().equals("EDIT")) {
+            String cacheBuster = "?ts=" + new java.util.Date().getTime();
+            RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list" + cacheBuster));
+            listConnectionBuilder.setHeader("Content-Type", "application/json");
+            try {
+                listConnectionBuilder.sendRequest(null, new RequestCallback() {
 
-                  RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"));
-                  listConnectionBuilder.setHeader("Content-Type", "application/json");
-                  try {
-                      listConnectionBuilder.sendRequest(null, new RequestCallback() {
+                @Override
+                public void onError(Request request, Throwable exception) {
+                  callback.error(exception.getMessage(), exception);
+                }
 
-                      @Override
-                      public void onError(Request request, Throwable exception) {
-                        callback.error(exception.getMessage(), exception);
-                      }
-
-                      @Override
-                      public void onResponseReceived(Request request, Response response) {
-                        AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory, IDatabaseConnectionList.class, response.getText());
-                        List<IDatabaseConnection> connections = bean.as().getDatabaseConnections();
-                        List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
-                        for(IDatabaseConnection connection:connections) {
-                          datasourceInfos.add(new DatasourceInfo(connection.getName(), connection.getName(), TYPE, editable, removable, importable, exportable));
-                        }
-                        callback.success(datasourceInfos);
-                      }
-                   });
-                  } catch (RequestException e) {
-                    callback.error(e.getMessage(), e);
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                  AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory, IDatabaseConnectionList.class, response.getText());
+                  List<IDatabaseConnection> connections = bean.as().getDatabaseConnections();
+                  List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
+                  for(IDatabaseConnection connection:connections) {
+                    datasourceInfos.add(new DatasourceInfo(connection.getName(), connection.getName(), TYPE, editable, removable, importable, exportable));
                   }
+                  callback.success(datasourceInfos);
+                }
+             });
+            } catch (RequestException e) {
+              callback.error(e.getMessage(), e);
+            }
           }
         }
       });
