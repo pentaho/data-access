@@ -358,7 +358,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   private void reloadConnections() {
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"));
+    String cacheBuster = "?ts=" + new java.util.Date().getTime();
+    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list" + cacheBuster));
+
     listConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       listConnectionBuilder.sendRequest(null, new RequestCallback() {

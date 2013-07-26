@@ -757,7 +757,9 @@ public class ConnectionController extends AbstractXulEventHandler {
 
 
   public void reloadConnections() {
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, getServiceURL("list"));
+    String cacheBuster = String.valueOf(new java.util.Date().getTime());
+    String[][] params = new String[][] { { "ts", cacheBuster } };
+    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, getServiceURL("list", params));
     listConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
       listConnectionBuilder.sendRequest(null, new RequestCallback() {
