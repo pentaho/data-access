@@ -23,27 +23,28 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import com.google.gwt.user.client.ui.*;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulVbox;
+import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
+import org.pentaho.ui.xul.util.XulDialogCallback;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.Window;
 
 public class MetadataImportDialogController extends AbstractXulDialogController<MetadataImportDialogModel> implements IImportPerspective, IOverwritableController {
   /**
@@ -65,11 +66,14 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private XulVbox hiddenArea;
   private DatasourceMessages messages = null;
   private boolean overwrite;
+  private static FormPanel.SubmitCompleteHandler submitHandler = null;
   
   // GWT controls
   private FormPanel formPanel;
   private FileUpload metadataFileUpload;
   private TextBox formDomainIdText;
+
+  protected static final int OVERWRITE_EXISTING_SCHEMA = 8;
    
   public void init() {
     try {
@@ -94,36 +98,38 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   }
   
   private void createWorkingForm() {
-    String importURL = METADATA_IMPORT_URL;
-    
-    formPanel = new FormPanel();
-    formPanel.setMethod(FormPanel.METHOD_POST);
-    formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
-    formPanel.setAction(importURL);
-    formPanel.getElement().getStyle().setProperty("position", "absolute");
-    formPanel.getElement().getStyle().setProperty("visibility", "hidden");
-    formPanel.getElement().getStyle().setProperty("overflow", "hidden");
-    formPanel.getElement().getStyle().setProperty("clip", "rect(0px,0px,0px,0px)");
-    mainFormPanel = new FlowPanel();
-    propertiesFileImportPanel = new FlowPanel();
-    mainFormPanel.add(propertiesFileImportPanel);
-    formPanel.add(mainFormPanel);
-    formDomainIdText = new TextBox();
-    formDomainIdText.setName("domainId");
-    mainFormPanel.add(formDomainIdText);
-    metadataFileUpload = new FileUpload();
-    metadataFileUpload.setName("metadataFile");
-    metadataFileUpload.getElement().setId("metaFileUpload");
-    metadataFileUpload.addChangeHandler(new ChangeHandler() {
-      @Override
-      public void onChange(ChangeEvent event) {
-        metaFileLocation.setValue(((FileUpload)event.getSource()).getFilename());
-        importDialogModel.setUploadedFile(((FileUpload)event.getSource()).getFilename());
-      }      
-    });
-    mainFormPanel.add(metadataFileUpload);
-    VerticalPanel vp = (VerticalPanel)hiddenArea.getManagedObject();
-    vp.add(formPanel);
+    if(formPanel == null){
+      formPanel = new FormPanel();
+      formPanel.setMethod(FormPanel.METHOD_POST);
+      formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
+      formPanel.setAction(METADATA_IMPORT_URL);
+      formPanel.getElement().getStyle().setProperty("position", "absolute");
+      formPanel.getElement().getStyle().setProperty("visibility", "hidden");
+      formPanel.getElement().getStyle().setProperty("overflow", "hidden");
+      formPanel.getElement().getStyle().setProperty("clip", "rect(0px,0px,0px,0px)");
+      mainFormPanel = new FlowPanel();
+      formPanel.add(mainFormPanel);
+      propertiesFileImportPanel = new FlowPanel();
+      mainFormPanel.add(propertiesFileImportPanel);
+
+      formDomainIdText = new TextBox();
+      formDomainIdText.setName("domainId");
+      mainFormPanel.add(formDomainIdText);
+      metadataFileUpload = new FileUpload();
+      metadataFileUpload.setName("metadataFile");
+      metadataFileUpload.getElement().setId("metaFileUpload");
+      metadataFileUpload.addChangeHandler(new ChangeHandler() {
+        @Override
+        public void onChange(ChangeEvent event) {
+          metaFileLocation.setValue(((FileUpload)event.getSource()).getFilename());
+          importDialogModel.setUploadedFile(((FileUpload)event.getSource()).getFilename());
+          acceptButton.setDisabled(!isValid());
+        }
+      });
+      mainFormPanel.add(metadataFileUpload);
+      VerticalPanel vp = (VerticalPanel)hiddenArea.getManagedObject();
+      vp.add(formPanel);
+    }
   }
 
   public XulDialog getDialog() {
@@ -179,14 +185,18 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private void reset() {
     metaFileLocation.setValue(resBundle.getString("importDialog.SELECT_METAFILE_LABEL", "Browse for metadata file"));
     importDialogModel.removeAllLocalizedBundles();
-    VerticalPanel gwtHiddenArea = (VerticalPanel)hiddenArea.getManagedObject();
-    if (formPanel != null && gwtHiddenArea.getWidgetIndex(formPanel) != -1) {
-      gwtHiddenArea.remove(formPanel);
+    if (formPanel != null && RootPanel.get().getWidgetIndex(formPanel) != -1) {
+      RootPanel.get().remove(formPanel);
     }
     acceptButton.setDisabled(true);
     domainIdText.setValue("");
     overwrite = false;
+    formPanel = null;
+
+    removeHiddenPanels();
   }
+
+
 
   public void concreteUploadCallback(String fileName, String uploadedFile) {
     importDialogModel.addLocalizedBundle(fileName, uploadedFile);
@@ -284,6 +294,79 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     return msg + " Metadata File: " + fileName;
   }
 
+
+  public void handleFormPanelEvent(FormPanel.SubmitCompleteEvent event) {
+    if (event.getResults().contains("SUCCESS") || event.getResults().contains("3")) {
+      showMessagebox(messages.getString("Metadata.SUCCESS"),
+              "Metadata File " + importDialogModel.getUploadedFile() + " has been uploaded");
+    } else {
+      String message = event.getResults();
+      //message = message.substring(4, message.length() - 6);
+      if (message != null && !"".equals(message) && message.length() == 1) {
+        int code = new Integer(message).intValue();
+        if (code == OVERWRITE_EXISTING_SCHEMA && !overwrite) {//Existing FIle Dialog
+          overwriteFileDialog();
+        } else {
+          showMessagebox(messages.getString("Metadata.ERROR"),
+                  convertToNLSMessage(event.getResults(), importDialogModel.getUploadedFile()));
+        }
+      } else {
+        showMessagebox(messages.getString("Metadata.SERVER_ERROR"),
+                convertToNLSMessage(event.getResults(), importDialogModel.getUploadedFile()));
+      }
+    }
+  }
+
+  @Bindable
+  public void overwriteFileDialog() {
+    //Experiment
+    XulConfirmBox confirm = null;
+    try {
+      confirm = (XulConfirmBox) document.createElement("confirmbox");
+    } catch (XulException e) {
+      Window.alert(e.getMessage());
+    }
+    confirm.setTitle("Confirmation");
+    confirm.setMessage(messages.getString("Metadata.OVERWRITE_EXISTING_SCHEMA"));
+    confirm.setAcceptLabel("Ok");
+    confirm.setCancelLabel("Cancel");
+    confirm.addDialogCallback(new XulDialogCallback<String>() {
+      public void onClose(XulComponent component, Status status, String value) {
+        if (status == XulDialogCallback.Status.ACCEPT) {
+          overwrite = true;
+          removeHiddenPanels();
+          buildAndSetParameters();
+          formPanel.submit();
+        }
+      }
+
+      public void onError(XulComponent component, Throwable err) {
+        return;
+      }
+    });
+    confirm.open();
+  }
+
+  /**
+   * Shows a informational dialog.
+   *
+   * @param title
+   *          title of dialog
+   * @param message
+   *          message within dialog
+   */
+  private void showMessagebox(final String title, final String message) {
+    try {
+      XulMessageBox messagebox = (XulMessageBox) document.createElement("messagebox");//$NON-NLS-1$
+
+      messagebox.setTitle(title);
+      messagebox.setMessage(message);
+      int option = messagebox.open();
+    } catch (XulException e) {
+      Window.alert("Show MessabeBox " + e.getMessage());
+    }
+
+  }
 
   /**
    * pass localized messages from Entry point initialization
