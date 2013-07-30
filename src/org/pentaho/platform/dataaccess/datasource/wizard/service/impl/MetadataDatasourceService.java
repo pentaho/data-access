@@ -161,12 +161,15 @@ public class MetadataDatasourceService {
         logger.error("Root cause: " + msg);
       }
       int statusCode = pe.getErrorStatus();
-      Response response = Response.ok(msg, MediaType.TEXT_PLAIN).build();
+      Response response = Response.ok().status(statusCode).type(MediaType.TEXT_PLAIN).build();
       return response;
     } catch (Exception e) {
       logger.error(e);
 			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
+
+
+
 	}
 
   @PUT
