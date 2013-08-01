@@ -659,6 +659,12 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     final DialogListener<MetadataImportDialogModel> importDialoglistener = new DialogListener<MetadataImportDialogModel>() {
 
       public void onDialogCancel() {
+        final MetadataImportDialogController controller = importDialog.getMetadataImportDialogController();
+        final FormPanel analysisDataFormPanel = controller.getFormPanel();
+        controller.removeHiddenPanels();
+        controller.buildAndSetParameters();
+        analysisDataFormPanel.removeFromParent();
+        RootPanel.get().add(analysisDataFormPanel);
       }
 
       public void onDialogAccept(final MetadataImportDialogModel importDialogModel) {
