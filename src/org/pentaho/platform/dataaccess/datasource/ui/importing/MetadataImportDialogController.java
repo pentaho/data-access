@@ -185,6 +185,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private void reset() {
     metaFileLocation.setValue(resBundle.getString("importDialog.SELECT_METAFILE_LABEL", "Browse for metadata file"));
     importDialogModel.removeAllLocalizedBundles();
+    importDialogModel.setUploadedFile(null);
     if (formPanel != null && RootPanel.get().getWidgetIndex(formPanel) != -1) {
       RootPanel.get().remove(formPanel);
     }
