@@ -399,8 +399,6 @@
                 <spacer flex="1"/>
               </hbox>
 
-              <label value="${source_column}:" flex="1"/>
-
               <label value="${ordinal_column}:" flex="1"/>
               <hbox flex="1">
                 <vbox flex="1">
