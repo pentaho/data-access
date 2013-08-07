@@ -20,14 +20,12 @@
  */
 package org.pentaho.platform.dataaccess.datasource.ui.selectdialog;
 
-import java.util.Collections;
-import java.util.List;
-
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.RootPanel;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
-import org.pentaho.platform.dataaccess.datasource.wizard.jsni.WAQRTransport;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -44,9 +42,8 @@ import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.RootPanel;
+import java.util.Collections;
+import java.util.List;
 
 public class DatasourceSelectionDialogController extends AbstractXulDialogController<LogicalModelSummary> {
 
@@ -242,6 +239,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   }
 
   private void refreshDatasources(final String domainId, final String modelId) {
+
     datasourceService.getLogicalModels(context, new XulServiceCallback<List<LogicalModelSummary>>() {
 
       public void error(final String message, final Throwable error) {
@@ -253,7 +251,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
 
         datasourceSelectionDialogModel.setSelectedIndex(-1);
         datasourceSelectionDialogModel.setLogicalModelSummaries(logicalModelSummaries);
-  
+
         if (domainId != null && modelId != null) {
           datasourceSelectionDialogModel.setSelectedLogicalModel(domainId, modelId);
           datasourceListbox.setSelectedIndex(datasourceSelectionDialogModel.getSelectedIndex());
@@ -262,7 +260,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
         }
       }
 
-    });    
+    });
   }
 
   /**
@@ -316,26 +314,24 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
 
     enableWaitCursor(true);
 
+    final DialogListener<Domain> dialogListener = new DialogListener<Domain>() {
+      public void onDialogAccept(final Domain domain) {
+        refreshDatasources(domain.getId(), domain.getLogicalModels().get(0).getId());
+      }
+      public void onDialogCancel() {}
+      public void onDialogReady() {
+        enableWaitCursor(false);
+      }
+      public void onDialogError(String value) {}
+    };
+
     if(datasourceEditor.isInitialized()){
+      datasourceEditor.addDialogListener(dialogListener);
       datasourceEditor.showDialog();
     } else {
       datasourceEditor.init(new AsyncConstructorListener<EmbeddedWizard>(){
         public void asyncConstructorDone(EmbeddedWizard dialog) {
-          enableWaitCursor(true);
-          datasourceEditor.addDialogListener(new DialogListener<Domain>() {
-            public void onDialogAccept(final Domain domain) {
-              refreshDatasources(domain.getId(), domain.getLogicalModels().get(0).getId());
-            }
-
-            public void onDialogCancel() {
-            }
-
-            public void onDialogReady() {
-              enableWaitCursor(false);
-            }
-            
-            public void onDialogError(String value) {}
-          });
+          datasourceEditor.addDialogListener(dialogListener);
           datasourceEditor.showDialog();
         }
       });
