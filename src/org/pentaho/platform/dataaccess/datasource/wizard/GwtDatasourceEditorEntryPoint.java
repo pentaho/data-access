@@ -22,6 +22,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard;
 
 import java.util.List;
 
+import com.google.gwt.http.client.RequestException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
@@ -167,24 +168,34 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
         // only init the app if the user has permissions
 
-        datasourceService.hasPermission(new XulServiceCallback<Boolean>() {
-          public void error(String message, Throwable error) {
-            setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
-            initDashboardButtons(false);
-          }
+          final String url = GWT.getHostPageBaseURL() + "plugin/data-access/api/permissions/hasDataAccess"; //$NON-NLS-1$
 
-          public void success(Boolean retVal) {
-            hasPermissions = retVal;
-            setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
-            if (isAdmin || hasPermissions) {
-              //              connectionService = new ConnectionServiceGwtImpl();
-              csvService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
-              setupPrivilegedNativeHooks(GwtDatasourceEditorEntryPoint.this);
-              loadOverlay("startup.dataaccess");
-            }
-            initDashboardButtons(retVal);
+          RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
+          builder.setHeader("accept", "application/json");
+
+          try {
+              builder.sendRequest(null, new RequestCallback() {
+
+                  public void onError(Request request, Throwable exception) {
+                      setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
+                      initDashboardButtons(false);
+                  }
+
+                  public void onResponseReceived(Request request, Response response) {
+                      hasPermissions = new Boolean(response.getText());
+                      setupStandardNativeHooks(GwtDatasourceEditorEntryPoint.this);
+                      if (hasPermissions) {
+                          csvService = (ICsvDatasourceServiceAsync) GWT.create(ICsvDatasourceService.class);
+                          setupPrivilegedNativeHooks(GwtDatasourceEditorEntryPoint.this);
+                          loadOverlay("startup.dataaccess");
+                      }
+                      initDashboardButtons(hasPermissions);
+
+                  }
+              });
+          } catch (RequestException e) {
+
           }
-        });
       }
     });
 
