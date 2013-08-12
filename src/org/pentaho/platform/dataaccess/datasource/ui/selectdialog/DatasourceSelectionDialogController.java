@@ -112,11 +112,8 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
                 }
 
                 public void onResponseReceived(Request request, Response response) {
-                    showMessagebox("Log", response.getText()); //$NON-NLS-1$
                     boolean hasDataAccess = new Boolean(response.getText());
                     DatasourceSelectionDialogController.this.administrator = hasDataAccess;
-
-                    showMessagebox("test", new Boolean(DatasourceSelectionDialogController.this.administrator).toString()); //$NON-NLS-1$
                     addDatasourceButton.setVisible(hasDataAccess);
                     editDatasourceButton.setVisible(hasDataAccess);
                     removeDatasourceButton.setVisible(hasDataAccess);
