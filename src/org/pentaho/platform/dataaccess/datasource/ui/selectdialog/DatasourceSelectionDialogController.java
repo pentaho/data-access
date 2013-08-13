@@ -213,6 +213,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
                                 IDatasourceInfo datasourceInfo=datasourceInfos.get(i);
                                 if(datasourceInfo.getId().equals(summary.getDomainId())){
                                     active=datasourceInfo.isEditable();
+                                    break;
                                 }
                             }
                         }
@@ -243,6 +244,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
                         IDatasourceInfo datasourceInfo=datasourceInfos.get(i);
                         if(datasourceInfo.getId().equals(summary.getDomainId())){
                             active=datasourceInfo.isEditable();
+                            break;
                         }
                     }
                     }
