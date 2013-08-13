@@ -29,8 +29,10 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
+import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.ui.xul.XulComponent;
@@ -48,6 +50,7 @@ import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -84,6 +87,9 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
     private Binding removeDatasourceButtonBinding;
     private ModelerDialog modeler;
     private String context;
+    UIDatasourceServiceManager manager;
+    private List<IDatasourceInfo> datasourceInfos=new ArrayList<IDatasourceInfo>();
+
 
     // ~ Constructors ====================================================================================================
 
@@ -154,6 +160,20 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
             editDatasourceButton = (XulButton) safeGetElementById(document, "editDatasource"); //$NON-NLS-1$
             removeDatasourceButton = (XulButton) safeGetElementById(document, "removeDatasource"); //$NON-NLS-1$
 
+            manager=UIDatasourceServiceManager.getInstance();
+
+            manager.getIds(new XulServiceCallback<List<IDatasourceInfo>>() {
+
+                @Override
+                public void success(List<IDatasourceInfo> infoList) {
+                    DatasourceSelectionDialogController.this.datasourceInfos=infoList;
+                }
+
+                @Override
+                public void error(String message, Throwable error) {
+                }
+            });
+
             bf.setBindingType(Binding.Type.ONE_WAY);
             bf.createBinding(DatasourceSelectionDialogController.this.datasourceSelectionDialogModel,
                     "logicalModelSummaries", datasourceListbox, "elements"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -183,7 +203,22 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
             BindingConvertor<Integer, Boolean> removeDatasourceButtonConvertor = new BindingConvertor<Integer, Boolean>() {
                 @Override
                 public Boolean sourceToTarget(final Integer value) {
-                    return value > -1 && administrator;
+                    boolean active=false;
+                    if(value > -1){
+
+                        LogicalModelSummary summary=(LogicalModelSummary)datasourceListbox.getSelectedItem();
+
+                        if(datasourceInfos.size()>0)  {
+                            for(int i=0;i<datasourceInfos.size();i++){
+                                IDatasourceInfo datasourceInfo=datasourceInfos.get(i);
+                                if(datasourceInfo.getId().equals(summary.getDomainId())){
+                                    active=datasourceInfo.isEditable();
+                                }
+                            }
+                        }
+
+                    }
+                    return active && administrator;
                 }
 
                 @Override
@@ -197,10 +232,23 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
             BindingConvertor<Integer, Boolean> editDatasourceButtonConvertor = new BindingConvertor<Integer, Boolean>() {
                 @Override
                 public Boolean sourceToTarget(final Integer value) {
-                    return
-                            value > -1 && administrator;
-                    //&& datasourceSelectionDialogModel.getLogicalModelSummaries().get(value).getModelId().equals("MODEL_1") //$NON-NLS-1$
-                    //;
+
+                    boolean active=false;
+                    if(value > -1){
+
+                    LogicalModelSummary summary=(LogicalModelSummary)datasourceListbox.getSelectedItem();
+
+                    if(datasourceInfos.size()>0)  {
+                    for(int i=0;i<datasourceInfos.size();i++){
+                        IDatasourceInfo datasourceInfo=datasourceInfos.get(i);
+                        if(datasourceInfo.getId().equals(summary.getDomainId())){
+                            active=datasourceInfo.isEditable();
+                        }
+                    }
+                    }
+
+                    }
+                    return active && administrator;
                 }
 
                 @Override
@@ -272,7 +320,23 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
                 } else {
                     datasourceSelectionDialogModel.setSelectedIndex(0);
                 }
+
+                manager=UIDatasourceServiceManager.getInstance();
+
+                manager.getIds(new XulServiceCallback<List<IDatasourceInfo>>() {
+
+                    @Override
+                    public void success(List<IDatasourceInfo> infoList) {
+                        DatasourceSelectionDialogController.this.datasourceInfos=infoList;
+                    }
+
+                    @Override
+                    public void error(String message, Throwable error) {
+                    }
+                });
             }
+
+
 
         });
     }
