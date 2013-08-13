@@ -303,7 +303,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
   @Bindable
   public void onCancel(){
     hideDialog();
-    ModelerDialog.this.listener.onDialogAccept(model.getDomain());
+    ModelerDialog.this.listener.onDialogCancel();
   }
 
   @Bindable
