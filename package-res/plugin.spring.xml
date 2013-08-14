@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ws="http://jax-ws.dev.java.net/spring/core" xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
+  xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
                            http://jax-ws.dev.java.net/spring/core http://jax-ws.dev.java.net/spring/core.xsd
-                           http://jax-ws.dev.java.net/spring/servlet http://jax-ws.dev.java.net/spring/servlet.xsd" 
+                           http://jax-ws.dev.java.net/spring/servlet http://jax-ws.dev.java.net/spring/servlet.xsd
+						   http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd"
                            default-lazy-init="true">
 
   <context:annotation-config />
@@ -20,4 +22,12 @@
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DataAccessPermissionResource"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionReaderWriter"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionListReaderWriter"/>
+ <bean class="org.pentah o.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" scope="singleton"/>
+ <bean class="org.pentaho.platform.web.servlet.DataAccessSerializationPolicy">
+	<pen:publish as-type="CLASSES">
+	  <pen:attributes>
+		<pen:attr key="plugin" value="data-access"/>
+	  </pen:attributes>
+	</pen:publish>
+  </bean>
 </beans>
