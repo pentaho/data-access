@@ -117,7 +117,7 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   @Override
   @Bindable
   public String getName() {
-    return "CSV File"; //TODO: i18n
+    return MessageHandler.getString("csv.datasource.name");
   }
 
   @Override
