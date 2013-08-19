@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.DatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.ui.service.DSWUIDatasourceService;
@@ -262,7 +263,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           XulMenuitem menuItem;
           try {
             menuItem = (XulMenuitem) document.createElement("menuitem");
-            menuItem.setLabel(datasourceType);
+            menuItem.setLabel(DatasourceInfo.getDisplayType(datasourceType));
             menuItem.setCommand(getName() + ".launchNewUI(\""+ datasourceType + "\")");
             menuItem.setId(datasourceType);
             datasourceTypeMenuPopup.addChild(menuItem);
@@ -272,8 +273,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         }
         datasourceAdminDialogModel.setDatasourceTypeList(datasourceTypes);
   }
-  
-  
+
   @Bindable
   public void launchNewUI(String datasourceType) {
       IUIDatasourceAdminService service = manager.getService(datasourceType);

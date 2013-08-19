@@ -15,6 +15,7 @@
 package org.pentaho.platform.dataaccess.datasource;
 
 
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -24,11 +25,15 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
    */
   private static final long serialVersionUID = 1L;
 
+  private static final String MSG_PREFIX = "DatasourceInfo.DisplayType.";
+
   String name;
   
   String id;
 
   String type;
+
+  String displayType;
   
   boolean editable;
   
@@ -49,6 +54,7 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     this.name = name;
     this.id = id;
     this.type = type;
+    this.displayType = getDisplayType(type);
   }
 
   public DatasourceInfo(String name, String id, String type, boolean editable, boolean removable, boolean importable, boolean exportable) {
@@ -56,6 +62,7 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     this.name = name;
     this.id = id;
     this.type = type;
+    this.displayType = getDisplayType(type);
     this.editable = editable;
     this.removable = removable;
     this.importable = importable;
@@ -66,6 +73,21 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   @Override
   public String getName() {
     return name;
+  }
+
+  @Bindable
+  @Override
+  public String getDisplayType() {
+    return displayType;
+  }
+
+  public static String getDisplayType(String type) {
+    if(type == null) {
+      throw new IllegalArgumentException(MessageHandler.getString("DatasourceInfo.TYPE_NULL"));
+    }
+    String displayName = null;
+    displayName = MessageHandler.getString(MSG_PREFIX + type.replace(" ", "_"));
+    return displayName == null ? type : displayName;
   }
 
   @Bindable

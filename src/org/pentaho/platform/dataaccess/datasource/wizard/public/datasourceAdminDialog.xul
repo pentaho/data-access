@@ -24,7 +24,7 @@
         pen:classname="pentaho-editbutton"/>        
       <label id="spacer-label" width="3" />
 
-      <button id="datasourceAddButton" image="images/spacer.gif" pen:classname="pentaho-addcombobutton">
+      <button id="datasourceAddButton" image="images/spacer.gif" pen:classname="pentaho-addcombobutton" tooltiptext="${datasourceAdminDialog.ADD}" >
        <menupopup id="datasourceTypeMenuPopup"/>
       </button>
       <label id="spacer-label" width="3" />
@@ -38,7 +38,7 @@
 		<tree height="175" width="480" id="datasourcesListTable" seltype="single">
 			<treecols id="datasourcesListCols">
 				<treecol id="datasourceName" label="${datasourcesListCols.datasourceName}" flex="1" pen:binding="name" editable="false" type="text"  sortActive="true" sortDirection="ASCENDING"/>
-				<treecol id="datasourceType" label="${datasourcesListCols.datasourceType}" flex="1" pen:binding="type" editable="false" type="text" />
+				<treecol id="datasourceType" label="${datasourcesListCols.datasourceType}" flex="1" pen:binding="displayType" editable="false" type="text" />
 			</treecols>
 			<treechildren id="datasourcesListRows"/>
 		</tree>
