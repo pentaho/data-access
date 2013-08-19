@@ -68,4 +68,10 @@ public interface IDatasourceInfo extends Serializable{
    * @return exportable or not
    */
   public boolean isExportable();
+
+  /**
+   * Returns the name to display for this type
+   * @return
+   */
+  public String getDisplayType();
 }

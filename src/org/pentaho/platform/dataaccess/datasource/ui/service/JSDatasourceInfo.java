@@ -17,9 +17,11 @@ public class JSDatasourceInfo implements IDatasourceInfo{
 
   private final native String getDatasourceId(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.id; }-*/; 
 
-  private final native String getDatasourceType(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.type; }-*/; 
+  private final native String getDatasourceType(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.type; }-*/;
 
-  private final native boolean isDatasourceEditable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.editable; }-*/; 
+  private final native String getDatasourceDisplayType(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.displayType; }-*/;
+
+  private final native boolean isDatasourceEditable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.editable; }-*/;
   
   private final native boolean isDatasourceRemovable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.removable; }-*/; 
 
@@ -61,6 +63,18 @@ public class JSDatasourceInfo implements IDatasourceInfo{
   @Override
   public final boolean isExportable() {
     return isDatasourceExportable(this.jsDatasourceInfo);
+  }
+
+  @Override
+  public String getDisplayType() {
+    String type = null;
+    try {
+      type = getDatasourceDisplayType(this.jsDatasourceInfo);
+    } catch (Exception e) {
+      // no displayType defined, fall back to type
+      type = getType();
+    }
+    return type;
   }
 
 }
