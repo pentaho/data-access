@@ -47,7 +47,7 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
   @Override
   @Bindable
   public String getName() {
-    return "SQL Query"; //TODO: i18n
+    return MessageHandler.getString("sql.datasource.name");
   }
 
   @Override
