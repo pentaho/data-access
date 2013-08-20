@@ -86,8 +86,13 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
       throw new IllegalArgumentException(MessageHandler.getString("DatasourceInfo.TYPE_NULL"));
     }
     String displayName = null;
-    displayName = MessageHandler.getString(MSG_PREFIX + type.replace(" ", "_"));
-    return displayName == null ? type : displayName;
+    try {
+      displayName = MessageHandler.getString(MSG_PREFIX + type.replace(" ", "_"));
+      return displayName == null ? type : displayName;
+    } catch (NullPointerException npe) {
+      // MessageHandler not initialized properly
+      return type;
+    }
   }
 
   @Bindable
