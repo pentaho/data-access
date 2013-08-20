@@ -52,7 +52,7 @@
 							</hbox>
 							
 							
-							<hbox flex="1" height="400" id="queryDeckPanel">
+							<hbox flex="1" height="100%" id="queryDeckPanel">
 								<!--  ###############################################################################  -->
 								<!--     SQL datasource step 1 -->
 								<!--  ###############################################################################  -->
@@ -70,14 +70,14 @@
 										
 										<button id="removeConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true" pen:classname="pentaho-deletebutton"/>
 									</hbox>
-									<listbox id="connectionList" pen:binding="modelName" disabled="true" height="275" width="180"/>
-									<vbox id="metadata" flex="1">
+									<listbox id="connectionList" pen:binding="modelName" disabled="true" height="275" width="180"/>									  
+									<vbox id="metadata" flex="1" height="80">
 									    <label value="${multitable.REPORTING_METADATA_GROUP_LABEL}" tooltiptext=""/>
 										<radiogroup id="metadataRadioGrup" padding="0">
 											<radio id="reporting" checked="true" value="${multitable.REPORTING_METADATA}" label="${multitable.REPORTING_METADATA_LABEL}"/>
 	                            			<radio id="reporting_analysis" value="${multitable.REPORTING_METADATA_ANALYSIS}" label="${multitable.REPORTING_METADATA_ANALYSIS_LABEL}" />
 										</radiogroup>
-									</vbox>
+									</vbox>									
 								</vbox>
 								<spacer width="10" height="400"/>
 								<vbox id="queryBox" height="400" flex="1">
