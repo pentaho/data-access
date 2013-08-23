@@ -204,6 +204,9 @@ public class DatasourceResource {
     ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
     model.setDomain(domain);
     LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+    if (logicalModel == null) {
+      logicalModel = model.getLogicalModel(ModelerPerspective.REPORTING);
+    }
     if (logicalModel.getProperty(MONDRIAN_CATALOG_REF) != null) {
       MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
       String catalogRef = (String)logicalModel.getProperty(MONDRIAN_CATALOG_REF);
@@ -237,6 +240,9 @@ public class DatasourceResource {
     ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
     model.setDomain(domain);
     LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+    if (logicalModel == null) {
+      logicalModel = model.getLogicalModel(ModelerPerspective.REPORTING);
+    }
     if (logicalModel.getProperty(MONDRIAN_CATALOG_REF) != null) {
       String catalogRef = (String)logicalModel.getProperty(MONDRIAN_CATALOG_REF);
       mondrianCatalogService.removeCatalog(catalogRef, PentahoSessionHolder.getSession());

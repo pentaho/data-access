@@ -186,6 +186,9 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
       model.setDomain(domain);
       LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+      if (logicalModel == null) {
+        logicalModel = model.getLogicalModel(ModelerPerspective.REPORTING);
+      }
       String modelState = (String) logicalModel.getProperty("datasourceModel");
     	
       // if CSV, drop the staged table
