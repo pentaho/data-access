@@ -35,7 +35,7 @@ var base = '';
 function pentahoAction( solution, path, action, params, func ) {
 	// execute an Action Sequence on the server
 
-	var url = WEB_CONTEXT_BASE + "ViewAction";
+	var url = CONTEXT_PATH + "ViewAction";
 	
 	// create the URL we need
 	var query = "wrapper=false&solution="+solution+"&path="+path+"&action="+action;
@@ -74,7 +74,7 @@ function pentahoAction( solution, path, action, params, func ) {
 function pentahoService( component, params, func, mimeType ) {
 	// execute a web service on the server
 	// create the URL we need
-	var url = WEB_CONTEXT_BASE + "ServiceAction";
+	var url = CONTEXT_PATH + "ServiceAction";
 	
 	var query = "ajax=true&";
 	if( component ) {
