@@ -158,6 +158,9 @@ public class ModelerService extends PentahoBase implements IModelerService {
             domain.setId(name + ".xmi");
 
             LogicalModel lModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+            if (lModel == null) {
+              lModel = model.getLogicalModel(ModelerPerspective.REPORTING);
+            }
             lModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
 
             String catName = lModel.getName(Locale.getDefault().toString());
