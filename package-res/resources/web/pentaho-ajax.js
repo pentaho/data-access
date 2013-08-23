@@ -6,11 +6,8 @@ var STATUS_UNAUTHORIZED = 401;
 var STATUS_NOT_FOUND = 404;
 var base = '';
 
-var pathArray = window.location.pathname.split( '/' );
-var webAppPath = "/" + pathArray[1];
-
-document.write("<script type='text/javascript' src='/js/webcontext.js'></script>");
-document.write("<script type='text/javascript' src='" + webAppPath + "/js/webcontext.js'></script>");
+ document.write("<!-- webcontext.js is written by PentahoWebContextFilter. Content of this file contains values of CONTEXT_PATH and FULLY_QUALIFIED_SERVER_URL --> \n"); 
+ document.write("<script type='text/javascript' src='webcontext.js'></script>"); 
 
 /**
  * @param solution String name of the solution containing the action sequence definition being called
