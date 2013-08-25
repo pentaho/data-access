@@ -21,8 +21,11 @@
 package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
+import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
+import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
+import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -55,6 +58,7 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
   private GwtDatasourceEditorEntryPoint entryPoint;
   
   private boolean initialized;
+  private GwtDatasourceMessages datasourceMessages;
 
   // ~ Constructors ====================================================================================================
 
@@ -95,12 +99,17 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
 
       BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
 
+      ResourceBundle resBundle = (ResourceBundle) container.getResourceBundles().get(0);
+      datasourceMessages = new GwtDatasourceMessages();
+      datasourceMessages.setMessageBundle(resBundle);
+      MessageHandler.getInstance().setMessages(datasourceMessages);
       datasourceAdminDialogController = new DatasourceAdminDialogController();
       datasourceAdminDialogController.setBindingFactory(bf);
       datasourceAdminDialogController.setDatasourceServiceManager(genericDatasourceServiceManager);
       datasourceAdminDialogController.setModelerService(modelerService);
       datasourceAdminDialogController.setDSWService(dswService);
       datasourceAdminDialogController.setEntryPoint(entryPoint);
+      datasourceAdminDialogController.setMessageBundle(datasourceMessages);
       container.addEventHandler(datasourceAdminDialogController);
       
       runner.initialize();
