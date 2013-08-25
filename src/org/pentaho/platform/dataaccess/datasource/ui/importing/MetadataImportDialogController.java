@@ -121,9 +121,16 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
       metadataFileUpload.addChangeHandler(new ChangeHandler() {
         @Override
         public void onChange(ChangeEvent event) {
-          metaFileLocation.setValue(((FileUpload)event.getSource()).getFilename());
-          importDialogModel.setUploadedFile(((FileUpload)event.getSource()).getFilename());
-          acceptButton.setDisabled(!isValid());
+          String filename = ((FileUpload)event.getSource()).getFilename();
+          if(filename != null && filename.trim().length() > 0) {
+            metaFileLocation.setValue(filename);
+            importDialogModel.setUploadedFile(filename);
+            acceptButton.setDisabled(!isValid());
+          } else {
+            metaFileLocation.setValue(resBundle.getString("importDialog.SELECT_METAFILE_LABEL", "browse for metadata file"));
+            importDialogModel.setUploadedFile(null);
+            acceptButton.setDisabled(!isValid());
+          }
         }
       });
       mainFormPanel.add(metadataFileUpload);
@@ -183,7 +190,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   }-*/;
   
   private void reset() {
-    metaFileLocation.setValue(resBundle.getString("importDialog.SELECT_METAFILE_LABEL", "Browse for metadata file"));
+    metaFileLocation.setValue(resBundle.getString("importDialog.SELECT_METAFILE_LABEL", "browse for metadata file"));
     importDialogModel.removeAllLocalizedBundles();
     importDialogModel.setUploadedFile(null);
     if (formPanel != null && RootPanel.get().getWidgetIndex(formPanel) != -1) {
