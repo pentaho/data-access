@@ -15,7 +15,7 @@ import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourc
 import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
+import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
@@ -74,6 +74,8 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   UIDatasourceServiceManager manager;
   private GwtDatasourceEditorEntryPoint entryPoint;
   private DialogListener adminDatasourceListener;
+  private GwtDatasourceMessages messageBundle;
+
   /**
    * Sets up bindings.
    */
@@ -263,7 +265,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           XulMenuitem menuItem;
           try {
             menuItem = (XulMenuitem) document.createElement("menuitem");
-            menuItem.setLabel(DatasourceInfo.getDisplayType(datasourceType));
+            menuItem.setLabel(DatasourceInfo.getDisplayType(datasourceType, messageBundle));
             menuItem.setCommand(getName() + ".launchNewUI(\""+ datasourceType + "\")");
             menuItem.setId(datasourceType);
             datasourceTypeMenuPopup.addChild(menuItem);
@@ -439,7 +441,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
                editDatasourceButton.setDisabled(true);
            } else {
         	   Window.alert(
-        			   MessageHandler.getString("datasourceAdminDialogController.COULD_NOT_REMOVE") 
+                 messageBundle.getString("datasourceAdminDialogController.COULD_NOT_REMOVE")
         			   + ": " + dsInfo.getId());
            }
         }
@@ -447,9 +449,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         @Override
         public void error(String message, Throwable error) {
         	Window.alert(
-        			MessageHandler.getString("datasourceAdminDialogController.ERROR_REMOVING") 
+              messageBundle.getString("datasourceAdminDialogController.ERROR_REMOVING")
         			+  ": " + dsInfo.getId() + "." 
-        					+ MessageHandler.getString("ERROR") + "=" + error.getLocalizedMessage());
+        					+ messageBundle.getString("ERROR") + "=" + error.getLocalizedMessage());
         }
     });
     removeDatasourceConfirmationDialog.hide();
@@ -458,5 +460,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Bindable
   public void removeDatasourceCancel() {
     removeDatasourceConfirmationDialog.hide();
+  }
+
+  public void setMessageBundle(GwtDatasourceMessages messageBundle) {
+    this.messageBundle = messageBundle;
   }
 }

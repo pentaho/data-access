@@ -15,6 +15,8 @@
 package org.pentaho.platform.dataaccess.datasource;
 
 
+import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
+import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -42,7 +44,8 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   boolean importable;
   
   boolean exportable;
-  
+
+
 
   public DatasourceInfo() {
     super();
@@ -85,12 +88,28 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     if(type == null) {
       throw new IllegalArgumentException(MessageHandler.getString("DatasourceInfo.TYPE_NULL"));
     }
+
     String displayName = null;
     try {
       displayName = MessageHandler.getString(MSG_PREFIX + type.replace(" ", "_"));
       return displayName == null ? type : displayName;
     } catch (NullPointerException npe) {
       // MessageHandler not initialized properly
+      return type;
+    }
+  }
+
+  public static String getDisplayType(String type, GwtDatasourceMessages messages) {
+    if(type == null) {
+      throw new IllegalArgumentException(messages.getString("DatasourceInfo.TYPE_NULL"));
+    }
+
+    String displayName = null;
+    try {
+      displayName = messages.getString(MSG_PREFIX + type.replace(" ", "_"));
+      return displayName == null ? type : displayName;
+    } catch (NullPointerException npe) {
+      // messages not initialized properly
       return type;
     }
   }

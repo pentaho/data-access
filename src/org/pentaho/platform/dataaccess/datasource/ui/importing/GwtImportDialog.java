@@ -25,6 +25,7 @@ import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
+import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
 import org.pentaho.ui.xul.gwt.GwtXulRunner;
@@ -63,13 +64,12 @@ public class GwtImportDialog implements IXulLoaderCallback {
   
   public void xulLoaded(GwtXulRunner runner) {
     try {
-      GwtXulDomContainer container = (GwtXulDomContainer) runner.getXulDomContainers().get(0);
+      XulDomContainer container = runner.getXulDomContainers().get(0);
 
       BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
       ResourceBundle resBundle = (ResourceBundle) container.getResourceBundles().get(0);
       datasourceMessages = new GwtDatasourceMessages();
       datasourceMessages.setMessageBundle(resBundle);
-      MessageHandler.getInstance().setMessages(datasourceMessages);
 
       metadataImportDialogController = new MetadataImportDialogController();
       metadataImportDialogController.setBindingFactory(bf);
