@@ -277,7 +277,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     } 
     if(selectedDatasource == null){
       Window.alert("bad one: " + datasourceType);
-      MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN_TITLE"), MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"));
+      MessageHandler.getInstance().showErrorDialog(datasourceMessages.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN_TITLE"), datasourceMessages.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"));
       return;
     }
     
@@ -289,7 +289,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     selectedDatasource.restoreSavedDatasource(domain, new XulServiceCallback<Void>(){
       @Override
       public void error(String s, Throwable throwable) {
-        MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"), throwable.getMessage());
+        MessageHandler.getInstance().showErrorDialog(datasourceMessages.getString("datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN"), throwable.getMessage());
       }
 
       @Override

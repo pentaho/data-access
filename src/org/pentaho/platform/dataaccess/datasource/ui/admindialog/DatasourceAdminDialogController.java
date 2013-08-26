@@ -233,6 +233,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   }
 
   private void refreshDatasourceList() {
+    if(messageBundle != null) {
+      DatasourceInfo.setMessageBundle(messageBundle);
+    }
     datasourceAdminDialogModel.setDatasourcesList(null);
       manager.getIds(new XulServiceCallback<List<IDatasourceInfo>>() {
   
