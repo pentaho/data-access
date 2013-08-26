@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
+  <!-- set this to true for production, and false for development/localization -->
+  <cache-messages>true</cache-messages>
+  <!-- how far ahead to set the browser's cache -->
+  <max-age>2628001</max-age>
+  <cache>true</cache>
+    
   <!-- roles with data access permissions -->
   <data-access-roles>Administrator</data-access-roles>
   <!-- users with data access permissions -->
