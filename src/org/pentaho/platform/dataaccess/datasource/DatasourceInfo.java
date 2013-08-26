@@ -15,7 +15,7 @@
 package org.pentaho.platform.dataaccess.datasource;
 
 
-import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
+import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
@@ -45,6 +45,7 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   
   boolean exportable;
 
+  static transient DatasourceMessages messageBundle;
 
 
   public DatasourceInfo() {
@@ -57,7 +58,6 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     this.name = name;
     this.id = id;
     this.type = type;
-    this.displayType = getDisplayType(type);
   }
 
   public DatasourceInfo(String name, String id, String type, boolean editable, boolean removable, boolean importable, boolean exportable) {
@@ -65,7 +65,6 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     this.name = name;
     this.id = id;
     this.type = type;
-    this.displayType = getDisplayType(type);
     this.editable = editable;
     this.removable = removable;
     this.importable = importable;
@@ -81,19 +80,24 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   @Bindable
   @Override
   public String getDisplayType() {
-    return displayType;
+    if(displayType != null) {
+      return displayType;
+    } else {
+      return getDisplayType(getType());
+    }
   }
 
   public static String getDisplayType(String type) {
     if(type == null) {
-      throw new IllegalArgumentException(MessageHandler.getString("DatasourceInfo.TYPE_NULL"));
+      throw new IllegalArgumentException(getString("DatasourceInfo.TYPE_NULL"));
     }
 
     String displayName = null;
     try {
-      displayName = MessageHandler.getString(MSG_PREFIX + type.replace(" ", "_"));
-      return displayName == null ? type : displayName;
-    } catch (NullPointerException npe) {
+      String key = MSG_PREFIX + type.replace(" ", "_");
+      displayName = getString(key);
+      return displayName == null || displayName.equals(key) ? type : displayName;
+    } catch (Exception e) {
       // MessageHandler not initialized properly
       return type;
     }
@@ -101,14 +105,14 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
 
   public static String getDisplayType(String type, GwtDatasourceMessages messages) {
     if(type == null) {
-      throw new IllegalArgumentException(messages.getString("DatasourceInfo.TYPE_NULL"));
+      throw new IllegalArgumentException(getString("DatasourceInfo.TYPE_NULL"));
     }
-
     String displayName = null;
     try {
-      displayName = messages.getString(MSG_PREFIX + type.replace(" ", "_"));
-      return displayName == null ? type : displayName;
-    } catch (NullPointerException npe) {
+      String key = MSG_PREFIX + type.replace(" ", "_");
+      displayName = getString(key);
+      return displayName == null || displayName.equals(key) ? type : displayName;
+    } catch (Exception e) {
       // messages not initialized properly
       return type;
     }
@@ -152,4 +156,17 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   public boolean isExportable() {
     return this.exportable;
   }
+
+  public static void setMessageBundle(DatasourceMessages bundle) {
+    messageBundle = bundle;
+  }
+
+  protected static String getString(String key) {
+    if(messageBundle != null) {
+      return messageBundle.getString(key);
+    } else {
+      return MessageHandler.getString(key);
+    }
+  }
+
 }
