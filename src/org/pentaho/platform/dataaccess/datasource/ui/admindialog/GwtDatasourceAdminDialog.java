@@ -102,7 +102,7 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
       ResourceBundle resBundle = (ResourceBundle) container.getResourceBundles().get(0);
       datasourceMessages = new GwtDatasourceMessages();
       datasourceMessages.setMessageBundle(resBundle);
-      MessageHandler.getInstance().setMessages(datasourceMessages);
+
       datasourceAdminDialogController = new DatasourceAdminDialogController();
       datasourceAdminDialogController.setBindingFactory(bf);
       datasourceAdminDialogController.setDatasourceServiceManager(genericDatasourceServiceManager);
