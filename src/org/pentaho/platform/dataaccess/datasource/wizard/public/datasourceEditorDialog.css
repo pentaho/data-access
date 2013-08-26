@@ -359,3 +359,11 @@ aggregation-dialog-checkbox-label {
 .IE #pooling-description {
     height: 246px !important;
 }
+
+#options-parameter-tree .gwt-ScrollTable {
+    height: 220px !important;
+}
+
+#options-parameter-tree .gwt-ScrollTable .dataWrapper {
+    height: 100% !important;
+}
