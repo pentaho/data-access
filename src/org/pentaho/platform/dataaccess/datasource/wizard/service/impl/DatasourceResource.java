@@ -25,6 +25,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +57,7 @@ import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
@@ -66,6 +68,9 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.repository2.unified.fileio.RepositoryFileInputStream;
+import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
+import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
+import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 
@@ -175,6 +180,9 @@ public class DatasourceResource {
   @Path("/metadata/{metadataId : .+}/download")
   @Produces(WILDCARD)
   public Response doGetMetadataFilesAsDownload(@PathParam("metadataId") String metadataId) {
+    if(!canAdminister()) {
+      return Response.status(UNAUTHORIZED).build();
+    }
     if (! (metadataDomainRepository instanceof IPentahoMetadataDomainRepositoryExporter)) {
       return Response.serverError().build();
     }
@@ -186,6 +194,9 @@ public class DatasourceResource {
   @Path("/analysis/{analysisId : .+}/download")
   @Produces(WILDCARD)
   public Response doGetAnalysisFilesAsDownload(@PathParam("analysisId") String analysisId) {
+    if(!canAdminister()) {
+      return Response.status(UNAUTHORIZED).build();
+    }
     MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
     Map<String, InputStream> fileData = helper.getModrianSchemaFiles(analysisId);
     
@@ -196,6 +207,9 @@ public class DatasourceResource {
   @Path("/dsw/{dswId : .+}/download")
   @Produces(WILDCARD)
   public Response doGetDSWFilesAsDownload(@PathParam("dswId") String dswId) {
+    if(!canAdminister()) {
+      return Response.status(UNAUTHORIZED).build();
+    }
     // First get the metadata files;
     Map<String, InputStream> fileData = ((IPentahoMetadataDomainRepositoryExporter)metadataDomainRepository).getDomainFilesData(dswId); 
   
@@ -220,6 +234,9 @@ public class DatasourceResource {
   @Path("/metadata/{metadataId : .+}/remove")
   @Produces(WILDCARD)
   public Response doRemoveMetadata(@PathParam("metadataId") String metadataId) {
+    if(!canAdminister()) {
+      return Response.status(UNAUTHORIZED).build();
+    }
     metadataDomainRepository.removeDomain(metadataId);
     return Response.ok().build();
   }
@@ -228,6 +245,9 @@ public class DatasourceResource {
   @Path("/analysis/{analysisId : .+}/remove")
   @Produces(WILDCARD)
   public Response doRemoveAnalysis(@PathParam("analysisId") String analysisId) {
+    if(!canAdminister()) {
+      return Response.status(UNAUTHORIZED).build();
+    }
     mondrianCatalogService.removeCatalog(analysisId, PentahoSessionHolder.getSession());
     return Response.ok().build();
   }
@@ -236,6 +256,9 @@ public class DatasourceResource {
   @Path("/dsw/{dswId : .+}/remove")
   @Produces(WILDCARD)
   public Response doRemoveDSW(@PathParam("dswId") String dswId) {
+    if(!canAdminister()) {
+      return Response.status(UNAUTHORIZED).build();
+    }
     Domain domain = metadataDomainRepository.getDomain(dswId);
     ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
     model.setDomain(domain);
@@ -314,5 +337,13 @@ public class DatasourceResource {
       return Response.ok(streamingOutput, mimeType).header("Content-Disposition", "attachment; filename=" + quotedFileName).build(); //$NON-NLS-1$ //$NON-NLS-2$
     }
     return Response.serverError().build();
+  }
+  
+  private boolean canAdminister() {
+    IAuthorizationPolicy policy = PentahoSystem
+        .get(IAuthorizationPolicy.class);
+    return policy
+        .isAllowed(RepositoryReadAction.NAME) && policy.isAllowed(RepositoryCreateAction.NAME)
+        && (policy.isAllowed(AdministerSecurityAction.NAME));
   }
 }
