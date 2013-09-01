@@ -27,6 +27,7 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.binding.BindingException;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 //TODO: this class is a mixture of CSV and Relational model code... break it up!
@@ -97,10 +98,15 @@ public class DatasourceModel extends XulEventSourceAdapter
 
   @Bindable
   public void setSelectedRelationalConnection(IDatabaseConnection value) {
-    IDatabaseConnection previousValue = this.selectedRelationalConnection;
-    this.selectedRelationalConnection = value;
-    this.firePropertyChange("selectedRelationalConnection", previousValue, value);
-    validate();
+    try{
+      IDatabaseConnection previousValue = this.selectedRelationalConnection;
+      this.selectedRelationalConnection = value;
+      this.firePropertyChange("selectedRelationalConnection", previousValue, value);
+      validate();
+    }
+    catch(BindingException e){
+      // ignore since any binding issues with datasource parameters will be more obviously caught elsewhere
+    }
   }
 
   @Bindable
