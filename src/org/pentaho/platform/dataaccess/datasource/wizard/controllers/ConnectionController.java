@@ -775,8 +775,14 @@ public class ConnectionController extends AbstractXulEventHandler {
               IDatabaseConnectionList.class, response.getText());
           List<IDatabaseConnection> connectionBeanList = bean.as().getDatabaseConnections();
           List<IDatabaseConnection> connectionImplList = new ArrayList<IDatabaseConnection>();
+
           for (IDatabaseConnection connectionBean : connectionBeanList) {
-            connectionImplList.add(AutobeanUtilities.connectionBeanToImpl(connectionBean));
+            try{
+              connectionImplList.add(AutobeanUtilities.connectionBeanToImpl(connectionBean));
+            }
+            catch (Exception e){
+              // skip invalid connections that couldn't be converted to IDatabaseConnection
+            }
           }
           if(datasourceModel != null) {
             datasourceModel.getGuiStateModel().setConnections(connectionImplList);
