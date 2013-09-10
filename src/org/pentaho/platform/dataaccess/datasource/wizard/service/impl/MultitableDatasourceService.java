@@ -47,6 +47,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.ConnectionServiceHelper;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.LegacyDatasourceConverter;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoBase;
@@ -185,6 +186,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 	public MultiTableDatasourceDTO deSerializeModelState(String dtoStr) throws DatasourceServiceException {
 		try {
 			XStream xs = new XStream();
+      xs.registerConverter(new LegacyDatasourceConverter());
 			return (MultiTableDatasourceDTO) xs.fromXML(dtoStr);
 		} catch (Exception e) {
       logger.error(e);
