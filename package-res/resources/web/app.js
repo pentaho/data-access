@@ -1,50 +1,19 @@
-/* EventTarget from N Zakas Professsional Javascript book */
-function EventTarget(){
-    this.handlers = {};    
-}
-
-EventTarget.prototype = {
-    constructor: EventTarget,
-
-    listen: function(type, handler){
-        if (typeof this.handlers[type] == "undefined"){
-            this.handlers[type] = [];
-        }
-
-        this.handlers[type].push(handler);
-    },
-    
-    notify: function(event){
-        if (!event.target){
-            event.target = this;
-        }
-        if (this.handlers[event.type] instanceof Array){
-            var handlers = this.handlers[event.type];
-            for (var i=0, len=handlers.length; i < len; i++){
-                handlers[i](event);
-            }
-        }            
-    },
-
-    ignore: function(type, handler){
-        if (this.handlers[type] instanceof Array){
-            var handlers = this.handlers[type];
-            for (var i=0, len=handlers.length; i < len; i++){
-                if (handlers[i] === handler){
-                    break;
-                }
-            }
-            
-            handlers.splice(i, 1);
-        }            
-    }
-};
-
-
-//= require "oop.js"
-
-/* define the pentaho namespace if it is not already defined. */
-var pentaho = pentaho || {};
+/*!
+* This program is free software; you can redistribute it and/or modify it under the
+* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+* Foundation.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this
+* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+* or from the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+*/
 
 /*
 pentaho.app concept is taken from Nicholas Zakas, Scalable JavaScript Architecture

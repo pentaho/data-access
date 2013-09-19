@@ -1,25 +1,25 @@
-/*
-    Copyright 2009,2010 Roland Bouman 
-    (Roland.Bouman@gmail.com, http://rpbouman.blogspot.com/, http://code.google.com/p/xmla4js)
-    
-    Note: some portions of the API documentation were adopted from the original XML/A specification. 
-    I believe that this constitutes fair use, 
-    but if you have reason to believe that the documentation violates any copyright, 
-    or is otherwise incompatible with the LGPL license please contact me.
+/*!
+Copyright 2009,2010 Roland Bouman
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+Note: some portions of the API documentation were adopted from the original XML/A specification.
+I believe that this constitutes fair use,
+but if you have reason to believe that the documentation violates any copyright,
+or is otherwise incompatible with the LGPL license please contact me.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/    
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 var Xmla;
 (function (){
 
