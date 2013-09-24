@@ -46,6 +46,7 @@ public class AutobeanUtilities {
     connectionImpl.setConnectionPoolingProperties(mapBeanToImpl(connectionBean.getConnectionPoolingProperties()));
     connectionImpl.setConnectSql(connectionBean.getConnectSql());
     connectionImpl.setDatabaseName(connectionBean.getDatabaseName());
+    connectionImpl.setDatabasePort(connectionBean.getDatabasePort());
     connectionImpl.setDatabaseType(dbTypeBeanToImpl(connectionBean.getDatabaseType()));
     connectionImpl.setDataTablespace(connectionBean.getDataTablespace());
     connectionImpl.setForcingIdentifiersToLowerCase(connectionBean.isForcingIdentifiersToLowerCase());
