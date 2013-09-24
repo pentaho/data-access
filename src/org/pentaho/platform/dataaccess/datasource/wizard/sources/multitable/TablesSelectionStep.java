@@ -28,10 +28,12 @@ import java.util.Set;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.JoinSelectionServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -60,6 +62,8 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
 	private SchemaSelection schemaSelection;
 	private MultiTableDatasource mtdatasource;
+	private Domain domain;
+	private MultiTableDatasourceDTO datasourceDTO;
 
 	public TablesSelectionStep(MultitableGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);
@@ -89,20 +93,24 @@ public class TablesSelectionStep extends AbstractWizardStep {
 		});
 	}
 
-	private void processAvailableTables(IDatabaseConnection connection, String schema) {
-		joinSelectionServiceGwtImpl.getDatabaseTables(connection, schema, new XulServiceCallback<List>() {
-			public void error(String message, Throwable error) {
-				error.printStackTrace();
-				mtdatasource.displayErrors(new JoinError(message,error.getMessage()));
-				closeWaitingDialog();
-			}
+  private void processAvailableTables(IDatabaseConnection connection, String schema) {
+    joinSelectionServiceGwtImpl.getDatabaseTables(connection, schema, new XulServiceCallback<List>() {
+      public void error(String message, Throwable error) {
+        error.printStackTrace();
+        mtdatasource.displayErrors(new JoinError(message, error.getMessage()));
+        closeWaitingDialog();
+      }
 
-			public void success(List tables) {
-				joinGuiModel.processAvailableTables(tables);
-				closeWaitingDialog();
-			}
-		});
-	}
+      public void success(List tables) {
+        joinGuiModel.populateJoinGuiModel(domain, datasourceDTO, tables);
+        if (joinGuiModel.isDoOlap()) {
+          setFactTable(joinGuiModel.getFactTable());
+        }
+        joinGuiModel.processAvailableTables(tables);
+        closeWaitingDialog();
+      }
+    });
+  }
 
 	@Bindable
 	public void addSelectedTable() {
@@ -264,13 +272,27 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Override
 	public void stepActivatingForward() {
     super.stepActivatingForward();
-    if(this.joinGuiModel.getAvailableTables() == null || this.joinGuiModel.getAvailableTables().size() == 0){
-      fetchTables();
-    }
+    fetchTables();
     checkValidState();
 	}
 	
-	public void closeWaitingDialog() {
+	public Domain getDomain() {
+    return domain;
+  }
+
+  public void setDomain(Domain domain) {
+    this.domain = domain;
+  }
+
+  public MultiTableDatasourceDTO getDatasourceDTO() {
+    return datasourceDTO;
+  }
+
+  public void setDatasourceDTO(MultiTableDatasourceDTO datasourceDTO) {
+    this.datasourceDTO = datasourceDTO;
+  }
+
+  public void closeWaitingDialog() {
 	    MessageHandler.getInstance().closeWaitingDialog();
 	}
 	
