@@ -304,21 +304,23 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
     this.selectedTables.clear();
     // Populate "selectedTables" from availableTables using logicalRelationships.
     AbstractModelList<JoinTableModel> selectedTablesList = new AbstractModelList<JoinTableModel>();
-    for (String selectedTable : dto.getSelectedTables()) {
-      this.selectTable(selectedTable, selectedTablesList, tables);
-    }
-    this.selectedTables.addAll(selectedTablesList);
+    if (dto != null) {
+      for (String selectedTable : dto.getSelectedTables()) {
+        this.selectTable(selectedTable, selectedTablesList, tables);
+      }
+      this.selectedTables.addAll(selectedTablesList);
 
-    // Populates joins.  
-    this.computeJoins(dto);
+      // Populates joins.  
+      this.computeJoins(dto);
 
-    // Populate fact table.
-    this.setDoOlap(dto.isDoOlap());
-    if (dto.isDoOlap()) {
-      for (JoinTableModel table : this.selectedTables) {
-        if (tablesAreEqual(table.getName(), dto.getSchemaModel().getFactTable().getName())) {
-          this.setFactTable(table);
-          break;
+      // Populate fact table.
+      this.setDoOlap(dto.isDoOlap());
+      if (dto.isDoOlap()) {
+        for (JoinTableModel table : this.selectedTables) {
+          if (tablesAreEqual(table.getName(), dto.getSchemaModel().getFactTable().getName())) {
+            this.setFactTable(table);
+            break;
+          }
         }
       }
     }
@@ -326,8 +328,10 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
     // Populate available tables discarding selected tables.
     this.processAvailableTables(tables);
 
-    // Existing joinTableModels will not have fields. We can add these from the domain.
-    this.addFieldsToTables(domain, this.availableTables);
+    if (domain != null) {
+      // Existing joinTableModels will not have fields. We can add these from the domain.
+      this.addFieldsToTables(domain, this.availableTables);
+    }
   }
 
   private void computeJoins(MultiTableDatasourceDTO dto) {
