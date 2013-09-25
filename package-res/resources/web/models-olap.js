@@ -2,7 +2,7 @@
 pentaho.pda.OlapHandler = function OlapHandler(sandbox) {
 	pentaho.pda.Handler.call(this, sandbox);
     this.type = pentaho.pda.SOURCE_TYPE_OLAP;
-    this.XMLA_SERVICE_URL = '/pentaho/Xmla'; // TODO this URL should be relative
+    this.XMLA_SERVICE_URL = CONTEXT_PATH + 'Xmla';
     this.datasourceCache = [];
 }
 
