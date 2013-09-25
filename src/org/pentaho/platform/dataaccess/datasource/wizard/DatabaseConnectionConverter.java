@@ -36,6 +36,19 @@ import com.google.gwt.xml.client.XMLParser;
 
 
 public class DatabaseConnectionConverter {
+  private static final String USERNAME = "username";
+  private static final String ATTRIBUTES = "attributes";
+  private static final String DATABASE_TYPE = "databaseType";
+  private static final String ACCESS_TYPE = "accessType";
+  private static final String PASSWORD = "password";
+  private static final String NAME = "name";
+  private static final String SERVER_NAME = "serverName";
+  private static final String DATA_TABLESPACE = "dataTablespace";
+  private static final String INDEX_TABLESPACE = "indexTablespace";
+  private static final String HOSTNAME = "hostname";
+  private static final String DATABASE_PORT = "databasePort";
+  private static final String DATABASE_NAME = "databaseName";
+  private static final String DATABASE_CONNECTION = "databaseConnection";
   private DatabaseTypeHelper databaseTypeHelper;
   public DatabaseConnectionConverter(DatabaseTypeHelper databaseTypeHelper) {
     this.databaseTypeHelper = databaseTypeHelper;
@@ -44,60 +57,65 @@ public class DatabaseConnectionConverter {
     
     Document document = XMLParser.createDocument();
     try {
-      Element databaseConnection = document.createElement("databaseConnection");
+      Element databaseConnection = document.createElement(DATABASE_CONNECTION);
       document.appendChild(databaseConnection);
       
-      Element databaseName = document.createElement("databaseName");
+      Element databaseName = document.createElement(DATABASE_NAME);
       Text databaseNameText = document.createTextNode(dbConn.getDatabaseName());
       databaseName.appendChild(databaseNameText);
       databaseConnection.appendChild(databaseName);
       
-      Element databasePort = document.createElement("databasePort");
+      Element databasePort = document.createElement(DATABASE_PORT);
       Text databasePortText = document.createTextNode(dbConn.getDatabasePort());
       databasePort.appendChild(databasePortText);
       databaseConnection.appendChild(databasePort);
       
-      Element hostname = document.createElement("hostname");
+      Element hostname = document.createElement(HOSTNAME);
       Text hostnameText = document.createTextNode(dbConn.getHostname());
       hostname.appendChild(hostnameText);
       databaseConnection.appendChild(hostname);
   
-      Element indexTablespace = document.createElement("indexTablespace");
+      Element indexTablespace = document.createElement(INDEX_TABLESPACE);
       Text indexTablespaceText = document.createTextNode(dbConn.getIndexTablespace());
       indexTablespace.appendChild(indexTablespaceText);
       databaseConnection.appendChild(indexTablespace);
 
-      Element dataTablespace = document.createElement("dataTablespace");
+      Element dataTablespace = document.createElement(DATA_TABLESPACE);
       Text dataTablespaceText = document.createTextNode(dbConn.getIndexTablespace());
       dataTablespace.appendChild(dataTablespaceText);
       databaseConnection.appendChild(dataTablespace);
       
-      Element informixServername = document.createElement("serverName");
+      Element informixServername = document.createElement(SERVER_NAME);
       Text informixServernameText = document.createTextNode(dbConn.getInformixServername());
       informixServername.appendChild(informixServernameText);
       databaseConnection.appendChild(informixServername);
   
-      Element name = document.createElement("name");
+      Element name = document.createElement(NAME);
       Text nameText = document.createTextNode(dbConn.getName());
       name.appendChild(nameText);
       databaseConnection.appendChild(name);
   
-      Element password = document.createElement("password");
+      Element username = document.createElement(USERNAME);
+      Text usernameTxt = document.createTextNode(dbConn.getUsername());
+      username.appendChild(usernameTxt);
+      databaseConnection.appendChild(username);
+      
+      Element password = document.createElement(PASSWORD);
       Text passwordText = document.createTextNode(dbConn.getPassword());
       password.appendChild(passwordText);
       databaseConnection.appendChild(password);
   
-      Element accessType = document.createElement("accessType");
+      Element accessType = document.createElement(ACCESS_TYPE);
       Text accessTypeText = document.createTextNode(dbConn.getAccessType().getName());
       accessType.appendChild(accessTypeText);
       databaseConnection.appendChild(accessType);
   
-      Element databaseType = document.createElement("databaseType");   
+      Element databaseType = document.createElement(DATABASE_TYPE);   
       Text databaseTypeText = document.createTextNode(dbConn.getDatabaseType().getShortName());
       databaseType.appendChild(databaseTypeText);
       databaseConnection.appendChild(databaseType);
   
-      Element attrributes = document.createElement("attrributes");
+      Element attrributes = document.createElement(ATTRIBUTES);
       databaseConnection.appendChild(attrributes);
       Map<String, String> attributeMap = dbConn.getAttributes();
       for(String key:attributeMap.keySet()) {
@@ -117,19 +135,19 @@ public class DatabaseConnectionConverter {
     Document document = XMLParser.parse(xml);
     Element element = document.getDocumentElement();
     IDatabaseConnection databaseConnection = new DatabaseConnection();
-    databaseConnection.setDatabaseName(getNodeValueByTagName(element, "databaseName"));
-    databaseConnection.setHostname(getNodeValueByTagName(element, "hostname"));
-    databaseConnection.setIndexTablespace(getNodeValueByTagName(element, "indexTablespace"));
-    databaseConnection.setDataTablespace(getNodeValueByTagName(element, "dataTablespace"));
-    databaseConnection.setName(getNodeValueByTagName(element, "name"));
-    databaseConnection.setPassword(getNodeValueByTagName(element, "password"));
-    databaseConnection.setUsername(getNodeValueByTagName(element, "username"));
-    databaseConnection.setDatabasePort(getNodeValueByTagName(element, "port"));
-    databaseConnection.setAccessType(DatabaseAccessType.getAccessTypeByName(getNodeValueByTagName(element, "accessType")));
-    databaseConnection.setDatabaseType((DatabaseType) databaseTypeHelper.getDatabaseTypeByShortName(getNodeValueByTagName(element, "databaseType")));
-    databaseConnection.setPassword(getNodeValueByTagName(element, "password"));
-    databaseConnection.setInformixServername(getNodeValueByTagName(element, "serverName"));
-    for(Node node :getNodesByTagName(element, "attributes")) {
+    databaseConnection.setDatabaseName(getNodeValueByTagName(element, DATABASE_NAME));
+    databaseConnection.setHostname(getNodeValueByTagName(element, HOSTNAME));
+    databaseConnection.setIndexTablespace(getNodeValueByTagName(element, INDEX_TABLESPACE));
+    databaseConnection.setDataTablespace(getNodeValueByTagName(element, DATA_TABLESPACE));
+    databaseConnection.setName(getNodeValueByTagName(element, NAME));
+    databaseConnection.setUsername(getNodeValueByTagName(element, USERNAME));
+    databaseConnection.setPassword(getNodeValueByTagName(element, PASSWORD));    
+    databaseConnection.setDatabasePort(getNodeValueByTagName(element, DATABASE_PORT));
+    databaseConnection.setAccessType(DatabaseAccessType.getAccessTypeByName(getNodeValueByTagName(element, ACCESS_TYPE)));
+    databaseConnection.setDatabaseType((DatabaseType) databaseTypeHelper.getDatabaseTypeByShortName(getNodeValueByTagName(element, DATABASE_TYPE)));
+    databaseConnection.setPassword(getNodeValueByTagName(element, PASSWORD));
+    databaseConnection.setInformixServername(getNodeValueByTagName(element, SERVER_NAME));
+    for(Node node :getNodesByTagName(element, ATTRIBUTES)) {
       databaseConnection.getAttributes().put(node.getNodeName(), node.getNodeValue());
     }
     return databaseConnection;
