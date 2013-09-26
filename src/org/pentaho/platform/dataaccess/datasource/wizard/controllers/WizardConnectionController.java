@@ -360,6 +360,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
         public void onResponseReceived(Request request, Response response) {
           try {
             if (response.getStatusCode() == Response.SC_OK) {
+              currentConnection = AutobeanUtilities.connectionBeanToImpl(currentConnection);
               datasourceModel.getGuiStateModel().updateConnection(existingConnectionName, currentConnection);
               datasourceModel.setSelectedRelationalConnection(currentConnection);
             } else {
