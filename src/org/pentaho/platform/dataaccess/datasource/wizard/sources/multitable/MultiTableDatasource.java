@@ -221,44 +221,30 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 		firePropertyChange("finishable", !finishable, finishable);
 	}
 
-	@Override
-	public void restoreSavedDatasource(final Domain previousDomain, final XulServiceCallback<Void> callback) {
+  @Override
+  public void restoreSavedDatasource(final Domain previousDomain, final XulServiceCallback<Void> callback) {
+    tablesSelectionStep.setDomain(previousDomain);
+    String serializedDatasource = (String) previousDomain.getLogicalModels().get(0).getProperty("datasourceModel");
+    joinSelectionServiceGwtImpl.deSerializeModelState(serializedDatasource,
+        new XulServiceCallback<MultiTableDatasourceDTO>() {
 
-		String serializedDatasource = (String) previousDomain.getLogicalModels().get(0).getProperty("datasourceModel");
-		joinSelectionServiceGwtImpl.deSerializeModelState(serializedDatasource, new XulServiceCallback<MultiTableDatasourceDTO>() {
+          public void success(final MultiTableDatasourceDTO datasourceDTO) {
+            tablesSelectionStep.setDatasourceDTO(datasourceDTO);
+            wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
+            MultiTableDatasource.this.connectionSelectionStep.selectConnectionByName(datasourceDTO
+                .getSelectedConnection().getName());
+            callback.success(null);
+          }
 
-			public void success(final MultiTableDatasourceDTO datasourceDTO) {
-				wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
-				// This sets up a race. populateJoinGuiModel relies on the
-				// available tables being populated, with is async
-				MultiTableDatasource.this.connectionSelectionStep.selectConnectionByName(datasourceDTO.getSelectedConnection().getName());
-
-				// We'll get out of the race by making the same async call now
-				// and tailing off it's success
-				// TODO: investigate a better way around this race condition.
-				// This service is being called twice on edit as is
-				joinSelectionServiceGwtImpl.getDatabaseTables(connection, null, new XulServiceCallback<List>() {
-					public void error(String message, Throwable error) {
-						error.printStackTrace();
-					}
-
-					public void success(List tables) {
-						joinGuiModel.populateJoinGuiModel(previousDomain, datasourceDTO, tables);						tablesSelectionStep.setValid(true);
-						if(joinGuiModel.isDoOlap()) {
-							tablesSelectionStep.setFactTable(joinGuiModel.getFactTable());
-						}
-						callback.success(null);
-					}
-				});
-
-			}
-
-			public void error(String s, Throwable throwable) {
-				MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString("DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
-				callback.error(s, throwable);
-			}
-		});
-	}
+          public void error(String s, Throwable throwable) {
+            MessageHandler.getInstance().showErrorDialog(
+                MessageHandler.getString("ERROR"),
+                MessageHandler.getString("DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG",
+                    throwable.getLocalizedMessage()));
+            callback.error(s, throwable);
+          }
+        });
+  }
 
 	class NotDisabledBindingConvertor extends BindingConvertor<Boolean, Boolean> {
 		public Boolean sourceToTarget(Boolean value) {
