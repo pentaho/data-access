@@ -3,6 +3,10 @@
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
+/*
+  Includes Chrome29 Fix.
+    Marc Batchelor
+*/
 
 /*
 	This is an optimized version of Dojo, built for deployment and not for
