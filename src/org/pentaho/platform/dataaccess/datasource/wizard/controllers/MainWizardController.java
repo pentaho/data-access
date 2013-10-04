@@ -1,19 +1,19 @@
-/*
- * This program is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- * Foundation.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- * or from the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * Copyright (c) 2009 Pentaho Corporation..  All rights reserved.
- */
+/*!
+* This program is free software; you can redistribute it and/or modify it under the
+* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+* Foundation.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this
+* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+* or from the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+*/
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
@@ -165,7 +165,9 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
       // update the controller panel
       final XulDeck deck = (XulDeck) document.getElementById(CONTENT_DECK_ELEMENT_ID);
-      deck.setSelectedIndex(deck.getChildNodes().indexOf(activatingWizardStep.getUIComponent()));
+      int index = deck.getChildNodes().indexOf(activatingWizardStep.getUIComponent());
+      deck.setSelectedIndex(index);
+      selectDataSourceMenuList(activatingWizardStep,index);
       activatingWizardStep.refresh();
 
       if (activeStep > oldActiveStep) {
@@ -177,6 +179,29 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       this.firePropertyChange(ACTIVE_STEP_PROPERTY_NAME, oldActiveStep, this.activeStep);
     } catch(Exception e){
       e.printStackTrace();
+    }
+  }
+
+  private void selectDataSourceMenuList(IWizardStep activatingWizardStep, int index) {
+    if(datatypeMenuList.getElements().size() > 0
+        && index != -1
+        && activeDatasource != null)
+    {
+      if(activeDatasource.getId().equals("NONE")){
+        this.datatypeMenuList.setSelectedIndex(0);
+      } else {
+        if(activeDatasource.getId().equals("CSV")){
+          this.datatypeMenuList.setSelectedIndex(1);
+        } else { 
+          if(activeDatasource.getId().equals("MULTI-TABLE-DS")){
+            this.datatypeMenuList.setSelectedIndex(3);
+          } else {
+            if(activeDatasource.getId().equals("SQL-DS")){
+              this.datatypeMenuList.setSelectedIndex(2);
+            }
+          }
+        }
+      }
     }
   }
 
