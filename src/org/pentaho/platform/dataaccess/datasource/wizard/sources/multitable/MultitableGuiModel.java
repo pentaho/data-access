@@ -1,21 +1,19 @@
-/*
- * This program is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- * Foundation.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- * or from the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * Copyright (c) 2011 Pentaho Corporation..  All rights reserved.
- * 
- * @author Ezequiel Cuellar
- */
+/*!
+* This program is free software; you can redistribute it and/or modify it under the
+* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+* Foundation.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this
+* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+* or from the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+*/
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
@@ -170,10 +168,12 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 
 	public void addJoin(JoinRelationshipModel join) {
 		this.joins.add(join);
+		this.selectedJoin =join;
 	}
 
 	public void removeSelectedJoin() {
 		this.joins.remove(this.selectedJoin);
+		this.selectedJoin = (joins == null || joins.asList().isEmpty())? null : joins.asList().get(0);
 	}
 
 	public void addSelectedTable(JoinTableModel table) {
@@ -341,18 +341,25 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
     for (JoinRelationshipModel join : dto.getSchemaModel().getJoins()) {
       for (JoinTableModel selectedTable : this.selectedTables) {
         if (tablesAreEqual(selectedTable.getName(), join.getLeftKeyFieldModel().getParentTable().getName())) {
-          join.getLeftKeyFieldModel().getParentTable().setName(selectedTable.getName());
+          join.getLeftKeyFieldModel().getParentTable().setName(selectedTable.getName());         
+        } else {
+          if (tablesAreEqual(selectedTable.getName(), join.getRightKeyFieldModel().getParentTable().getName())) {
+            join.getRightKeyFieldModel().getParentTable().setName(selectedTable.getName());
+          }
         }
-      }
-      for (JoinTableModel selectedTable : this.selectedTables) {
-        if (tablesAreEqual(selectedTable.getName(), join.getRightKeyFieldModel().getParentTable().getName())) {
-          join.getRightKeyFieldModel().getParentTable().setName(selectedTable.getName());
-        }
-      }
+      }    
     }
     this.joins.addAll(dto.getSchemaModel().getJoins());
   }
 
+  /**
+   * try to identify the correct selected table index from the joins
+   * @return int > 0 if found
+   */
+  public int getTableIndex(JoinTableModel joinTable) {      
+    return  (this.getSelectedTables() == null || this.getSelectedTables().isEmpty())? 0: this.getSelectedTables().indexOf(joinTable);    
+  }
+ 
 	private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
 
 		String locale = LocalizedString.DEFAULT_LOCALE;

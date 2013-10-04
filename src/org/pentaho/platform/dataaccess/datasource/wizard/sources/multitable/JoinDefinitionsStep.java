@@ -1,24 +1,23 @@
-/*
- * This program is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- * Foundation.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- * or from the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * Copyright (c) 2011 Pentaho Corporation..  All rights reserved.
- * 
- * @author Ezequiel Cuellar
- */
+/*!
+* This program is free software; you can redistribute it and/or modify it under the
+* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+* Foundation.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this
+* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+* or from the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+*/
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,7 +51,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 	private MultitableGuiModel joinGuiModel;
 	private XulMenuList<JoinTableModel> leftTables;
 	private XulMenuList<JoinTableModel> rightTables;
-	private XulListbox joins;
+	private XulListbox joinsList;
 	private XulListbox leftKeyFieldList;
 	private XulListbox rightKeyFieldList;
 	private JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl;
@@ -95,7 +94,7 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 	public void init(IWizardModel wizardModel) throws XulException {
 		this.validator = new JoinValidator(this.joinGuiModel, wizardModel);
 		this.joinDefinitionDialog = (XulVbox) document.getElementById(JOIN_DEFINITION_PANEL_ID);
-		this.joins = (XulListbox) document.getElementById("joins");
+		this.joinsList = (XulListbox) document.getElementById("joins");
 		this.leftKeyFieldList = (XulListbox) document.getElementById("leftKeyField");
 		this.rightKeyFieldList = (XulListbox) document.getElementById("rightKeyField");
 		this.leftTables = (XulMenuList<JoinTableModel>) document.getElementById("leftTables");
@@ -110,8 +109,8 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 		bf.createBinding(this.joinGuiModel.getRightTables(), "children", this.rightTables, "elements");
 		bf.createBinding(this.leftTables, "selectedItem", this.joinGuiModel, "leftJoinTable");
 		bf.createBinding(this.rightTables, "selectedItem", this.joinGuiModel, "rightJoinTable");
-		bf.createBinding(this.joinGuiModel.getJoins(), "children", this.joins, "elements");
-		bf.createBinding(this.joins, "selectedItem", this.joinGuiModel, "selectedJoin");
+		bf.createBinding(this.joinGuiModel.getJoins(), "children", this.joinsList, "elements");	
+	    bf.createBinding(this.joinsList, "selectedItem", this.joinGuiModel, "selectedJoin");
 		bf.createBinding(this.leftTables, "selectedItem", this.leftKeyFieldList, "elements", new TableSelectionConvertor(this.leftTables));
 		bf.createBinding(this.rightTables, "selectedItem", this.rightKeyFieldList, "elements", new TableSelectionConvertor(this.rightTables));
 		
@@ -161,12 +160,33 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 		super.stepActivatingForward();
 		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
 		this.joinGuiModel.computeJoinDefinitionStepTables();
-		this.leftTables.setSelectedIndex(0);
-		this.rightTables.setSelectedIndex(0);
+		this.setTableIndex();
 		parentDatasource.setFinishable(this.validator.allTablesJoined());
 	}
 
-	
+	/**
+	 * try to identify the first selected join relationship tables (left and right) from the first joinList
+	 * @return
+	 */
+	private void setTableIndex() {
+	  int leftIndex = 0;
+	  int rightIndex = 0;   
+	  JoinRelationshipModel jrm = this.joinGuiModel.getSelectedJoin(); 
+	  if(jrm == null &&  this.joinGuiModel.getJoins().asList().size() > 0){
+	      jrm = this.joinGuiModel.getJoins().asList().get(0);
+	  }   
+	  if(jrm != null){
+      JoinTableModel leftJoinTable = jrm.getLeftKeyFieldModel().getParentTable();
+      this.joinGuiModel.setLeftJoinTable(leftJoinTable);
+      leftIndex = this.joinGuiModel.getTableIndex(leftJoinTable);      
+      JoinTableModel rightJoinTable = jrm.getRightKeyFieldModel().getParentTable();
+      this.joinGuiModel.setRightJoinTable(rightJoinTable);
+      rightIndex = this.joinGuiModel.getTableIndex(rightJoinTable);          
+	  }	 
+	  this.leftTables.setSelectedIndex(leftIndex);
+	  this.rightTables.setSelectedIndex(rightIndex);
+	  
+  }
 
 	public String getStepName() {
 		return MessageHandler.getString("multitable.DEFINE_JOINS");
