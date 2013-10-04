@@ -61,6 +61,7 @@ public class AutobeanUtilities {
     connectionImpl.setPartitioned(connectionBean.isPartitioned());
     connectionImpl.setPartitioningInformation(connectionBean.getPartitioningInformation());
     connectionImpl.setPassword(connectionBean.getPassword());
+    connectionImpl.setDatabasePort(connectionBean.getDatabasePort());
     connectionImpl.setQuoteAllFields(connectionBean.isQuoteAllFields());
     connectionImpl.setSQLServerInstance(connectionBean.getSQLServerInstance());
     connectionImpl.setStreamingResults(connectionBean.isStreamingResults());

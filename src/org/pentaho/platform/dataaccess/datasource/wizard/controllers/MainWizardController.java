@@ -165,9 +165,11 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
       // update the controller panel
       final XulDeck deck = (XulDeck) document.getElementById(CONTENT_DECK_ELEMENT_ID);
-      deck.setSelectedIndex(deck.getChildNodes().indexOf(activatingWizardStep.getUIComponent()));
+      int index = deck.getChildNodes().indexOf(activatingWizardStep.getUIComponent());
+      deck.setSelectedIndex(index);
+      selectDataSourceMenuList(activatingWizardStep,index);
       activatingWizardStep.refresh();
-
+     
       if (activeStep > oldActiveStep) {
         activatingWizardStep.stepActivatingForward();
       } else {
@@ -177,6 +179,29 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       this.firePropertyChange(ACTIVE_STEP_PROPERTY_NAME, oldActiveStep, this.activeStep);
     } catch(Exception e){
       e.printStackTrace();
+    }
+  }
+
+  private void selectDataSourceMenuList(IWizardStep activatingWizardStep, int index) {
+    if(datatypeMenuList.getElements().size() > 0
+        && index != -1
+        && activeDatasource != null)
+    {
+      if(activeDatasource.getId().equals("NONE")){
+        this.datatypeMenuList.setSelectedIndex(0);
+      } else {
+        if(activeDatasource.getId().equals("CSV")){
+          this.datatypeMenuList.setSelectedIndex(1);
+        } else { 
+          if(activeDatasource.getId().equals("MULTI-TABLE-DS")){
+            this.datatypeMenuList.setSelectedIndex(3);
+          } else {
+            if(activeDatasource.getId().equals("SQL-DS")){
+              this.datatypeMenuList.setSelectedIndex(2);
+            }
+          }
+        }
+      }
     }
   }
 
@@ -307,7 +332,8 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     nextButtonBinding = bf.createBinding(getStep(getActiveStep()), VALID_PROPERTY_NAME, NEXT_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, notDisabledBindingConvertor);
 
     finishedButtonBinding = bf.createBinding(activeDatasource, FINISHABLE_PROPERTY_NAME, FINISH_BTN_ELEMENT_ID, DISABLED_PROPERTY_NAME, notDisabledBindingConvertor);
-
+    
+  
     try {
       nextButtonBinding.fireSourceChanged();
       finishedButtonBinding.fireSourceChanged();

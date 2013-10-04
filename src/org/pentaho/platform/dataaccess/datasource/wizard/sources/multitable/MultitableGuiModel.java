@@ -93,7 +93,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 
 	@Bindable
 	public void setSelectedTables(AbstractModelList<JoinTableModel> selectedTables) {
-		this.selectedTables = selectedTables;
+		this.selectedTables = selectedTables;		 
 	}
 
 	@Bindable
@@ -143,7 +143,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 
 	@Bindable
 	public void setJoins(AbstractModelList<JoinRelationshipModel> joins) {
-		this.joins = joins;
+		this.joins = joins;		
 	}
 
 	@Bindable
@@ -153,7 +153,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 
 	@Bindable
 	public void setSelectedJoin(JoinRelationshipModel selectedJoin) {
-		this.selectedJoin = selectedJoin;
+		this.selectedJoin = selectedJoin;			
 	}
 	
 	@Bindable
@@ -168,10 +168,12 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 
 	public void addJoin(JoinRelationshipModel join) {
 		this.joins.add(join);
+		this.selectedJoin =join;
 	}
 
 	public void removeSelectedJoin() {
 		this.joins.remove(this.selectedJoin);
+		this.selectedJoin = (joins == null || joins.asList().isEmpty())? null : joins.asList().get(0);
 	}
 
 	public void addSelectedTable(JoinTableModel table) {
@@ -339,18 +341,25 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
     for (JoinRelationshipModel join : dto.getSchemaModel().getJoins()) {
       for (JoinTableModel selectedTable : this.selectedTables) {
         if (tablesAreEqual(selectedTable.getName(), join.getLeftKeyFieldModel().getParentTable().getName())) {
-          join.getLeftKeyFieldModel().getParentTable().setName(selectedTable.getName());
+          join.getLeftKeyFieldModel().getParentTable().setName(selectedTable.getName());         
+        } else {
+          if (tablesAreEqual(selectedTable.getName(), join.getRightKeyFieldModel().getParentTable().getName())) {
+            join.getRightKeyFieldModel().getParentTable().setName(selectedTable.getName());
+          }
         }
-      }
-      for (JoinTableModel selectedTable : this.selectedTables) {
-        if (tablesAreEqual(selectedTable.getName(), join.getRightKeyFieldModel().getParentTable().getName())) {
-          join.getRightKeyFieldModel().getParentTable().setName(selectedTable.getName());
-        }
-      }
+      }    
     }
     this.joins.addAll(dto.getSchemaModel().getJoins());
   }
 
+  /**
+   * try to identify the correct selected table index from the joins
+   * @return int > 0 if found
+   */
+  public int getTableIndex(JoinTableModel joinTable) {      
+    return  (this.getSelectedTables() == null || this.getSelectedTables().isEmpty())? 0: this.getSelectedTables().indexOf(joinTable);    
+  }
+ 
 	private void addFieldsToTables(Domain domain, AbstractModelList<JoinTableModel> availableTables) {
 
 		String locale = LocalizedString.DEFAULT_LOCALE;
