@@ -128,6 +128,8 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
           returnValue = 0;
         } else if (DatasourceType.CSV == value) {
           returnValue = 1;
+        } else if (DatasourceType.OLAP == value) {
+          return 2;
         } else if (DatasourceType.NONE == value) {
           return 0;
         }
@@ -141,6 +143,8 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
           type = DatasourceType.SQL;
          } else if (value == 1) {
           type = DatasourceType.CSV;
+        } else if (value == 2){
+          type = DatasourceType.OLAP;
         }
         return type;
       }
