@@ -63,7 +63,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   private List<IWizardDatasource> datasources = new ArrayList<IWizardDatasource>();
   private IWizardDatasource activeDatasource;
   private String invalidCharacters;
-  public static final String DEFAULT_INVALID_CHARACTERS = "$<>?&#%^*()!~:;[]{}|"; //$NON-NLS-1$
+  public static final String DEFAULT_INVALID_CHARACTERS = "$<>?&#%^*()!~:;[]{}|/"; //$NON-NLS-1$
 
   // Binding converters
   protected class BackButtonBindingConverter extends BindingConvertor<Integer, Boolean> {
@@ -473,7 +473,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   }
 
   private boolean isDatasourceNameValid(String datasourceName) {
-    return containsNone(datasourceName, invalidCharacters);
+    return containsNone(datasourceName, this.DEFAULT_INVALID_CHARACTERS);
   }
   
   /**
