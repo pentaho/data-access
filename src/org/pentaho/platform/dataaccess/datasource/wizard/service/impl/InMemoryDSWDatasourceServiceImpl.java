@@ -408,7 +408,7 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
 
   public String getDatasourceIllegalCharacters() throws DatasourceServiceException {
-    return "$<>?&#%^*()!~:;[]{}|" ;
+    return "$<>?&#%^*()!~:;[]{}|/" ;
   }
 
   public GeoContext getGeoContext() throws DatasourceServiceException {
