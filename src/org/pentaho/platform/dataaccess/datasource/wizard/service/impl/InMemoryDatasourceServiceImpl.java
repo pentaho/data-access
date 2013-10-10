@@ -412,7 +412,7 @@ public class InMemoryDatasourceServiceImpl implements IDatasourceService {
   }
 
   public String getDatasourceIllegalCharacters() throws DatasourceServiceException {
-    return "$<>?&#%^*()!~:;[]{}|" ;
+    return "$<>?&#%^*()!~:;[]{}|/" ;
   }
 
   public GeoContext getGeoContext() throws DatasourceServiceException {
