@@ -669,12 +669,10 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     if(paramName.equalsIgnoreCase("Datasource")) {
       for(IDatabaseConnection connection : importDialogModel.getConnectionList()) {
         if(connection.getName().equals(paramValue)) {
-          importDialogModel.setConnection(connection);
-          importDialogModel.addParameter(paramName, paramValue);
+          importDialogModel.setConnection(connection);         
         }
       }
     } 
-    else 
     if(!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
       importDialogModel.addParameter(paramName, paramValue);
       hasParameters = true;
