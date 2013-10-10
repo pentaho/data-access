@@ -355,7 +355,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     } else {
       finishButton.setDisabled(false);
       MessageHandler.getInstance().showErrorDialog("Error", MessageHandler//$NON-NLS-1$
-          .getString("DatasourceEditor.ERROR_0005_INVALID_DATASOURCE_NAME", invalidCharacters), true); //$NON-NLS-1$ 
+          .getString("DatasourceEditor.ERROR_0005_INVALID_DATASOURCE_NAME", this.DEFAULT_INVALID_CHARACTERS), true); //$NON-NLS-1$ 
     }
   }
     
