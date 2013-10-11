@@ -23,20 +23,15 @@ import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
-import org.pentaho.ui.xul.components.XulTreeCell;
-import org.pentaho.ui.xul.components.XulTreeCol;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTabbox;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.containers.XulTreeChildren;
-import org.pentaho.ui.xul.containers.XulTreeRow;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
@@ -72,14 +67,6 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
   private XulTree modelDataTable = null;
   
   private XulTree csvDataTable = null;
-  private XulTreeCol relationalAggregationListCol;
-  private XulTreeCol relationalSampleDataTreeCol;
-  private XulTreeCol csvAggregationListCol;
-  private XulTreeCol csvSampleDataTreeCol;
-  private XulTreeCol relationalColumnNameTreeCol = null;
-  private XulTreeCol relationalColumnTypeTreeCol = null;
-  private XulTreeCol csvColumnNameTreeCol = null;
-  private XulTreeCol csvColumnTypeTreeCol = null;
   private XulDialog clearModelWarningDialog = null;
 
   private DatasourceType tabValueSelected = null;
@@ -87,21 +74,11 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
   private XulTabbox datasourceTabbox = null;
   
   public WizardDatasourceController() {
-
   }
 
   @Bindable
   public void init() {
     clearModelWarningDialog = (XulDialog) document.getElementById("clearModelWarningDialog");//$NON-NLS-1$
-    relationalAggregationListCol = (XulTreeCol) document.getElementById("relationalAggregationListCol"); //$NON-NLS-1$
-    relationalSampleDataTreeCol = (XulTreeCol) document.getElementById("relationalSampleDataTreeCol"); //$NON-NLS-1$
-    relationalColumnNameTreeCol = (XulTreeCol) document.getElementById("relationalColumnNameTreeCol");//$NON-NLS-1$
-    relationalColumnTypeTreeCol = (XulTreeCol) document.getElementById("relationalColumnTypeTreeCol");//$NON-NLS-1$
-    csvColumnNameTreeCol = (XulTreeCol) document.getElementById("csvColumnNameTreeCol");//$NON-NLS-1$
-    csvColumnTypeTreeCol = (XulTreeCol) document.getElementById("csvColumnTypeTreeCol");//$NON-NLS-1$
-    
-    csvAggregationListCol = (XulTreeCol) document.getElementById("relationalAggregationListCol");//$NON-NLS-1$
-    csvSampleDataTreeCol = (XulTreeCol) document.getElementById("relationalAggregationListCol");//$NON-NLS-1$
     csvDataTable = (XulTree) document.getElementById("csvDataTable");//$NON-NLS-1$
     modelDataTable = (XulTree) document.getElementById("modelDataTable");//$NON-NLS-1$
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
@@ -195,16 +172,6 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
     return "datasourceController"; //$NON-NLS-1$
   }
   
-  private void handleSaveError(DatasourceModel datasourceModel, Throwable xe) {
-    String datasourceName = null;
-    if(datasourceModel.getDatasourceType() == DatasourceType.CSV) {
-      datasourceName =  datasourceModel.getModelInfo().getStageTableName();
-    } else if(datasourceModel.getDatasourceType() == DatasourceType.SQL) {
-      datasourceName =  datasourceModel.getDatasourceName();
-    }
-    openErrorDialog(datasourceMessages.getString("ERROR"), datasourceMessages.getString("DatasourceController.ERROR_0003_UNABLE_TO_SAVE_MODEL",datasourceName,xe.getLocalizedMessage())); //$NON-NLS-1$ //$NON-NLS-2$
-  }
-
   private void showClearModelWarningDialog(DatasourceType value) {
     tabValueSelected = value;
     clearModelWarningDialog.show();
@@ -304,76 +271,6 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
     super.onDialogAccept();
   }
   
-  private void buildCsvEmptyTable() {
-    // Create the tree children and setting the data
-    csvAggregationListCol.setEditable(false);
-    csvSampleDataTreeCol.setEditable(false);
-    csvColumnNameTreeCol.setEditable(false);
-    csvColumnTypeTreeCol.setEditable(false);    
-    csvDataTable.update();
-    csvDataTable.suppressLayout(true);
-    XulTreeChildren treeChildren = csvDataTable.getRootChildren();
-    if(treeChildren != null) {
-      treeChildren.removeAll();
-    }
-    try {
-      int count = csvDataTable.getColumns().getColumnCount();
-      for (int i = 0; i < DEFAULT_CSV_TABLE_ROW_COUNT; i++) {
-        XulTreeRow row = (XulTreeRow) document.createElement("treerow"); //$NON-NLS-1$
-
-        for (int j = 0; j < count; j++) {
-          XulTreeCell cell = (XulTreeCell) document.createElement("treecell"); //$NON-NLS-1$
-          cell.setLabel(" "); //$NON-NLS-1$
-          row.addCell(cell);
-        }
-
-        csvDataTable.addTreeRow(row);
-      }
-      csvDataTable.suppressLayout(false);
-      csvAggregationListCol.setEditable(true);
-      csvSampleDataTreeCol.setEditable(true);
-      csvDataTable.update();
-      
-    } catch(XulException e) {
-      e.printStackTrace();
-    }
-  }
-  
-  private void buildRelationalEmptyTable() {
-    // Create the tree children and setting the data
-    relationalAggregationListCol.setEditable(false);
-    relationalSampleDataTreeCol.setEditable(false);
-    relationalColumnNameTreeCol.setEditable(false);
-    relationalColumnTypeTreeCol.setEditable(false);
-    modelDataTable.update();
-    modelDataTable.suppressLayout(true);
-     XulTreeChildren treeChildren = modelDataTable.getRootChildren();
-    if(treeChildren != null) {
-      treeChildren.removeAll();
-    }
-
-    try {
-      int count = modelDataTable.getColumns().getColumnCount();
-      for (int i = 0; i < DEFAULT_RELATIONAL_TABLE_ROW_COUNT; i++) {
-        XulTreeRow row = (XulTreeRow) document.createElement("treerow"); //$NON-NLS-1$
-
-        for (int j = 0; j < count; j++) {
-          XulTreeCell cell = (XulTreeCell) document.createElement("treecell"); //$NON-NLS-1$
-          cell.setLabel(" ");//$NON-NLS-1$
-          row.addCell(cell);
-        }
-
-        modelDataTable.addTreeRow(row);
-      }
-      modelDataTable.suppressLayout(false);
-      relationalAggregationListCol.setEditable(true);
-      relationalSampleDataTreeCol.setEditable(true);
-      modelDataTable.update();
-      
-    } catch(XulException e) {
-      e.printStackTrace();
-    }
-  }
   public void displayErrorMessage(Throwable th) {
     errorDialog.setTitle(ExceptionParser.getErrorHeader(th, getDatasourceMessages().getString("DatasourceEditor.USER_ERROR_TITLE"))); //$NON-NLS-1$
     errorLabel.setValue(ExceptionParser.getErrorMessage(th, getDatasourceMessages().getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED"))); //$NON-NLS-1$

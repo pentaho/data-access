@@ -17,6 +17,9 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.query;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.AutobeanUtilities;
@@ -24,17 +27,16 @@ import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.*;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTOUtil;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * User: nbaker

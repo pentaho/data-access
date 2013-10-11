@@ -38,7 +38,6 @@ import java.util.List;
  */
 public class DummyDatasource extends AbstractXulEventHandler implements IWizardDatasource{
   SelectDatasourceStep datasourceStep;
-  private IWizardModel wizardModel;
 
   public DummyDatasource(){
     datasourceStep = new SelectDatasourceStep(this);
@@ -66,7 +65,6 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
 
   @Override
   public void init(XulDomContainer container, IWizardModel wizardModel) throws XulException {
-    this.wizardModel = wizardModel;
     container.addEventHandler(datasourceStep);
     datasourceStep.init(wizardModel);
   }

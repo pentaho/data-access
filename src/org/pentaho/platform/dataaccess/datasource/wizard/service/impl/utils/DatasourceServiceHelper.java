@@ -52,9 +52,6 @@ public class DatasourceServiceHelper {
   private static final String PLUGIN_NAME = "data-access"; //$NON-NLS-1$
   private static final String SETTINGS_FILE = PLUGIN_NAME + "/settings.xml"; //$NON-NLS-1$
 
-  private static final String LATITUDE = "latitude";
-  private static final String LONGITUDE = "longitude";
-
   private static GeoContextConfigProvider configProvider = new GeoContextSettingsProvider(SETTINGS_FILE);
 
   public static Connection getDataSourceConnection(String connectionName, IPentahoSession session) {

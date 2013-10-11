@@ -62,7 +62,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidationException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
@@ -95,15 +94,12 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   private static final String AFTER_QUERY = ") tbl"; //$NON-NLS-1$
 
-  private ConnectionServiceImpl connectionService;
-
   private GeoContext geoContext;
 
   public DSWDatasourceServiceImpl() {
     this(new ConnectionServiceImpl());
   }
   public DSWDatasourceServiceImpl(ConnectionServiceImpl connectionService) {
-    this.connectionService = connectionService;
     metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, null);
     String dataAccessClassName = null;
     try {

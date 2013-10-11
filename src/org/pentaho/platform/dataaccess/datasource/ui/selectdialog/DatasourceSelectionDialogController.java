@@ -82,7 +82,6 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
 
     private Binding editDatasourceButtonBinding;
     private Binding removeDatasourceButtonBinding;
-    private ModelerDialog modeler;
     private String context;
     UIDatasourceServiceManager manager;
     private List<IDatasourceInfo> datasourceInfos=new ArrayList<IDatasourceInfo>();
@@ -439,7 +438,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
     }
 
     private void showModeler() {
-        modeler = ModelerDialog.getInstance(datasourceEditor, new AsyncConstructorListener<ModelerDialog>() {
+        ModelerDialog.getInstance(datasourceEditor, new AsyncConstructorListener<ModelerDialog>() {
             public void asyncConstructorDone(ModelerDialog dialog) {
                 final DialogListener<Domain> listener = new DialogListener<Domain>() {
                     public void onDialogCancel() {

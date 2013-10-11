@@ -17,6 +17,9 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
@@ -25,19 +28,14 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
-import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * User: nbaker
  * Date: 3/23/11
  */
 public class SelectDatasourceStep extends AbstractWizardStep {
-  private XulMenuList datatypeMenuList;
   private IWizardDatasource datasource;
 
   private XulDeck datasourceDeck;

@@ -18,8 +18,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

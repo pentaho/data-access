@@ -17,7 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,7 +58,6 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 	private JoinValidator validator;
 	private Binding rightKeyFieldBinding;
 	private Binding leftKeyFieldBinding;
-	private Binding joinSelectionBinding;
 
 	public JoinDefinitionsStep(MultitableGuiModel joinGuiModel, JoinSelectionServiceGwtImpl joinSelectionServiceGwtImpl, MultiTableDatasource parentDatasource) {
 		super(parentDatasource);

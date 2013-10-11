@@ -19,7 +19,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 /**

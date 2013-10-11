@@ -17,24 +17,16 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.SerializationException;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.server.rpc.SerializationPolicy;
-import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class CsvDatasourceServiceServlet extends RemoteServiceServlet implements ICsvDatasourceService {
 

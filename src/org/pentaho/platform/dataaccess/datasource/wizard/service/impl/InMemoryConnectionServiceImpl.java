@@ -22,29 +22,19 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.database.DatabaseDialectException;
 import org.pentaho.database.IDatabaseDialect;
-import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.database.service.DatabaseConnectionService;
 import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 
 public class InMemoryConnectionServiceImpl implements IConnectionService {
-
-  private String locale = Locale.getDefault().toString();
-
-  // this should be a singleton
-  private DatabaseConnectionService databaseConnectionService = new DatabaseConnectionService();
-
-  private DatabaseDialectService databaseDialectService = new DatabaseDialectService();
 
   private List<IDatabaseConnection> connectionList = new ArrayList<IDatabaseConnection>();
 

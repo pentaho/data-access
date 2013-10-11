@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.agilebi.modeler.models.SchemaModel;
@@ -30,17 +31,11 @@ import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
-import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.test.platform.engine.core.BaseTest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class JoinMetadataTest extends BaseTest {
-
-	private static Logger logger = LoggerFactory.getLogger(JoinMetadataTest.class);
 
 	static {
 		PentahoSystemHelper.init();
