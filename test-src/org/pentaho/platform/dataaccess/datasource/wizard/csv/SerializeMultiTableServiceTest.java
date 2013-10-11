@@ -19,7 +19,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,8 +27,6 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
@@ -60,9 +57,9 @@ import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceExcep
 import org.pentaho.platform.api.repository.datasource.DuplicateDatasourceException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
-import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -336,22 +333,6 @@ public class SerializeMultiTableServiceTest {
         methodTrackerHistory.add(new MethodTrackingData("newUser")
             .addParameter(USER_PARAMETER, securityHelper.getCurrentUser()));
         if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
-      }
-
-      public void resetCallHistory() {
-        this.methodTrackerHistory.clear();
-      }
-
-      public boolean isThrowException() {
-        return throwException;
-      }
-
-      public void setThrowException(final boolean throwException) {
-        this.throwException = throwException;
-      }
-
-      public ArrayList<MethodTrackingData> getMethodTrackerHistory() {
-        return (ArrayList<MethodTrackingData>) methodTrackerHistory.clone();
       }
 
       @Override

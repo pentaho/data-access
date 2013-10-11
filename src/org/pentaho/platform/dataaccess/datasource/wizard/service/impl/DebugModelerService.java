@@ -19,16 +19,12 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.io.File;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.metadata.util.MondrianModelExporter;
-import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.platform.api.engine.IApplicationContext;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -36,13 +32,7 @@ import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
-import org.pentaho.platform.engine.core.solution.ActionInfo;
-import org.pentaho.platform.engine.core.system.PathBasedSystemSettings;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
-import org.pentaho.platform.engine.core.system.objfac.StandaloneSpringPentahoObjectFactory;
-import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
-import org.springframework.context.ApplicationContext;
 
 /**
  * User: nbaker
@@ -98,8 +88,6 @@ public class DebugModelerService extends ModelerService {
       LogicalModel lModel = domain.getLogicalModels().get(0);
       String catName = lModel.getName(LocalizedString.DEFAULT_LOCALE);
       lModel.setProperty("MondrianCatalogRef", catName); //$NON-NLS-1$
-      XmiParser parser = new XmiParser();
-      String reportXML =  parser.generateXmi(model.getDomain());
 
       // Serialize domain to xmi.
       /*

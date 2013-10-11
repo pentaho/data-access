@@ -26,7 +26,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.repository.hibernate.HibernateUtil;
 
 public  class ConnectionServiceHelper {
   private static final Log logger = LogFactory.getLog(ConnectionServiceHelper.class);

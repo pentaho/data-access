@@ -21,7 +21,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulFileUpload;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -40,8 +39,6 @@ public class FileImportController extends AbstractXulEventHandler  {
 
   private XulLabel errorLabel;
 
-  private XulButton okButton;
-  
   private BindingFactory bf;
 
   private DatasourceMessages messages;
@@ -62,8 +59,6 @@ public class FileImportController extends AbstractXulEventHandler  {
     datasourceDialog = (XulDialog) document.getElementById("fileImportEditorWindow");//$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById("errorLabel"); //$NON-NLS-1$
     errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
-    
-    okButton = (XulButton) document.getElementById("okButton"); //$NON-NLS-1$
 
     BindingConvertor<String, Boolean> isDisabledConvertor = new BindingConvertor<String, Boolean>() {
 

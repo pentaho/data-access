@@ -40,8 +40,6 @@ public class AgileHelper {
   private static final String CSV_SAMPLE_SIZE = "data-access-csv-sample-rows";
   private static final Log logger = LogFactory.getLog(AgileHelper.class);
 
-  private static long contentLength = 0;
-  
   public static String getSchemaName() {
     return PentahoSystem.getSystemSetting(SETTINGS_FILE, STAGING_SCHEMA, null);
   }

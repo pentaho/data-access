@@ -317,12 +317,9 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
       csvTokenizer = new CSVTokenizer(line, delim, enclosure);
 
       List<String> rowData = new ArrayList<String>();
-      int count = 0;
-      
       while (csvTokenizer.hasMoreTokens()) {
         // get next token and store it in the list
         rowData.add(csvTokenizer.nextToken());
-        count++;
       }
       
       sample.add(rowData);  

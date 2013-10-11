@@ -25,9 +25,6 @@ import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.user.client.Window;
-
 public class MetadataUIDatasourceService implements IUIDatasourceAdminService{
   
   public static final String TYPE = "Metadata";

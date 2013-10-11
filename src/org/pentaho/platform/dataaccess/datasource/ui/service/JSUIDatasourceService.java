@@ -26,7 +26,6 @@ import org.pentaho.ui.xul.XulServiceCallback;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
-import com.google.gwt.http.client.RequestCallback;
 
 public class JSUIDatasourceService implements IUIDatasourceAdminService {
   private JavaScriptObject datasourceServiceObject;

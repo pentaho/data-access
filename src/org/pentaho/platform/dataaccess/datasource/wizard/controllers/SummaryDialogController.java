@@ -17,7 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
-import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -47,7 +46,6 @@ public class SummaryDialogController extends AbstractXulEventHandler {
   private XulLabel summaryDialogDetails;
   private IDatasourceSummary summary;
   private XulServiceCallback<IDatasourceSummary> callback;
-  private BindingFactory bf;
 
   @Override
   public String getName() {
@@ -128,6 +126,5 @@ public class SummaryDialogController extends AbstractXulEventHandler {
   }
 
   public void setBindingFactory(BindingFactory bindingFactory) {
-    bf = bindingFactory;
   }
 }

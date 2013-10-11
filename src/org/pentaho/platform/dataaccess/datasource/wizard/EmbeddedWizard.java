@@ -93,7 +93,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
   private ResourceBundle bundle;
 
   private IDatasourceSummary summary;
-  private ModelerDialog modeler;
   private SummaryDialogController summaryDialogController = new SummaryDialogController();
   private IWizardModel wizardModel = new WizardModel();
 
@@ -473,7 +472,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     };
     final Domain domain = summary.getDomain();
   
-    modeler = ModelerDialog.getInstance(this, new AsyncConstructorListener<ModelerDialog>(){
+    ModelerDialog.getInstance(this, new AsyncConstructorListener<ModelerDialog>(){
       public void asyncConstructorDone(ModelerDialog dialog) {
         dialog.addDialogListener(listener);
         MessageHandler.getInstance().closeWaitingDialog();

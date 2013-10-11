@@ -76,7 +76,6 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
   private XulDialog errorDialog;
 
   private EmbeddedWizard wizard;
-  private ModelerDialog modeler;
 //  private IXulAsyncConnectionService connectionService;
   private IXulAsyncDSWDatasourceService datasourceService;
   private ICsvDatasourceServiceAsync csvService;

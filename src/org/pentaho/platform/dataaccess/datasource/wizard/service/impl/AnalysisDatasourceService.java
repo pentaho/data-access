@@ -73,13 +73,7 @@ public class AnalysisDatasourceService {
 
   private static final String ENABLE_XMLA = "EnableXmla";
 
-  private static final String ACCESS_DENIED = "Access Denied";
-
   private static final int SUCCESS = 3;
-
-  private static final String SUCCESS_MSG = "SUCCESS";
-
-  private final String ACTION_ADMINISTER_SECURITY = "org.pentaho.security.administerSecurity";
 
   private static final String DOMAIN_ID = "domain-id";
 

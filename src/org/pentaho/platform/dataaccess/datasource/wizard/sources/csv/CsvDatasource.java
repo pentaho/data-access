@@ -37,8 +37,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasou
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
-import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -56,13 +54,9 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   private ICsvDatasourceServiceAsync csvDatasourceService;
 
   private DatasourceModel datasourceModel;
-  private MessageHandler handler;
   public FileTransformStats stats;
   private StageDataStep stageStep;
   private CsvPhysicalStep csvStep;
-  private DatasourceModel model;
-  private BindingFactory bindingFactory;
-  private XulDomContainer container;
   private boolean finishable;
 
   private IXulAsyncDSWDatasourceService datasourceService;
@@ -124,7 +118,6 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   @Override
   public void init(XulDomContainer container, IWizardModel wizardModel) throws XulException {
     this.wizardModel = wizardModel;
-    bindingFactory = new GwtBindingFactory(document);
     container.addEventHandler(csvStep);
     container.addEventHandler(stageStep);
     csvStep.init(wizardModel);
@@ -151,7 +144,6 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
     datasourceModel.getGuiStateModel().setDataStagingComplete(false);
     setColumnIdsToColumnNames();
 
-    String name = datasourceModel.getDatasourceName().replace(".", "_").replace(" ", "_");
     // set the modelInfo.stageTableName to the database table name generated from the datasourceName
     datasourceModel.getModelInfo().setStageTableName(datasourceModel.generateTableName());
     String tmpFileName = datasourceModel.getModelInfo().getFileInfo().getTmpFilename();

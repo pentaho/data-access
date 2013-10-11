@@ -48,7 +48,6 @@ public class LegacyDatasourceConverter implements Converter {
    */
   @Override
   public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-    MultiTableDatasourceDTO multiTableDatasourceDTO = (MultiTableDatasourceDTO) source;
   }
 
   /**
@@ -189,10 +188,6 @@ public class LegacyDatasourceConverter implements Converter {
     private String databaseName;
     private String jdbcPrefix;
 
-    ParsedJdbcUrl(){
-
-    }
-
     ParsedJdbcUrl(String jdbcUrl){
       parseUrl(jdbcUrl);
     }
@@ -206,7 +201,6 @@ public class LegacyDatasourceConverter implements Converter {
 
       String[] urlParts = jdbcUrl.split(":");
 
-      String databaseType = urlParts[0];
       String port = "";
       String hostname = "";
       String databaseName = urlParts[urlParts.length-1];
@@ -256,32 +250,16 @@ public class LegacyDatasourceConverter implements Converter {
       return hostname;
     }
 
-    private void setHostname(String hostname) {
-      this.hostname = hostname;
-    }
-
     private String getPort() {
       return port;
-    }
-
-    private void setPort(String port) {
-      this.port = port;
     }
 
     private String getDatabaseName() {
       return databaseName;
     }
 
-    private void setDatabaseName(String databaseName) {
-      this.databaseName = databaseName;
-    }
-
     private String getJdbcPrefix() {
       return jdbcPrefix;
-    }
-
-    private void setJdbcPrefix(String jdbcPrefix) {
-      this.jdbcPrefix = jdbcPrefix;
     }
   }
 
