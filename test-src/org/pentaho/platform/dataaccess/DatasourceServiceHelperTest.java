@@ -17,25 +17,19 @@
 
 package org.pentaho.platform.dataaccess;
 
-import java.io.File;
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
-import org.pentaho.platform.api.engine.IApplicationContext;
-import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
-import org.pentaho.test.platform.engine.core.BaseTest;
-
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class DatasourceServiceHelperTest {
 

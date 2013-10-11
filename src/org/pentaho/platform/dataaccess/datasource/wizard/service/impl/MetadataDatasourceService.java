@@ -147,7 +147,7 @@ public class MetadataDatasourceService {
 
     int pos = 0;
     if(localeFiles != null){
-      for(FormDataBodyPart part : localeFiles){
+      for(int i=0; i <= localeFiles.size(); i++) {
         logger.info("create language file");
         IPlatformImportBundle localizationBundle = new RepositoryFileImportBundle.Builder()
             .input(new ByteArrayInputStream(localeFiles.get(0).getValueAs(byte[].class)))

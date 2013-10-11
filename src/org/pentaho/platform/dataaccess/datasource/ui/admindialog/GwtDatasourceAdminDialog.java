@@ -22,7 +22,6 @@ import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
-import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.binding.BindingFactory;

@@ -18,9 +18,7 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.gwt;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.database.model.DatabaseConnection;

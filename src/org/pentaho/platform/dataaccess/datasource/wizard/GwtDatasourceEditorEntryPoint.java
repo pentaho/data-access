@@ -19,7 +19,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard;
 
 import java.util.List;
 
-import com.google.gwt.http.client.RequestException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
@@ -78,6 +77,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -364,7 +364,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     confirm.open();
   }
 
-  @SuppressWarnings("unused")
   private void addGlassPaneListener(JavaScriptObject obj) {
     GlassPane.getInstance().addGlassPaneListener(new GlassPaneNativeListener(obj));
   }
@@ -543,7 +542,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     }
   }
 
-  @SuppressWarnings("unused")
   private void showAdminDialog(final JavaScriptObject callback) {
 
     final DialogListener<IDatasourceInfo> listener = new DialogListener<IDatasourceInfo>() {
@@ -580,7 +578,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     }
   }
 
-  @SuppressWarnings("unused")
   private void showSelectionDialog(final String context, final String selectDatasource, final JavaScriptObject callback) {
     final DialogListener<LogicalModelSummary> listener = new DialogListener<LogicalModelSummary>() {
       public void onDialogCancel() {
@@ -630,8 +627,6 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
       }
 
       public void onDialogAccept(final MetadataImportDialogModel importDialogModel) {
-
-        final MetadataImportDialogController controller = importDialog.getMetadataImportDialogController();
 
         MetadataDatasourceServiceGwtImpl service = new MetadataDatasourceServiceGwtImpl();
 

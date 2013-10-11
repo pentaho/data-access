@@ -74,22 +74,6 @@ public class XMLToDatasourceInfoConverter {
       return null;
     }
     
-    /*
-     * Return all node matching the tagName, starting from the current element
-     * location
-     */
-    private List<Node> getNodesByTagName(Element element, String tagName) {
-      List<Node> nodes = new ArrayList<Node>();
-      NodeList list = element.getChildNodes();
-      for(int i=0;i<list.getLength();i++) {
-        Node node = list.item(i);
-        if( node != null && node.getNodeName().equals(tagName)) {
-          nodes.add(node);
-        }
-      }
-      return nodes;
-    }
-    
     private final String getType(Element element) {
       return getNodeValueByTagName(element, "type");
     }

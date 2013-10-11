@@ -63,7 +63,6 @@ public class PdiTransListener implements TransListener, Runnable {
   }
 
   private void doFinish() {
-    int errorCount = trans.getErrors();
     try {
       trans.cleanup();
     } catch (Exception e) {

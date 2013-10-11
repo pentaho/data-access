@@ -17,8 +17,18 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
-import org.pentaho.platform.dataaccess.datasource.wizard.*;
+import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardController;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardDatasource;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardListener;
+import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyDatasource;
@@ -36,14 +46,6 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import com.google.gwt.user.client.Window;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * The wizard-controler manages the navigation between the wizard-panes. All panes are organized as a list, where
  * each panel cannot be enabled if the previous panels are not valid or enabled.
@@ -58,11 +60,9 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
   private IWizardModel wizardModel;
   private IXulAsyncDSWDatasourceService datasourceService;
-  private SelectDatasourceStep datasourceStep;
   private XulTextbox datasourceName;
-  private List<IWizardDatasource> datasources = new ArrayList<IWizardDatasource>();
   private IWizardDatasource activeDatasource;
-  private String invalidCharacters;
+//  private String invalidCharacters;
   public static final String DEFAULT_INVALID_CHARACTERS = "$<>?&#%^*()!~:;[]{}|/"; //$NON-NLS-1$
 
   // Binding converters
@@ -258,17 +258,12 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       datasourceBinding.fireSourceChanged();
       setSelectedDatasource(dummyDatasource);
       datasourceService.getDatasourceIllegalCharacters(new XulServiceCallback<String>() {
-
         @Override
         public void success(String retVal) {
-          invalidCharacters = retVal;
-          
         }
 
         @Override
         public void error(String message, Throwable error) {
-          invalidCharacters = DEFAULT_INVALID_CHARACTERS;
-          
         }
       });
     } catch (XulException e) {
@@ -388,7 +383,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     } else {
       finishButton.setDisabled(false);
       MessageHandler.getInstance().showErrorDialog("Error", MessageHandler//$NON-NLS-1$
-          .getString("DatasourceEditor.ERROR_0005_INVALID_DATASOURCE_NAME", this.DEFAULT_INVALID_CHARACTERS), true); //$NON-NLS-1$ 
+          .getString("DatasourceEditor.ERROR_0005_INVALID_DATASOURCE_NAME", DEFAULT_INVALID_CHARACTERS), true); //$NON-NLS-1$ 
     }
   }
     
@@ -499,7 +494,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   }
 
   private boolean isDatasourceNameValid(String datasourceName) {
-    return containsNone(datasourceName, this.DEFAULT_INVALID_CHARACTERS);
+    return containsNone(datasourceName, DEFAULT_INVALID_CHARACTERS);
   }
   
   /**

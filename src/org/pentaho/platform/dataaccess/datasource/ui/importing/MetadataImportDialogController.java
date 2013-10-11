@@ -366,7 +366,6 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
       messagebox.setTitle(title);
       messagebox.setMessage(message);
-      int option = messagebox.open();
     } catch (XulException e) {
       Window.alert("Show MessabeBox " + e.getMessage());
     }

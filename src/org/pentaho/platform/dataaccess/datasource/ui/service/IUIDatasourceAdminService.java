@@ -22,8 +22,6 @@ import java.util.List;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-import com.google.gwt.http.client.RequestCallback;
-
 public interface IUIDatasourceAdminService {
   
   /**

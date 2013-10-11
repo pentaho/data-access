@@ -49,10 +49,8 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
   private ICsvDatasourceServiceAsync csvDatasourceService;
   
   private static final String MSG_STAGING_DATA = "physicalDatasourceDialog.STAGING_DATA"; //$NON-NLS-1$
-  private static final String MSG_ROWS_STAGED = "physicalDatasourceDialog.ROWS_STAGED"; //$NON-NLS-1$
-  private static final String MSG_STAGING_FILE = "physicalDatasourceDialog.STAGING_FILE"; //$NON-NLS-1$
-  private static final String MSG_STAGING_ERRORS = "physicalDatasourceDialog.STAGING_ERRORS"; //$NON-NLS-1$
 
+  private static final String MSG_STAGING_FILE = "physicalDatasourceDialog.STAGING_FILE"; //$NON-NLS-1$
 
   private XulDialog errorDialog = null;
 

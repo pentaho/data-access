@@ -17,8 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.util.ISpoonModelerSource;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -41,7 +39,6 @@ public class InlineSqlModelerSource implements ISpoonModelerSource {
 
   private DatabaseMeta databaseMeta;
   private String query, datasourceName;
-  private static Log logger = LogFactory.getLog(InlineSqlModelerSource.class);
   private IDSWDatasourceService datasourceImpl;
   private String connectionName;
   private String dbType;

@@ -66,8 +66,6 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
 
   private boolean valid;
 
-  private boolean finishable;
-
   protected BindingFactory bf;
 
   protected XulImage stepImage;

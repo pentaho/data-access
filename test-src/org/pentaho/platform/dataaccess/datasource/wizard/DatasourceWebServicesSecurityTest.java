@@ -18,7 +18,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
-import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,6 @@ import org.pentaho.platform.api.mt.ITenant;
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.util.IPasswordService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.AnalysisDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
@@ -55,7 +53,6 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper
 import org.pentaho.platform.plugin.services.cache.CacheManager;
 import org.pentaho.platform.repository2.unified.DefaultUnifiedRepository;
 import org.pentaho.platform.util.Base64PasswordService;
-import org.pentaho.platform.web.http.api.resources.RepositoryImportResource;
 import org.pentaho.test.platform.MethodTrackingData;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.pentaho.test.platform.engine.security.MockSecurityHelper;
@@ -67,8 +64,6 @@ import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
 
 /**
  * Integration test. Tests {@link DefaultUnifiedRepository} and
@@ -102,8 +97,6 @@ public class DatasourceWebServicesSecurityTest {
 	
 	private MicroPlatform booter;
 
-  private String catalogName;
-	
 	@Before
 	public void setUp() throws Exception {
 		
@@ -139,13 +132,7 @@ public class DatasourceWebServicesSecurityTest {
 	@Test
 	public void testPostMondrainSchema() throws Exception {
 		login("joe", "duff", false);
-		AnalysisDatasourceService analysisDatasourceService = new AnalysisDatasourceService();
 		
-		String datasourceName = null;
-    FormDataContentDisposition schemaFileInfo = null;
-    String overwrite ="false";
-    String xmlaEnabledFlag = "false";
-    String parameters = "";
     //Response res = analysisDatasourceService.postMondrainSchema(null, schemaFileInfo, catalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters);
    	//Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
 		//Assert.assertTrue(res.getEntity().equals("Access Denied"));
@@ -154,17 +141,9 @@ public class DatasourceWebServicesSecurityTest {
 	@Test
   public void testPutMondrainSchema() throws Exception {
     login("joe", "duff", false);
-    AnalysisDatasourceService analysisDatasourceService = new AnalysisDatasourceService();
-    String domainId ="testJndiName";
-    InputStream dataInputStream = null;
-    Response res = null;//analysisDatasourceService.importAnalysisSchemaFile(domainId, dataInputStream, domainId, "true","false");
+    //analysisDatasourceService.importAnalysisSchemaFile(domainId, dataInputStream, domainId, "true","false");
     //Assert.assertTrue(res.getEntity().equals("Access Denied"));
     
-    String datasourceName = null;
-    FormDataContentDisposition schemaFileInfo = null;
-    String overwrite ="false";
-    String xmlaEnabledFlag = "false";
-    String parameters = "";
     //res = analysisDatasourceService.postMondrainSchema(dataInputStream, schemaFileInfo, domainId, datasourceName, overwrite, xmlaEnabledFlag, parameters);
     //Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
     logout();
@@ -281,22 +260,6 @@ public class DatasourceWebServicesSecurityTest {
 	      methodTrackerHistory.add(new MethodTrackingData("newUser")
 	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser()));
 	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
-	    }
-
-	    public void resetCallHistory() {
-	      this.methodTrackerHistory.clear();
-	    }
-
-	    public boolean isThrowException() {
-	      return throwException;
-	    }
-
-	    public void setThrowException(final boolean throwException) {
-	      this.throwException = throwException;
-	    }
-
-	    public ArrayList<MethodTrackingData> getMethodTrackerHistory() {
-	      return (ArrayList<MethodTrackingData>) methodTrackerHistory.clone();
 	    }
 
       @Override

@@ -139,10 +139,4 @@ public class TestDataSourceResource {
     }
     return connection;
   }
-
-  private static IDatabaseConnection createConnection(String name) {
-    IDatabaseConnection conn = new DatabaseConnection();
-    conn.setName(name);
-    return conn;
-  }
 }

@@ -17,7 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;

@@ -40,7 +40,6 @@ import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleM
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.core.mt.Tenant;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
@@ -128,8 +127,6 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 	public void testImportSchema() throws Exception {
 		try {
 			login("joe", "duff", false);
-			String localizeBundleEntries = "index_ja.properties=index_ja.properties;index_de.properties=index_de.properties";
-			MetadataDatasourceService service = new MetadataDatasourceService();
 //			service.importMetadataDatasource(localizeBundleEntries, "steel-wheels", "metadata.xmi");
 			logout();
 		} catch (Exception e) {
@@ -260,22 +257,6 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 	      methodTrackerHistory.add(new MethodTrackingData("newUser")
 	          .addParameter(USER_PARAMETER, securityHelper.getCurrentUser()));
 	      if (throwException) throw new RuntimeException(UNIT_TEST_EXCEPTION_MESSAGE);
-	    }
-
-	    public void resetCallHistory() {
-	      this.methodTrackerHistory.clear();
-	    }
-
-	    public boolean isThrowException() {
-	      return throwException;
-	    }
-
-	    public void setThrowException(final boolean throwException) {
-	      this.throwException = throwException;
-	    }
-
-	    public ArrayList<MethodTrackingData> getMethodTrackerHistory() {
-	      return (ArrayList<MethodTrackingData>) methodTrackerHistory.clone();
 	    }
 
       @Override

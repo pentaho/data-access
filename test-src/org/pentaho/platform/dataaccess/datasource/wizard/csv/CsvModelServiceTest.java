@@ -23,13 +23,10 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.pentaho.gwt.widgets.client.utils.string.StringTokenizer;
 import org.pentaho.metadata.model.concept.types.DataType;
-import org.pentaho.platform.api.engine.IApplicationContext;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorTest;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
 import org.pentaho.test.platform.engine.core.BaseTest;
 
 
@@ -40,19 +37,8 @@ public class CsvModelServiceTest extends BaseTest {
 
   private static final String PENTAHO_XML_PATH = "/system/pentaho.xml"; //$NON-NLS-1$
 
-  private static final String SYSTEM_FOLDER = "/system"; //$NON-NLS-1$
-
-  private static final String SOLUTION = "testsolution"; //$NON-NLS-1$
-
   private CsvUtils service = null;
 
-  private void init() {
-    if (!PentahoSystem.getInitializedOK()) {
-      IApplicationContext context = new StandaloneApplicationContext(SOLUTION_PATH, "."); //$NON-NLS-1$
-      PentahoSystem.init(context);
-    }
-  }
-  
   public String getSolutionPath() {
     File file = new File(SOLUTION_PATH + PENTAHO_XML_PATH);
     if (file.exists()) {

@@ -17,8 +17,12 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import org.pentaho.platform.dataaccess.datasource.Delimiter;
 import org.pentaho.platform.dataaccess.datasource.Enclosure;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
@@ -35,14 +39,10 @@ import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulRow;
-import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * User: nbaker
@@ -54,7 +54,6 @@ public class CsvPhysicalStep extends AbstractWizardStep {
   private XulMenuList<String> encodingTypeMenuList = null;
   private static final List<String> ENCODINGS = Arrays.asList("", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR", "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251", "windows-1256", "KOI8-R", "ISO-8859-9");
   private XulTextbox uploadedFileTextBox;
-  private XulTree csvDataTable;
   private XulLabel csvTextPreview;
 
   private DatasourceModel datasourceModel;
@@ -99,7 +98,6 @@ public class CsvPhysicalStep extends AbstractWizardStep {
   @Override
   public void setBindings() {
     
-    csvDataTable = (XulTree) document.getElementById("csvDataTable");//$NON-NLS-1$
     uploadedFileTextBox = (XulTextbox) document.getElementById("uploadedFile"); //$NON-NLS-1$
     csvTextPreview = (XulLabel) document.getElementById("csvTextPreview"); //$NON-NLS-1$
 

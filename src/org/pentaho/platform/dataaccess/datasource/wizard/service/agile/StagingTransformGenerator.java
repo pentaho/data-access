@@ -48,8 +48,8 @@ import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 
 public abstract class StagingTransformGenerator extends PentahoBase {
@@ -68,8 +68,6 @@ public abstract class StagingTransformGenerator extends PentahoBase {
 
   private String tableName = null;
   
-  private String sessionKey = null;
-
   private FileTransformStats transformStats;
 
   protected abstract StepMeta[] getSteps( TransMeta transMeta );
@@ -295,7 +293,6 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     // super.addErrorRowData(row, startIndex, nrErrors, errorDescriptions, fieldNames, errorCodes);
     // }
     // };
-    StepMeta outputDummyStepMeta = addDummyStep(transMeta, "TableOutputErrorDummy");
     // tableOutputErrorMeta.setTargetStep(outputDummyStepMeta);
     // tableOutputErrorMeta.setEnabled(true);
     // tableOutputStepMeta.setStepErrorMeta(tableOutputErrorMeta);
@@ -458,7 +455,6 @@ public abstract class StagingTransformGenerator extends PentahoBase {
       int from = 0;
       int to = 0;
       int length = all.length();
-      int nrstats = 0;
 
       while (to < length) {
         char c = all.charAt(to);
@@ -485,7 +481,6 @@ public abstract class StagingTransformGenerator extends PentahoBase {
 
           String stat = all.substring(from, to);
           String sql = Const.trim(stat);
-          nrstats++;
           try {
             if (!sql.equals("")) { //$NON-NLS-1$
               db.execStatement(sql);
@@ -623,8 +618,6 @@ public abstract class StagingTransformGenerator extends PentahoBase {
         removedFromResult, conversionMask, decimalSymbol, groupingSymbol, currencySymbol);
     
     // update the model
-    ModelInfo info = getModelInfo();
-    ColumnInfo columns[] = info.getColumns();
     ColumnInfo column = new ColumnInfo();
     column.setAggregateType(AggregationType.NONE.toString());
     column.setDataType(DataType.NUMERIC);

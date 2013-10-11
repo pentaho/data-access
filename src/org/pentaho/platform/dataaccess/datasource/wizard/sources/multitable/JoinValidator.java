@@ -28,12 +28,10 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 public class JoinValidator {
 
 	private MultitableGuiModel joinGuiModel;
-	private IWizardModel wizardModel;
 	private JoinError error;
 
 	public JoinValidator(MultitableGuiModel joinGuiModel, IWizardModel wizardModel) {
 		this.joinGuiModel = joinGuiModel;
-		this.wizardModel = wizardModel;
 	}
 
 	public boolean isValid(JoinRelationshipModel join) {

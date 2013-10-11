@@ -26,8 +26,6 @@ import org.pentaho.gwt.widgets.client.ui.ICallback;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-import com.google.gwt.http.client.RequestCallback;
-
 public class UIDatasourceServiceManager {
 
   Map<String, IUIDatasourceAdminService> serviceMap = new HashMap<String, IUIDatasourceAdminService>();

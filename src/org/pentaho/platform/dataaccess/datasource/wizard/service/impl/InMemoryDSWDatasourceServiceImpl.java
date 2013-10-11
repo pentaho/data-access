@@ -21,8 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +54,6 @@ import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidationException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceInMemoryServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
@@ -88,14 +85,11 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
 
 
   private IMetadataDomainRepository metadataDomainRepository;
-  private ConnectionServiceImpl connectionService;
-
 
   public InMemoryDSWDatasourceServiceImpl() {
     this(new ConnectionServiceImpl());
   }
   public InMemoryDSWDatasourceServiceImpl(ConnectionServiceImpl connectionService) {
-    this.connectionService = connectionService;
     // this needs to share the same one as MQL editor...
     metadataDomainRepository = METADATA_DOMAIN_REPO;
   }
@@ -271,24 +265,6 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
       logger.error(Messages.getErrorString("InMemoryDatasourceServiceImpl.ERROR_0019_DOMAIN_IS_NULL"), dne);
       throw new DatasourceServiceException(Messages
           .getErrorString("InMemoryDatasourceServiceImpl.ERROR_0019_DOMAIN_IS_NULL"), dne); //$NON-NLS-1$      
-    }
-  }
-
-  private String getUploadFilePath() throws DatasourceServiceException {
-    try {
-      URL url = ClassLoader.getSystemResource(DEFAULT_UPLOAD_FILEPATH_FILE_NAME);
-      URI uri = url.toURI();
-      File file = new File(uri);
-      FileInputStream fis = new FileInputStream(file);
-      try {
-      Properties properties = new Properties();
-      properties.load(fis);
-      return (String) properties.get(UPLOAD_FILE_PATH);
-      } finally {
-        fis.close();
-      }
-    } catch (Exception e) {
-      throw new DatasourceServiceException(e);
     }
   }
 

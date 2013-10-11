@@ -97,10 +97,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
   private XulLabel successLabel = null;
 
-  private XulTreeCol columnNameTreeCol = null;
-
-  private XulTreeCol columnTypeTreeCol = null;
-
   //private XulTreeCol columnFormatTreeCol = null;\
   XulTree sampleDataTree = null;
 
@@ -139,8 +135,6 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
     removeConnectionButton = (XulButton) document.getElementById("removeConnection"); //$NON-NLS-1$
     editQueryButton = (XulButton) document.getElementById("editQuery"); //$NON-NLS-1$
     previewButton = (XulButton) document.getElementById("preview"); //$NON-NLS-1$
-    columnNameTreeCol = (XulTreeCol) document.getElementById("relationalColumnNameTreeCol"); //$NON-NLS-1$
-    columnTypeTreeCol = (XulTreeCol) document.getElementById("relationalColumnTypeTreeCol"); //$NON-NLS-1$
 
     bf.setBindingType(Binding.Type.ONE_WAY);
     bf.createBinding(datasourceModel.getGuiStateModel(), "relationalPreviewValidated", previewButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$

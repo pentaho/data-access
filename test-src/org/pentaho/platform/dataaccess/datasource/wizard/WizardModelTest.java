@@ -17,11 +17,12 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.WizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasource;

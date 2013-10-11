@@ -45,8 +45,6 @@ public class CsvTransformGenerator extends StagingTransformGenerator {
 
   private static final String SELECT_VALUES = "select"; //$NON-NLS-1$
   
-  private static final String CALC_DATES = "calc dates"; //$NON-NLS-1$
-
   public static final String DEFAULT_RELATIVE_UPLOAD_FILE_PATH = File.separatorChar
       + "system" + File.separatorChar + "metadata" + File.separatorChar + "csvfiles" + File.separatorChar; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
   public static final String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
