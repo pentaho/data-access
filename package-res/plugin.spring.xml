@@ -37,7 +37,6 @@
        <value>com.google.gwt.json.client.JSONException</value>
        <value>com.google.gwt.jsonp.client.TimeoutException</value>
        <value>com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException</value>
-       <value>com.google.gwt.user.client.rpc.InvocationException</value>
        <value>com.google.gwt.user.client.rpc.RpcTokenException</value>
        <value>com.google.gwt.user.client.rpc.SerializableException</value>
        <value>com.google.gwt.user.client.rpc.SerializationException</value>
@@ -61,7 +60,6 @@
        <value>com.google.gwt.widgetideas.table.client.SortableColumnsListenerCollection</value>
        <value>com.google.gwt.widgetideas.table.client.TableModelListenerCollection</value>
        <value>com.google.gwt.widgetideas.table.client.TableSelectionListenerCollection</value>
-       <value>com.google.gwt.xml.client.DOMException</value>
        <value>com.google.gwt.xml.client.impl.DOMParseException</value>
        <value>com.google.web.bindery.event.shared.UmbrellaException</value>
        <value>java.io.IOException</value>
@@ -254,7 +252,6 @@
        <value>org.pentaho.ui.xul.XulException</value>
        <value>org.pentaho.ui.xul.util.AbstractModelList</value>
        <value>org.pentaho.ui.xul.util.AbstractModelNode</value>
-       <value>org.pentaho.ui.xul.gwt.service.XulLoaderService</value>
      </util:list>
    </property>
 	<pen:publish as-type="CLASSES">
