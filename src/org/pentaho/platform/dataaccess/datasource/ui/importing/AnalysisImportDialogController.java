@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright 2008 - 2009 Pentaho Corporation.  All rights reserved.
+* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
  *
  *
  * Created December 08, 2011
@@ -664,18 +664,30 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   protected boolean handleParam(StringBuilder name, StringBuilder value) {
     if (name.length() == 0 && value.length() == 0) return false;
     boolean hasParameters = false;
+    boolean connectionFound = false;
     String paramName = name.toString();
     String paramValue = value.toString();
-    if(paramName.equalsIgnoreCase("Datasource")) {
-      for(IDatabaseConnection connection : importDialogModel.getConnectionList()) {
-        if(connection.getName().equals(paramValue)) {
-          importDialogModel.setConnection(connection);         
+    if (paramName.equalsIgnoreCase("Datasource")) {
+      for (IDatabaseConnection connection : importDialogModel.getConnectionList()) {
+        if (connection.getName().equals(paramValue)) {
+          importDialogModel.setConnection(connection); 
+          connectionFound = true;
         }
       }
-    } 
-    if(!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
+      //always add the Datasource so if the toggle is selected it displays - 
+      // it may be JNDI and not in DSW
       importDialogModel.addParameter(paramName, paramValue);
-      hasParameters = true;
+      hasParameters = !connectionFound;
+    } else {
+      if (!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
+        importDialogModel.addParameter(paramName, paramValue);
+        //this is the default value so do not treat it as a param to flip to manual mode
+        if ((paramName.equalsIgnoreCase("EnableXmla") && paramValue.equalsIgnoreCase("true"))) {
+          hasParameters = false;
+        } else {
+          hasParameters = true;
+        }
+      }
     }
     name.setLength(0);
     value.setLength(0);
