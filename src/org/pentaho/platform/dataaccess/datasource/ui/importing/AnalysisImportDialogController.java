@@ -147,9 +147,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   private FlowPanel mainFormPanel;
 
   private FileUpload analysisFileUpload;
-  
+
   private XulButton uploadAnalysisButton;
-  
+
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
 
   public void init() {
@@ -355,7 +355,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private void reloadConnections() {
     String cacheBuster = "?ts=" + new java.util.Date().getTime();
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list" + cacheBuster));
+    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"
+        + cacheBuster));
 
     listConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
@@ -447,18 +448,18 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   public void buildAndSetParameters() {
-	  buildAndSetParameters(false);  
+    buildAndSetParameters(false);
   }
 
   public void buildAndSetParameters(boolean isEditMode) {
-	  
-	if(isEditMode) {  
-	    String file = importDialogModel.getUploadedFile();
-	    if(file != null) {
-	    	mainFormPanel.add(new Hidden("catalogName", file));
-	    }
-	}
-    
+
+    if (isEditMode) {
+      String file = importDialogModel.getUploadedFile();
+      if (file != null) {
+        mainFormPanel.add(new Hidden("catalogName", file));
+      }
+    }
+
     // If user selects available data source, then pass the datasource as part of the parameters.
     // If user selects manual data source, pass in whatever parameters they specify even if it is empty.
     String parameters = importDialogModel.getParameters();
@@ -466,14 +467,12 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       parameters = "Datasource=" + connectionList.getValue();
       parameters += ";overwrite=" + String.valueOf(isEditMode ? isEditMode : overwrite);
     }
-
     // Parameters would contain either the data source from connectionList drop-down
     // or the parameters manually entered (even if list is empty)
     Hidden queryParameters = new Hidden("parameters", parameters);
     mainFormPanel.add(queryParameters);
   }
-  
-  
+
   // TODO - this method should be removed after it is removed by MetadataImportDialogController
   public void concreteUploadCallback(String fileName, String uploadedFile) {
     acceptButton.setDisabled(!isValid());
@@ -656,52 +655,63 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   public void setOverwrite(boolean overwrite) {
     this.overwrite = overwrite;
   }
-  
+
   protected boolean handleParam(StringBuilder name, StringBuilder value) {
-    if (name.length() == 0 && value.length() == 0) return false;
+    if (name.length() == 0 && value.length() == 0)
+      return false;
     boolean hasParameters = false;
+    boolean connectionFound = false;
     String paramName = name.toString();
     String paramValue = value.toString();
-    if(paramName.equalsIgnoreCase("Datasource")) {
-      for(IDatabaseConnection connection : importDialogModel.getConnectionList()) {
-        if(connection.getName().equals(paramValue)) {
-          importDialogModel.setConnection(connection);          
+    if (paramName.equalsIgnoreCase("Datasource")) {
+      for (IDatabaseConnection connection : importDialogModel.getConnectionList()) {
+        if (connection.getName().equals(paramValue)) {
+          importDialogModel.setConnection(connection); 
+          connectionFound = true;
         }
       }
-    }    
-    if(!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
+      //always add the Datasource so if the toggle is selected it displays - 
+      // it may be JNDI and not in DSW
       importDialogModel.addParameter(paramName, paramValue);
-      hasParameters = true;
+      hasParameters = !connectionFound;
+    } else {
+      if (!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
+        importDialogModel.addParameter(paramName, paramValue);
+        //this is the default value so do not treat it as a param to flip to manual mode
+        if ((paramName.equalsIgnoreCase("EnableXmla") && paramValue.equalsIgnoreCase("true"))) {
+          hasParameters = false;
+        } else {
+          hasParameters = true;
+        }
+      }
     }
     name.setLength(0);
     value.setLength(0);
     return hasParameters;
   }
-  
 
   public void editDatasource(final IDatasourceInfo datasourceInfo) {
 
     boolean isEditMode = datasourceInfo != null;
     uploadAnalysisButton.setDisabled(isEditMode);
-    acceptButton.setLabel(isEditMode ? resBundle.getString("importDialog.SAVE") : resBundle.getString("importDialog.IMPORT"));
-  
-    if(!isEditMode) return;
-    
+    acceptButton.setLabel(isEditMode ? resBundle.getString("importDialog.SAVE") : resBundle
+        .getString("importDialog.IMPORT"));
+
+    if (!isEditMode)
+      return;
+
     String url = GWT.getModuleBaseURL();
     int indexOfContent = url.indexOf("content");
     if (indexOfContent > -1) {
       url = url.substring(0, indexOfContent);
-      url = url + "plugin/data-access/api/datasource/" + 
-            datasourceInfo.getId() +
-            "/getAnalysisDatasourceInfo"
-      ;
+      url = url + "plugin/data-access/api/datasource/" + datasourceInfo.getId() + "/getAnalysisDatasourceInfo";
     }
     RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
     try {
       requestBuilder.sendRequest(null, new RequestCallback() {
 
         public void onError(Request request, Throwable e) {
-         logger.log(Level.ALL, e.getMessage());
+          logger.log(Level.ALL, e.getMessage());
         }
 
         public void onResponseReceived(Request request, final Response response) {
@@ -715,10 +725,11 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
           int i, len = responseValue.length();
           for (i = 0; i < len; i++) {
             ch = responseValue.charAt(i);
-            switch (state){
+            switch (state) {
               case 0: //new name/value pair
                 paramHandled = handleParam(name, value);
-                if (!hasParameters) hasParameters = paramHandled;
+                if (!hasParameters)
+                  hasParameters = paramHandled;
                 switch (ch) {
                   case ';':
                     break;
@@ -737,7 +748,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               case 2: //about to parse the value
-                switch (ch){
+                switch (ch) {
                   case '"':
                     state = 3;
                     break;
@@ -750,7 +761,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               case 3: //parse value till closing quote.
-                switch (ch){
+                switch (ch) {
                   case '"':
                     state = 0;
                     break;
@@ -768,22 +779,22 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               default:
-                
+
             }
           }
           paramHandled = handleParam(name, value);
-          if (!hasParameters) hasParameters = paramHandled;
-          
+          if (!hasParameters)
+            hasParameters = paramHandled;
+
           schemaNameLabel.setValue(datasourceInfo.getId() + ".mondrian.xml");
           importDialogModel.setUploadedFile(datasourceInfo.getId());
 
           int preference;
           XulRadio radio;
-          if(hasParameters) {
+          if (hasParameters) {
             preference = PARAMETER_MODE;
             radio = manualRadio;
-          } 
-          else {
+          } else {
             preference = DATASOURCE_MODE;
             radio = availableRadio;
           }
