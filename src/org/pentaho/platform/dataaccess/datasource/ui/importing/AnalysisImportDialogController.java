@@ -75,6 +75,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
@@ -345,12 +346,28 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   public void removeHiddenPanels() {
     // Remove all previous hidden form parameters otherwise parameters
-    // from a previous import would get included in current form submit
-    for (int i = 0; mainFormPanel != null && i < mainFormPanel.getWidgetCount(); i++) {
-      if (mainFormPanel.getWidget(i).getClass().equals(Hidden.class)) {
-        mainFormPanel.remove(mainFormPanel.getWidget(i));
+    // from a previous import would get included in current form submit         
+    List<Widget> hiddenPanels = findHiddenPanels();
+    for (Widget hiddenPanel : hiddenPanels) {
+      mainFormPanel.remove(hiddenPanel);
+    }
+  }
+
+  /**
+   * create a List of hidden panels
+   * @return Widget list or empty
+   */
+  private List<Widget> findHiddenPanels() {
+    ArrayList<Widget> hiddenPanels = new ArrayList<Widget>();
+    if (mainFormPanel != null) {
+      int widgetCount = mainFormPanel.getWidgetCount();
+      for (int i = 0; i < widgetCount; i++) {
+        if (mainFormPanel.getWidget(i).getClass().equals(Hidden.class)) {
+          hiddenPanels.add(mainFormPanel.getWidget(i));
+        }
       }
     }
+    return hiddenPanels;
   }
 
   private void reloadConnections() {
@@ -389,6 +406,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     if (event.getResults().contains("SUCCESS") || event.getResults().contains("3")) {
       showMessagebox(messages.getString("Mondrian.SUCCESS"),
           "Mondrian Analysis File " + importDialogModel.getUploadedFile() + " has been uploaded");
+      overwrite = false;
     } else {
       String message = event.getResults();
       //message = message.substring(4, message.length() - 6);
@@ -453,11 +471,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   public void buildAndSetParameters(boolean isEditMode) {
 
-    if (isEditMode) {
-      String file = importDialogModel.getUploadedFile();
-      if (file != null) {
-        mainFormPanel.add(new Hidden("catalogName", file));
-      }
+    String file = importDialogModel.getUploadedFile();
+    if (file != null) {
+      mainFormPanel.add(new Hidden("catalogName", file));
     }
 
     // If user selects available data source, then pass the datasource as part of the parameters.
@@ -465,10 +481,11 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     String parameters = importDialogModel.getParameters();
     if (availableRadio.isSelected()) {
       parameters = "Datasource=" + connectionList.getValue();
-      parameters += ";overwrite=" + String.valueOf(isEditMode ? isEditMode : overwrite);
     }
     // Parameters would contain either the data source from connectionList drop-down
     // or the parameters manually entered (even if list is empty)
+    String sep = (StringUtils.isEmpty(parameters)) ? "" : ";";
+    parameters += sep + "overwrite=" + String.valueOf(overwrite);
     Hidden queryParameters = new Hidden("parameters", parameters);
     mainFormPanel.add(queryParameters);
   }
@@ -666,7 +683,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     if (paramName.equalsIgnoreCase("Datasource")) {
       for (IDatabaseConnection connection : importDialogModel.getConnectionList()) {
         if (connection.getName().equals(paramValue)) {
-          importDialogModel.setConnection(connection); 
+          importDialogModel.setConnection(connection);
           connectionFound = true;
         }
       }
