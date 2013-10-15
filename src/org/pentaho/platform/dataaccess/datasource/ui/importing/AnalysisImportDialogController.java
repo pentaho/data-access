@@ -1,23 +1,19 @@
-/*
- * This program is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- * Foundation.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- * or from the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
+/*!
+* This program is free software; you can redistribute it and/or modify it under the
+* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+* Foundation.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this
+* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+* or from the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
 * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
- *
- *
- * Created December 08, 2011
- * @author Ezequiel Cuellar
- */
+*/
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
@@ -79,6 +75,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
@@ -151,9 +148,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   private FlowPanel mainFormPanel;
 
   private FileUpload analysisFileUpload;
-  
+
   private XulButton uploadAnalysisButton;
-  
+
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
 
   public void init() {
@@ -349,17 +346,34 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   public void removeHiddenPanels() {
     // Remove all previous hidden form parameters otherwise parameters
-    // from a previous import would get included in current form submit
-    for (int i = 0; mainFormPanel != null && i < mainFormPanel.getWidgetCount(); i++) {
-      if (mainFormPanel.getWidget(i).getClass().equals(Hidden.class)) {
-        mainFormPanel.remove(mainFormPanel.getWidget(i));
+    // from a previous import would get included in current form submit         
+    List<Widget> hiddenPanels = findHiddenPanels();
+    for (Widget hiddenPanel : hiddenPanels) {
+      mainFormPanel.remove(hiddenPanel);
+    }
+  }
+
+  /**
+   * create a List of hidden panels
+   * @return Widget list or empty
+   */
+  private List<Widget> findHiddenPanels() {
+    ArrayList<Widget> hiddenPanels = new ArrayList<Widget>();
+    if (mainFormPanel != null) {
+      int widgetCount = mainFormPanel.getWidgetCount();
+      for (int i = 0; i < widgetCount; i++) {
+        if (mainFormPanel.getWidget(i).getClass().equals(Hidden.class)) {
+          hiddenPanels.add(mainFormPanel.getWidget(i));
+        }
       }
     }
+    return hiddenPanels;
   }
 
   private void reloadConnections() {
     String cacheBuster = "?ts=" + new java.util.Date().getTime();
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list" + cacheBuster));
+    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"
+        + cacheBuster));
 
     listConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
@@ -392,6 +406,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     if (event.getResults().contains("SUCCESS") || event.getResults().contains("3")) {
       showMessagebox(messages.getString("Mondrian.SUCCESS"),
           "Mondrian Analysis File " + importDialogModel.getUploadedFile() + " has been uploaded");
+      overwrite = false;
     } else {
       String message = event.getResults();
       //message = message.substring(4, message.length() - 6);
@@ -451,33 +466,30 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   public void buildAndSetParameters() {
-	  buildAndSetParameters(false);  
+    buildAndSetParameters(false);
   }
 
   public void buildAndSetParameters(boolean isEditMode) {
-	  
-	if(isEditMode) {  
-	    String file = importDialogModel.getUploadedFile();
-	    if(file != null) {
-	    	mainFormPanel.add(new Hidden("catalogName", file));
-	    }
-	}
-    
+
+    String file = importDialogModel.getUploadedFile();
+    if (file != null) {
+      mainFormPanel.add(new Hidden("catalogName", file));
+    }
+
     // If user selects available data source, then pass the datasource as part of the parameters.
     // If user selects manual data source, pass in whatever parameters they specify even if it is empty.
     String parameters = importDialogModel.getParameters();
     if (availableRadio.isSelected()) {
       parameters = "Datasource=" + connectionList.getValue();
-      parameters += ";overwrite=" + String.valueOf(isEditMode ? isEditMode : overwrite);
     }
-
     // Parameters would contain either the data source from connectionList drop-down
     // or the parameters manually entered (even if list is empty)
+    String sep = (StringUtils.isEmpty(parameters)) ? "" : ";";
+    parameters += sep + "overwrite=" + String.valueOf(overwrite);
     Hidden queryParameters = new Hidden("parameters", parameters);
     mainFormPanel.add(queryParameters);
   }
-  
-  
+
   // TODO - this method should be removed after it is removed by MetadataImportDialogController
   public void concreteUploadCallback(String fileName, String uploadedFile) {
     acceptButton.setDisabled(!isValid());
@@ -660,9 +672,10 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   public void setOverwrite(boolean overwrite) {
     this.overwrite = overwrite;
   }
-  
+
   protected boolean handleParam(StringBuilder name, StringBuilder value) {
-    if (name.length() == 0 && value.length() == 0) return false;
+    if (name.length() == 0 && value.length() == 0)
+      return false;
     boolean hasParameters = false;
     boolean connectionFound = false;
     String paramName = name.toString();
@@ -670,7 +683,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     if (paramName.equalsIgnoreCase("Datasource")) {
       for (IDatabaseConnection connection : importDialogModel.getConnectionList()) {
         if (connection.getName().equals(paramValue)) {
-          importDialogModel.setConnection(connection); 
+          importDialogModel.setConnection(connection);
           connectionFound = true;
         }
       }
@@ -693,31 +706,29 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     value.setLength(0);
     return hasParameters;
   }
-  
 
   public void editDatasource(final IDatasourceInfo datasourceInfo) {
 
     boolean isEditMode = datasourceInfo != null;
     uploadAnalysisButton.setDisabled(isEditMode);
-    acceptButton.setLabel(isEditMode ? resBundle.getString("importDialog.SAVE") : resBundle.getString("importDialog.IMPORT"));
-  
-    if(!isEditMode) return;
-    
+    acceptButton.setLabel(isEditMode ? resBundle.getString("importDialog.SAVE") : resBundle
+        .getString("importDialog.IMPORT"));
+
+    if (!isEditMode)
+      return;
+
     String url = GWT.getModuleBaseURL();
     int indexOfContent = url.indexOf("content");
     if (indexOfContent > -1) {
       url = url.substring(0, indexOfContent);
-      url = url + "plugin/data-access/api/datasource/" + 
-            datasourceInfo.getId() +
-            "/getAnalysisDatasourceInfo"
-      ;
+      url = url + "plugin/data-access/api/datasource/" + datasourceInfo.getId() + "/getAnalysisDatasourceInfo";
     }
     RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
     try {
       requestBuilder.sendRequest(null, new RequestCallback() {
 
         public void onError(Request request, Throwable e) {
-         logger.log(Level.ALL, e.getMessage());
+          logger.log(Level.ALL, e.getMessage());
         }
 
         public void onResponseReceived(Request request, final Response response) {
@@ -731,10 +742,11 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
           int i, len = responseValue.length();
           for (i = 0; i < len; i++) {
             ch = responseValue.charAt(i);
-            switch (state){
+            switch (state) {
               case 0: //new name/value pair
                 paramHandled = handleParam(name, value);
-                if (!hasParameters) hasParameters = paramHandled;
+                if (!hasParameters)
+                  hasParameters = paramHandled;
                 switch (ch) {
                   case ';':
                     break;
@@ -753,7 +765,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               case 2: //about to parse the value
-                switch (ch){
+                switch (ch) {
                   case '"':
                     state = 3;
                     break;
@@ -766,7 +778,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               case 3: //parse value till closing quote.
-                switch (ch){
+                switch (ch) {
                   case '"':
                     state = 0;
                     break;
@@ -784,22 +796,22 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               default:
-                
+
             }
           }
           paramHandled = handleParam(name, value);
-          if (!hasParameters) hasParameters = paramHandled;
-          
+          if (!hasParameters)
+            hasParameters = paramHandled;
+
           schemaNameLabel.setValue(datasourceInfo.getId() + ".mondrian.xml");
           importDialogModel.setUploadedFile(datasourceInfo.getId());
 
           int preference;
           XulRadio radio;
-          if(hasParameters) {
+          if (hasParameters) {
             preference = PARAMETER_MODE;
             radio = manualRadio;
-          } 
-          else {
+          } else {
             preference = DATASOURCE_MODE;
             radio = availableRadio;
           }
