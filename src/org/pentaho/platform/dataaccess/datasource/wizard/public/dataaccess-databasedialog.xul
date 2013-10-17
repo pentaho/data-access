@@ -8,7 +8,7 @@
   
   <!-- Remove pooling parameters from the pooling tab -->
   <label id="pool-parameter-description-label" flex="0" height="20" width="535"/>
-  <tree id="pool-parameter-tree" removeelement="false"/>
+  <tree id="pool-parameter-tree" removeelement="false" flex="0" height="125" />
   <button id="restore-defaults-button" removeelement="false"/>
   <!-- End remove pooling parameters -->
   
