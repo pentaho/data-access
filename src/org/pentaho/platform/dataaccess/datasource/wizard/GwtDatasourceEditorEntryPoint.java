@@ -94,6 +94,8 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   private static final String OVERWRITE_8 = "8";
+  
+  private static final String OVERWRITE__CATALOG_7 = "7";
 
   private static final String SUCCESS_3 = "3";
 
@@ -789,7 +791,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 	              String message = controller.convertToNLSMessage(results, controller.getFileName());
 
 	              if (!SUCCESS_3.equals(results)) {
-	                if (OVERWRITE_8.equals(results)) {
+	                if (OVERWRITE_8.equals(results) || OVERWRITE__CATALOG_7.equals(results)) {
 	                  overwriteFileDialog(analysisDataFormPanel, message, controller);
 	                } else {
 	                  listener.onDialogError(message);
@@ -852,7 +854,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
             String message = controller.convertToNLSMessage(results, controller.getFileName());
 
             if (!SUCCESS_3.equals(results)) {
-              if (OVERWRITE_8.equals(results)) {
+              if (OVERWRITE_8.equals(results) || OVERWRITE__CATALOG_7.equals(results)) {
                 overwriteFileDialog(analysisDataFormPanel, message, controller);
               } else {
                 listener.onDialogError(message);
