@@ -137,6 +137,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   protected static final int PUBLISH_SCHEMA_EXISTS_ERROR = 8;
 
+  protected static final int PUBLISH_SCHEMA_CATALOG_EXISTS_ERROR = 7;
+
   private static SubmitCompleteHandler submitHandler = null;
 
   private DatasourceMessages messages = null;
@@ -412,8 +414,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       //message = message.substring(4, message.length() - 6);
       if (message != null && !"".equals(message) && message.length() == 1) {
         int code = new Integer(message).intValue();
-        if (code == PUBLISH_SCHEMA_EXISTS_ERROR && !overwrite) {//Existing FIle Dialog
-          overwriteFileDialog();
+        if (!overwrite) {
+          overwriteFileDialog(code);
         } else {
           showMessagebox(messages.getString("Mondrian.ERROR"),
               convertToNLSMessage(event.getResults(), importDialogModel.getUploadedFile()));
@@ -453,7 +455,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
         msg = messages.getString("Mondrian.ERROR_OO6_Existing_Datasource");
         break;
       case 7:
-        msg = messages.getString("Mondrian.ERROR_OO7_EXISTING_XMLA");
+        msg = messages.getString("Mondrian.OVERWRITE_EXISTING_CATALOG");
         break;
       case 8:
         msg = messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA");
@@ -550,16 +552,23 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   @Bindable
-  public void overwriteFileDialog() {
-    //Experiment
+  public void overwriteFileDialog(int code) {
+    if (code != PUBLISH_SCHEMA_CATALOG_EXISTS_ERROR && code != PUBLISH_SCHEMA_EXISTS_ERROR) {
+      return;
+    }
+    String msg = messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA");
+    if (PUBLISH_SCHEMA_CATALOG_EXISTS_ERROR == code) {
+      msg = messages.getString("Mondrian.OVERWRITE_EXISTING_CATALOG");
+    }
     XulConfirmBox confirm = null;
     try {
       confirm = (XulConfirmBox) document.createElement("confirmbox");
     } catch (XulException e) {
       Window.alert(e.getMessage());
     }
+
     confirm.setTitle("Confirmation");
-    confirm.setMessage(messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA"));
+    confirm.setMessage(msg);
     confirm.setAcceptLabel("Ok");
     confirm.setCancelLabel("Cancel");
     confirm.addDialogCallback(new XulDialogCallback<String>() {
