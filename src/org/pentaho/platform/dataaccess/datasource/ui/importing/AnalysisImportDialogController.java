@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright 2008 - 2009 Pentaho Corporation.  All rights reserved.
+* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
  *
  *
  * Created December 08, 2011
@@ -79,6 +79,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 
@@ -140,6 +141,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   protected static final int PUBLISH_SCHEMA_EXISTS_ERROR = 8;
 
+  protected static final int PUBLISH_SCHEMA_CATALOG_EXISTS_ERROR = 7;
   private static SubmitCompleteHandler submitHandler = null;
 
   private DatasourceMessages messages = null;
@@ -349,12 +351,28 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   public void removeHiddenPanels() {
     // Remove all previous hidden form parameters otherwise parameters
-    // from a previous import would get included in current form submit
-    for (int i = 0; mainFormPanel != null && i < mainFormPanel.getWidgetCount(); i++) {
-      if (mainFormPanel.getWidget(i).getClass().equals(Hidden.class)) {
-        mainFormPanel.remove(mainFormPanel.getWidget(i));
+    // from a previous import would get included in current form submit         
+    List<Widget> hiddenPanels = findHiddenPanels();
+    for (Widget hiddenPanel : hiddenPanels) {
+      mainFormPanel.remove(hiddenPanel);
+    }
+  }
+
+  /**
+   * create a List of hidden panels
+   * @return Widget list or empty
+   */
+  private List<Widget> findHiddenPanels() {
+    ArrayList<Widget> hiddenPanels = new ArrayList<Widget>();
+    if (mainFormPanel != null) {
+      int widgetCount = mainFormPanel.getWidgetCount();
+      for (int i = 0; i < widgetCount; i++) {
+        if (mainFormPanel.getWidget(i).getClass().equals(Hidden.class)) {
+          hiddenPanels.add(mainFormPanel.getWidget(i));
+        }
       }
     }
+    return hiddenPanels;
   }
 
   private void reloadConnections() {
@@ -392,13 +410,14 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     if (event.getResults().contains("SUCCESS") || event.getResults().contains("3")) {
       showMessagebox(messages.getString("Mondrian.SUCCESS"),
           "Mondrian Analysis File " + importDialogModel.getUploadedFile() + " has been uploaded");
+      overwrite = false;
     } else {
       String message = event.getResults();
       //message = message.substring(4, message.length() - 6);
       if (message != null && !"".equals(message) && message.length() == 1) {
         int code = new Integer(message).intValue();
-        if (code == PUBLISH_SCHEMA_EXISTS_ERROR && !overwrite) {//Existing FIle Dialog
-          overwriteFileDialog();
+        if (!overwrite) {
+          overwriteFileDialog(code);
         } else {
           showMessagebox(messages.getString("Mondrian.ERROR"),
               convertToNLSMessage(event.getResults(), importDialogModel.getUploadedFile()));
@@ -438,7 +457,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
         msg = messages.getString("Mondrian.ERROR_OO6_Existing_Datasource");
         break;
       case 7:
-        msg = messages.getString("Mondrian.ERROR_OO7_EXISTING_XMLA");
+        msg = messages.getString("Mondrian.OVERWRITE_EXISTING_CATALOG");
         break;
       case 8:
         msg = messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA");
@@ -455,24 +474,24 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   public void buildAndSetParameters(boolean isEditMode) {
-	  
-	if(isEditMode) {  
-	    String file = importDialogModel.getUploadedFile();
-	    if(file != null) {
-	    	mainFormPanel.add(new Hidden("catalogName", file));
-	    }
-	}
-    
+
+    if (isEditMode) {
+      String file = importDialogModel.getUploadedFile();
+      if (file != null) {
+        mainFormPanel.add(new Hidden("catalogName", file));
+      }
+    }
+
     // If user selects available data source, then pass the datasource as part of the parameters.
     // If user selects manual data source, pass in whatever parameters they specify even if it is empty.
     String parameters = importDialogModel.getParameters();
     if (availableRadio.isSelected()) {
       parameters = "Datasource=" + connectionList.getValue();
-      parameters += ";overwrite=" + String.valueOf(isEditMode ? isEditMode : overwrite);
     }
-
     // Parameters would contain either the data source from connectionList drop-down
     // or the parameters manually entered (even if list is empty)
+    String sep = (StringUtils.isEmpty(parameters)) ? "" : ";";    
+    parameters += ";overwrite=" + String.valueOf(isEditMode ? isEditMode : overwrite);
     Hidden queryParameters = new Hidden("parameters", parameters);
     mainFormPanel.add(queryParameters);
   }
@@ -538,16 +557,23 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   @Bindable
-  public void overwriteFileDialog() {
-    //Experiment
+  public void overwriteFileDialog(int code) {
+    if (code != PUBLISH_SCHEMA_CATALOG_EXISTS_ERROR && code != PUBLISH_SCHEMA_EXISTS_ERROR) {
+      return;
+    }
+    String msg = messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA");
+    if (PUBLISH_SCHEMA_CATALOG_EXISTS_ERROR == code) {
+      msg = messages.getString("Mondrian.OVERWRITE_EXISTING_CATALOG");
+    }
     XulConfirmBox confirm = null;
     try {
       confirm = (XulConfirmBox) document.createElement("confirmbox");
     } catch (XulException e) {
       Window.alert(e.getMessage());
     }
+
     confirm.setTitle("Confirmation");
-    confirm.setMessage(messages.getString("Mondrian.OVERWRITE_EXISTING_SCHEMA"));
+    confirm.setMessage(msg);
     confirm.setAcceptLabel("Ok");
     confirm.setCancelLabel("Cancel");
     confirm.addDialogCallback(new XulDialogCallback<String>() {
@@ -664,18 +690,30 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   protected boolean handleParam(StringBuilder name, StringBuilder value) {
     if (name.length() == 0 && value.length() == 0) return false;
     boolean hasParameters = false;
+    boolean connectionFound = false;
     String paramName = name.toString();
     String paramValue = value.toString();
     if(paramName.equalsIgnoreCase("Datasource")) {
       for(IDatabaseConnection connection : importDialogModel.getConnectionList()) {
         if(connection.getName().equals(paramValue)) {
           importDialogModel.setConnection(connection);         
+          connectionFound = true;
         }
       }
-    } 
-    if(!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
+      //always add the Datasource so if the toggle is selected it displays - 
+      // it may be JNDI and not in DSW
       importDialogModel.addParameter(paramName, paramValue);
-      hasParameters = true;
+      hasParameters = !connectionFound;
+    } else {
+      if (!paramName.equalsIgnoreCase("overwrite") && !paramName.equalsIgnoreCase("Provider")) {
+        importDialogModel.addParameter(paramName, paramValue);
+        //this is the default value so do not treat it as a param to flip to manual mode
+        if ((paramName.equalsIgnoreCase("EnableXmla") && paramValue.equalsIgnoreCase("true"))) {
+          hasParameters = false;
+        } else {
+          hasParameters = true;
+        }
+      }
     }
     name.setLength(0);
     value.setLength(0);
