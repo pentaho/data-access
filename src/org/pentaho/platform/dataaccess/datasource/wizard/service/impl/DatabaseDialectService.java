@@ -21,6 +21,7 @@ import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.DB2DatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.dialect.H2DatabaseDialect;
+import org.pentaho.database.dialect.Hive2DatabaseDialect;
 import org.pentaho.database.dialect.HiveDatabaseDialect;
 import org.pentaho.database.dialect.HypersonicDatabaseDialect;
 import org.pentaho.database.dialect.ImpalaDatabaseDialect;
@@ -50,7 +51,6 @@ public class DatabaseDialectService {
   Map<IDatabaseType, IDatabaseDialect> typeToDialectMap = new HashMap<IDatabaseType, IDatabaseDialect>();
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
 
-  
   public DatabaseDialectService() {
     this(true);
   }
@@ -60,6 +60,7 @@ public class DatabaseDialectService {
     registerDatabaseDialect(new OracleDatabaseDialect(), validateClasses);
     registerDatabaseDialect(new MySQLDatabaseDialect(), validateClasses);
     registerDatabaseDialect(new HiveDatabaseDialect(), validateClasses);
+    registerDatabaseDialect( new Hive2DatabaseDialect(), validateClasses );
     registerDatabaseDialect(new HypersonicDatabaseDialect(), validateClasses);
     registerDatabaseDialect(new ImpalaDatabaseDialect(), validateClasses);
     registerDatabaseDialect(new MSSQLServerDatabaseDialect(), validateClasses);
@@ -90,7 +91,8 @@ public class DatabaseDialectService {
   @POST
   @Path("/registerDatabaseDialectWithValidation/{validateClassExists}")
   @Consumes({APPLICATION_JSON})
-  public Response registerDatabaseDialect(IDatabaseDialect databaseDialect, @PathParam("validateClassExists") Boolean validateClassExists) {
+  public Response registerDatabaseDialect( IDatabaseDialect databaseDialect,
+      @PathParam( "validateClassExists" ) Boolean validateClassExists ) {
     try {
       if (!validateClassExists || validateJdbcDriverClassExists(databaseDialect.getNativeDriver())) {
         databaseTypes.add(databaseDialect.getDatabaseType());
@@ -106,7 +108,8 @@ public class DatabaseDialectService {
   /**
    * Attempt to load the JDBC Driver class. If it's not available, return false.
    * 
-   * @param classname validate that this classname exists in the classpath
+   * @param classname
+   *          validate that this classname exists in the classpath
    * 
    * @return true if the class exists
    */
