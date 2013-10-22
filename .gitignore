@@ -23,3 +23,5 @@ Thumbs.db
 /war
 /.project
 /.classpath
+/lib
+/codegen-lib

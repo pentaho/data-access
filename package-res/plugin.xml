@@ -1,92 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<plugin title="Pentaho Data Access" loader="OVERRIDING" name="data-access">
+<plugin title="Pentaho Data Access V2" loader="OVERRIDING" name="data-access-v2">
+
+   <lifecycle-listener class="org.pentaho.reporting.platform.plugin.LifecycleListener"/>
 
    <static-paths>
-     <!-- this translates to /pentaho/content/data-access-plugin/resources/* -->
-     <static-path url="/data-access/resources" localFolder="resources"/>
+     <static-path url="/data-access-v2/resources" localFolder="resources"/>
    </static-paths>
    
    <overlays>
-	    <overlay id="dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages.properties" loadatstart="false">
+	    <overlay id="startup.dataaccessv2"  resourcebundle="api/repos/data-access-v2/resources/messages/messages.properties">
 			<menubar id="filemenu">
-			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />
+			    <menuitem id="manageDatasourceV2Item" insertafter="openMenuItem" label="${manageDatasourceV2Ellipsis}" js-command="alert('Manage Data Sources..')" />
 			</menubar>
 			<menubar id="newmenu">
-				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="window.top.pho.openDatasourceEditor(window.top.datasourceEditorCallback)" />				
+				<menuitem id="newDatasourceV2Item" label="${newDatasourceV2Ellipsis}" js-command="alert('Create New Data Source..')" />				
 			</menubar>
 	    </overlay>
 	</overlays>
 
-   <!-- this is used by the datasource service -->
-   <bean id="connectionServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl"/>
-
-   <bean id="datasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
-
-   <bean id="csvDatasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
-
-     
-  <webservice
-    id="DatasourceService"
-    type="xml,gwt"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
-    
-  <webservice
-    id="joinSelectionService"
-    type="xml,gwt"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultitableDatasourceService"/>
-
-  <webservice
-    id="connectionService"
-    type="gwt"
-    title="%ConnectionService.TITLE%"
-    description="%ConnectionService.DESC%"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl"/>
-
-  <webservice
-    id="soapConnectionService"
-    type="xml"
-    title="%ConnectionService.TITLE%"
-    description="%ConnectionService.DESC%"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceConcrete"/>
-
-
-  <webservice
-    id="databaseConnectionService"
-    type="gwt"
-    title="Database Connection Service"
-    description="This service is used with the database connection dialog"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.DataAccessDatabaseConnectionService"/>
-
-  <webservice
-    id="databaseDialectService"
-    type="gwt"
-    title="Database Dialect Service"
-    description="This service is used with the database connection dialog"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.DataAccessDatabaseDialectService"/>
-    
-   <webservice
-    id="CsvDatasourceService"
-    type="xml,gwt"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
-
-   <webservice
-    id="modelerService"
-    type="xml,gwt"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService"/>
-
-   <webservice
-    id="metadataServiceDA"
-    type="xml,gwt"
-    class="org.pentaho.platform.dataaccess.metadata.service.MetadataService"/>
-
   <external-resources>
-    <!--
-     **  Need these css includes here. adding them to the gwt module definition makes the load order unpredictable.
-     **  This unpredictability allows them to supercede the theme css files in some cases.
-     -->
-    <file context="global">content/data-access/resources/gwt/datasourceEditorDialog.css</file>
-    <file context="global">content/data-access/resources/gwt/datasourceAdminDialog.css</file>
   </external-resources>
 
 </plugin>

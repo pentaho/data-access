@@ -1,7 +1,7 @@
-<project name="Data Access" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="Data Access V2" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-	<!-- Import the subfloor-gwt.xml file which contains all the default tasks -->
-	<import file="build-res/subfloor-gwt.xml" />
+	<!-- Import the subfloor-pkg.xml file which contains all the default tasks -->
+	<import file="build-res/subfloor-pkg.xml" />
 	<import file="build-res/common_build_compatibility.xml" />
 
 	<!-- Setup the classpath used for testing -->
@@ -10,9 +10,6 @@
 			<include name="*.jar" />
 		</fileset>
 		<fileset dir="${devlib.dir}">
-			<include name="*" />
-		</fileset>
-		<fileset dir="${codegenlib.dir}">
 			<include name="*" />
 		</fileset>
 		<fileset dir="${testlib.dir}">
@@ -71,27 +68,14 @@
 	</target>
 	
 	<!-- override the subfloor assemble target to do special plug-in assembly -->
-	<target name="assemble" depends="gwt-compile,assemble.init">
+	<target name="assemble" depends="assemble.init">
 		<copy todir="${approot.stage.dir}/lib" overwrite="true">
 			<!-- fileset dir="${lib.dir}" excludes="pentaho-bi-platform-*.jar" / -->
 			<fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
-			<!--fileset file="${gwt.sdk.dir}/gwt-user*.jar" /-->
-			<fileset file="${codegenlib.dir}/pentaho-database-gwt-${dependency.pentaho-database.revision}.jar" />
-			<fileset file="${codegenlib.dir}/pentaho-modeler-${dependency.pentaho-modeler.revision}.jar" />
 		</copy>
 
 		<copy todir="${approot.stage.dir}" overwrite="true">
 			<fileset dir="${package.resdir}" />
-		</copy>
-	    <copy todir="${approot.stage.dir}/lib">
-	      <fileset file="${lib.dir}/flexjson*.jar" />
-	    </copy>
-		<copy todir="${approot.stage.dir}/resources/gwt" overwrite="true">
-			<fileset dir="${gwt.output.dir}/DatasourceEditor">
-				<exclude name=".gwt-tmp/" />
-				<exclude name="*-aux/" />
-				<exclude name="WEB-INF/" />
-			</fileset>
 		</copy>
 	</target>
 
