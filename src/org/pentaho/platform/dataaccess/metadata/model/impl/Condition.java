@@ -17,11 +17,14 @@
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.query.model.CombinationType;
 import org.pentaho.platform.dataaccess.metadata.model.ICondition;
 import org.pentaho.platform.dataaccess.metadata.model.Operator;
 
+@XmlRootElement
 public class Condition implements ICondition {
 
   private static final long serialVersionUID = 6382700024558898605L;
@@ -30,9 +33,6 @@ public class Condition implements ICondition {
   private String operator = Operator.EQUAL.name();
   private String value[];
   private String comboType = CombinationType.AND.name();
-//  private boolean parameterized;
-//  private String defaultValue;
-//  private String selectedAggType;
 
   public Condition(){
     

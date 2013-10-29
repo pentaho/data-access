@@ -19,6 +19,8 @@ package org.pentaho.platform.dataaccess.metadata.model.impl;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.pentaho.platform.dataaccess.metadata.model.ICategory;
 
 /**
@@ -26,6 +28,7 @@ import org.pentaho.platform.dataaccess.metadata.model.ICategory;
  * @author jamesdixon
  *
  */
+@XmlRootElement
 public class Category implements ICategory, Serializable {
 
   private static final long serialVersionUID = -454688567483551796L;

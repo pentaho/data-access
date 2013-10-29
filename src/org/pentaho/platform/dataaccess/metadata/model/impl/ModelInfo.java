@@ -19,12 +19,15 @@ package org.pentaho.platform.dataaccess.metadata.model.impl;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Concrete, lightweight, serializable object that holds the envelope information
  * of an {@see IModel} object
  * @author jamesdixon
  *
  */
+@XmlRootElement
 public class ModelInfo implements Serializable {
 
   private static final long serialVersionUID = -8341925508348437605L;

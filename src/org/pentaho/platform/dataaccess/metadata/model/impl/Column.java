@@ -20,6 +20,8 @@ package org.pentaho.platform.dataaccess.metadata.model.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.pentaho.platform.dataaccess.metadata.model.IColumn;
 
 /**
@@ -27,6 +29,7 @@ import org.pentaho.platform.dataaccess.metadata.model.IColumn;
  * @author jamesdixon
  *
  */
+@XmlRootElement
 public class Column implements IColumn {
 
   private static final long serialVersionUID = 3751750093446278893L;
