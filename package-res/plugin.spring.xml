@@ -14,8 +14,6 @@
 
   <context:annotation-config />
 
-  <!-- add this back when we actually have REST
-  <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
-   -->  
+  <bean class="org.pentaho.platform.dataaccess.metadata.service.MetadataService"/>
   
 </beans>
