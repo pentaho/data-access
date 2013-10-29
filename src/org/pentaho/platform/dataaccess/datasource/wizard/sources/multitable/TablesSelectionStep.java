@@ -102,8 +102,8 @@ public class TablesSelectionStep extends AbstractWizardStep {
       }
 
       public void success(List tables) {
-        joinGuiModel.populateJoinGuiModel(domain, datasourceDTO, tables);
-        if (joinGuiModel.isDoOlap()) {
+        if ((joinGuiModel.isDoOlap()) && (domain != null) && (datasourceDTO != null)) {
+          joinGuiModel.populateJoinGuiModel(domain, datasourceDTO, tables);
           setFactTable(joinGuiModel.getFactTable());
         }
         joinGuiModel.processAvailableTables(tables);
@@ -272,7 +272,9 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	@Override
 	public void stepActivatingForward() {
     super.stepActivatingForward();
-    fetchTables();
+    if(this.joinGuiModel.getAvailableTables() == null || this.joinGuiModel.getAvailableTables().size() == 0){ 
+      fetchTables();
+    }
     checkValidState();
 	}
 	
