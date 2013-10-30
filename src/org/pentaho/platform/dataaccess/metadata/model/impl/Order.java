@@ -17,8 +17,11 @@
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.pentaho.platform.dataaccess.metadata.model.IOrder;
 
+@XmlRootElement
 public class Order implements IOrder {
 
   private static final long serialVersionUID = 4824503466813354111L;

@@ -19,8 +19,11 @@ package org.pentaho.platform.dataaccess.metadata.model.impl;
 
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.pentaho.platform.dataaccess.metadata.model.IQuery;
 
+@XmlRootElement
 public class Query implements IQuery {
 
   private static final long serialVersionUID = 8616769258583080677L;
