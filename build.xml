@@ -247,23 +247,20 @@
     </target>
 
     <!-- ===================================================================
-        taskdef jmeter
-
-        Use the bundled jmeter ant task to execute test
-    ======================================================================== -->
-    <taskdef
-            name="jmeter"
-            classpath="${jmeter.home}/apache-jmeter-${jmeter.version}/extras/ant-jmeter-1.1.1.jar"
-            classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask" />
-
-    <!-- ===================================================================
         jmeter.run-tests
-
-
     ======================================================================== -->
     <target name="jmeter.run-tests"
             description="execute included jmeter script"
             depends="jmeter.install">
+        <!-- ===================================================================
+            taskdef jmeter
+
+            Use the bundled jmeter ant task to execute test
+        ======================================================================== -->
+        <taskdef
+                name="jmeter"
+                classpath="${jmeter.home}/apache-jmeter-${jmeter.version}/extras/ant-jmeter-1.1.1.jar"
+                classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask" />
         <jmeter
             jmeterhome="${jmeter.home}/apache-jmeter-${jmeter.version}"
             testplan="${jmeter.run.script}"
