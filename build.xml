@@ -42,12 +42,26 @@
 			value="${findbugs.build.cache.dir}/findbugs-${findbugs.version}"
 			description="Where findbugs is installed to" />
 
+    <!-- jmeter properties -->
+        <property name="jmeter.home"
+                  value="${basedir}/jmeter"
+                  description="jmeter installation location" />
+        <property name="jmeter.version"
+                  value="2.10"
+                  description="version of jmeter to use" />
+        <property name="jmeter.url"
+                  value="http://apache.cs.utah.edu/jmeter/binaries/apache-jmeter-${jmeter.version}.zip"
+                  description="URL to download jmeter from"/>
+        <property name="jmeter.zip"
+                  value="${jmeter.home}/jmeter.zip"/>
+
+
 	  <property name="enunciate.home" value="${basedir}/enunciate" />
 	  <property name="enunciate.bin.dir" value="${bin.dir}/enunciate" />
 	  
 	  <!-- Override package to just do enunciate. there is no native assembly or package involved -->
-	  <target name="package" depends="enunciate"/>
-	  
+	  <target name="package" depends="enunciate, subfloor-pkg.package"/>
+
 	  <!-- Override resolve to tack on a resolve of enunciate jars needed for doc generation -->
 	  <target name="resolve" depends="subfloor.resolve, resolve-enunciate" />
 	  <target name="resolve-enunciate" depends="resolve-init">
@@ -193,4 +207,67 @@
 	<target name="findbugs.clean" description="cleans up any previous findbugs reports">
 		<delete dir="${findbugs.output-dir}"></delete>
 	</target>
+
+    <!-- ===================================================================
+    jmeter.download-check
+    
+    checks to see if jmeter is available or not
+    ======================================================================== -->
+    <target name="jmeter.download-check"
+            description="checks if files have already been downloaded">
+        <condition property="jmeter.exists">
+            <and>
+                <available file="${jmeter.home}/apache-jmeter-${jmeter.version}"
+                           type="dir" />
+            </and>
+        </condition>
+    </target>
+
+    <!-- ===================================================================
+        jmeter.install
+        
+        downloads and unzips jmeter from sourceforge.
+        ivy/maven resolution doesn't work well.  
+        only a really old version of jmeter is available.
+        the jmeter ant task requires a "home" location of a jmeter install,
+        the ivy/maven artifacts aren't a complete install.  So we download it
+        from sourceforge and unzip it in a known location.
+    ======================================================================== -->
+    <target name="jmeter.install"
+            description="download and install jmeter"
+            depends="jmeter.download-check"
+            unless="jmeter.exists">
+        <mkdir dir="${jmeter.home}"/>
+        <get src="${jmeter.url}"
+             dest="${jmeter.zip}"
+             usetimestamp="true" />
+        <unzip src="${jmeter.zip}"
+               dest="${jmeter.home}" />
+        <delete file="${jmeter.zip}" />
+    </target>
+
+    <!-- ===================================================================
+        jmeter.run-tests
+    ======================================================================== -->
+    <target name="jmeter.run-tests"
+            description="execute included jmeter script"
+            depends="jmeter.install">
+        <!-- ===================================================================
+            taskdef jmeter
+
+            Use the bundled jmeter ant task to execute test
+        ======================================================================== -->
+        <taskdef
+                name="jmeter"
+                classpath="${jmeter.home}/apache-jmeter-${jmeter.version}/extras/ant-jmeter-1.1.1.jar"
+                classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask" />
+        <jmeter
+            jmeterhome="${jmeter.home}/apache-jmeter-${jmeter.version}"
+            testplan="${jmeter.run.script}"
+            resultlog="${jmeter.run.output}">
+            <property name="run.server" value="${jmeter.run.server}" />
+            <property name="run.port" value="${jmeter.run.port}" />
+        </jmeter>
+    </target>
+
 </project>
