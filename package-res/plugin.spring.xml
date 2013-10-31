@@ -14,6 +14,34 @@
 
   <context:annotation-config />
 
+  <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
   <bean class="org.pentaho.platform.dataaccess.metadata.service.MetadataService"/>
-  
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.DSWDataSourceModelService"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.models.DSWDataSourceModel">
+	<constructor-arg value="CSV" />
+	<constructor-arg value="CSV File" />
+   	<pen:publish as-type="INTERFACES">
+	  <pen:attributes>
+		<pen:attr key="DSWModelType" value="CSV"/>
+	  </pen:attributes>
+	</pen:publish>
+  </bean>
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.models.DSWDataSourceModel">
+	<constructor-arg value="SQL" />
+	<constructor-arg value="SQL Query" />
+   	<pen:publish as-type="INTERFACES">
+	  <pen:attributes>
+		<pen:attr key="DSWModelType" value="SQL"/>
+	  </pen:attributes>
+	</pen:publish>
+  </bean>
+   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.models.DSWDataSourceModel">
+	<constructor-arg value="XML" />
+	<constructor-arg value="Database Table(s)" />
+   	<pen:publish as-type="INTERFACES">
+	  <pen:attributes>
+		<pen:attr key="DSWModelType" value="XML"/>
+	  </pen:attributes>
+	</pen:publish>
+  </bean> 
 </beans>
