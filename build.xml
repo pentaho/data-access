@@ -60,7 +60,7 @@
 	  <property name="enunciate.bin.dir" value="${bin.dir}/enunciate" />
 	  
 	  <!-- Override package to just do enunciate. there is no native assembly or package involved -->
-	  <target name="package" depends="enunciate, subfloor-pkg.package"/>
+	  <!-- <target name="package" depends="enunciate, subfloor-pkg.package"/> -->
 	  
 	  <!-- Override resolve to tack on a resolve of enunciate jars needed for doc generation -->
 	  <target name="resolve" depends="subfloor.resolve, resolve-enunciate" />
