@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.catalog.api;
 import java.util.List;
 
 public interface IDatasource {
+  
   /**
    * @return the type of this datasource
    */
