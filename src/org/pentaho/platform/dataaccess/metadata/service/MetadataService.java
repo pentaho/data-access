@@ -85,7 +85,7 @@ public class MetadataService extends PentahoBase {
   @Produces({APPLICATION_JSON, APPLICATION_XML})  
   public String getDatasourcePermissions() {
 
-	// Need to check ABS to see if we can do these things.
+	// TODO Need to check ABS to see if we can do these things.
     boolean canEdit = true;
     boolean canView = true;
     
@@ -265,11 +265,15 @@ public class MetadataService extends PentahoBase {
   
   /**
    * Executes a XML query and returns a serializable result set 
-   * @param query
+   * @param query an xml query.
    * @param rowLimit An optional row limit, -1 or null means all rows
    * @return
    */
-  public MarshallableResultSet doXmlQuery( String xml, Integer rowLimit ) {
+  @POST
+  @Path("/doXmlQuery")
+  @Consumes({APPLICATION_JSON, APPLICATION_XML})
+  @Produces({APPLICATION_JSON, APPLICATION_XML}) 
+  public MarshallableResultSet doXmlQuery(String xml, @QueryParam("rowLimit")Integer rowLimit ) {
     IPentahoResultSet resultSet = executeQuery(xml, rowLimit);
     if( resultSet == null ) {
       return null;
@@ -358,14 +362,14 @@ public class MetadataService extends PentahoBase {
   
   /**
    * Executes a XML query and returns a native result set 
-   * @param query
+   * @param queryXml
    * @param rowLimit An optional row limit, -1 or null means all rows
    * @return
    */
-  protected IPentahoResultSet executeQuery( String query, Integer rowLimit ) {
+  protected IPentahoResultSet executeQuery( String queryXml, Integer rowLimit ) {
     // create a component to execute the query
     MetadataQueryComponent dataComponent = new MetadataQueryComponent();
-    dataComponent.setQuery(query);
+    dataComponent.setQuery(queryXml);
     dataComponent.setLive(false);
     dataComponent.setUseForwardOnlyResultSet(true);
     if(rowLimit != null && rowLimit > -1) {
