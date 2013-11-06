@@ -189,4 +189,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </copy>
   </target>
 
+    <!--=======================================================================
+      install-pentaho-ant-tasks
+
+      Fetches and installs Pentaho Ant tasks
+    ====================================================================-->
+    <target name="install-pentaho-ant-tasks" depends="install-ivy">
+        <taskdef-with-ivy task-name="validate-gwt-compile" classname="org.pentaho.anttasks.GwtBuildValidator" organisation="pentaho" module="pentaho-ant-tasks" revision="1.2-SNAPSHOT" />
+    </target>
+
+    <!--=======================================================================
+      validate-gwt-compile
+
+      Fetches and installs Pentaho Ant tasks
+    ====================================================================-->
+    <target name="gwt-compile.validate" depends="install-pentaho-ant-tasks, gwt-compile">
+        <validate-gwt-compile stagePath="${gwt.output.dir}" whitelistFilePath="${basedir}/build-res/gwt-rpc-whitelist.xml" quickScan="true" debug="false" />
+    </target>
+
 </project>
