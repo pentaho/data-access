@@ -35,8 +35,6 @@ public class DatasourceCatalog implements IDatasourceCatalog {
 
   @XmlAnyElement
   private List<IDatasourceProvider> datasourceProviders = new ArrayList<IDatasourceProvider>();;
-  @XmlAnyElement
-  private List<IDatasourceType> datasourceTypes = new ArrayList<IDatasourceType>();
   
   public DatasourceCatalog() {
     super();
@@ -74,21 +72,15 @@ public class DatasourceCatalog implements IDatasourceCatalog {
    */
   @Override
   public List<IDatasourceType> getDatasourceTypes() {
-    return datasourceTypes;
+    List<IDatasourceType> values = new ArrayList<IDatasourceType>();
+    
+    for (IDatasourceProvider provider : datasourceProviders) {
+      values.add(provider.getType());
+    }
+    
+    return values;
   }
 
-  /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.catalog.api.IDatasourceCatalog#registerDatasourceType(org.pentaho.platform.dataaccess.catalog.api.IDatasourceType)
-   */
-  @Override
-  public void registerDatasourceType( IDatasourceType datasourceType ) {
-    datasourceTypes.add(datasourceType);
-  }
-
-  /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.catalog.api.IDatasourceCatalog#registerDatasourceProvider(org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider)
-   */
-  @Override
   public void registerDatasourceProvider( IDatasourceProvider datasourceProvider ) {
     datasourceProviders.add(datasourceProvider);
   }
