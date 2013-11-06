@@ -1,4 +1,4 @@
-/*!
+/*
 * This program is free software; you can redistribute it and/or modify it under the
 * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
 * Foundation.
@@ -15,20 +15,24 @@
 * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
 */
 
-package org.pentaho.platform.dataaccess.metadata.model.impl;
+package org.pentaho.platform.dataaccess.catalog.api;
 
-import java.util.Comparator;
+import java.util.List;
 
-/**
- * compares two model info objects so that they can be sorted by name
- * @author jamesdixon
- *
- */
-public class ModelInfoComparator implements Comparator<ModelInfo> {
-
-  @Override
-  public int compare(ModelInfo model1, ModelInfo model2) {
-    return model1.getModelName().compareTo(model2.getModelName());
-  }
-
+public interface IDatasource {
+  /**
+   * @return the type of this datasource
+   */
+  public IDatasourceType getType();
+  
+  /**
+   * @return name of this datasource
+   */
+  public String getName();
+    
+  /**
+   * @return the children of this datasource.  This might be in a tree form
+   * ie. Metadata->domainName->logicalModel.
+   */
+  public List<IDatasourceChild> getChildren();
 }

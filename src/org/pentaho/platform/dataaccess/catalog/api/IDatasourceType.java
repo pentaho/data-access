@@ -15,20 +15,15 @@
 * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
 */
 
-package org.pentaho.platform.dataaccess.metadata.model.impl;
+package org.pentaho.platform.dataaccess.catalog.api;
 
-import java.util.Comparator;
+import java.util.Locale;
 
 /**
- * compares two model info objects so that they can be sorted by name
- * @author jamesdixon
+ * @author wseyler
  *
  */
-public class ModelInfoComparator implements Comparator<ModelInfo> {
-
-  @Override
-  public int compare(ModelInfo model1, ModelInfo model2) {
-    return model1.getModelName().compareTo(model2.getModelName());
-  }
-
+public interface IDatasourceType {
+  public String getId();
+  public String getDisplayName(Locale locale);
 }
