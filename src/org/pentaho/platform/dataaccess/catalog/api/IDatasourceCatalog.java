@@ -41,14 +41,4 @@ public interface IDatasourceCatalog {
    */
   public List<IDatasourceType> getDatasourceTypes();
   
-  /**
-   * @param datasourceType - Registers 'datasourceType' with the catalog
-   */
-  public void registerDatasourceType(IDatasourceType datasourceType);
-  
-  /**
-   * @param datasourceProvider - Registers 'datasourceProvider' with the catalog
-   */
-  public void registerDatasourceProvider(IDatasourceProvider datasourceProvider);
-  
 }

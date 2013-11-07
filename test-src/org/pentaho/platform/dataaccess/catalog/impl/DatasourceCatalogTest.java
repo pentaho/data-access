@@ -37,7 +37,7 @@ public class DatasourceCatalogTest {
     datasources.add(datasource2);
     
     IDatasourceProvider provider = new DatasourceProvider(datasource1.getType(), datasources); 
-    datasourceCatalog.registerDatasourceProvider(provider);
+    ((DatasourceCatalog)datasourceCatalog).registerDatasourceProvider(provider);
     
     List<IDatasource> result = datasourceCatalog.getDatasources();
     
@@ -56,7 +56,7 @@ public class DatasourceCatalogTest {
     datasources1.add(datasource1);
     datasources1.add(datasource2);
     IDatasourceProvider provider = new DatasourceProvider(datasource1.getType(), datasources1);
-    datasourceCatalog.registerDatasourceProvider(provider);
+    ((DatasourceCatalog)datasourceCatalog).registerDatasourceProvider(provider);
 
     List<IDatasource> datasources2 = new ArrayList<IDatasource>();
     IDatasource datasource3 = new Datasource("datasource3",
@@ -66,7 +66,7 @@ public class DatasourceCatalogTest {
     datasources2.add(datasource3);
     datasources2.add(datasource4);
     provider = new DatasourceProvider(datasource3.getType(), datasources2);
-    datasourceCatalog.registerDatasourceProvider(provider);
+    ((DatasourceCatalog)datasourceCatalog).registerDatasourceProvider(provider);
     
     List<IDatasource> result = datasourceCatalog.getDatasourcesOfType(datasource1.getType());
     assertEquals(2, result.size());
@@ -81,17 +81,16 @@ public class DatasourceCatalogTest {
 
   @Test
   public void testGetDatasourceTypes() {
-    fail( "Not yet implemented" );
-  }
+    IDatasourceProvider provider = new DatasourceProvider(new MockDatasourceType( "1" ));
+    ((DatasourceCatalog)datasourceCatalog).registerDatasourceProvider(provider);
 
-  @Test
-  public void testRegisterDatasourceType() {
-    fail( "Not yet implemented" );
-  }
-
-  @Test
-  public void testRegisterDatasourceProvider() {
-    fail( "Not yet implemented" );
+    provider = new DatasourceProvider(new MockDatasourceType( "2" ));
+    ((DatasourceCatalog)datasourceCatalog).registerDatasourceProvider(provider);
+    
+    List<IDatasourceType> result = datasourceCatalog.getDatasourceTypes();
+    assertEquals( 2, result.size() );
+    assertEquals("1", result.get( 0 ).getId());
+    assertEquals("2", result.get( 1 ).getId());
   }
 
   public class MockDatasourceType implements IDatasourceType {
