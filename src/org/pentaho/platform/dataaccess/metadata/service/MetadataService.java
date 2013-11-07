@@ -63,7 +63,7 @@ import flexjson.JSONSerializer;
  * @author jamesdixon
  * 
  */
-@Path( "/data-access/api/metadataDA" )
+@Path( "/data-access-v2/api/metadataDA" )
 public class MetadataService extends PentahoBase {
 
   private static final long serialVersionUID = 8481450224870463494L;
