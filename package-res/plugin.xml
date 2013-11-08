@@ -11,7 +11,7 @@
    <overlays>
 	    <overlay id="startup.dataaccessv2"  resourcebundle="api/repos/data-access-v2/resources/messages/messages.properties">
 			<menubar id="filemenu">
-			    <menuitem id="manageDatasourceV2Item" insertafter="openMenuItem" label="${manageDatasourceV2Ellipsis}" js-command="alert('Manage Data Sources..')" />
+			    <menuitem id="manageDatasourceV2Item" insertafter="openMenuItem" label="${manageDatasourceV2Ellipsis}" js-command="pen.startDataAccess()" />
 			</menubar>
 			<menubar id="newmenu">
 				<menuitem id="newDatasourceV2Item" label="${newDatasourceV2Ellipsis}" js-command="alert('Create New Data Source..')" />				
@@ -20,6 +20,7 @@
 	</overlays>
 
   <external-resources>
+  		<file context="mantle">content/data-access-v2/resources/web/js/data-access-angular-plugin.js</file>
   </external-resources>
 
 </plugin>
