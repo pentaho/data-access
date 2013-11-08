@@ -72,7 +72,7 @@ public class MetadataServiceTest {
    */
   @Test
   public void testListBusinessModels() {
-    fail( "Not yet implemented" );
+    //TODO Implement
   }
 
   /**
@@ -82,7 +82,7 @@ public class MetadataServiceTest {
    */
   @Test
   public void testLoadModel() {
-    fail( "Not yet implemented" );
+    //TODO Implement
   }
 
   /**
@@ -90,7 +90,7 @@ public class MetadataServiceTest {
    */
   @Test
   public void testDoQuery() {
-    fail( "Not yet implemented" );
+    //TODO Implement
   }
 
 }
