@@ -1,4 +1,4 @@
-/*!
+/**
  * This program is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
  * Foundation.
@@ -12,52 +12,64 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
+ *
  */
 
-package org.pentaho.platform.dataaccess.metadata.model;
+package org.pentaho.platform.dataaccess.catalog.impl;
 
-import java.io.Serializable;
+import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 
-/**
- * 
- * Represents a Metadata Model object containing one or more {@see ICategory}s
- * 
- */
-public interface IModel extends Serializable {
+import java.util.Locale;
 
-  /**
-   * Returns the id of the model
-   * 
-   * @return
-   */
-  public String getId();
+public class DatasourceType implements IDatasourceType {
+
+  String id;
+  String displayName;
 
   /**
-   * Returns the id of the domain of the model
-   * 
+   *
    * @return
    */
-  public String getDomainId();
+  @Override
+  public String getId() {
+    return id;
+  }
 
   /**
-   * Returns the name of the model for the current locale
-   * 
+   *
+   * @param locale
    * @return
    */
-  public String getName();
+  @Override
+  public String getDisplayName( Locale locale ) {
+    return displayName;
+  }
 
   /**
-   * Returns an array of categories for the model
-   * 
-   * @return
+   *
+   * @param id
    */
-  public ICategory[] getCategories();
+  public void setId( String id ) {
+    this.id = id;
+  }
 
   /**
-   * Returns the description of the model for the current locale
-   * 
+   *
+   * @param displayName
    * @return
    */
-  public String getDescription();
+  public void setDisplayName( String displayName ) {
+    this.displayName = displayName;
+  }
+
+  /**
+   *
+   * @param id
+   * @param displayName
+   */
+  public DatasourceType( String id, String displayName ) {
+    this.id = id;
+    this.displayName = displayName;
+  }
 }

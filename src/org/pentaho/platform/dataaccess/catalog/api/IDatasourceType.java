@@ -15,49 +15,26 @@
  * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.metadata.model;
+package org.pentaho.platform.dataaccess.catalog.api;
 
-import java.io.Serializable;
+import java.util.Locale;
 
 /**
+ * @author wseyler
  * 
- * Represents a Metadata Model object containing one or more {@see ICategory}s
- * 
+ *         Interface that defines a datasource type ie. analysis, ir, etc.
  */
-public interface IModel extends Serializable {
+public interface IDatasourceType {
 
   /**
-   * Returns the id of the model
-   * 
-   * @return
+   * @return the string id of this type
    */
   public String getId();
 
   /**
-   * Returns the id of the domain of the model
-   * 
-   * @return
+   * @param locale
+   *          the locale lookup for the display name
+   * @return localized display name
    */
-  public String getDomainId();
-
-  /**
-   * Returns the name of the model for the current locale
-   * 
-   * @return
-   */
-  public String getName();
-
-  /**
-   * Returns an array of categories for the model
-   * 
-   * @return
-   */
-  public ICategory[] getCategories();
-
-  /**
-   * Returns the description of the model for the current locale
-   * 
-   * @return
-   */
-  public String getDescription();
+  public String getDisplayName( Locale locale );
 }

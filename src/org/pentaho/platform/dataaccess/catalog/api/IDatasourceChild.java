@@ -15,49 +15,29 @@
  * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.metadata.model;
+package org.pentaho.platform.dataaccess.catalog.api;
 
-import java.io.Serializable;
+import java.util.List;
 
 /**
- * 
- * Represents a Metadata Model object containing one or more {@see ICategory}s
- * 
+ * @author wseyler
+ *
+ * Datasource child to represent heirarchical elements of a datasource.
  */
-public interface IModel extends Serializable {
+public interface IDatasourceChild {
 
   /**
-   * Returns the id of the model
-   * 
-   * @return
+   * @return a string that represents an id
    */
   public String getId();
 
   /**
-   * Returns the id of the domain of the model
-   * 
-   * @return
-   */
-  public String getDomainId();
-
-  /**
-   * Returns the name of the model for the current locale
-   * 
-   * @return
+   * @return the name of the datasource child
    */
   public String getName();
 
   /**
-   * Returns an array of categories for the model
-   * 
-   * @return
+   * @return a list of this childs children
    */
-  public ICategory[] getCategories();
-
-  /**
-   * Returns the description of the model for the current locale
-   * 
-   * @return
-   */
-  public String getDescription();
+  public List<IDatasourceChild> getChildren();
 }

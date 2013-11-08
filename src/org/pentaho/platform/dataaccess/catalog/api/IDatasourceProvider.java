@@ -15,49 +15,24 @@
  * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.metadata.model;
+package org.pentaho.platform.dataaccess.catalog.api;
 
-import java.io.Serializable;
+import java.util.List;
 
 /**
- * 
- * Represents a Metadata Model object containing one or more {@see ICategory}s
- * 
+ * @author wseyler
+ *
+ * A provider that is registered with the IDatasourceCatalog that provides management for a specific type of datasource.
  */
-public interface IModel extends Serializable {
+public interface IDatasourceProvider {
 
   /**
-   * Returns the id of the model
-   * 
-   * @return
+   * @return a list of IDatasources managed by this provider
    */
-  public String getId();
+  public List<IDatasource> getDatasources();
 
   /**
-   * Returns the id of the domain of the model
-   * 
-   * @return
+   * @return the IDatasourceType that this provider manages
    */
-  public String getDomainId();
-
-  /**
-   * Returns the name of the model for the current locale
-   * 
-   * @return
-   */
-  public String getName();
-
-  /**
-   * Returns an array of categories for the model
-   * 
-   * @return
-   */
-  public ICategory[] getCategories();
-
-  /**
-   * Returns the description of the model for the current locale
-   * 
-   * @return
-   */
-  public String getDescription();
+  public IDatasourceType getType();
 }

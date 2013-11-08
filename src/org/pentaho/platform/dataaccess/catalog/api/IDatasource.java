@@ -1,4 +1,4 @@
-/*!
+/*
  * This program is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
  * Foundation.
@@ -15,49 +15,29 @@
  * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.metadata.model;
+package org.pentaho.platform.dataaccess.catalog.api;
 
-import java.io.Serializable;
+import java.util.List;
 
 /**
- * 
- * Represents a Metadata Model object containing one or more {@see ICategory}s
- * 
+ * @author wseyler
+ *
+ * An interface that represents a datasource.  ie. analysis, metadata, connections
  */
-public interface IModel extends Serializable {
+public interface IDatasource {
 
   /**
-   * Returns the id of the model
-   * 
-   * @return
+   * @return the type of this datasource
    */
-  public String getId();
+  public IDatasourceType getType();
 
   /**
-   * Returns the id of the domain of the model
-   * 
-   * @return
-   */
-  public String getDomainId();
-
-  /**
-   * Returns the name of the model for the current locale
-   * 
-   * @return
+   * @return name of this datasource
    */
   public String getName();
 
   /**
-   * Returns an array of categories for the model
-   * 
-   * @return
+   * @return the children of this datasource. This might be in a tree form ie. Metadata->domainName->logicalModel.
    */
-  public ICategory[] getCategories();
-
-  /**
-   * Returns the description of the model for the current locale
-   * 
-   * @return
-   */
-  public String getDescription();
+  public List<IDatasourceChild> getChildren();
 }

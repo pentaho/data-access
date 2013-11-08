@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
 
@@ -25,8 +25,9 @@ import org.pentaho.platform.dataaccess.metadata.model.ICategory;
 
 /**
  * Concrete, lightweight, serializable implementation of an {@see ICategory} object
+ * 
  * @author jamesdixon
- *
+ * 
  */
 @XmlRootElement
 public class Category implements ICategory, Serializable {
@@ -53,17 +54,19 @@ public class Category implements ICategory, Serializable {
 
   /**
    * Returns the id of the category
+   * 
    * @param id
    */
-  public void setId(String id) {
+  public void setId( String id ) {
     this.id = id;
   }
 
   /**
    * Sets the name of the category
+   * 
    * @param name
    */
-  public void setName(String name) {
+  public void setName( String name ) {
     this.name = name;
   }
 
@@ -77,12 +80,11 @@ public class Category implements ICategory, Serializable {
 
   /**
    * Sets the array of {@see IColumn}s for this category
- * @param columns
+   * 
+   * @param columns
    */
-  public void setColumns(Column columns[]) {
+  public void setColumns( Column columns[] ) {
     this.columns = columns;
   }
-  
-  
 
 }

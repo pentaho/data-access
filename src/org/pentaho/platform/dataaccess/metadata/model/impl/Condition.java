@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
 
@@ -34,16 +34,16 @@ public class Condition implements ICondition {
   private String value[];
   private String comboType = CombinationType.AND.name();
 
-  public Condition(){
-    
+  public Condition() {
+
   }
-  
+
   public String getColumn() {
-    return this.column;    
+    return this.column;
   }
 
   public String getCombinationType() {
-    return this.comboType;  
+    return this.comboType;
   }
 
   public String getOperator() {
@@ -54,96 +54,82 @@ public class Condition implements ICondition {
     return this.value;
   }
 
-  public void setColumn(String column) {
-    this.column = column;  
+  public void setColumn( String column ) {
+    this.column = column;
   }
 
-  public void setCombinationType(String combinationType) {
+  public void setCombinationType( String combinationType ) {
     this.comboType = combinationType;
   }
 
-  public void setOperator(String operator) {
+  public void setOperator( String operator ) {
     this.operator = operator;
   }
 
-  public void setValue(String value[]) {
-   this.value = value;   
+  public void setValue( String value[] ) {
+    this.value = value;
   }
 
   public boolean validate() {
-    return true;   
+    return true;
   }
 
-  public String getCondition(String type) {
-    return getCondition(type, column);
+  public String getCondition( String type ) {
+    return getCondition( type, column );
   }
 
-  public String getCondition(String type, String paramName){
+  public String getCondition( String type, String paramName ) {
     String val[] = this.value;
-/*
-    if(val == null && defaultValue != null) {
-      val = defaultValue;
-    }
-*/
-    Operator theOperator = Operator.parse(operator);
-    if(type.equalsIgnoreCase(DataType.STRING.getName()) && theOperator == Operator.EQUAL ){
+    /*
+     * if(val == null && defaultValue != null) { val = defaultValue; }
+     */
+    Operator theOperator = Operator.parse( operator );
+    if ( type.equalsIgnoreCase( DataType.STRING.getName() ) && theOperator == Operator.EQUAL ) {
       theOperator = Operator.EXACTLY_MATCHES;
     }
 
-    if(type.equalsIgnoreCase(DataType.STRING.getName()) ){
-      for(int idx=0; idx<val.length; idx++) {
-        val[idx] = "\""+val[idx]+"\"";         //$NON-NLS-1$ //$NON-NLS-2$
+    if ( type.equalsIgnoreCase( DataType.STRING.getName() ) ) {
+      for ( int idx = 0; idx < val.length; idx++ ) {
+        val[idx] = "\"" + val[idx] + "\""; //$NON-NLS-1$ //$NON-NLS-2$
       }
     }
     boolean enforceParameters = paramName != null;
-    String columnName = "["+category+"."+column+"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$;
+    String columnName = "[" + category + "." + column + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$;
     // Date is a special case where we craft a formula function.
-    if(type.equals(DataType.DATE.getName())){
-      if(enforceParameters){
+    if ( type.equals( DataType.DATE.getName() ) ) {
+      if ( enforceParameters ) {
         // Due to the fact that the value of a Date is a forumula function, the tokenizing of
         // the value needs to happen here instead of letting the Operator class handle it.
-        for(int idx=0; idx<val.length; idx++) {
-          val[idx] = "DATEVALUE("+"[param:"+value[idx].replaceAll("[\\{\\}]","")+"]"+")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        for ( int idx = 0; idx < val.length; idx++ ) {
+          val[idx] = "DATEVALUE(" + "[param:" + value[idx].replaceAll( "[\\{\\}]", "" ) + "]" + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
-        return theOperator.formatCondition(columnName, paramName, val, false);
-      } else {  
-        for(int idx=0; idx<val.length; idx++) {
-        val[idx] = "DATEVALUE(\""+val[idx]+"\")"; //$NON-NLS-1$ //$NON-NLS-2$
+        return theOperator.formatCondition( columnName, paramName, val, false );
+      } else {
+        for ( int idx = 0; idx < val.length; idx++ ) {
+          val[idx] = "DATEVALUE(\"" + val[idx] + "\")"; //$NON-NLS-1$ //$NON-NLS-2$
         }
       }
     }
-    return theOperator.formatCondition(columnName, paramName, val, enforceParameters);
-  }
-/*
-  public boolean isParameterized() {
-    return parameterized;
+    return theOperator.formatCondition( columnName, paramName, val, enforceParameters );
   }
 
-  public void setParameterized(boolean parameterized) {
-   this.parameterized = parameterized;   
-  }
-/
-  public void setDefaultValue(String val){
-    this.defaultValue = val;
-  }
-  
-  public String getDefaultValue(){
-    return this.defaultValue;
-  }
-
-  public void setSelectedAggType(String aggType){
-    this.selectedAggType = aggType;
-  }
-  
-  public String getSelectedAggType(){
-    return this.selectedAggType;
-  }
-*/
+  /*
+   * public boolean isParameterized() { return parameterized; }
+   * 
+   * public void setParameterized(boolean parameterized) { this.parameterized = parameterized; } / public void
+   * setDefaultValue(String val){ this.defaultValue = val; }
+   * 
+   * public String getDefaultValue(){ return this.defaultValue; }
+   * 
+   * public void setSelectedAggType(String aggType){ this.selectedAggType = aggType; }
+   * 
+   * public String getSelectedAggType(){ return this.selectedAggType; }
+   */
   public String getCategory() {
     return category;
   }
 
-  public void setCategory(String category) {
+  public void setCategory( String category ) {
     this.category = category;
   }
 
