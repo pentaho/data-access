@@ -22,7 +22,7 @@ import java.util.Locale;
 /**
  * @author wseyler
  * 
- *         Interface that defines a datasource type ie. analysis, ir, etc.
+ * Interface that defines a datasource type ie. analysis, ir, etc.
  */
 public interface IDatasourceType {
 
