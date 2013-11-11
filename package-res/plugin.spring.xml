@@ -44,4 +44,30 @@
 	  </pen:attributes>
 	</pen:publish>
   </bean> 
+  <bean class="org.pentaho.platform.dataaccess.catalog.impl.DatasourceCatalog">
+    <constructor-arg>
+      <pen:list class="org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider"/>
+    </constructor-arg>
+  </bean>
+    <bean class="org.pentaho.platform.dataaccess.datasource.provider.AnalysisDatasourceProvider">
+    <pen:publish as-type="INTERFACES">
+      <pen:attributes>
+        <pen:attr key="priority" value="50"/>
+      </pen:attributes>
+    </pen:publish>
+  </bean>
+  <bean class="org.pentaho.platform.dataaccess.datasource.provider.JDBCDatasourceProvider">
+    <pen:publish as-type="INTERFACES">
+      <pen:attributes>
+        <pen:attr key="priority" value="40"/>
+      </pen:attributes>
+    </pen:publish>
+  </bean>
+  <bean class="org.pentaho.platform.dataaccess.datasource.provider.MetadataDatasourceProvider">
+    <pen:publish as-type="INTERFACES">
+      <pen:attributes>
+        <pen:attr key="priority" value="30"/>
+      </pen:attributes>
+    </pen:publish>
+  </bean>
 </beans>
