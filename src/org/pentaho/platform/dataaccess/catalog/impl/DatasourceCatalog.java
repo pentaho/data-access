@@ -17,9 +17,17 @@
 
 package org.pentaho.platform.dataaccess.catalog.impl;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.xml.bind.annotation.XmlAnyElement;
 
 import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
@@ -31,6 +39,7 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
  * @author wseyler
  * 
  */
+@Path( "/data-access-v2/api/datasourceCatalog" )
 public class DatasourceCatalog implements IDatasourceCatalog {
 
   @XmlAnyElement
@@ -51,6 +60,9 @@ public class DatasourceCatalog implements IDatasourceCatalog {
    * @see org.pentaho.platform.dataaccess.catalog.api.IDatasourceCatalog#getDatasources()
    */
   @Override
+  @GET
+  @Path( "/getDatasources" )
+  @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   public List<IDatasource> getDatasources() {
     List<IDatasource> values = new ArrayList<IDatasource>();
 
@@ -69,6 +81,10 @@ public class DatasourceCatalog implements IDatasourceCatalog {
    * .catalog.api.IDatasourceType)
    */
   @Override
+  @POST
+  @Path( "/getDatasourcesByType" )
+  @Consumes( { APPLICATION_JSON, APPLICATION_XML } )
+  @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   public List<IDatasource> getDatasourcesOfType( IDatasourceType datasourceType ) {
     for ( IDatasourceProvider provider : datasourceProviders ) {
       if ( provider.getType().getId().equals( datasourceType.getId() ) ) {
@@ -84,6 +100,9 @@ public class DatasourceCatalog implements IDatasourceCatalog {
    * @see org.pentaho.platform.dataaccess.catalog.api.IDatasourceCatalog#getDatasourceTypes()
    */
   @Override
+  @GET
+  @Path( "/getDatasourceTypes" )
+  @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   public List<IDatasourceType> getDatasourceTypes() {
     List<IDatasourceType> values = new ArrayList<IDatasourceType>();
 

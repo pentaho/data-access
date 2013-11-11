@@ -11,22 +11,23 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
 
-public class JDBCDatasourceProvider implements IDatasourceProvider{
+public class JDBCDatasourceProvider implements IDatasourceProvider {
 
   private IDatasourceMgmtService datasourceMgmtService;
-  private IDatasourceType datasourceType = new JDBCDatasourceType(); 
-  
-  public JDBCDatasourceProvider(final IDatasourceMgmtService datasourceMgmtService) {
+  private IDatasourceType datasourceType = new JDBCDatasourceType();
+
+  public JDBCDatasourceProvider( final IDatasourceMgmtService datasourceMgmtService ) {
     this.datasourceMgmtService = datasourceMgmtService;
   }
+
   @Override
   public List<IDatasource> getDatasources() {
     List<IDatasource> datasources = new ArrayList<IDatasource>();
     try {
-      for(IDatabaseConnection databaseConnection:datasourceMgmtService.getDatasources()) {
-        datasources.add( new Datasource(databaseConnection.getName(), getType(), null) );
+      for ( IDatabaseConnection databaseConnection : datasourceMgmtService.getDatasources() ) {
+        datasources.add( new Datasource( databaseConnection.getName(), getType(), null ) );
       }
-      
+
     } catch ( DatasourceMgmtServiceException e ) {
       // TODO Auto-generated catch block
       e.printStackTrace();
