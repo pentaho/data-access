@@ -17,9 +17,9 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCube;
 public class AnalysisDatasourceProvider implements IDatasourceProvider {
 
   private MondrianCatalogHelper mondrianCatalogHelper;
-  private IDatasourceType datasourceType = new AnalysisDatasourceType();
-
-  public AnalysisDatasourceProvider( final MondrianCatalogHelper mondrianCatalogHelper ) {
+  private IDatasourceType datasourceType = new AnalysisDatasourceType(AnalysisDatasourceType.ID,AnalysisDatasourceType.ID);
+  
+  public AnalysisDatasourceProvider(final MondrianCatalogHelper mondrianCatalogHelper) {
     this.mondrianCatalogHelper = mondrianCatalogHelper;
   }
 

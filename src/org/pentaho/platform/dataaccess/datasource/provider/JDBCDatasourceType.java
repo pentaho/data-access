@@ -1,26 +1,12 @@
 package org.pentaho.platform.dataaccess.datasource.provider;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
+import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
 
-import javax.xml.bind.annotation.XmlRootElement;
+public class JDBCDatasourceType extends DatasourceType{
 
-import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
-import org.pentaho.platform.dataaccess.datasource.provider.messages.Messages;;
-
-@XmlRootElement
-public class JDBCDatasourceType implements IDatasourceType{
-  private static final String ID = "JDBC"; 
-  ResourceBundle resourceBundle;
-  @Override
-  public String getId() {
-    return ID;
+  public JDBCDatasourceType( String id, String displayName ) {
+    super( id, displayName );
   }
 
-  @Override
-  public String getDisplayName( Locale locale ) {
-    resourceBundle = Messages.getInstance().getBundle(locale);
-    return resourceBundle.getString( ID );
-  }
-
+  public static final String ID = "JDBC"; 
 }
