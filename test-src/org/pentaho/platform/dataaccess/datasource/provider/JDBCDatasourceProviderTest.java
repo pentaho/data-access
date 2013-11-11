@@ -98,7 +98,7 @@ public class JDBCDatasourceProviderTest {
     fileList.add( file1 );
     fileList.add( file2 );
 
-    doReturn( fileList ).when( repo ).getChildren(Mockito.anyString(),  Mockito.anyString(), Mockito.anyBoolean()  );
+    doReturn( fileList ).when( repo ).getChildren(Mockito.anyString(),  eq("*" + RepositoryObjectType.DATABASE.getExtension()));
     
     IDatasourceMgmtService datasourceMgmtService =
       new JcrBackedDatasourceMgmtService( repo, new DatabaseDialectService() );
