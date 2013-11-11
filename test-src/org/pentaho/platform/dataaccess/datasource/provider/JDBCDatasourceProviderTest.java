@@ -5,7 +5,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,7 +98,7 @@ public class JDBCDatasourceProviderTest {
     fileList.add( file1 );
     fileList.add( file2 );
 
-    doReturn( fileList ).when( repo ).getChildren((Serializable)Mockito.anyString(),  eq("*" + RepositoryObjectType.DATABASE.getExtension()), eq(true)  );
+    doReturn( fileList ).when( repo ).getChildren(Mockito.anyString(),  Mockito.anyString(), Mockito.anyBoolean()  );
     
     IDatasourceMgmtService datasourceMgmtService =
       new JcrBackedDatasourceMgmtService( repo, new DatabaseDialectService() );
