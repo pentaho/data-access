@@ -40,6 +40,11 @@ public class DatasourceCatalog implements IDatasourceCatalog {
     super();
   }
 
+
+  public DatasourceCatalog(List<IDatasourceProvider> datasourceProviders) {
+    datasourceProviders.addAll( datasourceProviders );
+  }
+
   /*
    * (non-Javadoc)
    * 
