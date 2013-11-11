@@ -20,14 +20,19 @@ package org.pentaho.platform.dataaccess.catalog.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 
+@XmlRootElement
 public class Datasource implements IDatasource {
 
   private String name;
   private IDatasourceType datasourceType;
+  @XmlAnyElement
   private List<IDatasourceChild> children = new ArrayList<IDatasourceChild>();
 
   public Datasource() {
@@ -50,6 +55,7 @@ public class Datasource implements IDatasource {
   }
 
   @Override
+  @XmlAnyElement
   public IDatasourceType getType() {
     return datasourceType;
   }
