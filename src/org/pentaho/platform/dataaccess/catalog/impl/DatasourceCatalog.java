@@ -1,4 +1,4 @@
-/*
+/*!
  * This program is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
  * Foundation.
@@ -49,9 +49,8 @@ public class DatasourceCatalog implements IDatasourceCatalog {
     super();
   }
 
-
-  public DatasourceCatalog(List<IDatasourceProvider> datasourceProviders) {
-    datasourceProviders.addAll( datasourceProviders );
+  public DatasourceCatalog( List<IDatasourceProvider> datasourceProviders ) {
+    this.datasourceProviders.addAll( datasourceProviders );
   }
 
   /*
@@ -118,3 +117,4 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   }
 
 }
+
