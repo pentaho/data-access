@@ -15,20 +15,8 @@
  * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess;
+package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-import org.pentaho.platform.api.engine.PluginLifecycleException;
-
-public class DummyTest {
-
-  @Test
-  public void test() throws PluginLifecycleException {
-    LifecycleListener listener = new LifecycleListener();
-    listener.init();
-    assertEquals( !Boolean.FALSE, Boolean.TRUE );
-  }
+public interface IDSWModelImplementer {
 
 }
