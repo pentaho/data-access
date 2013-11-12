@@ -31,7 +31,7 @@ import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
 public class JDBCDatasourceProvider implements IDatasourceProvider{
 
   private IDatasourceMgmtService datasourceMgmtService;
-  private IDatasourceType datasourceType = new JDBCDatasourceType(JDBCDatasourceType.ID, JDBCDatasourceType.ID); 
+  private IDatasourceType datasourceType = new JDBCDatasourceType(); 
   
   public JDBCDatasourceProvider(final IDatasourceMgmtService datasourceMgmtService) {
     this.datasourceMgmtService = datasourceMgmtService;

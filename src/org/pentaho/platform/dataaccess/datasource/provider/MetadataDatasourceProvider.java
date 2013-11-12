@@ -29,7 +29,7 @@ import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
 public class MetadataDatasourceProvider implements IDatasourceProvider{
 
   private IMetadataDomainRepository metadataDomainRepository;
-  private IDatasourceType datasourceType = new MetadataDatasourceType(MetadataDatasourceType.ID, MetadataDatasourceType.ID);
+  private IDatasourceType datasourceType = new MetadataDatasourceType();
   
   public MetadataDatasourceProvider(final IMetadataDomainRepository metadataDomainRepository) {
     this.metadataDomainRepository = metadataDomainRepository;

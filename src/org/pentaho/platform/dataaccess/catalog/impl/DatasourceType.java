@@ -24,13 +24,42 @@ import org.pentaho.platform.dataaccess.datasource.provider.messages.Messages;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class DatasourceType implements IDatasourceType {
 
   String id;
   String displayName;
   ResourceBundle resourceBundle;
+
+  public DatasourceType() {
+    super();
+  }
+
   /**
-   *
+   * 
+   * @param id
+   */
+  public DatasourceType( String id ) {
+    this();
+    this.id = id;
+  }
+
+  
+  /**
+   * 
+   * @param id
+   * @param displayName
+   */
+  public DatasourceType( String id, String displayName ) {
+    this();
+    this.id = id;
+    this.displayName = displayName;
+  }
+
+  /**
+   * 
    * @return
    */
   @Override
@@ -39,7 +68,7 @@ public class DatasourceType implements IDatasourceType {
   }
 
   /**
-   *
+   * 
    * @param locale
    * @return
    */
@@ -50,7 +79,7 @@ public class DatasourceType implements IDatasourceType {
   }
 
   /**
-   *
+   * 
    * @param id
    */
   public void setId( String id ) {
@@ -58,7 +87,7 @@ public class DatasourceType implements IDatasourceType {
   }
 
   /**
-   *
+   * 
    * @param displayName
    * @return
    */
@@ -66,13 +95,4 @@ public class DatasourceType implements IDatasourceType {
     this.displayName = displayName;
   }
 
-  /**
-   *
-   * @param id
-   * @param displayName
-   */
-  public DatasourceType( String id, String displayName ) {
-    this.id = id;
-    this.displayName = displayName;
-  }
 }

@@ -21,8 +21,8 @@ import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
 
 public class JDBCDatasourceType extends DatasourceType{
 
-  public JDBCDatasourceType( String id, String displayName ) {
-    super( id, displayName );
+  public JDBCDatasourceType( ) {
+    super( ID );
   }
 
   public static final String ID = "JDBC"; 
