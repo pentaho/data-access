@@ -40,6 +40,16 @@ public class DatasourceType implements IDatasourceType {
   /**
    * 
    * @param id
+   */
+  public DatasourceType( String id ) {
+    this();
+    this.id = id;
+  }
+
+  
+  /**
+   * 
+   * @param id
    * @param displayName
    */
   public DatasourceType( String id, String displayName ) {
