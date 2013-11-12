@@ -1,4 +1,23 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License, version 2 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/gpl-2.0.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ *
+ * Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
+ */
+
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
+
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalRelationship;
@@ -12,7 +31,7 @@ import org.pentaho.metadata.model.concept.types.TargetColumnType;
  * Provides a mocked <code>LogicalModel</code> that can be used for testing the persistence layer.
  * 
  * @author tkafalas
- *
+ * 
  */
 public class MockLogicalModel {
   public static LogicalModel buildDefaultModel() {
@@ -121,11 +140,11 @@ public class MockLogicalModel {
     }
     return null;
   }
-  
+
   public static LogicalModel buildLogicalModelWithTemplateModel() {
     LogicalModel lm = buildDefaultModel();
-    lm.setProperty(DSWModelStorage.TEMPLATE_ID_PROPERTY, "CSV");
-    lm.setProperty(DSWModelStorage.TEMPLATE_MODEL_PROPERTY, "DSWTemplateModelImage");
+    lm.setProperty( DSWModelStorage.TEMPLATE_ID_PROPERTY, "CSV" );
+    lm.setProperty( DSWModelStorage.TEMPLATE_MODEL_PROPERTY, "DSWTemplateModelImage" );
     return lm;
   }
 }
