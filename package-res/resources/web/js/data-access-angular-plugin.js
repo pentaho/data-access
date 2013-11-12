@@ -8,36 +8,34 @@ pen.require(['mantle/puc-api/pucAngularApi'], function(PentahoPluginHandler) {
 	}
 
 	// Routes
-	var routes = [{
-		url : "/data-access",
-		templateUrl : "content/data-access-v2/resources/web/partials/data-access.html",
-		controller : "DataAccessController"
-	}, {
-		url : "/data-access-page1",
-		templateUrl : "content/data-access-v2/resources/web/partials/data-access-page1.html",
-		controller : "DataAccessController1"
-	}, {
-		url : "/data-access-page2",
-		templateUrl : "content/data-access-v2/resources/web/partials/data-access-page2.html",
-		controller : "DataAccessController2"
-	}];
+	var routes = function($routeProvider) {
+		$routeProvider
+			.when("/data-access", {
+				templateUrl : "content/data-access-v2/resources/web/partials/data-access.html",
+				controller : "DataAccessController"		
+			})
+			.when("/data-access-page1", {
+				templateUrl : "content/data-access-v2/resources/web/partials/data-access-page1.html",
+				controller : "DataAccessController1"
+			})
+			.when("/data-access-page2", {
+				templateUrl : "content/data-access-v2/resources/web/partials/data-access-page2.html"
+			});
+	}
 	
 	// Controllers
-	var controllers = [{
-		name : "DataAccessController",
-		def : ["$scope", function($scope) {
-			$scope.title="Data-access";
-		}]
-	}, {
-		name : "DataAccessController1",
-		def : ["$scope", function($scope) {
-			$scope.title="Page1";
-		}]
-	}, {
-		name : "DataAccessController2",
-		def : ["$scope", function($scope) {
-		}]
-	}];
+	var controllers = function($controller) {
+
+		$controller("DataAccessController", ["$scope", 
+			function($scope) {
+				$scope.title="Data-access";
+			}]);
+
+		$controller("DataAccessController1", ["$scope", 
+			function($scope) {
+				$scope.title="Page1";
+			}]);
+	}	
 	
 	// TODO: retrieve data to populate the page
 	var service = null;
