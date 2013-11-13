@@ -18,6 +18,10 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWDataSource;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplate;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplateModel;
+
 /**
  * This class represents the server support needed to drive the UI for editing the datasource. The
  * <code>IDSWTemplate</code> is responsible for serializing/de-serializing the state of the UI for the Datasource. This

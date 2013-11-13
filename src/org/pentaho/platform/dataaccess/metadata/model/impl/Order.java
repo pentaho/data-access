@@ -19,7 +19,7 @@ package org.pentaho.platform.dataaccess.metadata.model.impl;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.pentaho.platform.dataaccess.metadata.model.IOrder;
+import org.pentaho.platform.dataaccess.metadata.model.api.IOrder;
 
 @XmlRootElement
 public class Order implements IOrder {

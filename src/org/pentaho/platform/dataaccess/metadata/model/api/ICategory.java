@@ -15,28 +15,32 @@
  * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.service.exception;
+package org.pentaho.platform.dataaccess.metadata.model.api;
 
 import java.io.Serializable;
 
-public class DatasourceServiceException extends Exception implements Serializable {
+import org.pentaho.platform.dataaccess.metadata.model.impl.Column;
 
-  private static final long serialVersionUID = 1L;
+/**
+ * Represents a Metadata Category containing a collection of {@see IColumn}s A category is a logical grouping of columns
+ * that makes it easier for the user to understand the model. It does not have to mirror the underlying physical model.
+ * 
+ */
+public interface ICategory extends Serializable {
 
-  public DatasourceServiceException() {
-    super();
-  }
+  /**
+   * Returns the id of the category
+   */
+  public String getId();
 
-  public DatasourceServiceException( String message ) {
-    super( message );
-  }
+  /**
+   * Returns the name of the cateogry for the current locale
+   */
+  public String getName();
 
-  public DatasourceServiceException( Throwable cause ) {
-    super( cause );
-  }
-
-  public DatasourceServiceException( String message, Throwable cause ) {
-    super( message, cause );
-  }
+  /**
+   * Returns the array of {@see IColumn}s for this category
+   */
+  public Column[] getColumns();
 
 }

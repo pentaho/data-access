@@ -21,7 +21,10 @@ package org.pentaho.platform.dataaccess.datasource.wizard.models;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.exception.DSWException;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.DSWException;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWDataSource;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplate;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplateModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.messages.Messages;
 
 /**

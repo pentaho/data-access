@@ -22,7 +22,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.pentaho.platform.dataaccess.metadata.model.IColumn;
+import org.pentaho.platform.dataaccess.metadata.model.api.IColumn;
 
 /**
  * Concrete, lightweight, serializable implementation of an {@see IColumn} object

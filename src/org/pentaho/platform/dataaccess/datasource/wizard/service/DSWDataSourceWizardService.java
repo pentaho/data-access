@@ -29,8 +29,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.models.IDSWDataSourceWizard;
-import org.pentaho.platform.dataaccess.datasource.wizard.models.IDSWTemplate;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWDataSourceWizard;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplate;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 /**
