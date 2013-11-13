@@ -23,40 +23,26 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
-import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
+import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
+import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
 
 /**
  * This class provides the list structure of templates to the template listing service.
-<<<<<<< HEAD
  *
  * @author wseyler
-=======
- * 
- * @author wseyler
- * 
->>>>>>> 6f96d60... BISERVER-10435: Change Jersey methods to serialize using dto type classes.  Added Enunciate Doc
  */
 @XmlRootElement( name = "datasourceList" )
-public class DatasourceListDto {
+public class DatasourceTypesListDto {
 
-  public List<Datasource> datasources;
+  public List<DatasourceType> datasourceTypes;
 
-  DatasourceListDto() {
+  DatasourceTypesListDto() {
   }
 
-  public DatasourceListDto( List<IDatasource> datasources ) {
-    this.datasources = new ArrayList<Datasource>();
-<<<<<<< HEAD
-    for ( IDatasource iDatasource : datasources ) {
-      this.datasources.add( (Datasource) iDatasource );
+  public DatasourceTypesListDto( List<IDatasourceType> datasourceTypes ) {
+    this.datasourceTypes = new ArrayList<DatasourceType>();
+    for ( IDatasourceType iDatasourceType : datasourceTypes ) {
+      this.datasourceTypes.add( (DatasourceType) iDatasourceType );
     }
   }
 }
-=======
-    for (IDatasource iDatasource : datasources) {
-      this.datasources.add( (Datasource) iDatasource );
-    }
-  }
-}
->>>>>>> 6f96d60... BISERVER-10435: Change Jersey methods to serialize using dto type classes.  Added Enunciate Doc
