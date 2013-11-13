@@ -49,9 +49,9 @@ public class DSWDataSourceWizardService {
    * @return A "templateList" that wraps a list of 'DSWTemplateSummaryDto'.
    */
   @GET
-  @Path( "/list" )
+  @Path( "/templates" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
-  public DSWTemplateSummaryListDto getDSWModelList() {
+  public DSWTemplateSummaryListDto getTemplates() {
     IDSWDataSourceWizard dsw = PentahoSystem.get( IDSWDataSourceWizard.class );
     List<IDSWTemplate> templates = dsw.getTemplates();
     ArrayList<DSWTemplateSummaryDto> templateNames = new ArrayList<DSWTemplateSummaryDto>();
