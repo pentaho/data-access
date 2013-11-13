@@ -36,7 +36,6 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 import org.pentaho.platform.dataaccess.catalog.impl.dto.DatasourceListDto;
 import org.pentaho.platform.dataaccess.catalog.impl.dto.DatasourceTypesListDto;
-import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 /**
  * @author wseyler

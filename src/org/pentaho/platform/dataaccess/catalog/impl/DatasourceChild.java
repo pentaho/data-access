@@ -17,6 +17,7 @@
 
 package org.pentaho.platform.dataaccess.catalog.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -34,8 +35,7 @@ public class DatasourceChild implements IDatasourceChild {
 
   private String id;
   private String name;
-  @XmlAnyElement
-  private List<IDatasourceChild> children;
+  private List<DatasourceChild> children;
 
   public DatasourceChild() {
     super();
@@ -51,7 +51,7 @@ public class DatasourceChild implements IDatasourceChild {
     this.name = name;
   }
 
-  public DatasourceChild( String id, String name, List<IDatasourceChild> children ) {
+  public DatasourceChild( String id, String name, List<DatasourceChild> children ) {
     this( id, name );
     this.children = children;
   }
@@ -83,7 +83,11 @@ public class DatasourceChild implements IDatasourceChild {
    */
   @Override
   public List<IDatasourceChild> getChildren() {
-    return children;
+    List<IDatasourceChild> values = new ArrayList<IDatasourceChild>();
+    for (IDatasourceChild iDatasourceChild : children) {
+      values.add( iDatasourceChild );
+    }
+    return values;
   }
 
   public void setId( String id ) {
@@ -94,7 +98,7 @@ public class DatasourceChild implements IDatasourceChild {
     this.name = name;
   }
 
-  public void setChildren( List<IDatasourceChild> children ) {
+  public void setChildren( List<DatasourceChild> children ) {
     this.children = children;
   }
 
