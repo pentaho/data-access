@@ -36,9 +36,11 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 import org.pentaho.platform.dataaccess.catalog.impl.dto.DatasourceListDto;
 import org.pentaho.platform.dataaccess.catalog.impl.dto.DatasourceTypesListDto;
-import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 /**
+ * Datasource Catalog is a datasource listing service, which finds IDatasource object 
+ * by consulting the IDatasourceProvider(s) registered with it.
+ * 
  * @author wseyler
  * 
  */
@@ -105,6 +107,8 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   }
 
   /**
+   * Returns list of datasources for a given type.
+   * 
    * @param datasourceType
    *          - the type of the datasources to return (typically an instance of DatasourceType)
    * @return A JaxbList of concrete instances of the type 'IDatasourceType' (typically DatasourceType)
@@ -138,7 +142,10 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   }
 
   /**
-   * @return A JaxbList of concrete instances of IDatasourceType (typically DatasourceType) suitable for serialization by Jersey
+   * Returns list of datasources types registered in the system.
+   * 
+   * @return A JaxbList of concrete instances of IDatasourceType (typically DatasourceType) 
+   *         suitable for serialization by Jersey
    */
   @GET
   @Path( "/getDatasourceTypes" )
