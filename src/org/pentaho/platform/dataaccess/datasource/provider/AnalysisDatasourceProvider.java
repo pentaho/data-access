@@ -53,7 +53,7 @@ public class AnalysisDatasourceProvider implements IDatasourceProvider {
 
     for ( MondrianCatalog mondrianCatalog : mondrianCatalogHelper.listCatalogs( PentahoSessionHolder.getSession(),
         false ) ) {
-      List<IDatasourceChild> datasourceChildren = new ArrayList<IDatasourceChild>();
+      List<DatasourceChild> datasourceChildren = new ArrayList<DatasourceChild>();
 
       for ( MondrianCube cube : mondrianCatalog.getSchema().getCubes() ) {
         datasourceChildren.add( new DatasourceChild( cube.getId(), cube.getName(), null ) );
