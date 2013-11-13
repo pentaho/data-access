@@ -4,7 +4,7 @@
 
 pen.require(['mantle/puc-api/pucAngularApi'], function(PentahoPluginHandler) {
 	pen.startDataAccess = function() {
-		PentahoPluginHandler.goNext("/data-access");
+		plugin.goNext("/data-access");
 	}
 
 	// Routes
@@ -40,6 +40,5 @@ pen.require(['mantle/puc-api/pucAngularApi'], function(PentahoPluginHandler) {
 	// TODO: retrieve data to populate the page
 	var service = null;
 	
-	var plugin = new PentahoPluginHandler.PUCAngularPlugin(routes, controllers, service);
-	plugin.register();
+	var plugin = new PentahoPluginHandler.PUCAngularPlugin(routes, controllers, service).register();
 })
