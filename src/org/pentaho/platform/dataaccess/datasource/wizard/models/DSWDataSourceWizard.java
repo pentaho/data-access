@@ -24,7 +24,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.exception.DSWException;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.DSWException;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWDataSource;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWDataSourceWizard;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWModelStorage;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplate;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplateModel;
 
 /**
  * This is a singleton class that provides various convenience services for DSWDataSource

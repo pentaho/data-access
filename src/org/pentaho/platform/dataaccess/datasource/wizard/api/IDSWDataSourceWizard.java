@@ -16,11 +16,10 @@
  * Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.models;
+package org.pentaho.platform.dataaccess.datasource.wizard.api;
 
 import java.util.List;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.exception.DSWException;
 
 /**
  * Intended as a singleton, this class provides various convenience services for DSWDataSource

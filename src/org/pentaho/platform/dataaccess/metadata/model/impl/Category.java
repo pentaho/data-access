@@ -21,7 +21,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.pentaho.platform.dataaccess.metadata.model.ICategory;
+import org.pentaho.platform.dataaccess.metadata.model.api.ICategory;
 
 /**
  * Concrete, lightweight, serializable implementation of an {@see ICategory} object

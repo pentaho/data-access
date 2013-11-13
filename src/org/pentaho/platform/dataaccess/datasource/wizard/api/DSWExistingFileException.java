@@ -16,14 +16,25 @@
  * Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.models;
+package org.pentaho.platform.dataaccess.datasource.wizard.api;
 
-public interface IDSWTemplateModel {
-  /**
-   * Return the unique Id name of the template. Each template Id should be implemented by only one object and that
-   * object should be registered in plugin.spring.xml file for it's plugin.
-   * 
-   * @return The Id with identifies the template responsible for serializing and deserializing this model.
-   */
-  String getTemplateID();
+import java.io.Serializable;
+
+
+/**
+ * Attempt to Save a datasource when a datasource already exists by that name, and the method is not set to overwrite.
+ * 
+ * @author tkafalas
+ * 
+ */
+public class DSWExistingFileException extends DSWException implements Serializable {
+  private static final long serialVersionUID = 1L;
+
+  public DSWExistingFileException() {
+    super();
+  }
+
+  public DSWExistingFileException( String message ) {
+    super( message );
+  }
 }

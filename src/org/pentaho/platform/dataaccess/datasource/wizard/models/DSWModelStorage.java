@@ -24,8 +24,12 @@ import org.pentaho.metadata.repository.DomainAlreadyExistsException;
 import org.pentaho.metadata.repository.DomainIdNullException;
 import org.pentaho.metadata.repository.DomainStorageException;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
-import org.pentaho.platform.dataaccess.datasource.wizard.exception.DSWException;
-import org.pentaho.platform.dataaccess.datasource.wizard.exception.DSWExistingFileException;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.DSWException;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.DSWExistingFileException;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWDataSource;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWModelStorage;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplate;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplateModel;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 

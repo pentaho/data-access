@@ -21,8 +21,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.query.model.CombinationType;
-import org.pentaho.platform.dataaccess.metadata.model.ICondition;
-import org.pentaho.platform.dataaccess.metadata.model.Operator;
+import org.pentaho.platform.dataaccess.metadata.model.api.ICondition;
+import org.pentaho.platform.dataaccess.metadata.model.api.Operator;
 
 @XmlRootElement
 public class Condition implements ICondition {

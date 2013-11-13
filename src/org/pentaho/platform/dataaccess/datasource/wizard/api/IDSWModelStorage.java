@@ -16,9 +16,8 @@
  * Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.models;
+package org.pentaho.platform.dataaccess.datasource.wizard.api;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.exception.DSWException;
 
 /**
  * This interface provides the api for the methods save a seialized model, or, load the serialized model from the
