@@ -43,7 +43,7 @@ public class DatasourceChildTest {
     datasourceChild3.setId( "3" );
     datasourceChild3.setName( "testDatasource3" );
 
-    List<IDatasourceChild> datasourceChildList = new ArrayList<IDatasourceChild>(
+    List<DatasourceChild> datasourceChildList = new ArrayList<DatasourceChild>(
       Arrays.asList( datasourceChild2, datasourceChild3 ) );
 
     datasourceChild.setChildren( datasourceChildList );
