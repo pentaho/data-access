@@ -26,35 +26,46 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
 import org.pentaho.platform.dataaccess.catalog.impl.DatasourceChild;
+import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCube;
 
-public class AnalysisDatasourceProvider implements IDatasourceProvider{
+public class AnalysisDatasourceProvider implements IDatasourceProvider {
 
   private MondrianCatalogHelper mondrianCatalogHelper;
   private IDatasourceType datasourceType = new AnalysisDatasourceType();
 
+  public AnalysisDatasourceProvider() {
+    this.mondrianCatalogHelper = (MondrianCatalogHelper) PentahoSystem.get( IMondrianCatalogService.class );
+  }
+
   public AnalysisDatasourceProvider( final MondrianCatalogHelper mondrianCatalogHelper ) {
     this.mondrianCatalogHelper = mondrianCatalogHelper;
   }
+
   @Override
   public List<IDatasource> getDatasources() {
     List<IDatasource> datasources = new ArrayList<IDatasource>();
-    
-    for(MondrianCatalog mondrianCatalog:mondrianCatalogHelper.listCatalogs( PentahoSessionHolder.getSession(), false )) {
+
+    for ( MondrianCatalog mondrianCatalog : mondrianCatalogHelper.listCatalogs( PentahoSessionHolder.getSession(),
+        false ) ) {
       List<IDatasourceChild> datasourceChildren = new ArrayList<IDatasourceChild>();
-      
-      for(MondrianCube cube:mondrianCatalog.getSchema().getCubes()) {
-        datasourceChildren.add( new DatasourceChild(cube.getId(), cube.getName(), null));
+
+      for ( MondrianCube cube : mondrianCatalog.getSchema().getCubes() ) {
+        datasourceChildren.add( new DatasourceChild( cube.getId(), cube.getName(), null ) );
       }
-      
-      IDatasourceChild datasourceChild = new DatasourceChild(mondrianCatalog.getSchema().getName(), mondrianCatalog.getSchema().getName(), datasourceChildren);
-      
-      List<IDatasourceChild> children = new ArrayList<IDatasourceChild>();
-      children.add(datasourceChild);
-      datasources.add( new Datasource(mondrianCatalog.getName(), getType(), children) );
+
+      IDatasourceChild datasourceChild =
+          new DatasourceChild( mondrianCatalog.getSchema().getName(), mondrianCatalog.getSchema().getName(),
+              datasourceChildren );
+
+      List<DatasourceChild> children = new ArrayList<DatasourceChild>();
+      children.add( (DatasourceChild) datasourceChild );
+      datasources.add( new Datasource( mondrianCatalog.getName(), (DatasourceType) getType(), children ) );
     }
     return datasources;
   }
@@ -65,3 +76,4 @@ public class AnalysisDatasourceProvider implements IDatasourceProvider{
   }
 
 }
+
