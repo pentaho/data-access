@@ -64,6 +64,9 @@
         <pen:attr key="priority" value="50"/>
       </pen:attributes>
     </pen:publish>
+    <constructor-arg>
+       <pen:bean class="org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService"/>
+    </constructor-arg>
   </bean>
   <bean class="org.pentaho.platform.dataaccess.datasource.provider.JDBCDatasourceProvider">
     <pen:publish as-type="INTERFACES">
@@ -71,6 +74,9 @@
         <pen:attr key="priority" value="40"/>
       </pen:attributes>
     </pen:publish>
+    <constructor-arg>
+       <pen:bean class="org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService"/>
+    </constructor-arg>
   </bean>
   <bean class="org.pentaho.platform.dataaccess.datasource.provider.MetadataDatasourceProvider">
     <pen:publish as-type="INTERFACES">
@@ -78,6 +84,9 @@
         <pen:attr key="priority" value="30"/>
       </pen:attributes>
     </pen:publish>
+    <constructor-arg>
+       <pen:bean class="org.pentaho.metadata.repository.IMetadataDomainRepository"/>
+    </constructor-arg>    
   </bean>
   <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" scope="singleton"/>
 </beans>
