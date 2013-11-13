@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
-import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 public class DatasourceProviderTest {
 
   IDatasourceProvider datasourceProvider;
-  IDatasourceType csvDatasourceType;
+  DatasourceType csvDatasourceType;
 
   /**
    *

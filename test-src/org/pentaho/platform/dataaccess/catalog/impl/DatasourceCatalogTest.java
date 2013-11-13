@@ -104,7 +104,7 @@ public class DatasourceCatalogTest {
     assertEquals( "2", result.get( 1 ).getId() );
   }
 
-  public class MockDatasourceType implements IDatasourceType {
+  public class MockDatasourceType extends DatasourceType {
     String id;
 
     public MockDatasourceType( String id ) {
