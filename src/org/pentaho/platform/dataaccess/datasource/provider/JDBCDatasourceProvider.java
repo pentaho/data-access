@@ -21,18 +21,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
+import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class JDBCDatasourceProvider implements IDatasourceProvider {
 
   private IDatasourceMgmtService datasourceMgmtService;
-  private IDatasourceType datasourceType = new JDBCDatasourceType(); 
-  
+  private IDatasourceType datasourceType = new JDBCDatasourceType();
+  IPentahoSession pentahoSession = PentahoSessionHolder.getSession();
+
+  public JDBCDatasourceProvider() {
+    this.datasourceMgmtService = PentahoSystem.get( IDatasourceMgmtService.class, pentahoSession );
+  }
+
   public JDBCDatasourceProvider(final IDatasourceMgmtService datasourceMgmtService) {
     this.datasourceMgmtService = datasourceMgmtService;
   }
@@ -42,7 +51,7 @@ public class JDBCDatasourceProvider implements IDatasourceProvider {
     List<IDatasource> datasources = new ArrayList<IDatasource>();
     try {
       for ( IDatabaseConnection databaseConnection : datasourceMgmtService.getDatasources() ) {
-        datasources.add( new Datasource( databaseConnection.getName(), getType(), null ) );
+        datasources.add( new Datasource( databaseConnection.getName(), (DatasourceType) getType(), null ) );
       }
 
     } catch ( DatasourceMgmtServiceException e ) {

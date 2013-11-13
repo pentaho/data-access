@@ -27,13 +27,17 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 
+/**
+ * Provides a concrete Implementation of IDatasource suitable for serialization using Jersey.
+ *
+ * @author wseyler
+ */
 @XmlRootElement
 public class Datasource implements IDatasource {
 
   private String name;
-  private IDatasourceType datasourceType;
-  @XmlAnyElement
-  private List<IDatasourceChild> children = new ArrayList<IDatasourceChild>();
+  private DatasourceType datasourceType;
+  private List<DatasourceChild> children = new ArrayList<DatasourceChild>();
 
   public Datasource() {
     super();
@@ -44,18 +48,17 @@ public class Datasource implements IDatasource {
     this.name = name;
   }
 
-  public Datasource( String name, IDatasourceType datasourceType ) {
+  public Datasource( String name, DatasourceType datasourceType ) {
     this( name );
     this.datasourceType = datasourceType;
   }
 
-  public Datasource( String name, IDatasourceType datasourceType, List<IDatasourceChild> children ) {
+  public Datasource( String name, DatasourceType datasourceType, List<DatasourceChild> children ) {
     this( name, datasourceType );
     this.children = children;
   }
 
   @Override
-  @XmlAnyElement
   public IDatasourceType getType() {
     return datasourceType;
   }
@@ -67,18 +70,22 @@ public class Datasource implements IDatasource {
 
   @Override
   public List<IDatasourceChild> getChildren() {
-    return children;
+    List<IDatasourceChild> ivalues = new ArrayList<IDatasourceChild>();
+    for (DatasourceChild child : children) {
+      ivalues.add( child );
+    }
+    return ivalues;
   }
 
   public void setName( String name ) {
     this.name = name;
   }
 
-  public void setType( IDatasourceType datasourceType ) {
+  public void setType( DatasourceType datasourceType ) {
     this.datasourceType = datasourceType;
   }
 
-  public void setChildren( List<IDatasourceChild> children ) {
+  public void setChildren( List<DatasourceChild> children ) {
     this.children = children;
   }
 

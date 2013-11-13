@@ -26,7 +26,10 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
 import org.pentaho.platform.dataaccess.catalog.impl.DatasourceChild;
+import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCube;
@@ -35,6 +38,10 @@ public class AnalysisDatasourceProvider implements IDatasourceProvider {
 
   private MondrianCatalogHelper mondrianCatalogHelper;
   private IDatasourceType datasourceType = new AnalysisDatasourceType();
+
+  public AnalysisDatasourceProvider() {
+    this.mondrianCatalogHelper = (MondrianCatalogHelper) PentahoSystem.get( IMondrianCatalogService.class );
+  }
 
   public AnalysisDatasourceProvider( final MondrianCatalogHelper mondrianCatalogHelper ) {
     this.mondrianCatalogHelper = mondrianCatalogHelper;
@@ -56,9 +63,9 @@ public class AnalysisDatasourceProvider implements IDatasourceProvider {
           new DatasourceChild( mondrianCatalog.getSchema().getName(), mondrianCatalog.getSchema().getName(),
               datasourceChildren );
 
-      List<IDatasourceChild> children = new ArrayList<IDatasourceChild>();
-      children.add( datasourceChild );
-      datasources.add( new Datasource( mondrianCatalog.getName(), getType(), children ) );
+      List<DatasourceChild> children = new ArrayList<DatasourceChild>();
+      children.add( (DatasourceChild) datasourceChild );
+      datasources.add( new Datasource( mondrianCatalog.getName(), (DatasourceType) getType(), children ) );
     }
     return datasources;
   }
