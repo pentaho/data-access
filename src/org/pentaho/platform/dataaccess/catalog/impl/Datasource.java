@@ -27,6 +27,11 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 
+/**
+ * Provides a concrete Implementation of IDatasource suitable for serialization using Jersey.
+ * 
+ * @author wseyler
+ */
 @XmlRootElement
 public class Datasource implements IDatasource {
 

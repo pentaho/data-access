@@ -1,4 +1,4 @@
-/*!
+/*
  * This program is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
  * Foundation.
@@ -51,7 +51,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   }
 
   public DatasourceCatalog( List<IDatasourceProvider> datasourceProviders ) {
-    this.datasourceProviders.addAll( datasourceProviders );
+    datasourceProviders.addAll( datasourceProviders );
   }
 
   /*
@@ -70,21 +70,21 @@ public class DatasourceCatalog implements IDatasourceCatalog {
     return values;
   }
 
-  /*
-   * returns a JaxbList of IDatasourceType suitable for serialization by Jersey
+  /**
+   * Returns a list of IDatasourceTypes that can be further used to lookup datasources of a specific type.
+   * @return a JaxbList of IDatasourceType implementations (usually DatasourceType) suitable for serialization by Jersey
    */
   @GET
   @Path( "/getDatasources" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   public JaxbList<IDatasource> getDatasourcesAsJaxbList() {
     List<IDatasource> values = getDatasources();
-    if (values != null) {
-      return new JaxbList<IDatasource>(values);
+    if ( values != null ) {
+      return new JaxbList<IDatasource>( values );
     }
     return null;
   }
 
-  
   /*
    * (non-Javadoc)
    * 
@@ -102,26 +102,23 @@ public class DatasourceCatalog implements IDatasourceCatalog {
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.pentaho.platform.dataaccess.catalog.api.IDatasourceCatalog#getDatasourcesOfType(org.pentaho.platform.dataaccess
-   * .catalog.api.IDatasourceType)
+  /**
+   * @param datasourceType
+   *          - the type of the datasources to return (typically an instance of DatasourceType)
+   * @return A JaxbList of concrete instances of the type 'IDatasourceType' (typically DatasourceType)
    */
   @POST
   @Path( "/getDatasourcesByType" )
   @Consumes( { APPLICATION_JSON, APPLICATION_XML } )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   public JaxbList<IDatasource> getDatasourcesOfTypeAsJaxbList( IDatasourceType datasourceType ) {
-    List<IDatasource> values = getDatasourcesOfType(datasourceType);
-    if (values != null) {
-      return new JaxbList<IDatasource>(values);
+    List<IDatasource> values = getDatasourcesOfType( datasourceType );
+    if ( values != null ) {
+      return new JaxbList<IDatasource>( values );
     }
     return null;
   }
 
-  
   /*
    * (non-Javadoc)
    * 
@@ -138,14 +135,14 @@ public class DatasourceCatalog implements IDatasourceCatalog {
     return values;
   }
 
-  /*
-   * returns a JaxbList of IDatasourceType suitable for serialization by Jersey
+  /**
+   * @return A JaxbList of concrete instances of IDatasourceType (typically DatasourceType) suitable for serialization by Jersey
    */
   @GET
   @Path( "/getDatasourceTypes" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   public JaxbList<IDatasourceType> getDatasourceTypesAsJaxbList() {
-    return new JaxbList<IDatasourceType>(getDatasourceTypes());
+    return new JaxbList<IDatasourceType>( getDatasourceTypes() );
   }
 
   public void registerDatasourceProvider( IDatasourceProvider datasourceProvider ) {
@@ -153,4 +150,3 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   }
 
 }
-
