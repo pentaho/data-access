@@ -43,6 +43,11 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 @Path( "/data-access-v2/api/datasourceWizard/" )
 public class DSWDataSourceWizardService {
 
+  /**
+   * Queries the system for a list of registered datasource templates.
+   * 
+   * @return A "templateList" that wraps a list of 'DSWTemplateSummaryDto'.
+   */
   @GET
   @Path( "/list" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )

@@ -26,6 +26,12 @@ import java.util.ResourceBundle;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * An implementation of 'IDatasourceType' that defines a datasource type and provides for retrieving a localized name for
+ * that type.
+ * 
+ * @author wseyler
+ */
 @XmlRootElement
 public class DatasourceType implements IDatasourceType {
 
