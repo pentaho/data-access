@@ -28,9 +28,8 @@ import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
 
 /**
  * This class provides the list structure of templates to the template listing service.
- * 
+ *
  * @author wseyler
- * 
  */
 @XmlRootElement( name = "datasourceList" )
 public class DatasourceListDto {
@@ -42,7 +41,7 @@ public class DatasourceListDto {
 
   public DatasourceListDto( List<IDatasource> datasources ) {
     this.datasources = new ArrayList<Datasource>();
-    for (IDatasource iDatasource : datasources) {
+    for ( IDatasource iDatasource : datasources ) {
       this.datasources.add( (Datasource) iDatasource );
     }
   }

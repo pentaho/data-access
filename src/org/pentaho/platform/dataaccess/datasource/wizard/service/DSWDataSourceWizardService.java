@@ -40,7 +40,7 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
  * 
  */
 
-@Path( "/data-access-v2/api/dsw-wizard/" )
+@Path( "/data-access-v2/api/datasourceWizard/" )
 public class DSWDataSourceWizardService {
 
   /**
@@ -56,7 +56,8 @@ public class DSWDataSourceWizardService {
     List<IDSWTemplate> templates = dsw.getTemplates();
     ArrayList<DSWTemplateSummaryDto> templateNames = new ArrayList<DSWTemplateSummaryDto>();
     for ( IDSWTemplate template : templates ) {
-      templateNames.add( new DSWTemplateSummaryDto( template.getID(), template.getDisplayName( Locale.getDefault() ) ) );
+      templateNames.add( new DSWTemplateSummaryDto( template.getID(),
+          template.getDisplayName( Locale.getDefault() ) ) );
     }
     return new DSWTemplateSummaryListDto( templateNames );
   }

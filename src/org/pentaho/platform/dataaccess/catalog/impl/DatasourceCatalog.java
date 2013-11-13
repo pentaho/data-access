@@ -39,7 +39,7 @@ import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 /**
  * @author wseyler
- * 
+ *
  */
 @Path( "/data-access-v2/api/datasourceCatalog" )
 public class DatasourceCatalog implements IDatasourceCatalog {
@@ -52,7 +52,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   }
 
   public DatasourceCatalog( List<IDatasourceProvider> datasourceProviders ) {
-    datasourceProviders.addAll( datasourceProviders );
+    this.datasourceProviders.addAll( datasourceProviders );
   }
 
   /*
@@ -147,7 +147,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   }
 
   public void registerDatasourceProvider( IDatasourceProvider datasourceProvider ) {
-    datasourceProviders.add( datasourceProvider );
+    this.datasourceProviders.add( datasourceProvider );
   }
 
 }

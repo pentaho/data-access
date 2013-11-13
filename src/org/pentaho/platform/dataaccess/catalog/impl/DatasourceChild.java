@@ -19,6 +19,7 @@ package org.pentaho.platform.dataaccess.catalog.impl;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild;
@@ -33,6 +34,7 @@ public class DatasourceChild implements IDatasourceChild {
 
   private String id;
   private String name;
+  @XmlAnyElement
   private List<IDatasourceChild> children;
 
   public DatasourceChild() {
