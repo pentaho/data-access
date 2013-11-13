@@ -22,6 +22,9 @@ import org.mockito.Mockito;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWDataSource;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplate;
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplateModel;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 

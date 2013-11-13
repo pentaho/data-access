@@ -16,24 +16,14 @@
  * Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.exception;
+package org.pentaho.platform.dataaccess.datasource.wizard.api;
 
-import java.io.Serializable;
-
-/**
- * General purpose exception for classes related to DataSourceWizard and templates
- * 
- * @author tkafalas
- * 
- */
-public class DSWException extends Exception implements Serializable {
-  private static final long serialVersionUID = 1L;
-
-  public DSWException() {
-    super();
-  }
-
-  public DSWException( String message ) {
-    super( message );
-  }
+public interface IDSWTemplateModel {
+  /**
+   * Return the unique Id name of the template. Each template Id should be implemented by only one object and that
+   * object should be registered in plugin.spring.xml file for it's plugin.
+   * 
+   * @return The Id with identifies the template responsible for serializing and deserializing this model.
+   */
+  String getTemplateID();
 }

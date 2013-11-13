@@ -16,33 +16,24 @@
  * Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.datasource.wizard.models;
+package org.pentaho.platform.dataaccess.datasource.wizard.api;
+
+import java.io.Serializable;
 
 /**
- * This interface provides the api for the server support needed to drive the UI for editing the datasource. The
- * <code>IDSWTemplate</code> is responsible for serializing/de-serializing the state of the UI for the Datasource. This
- * state is stored in the <code>IDSWTemplateModel</code>.
+ * General purpose exception for classes related to DataSourceWizard and templates
  * 
  * @author tkafalas
  * 
  */
-public interface IDSWDataSource {
-  /**
-   * 
-   * @return The formal name of the DataSource
-   */
-  String getName();
+public class DSWException extends Exception implements Serializable {
+  private static final long serialVersionUID = 1L;
 
-  /**
-   * 
-   * @return The template which allows serialization/de-serailization of the UI state as well as providing a base model
-   *         suitable adding a new datasource.
-   */
-  IDSWTemplate getTemplate();
+  public DSWException() {
+    super();
+  }
 
-  /**
-   * 
-   * @return The state of the UI, if it exists, or null if it is not defined.
-   */
-  IDSWTemplateModel getModel();
+  public DSWException( String message ) {
+    super( message );
+  }
 }

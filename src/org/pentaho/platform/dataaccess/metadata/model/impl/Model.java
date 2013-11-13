@@ -19,7 +19,7 @@ package org.pentaho.platform.dataaccess.metadata.model.impl;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.pentaho.platform.dataaccess.metadata.model.IModel;
+import org.pentaho.platform.dataaccess.metadata.model.api.IModel;
 
 /**
  * Concrete, lightweight, serializable implementation of an {@see IModel} object

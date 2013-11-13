@@ -21,7 +21,7 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.pentaho.platform.dataaccess.metadata.model.IQuery;
+import org.pentaho.platform.dataaccess.metadata.model.api.IQuery;
 
 @XmlRootElement
 public class Query implements IQuery {

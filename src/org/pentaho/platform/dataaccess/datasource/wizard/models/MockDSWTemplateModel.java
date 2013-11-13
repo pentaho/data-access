@@ -18,6 +18,8 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
+import org.pentaho.platform.dataaccess.datasource.wizard.api.IDSWTemplateModel;
+
 /**
  * Serves as a placeholder for true implementations of the IDSWTemplate until they are developed.
  * 

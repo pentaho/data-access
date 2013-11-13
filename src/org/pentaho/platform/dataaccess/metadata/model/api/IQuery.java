@@ -15,49 +15,28 @@
  * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
  */
 
-package org.pentaho.platform.dataaccess.metadata.model;
+package org.pentaho.platform.dataaccess.metadata.model.api;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
- * 
- * Represents a Metadata Model object containing one or more {@see ICategory}s
+ * Represents an MQL Query. Contains a list of selected columns, conditions and order information.
  * 
  */
-public interface IModel extends Serializable {
+public interface IQuery extends Serializable {
 
-  /**
-   * Returns the id of the model
-   * 
-   * @return
-   */
-  public String getId();
+  public IColumn[] getColumns();
 
-  /**
-   * Returns the id of the domain of the model
-   * 
-   * @return
-   */
-  public String getDomainId();
+  public ICondition[] getConditions();
 
-  /**
-   * Returns the name of the model for the current locale
-   * 
-   * @return
-   */
-  public String getName();
+  public IOrder[] getOrders();
 
-  /**
-   * Returns an array of categories for the model
-   * 
-   * @return
-   */
-  public ICategory[] getCategories();
+  public String getDomainName();
 
-  /**
-   * Returns the description of the model for the current locale
-   * 
-   * @return
-   */
-  public String getDescription();
+  public String getModelId();
+
+  public Map<String, String> getDefaultParameterMap();
+
+  public Boolean getDisableDistinct();
 }
