@@ -1,4 +1,4 @@
-/*!
+/**
  * This program is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
  * Foundation.
@@ -12,67 +12,93 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
+ *
  */
 
-package org.pentaho.platform.dataaccess.datasource.provider;
+package org.pentaho.platform.dataaccess.catalog.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
-import org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild;
-import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
-import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
-import org.pentaho.platform.dataaccess.catalog.impl.DatasourceChild;
-import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
-import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
-import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
-import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
-import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCube;
+import org.pentaho.platform.dataaccess.datasource.provider.messages.Messages;
 
-public class AnalysisDatasourceProvider implements IDatasourceProvider {
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-  private MondrianCatalogHelper mondrianCatalogHelper;
-  private IDatasourceType datasourceType = new AnalysisDatasourceType();
+import javax.xml.bind.annotation.XmlRootElement;
 
-  public AnalysisDatasourceProvider() {
-    this.mondrianCatalogHelper = (MondrianCatalogHelper) PentahoSystem.get( IMondrianCatalogService.class );
+/**
+ * An implementation of 'IDatasourceType' that defines a datasource type and provides for retrieving a localized name for
+ * that type.
+ * 
+ * @author wseyler
+ */
+@XmlRootElement
+public class DatasourceType implements IDatasourceType {
+
+  String id;
+  String displayName;
+  ResourceBundle resourceBundle;
+
+  public DatasourceType() {
+    super();
   }
 
-  public AnalysisDatasourceProvider( final MondrianCatalogHelper mondrianCatalogHelper ) {
-    this.mondrianCatalogHelper = mondrianCatalogHelper;
+  /**
+   * 
+   * @param id
+   */
+  public DatasourceType( String id ) {
+    this();
+    this.id = id;
   }
 
+  
+  /**
+   * 
+   * @param id
+   * @param displayName
+   */
+  public DatasourceType( String id, String displayName ) {
+    this();
+    this.id = id;
+    this.displayName = displayName;
+  }
+
+  /**
+   * 
+   * @return
+   */
   @Override
-  public List<IDatasource> getDatasources() {
-    List<IDatasource> datasources = new ArrayList<IDatasource>();
-
-    for ( MondrianCatalog mondrianCatalog : mondrianCatalogHelper.listCatalogs( PentahoSessionHolder.getSession(),
-        false ) ) {
-      List<IDatasourceChild> datasourceChildren = new ArrayList<IDatasourceChild>();
-
-      for ( MondrianCube cube : mondrianCatalog.getSchema().getCubes() ) {
-        datasourceChildren.add( new DatasourceChild( cube.getId(), cube.getName(), null ) );
-      }
-
-      IDatasourceChild datasourceChild =
-          new DatasourceChild( mondrianCatalog.getSchema().getName(), mondrianCatalog.getSchema().getName(),
-              datasourceChildren );
-
-      List<DatasourceChild> children = new ArrayList<DatasourceChild>();
-      children.add( (DatasourceChild) datasourceChild );
-      datasources.add( new Datasource( mondrianCatalog.getName(), (DatasourceType) getType(), children ) );
-    }
-    return datasources;
+  public String getId() {
+    return id;
   }
 
+  /**
+   * 
+   * @param locale
+   * @return
+   */
   @Override
-  public IDatasourceType getType() {
-    return datasourceType;
+  public String getDisplayName( Locale locale ) {
+    resourceBundle = Messages.getInstance().getBundle(locale);
+    return resourceBundle.getString( id );
+  }
+
+  /**
+   * 
+   * @param id
+   */
+  public void setId( String id ) {
+    this.id = id;
+  }
+
+  /**
+   * 
+   * @param displayName
+   * @return
+   */
+  public void setDisplayName( String displayName ) {
+    this.displayName = displayName;
   }
 
 }

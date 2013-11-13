@@ -24,8 +24,9 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 
 /**
- * @author wseyler
+ * An implementation of IDatasourceProvider where one instance represents one type of datasource that has been registered by the system. 
  * 
+ * @author wseyler
  */
 public class DatasourceProvider implements IDatasourceProvider {
 

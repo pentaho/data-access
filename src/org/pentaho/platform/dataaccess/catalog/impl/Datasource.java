@@ -29,15 +29,16 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 
 /**
  * Provides a concrete Implementation of IDatasource suitable for serialization using Jersey.
- *
+ * 
  * @author wseyler
  */
 @XmlRootElement
 public class Datasource implements IDatasource {
 
   private String name;
-  private DatasourceType datasourceType;
-  private List<DatasourceChild> children = new ArrayList<DatasourceChild>();
+  private IDatasourceType datasourceType;
+  @XmlAnyElement
+  private List<IDatasourceChild> children = new ArrayList<IDatasourceChild>();
 
   public Datasource() {
     super();
@@ -48,17 +49,18 @@ public class Datasource implements IDatasource {
     this.name = name;
   }
 
-  public Datasource( String name, DatasourceType datasourceType ) {
+  public Datasource( String name, IDatasourceType datasourceType ) {
     this( name );
     this.datasourceType = datasourceType;
   }
 
-  public Datasource( String name, DatasourceType datasourceType, List<DatasourceChild> children ) {
+  public Datasource( String name, IDatasourceType datasourceType, List<IDatasourceChild> children ) {
     this( name, datasourceType );
     this.children = children;
   }
 
   @Override
+  @XmlAnyElement
   public IDatasourceType getType() {
     return datasourceType;
   }
@@ -70,22 +72,18 @@ public class Datasource implements IDatasource {
 
   @Override
   public List<IDatasourceChild> getChildren() {
-    List<IDatasourceChild> ivalues = new ArrayList<IDatasourceChild>();
-    for (DatasourceChild child : children) {
-      ivalues.add( child );
-    }
-    return ivalues;
+    return children;
   }
 
   public void setName( String name ) {
     this.name = name;
   }
 
-  public void setType( DatasourceType datasourceType ) {
+  public void setType( IDatasourceType datasourceType ) {
     this.datasourceType = datasourceType;
   }
 
-  public void setChildren( List<DatasourceChild> children ) {
+  public void setChildren( List<IDatasourceChild> children ) {
     this.children = children;
   }
 

@@ -25,8 +25,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild;
 
 /**
- * @author wseyler
+ * Provides the structure for a hierarchy of children that belong to a datasource.
  * 
+ * @author wseyler
  */
 @XmlRootElement
 public class DatasourceChild implements IDatasourceChild {
