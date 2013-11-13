@@ -20,7 +20,6 @@ package org.pentaho.platform.dataaccess.catalog.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.pentaho.platform.dataaccess.catalog.api.IDatasource;

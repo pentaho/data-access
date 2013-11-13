@@ -35,6 +35,7 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasourceCatalog;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider;
 import org.pentaho.platform.dataaccess.catalog.api.IDatasourceType;
 import org.pentaho.platform.dataaccess.catalog.impl.dto.DatasourceListDto;
+import org.pentaho.platform.dataaccess.catalog.impl.dto.DatasourceTypesListDto;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 /**
@@ -142,8 +143,8 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   @GET
   @Path( "/getDatasourceTypes" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
-  public JaxbList<IDatasourceType> getDatasourceTypesAsJaxbList() {
-    return new JaxbList<IDatasourceType>( getDatasourceTypes() );
+  public DatasourceTypesListDto getDatasourceTypesAsJaxbList() {
+    return new DatasourceTypesListDto( getDatasourceTypes() );
   }
 
   public void registerDatasourceProvider( IDatasourceProvider datasourceProvider ) {
