@@ -84,7 +84,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   public DatasourceListDto getDatasourcesAsJaxbList() {
     List<IDatasource> values = getDatasources();
     if ( values != null ) {
-      return new DatasourceListDto(values);
+      return new DatasourceListDto( values );
     }
     return null;
   }
@@ -117,7 +117,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   @Path( "/getDatasourcesByType" )
   @Consumes( { APPLICATION_JSON, APPLICATION_XML } )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
-  public DatasourceListDto getDatasourcesOfTypeAsJaxbList( IDatasourceType datasourceType ) {
+  public DatasourceListDto getDatasourcesOfTypeAsJaxbList( DatasourceType datasourceType ) {
     List<IDatasource> values = getDatasourcesOfType( datasourceType );
     if ( values != null ) {
       return new DatasourceListDto( values );
