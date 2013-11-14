@@ -21,6 +21,9 @@
 
   <dependencies defaultconf="default->default">
 
+    <!-- data-access-api dependency -->
+    <dependency org="${ivy.artifact.group}" name="${ivy.artifact.api.id}" rev="${project.revision}" changing="true" />
+
     <!--  internal dependencies -->
     <dependency org="pentaho" name="mondrian" rev="${dependency.mondrian.revision}" changing="true">
       <exclude org="commons-dbcp" name="commons-dbcp"/>

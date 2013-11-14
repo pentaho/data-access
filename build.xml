@@ -1,220 +1,45 @@
-<project name="Data Access V2" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="Data Access v2" basedir="." default="jar"
+         xmlns:ivy="antlib:org.apache.ivy.ant">
 
-	<!-- Import the subfloor-pkg.xml file which contains all the default tasks -->
-	<import file="build-res/subfloor-pkg.xml" />
-	<import file="build-res/common_build_compatibility.xml" />
+    <description>
+       Data Access v2 convenience build
+    </description>
 
-	<!-- Setup the classpath used for testing -->
-	<path id="test.classpath">
-		<fileset dir="${lib.dir}">
-			<include name="*.jar" />
-		</fileset>
-		<fileset dir="${devlib.dir}">
-			<include name="*" />
-		</fileset>
-		<fileset dir="${testlib.dir}">
-			<include name="*.jar" />
-		</fileset>
-		<dirset dir="${classes.dir}" />
-		<dirset dir="${testclasses.dir}" />
-	</path>
+    <property file="build.properties"/>
 
-	<!-- Findbugs properties -->
-		<property name="findbugs.build.cache.dir" 
-			value="${build.cache.dir}/findbugs" 
-			description="Directory where the findbugs jars (and dependencies) is placed after it is auto-downloaded by the build" />
-		<property name="findbugs.zip" 
-			value="${findbugs.build.cache.dir}/findbugs.zip" 
-			description="Findbugs zip file that is downloaded" />
-		<property name="findbugs.version" 
-			value="1.3.9" 
-			description="version of findbugs to use" />
-		<property name="findbugs.url" 
-			value="http://sourceforge.net/projects/findbugs/files/findbugs/${findbugs.version}/findbugs-${findbugs.version}.zip/download" 
-			description="URL to download finbugs from" />
-		<property name="findbugs.output-dir" 
-			value="${bin.dir}/reports/findbugs" 
-			description="Folder to write the findbugs xml output file" />
-		<property name="findbugs.output-file" 
-			value="${findbugs.output-dir}/findbugs.xml" 
-			description="File to write the findbugs output" />
-		<property name="findbugs.home" 
-			value="${findbugs.build.cache.dir}/findbugs-${findbugs.version}"
-			description="Where findbugs is installed to" />
-
-	  <!-- jmeter properties -->
-        <property name="jmeter.home"
-                  value="${basedir}/jmeter"
-                  description="jmeter installation location" />
-        <property name="jmeter.version"
-                  value="2.10"
-                  description="version of jmeter to use" />
-        <property name="jmeter.url"
-                  value="http://apache.cs.utah.edu/jmeter/binaries/apache-jmeter-${jmeter.version}.zip"
-                  description="URL to download jmeter from"/>
-        <property name="jmeter.zip"
-                  value="${jmeter.home}/jmeter.zip"/>
-	
-  <!--=======================================================================
-      continuous
-
-      Runs a typical continuous integration build including project dist, javadoc, test,
-      and coverage artifacts
-      ====================================================================-->
-  <target name="continuous" depends="clean-all,resolve,dist,cobertura,publish"/>
-
-
-	<target name="install" description="Installs the plugin to your Pentaho BI Server">
-		<unzip src="${dist.dir}/${package.basename}.zip" dest="${pentaho.solutions.dir}/system" overwrite="true">
-		</unzip>
-
-		<!--copy todir="${pentaho.solutions.dir}">
-      <fileset dir="${basedir}/solutions/" />
-    </copy-->
-	</target>
-
-	<target name="install-jar" depends="jar" description="Installs the plugin to your Pentaho BI Server">
-		<copy file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" todir="${pentaho.solutions.dir}/system/${package.root.dir}/lib" overwrite="true"/>
-		<!--copy todir="${pentaho.solutions.dir}">
-      <fileset dir="${basedir}/solutions/" />
-    </copy-->
-	</target>
-	
-	<!-- override the subfloor assemble target to do special plug-in assembly -->
-	<target name="assemble" depends="assemble.init">
-		<copy todir="${approot.stage.dir}/lib" overwrite="true">
-			<!-- fileset dir="${lib.dir}" excludes="pentaho-bi-platform-*.jar" / -->
-			<fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
-		</copy>
-
-		<copy todir="${approot.stage.dir}" overwrite="true">
-			<fileset dir="${package.resdir}" />
-		</copy>
-	</target>
-
-	<!-- ===================================================================
-		findbugs.download-check
-		
-		checks to see if findbugs is available or not
-	======================================================================== -->
-	<target name="findbugs.download-check" description="checks if files have already been downloaded">
-		<condition property="findbugs.exists">
-			<and>
-				<available file="${findbugs.build.cache.dir}" type="dir" />
-				<available file="${findbugs.home}" type="dir" />
-				<available classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
-					<classpath>
-						<fileset dir="${findbugs.home}/lib">
-							<include name="findbugs-ant.jar"/>
-						</fileset>
-					</classpath>
-				</available>					
-			</and>
-		</condition>
-		
-	</target>
-
-
-	<!-- ===================================================================
-		findbugs.install
-		
-		downloads and unzips findbugs from sourceforge.
-		ivy/maven resolution doesn't work well.  
-		only a really old version of findbugs is available.
-		the findbugs ant task requires a "home" location of a findbugs install,
-		the ivy/maven artifacts aren't a complete install.  So we download it
-		from sourceforge and unzip it in a known location.
-	======================================================================== -->
-	<target name="findbugs.install" description="download and install findbugs" depends="findbugs.download-check" unless="findbugs.exists">
-		<mkdir dir="${findbugs.build.cache.dir}" />
-		<get src="${findbugs.url}" dest="${findbugs.zip}" usetimestamp="true" />
-		<unzip src="${findbugs.zip}" dest="${findbugs.build.cache.dir}" />
-		<delete file="${findbugs.zip}" />
-	</target>
-
-	<!-- ===================================================================
-		findbugs
-		
-		runs findbugs on the compiled project classes, generates an xml report
-	======================================================================== -->
-	<target name="findbugs" depends="findbugs.install,compile,findbugs.clean" description="executes findbugs">
-		<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpath="${findbugs.home}/lib/findbugs-ant.jar" />
-		<mkdir dir="${findbugs.output-dir}"/>
-		<findbugs home="${findbugs.home}" output="xml" outputFile="${findbugs.output-file}">
-			<sourcePath path="${src.dir}" />
-			<class location="${bin.dir}" />
-		</findbugs>
-	</target>
-
-	<!-- ===================================================================
-		findbugs.clean
-		
-		cleans up any previous findbugs reports
-	======================================================================== -->
-	<target name="findbugs.clean" description="cleans up any previous findbugs reports">
-		<delete dir="${findbugs.output-dir}"></delete>
-	</target>
-
-    <!-- ===================================================================
-    jmeter.download-check
-    
-    checks to see if jmeter is available or not
-    ======================================================================== -->
-    <target name="jmeter.download-check"
-            description="checks if files have already been downloaded">
-        <condition property="jmeter.exists">
-            <and>
-                <available file="${jmeter.home}/apache-jmeter-${jmeter.version}"
-                           type="dir" />
-            </and>
-        </condition>
+    <target name="clean-all">
+        <ant dir="data-access-api" antfile="build.xml" target="clean-all" inheritAll="true"/>
+        <ant dir="data-access-core" antfile="build.xml" target="clean-all" inheritAll="true"/>
     </target>
 
-    <!-- ===================================================================
-        jmeter.install
-        
-        downloads and unzips jmeter from sourceforge.
-        ivy/maven resolution doesn't work well.  
-        only a really old version of jmeter is available.
-        the jmeter ant task requires a "home" location of a jmeter install,
-        the ivy/maven artifacts aren't a complete install.  So we download it
-        from sourceforge and unzip it in a known location.
-    ======================================================================== -->
-    <target name="jmeter.install"
-            description="download and install jmeter"
-            depends="jmeter.download-check"
-            unless="jmeter.exists">
-        <mkdir dir="${jmeter.home}"/>
-        <get src="${jmeter.url}"
-             dest="${jmeter.zip}"
-             usetimestamp="true" />
-        <unzip src="${jmeter.zip}"
-               dest="${jmeter.home}" />
-        <delete file="${jmeter.zip}" />
+    <target name="build-api">        
+        <ant dir="data-access-api" antfile="build.xml" target="clean-all" inheritAll="true"/>
+        <ant dir="data-access-api" antfile="build.xml" target="resolve" inheritAll="true"/>
+        <ant dir="data-access-api" antfile="build.xml" target="dist" inheritAll="true"/>
+        <ant dir="data-access-api" antfile="build.xml" target="publish-local" inheritAll="true"/> <!-- temporary -->
     </target>
 
-    <!-- ===================================================================
-        jmeter.run-tests
-    ======================================================================== -->
-    <target name="jmeter.run-tests"
-            description="execute included jmeter script"
-            depends="jmeter.install">
-        <!-- ===================================================================
-            taskdef jmeter
+    <target name="build-core" depends="build-api">        
+        <ant dir="data-access-core" antfile="build.xml" target="clean-all" inheritAll="true"/>
+        <ant dir="data-access-core" antfile="build.xml" target="resolve" inheritAll="true"/>
+        <ant dir="data-access-core" antfile="build.xml" target="dist" inheritAll="true"/>
+    </target>
 
-            Use the bundled jmeter ant task to execute test
-        ======================================================================== -->
-        <taskdef
-                name="jmeter"
-                classpath="${jmeter.home}/apache-jmeter-${jmeter.version}/extras/ant-jmeter-1.1.1.jar"
-                classname="org.programmerplanet.ant.taskdefs.jmeter.JMeterTask" />
-        <jmeter
-            jmeterhome="${jmeter.home}/apache-jmeter-${jmeter.version}"
-            testplan="${jmeter.run.script}"
-            resultlog="${jmeter.run.output}">
-            <property name="run.server" value="${jmeter.run.server}" />
-            <property name="run.port" value="${jmeter.run.port}" />
-        </jmeter>
+    <target name="build-and-test-core" depends="build-core">
+        <ant dir="data-access-core" antfile="build.xml" target="test" inheritAll="true"/>
+    </target>
+
+    <target name="install" depends="build-and-test-core">
+        <echo message="Now installing ${package.root.dir} in ${pentaho.solutions.dir}/system ..." />
+        <ant dir="data-access-core" antfile="build.xml" target="assemble" inheritAll="true"/>
+        <copy todir="${pentaho.solutions.dir}/system/${package.root.dir}" overwrite="true">  
+           <fileset dir="data-access-core/bin/stage/${package.root.dir}" includes="**"/>  
+        </copy>
+
+        <!-- copying the plugin's api jar to webapps/pentaho/WEB-INF/lib  -->
+        <echo message="Now copying ${artifact.api.id}-${artifact.revision}.jar file to ${tomcat.webapps.pentaho.dir}/WEB-INF/lib ..." />
+        <copy file="data-access-core/bin/stage/${package.root.dir}/lib/${artifact.api.id}-${artifact.revision}.jar" 
+            todir="${tomcat.webapps.pentaho.dir}/WEB-INF/lib" overwrite="true" /> 
     </target>
 
 </project>
