@@ -8,37 +8,41 @@
     <property file="build.properties"/>
 
     <target name="clean-all">
-        <ant dir="data-access-api" antfile="build.xml" target="clean-all" inheritAll="true"/>
-        <ant dir="data-access-core" antfile="build.xml" target="clean-all" inheritAll="true"/>
+        <ant dir="api" antfile="build.xml" target="clean-all" inheritAll="true"/>
+        <ant dir="core" antfile="build.xml" target="clean-all" inheritAll="true"/>
     </target>
 
     <target name="build-api">        
-        <ant dir="data-access-api" antfile="build.xml" target="clean-all" inheritAll="true"/>
-        <ant dir="data-access-api" antfile="build.xml" target="resolve" inheritAll="true"/>
-        <ant dir="data-access-api" antfile="build.xml" target="dist" inheritAll="true"/>
-        <ant dir="data-access-api" antfile="build.xml" target="publish-local" inheritAll="true"/> <!-- temporary -->
+        <ant dir="api" antfile="build.xml" target="clean-all" inheritAll="true"/>
+        <ant dir="api" antfile="build.xml" target="resolve" inheritAll="true"/>
+        <ant dir="api" antfile="build.xml" target="dist" inheritAll="true"/>
+        <ant dir="api" antfile="build.xml" target="publish-local" inheritAll="true"/> <!-- temporary -->
     </target>
 
     <target name="build-core" depends="build-api">        
-        <ant dir="data-access-core" antfile="build.xml" target="clean-all" inheritAll="true"/>
-        <ant dir="data-access-core" antfile="build.xml" target="resolve" inheritAll="true"/>
-        <ant dir="data-access-core" antfile="build.xml" target="dist" inheritAll="true"/>
+        <ant dir="core" antfile="build.xml" target="clean-all" inheritAll="true"/>
+        <ant dir="core" antfile="build.xml" target="resolve" inheritAll="true"/>
+        <ant dir="core" antfile="build.xml" target="dist" inheritAll="true"/>
+    </target>
+
+    <target name="enunciate-core" depends="build-core">        
+        <ant dir="core" antfile="build.xml" target="enunciate" inheritAll="true"/>
     </target>
 
     <target name="build-and-test-core" depends="build-core">
-        <ant dir="data-access-core" antfile="build.xml" target="test" inheritAll="true"/>
+        <ant dir="core" antfile="build.xml" target="test" inheritAll="true"/>
     </target>
 
     <target name="install" depends="build-and-test-core">
         <echo message="Now installing ${package.root.dir} in ${pentaho.solutions.dir}/system ..." />
-        <ant dir="data-access-core" antfile="build.xml" target="assemble" inheritAll="true"/>
+        <ant dir="core" antfile="build.xml" target="assemble" inheritAll="true"/>
         <copy todir="${pentaho.solutions.dir}/system/${package.root.dir}" overwrite="true">  
-           <fileset dir="data-access-core/bin/stage/${package.root.dir}" includes="**"/>  
+           <fileset dir="core/bin/stage/${package.root.dir}" includes="**"/>  
         </copy>
 
         <!-- copying the plugin's api jar to webapps/pentaho/WEB-INF/lib  -->
         <echo message="Now copying ${artifact.api.id}-${artifact.revision}.jar file to ${tomcat.webapps.pentaho.dir}/WEB-INF/lib ..." />
-        <copy file="data-access-core/bin/stage/${package.root.dir}/lib/${artifact.api.id}-${artifact.revision}.jar" 
+        <copy file="core/bin/stage/${package.root.dir}/lib/${artifact.api.id}-${artifact.revision}.jar" 
             todir="${tomcat.webapps.pentaho.dir}/WEB-INF/lib" overwrite="true" /> 
     </target>
 
