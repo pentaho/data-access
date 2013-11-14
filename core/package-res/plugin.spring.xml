@@ -17,7 +17,7 @@
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
   <bean class="org.pentaho.platform.dataaccess.metadata.service.MetadataService"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.DSWDataSourceWizardService"/>
-  <bean id="IDSWDataSourceWizard" class="org.pentaho.platform.dataaccess.datasource.wizard.models.DSWDataSourceWizard" scope="singleton">
+  <bean id="IDSWDataSourceWizard" class="org.pentaho.platform.dataaccess.impl.datasource.wizard.DSWDataSourceWizard" scope="singleton">
     <property name="templates">
       <list>
         <ref local="CSVTemplate"/>
@@ -26,7 +26,7 @@
       </list>
     </property>
   </bean>
-  <bean id="CSVTemplate" class="org.pentaho.platform.dataaccess.datasource.wizard.models.MockDSWTemplate">
+  <bean id="CSVTemplate" class="org.pentaho.platform.dataaccess.impl.datasource.wizard.MockDSWTemplate">
 	<constructor-arg value="CSV" />
 	<constructor-arg value="CSV File" />
    	<pen:publish as-type="INTERFACES">
@@ -35,7 +35,7 @@
 	  </pen:attributes>
 	</pen:publish>
   </bean>
-  <bean id="SQLTemplate" class="org.pentaho.platform.dataaccess.datasource.wizard.models.MockDSWTemplate">
+  <bean id="SQLTemplate" class="org.pentaho.platform.dataaccess.impl.datasource.wizard.MockDSWTemplate">
 	<constructor-arg value="SQL" />
 	<constructor-arg value="SQL Query" />
    	<pen:publish as-type="INTERFACES">
@@ -44,7 +44,7 @@
 	  </pen:attributes>
 	</pen:publish>
   </bean>
-   <bean id="XMLTemplate" class="org.pentaho.platform.dataaccess.datasource.wizard.models.MockDSWTemplate">
+   <bean id="XMLTemplate" class="org.pentaho.platform.dataaccess.impl.datasource.wizard.MockDSWTemplate">
 	<constructor-arg value="XML" />
 	<constructor-arg value="Database Table(s)" />
    	<pen:publish as-type="INTERFACES">
@@ -53,9 +53,9 @@
 	  </pen:attributes>
 	</pen:publish>
   </bean> 
-  <bean class="org.pentaho.platform.dataaccess.catalog.impl.DatasourceCatalog">
+  <bean class="org.pentaho.platform.dataaccess.impl.catalog.DatasourceCatalog">
     <constructor-arg>
-      <pen:list class="org.pentaho.platform.dataaccess.catalog.api.IDatasourceProvider"/>
+      <pen:list class="org.pentaho.platform.dataaccess.api.catalog.IDatasourceProvider"/>
     </constructor-arg>
   </bean>
   <bean class="org.pentaho.platform.dataaccess.datasource.provider.AnalysisDatasourceProvider">
