@@ -1,4 +1,4 @@
-<project name="Data Access v2" basedir="." default="jar"
+<project name="Data Access v2" basedir="." default="build-and-test-core"
          xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <description>
