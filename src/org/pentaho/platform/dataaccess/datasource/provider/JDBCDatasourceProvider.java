@@ -35,16 +35,17 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 public class JDBCDatasourceProvider implements IDatasourceProvider {
 
   private IDatasourceMgmtService datasourceMgmtService;
-  private IDatasourceType datasourceType = new JDBCDatasourceType(); 
+  private IDatasourceType datasourceType = new JDBCDatasourceType();
   IPentahoSession pentahoSession = PentahoSessionHolder.getSession();
 
   public JDBCDatasourceProvider() {
     this.datasourceMgmtService = PentahoSystem.get( IDatasourceMgmtService.class, pentahoSession );
   }
-  
-  public JDBCDatasourceProvider(final IDatasourceMgmtService datasourceMgmtService) {
+
+  public JDBCDatasourceProvider( final IDatasourceMgmtService datasourceMgmtService ) {
     this.datasourceMgmtService = datasourceMgmtService;
   }
+
   @Override
   public List<IDatasource> getDatasources() {
     List<IDatasource> datasources = new ArrayList<IDatasource>();

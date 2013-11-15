@@ -27,9 +27,9 @@ import java.util.ResourceBundle;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * An implementation of 'IDatasourceType' that defines a datasource type and provides for retrieving a localized name for
- * that type.
- * 
+ * An implementation of 'IDatasourceType' that defines a datasource type and
+ * provides for retrieving a localized name for that type.
+ *
  * @author wseyler
  */
 @XmlRootElement
@@ -44,7 +44,6 @@ public class DatasourceType implements IDatasourceType {
   }
 
   /**
-   * 
    * @param id
    */
   public DatasourceType( String id ) {
@@ -52,9 +51,8 @@ public class DatasourceType implements IDatasourceType {
     this.id = id;
   }
 
-  
+
   /**
-   * 
    * @param id
    * @param displayName
    */
@@ -65,7 +63,6 @@ public class DatasourceType implements IDatasourceType {
   }
 
   /**
-   * 
    * @return
    */
   @Override
@@ -74,18 +71,16 @@ public class DatasourceType implements IDatasourceType {
   }
 
   /**
-   * 
    * @param locale
    * @return
    */
   @Override
   public String getDisplayName( Locale locale ) {
-    resourceBundle = Messages.getInstance().getBundle(locale);
+    resourceBundle = Messages.getInstance().getBundle( locale );
     return resourceBundle.getString( id );
   }
 
   /**
-   * 
    * @param id
    */
   public void setId( String id ) {
@@ -93,7 +88,6 @@ public class DatasourceType implements IDatasourceType {
   }
 
   /**
-   * 
    * @param displayName
    * @return
    */

@@ -20,12 +20,12 @@ package org.pentaho.platform.dataaccess.datasource.provider;
 import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
 
 public class MetadataDatasourceType extends DatasourceType {
-  
-  
-  public MetadataDatasourceType( ) {
+
+
+  public MetadataDatasourceType() {
     super( ID );
   }
 
-  public static final String ID = "METADATA"; 
+  public static final String ID = "METADATA";
 }
 

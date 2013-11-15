@@ -121,7 +121,7 @@ public enum Operator implements Serializable {
    * !stringType) { ops.add(vals[i]); } } return ops.toArray(new Operator[]{}); }
    */
 
-  public String formatCondition( String columnName, String paramName, String value[], boolean parameterized ) {
+  public String formatCondition( String columnName, String paramName, String[] value, boolean parameterized ) {
 
     if ( parameterized ) {
       value = new String[] { "[param:" + paramName.replaceAll( "[\\{\\}]", "" ) + "]" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
