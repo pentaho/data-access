@@ -27,7 +27,7 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
 import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
 
 /**
- * This class provides the list structure of templates to the template listing service.
+ * This class provides the list structure of Datasources for use in the DatasourceCatalog services.
  *
  * @author wseyler
  */

@@ -76,7 +76,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
 
   /**
    * Returns a list of IDatasourceTypes that can be further used to lookup datasources of a specific type.
-   * @return a JaxbList of IDatasourceType implementations (usually DatasourceType) suitable for serialization by Jersey
+   * @return a DatasourceListDto of DatasourceType implementations.
    */
   @GET
   @Path( "/getDatasources" )
@@ -111,7 +111,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
    * 
    * @param datasourceType
    *          - the type of the datasources to return (typically an instance of DatasourceType)
-   * @return A JaxbList of concrete instances of the type 'IDatasourceType' (typically DatasourceType)
+   * @return A DatasourceListDto of instances of the type 'DatasourceType'.
    */
   @POST
   @Path( "/getDatasourcesByType" )
@@ -144,7 +144,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   /**
    * Returns list of datasources types registered in the system.
    * 
-   * @return A JaxbList of concrete instances of IDatasourceType (typically DatasourceType) 
+   * @return A DatasourceTypesListDto of concrete instances of DatasourceType 
    *         suitable for serialization by Jersey
    */
   @GET
