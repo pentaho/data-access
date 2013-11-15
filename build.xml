@@ -68,6 +68,9 @@
 		<unzip src="${dist.dir}/${package.basename}.zip" dest="${pentaho.solutions.dir}/system" overwrite="true">
 		</unzip>
 
+		<!-- Temporary fix: place jar in WEB-INF/lib as well -->
+		<copy file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" todir="${dev.tomcat.dir}/webapps/pentaho/WEB-INF/lib/" overwrite="true"/>
+
 		<!--copy todir="${pentaho.solutions.dir}">
       <fileset dir="${basedir}/solutions/" />
     </copy-->
@@ -75,6 +78,10 @@
 
 	<target name="install-jar" depends="jar" description="Installs the plugin to your Pentaho BI Server">
 		<copy file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" todir="${pentaho.solutions.dir}/system/${package.root.dir}/lib" overwrite="true"/>
+
+		<!-- Temporary fix: place jar in WEB-INF/lib as well -->
+		<copy file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" todir="${dev.tomcat.dir}/webapps/pentaho/WEB-INF/lib/" overwrite="true"/>
+
 		<!--copy todir="${pentaho.solutions.dir}">
       <fileset dir="${basedir}/solutions/" />
     </copy-->
