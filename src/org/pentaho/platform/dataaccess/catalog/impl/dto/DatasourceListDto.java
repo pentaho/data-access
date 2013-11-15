@@ -27,15 +27,9 @@ import org.pentaho.platform.dataaccess.catalog.api.IDatasource;
 import org.pentaho.platform.dataaccess.catalog.impl.Datasource;
 
 /**
- * This class provides the list structure of templates to the template listing service.
-<<<<<<< HEAD
+ * This class provides the list structure of Datasources for use in the DatasourceCatalog services.
  *
  * @author wseyler
-=======
- * 
- * @author wseyler
- * 
->>>>>>> 6f96d60... BISERVER-10435: Change Jersey methods to serialize using dto type classes.  Added Enunciate Doc
  */
 @XmlRootElement( name = "datasourceList" )
 public class DatasourceListDto {
@@ -47,16 +41,8 @@ public class DatasourceListDto {
 
   public DatasourceListDto( List<IDatasource> datasources ) {
     this.datasources = new ArrayList<Datasource>();
-<<<<<<< HEAD
     for ( IDatasource iDatasource : datasources ) {
       this.datasources.add( (Datasource) iDatasource );
     }
   }
 }
-=======
-    for (IDatasource iDatasource : datasources) {
-      this.datasources.add( (Datasource) iDatasource );
-    }
-  }
-}
->>>>>>> 6f96d60... BISERVER-10435: Change Jersey methods to serialize using dto type classes.  Added Enunciate Doc
