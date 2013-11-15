@@ -109,7 +109,9 @@ public class TablesSelectionStep extends AbstractWizardStep {
         }
         if ((joinGuiModel.isDoOlap()) && (domain != null) && (datasourceDTO != null)) {
        	  joinGuiModel.populateJoinGuiModel(domain, datasourceDTO, tables);
-          setFactTable(joinGuiModel.getFactTable());
+       	  if(joinGuiModel.getFactTable() != null) {
+       	    setFactTable(joinGuiModel.getFactTable());
+       	  }
         }
         joinGuiModel.processAvailableTables(tables);
         closeWaitingDialog();
