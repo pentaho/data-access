@@ -126,6 +126,11 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   public FileTransformStats generateDomain(DatasourceDTO datasourceDto) throws Exception {
     synchronized (lock) {
       ModelInfo modelInfo = datasourceDto.getCsvModelInfo();
+
+      if( modelInfo != null && modelInfo.getStageTableName() != null ){
+          modelInfo.setStageTableName( modelInfo.getStageTableName().toUpperCase() ); // uppercasing stage table name
+      }
+
       IPentahoSession pentahoSession = null;
       try {
         pentahoSession = PentahoSessionHolder.getSession();
