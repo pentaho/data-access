@@ -24,14 +24,14 @@ pen.require(['mantle/puc-api/pucAngularApi'], function(PentahoPluginHandler) {
 	}
 	
 	// Controllers
-	var controllers = function($controller) {
+	var controllers = function($controllerProvider) {
 
-		$controller("DataAccessController", ["$scope", 
+		$controllerProvider("DataAccessController", ["$scope", 
 			function($scope) {
 				$scope.title="Data-access";
 			}]);
 
-		$controller("DataAccessController1", ["$scope", 
+		$controllerProvider("DataAccessController1", ["$scope", 
 			function($scope) {
 				$scope.title="Page1";
 			}]);
@@ -40,5 +40,8 @@ pen.require(['mantle/puc-api/pucAngularApi'], function(PentahoPluginHandler) {
 	// TODO: retrieve data to populate the page
 	var service = null;
 	
-	var plugin = new PentahoPluginHandler.PUCAngularPlugin(routes, controllers, service).register();
+	var plugin = new PentahoPluginHandler.Plugin({
+		routerCallback : routes,
+		controllerCallback : controllers
+	}).register();
 })
