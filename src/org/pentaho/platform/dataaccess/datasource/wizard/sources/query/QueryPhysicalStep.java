@@ -270,6 +270,5 @@ public class QueryPhysicalStep extends AbstractWizardStep {
 
   @Override
   public void refresh() {
-    reloadConnections();
   }
 }
