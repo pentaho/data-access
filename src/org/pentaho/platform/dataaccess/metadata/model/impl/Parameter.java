@@ -28,8 +28,8 @@ public class Parameter implements Serializable {
   private String column;
   private String name;
   private String type;
-  private String defaultValue[];
-  private String value[];
+  private String[] defaultValue;
+  private String[] value;
 
   public Parameter() {
   }
@@ -46,7 +46,7 @@ public class Parameter implements Serializable {
     this.type = type;
   }
 
-  public void setDefaultValue( String defaultValue[] ) {
+  public void setDefaultValue( String[] defaultValue ) {
     this.defaultValue = defaultValue;
   }
 
@@ -74,7 +74,7 @@ public class Parameter implements Serializable {
     }
   }
 
-  public void setValue( String value[] ) {
+  public void setValue( String[] value ) {
     this.value = value;
   }
 

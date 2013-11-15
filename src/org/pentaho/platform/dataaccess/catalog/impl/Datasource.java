@@ -70,7 +70,7 @@ public class Datasource implements IDatasource {
   @Override
   public List<IDatasourceChild> getChildren() {
     List<IDatasourceChild> ivalues = new ArrayList<IDatasourceChild>();
-    for (DatasourceChild child : children) {
+    for ( DatasourceChild child : children ) {
       ivalues.add( child );
     }
     return ivalues;

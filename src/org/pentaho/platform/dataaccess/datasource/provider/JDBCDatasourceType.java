@@ -19,11 +19,11 @@ package org.pentaho.platform.dataaccess.datasource.provider;
 
 import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
 
-public class JDBCDatasourceType extends DatasourceType{
+public class JDBCDatasourceType extends DatasourceType {
 
-  public JDBCDatasourceType( ) {
+  public JDBCDatasourceType() {
     super( ID );
   }
 
-  public static final String ID = "JDBC"; 
+  public static final String ID = "JDBC";
 }

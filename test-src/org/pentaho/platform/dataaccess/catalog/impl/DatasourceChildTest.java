@@ -20,7 +20,6 @@ package org.pentaho.platform.dataaccess.catalog.impl;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild;
 
 import java.util.ArrayList;
 import java.util.Arrays;

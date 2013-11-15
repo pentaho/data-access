@@ -31,7 +31,7 @@ public class Condition implements ICondition {
   private String column;
   private String category;
   private String operator = Operator.EQUAL.name();
-  private String value[];
+  private String[] value;
   private String comboType = CombinationType.AND.name();
 
   public Condition() {
@@ -66,7 +66,7 @@ public class Condition implements ICondition {
     this.operator = operator;
   }
 
-  public void setValue( String value[] ) {
+  public void setValue( String[] value ) {
     this.value = value;
   }
 
@@ -79,7 +79,7 @@ public class Condition implements ICondition {
   }
 
   public String getCondition( String type, String paramName ) {
-    String val[] = this.value;
+    String[] val = this.value;
     /*
      * if(val == null && defaultValue != null) { val = defaultValue; }
      */

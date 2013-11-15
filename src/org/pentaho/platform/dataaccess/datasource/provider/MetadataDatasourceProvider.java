@@ -30,7 +30,7 @@ import org.pentaho.platform.dataaccess.catalog.impl.DatasourceType;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
-public class MetadataDatasourceProvider implements IDatasourceProvider{
+public class MetadataDatasourceProvider implements IDatasourceProvider {
 
   private IMetadataDomainRepository metadataDomainRepository;
   private IDatasourceType datasourceType = new MetadataDatasourceType();
@@ -40,15 +40,15 @@ public class MetadataDatasourceProvider implements IDatasourceProvider{
     this.metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, pentahoSession );
   }
 
-  public MetadataDatasourceProvider(final IMetadataDomainRepository metadataDomainRepository) {
+  public MetadataDatasourceProvider( final IMetadataDomainRepository metadataDomainRepository ) {
     this.metadataDomainRepository = metadataDomainRepository;
   }
 
   @Override
   public List<IDatasource> getDatasources() {
     List<IDatasource> datasources = new ArrayList<IDatasource>();
-    for(String id :metadataDomainRepository.getDomainIds()) {
-      datasources.add( new Datasource(id, (DatasourceType) getType(), null) );
+    for ( String id : metadataDomainRepository.getDomainIds() ) {
+      datasources.add( new Datasource( id, (DatasourceType) getType(), null ) );
     }
     return datasources;
   }

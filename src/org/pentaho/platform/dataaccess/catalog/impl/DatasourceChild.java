@@ -17,17 +17,15 @@
 
 package org.pentaho.platform.dataaccess.catalog.impl;
 
+import org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild;
-
 /**
  * Provides the structure for a hierarchy of children that belong to a datasource.
- * 
+ *
  * @author wseyler
  */
 @XmlRootElement
@@ -58,7 +56,7 @@ public class DatasourceChild implements IDatasourceChild {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild#getId()
    */
   @Override
@@ -68,7 +66,7 @@ public class DatasourceChild implements IDatasourceChild {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild#getName()
    */
   @Override
@@ -78,13 +76,13 @@ public class DatasourceChild implements IDatasourceChild {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.platform.dataaccess.catalog.api.IDatasourceChild#getChildren()
    */
   @Override
   public List<IDatasourceChild> getChildren() {
     List<IDatasourceChild> values = new ArrayList<IDatasourceChild>();
-    for (IDatasourceChild iDatasourceChild : children) {
+    for ( IDatasourceChild iDatasourceChild : children ) {
       values.add( iDatasourceChild );
     }
     return values;
