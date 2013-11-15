@@ -35,9 +35,8 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 /**
  * This class provides web services associated with the DataSource Wizard Dialog.
- * 
+ *
  * @author tkafalas
- * 
  */
 
 @Path( "/data-access-v2/api/datasourceWizard/" )
@@ -45,7 +44,7 @@ public class DSWDataSourceWizardService {
 
   /**
    * Queries the system for a list of registered datasource templates.
-   * 
+   *
    * @return A "templateList" that wraps a list of 'DSWTemplateSummaryDto'.
    */
   @GET
@@ -57,7 +56,7 @@ public class DSWDataSourceWizardService {
     ArrayList<DSWTemplateSummaryDto> templateNames = new ArrayList<DSWTemplateSummaryDto>();
     for ( IDSWTemplate template : templates ) {
       templateNames.add( new DSWTemplateSummaryDto( template.getID(),
-          template.getDisplayName( Locale.getDefault() ) ) );
+        template.getDisplayName( Locale.getDefault() ) ) );
     }
     return new DSWTemplateSummaryListDto( templateNames );
   }

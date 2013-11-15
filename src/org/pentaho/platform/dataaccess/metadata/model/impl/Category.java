@@ -83,7 +83,7 @@ public class Category implements ICategory, Serializable {
    * 
    * @param columns
    */
-  public void setColumns( Column columns[] ) {
+  public void setColumns( Column[] columns ) {
     this.columns = columns;
   }
 

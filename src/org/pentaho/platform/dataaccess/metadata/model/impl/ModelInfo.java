@@ -70,7 +70,7 @@ public class ModelInfo implements Serializable {
   /**
    * Sets the id of the model
    * 
-   * @param id
+   * @param modelId
    */
   public void setModelId( String modelId ) {
     this.modelId = modelId;
@@ -88,7 +88,7 @@ public class ModelInfo implements Serializable {
   /**
    * Sets the name of the model for the current locale
    * 
-   * @param name
+   * @param modelName
    */
   public void setModelName( String modelName ) {
     this.modelName = modelName;
@@ -106,7 +106,7 @@ public class ModelInfo implements Serializable {
   /**
    * Sets the description of the model
    * 
-   * @param description
+   * @param modelDescription
    */
   public void setModelDescription( String modelDescription ) {
     this.modelDescription = modelDescription;

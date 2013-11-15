@@ -42,7 +42,7 @@ public class JDBCDatasourceProvider implements IDatasourceProvider {
     this.datasourceMgmtService = PentahoSystem.get( IDatasourceMgmtService.class, pentahoSession );
   }
 
-  public JDBCDatasourceProvider(final IDatasourceMgmtService datasourceMgmtService) {
+  public JDBCDatasourceProvider( final IDatasourceMgmtService datasourceMgmtService ) {
     this.datasourceMgmtService = datasourceMgmtService;
   }
 

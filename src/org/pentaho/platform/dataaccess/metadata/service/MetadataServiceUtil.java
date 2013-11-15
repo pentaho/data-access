@@ -296,7 +296,8 @@ public class MetadataServiceUtil extends PentahoBase {
     LogicalModel logicalModel = fullDomain.findLogicalModel( src.getModelId() );
 
     // create a new full query object
-    org.pentaho.metadata.query.model.Query dest = new org.pentaho.metadata.query.model.Query( fullDomain, logicalModel );
+    org.pentaho.metadata.query.model.Query dest =
+      new org.pentaho.metadata.query.model.Query( fullDomain, logicalModel );
 
     // now add the selections
     List<Selection> selections = dest.getSelections();
@@ -353,7 +354,7 @@ public class MetadataServiceUtil extends PentahoBase {
       // find the column for this parameter
       LogicalColumn logicalColumn = logicalModel.findLogicalColumn( parameter.getColumn() );
       DataType type = logicalColumn.getDataType();
-      String value[] = parameter.getValue();
+      String[] value = parameter.getValue();
       org.pentaho.metadata.query.model.Parameter fullParam =
           new org.pentaho.metadata.query.model.Parameter( parameter.getColumn(), type, value[0] );
       parameters.add( fullParam );

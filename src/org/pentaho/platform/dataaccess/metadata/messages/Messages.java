@@ -80,7 +80,8 @@ public class Messages {
     return MessageUtil.getErrorString( Messages.getBundle(), key, param1, param2 );
   }
 
-  public static String getErrorString( final String key, final String param1, final String param2, final String param3 ) {
+  public static String getErrorString( final String key, final String param1,
+                                       final String param2, final String param3 ) {
     return MessageUtil.getErrorString( Messages.getBundle(), key, param1, param2, param3 );
   }
 
