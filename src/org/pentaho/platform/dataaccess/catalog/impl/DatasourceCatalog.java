@@ -79,7 +79,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
    * @return a DatasourceListDto of DatasourceType implementations.
    */
   @GET
-  @Path( "/getDatasources" )
+  @Path( "/datasources" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   public DatasourceListDto getDatasourcesAsJaxbList() {
     List<IDatasource> values = getDatasources();
@@ -114,7 +114,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
    * @return A DatasourceListDto of instances of the type 'DatasourceType'.
    */
   @POST
-  @Path( "/getDatasourcesByType" )
+  @Path( "/datasources" )
   @Consumes( { APPLICATION_JSON, APPLICATION_XML } )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   public DatasourceListDto getDatasourcesOfTypeAsJaxbList( DatasourceType datasourceType ) {
@@ -148,7 +148,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
    *         suitable for serialization by Jersey
    */
   @GET
-  @Path( "/getDatasourceTypes" )
+  @Path( "/datasourceTypes" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   public DatasourceTypesListDto getDatasourceTypesAsJaxbList() {
     return new DatasourceTypesListDto( getDatasourceTypes() );
