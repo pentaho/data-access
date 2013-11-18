@@ -51,29 +51,41 @@ public class MockDSWTemplate extends AbstractDSWTemplate {
 
   @Override
   public IDSWTemplateModel deserialize( String serializedModel ) throws DSWException {
+    if ( serializedModel == null ) {
+      throw new DSWException( "Malformed Serialized Model" );
+    }
     return mockDSWTemplateModel;
   }
 
   @Override
-  public String serialize( IDSWTemplateModel dswTemplateModel ) {
+  public String serialize( IDSWTemplateModel dswTemplateModel ) throws DSWException {
+    if ( dswTemplateModel == null ) {
+      throw new DSWException( "DSWTemplateModel is null" );
+    }
     return "serialized " + mockDSWTemplateModel.getMockData();
   }
 
   @Override
   public void createDatasource( IDSWDataSource iDSWDataSource, boolean overwrite ) throws DSWException {
-    domain = new Domain();
-    domain.setId( iDSWDataSource.getName() );
-    LogicalModel logicalModel = MockLogicalModel.buildDefaultModel();
-    domain.addLogicalModel( logicalModel );
-
     try {
-      metadataDomainRepository.storeDomain( domain, overwrite );
-    } catch ( DomainIdNullException e ) {
-      throw new DSWException( "Domain was null" );
-    } catch ( DomainAlreadyExistsException e ) {
-      throw new DSWExistingFileException();
-    } catch ( DomainStorageException e ) {
-      throw new DSWException( "Failure in metadata layer" );
+      domain = new Domain();
+      domain.setId( iDSWDataSource.getName() );
+      LogicalModel logicalModel = MockLogicalModel.buildDefaultModel();
+      domain.addLogicalModel( logicalModel );
+
+      try {
+        metadataDomainRepository.storeDomain( domain, overwrite );
+      } catch ( DomainIdNullException e ) {
+        throw new DSWException( "Domain was null" );
+      } catch ( DomainAlreadyExistsException e ) {
+        throw new DSWExistingFileException();
+      } catch ( DomainStorageException e ) {
+        throw new DSWException( "Failure in metadata layer" );
+      }
+    } catch ( DSWException e ) {
+      throw e;
+    } catch ( Exception e ) {
+      throw new DSWException( "Unexpected Exception creating DSWDataSource", e );
     }
   }
 }

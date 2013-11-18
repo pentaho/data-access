@@ -33,7 +33,12 @@ public class DSWException extends Exception implements Serializable {
     super();
   }
 
+  public DSWException( final String message, final Throwable t ) {
+    super( message, t );
+  }
+  
   public DSWException( String message ) {
     super( message );
   }
+  
 }
