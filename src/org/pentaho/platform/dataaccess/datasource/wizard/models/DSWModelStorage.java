@@ -49,36 +49,47 @@ public class DSWModelStorage implements IDSWModelStorage {
 
   @Override
   public void storeModel( String serializedModel, IDSWDataSource iDSWDataSource ) throws DSWException {
-    Domain domain = metadataDomainRepository.getDomain( iDSWDataSource.getName() );
-    LogicalModel logicalModel = domain.getLogicalModels().get( 0 );
-    logicalModel.setProperty( TEMPLATE_ID_PROPERTY, iDSWDataSource.getTemplate().getID() );
-    logicalModel.setProperty( TEMPLATE_MODEL_PROPERTY, serializedModel );
-
     try {
-      metadataDomainRepository.storeDomain( domain, true );
-    } catch ( DomainIdNullException e ) {
-      throw new DSWException( "Domain was null" );
-    } catch ( DomainAlreadyExistsException e ) {
-      throw new DSWExistingFileException();
-    } catch ( DomainStorageException e ) {
-      throw new DSWException( "Failure in metadata layer" );
+      Domain domain = metadataDomainRepository.getDomain( iDSWDataSource.getName() );
+      LogicalModel logicalModel = domain.getLogicalModels().get( 0 );
+      logicalModel.setProperty( TEMPLATE_ID_PROPERTY, iDSWDataSource.getTemplate().getID() );
+      logicalModel.setProperty( TEMPLATE_MODEL_PROPERTY, serializedModel );
+
+      try {
+        metadataDomainRepository.storeDomain( domain, true );
+      } catch ( DomainIdNullException e ) {
+        throw new DSWException( "Domain was null" );
+      } catch ( DomainAlreadyExistsException e ) {
+        throw new DSWExistingFileException();
+      } catch ( DomainStorageException e ) {
+        throw new DSWException( "Failure in metadata layer" );
+      }
+    } catch ( DSWException e ) {
+      throw e;
+    } catch ( Exception e ) {
+      throw new DSWException( "Unexpected Model Storage Failure", e );
     }
   }
 
   @Override
   public IDSWTemplateModel loadModel( String dataSourceID ) throws DSWException {
-    // Load Domain from repo
-    Domain domain = metadataDomainRepository.getDomain( dataSourceID );
-    // Get the propeties pertaining to the model
-    LogicalModel logicalModel = domain.getLogicalModels().get( 0 );
-    String templateID = (String) logicalModel.getProperty( TEMPLATE_ID_PROPERTY );
-    String serializedModel = (String) logicalModel.getProperty( TEMPLATE_MODEL_PROPERTY );
-    // Get the template and deserialize the model string
+    try {
+      // Load Domain from repo
+      Domain domain = metadataDomainRepository.getDomain( dataSourceID );
+      // Get the propeties pertaining to the model
+      LogicalModel logicalModel = domain.getLogicalModels().get( 0 );
+      String templateID = (String) logicalModel.getProperty( TEMPLATE_ID_PROPERTY );
+      String serializedModel = (String) logicalModel.getProperty( TEMPLATE_MODEL_PROPERTY );
+      // Get the template and deserialize the model string
 
-    DSWDataSourceWizard dswDataSourceWizard = PentahoSystem.get( DSWDataSourceWizard.class );
-    IDSWTemplate iDSWTemplate = dswDataSourceWizard.getTemplateByID( templateID );
-    IDSWTemplateModel iDSWTemplateModel = iDSWTemplate.deserialize( serializedModel );
-    return iDSWTemplateModel;
+      DSWDataSourceWizard dswDataSourceWizard = PentahoSystem.get( DSWDataSourceWizard.class );
+      IDSWTemplate iDSWTemplate = dswDataSourceWizard.getTemplateByID( templateID );
+      IDSWTemplateModel iDSWTemplateModel = iDSWTemplate.deserialize( serializedModel );
+      return iDSWTemplateModel;
+    } catch ( DSWException e ) {
+      throw e;
+    } catch ( Exception e ) {
+      throw new DSWException( "Unexpected Model Load Failure", e );
+    }
   }
-
 }

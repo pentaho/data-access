@@ -72,18 +72,37 @@ public class DSWDataSourceWizard implements IDSWDataSourceWizard {
 
   @Override
   public void storeDataSource( IDSWDataSource iDSWDataSource, boolean overwrite ) throws DSWException {
-    iDSWDataSource.getTemplate().createDatasource( iDSWDataSource, overwrite );
-    IDSWModelStorage iDSWModelStorage = new DSWModelStorage();
-    String serializedModel = iDSWDataSource.getTemplate().serialize( iDSWDataSource.getModel() );
-    iDSWModelStorage.storeModel( serializedModel, iDSWDataSource );
+    if ( iDSWDataSource == null ) {
+      throw ( new DSWException( "Attempt to store a null DSWDataSource" ) );
+    }
+    try {
+      iDSWDataSource.getTemplate().createDatasource( iDSWDataSource, overwrite );
+      IDSWModelStorage iDSWModelStorage = new DSWModelStorage();
+      String serializedModel = iDSWDataSource.getTemplate().serialize( iDSWDataSource.getModel() );
+      iDSWModelStorage.storeModel( serializedModel, iDSWDataSource );
+    } catch ( Exception e ) {
+      if ( e instanceof DSWException ) {
+        throw (DSWException) e;
+      } else {
+        throw new DSWException( "Unexpected Exception storing DSWDatasource", e );
+      }
+    }
   }
 
   @Override
   public IDSWDataSource loadDataSource( String dataSourceID ) throws DSWException {
-    IDSWModelStorage dswModelStorage = new DSWModelStorage();
-    IDSWTemplateModel templateModel = dswModelStorage.loadModel( dataSourceID );
-    IDSWTemplate template = getTemplateByID( templateModel.getTemplateID() );
-    return new DSWDataSource( dataSourceID, template, templateModel );
+    try {
+      IDSWModelStorage dswModelStorage = new DSWModelStorage();
+      IDSWTemplateModel templateModel = dswModelStorage.loadModel( dataSourceID );
+      IDSWTemplate template = getTemplateByID( templateModel.getTemplateID() );
+      return new DSWDataSource( dataSourceID, template, templateModel );
+    } catch ( Exception e ) {
+      if ( e instanceof DSWException ) {
+        throw (DSWException) e;
+      } else {
+        throw new DSWException( "Unexpected Failure Loading DSWDatasource", e );
+      }
+    }
   }
 
 }
