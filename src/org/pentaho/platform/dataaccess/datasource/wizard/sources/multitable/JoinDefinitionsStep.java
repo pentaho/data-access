@@ -160,33 +160,8 @@ public class JoinDefinitionsStep extends AbstractWizardStep {
 		super.stepActivatingForward();
 		this.selectedConnection = ((MultiTableDatasource) this.parentDatasource).getConnection();
 		this.joinGuiModel.computeJoinDefinitionStepTables();
-		this.setTableIndex();
 		parentDatasource.setFinishable(this.validator.allTablesJoined());
 	}
-
-	/**
-	 * try to identify the first selected join relationship tables (left and right) from the first joinList
-	 * @return
-	 */
-	private void setTableIndex() {
-	  int leftIndex = 0;
-	  int rightIndex = 0;   
-	  JoinRelationshipModel jrm = this.joinGuiModel.getSelectedJoin(); 
-	  if(jrm == null &&  this.joinGuiModel.getJoins().asList().size() > 0){
-	      jrm = this.joinGuiModel.getJoins().asList().get(0);
-	  }   
-	  if(jrm != null){
-      JoinTableModel leftJoinTable = jrm.getLeftKeyFieldModel().getParentTable();
-      this.joinGuiModel.setLeftJoinTable(leftJoinTable);
-      leftIndex = this.joinGuiModel.getTableIndex(leftJoinTable);      
-      JoinTableModel rightJoinTable = jrm.getRightKeyFieldModel().getParentTable();
-      this.joinGuiModel.setRightJoinTable(rightJoinTable);
-      rightIndex = this.joinGuiModel.getTableIndex(rightJoinTable);          
-	  }	 
-	  this.leftTables.setSelectedIndex(leftIndex);
-	  this.rightTables.setSelectedIndex(rightIndex);
-	  
-  }
 
   public String getStepName() {
 		return MessageHandler.getString("multitable.DEFINE_JOINS");
