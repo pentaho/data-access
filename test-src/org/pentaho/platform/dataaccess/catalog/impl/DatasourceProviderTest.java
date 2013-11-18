@@ -51,7 +51,7 @@ public class DatasourceProviderTest {
     datasource2.setName( "CSV Data source 2" );
     datasource2.setType( csvDatasourceType );
 
-    List<IDatasource> datasourceList = new ArrayList( Arrays.asList( datasource1, datasource2 ) );
+    List<IDatasource> datasourceList = new ArrayList<IDatasource>( Arrays.asList( datasource1, datasource2 ) );
 
     datasourceProvider = new DatasourceProvider( csvDatasourceType, datasourceList );
   }
