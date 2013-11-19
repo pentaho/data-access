@@ -255,6 +255,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	@Override
 	public void reset() {
 		this.joinGuiModel.reset();
+    this.tablesSelectionStep.setDatasourceDTO( null );
 	}
 
 	@Bindable
