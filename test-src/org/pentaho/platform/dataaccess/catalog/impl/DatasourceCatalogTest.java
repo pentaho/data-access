@@ -88,6 +88,10 @@ public class DatasourceCatalogTest {
     assertEquals( 2, result.size() );
     assertEquals( datasource3, result.get( 0 ) );
     assertEquals( datasource4, result.get( 1 ) );
+    
+    DatasourceType type = new MockDatasourceType("3");
+    result = datasourceCatalog.getDatasourcesOfType( type );
+    assertNull( result );
   }
 
   @Test
