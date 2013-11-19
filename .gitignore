@@ -25,3 +25,5 @@ Thumbs.db
 /.classpath
 /lib
 /codegen-lib
+jmeter/
+jmeter-results.jtl
