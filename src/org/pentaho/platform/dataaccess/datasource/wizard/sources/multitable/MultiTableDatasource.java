@@ -104,9 +104,6 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	    connections.setWidth(568);
 	    connections.setHeight(275);
 
-        // Non-star is the default, change that if relational only is not an option
-        joinGuiModel.setDoOlap(!wizardModel.isReportingOnlyValid());
-
 	    try {
 	      //RPB: BISERVER-9258. 
 	      
@@ -228,6 +225,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
           public void success(final MultiTableDatasourceDTO datasourceDTO) {
             tablesSelectionStep.setDatasourceDTO(datasourceDTO);
+            joinGuiModel.setDoOlap( datasourceDTO.getSchemaModel().getFactTable() != null );
             wizardModel.setDatasourceName(datasourceDTO.getDatasourceName());
             MultiTableDatasource.this.connectionSelectionStep.selectConnectionByName(datasourceDTO
                 .getSelectedConnection().getName());
@@ -257,6 +255,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 	@Override
 	public void reset() {
 		this.joinGuiModel.reset();
+		this.tablesSelectionStep.setDatasourceDTO( null );
 	}
 
 	@Bindable

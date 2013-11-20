@@ -316,8 +316,9 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
       this.computeJoins(dto);
 
       // Populate fact table.
-      this.setDoOlap(dto.isDoOlap());
-      if (dto.isDoOlap()) {
+      boolean isDoOlap = dto.isDoOlap() || dto.getSchemaModel().getFactTable() != null;
+      this.setDoOlap(isDoOlap);
+      if (isDoOlap) {
         for (JoinTableModel table : this.selectedTables) {
           if (tablesAreEqual(table.getName(), dto.getSchemaModel().getFactTable().getName())) {
             this.setFactTable(table);
@@ -392,13 +393,19 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 	}
 
 	public void reset() {
-		this.availableTables.clear();
-		this.selectedTables.clear();
-		this.joins.clear();
-		this.leftJoinTable.reset();
-		this.rightJoinTable.reset();
-		this.schemas.clear();
-	}
+    this.availableTables.clear();
+    this.selectedTables.clear();
+    this.joins.clear();
+    this.schemas.clear();
+    this.leftTables.clear();
+    this.rightTables.clear();
+    this.leftKeyField = null;
+    this.rightKeyField = null;
+    this.selectedJoin = null;
+    this.factTable = null;
+    this.leftJoinTable = null;
+    this.rightJoinTable = null;
+  }
 	
 	private boolean tablesAreEqual(String table1, String table2) {
 		String tableName1 = getSchemaTablePair(table1)[1];
