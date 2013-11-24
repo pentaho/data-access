@@ -1,0 +1,11 @@
+<enunciate basedir="src/" defaultRestSubcontext="/plugin">
+  <modules>
+    <docs splashPackage="com.pentaho.api" title="Pentaho Data-Access plugin doc" copyright="Pentaho.com" docsDir="dataaccessdocs">
+    </docs>
+    <c disabled="true"/>
+    <obj-c disabled="true"/>
+    <csharp disabled="true"/> 
+  </modules>
+  
+  <webapp disabled="true" />
+</enunciate> 
