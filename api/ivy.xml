@@ -19,5 +19,7 @@
   </publications>
 
   <dependencies defaultconf="default->default">
+  <dependency org="junit" name="junit" rev="4.8.2" transitive="false" conf="test->default"/>
+  
   </dependencies>
 </ivy-module>
