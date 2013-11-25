@@ -1,32 +1,42 @@
-<project name="Community Dashboard Editor" basedir="." default="build-and-test"
-         xmlns:ivy="antlib:org.apache.ivy.ant">
+<!--===========================================================================
+  This is the build file for the Pentaho Data Access v2 project.
+  
+  This build file will use the subfloor.xml file as the default build
+  process and should only override the tasks that need to differ from
+  the common build file.
+  
+============================================================================-->
+<project name="data-access-v2" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-    <description>Data Access v2 convenience build</description>
+  <!-- Import the common_build.xml file which contains all the default tasks -->
+  <import file="build-res/subfloor-pkg.xml" />  
+  <property name="source.publish" value="true" />
 
-    <property file="core/build.properties"/>
+  <!--
+      AS STATED ABOVE, THE ONLY TASKS THAT SHOULD EXIST IN THIS BUILD FILE ARE
+      THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
+      FOUND IN common_build.xml.
+    -->
 
-    <target name="clean-all">
-        <ant dir="api" antfile="build.xml" target="clean-all" inheritAll="true"/>
-        <ant dir="core" antfile="build.xml" target="clean-all" inheritAll="true"/>
-    </target>
-
-    <target name="resolve">
-        <ant dir="api" antfile="build.xml" target="resolve" inheritAll="true"/>
-        <ant dir="core" antfile="build.xml" target="resolve" inheritAll="true"/>
-    </target>
-
-    <target name="build" depends="clean-all, resolve">
-        <ant dir="api" antfile="build.xml" target="dist" inheritAll="true"/>
-        <ant dir="core" antfile="build.xml" target="dist" inheritAll="true"/>
-    </target>
-
-    <target name="build-and-test" depends="build">
-        <ant dir="core" antfile="build.xml" target="test" inheritAll="true"/>
-    </target>
-
-    <target name="install" depends="build-and-test"> 
-        <echo message="Installing ${impl.title} into ${pentaho.solutions.dir}/system/${package.root.dir}" />
-        <ant dir="core" antfile="build.xml" target="install" inheritAll="true"/>
-    </target>
-
+  <target name="dev-build" depends="install-antcontrib">
+    <for list="api, core" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          <target name="clean-all"/>
+          <target name="resolve" />
+          <target name="dist" />
+          <target name="publish-local" />
+        </ant>
+      </sequential>
+    </for>
+    <antcall>
+      <target name="clean-all" />
+      <target name="resolve" />
+      <target name="dist" />
+    </antcall>
+  </target>
+ 
+  <target name="assemble" depends="init,subfloor-pkg.assemble" description="Creates a distribution" />
+  
 </project>
+

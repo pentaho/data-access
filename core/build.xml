@@ -85,10 +85,6 @@
 			<fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
 			<fileset file="${lib.dir}/${ivy.artifact.api.id}-${project.revision}.jar" />
 		</copy>
-
-		<copy todir="${approot.stage.dir}" overwrite="true">
-			<fileset dir="${package.resdir}" />
-		</copy>
 	</target>
 
 	<!-- ===================================================================
