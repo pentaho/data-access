@@ -1,32 +1,125 @@
-<project name="Community Dashboard Editor" basedir="." default="build-and-test"
-         xmlns:ivy="antlib:org.apache.ivy.ant">
+<!--===========================================================================
+  This is the build file for the Pentaho BI Platform Engine Core project.
+  
+  This build file will use the subfloor-gwt.xml file as the default build
+  process and should only override the tasks that need to differ from
+  the common build file.
+  
+  See common_build.xml for more details
+============================================================================-->
+<project name="data-access-v2" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-    <description>Data Access v2 convenience build</description>
+  <!-- Import the common_build.xml file which contains all the default tasks -->
+  <import file="build-res/subfloor-pkg.xml" />  
+  <property name="source.publish" value="true" />
 
-    <property file="core/build.properties"/>
+  <!--
+      AS STATED ABOVE, THE ONLY TASKS THAT SHOULD EXIST IN THIS BUILD FILE ARE
+      THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
+      FOUND IN common_build.xml.
+    -->
 
-    <target name="clean-all">
-        <ant dir="api" antfile="build.xml" target="clean-all" inheritAll="true"/>
-        <ant dir="core" antfile="build.xml" target="clean-all" inheritAll="true"/>
-    </target>
+  <target name="dev-build" depends="install-antcontrib">
+    <for list="api, core" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          <target name="clean-all"/>
+          <target name="resolve" />
+          <target name="dist" />
+          <target name="publish-local" />
+        </ant>
+      </sequential>
+    </for>
+    <antcall>
+      <target name="clean-all" />
+      <target name="resolve" />
+      <target name="package" />
+    </antcall>
+  </target>
 
-    <target name="resolve">
-        <ant dir="api" antfile="build.xml" target="resolve" inheritAll="true"/>
-        <ant dir="core" antfile="build.xml" target="resolve" inheritAll="true"/>
-    </target>
 
-    <target name="build" depends="clean-all, resolve">
-        <ant dir="api" antfile="build.xml" target="dist" inheritAll="true"/>
-        <ant dir="core" antfile="build.xml" target="dist" inheritAll="true"/>
-    </target>
+  <target name="resolve" depends="subfloor.resolve">
+    <!--<ivy:resolve file="${ivyfile}" conf="core" />
+    <ivy:retrieve conf="core" pattern="lib/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />-->
+  </target>
 
-    <target name="build-and-test" depends="build">
-        <ant dir="core" antfile="build.xml" target="test" inheritAll="true"/>
-    </target>
+  <!--=======================================================================
+        package
 
-    <target name="install" depends="build-and-test"> 
-        <echo message="Installing ${impl.title} into ${pentaho.solutions.dir}/system/${package.root.dir}" />
-        <ant dir="core" antfile="build.xml" target="install" inheritAll="true"/>
-    </target>
+        Creates a zip distribution of this plugin
+        ====================================================================-->
+  <!-- need to add obfuscate call after the jar target in the depends attribute below; also add -obf to JAR filename -->
+  <target name="assemble" depends="init,subfloor-pkg.assemble" description="Creates a distribution">
+
+    <copy todir="${stage.dir}/${package.root.dir}/lib" overwrite="true">
+      <fileset dir="lib">
+        <include name="*" />
+      </fileset>
+    </copy>
+
+    <copy todir="${stage.dir}/${package.root.dir}" overwrite="true">
+      <fileset dir="package-res" />
+    </copy>
+
+  </target>
+
+  <target name="assemble.copy-libs">
+    <copy todir="${approot.stage.dir}/lib">
+      <fileset dir="${lib.dir}" />
+    </copy>
+  </target>
+
+  <!-- ======================================== EULA assembly packaging ========================================= -->
+
+	<property name="pentaho-eula-assembly-pom.version" value="1.0.9" />
+
+	<target name="package-eula" depends="install-antcontrib">
+
+		<if>
+			<not>
+				<available file="${dist.dir}/pentaho-eula-assembly-pom-${pentaho-eula-assembly-pom.version}-pom.xml" type="file" />
+			</not>
+			<then>
+				<get src="http://repo.pentaho.org/artifactory/private-release/com/pentaho/pentaho-eula-assembly-pom/${pentaho-eula-assembly-pom.version}/pentaho-eula-assembly-pom-${pentaho-eula-assembly-pom.version}-pom.xml" 
+	              dest="${dist.dir}/pentaho-eula-assembly-pom-${pentaho-eula-assembly-pom.version}-pom.xml" 
+	              verbose="true" />
+			</then>
+		</if>
+
+		<echo>
+	          mvn
+	          -f
+	          ${dist.dir}/pentaho-eula-assembly-pom-${pentaho-eula-assembly-pom.version}-pom.xml
+	          -DartifactName=${artifactName}
+	          -Ddist.dir=${dist.dir}
+	          package
+	        </echo>
+		<if>
+			<isset property="isWindows" />
+			<then>
+				<exec executable="cmd">
+					<arg value="/c" />
+					<arg value="mvn.bat" />
+					<arg value="-f" />
+					<arg value="${dist.dir}/pentaho-eula-assembly-pom-${pentaho-eula-assembly-pom.version}-pom.xml" />
+					<arg value="-DartifactName=${artifactName}" />
+					<arg value="-Ddist.dir=${dist.dir}" />
+					<arg value="package" />
+				</exec>
+			</then>
+			<else>
+				<exec executable="mvn">
+					<arg value="-f" />
+					<arg value="${dist.dir}/pentaho-eula-assembly-pom-${pentaho-eula-assembly-pom.version}-pom.xml" />
+					<arg value="-DartifactName=${artifactName}" />
+					<arg value="-Ddist.dir=${dist.dir}" />
+					<arg value="package" />
+				</exec>
+			</else>
+		</if>
+
+	</target>
+
 
 </project>
+
