@@ -23,9 +23,6 @@
 
   <dependencies defaultconf="default->default">
 
-    <dependency org="junit" name="junit" rev="4.8.2"  transitive="false" conf="test->default"/>
-    <dependency org="org.mockito" name="mockito-all" rev="1.8.0"  transitive="false" conf="test->default"/>
-
     <dependency org="${ivy.artifact.group}" name="pentaho-bi-platform-data-access-api-v2" rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="pentaho-bi-platform-data-access-core-v2" rev="${project.revision}" transitive="false" changing="true"/>
 	
