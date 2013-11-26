@@ -69,7 +69,7 @@ public class MultiTableDatasourceDTO implements Serializable {
 	}
 
 	public boolean isDoOlap() {
-		return doOlap;
+		return (getSchemaModel() != null && getSchemaModel().getFactTable() != null);
 	}
 
 	public void setDoOlap(boolean doOlap) {
