@@ -2,7 +2,7 @@
  * Defines the plugin for the angular views for data access
  */
 
-pen.require(['mantle/puc-api/pucAngularApi'], function(PentahoPluginHandler) {
+pen.require(['mantle/puc-api/pucAngularPlugin'], function(PUCAngularPlugin) {
 	pen.startDataAccess = function() {
 		plugin.goNext("/data-access");
 	}
@@ -40,7 +40,7 @@ pen.require(['mantle/puc-api/pucAngularApi'], function(PentahoPluginHandler) {
 	// TODO: retrieve data to populate the page
 	var service = null;
 	
-	var plugin = new PentahoPluginHandler.Plugin({
+	var plugin = new PUCAngularPlugin({
 		routerCallback : routes,
 		controllerCallback : controllers
 	}).register();
