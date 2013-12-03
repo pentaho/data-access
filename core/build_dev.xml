@@ -1,0 +1,10 @@
+<project name="pentaho-data-access" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+	<import file="build.xml" />
+
+	<target name="dev-dist" depends="dist">
+		<unzip src="core/${dist.dir}/data-access-plugin-TRUNK-SNAPSHOT.zip" dest="${dev.tomcat.dir}/../pentaho-solutions/system/" overwrite="true" />
+	</target>
+	
+	<target name="dev-dist-full" depends="clean-all, resolve, dev-dist, publish-local" />
+</project>
