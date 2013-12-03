@@ -198,21 +198,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </target>
 
     <!--=======================================================================
-      install-pentaho-ant-tasks
-
-      Fetches and installs Pentaho Ant tasks
-    ====================================================================-->
-    <target name="install-pentaho-ant-tasks" depends="install-ivy">
-        <taskdef-with-ivy task-name="validate-gwt-compile" classname="org.pentaho.anttasks.GwtBuildValidator" organisation="pentaho" module="pentaho-ant-tasks" revision="1.2-SNAPSHOT" />
-    </target>
-
-    <!--=======================================================================
       validate-gwt-compile
 
       Fetches and installs Pentaho Ant tasks
     ====================================================================-->
     <target name="gwt-compile.validate" depends="install-pentaho-ant-tasks, gwt-compile">
-        <validate-gwt-compile stagePath="${gwt.output.dir}" srcPath="${src.dir}/.." quickScan="true" debug="false" />
+        <path id="taskdef.classpath">
+            <fileset dir="${subfloor.resources.dir}/pentaho-ant-tasks-${dependency.pentaho-ant-tasks}">
+                <include name="*.jar" />
+            </fileset>
+        </path>
+
+        <taskdef classpathref="taskdef.classpath"
+                 name="validate-gwt-compile"
+                 classname="org.pentaho.anttasks.GwtBuildValidator" />
+
+        <validate-gwt-compile
+                stagePath="${gwt.output.dir}"
+                whitelistFilePath="${basedir}/package-res/plugin.spring.xml"
+                quickScan="true"
+                debug="false" />
     </target>
 
 </project>
