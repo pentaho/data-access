@@ -35,7 +35,7 @@ import org.pentaho.platform.dataaccess.api.catalog.IDatasourceType;
 public class Datasource implements IDatasource {
 
   private String name;
-  private IDatasourceType datasourceType;
+  private DatasourceType datasourceType;
   private List<DatasourceChild> children = new ArrayList<DatasourceChild>();
 
   public Datasource() {
@@ -47,18 +47,17 @@ public class Datasource implements IDatasource {
     this.name = name;
   }
 
-  public Datasource( String name, IDatasourceType datasourceType ) {
+  public Datasource( String name, DatasourceType datasourceType ) {
     this( name );
     this.datasourceType = datasourceType;
   }
 
-  public Datasource( String name, IDatasourceType datasourceType, List<DatasourceChild> children ) {
+  public Datasource( String name, DatasourceType datasourceType, List<DatasourceChild> children ) {
     this( name, datasourceType );
     this.children = children;
   }
 
   @Override
-  @XmlAnyElement
   public IDatasourceType getType() {
     return datasourceType;
   }
@@ -81,7 +80,7 @@ public class Datasource implements IDatasource {
     this.name = name;
   }
 
-  public void setType( IDatasourceType datasourceType ) {
+  public void setType( DatasourceType datasourceType ) {
     this.datasourceType = datasourceType;
   }
 

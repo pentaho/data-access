@@ -55,7 +55,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   }
 
   public DatasourceCatalog( List<IDatasourceProvider> datasourceProviders ) {
-    datasourceProviders.addAll( datasourceProviders );
+    this.datasourceProviders.addAll( datasourceProviders );
   }
 
   /*
@@ -155,7 +155,7 @@ public class DatasourceCatalog implements IDatasourceCatalog {
   }
 
   public void registerDatasourceProvider( IDatasourceProvider datasourceProvider ) {
-    datasourceProviders.add( datasourceProvider );
+    this.datasourceProviders.add( datasourceProvider );
   }
 
 }

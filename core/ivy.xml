@@ -56,7 +56,7 @@
     <dependency org="org.json" name="json" rev="3.1.1" transitive="false" conf="default->default"/>
 
 	<!-- To support Enunciate Annotations in Resource classes 1.21.1 -->
-	<dependency org="org.codehaus.enunciate" name="enunciate-jersey-rt" rev="1.27" />
+	<dependency org="org.codehaus.enunciate" name="enunciate-jersey-rt" rev="1.27" conf="enunciate->default"/>
 	
     <!--  using libbase's CSVTokenizer -->
     <dependency org="${dependency.reporting-library.group}" name="libbase" rev="${dependency.libbase.revision}" changing="true">
