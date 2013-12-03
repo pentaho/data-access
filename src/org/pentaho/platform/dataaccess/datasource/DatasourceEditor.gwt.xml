@@ -88,6 +88,10 @@ This module serves as the Debuging environment and default implementation for in
 
     </source>
    <public path="wizard/public"/>
+   
+    <add-linker name="xsiframe"/>
+    <set-configuration-property name="devModeRedirectEnabled" value="true"/>
+   
     <entry-point class="org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint"/>
    <!--
   <servlet path="/databaseConnectionService" class="org.pentaho.ui.database.gwt.GwtDatabaseConnectionServlet" />
