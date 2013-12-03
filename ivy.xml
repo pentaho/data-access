@@ -4,6 +4,14 @@
 
   <configurations>
     <conf name="default"/>
+    <conf name="test" visibility="private"/>
+    <conf name="source"/>
+    <conf name="runtime"/>
+    <conf name="codegen" visibility="private"/>
+    <conf name="codegen-mac" visibility="private" extends="codegen"/>
+    <conf name="codegen-win" visibility="private" extends="codegen"/>
+    <conf name="codegen-linux" visibility="private" extends="codegen"/>
+    <conf name="enunciate" visibility="private"/>
     <conf name="core" visibility="private"/>
     <conf name="api" visibility="private"/>
   </configurations>
