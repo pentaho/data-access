@@ -321,9 +321,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
       this.computeJoins( dto );
 
       // Populate fact table.
-      boolean isDoOlap = dto.isDoOlap();
-      this.setDoOlap( isDoOlap );
-      if ( isDoOlap ) {
+      if (dto.isDoOlap()) {
         for ( JoinTableModel table : this.selectedTables ) {
           if ( tablesAreEqual( table.getName(), dto.getSchemaModel().getFactTable().getName() ) ) {
             this.setFactTable( table );
