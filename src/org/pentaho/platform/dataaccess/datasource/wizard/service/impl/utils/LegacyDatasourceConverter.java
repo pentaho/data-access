@@ -139,6 +139,9 @@ public class LegacyDatasourceConverter implements Converter {
           resultDTO.setSelectedTables(selectedTables);
         }
       }
+      else if(nodeName.equalsIgnoreCase("doOlap")){
+        resultDTO.setDoOlap( Boolean.valueOf( reader.getValue() ) );
+      }
 
       reader.moveUp();
     }

@@ -102,12 +102,17 @@ public class TablesSelectionStep extends AbstractWizardStep {
         closeWaitingDialog();
       }
 
-      public void success( List tables ) {
-        joinGuiModel.populateJoinGuiModel( domain, datasourceDTO, tables );
-        if ( joinGuiModel.isDoOlap() || datasourceDTO.getSchemaModel().getFactTable() != null ) {
-          setFactTable( joinGuiModel.getFactTable() );
+      public void success(List tables) {
+        if(tables.size() == 0 ) {
+          return;
         }
-        joinGuiModel.processAvailableTables( tables );
+        if (domain != null && datasourceDTO != null) {
+          joinGuiModel.populateJoinGuiModel(domain, datasourceDTO, tables);
+          if(joinGuiModel.getFactTable() != null) {
+            setFactTable(joinGuiModel.getFactTable());
+          }
+        }
+        joinGuiModel.processAvailableTables(tables);
         closeWaitingDialog();
       }
     } );
@@ -266,7 +271,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
   private void checkValidState() {
     boolean valid = true;
     boolean finishable = true;
-    if ( joinGuiModel.isDoOlap() || joinGuiModel.getFactTable() != null ) {
+    if(joinGuiModel.isDoOlap()) {
       valid &= this.factTables.getSelectedIndex() > 0;
       finishable &= this.factTables.getSelectedIndex() > 0;
     }
