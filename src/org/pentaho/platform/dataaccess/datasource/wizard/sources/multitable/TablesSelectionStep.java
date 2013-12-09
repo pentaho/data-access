@@ -107,7 +107,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
         if(tables.size() == 0 ) {
           return;
         }
-        if ((joinGuiModel.isDoOlap()) && (domain != null) && (datasourceDTO != null)) {
+        if (domain != null && datasourceDTO != null) {
        	  joinGuiModel.populateJoinGuiModel(domain, datasourceDTO, tables);
        	  if(joinGuiModel.getFactTable() != null) {
        	    setFactTable(joinGuiModel.getFactTable());
@@ -252,7 +252,9 @@ public class TablesSelectionStep extends AbstractWizardStep {
 	public void setFactTable(JoinTableModel factTable) {
 		List<JoinTableModel> tables = new ArrayList<JoinTableModel>();
 		tables.addAll(this.factTables.getElements());
-		this.factTables.setSelectedIndex(tables.indexOf(factTable.getName()));
+		if ( factTable != null ) {
+		  this.factTables.setSelectedIndex( tables.indexOf( factTable.getName() ) );
+		}
 	}
 
 	@Override
