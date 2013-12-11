@@ -88,5 +88,20 @@
        <pen:bean class="org.pentaho.metadata.repository.IMetadataDomainRepository"/>
     </constructor-arg>    
   </bean>
+
+  <bean class="org.pentaho.platform.dataaccess.security.policy.rolebased.actions.DatasourceViewAction">
+  	<pen:publish as-type="INTERFACES">
+	    <pen:attributes>
+	      <pen:attr key="priority" value="70"/>
+	    </pen:attributes>
+  	</pen:publish>
+	</bean>
+	  <bean class="org.pentaho.platform.dataaccess.security.policy.rolebased.actions.DatasourceManageAction">
+  	<pen:publish as-type="INTERFACES">
+	    <pen:attributes>
+	      <pen:attr key="priority" value="70"/>
+	    </pen:attributes>
+  	</pen:publish>
+	</bean>
   <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" scope="singleton"/>
 </beans>
