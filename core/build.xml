@@ -1,4 +1,4 @@
-<project name="Data Access V2" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="Data Access V2 - Core" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	<!-- Import the subfloor-pkg.xml file which contains all the default tasks -->
 	<import file="build-res/subfloor-pkg.xml" />
