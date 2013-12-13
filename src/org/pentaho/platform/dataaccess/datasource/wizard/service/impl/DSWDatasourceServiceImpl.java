@@ -48,8 +48,10 @@ import org.pentaho.metadata.repository.DomainStorageException;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoUrlFactory;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
+import org.pentaho.platform.api.engine.security.userroledao.IUserRoleDao;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
@@ -84,10 +86,12 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   
   private static final Log logger = LogFactory.getLog(DSWDatasourceServiceImpl.class);
 
-  private IDataAccessPermissionHandler dataAccessPermHandler;
+  //private IDataAccessPermissionHandler dataAccessPermHandler;
 
-  private IDataAccessViewPermissionHandler dataAccessViewPermHandler;
-
+  //private IDataAccessViewPermissionHandler dataAccessViewPermHandler;
+  
+  private IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
+  
   private IMetadataDomainRepository metadataDomainRepository;
 
   private static final String BEFORE_QUERY = " SELECT * FROM ("; //$NON-NLS-1$
@@ -101,7 +105,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
   public DSWDatasourceServiceImpl(ConnectionServiceImpl connectionService) {
     metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, null);
-    String dataAccessClassName = null;
+/*    String dataAccessClassName = null;
     try {
       IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
       dataAccessClassName = resLoader
@@ -131,40 +135,65 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
           Messages.getErrorString("DatasourceServiceImpl.ERROR_0030_DATAACCESS_VIEW_PERMISSIONS_INIT_ERROR"), e); //$NON-NLS-1$
       // TODO: Unhardcode once this is an actual plugin
       dataAccessViewPermHandler = new SimpleDataAccessViewPermissionHandler();
-    }
+    }*/
 
   }
 
   protected boolean hasDataAccessPermission() {
-    return dataAccessPermHandler != null
-        && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());
+/*    return dataAccessPermHandler != null
+        && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());*/
+    return policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.manage" );
   }
 
   protected boolean hasDataAccessViewPermission() {
-    return dataAccessViewPermHandler != null
-        && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession());
+//    return dataAccessViewPermHandler != null
+//        && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession());
+    return policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.view" );
   }
 
+  //////////////////////////////////////////////////////////////
+  // method overhauls here
+  /////////////////////////////////////////////////////////////
   protected List<String> getPermittedRoleList() {
-    if (dataAccessViewPermHandler == null) {
+/*    if (dataAccessViewPermHandler == null) {
       return null;
     }
     return dataAccessViewPermHandler.getPermittedRoleList(PentahoSessionHolder.getSession());
+  
+    IUserRoleDao userRoleDao = PentahoSystem.get(IUserRoleDao.class, "userRoleDaoTxn", pentahoSession);
+    userRoleDao.getRoleMembers( arg0, arg1 )
+    */
+    return null;
   }
 
   protected List<String> getPermittedUserList() {
-    if (dataAccessViewPermHandler == null) {
+/*    if (dataAccessViewPermHandler == null) {
       return null;
     }
-    return dataAccessViewPermHandler.getPermittedUserList(PentahoSessionHolder.getSession());
+    return dataAccessViewPermHandler.getPermittedUserList(PentahoSessionHolder.getSession());*/
+    return null;
   }
 
+
   protected int getDefaultAcls() {
-    if (dataAccessViewPermHandler == null) {
+/*    if (dataAccessViewPermHandler == null) {
       return -1;
     }
-    return dataAccessViewPermHandler.getDefaultAcls(PentahoSessionHolder.getSession());
+    return dataAccessViewPermHandler.getDefaultAcls(PentahoSessionHolder.getSession());*/
+    IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
+    String defaultAclsAsString = null;
+    int defaultAcls = -1;
+    try {
+      defaultAclsAsString = resLoader.getPluginSetting(getClass(), "settings/data-access-default-view-acls"); //$NON-NLS-1$
+    } catch (Exception e) {
+      logger.debug("Error getting plugin setting", e);
+    }
+    if (defaultAclsAsString != null && defaultAclsAsString.length() > 0) {
+      defaultAcls = Integer.parseInt(defaultAclsAsString);
+    }
+    return defaultAcls;
   }
+  ////////////////////////////////////////////////////////////////////////
 
   public boolean deleteLogicalModel(String domainId, String modelName) throws DatasourceServiceException {
     if (!hasDataAccessPermission()) {
@@ -342,7 +371,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connectionName, query,
           Integer.parseInt(previewLimit), PentahoSessionHolder.getSession());
       SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(modelName, connectionName, dbType, resultSet.getColumnTypes(), resultSet.getColumns(), query,
-          securityEnabled, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
+          true, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
               .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
       Domain domain = sqlModelGenerator.generate();
       return new BusinessData(domain, resultSet.getData());

@@ -42,6 +42,7 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.MondrianModelExporter;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.InlineSqlModelerSource;
@@ -64,11 +65,12 @@ public class ModelerService extends PentahoBase implements IModelerService {
   private static final long serialVersionUID = 1L;
   private static final Log logger = LogFactory.getLog(ModelerService.class);
   public static final String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
-  private SimpleDataAccessPermissionHandler dataAccessPermHandler;
+  private IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
+  //private SimpleDataAccessPermissionHandler dataAccessPermHandler;
 
   public ModelerService() {
     super();
-    dataAccessPermHandler = new SimpleDataAccessPermissionHandler();
+    //dataAccessPermHandler = new SimpleDataAccessPermissionHandler();
   }
   
   public Log getLogger() {
@@ -141,8 +143,8 @@ public class ModelerService extends PentahoBase implements IModelerService {
     String domainId = null;
     initKettle();
 
-    if (dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession())) {
-      SecurityHelper.getInstance().runAsSystem(new Callable<Void>() {
+    if ( policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.manage" ) ) {
+      SecurityHelper.getInstance().runAsSystem( new Callable<Void>() {
 
         @Override
         public Void call() throws Exception {

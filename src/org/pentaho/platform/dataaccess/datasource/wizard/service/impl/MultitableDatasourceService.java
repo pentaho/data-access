@@ -40,6 +40,7 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.Concept;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
@@ -60,7 +61,8 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 	private DatabaseMeta databaseMeta;
 	private ConnectionServiceImpl connectionServiceImpl;
   private Log logger = LogFactory.getLog(MultitableDatasourceService.class);
-  private IDataAccessViewPermissionHandler dataAccessViewPermHandler;
+  private IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
+  //private IDataAccessViewPermissionHandler dataAccessViewPermHandler;
 
 	public MultitableDatasourceService() {
 		this.connectionServiceImpl = new ConnectionServiceImpl();
@@ -73,7 +75,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 	}
 
   protected void init() {
-    String dataAccessViewClassName = null;
+/*    String dataAccessViewClassName = null;
     try {
       IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
       dataAccessViewClassName = resLoader
@@ -88,8 +90,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
           Messages.getErrorString("DatasourceServiceImpl.ERROR_0030_DATAACCESS_VIEW_PERMISSIONS_INIT_ERROR"), e); //$NON-NLS-1$
       // TODO: Unhardcode once this is an actual plugin
       dataAccessViewPermHandler = new SimpleDataAccessViewPermissionHandler();
-    }
-
+    }*/
   }
 
 	private DatabaseMeta getDatabaseMeta(IDatabaseConnection connection) throws ConnectionServiceException {
@@ -228,47 +229,41 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 	}
 
   protected boolean hasDataAccessViewPermission() {
-    return dataAccessViewPermHandler != null
-        && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession());
+    return policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.view" );
   }
 
   protected List<String> getPermittedRoleList() {
-    if (dataAccessViewPermHandler == null) {
-      return null;
-    }
-    return dataAccessViewPermHandler.getPermittedRoleList(PentahoSessionHolder.getSession());
+    return null;
   }
 
   protected List<String> getPermittedUserList() {
-    if (dataAccessViewPermHandler == null) {
-      return null;
-    }
-    return dataAccessViewPermHandler.getPermittedUserList(PentahoSessionHolder.getSession());
+    return null;
   }
 
   protected int getDefaultAcls() {
-    if (dataAccessViewPermHandler == null) {
-      return -1;
-    }
-    return dataAccessViewPermHandler.getDefaultAcls(PentahoSessionHolder.getSession());
+    return -1;
   }
     
   protected boolean isSecurityEnabled() {
-    Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
-        || ((getPermittedUserList() != null && getPermittedUserList().size() > 0));
-    return securityEnabled;
+/*    Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
+        || ((getPermittedUserList() != null && getPermittedUserList().size() > 0));*/
+    return true;
   }
 
   protected void applySecurity(LogicalModel logicalModel) {
-    if (isSecurityEnabled()) {
+    if ( isSecurityEnabled() ) {
       Security security = new Security();
-      for (String user : getPermittedUserList()) {
-        SecurityOwner owner = new SecurityOwner(SecurityOwner.OwnerType.USER, user);
-        security.putOwnerRights(owner, getDefaultAcls());
+      if ( getPermittedUserList() != null ) {
+        for ( String user : getPermittedUserList() ) {
+          SecurityOwner owner = new SecurityOwner( SecurityOwner.OwnerType.USER, user );
+          security.putOwnerRights( owner, getDefaultAcls() );
+        }
       }
-      for (String role : getPermittedRoleList()) {
-        SecurityOwner owner = new SecurityOwner(SecurityOwner.OwnerType.ROLE, role);
-        security.putOwnerRights(owner, getDefaultAcls());
+      if ( getPermittedRoleList() != null ) {
+        for ( String role : getPermittedRoleList() ) {
+          SecurityOwner owner = new SecurityOwner( SecurityOwner.OwnerType.ROLE, role );
+          security.putOwnerRights( owner, getDefaultAcls() );
+        }
       }
       logicalModel.setProperty(Concept.SECURITY_PROPERTY, security);
     }

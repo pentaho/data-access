@@ -17,7 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -28,8 +27,8 @@ import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.service.DatabaseDialectService;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
-import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
 import org.pentaho.platform.api.repository.datasource.DuplicateDatasourceException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
@@ -51,13 +50,15 @@ import com.google.gwt.http.client.Response;
  */
 public class ConnectionServiceImpl extends PentahoBase implements IConnectionService {
 
-  private IDataAccessPermissionHandler dataAccessPermHandler;
+  //private IDataAccessPermissionHandler dataAccessPermHandler;
 
   private IDatasourceMgmtService datasourceMgmtSvc;
   
   private DatabaseDialectService dialectService = new DatabaseDialectService();
   
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
+  
+  private IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
 
   private static final Log logger = LogFactory.getLog(ConnectionServiceImpl.class);
 
@@ -68,27 +69,28 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   public ConnectionServiceImpl() {
     IPentahoSession session = PentahoSessionHolder.getSession();
     datasourceMgmtSvc = PentahoSystem.get(IDatasourceMgmtService.class, session);
-    String dataAccessClassName;
-    try {
-      //FIXME: we should be using an object factory of some kind here
-      IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
-      dataAccessClassName = resLoader.getPluginSetting(getClass(),
-          "settings/data-access-permission-handler", SimpleDataAccessPermissionHandler.class.getName()); //$NON-NLS-1$ 
-      Class<?> clazz = Class.forName(dataAccessClassName, true, getClass().getClassLoader());
-      Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
-      dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance();
-    } catch (Exception e) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0007_DATAACCESS_PERMISSIONS_INIT_ERROR", e //$NON-NLS-1$
-          .getLocalizedMessage()), e);
-      // TODO: Unhardcode once this is an actual plugin
-      dataAccessPermHandler = new SimpleDataAccessPermissionHandler();
-    }
+//    String dataAccessClassName;
+//    try {
+//      //FIXME: we should be using an object factory of some kind here
+//      IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
+//      dataAccessClassName = resLoader.getPluginSetting(getClass(),
+//          "settings/data-access-permission-handler", SimpleDataAccessPermissionHandler.class.getName()); //$NON-NLS-1$ 
+//      Class<?> clazz = Class.forName(dataAccessClassName, true, getClass().getClassLoader());
+//      Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
+//      dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance();
+//    } catch (Exception e) {
+//      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0007_DATAACCESS_PERMISSIONS_INIT_ERROR", e //$NON-NLS-1$
+//          .getLocalizedMessage()), e);
+//      // TODO: Unhardcode once this is an actual plugin
+//      dataAccessPermHandler = new SimpleDataAccessPermissionHandler();
+//    }
 
   }
 
   protected boolean hasDataAccessPermission() {
-    return dataAccessPermHandler != null
-        && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());
+    /*    return dataAccessPermHandler != null
+        && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());*/
+    return policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.manage" );
   }
   
   protected void ensureDataAccessPermission() throws ConnectionServiceException{
