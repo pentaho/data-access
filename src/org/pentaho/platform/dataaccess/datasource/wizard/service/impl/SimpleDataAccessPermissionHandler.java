@@ -19,6 +19,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -27,10 +28,16 @@ import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 
 public class SimpleDataAccessPermissionHandler implements IDataAccessPermissionHandler {
+  
+  private IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
 
   private Log logger = LogFactory.getLog(SimpleDataAccessPermissionHandler.class);
   @Override
   public boolean hasDataAccessPermission(IPentahoSession session) {
+
+    if ( policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.manage" ) ) {
+      return true;
+    }
 
     Authentication auth = SecurityHelper.getInstance().getAuthentication(session, true);
     
