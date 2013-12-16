@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -32,6 +33,8 @@ import org.springframework.security.GrantedAuthority;
 public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPermissionHandler {
 
   private Log logger = LogFactory.getLog(SimpleDataAccessViewPermissionHandler.class);
+  
+  private IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
 
   public List<String> getPermittedRoleList(IPentahoSession session) {
     List<String> roleList = new ArrayList<String>();
@@ -99,7 +102,7 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
   }
 
   public boolean hasDataAccessViewPermission(IPentahoSession session) {
-    return getPermittedUserList(session).size() > 0 || getPermittedRoleList(session).size() > 0;
-      
+    return getPermittedUserList( session ).size() > 0 || getPermittedRoleList( session ).size() > 0
+        || policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.view" );
   }
 }
