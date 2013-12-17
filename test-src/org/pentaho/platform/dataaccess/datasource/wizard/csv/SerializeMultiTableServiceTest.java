@@ -94,6 +94,9 @@ import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
 import org.springframework.security.userdetails.UserDetailsService;
 import org.springframework.security.userdetails.UsernameNotFoundException;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyString;
 
 /**
  * Integration test. Tests {@link DefaultUnifiedRepository} and
@@ -127,6 +130,8 @@ public class SerializeMultiTableServiceTest {
   public void setUp() throws Exception {
     
     manager = new MockBackingRepositoryLifecycleManager(new MockSecurityHelper());
+    IAuthorizationPolicy mockAuthorizationPolicy = mock(IAuthorizationPolicy.class);
+    when( mockAuthorizationPolicy.isAllowed( anyString() ) ).thenReturn( true );
     
     System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
     booter = new MicroPlatform("test-res/solution1");
@@ -145,6 +150,7 @@ public class SerializeMultiTableServiceTest {
     booter.define(ISecurityHelper.class, MockSecurityHelper.class);
     booter.define(UserDetailsService.class, MockUserDetailService.class);
     booter.define("singleTenantAdminUserName", new String("admin"));
+    booter.defineInstance( IAuthorizationPolicy.class, mockAuthorizationPolicy );
      booter.defineInstance(IPluginResourceLoader.class, new PluginResourceLoader() {
         protected PluginClassLoader getOverrideClassloader() {
           return new PluginClassLoader(new File(".", "test-res/solution1/system/simple-jndi"), this);

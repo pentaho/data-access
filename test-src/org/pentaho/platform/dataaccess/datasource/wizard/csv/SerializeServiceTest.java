@@ -18,6 +18,10 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -127,6 +131,9 @@ public class SerializeServiceTest {
 
     System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
     booter = new MicroPlatform("test-res/solution1");
+    
+    IAuthorizationPolicy mockAuthorizationPolicy = mock(IAuthorizationPolicy.class);
+    when( mockAuthorizationPolicy.isAllowed( anyString() ) ).thenReturn( true );
 
     booter.define(ISolutionEngine.class, SolutionEngine.class, Scope.GLOBAL);
     booter.define(IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, Scope.GLOBAL);
@@ -142,6 +149,7 @@ public class SerializeServiceTest {
     booter.define(ISecurityHelper.class, MockSecurityHelper.class);
     booter.define(UserDetailsService.class, MockUserDetailService.class);
     booter.define("singleTenantAdminUserName", new String("admin"));
+    booter.defineInstance( IAuthorizationPolicy.class, mockAuthorizationPolicy );
 
     booter.defineInstance(IPluginResourceLoader.class, new PluginResourceLoader() {
       protected PluginClassLoader getOverrideClassloader() {
