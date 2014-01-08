@@ -341,9 +341,12 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
           || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connectionName, query,
           Integer.parseInt(previewLimit), PentahoSessionHolder.getSession());
-      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(modelName, connectionName, dbType, resultSet.getColumnTypes(), resultSet.getColumns(), query,
-          securityEnabled, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
-              .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
+      
+      SQLModelGenerator sqlModelGenerator =
+          new SQLModelGenerator( modelName, connectionName, dbType, resultSet.getColumnTypes(), resultSet.getColumns(),
+              query, securityEnabled, getPermittedRoleList(), getEffectivePermittedUserList( securityEnabled ),
+              getDefaultAcls(), ( PentahoSessionHolder.getSession() != null ) ? PentahoSessionHolder.getSession()
+                  .getName() : null );
       Domain domain = sqlModelGenerator.generate();
       return new BusinessData(domain, resultSet.getData());
     } catch (SQLModelGeneratorException smge) {
@@ -358,6 +361,18 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
           "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e); //$NON-NLS-1$
     }
    }
+  
+  // Add user to list if not already present
+  private List<String> getEffectivePermittedUserList( boolean securityEnabled ) {
+    ArrayList<String> permittedUserList =
+        getPermittedUserList() == null ? new ArrayList<String>() : new ArrayList<String>( getPermittedUserList() );
+    if ( securityEnabled ) {
+      if ( !permittedUserList.contains( PentahoSessionHolder.getSession().getName() ) ) {
+        permittedUserList.add( PentahoSessionHolder.getSession().getName() );
+      }
+    }
+    return permittedUserList;
+  }
 
   public IMetadataDomainRepository getMetadataDomainRepository() {
     return metadataDomainRepository;
@@ -518,7 +533,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connection.getName(), query,
           10, PentahoSessionHolder.getSession());
       SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connection.getDatabaseType().getShortName(), resultSet.getColumnTypes(), resultSet.getColumns(), query,
-          securityEnabled, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
+          securityEnabled, getPermittedRoleList(), getEffectivePermittedUserList( securityEnabled ), getDefaultAcls(), (PentahoSessionHolder
               .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
       Domain domain = sqlModelGenerator.generate();
       domain.getPhysicalModels().get(0).setId(connection.getName());

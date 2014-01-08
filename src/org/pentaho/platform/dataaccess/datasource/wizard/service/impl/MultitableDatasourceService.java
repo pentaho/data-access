@@ -262,9 +262,9 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
   protected void applySecurity(LogicalModel logicalModel) {
     if (isSecurityEnabled()) {
       Security security = new Security();
-      for (String user : getPermittedUserList()) {
-        SecurityOwner owner = new SecurityOwner(SecurityOwner.OwnerType.USER, user);
-        security.putOwnerRights(owner, getDefaultAcls());
+      for ( String user : getEffectivePermittedUserList( isSecurityEnabled() ) ) {
+        SecurityOwner owner = new SecurityOwner( SecurityOwner.OwnerType.USER, user );
+        security.putOwnerRights( owner, getDefaultAcls() );
       }
       for (String role : getPermittedRoleList()) {
         SecurityOwner owner = new SecurityOwner(SecurityOwner.OwnerType.ROLE, role);
@@ -272,6 +272,18 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
       }
       logicalModel.setProperty(Concept.SECURITY_PROPERTY, security);
     }
+  }
+  
+  // Add user to list if not already present
+  private List<String> getEffectivePermittedUserList( boolean securityEnabled ) {
+    ArrayList<String> permittedUserList =
+        getPermittedUserList() == null ? new ArrayList<String>() : new ArrayList<String>( getPermittedUserList() );
+    if ( securityEnabled ) {
+      if ( !permittedUserList.contains( PentahoSessionHolder.getSession().getName() ) ) {
+        permittedUserList.add( PentahoSessionHolder.getSession().getName() );
+      }
+    }
+    return permittedUserList;
   }
 
 }
