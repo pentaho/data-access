@@ -344,7 +344,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       
       SQLModelGenerator sqlModelGenerator =
           new SQLModelGenerator( modelName, connectionName, dbType, resultSet.getColumnTypes(), resultSet.getColumns(),
-              query, securityEnabled, getPermittedRoleList(), getEffectivePermittedUserList( securityEnabled ),
+              query, securityEnabled, getEffectivePermittedUserList( securityEnabled ), getPermittedRoleList(),
               getDefaultAcls(), ( PentahoSessionHolder.getSession() != null ) ? PentahoSessionHolder.getSession()
                   .getName() : null );
       Domain domain = sqlModelGenerator.generate();
@@ -533,7 +533,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connection.getName(), query,
           10, PentahoSessionHolder.getSession());
       SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connection.getDatabaseType().getShortName(), resultSet.getColumnTypes(), resultSet.getColumns(), query,
-          securityEnabled, getPermittedRoleList(), getEffectivePermittedUserList( securityEnabled ), getDefaultAcls(), (PentahoSessionHolder
+          securityEnabled, getEffectivePermittedUserList( securityEnabled ), getPermittedRoleList(), getDefaultAcls(), (PentahoSessionHolder
               .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
       Domain domain = sqlModelGenerator.generate();
       domain.getPhysicalModels().get(0).setId(connection.getName());
