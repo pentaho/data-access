@@ -88,9 +88,11 @@ This module serves as the Debuging environment and default implementation for in
 
     </source>
    <public path="wizard/public"/>
-   
-    <add-linker name="xsiframe"/>
-    <set-configuration-property name="devModeRedirectEnabled" value="true"/>
+
+<!-- **SuperDevMode** == Uncomment this and re-build to get a SuperDevMode compatible build
+  <add-linker name="xsiframe"/>
+  <set-configuration-property name="devModeRedirectEnabled" value="true"/>
+**SuperDevMode** -->
    
     <entry-point class="org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint"/>
    <!--
