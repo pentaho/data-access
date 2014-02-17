@@ -52,6 +52,7 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.ISecurityHelper;
 import org.pentaho.platform.api.engine.ISolutionEngine;
+import org.pentaho.platform.api.engine.IUserRoleListService;
 import org.pentaho.platform.api.mt.ITenant;
 import org.pentaho.platform.api.repository.IClientRepositoryPathsStrategy;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
@@ -135,6 +136,8 @@ public class SerializeServiceTest {
     IAuthorizationPolicy mockAuthorizationPolicy = mock(IAuthorizationPolicy.class);
     when( mockAuthorizationPolicy.isAllowed( anyString() ) ).thenReturn( true );
 
+    IUserRoleListService mockUserRoleListService = mock(IUserRoleListService.class);
+
     booter.define(ISolutionEngine.class, SolutionEngine.class, Scope.GLOBAL);
     booter.define(IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, Scope.GLOBAL);
     booter.define(IMondrianCatalogService.class, MondrianCatalogHelper.class, Scope.GLOBAL);
@@ -156,6 +159,8 @@ public class SerializeServiceTest {
         return new PluginClassLoader(new File(".", "test-res/solution1/system/simple-jndi"), this);
       }
     });
+
+    booter.defineInstance(IUserRoleListService.class, mockUserRoleListService);
 
     booter.setSettingsProvider(new SystemSettings());
     booter.start();
