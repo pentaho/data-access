@@ -51,6 +51,7 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.ISecurityHelper;
 import org.pentaho.platform.api.engine.ISolutionEngine;
+import org.pentaho.platform.api.engine.IUserRoleListService;
 import org.pentaho.platform.api.mt.ITenant;
 import org.pentaho.platform.api.repository.IClientRepositoryPathsStrategy;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
@@ -132,7 +133,9 @@ public class SerializeMultiTableServiceTest {
     manager = new MockBackingRepositoryLifecycleManager(new MockSecurityHelper());
     IAuthorizationPolicy mockAuthorizationPolicy = mock(IAuthorizationPolicy.class);
     when( mockAuthorizationPolicy.isAllowed( anyString() ) ).thenReturn( true );
-    
+
+    IUserRoleListService mockUserRoleListService = mock(IUserRoleListService.class);
+
     System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
     booter = new MicroPlatform("test-res/solution1");
     
@@ -156,7 +159,8 @@ public class SerializeMultiTableServiceTest {
           return new PluginClassLoader(new File(".", "test-res/solution1/system/simple-jndi"), this);
         }
       });
-    
+
+    booter.defineInstance(IUserRoleListService.class, mockUserRoleListService);
     
     booter.setSettingsProvider(new SystemSettings());
     booter.start();
