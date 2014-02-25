@@ -349,7 +349,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connectionName, query,
           Integer.parseInt(previewLimit), PentahoSessionHolder.getSession());
       SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(modelName, connectionName, dbType, resultSet.getColumnTypes(), resultSet.getColumns(), query,
-          securityEnabled, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
+          securityEnabled, getPermittedUserList(), getPermittedRoleList(), getDefaultAcls(), (PentahoSessionHolder
               .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
       Domain domain = sqlModelGenerator.generate();
       return new BusinessData(domain, resultSet.getData());
@@ -525,7 +525,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connection.getName(), query,
           10, PentahoSessionHolder.getSession());
       SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connection.getDatabaseType().getShortName(), resultSet.getColumnTypes(), resultSet.getColumns(), query,
-          securityEnabled, getPermittedRoleList(), getPermittedUserList(), getDefaultAcls(), (PentahoSessionHolder
+          securityEnabled, getPermittedUserList(), getPermittedRoleList(), getDefaultAcls(), (PentahoSessionHolder
               .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
       Domain domain = sqlModelGenerator.generate();
       domain.getPhysicalModels().get(0).setId(connection.getName());
