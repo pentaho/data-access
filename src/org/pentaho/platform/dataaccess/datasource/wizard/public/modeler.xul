@@ -9,7 +9,7 @@
           buttonlabelcancel="${dialog.cancel}">
     <hbox id="metadatastep" flex="1" padding="0" spacing="3" height="425">
       <editpanel width="260">
-        <caption label="${available}:"/>
+        <caption label="${available}"/>
 
         <toolbar mode="icons">
           <toolbarspacer flex="1"/>
