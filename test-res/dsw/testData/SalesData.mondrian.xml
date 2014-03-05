@@ -1,0 +1,100 @@
+<Schema name="SalesData">
+  <Dimension name="CUSTOMER W TER">
+    <Hierarchy name="ADDRESSLINE1" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="ADDRESSLINE1" uniqueMembers="false" column="ADDRESSLINE1" type="String">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="ADDRESSLINE2" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="ADDRESSLINE2" uniqueMembers="false" column="ADDRESSLINE2" type="String">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="CONTACTFIRSTNAME" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="CONTACTFIRSTNAME" uniqueMembers="false" column="CONTACTFIRSTNAME" type="String">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="CONTACTLASTNAME" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="CONTACTLASTNAME" uniqueMembers="false" column="CONTACTLASTNAME" type="String">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="CREDITLIMIT" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="CREDITLIMIT" uniqueMembers="false" column="CREDITLIMIT" type="Numeric">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="CUSTOMERNAME" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="CUSTOMERNAME" uniqueMembers="false" column="CUSTOMERNAME" type="String">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="CUSTOMERNUMBER" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="CUSTOMERNUMBER" uniqueMembers="false" column="CUSTOMERNUMBER" type="Numeric">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="EMPLOYEENUMBER" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="EMPLOYEENUMBER" uniqueMembers="false" column="EMPLOYEENUMBER" type="Numeric">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="PHONE" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="PHONE" uniqueMembers="false" column="PHONE" type="String">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="TERRITORY COLOR" hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="TERRITORY COLOR" uniqueMembers="false" column="TERRITORY_COLOR" type="String">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="Geography">
+    <Hierarchy hasAll="true" primaryKey="CUSTOMERNUMBER">
+      <Table name="CUSTOMER_W_TER" schema="PUBLIC"/>
+      <Level name="TERRITORY" uniqueMembers="false" column="TERRITORY" type="String">
+        <Annotations>
+          <Annotation name="Data.Role">Geography</Annotation>
+          <Annotation name="Geo.Role">territory</Annotation>
+        </Annotations>
+      </Level>
+      <Level name="COUNTRY" uniqueMembers="false" column="COUNTRY" type="String">
+        <Annotations>
+          <Annotation name="Data.Role">Geography</Annotation>
+          <Annotation name="Geo.Role">country</Annotation>
+        </Annotations>
+      </Level>
+      <Level name="STATE" uniqueMembers="false" column="STATE" type="String">
+        <Annotations>
+          <Annotation name="Data.Role">Geography</Annotation>
+          <Annotation name="Geo.Role">state</Annotation>
+          <Annotation name="Geo.RequiredParents">country</Annotation>
+        </Annotations>
+      </Level>
+      <Level name="CITY" uniqueMembers="false" column="CITY" type="String">
+        <Annotations>
+          <Annotation name="Data.Role">Geography</Annotation>
+          <Annotation name="Geo.Role">city</Annotation>
+          <Annotation name="Geo.RequiredParents">country,state</Annotation>
+        </Annotations>
+      </Level>
+      <Level name="POSTALCODE" uniqueMembers="false" column="POSTALCODE" type="String">
+        <Annotations>
+          <Annotation name="Data.Role">Geography</Annotation>
+          <Annotation name="Geo.Role">postal_code</Annotation>
+          <Annotation name="Geo.RequiredParents">country</Annotation>
+        </Annotations>
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="SalesData">
+    <Table name="CUSTOMERS" schema="PUBLIC"/>
+    <DimensionUsage name="CUSTOMER W TER" source="CUSTOMER W TER" foreignKey="CUSTOMERNUMBER"/>
+    <DimensionUsage name="Geography" source="Geography" foreignKey="CUSTOMERNUMBER"/>
+    <Measure name="CREDITLIMIT" column="CREDITLIMIT" aggregator="sum" formatString="&#x23;"/>
+    <Measure name="CUSTOMERNUMBER" column="CUSTOMERNUMBER" aggregator="sum" formatString="&#x23;"/>
+    <Measure name="SALESREPEMPLOYEENUMBER" column="SALESREPEMPLOYEENUMBER" aggregator="sum" formatString="&#x23;"/>
+  </Cube>
+</Schema>
