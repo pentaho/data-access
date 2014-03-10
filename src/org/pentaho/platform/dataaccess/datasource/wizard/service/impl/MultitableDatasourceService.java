@@ -17,7 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,18 +39,16 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.Concept;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
-import org.pentaho.platform.api.engine.IPluginResourceLoader;
+import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtJoinSelectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.ConnectionServiceHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.LegacyDatasourceConverter;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -60,7 +57,6 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 	private DatabaseMeta databaseMeta;
 	private ConnectionServiceImpl connectionServiceImpl;
   private Log logger = LogFactory.getLog(MultitableDatasourceService.class);
-  private IDataAccessViewPermissionHandler dataAccessViewPermHandler;
 
 	public MultitableDatasourceService() {
 		this.connectionServiceImpl = new ConnectionServiceImpl();
@@ -73,23 +69,6 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 	}
 
   protected void init() {
-    String dataAccessViewClassName = null;
-    try {
-      IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
-      dataAccessViewClassName = resLoader
-          .getPluginSetting(
-              getClass(),
-              "settings/data-access-view-permission-handler", "org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessViewPermissionHandler"); //$NON-NLS-1$ //$NON-NLS-2$
-      Class<?> clazz = Class.forName(dataAccessViewClassName);
-      Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
-      dataAccessViewPermHandler = (IDataAccessViewPermissionHandler) defaultConstructor.newInstance();
-    } catch (Exception e) {
-      logger.error(
-          Messages.getErrorString("DatasourceServiceImpl.ERROR_0030_DATAACCESS_VIEW_PERMISSIONS_INIT_ERROR"), e); //$NON-NLS-1$
-      // TODO: Unhardcode once this is an actual plugin
-      dataAccessViewPermHandler = new SimpleDataAccessViewPermissionHandler();
-    }
-
   }
 
 	private DatabaseMeta getDatabaseMeta(IDatabaseConnection connection) throws ConnectionServiceException {
@@ -226,33 +205,24 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
   protected boolean hasDataAccessViewPermission() {
-    return dataAccessViewPermHandler != null
-        && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession());
+    return DataAccessPermissionUtil.hasViewAccess();
   }
-
+  
   protected List<String> getPermittedRoleList() {
-    if (dataAccessViewPermHandler == null) {
-      return null;
-    }
-    return dataAccessViewPermHandler.getPermittedRoleList(PentahoSessionHolder.getSession());
+    return DataAccessPermissionUtil.getPermittedViewRoleList();
   }
 
   protected List<String> getPermittedUserList() {
-    if (dataAccessViewPermHandler == null) {
-      return null;
-    }
-    return dataAccessViewPermHandler.getPermittedUserList(PentahoSessionHolder.getSession());
+    return DataAccessPermissionUtil.getPermittedViewUserList();
   }
 
   protected int getDefaultAcls() {
-    if (dataAccessViewPermHandler == null) {
-      return -1;
-    }
-    return dataAccessViewPermHandler.getDefaultAcls(PentahoSessionHolder.getSession());
+    return DataAccessPermissionUtil.getDataAccessViewPermissionHandler().getDefaultAcls(
+        PentahoSessionHolder.getSession() );
   }
-    
+
   protected boolean isSecurityEnabled() {
     Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
         || ((getPermittedUserList() != null && getPermittedUserList().size() > 0));
