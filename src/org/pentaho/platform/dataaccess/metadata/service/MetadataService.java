@@ -39,6 +39,9 @@ import org.pentaho.metadata.query.model.util.QueryXmlHelper;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.ILogger;
+import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAccessPermissionHandler;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAccessViewPermissionHandler;
 import org.pentaho.platform.dataaccess.metadata.messages.Messages;
 import org.pentaho.platform.dataaccess.metadata.model.impl.Model;
 import org.pentaho.platform.dataaccess.metadata.model.impl.ModelInfo;
@@ -48,6 +51,7 @@ import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.pentahometadata.MetadataQueryComponent;
+import org.pentaho.platform.plugin.services.importer.IPlatformImportHandler;
 import org.pentaho.platform.util.messages.LocaleHelper;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 
@@ -81,9 +85,8 @@ public class MetadataService extends PentahoBase {
   @Path("/getDatasourcePermissions")
   @Produces({APPLICATION_JSON})  
   public String getDatasourcePermissions() {
-    IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
-    boolean canEdit = policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.manage" );
-    boolean canView = policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.view" );
+    boolean canEdit = DataAccessPermissionUtil.hasManageAccess();
+    boolean canView = DataAccessPermissionUtil.hasViewAccess();
 
     if ( canEdit ) {
       return "EDIT"; //$NON-NLS-1$

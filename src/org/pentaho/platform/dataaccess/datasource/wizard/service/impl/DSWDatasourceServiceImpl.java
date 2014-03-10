@@ -19,7 +19,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +53,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
+import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
@@ -84,10 +84,6 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   
   private static final Log logger = LogFactory.getLog(DSWDatasourceServiceImpl.class);
 
-  private IDataAccessPermissionHandler dataAccessPermHandler;
-
-  private IDataAccessViewPermissionHandler dataAccessViewPermHandler;
-
   private IMetadataDomainRepository metadataDomainRepository;
 
   private static final String BEFORE_QUERY = " SELECT * FROM ("; //$NON-NLS-1$
@@ -101,69 +97,27 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
   public DSWDatasourceServiceImpl(ConnectionServiceImpl connectionService) {
     metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, null);
-    String dataAccessClassName = null;
-    try {
-      IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
-      dataAccessClassName = resLoader
-          .getPluginSetting(
-              getClass(),
-              "settings/data-access-permission-handler", "org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessPermissionHandler"); //$NON-NLS-1$ //$NON-NLS-2$
-      Class<?> clazz = Class.forName(dataAccessClassName);
-      Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
-      dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance();
-    } catch (Exception e) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0007_DATAACCESS_PERMISSIONS_INIT_ERROR"), e); //$NON-NLS-1$
-      // TODO: Unhardcode once this is an actual plugin
-      dataAccessPermHandler = new SimpleDataAccessPermissionHandler();
-    }
-    String dataAccessViewClassName = null;
-    try {
-      IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
-      dataAccessViewClassName = resLoader
-          .getPluginSetting(
-              getClass(),
-              "settings/data-access-view-permission-handler", "org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessViewPermissionHandler"); //$NON-NLS-1$ //$NON-NLS-2$
-      Class<?> clazz = Class.forName(dataAccessViewClassName);
-      Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
-      dataAccessViewPermHandler = (IDataAccessViewPermissionHandler) defaultConstructor.newInstance();
-    } catch (Exception e) {
-      logger.error(
-          Messages.getErrorString("DatasourceServiceImpl.ERROR_0030_DATAACCESS_VIEW_PERMISSIONS_INIT_ERROR"), e); //$NON-NLS-1$
-      // TODO: Unhardcode once this is an actual plugin
-      dataAccessViewPermHandler = new SimpleDataAccessViewPermissionHandler();
-    }
-
   }
 
   protected boolean hasDataAccessPermission() {
-    return dataAccessPermHandler != null
-        && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());
+    return DataAccessPermissionUtil.hasManageAccess();
   }
 
   protected boolean hasDataAccessViewPermission() {
-    return dataAccessViewPermHandler != null
-        && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession());
+    return DataAccessPermissionUtil.hasViewAccess();
   }
 
   protected List<String> getPermittedRoleList() {
-    if (dataAccessViewPermHandler == null) {
-      return null;
-    }
-    return dataAccessViewPermHandler.getPermittedRoleList(PentahoSessionHolder.getSession());
+    return DataAccessPermissionUtil.getPermittedViewRoleList();
   }
 
   protected List<String> getPermittedUserList() {
-    if (dataAccessViewPermHandler == null) {
-      return null;
-    }
-    return dataAccessViewPermHandler.getPermittedUserList(PentahoSessionHolder.getSession());
+    return DataAccessPermissionUtil.getPermittedViewUserList();
   }
 
   protected int getDefaultAcls() {
-    if (dataAccessViewPermHandler == null) {
-      return -1;
-    }
-    return dataAccessViewPermHandler.getDefaultAcls(PentahoSessionHolder.getSession());
+    return DataAccessPermissionUtil.getDataAccessViewPermissionHandler().getDefaultAcls(
+        PentahoSessionHolder.getSession() );
   }
 
   public boolean deleteLogicalModel(String domainId, String modelName) throws DatasourceServiceException {
