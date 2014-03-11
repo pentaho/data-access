@@ -48,14 +48,12 @@ public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPer
       logger.debug("Error getting plugin setting", e);
     }
 
-    if (roles != null && roles.length() > 0) {
-      String roleArr[] = roles.split(","); //$NON-NLS-1$
+    if ( roles != null && roles.length() > 0 ) {
+      String roleArr[] = roles.split( "," ); //$NON-NLS-1$
 
-      for (String role : roleArr) {
-        for (GrantedAuthority userRole : auth.getAuthorities()) {
-          if (role != null && role.trim().equals(userRole.getAuthority())) {
-            roleList.add(role);
-          }
+      for ( String role : roleArr ) {
+        if ( role != null && role.trim().length() > 0) {
+          roleList.add( role );
         }
       }
     }
