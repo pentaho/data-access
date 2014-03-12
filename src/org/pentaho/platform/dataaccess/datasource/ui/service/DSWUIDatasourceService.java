@@ -60,6 +60,8 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
             int index = id.indexOf(EXT);
             if( index >=0) {
               name = id.substring(0, index);
+            } else{
+              name = id; // BISERVER-10557
             }
             datasourceInfos.add(new DatasourceInfo(name, id, TYPE, editable, removable, importable, exportable));          
           }
