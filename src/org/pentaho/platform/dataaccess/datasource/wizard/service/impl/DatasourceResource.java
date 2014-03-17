@@ -195,7 +195,8 @@ public class DatasourceResource {
     }
     MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
     Map<String, InputStream> fileData = helper.getModrianSchemaFiles(analysisId);
-    
+    parseMondrianSchemaName(analysisId, fileData);
+
     return createAttachment(fileData, analysisId);
   }
   
@@ -221,11 +222,21 @@ public class DatasourceResource {
       MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
       String catalogRef = (String)logicalModel.getProperty(MONDRIAN_CATALOG_REF);
       fileData.putAll(helper.getModrianSchemaFiles(catalogRef));
+      parseMondrianSchemaName( dswId, fileData );
     }
 
     return createAttachment(fileData, dswId);
   }
-  
+
+  private void parseMondrianSchemaName( String dswId, Map<String, InputStream> fileData ) {
+    final String keySchema = "schema.xml";//$NON-NLS-1$
+    if ( fileData.containsKey( keySchema ) ) {
+      final int xmiIndex = dswId.lastIndexOf( ".xmi" );//$NON-NLS-1$
+      fileData.put( ( xmiIndex > 0 ? dswId.substring( 0, xmiIndex ) : dswId ) + ".mondrian.xml", fileData.get( keySchema ) );//$NON-NLS-1$
+      fileData.remove( keySchema );
+    }
+  }
+
   @POST
   @Path("/metadata/{metadataId : .+}/remove")
   @Produces(WILDCARD)
@@ -315,11 +326,12 @@ public class DatasourceResource {
           IOUtils.copy(is, output);
         }
       };
-      quotedFileName = "\"" + domainId + ".zip\""; //$NON-NLS-1$//$NON-NLS-2$
+      final int xmiIndex = domainId.lastIndexOf( ".xmi" );//$NON-NLS-1$
+      quotedFileName = "\"" + ( xmiIndex > 0 ? domainId.substring( 0, xmiIndex ) : domainId ) + ".zip\""; //$NON-NLS-1$//$NON-NLS-2$
       return Response.ok(streamingOutput, APPLICATION_ZIP).header("Content-Disposition", "attachment; filename=" + quotedFileName).build(); //$NON-NLS-1$ //$NON-NLS-2$
     } else if (fileData.size() == 1) {  // we've got a single metadata file so we just return that.
       String fileName = (String) fileData.keySet().toArray()[0];
-      quotedFileName = "\"" + domainId + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+      quotedFileName = "\"" + fileName + "\""; //$NON-NLS-1$ //$NON-NLS-2$
       is = fileData.get(fileName);
       String mimeType = MediaType.TEXT_PLAIN;
       if (is instanceof RepositoryFileInputStream) {
