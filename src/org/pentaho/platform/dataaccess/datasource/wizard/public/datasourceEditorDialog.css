@@ -144,6 +144,12 @@ aggregation-dialog-checkbox-label {
     border-collapse: collapse;
 }
 
+.IE .dialogContent,
+.IE .dialog-content {
+    border-spacing: inherit;
+    border-collapse: inherit;
+}
+
 .dialog-content {
     border-collapse: expression('separate', cellSpacing = '0px');  /* IE hack  */
     border-collapse: separate;
