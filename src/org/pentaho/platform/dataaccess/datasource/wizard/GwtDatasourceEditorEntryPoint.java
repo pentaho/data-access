@@ -989,7 +989,10 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   public void showDatabaseDialog(final DialogListener<IDatabaseConnection> listener) {
     ConnectionController connectionController = wizard.getConnectionController();
     connectionController.init();
-    DatasourceModel datasourceModel = new DatasourceModel();
+    DatasourceModel datasourceModel = connectionController.getDatasourceModel();
+    if (datasourceModel == null) {
+      datasourceModel = new DatasourceModel();
+    }
     connectionController.setDatasourceModel(datasourceModel);
     connectionController.showAddConnectionDialog(listener);
   }
