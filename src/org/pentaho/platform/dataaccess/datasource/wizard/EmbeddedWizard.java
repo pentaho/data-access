@@ -358,6 +358,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     MessageHandler.getInstance().setMessages(datasourceMessages);
 
     connectionController = new ConnectionController(rootDocument);
+    connectionController.setDatasourceModel(datasourceModel);
 //    connectionController.setService(connectionService);
     mainWizardContainer.addEventHandler(connectionController);
 
