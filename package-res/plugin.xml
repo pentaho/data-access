@@ -8,7 +8,7 @@
    </static-paths>
    
    <overlays>
-	    <overlay id="dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages.properties" loadatstart="false">
+	    <overlay id="dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages" loadatstart="false">
 			<menubar id="filemenu">
 			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />
 			</menubar>
