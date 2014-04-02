@@ -20,6 +20,12 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
@@ -29,11 +35,6 @@ import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourc
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.xml.client.Document;
@@ -248,12 +249,13 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   @Override
   public void export(IDatasourceInfo dsInfo) {
     String exportURL = null;
+    final String id = URL.encodeQueryString( dsInfo.getId() );
     if (dsInfo.getType() == MetadataUIDatasourceService.TYPE) {
-      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + dsInfo.getId() + "/download";
+      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + id + "/download";
     } else if (dsInfo.getType() == MondrianUIDatasourceService.TYPE) {
-      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + dsInfo.getId() + "/download";
+      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + id + "/download";
     } else if (dsInfo.getType() == DSWUIDatasourceService.TYPE) {
-      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + dsInfo.getId() + "/download";
+      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + id + "/download";
     }
     Window.open(exportURL, "_new", "");
   }
@@ -264,12 +266,13 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   @Override
   public void remove(IDatasourceInfo dsInfo, final Object xulCallback) {
     final String removeURL;
+    final String id = URL.encodeQueryString( dsInfo.getId() );
     if (dsInfo.getType() == MetadataUIDatasourceService.TYPE) {
-      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + dsInfo.getId() + "/remove";
+      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + id + "/remove";
     } else if (dsInfo.getType() == MondrianUIDatasourceService.TYPE) {
-      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + dsInfo.getId() + "/remove";
+      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + id + "/remove";
     } else if (dsInfo.getType() == DSWUIDatasourceService.TYPE) {
-      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + dsInfo.getId() + "/remove";
+      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + id + "/remove";
     } else {
       removeURL = null;
     }
