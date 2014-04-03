@@ -160,6 +160,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
               lModel = model.getLogicalModel(ModelerPerspective.REPORTING);
             }
             lModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
+            lModel.setProperty( "WIZARD_GENERATED_SCHEMA", "TRUE" );
 
             String catName = lModel.getName(Locale.getDefault().toString());
 

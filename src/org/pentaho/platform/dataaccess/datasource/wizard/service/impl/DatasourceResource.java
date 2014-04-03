@@ -135,11 +135,18 @@ public class DatasourceResource {
     
     List<LogicalModel> logicalModelList = domain.getLogicalModels();
     if(logicalModelList != null && logicalModelList.size() >= 1) {
-      for(LogicalModel logicalModel : logicalModelList) {	
-    	  Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
+      for(LogicalModel logicalModel : logicalModelList) {
+        // keep this check for backwards compatibility for now
+        Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
+        if(property != null) {
+          return false;
+        }
+
+        // moving forward any non metadata generated datasource should have this property
+    	  property = logicalModel.getProperty("WIZARD_GENERATED_SCHEMA"); //$NON-NLS-1$
     	  if(property != null) {
     		  return false;    
-    	  } 
+    	  }
       }
       return true;
     } else {
