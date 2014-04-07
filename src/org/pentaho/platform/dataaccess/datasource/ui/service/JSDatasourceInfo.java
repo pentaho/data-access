@@ -44,7 +44,9 @@ public class JSDatasourceInfo implements IDatasourceInfo{
 
   private final native boolean isDatasourceImportable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.importable; }-*/; 
   
-  private final native boolean isDatasourceExportable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.exportable; }-*/; 
+  private final native boolean isDatasourceExportable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.exportable; }-*/;
+
+  private final native boolean isDatasourceCreatable(JavaScriptObject jsDatasourceInfo) /*-{ return jsDatasourceInfo.creatable; }-*/;
 
   
   @Override
@@ -80,6 +82,11 @@ public class JSDatasourceInfo implements IDatasourceInfo{
   @Override
   public final boolean isExportable() {
     return isDatasourceExportable(this.jsDatasourceInfo);
+  }
+
+  @Override
+  public final boolean isCreatable() {
+    return isDatasourceCreatable(this.jsDatasourceInfo);
   }
 
   @Override

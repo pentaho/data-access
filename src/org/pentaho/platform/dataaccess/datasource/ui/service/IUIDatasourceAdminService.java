@@ -57,4 +57,14 @@ public interface IUIDatasourceAdminService {
 
   public void remove(IDatasourceInfo dsInfo, Object callback);
 
+  public boolean isEditable();
+
+  public boolean isRemovable();
+
+  public boolean isImportable();
+
+  public boolean isExportable();
+
+  public boolean isCreatable();
+
 }

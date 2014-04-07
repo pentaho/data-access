@@ -49,6 +49,8 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   
   boolean exportable;
 
+  boolean creatable;
+
   static transient DatasourceMessages messageBundle;
 
 
@@ -73,6 +75,20 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     this.removable = removable;
     this.importable = importable;
     this.exportable = exportable;
+    this.creatable = true;
+  }
+
+  public DatasourceInfo(String name, String id, String type, boolean editable, boolean removable, boolean importable,
+                        boolean exportable, boolean creatable) {
+    super();
+    this.name = name;
+    this.id = id;
+    this.type = type;
+    this.editable = editable;
+    this.removable = removable;
+    this.importable = importable;
+    this.exportable = exportable;
+    this.creatable = creatable;
   }
   
   @Bindable
@@ -159,6 +175,11 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   @Override
   public boolean isExportable() {
     return this.exportable;
+  }
+
+  @Override
+  public boolean isCreatable(){
+    return this.creatable;
   }
 
   public static void setMessageBundle(DatasourceMessages bundle) {

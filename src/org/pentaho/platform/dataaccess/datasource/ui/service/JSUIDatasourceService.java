@@ -29,6 +29,13 @@ import com.google.gwt.core.client.JsArray;
 
 public class JSUIDatasourceService implements IUIDatasourceAdminService {
   private JavaScriptObject datasourceServiceObject;
+
+  private boolean editable = false;
+  private boolean removable = false;
+  private boolean importable = false;
+  private boolean exportable = false;
+  private boolean creatable = false;
+
   // Overlay types always have protected, zero argument constructors.
   public JSUIDatasourceService(JavaScriptObject datasourceServiceObject) {
     this.datasourceServiceObject = datasourceServiceObject;
@@ -75,6 +82,46 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
     getDelegateRemove(this.datasourceServiceObject, dsInfo.getId(), xulServiceCallbackJsObject.getJavascriptObject());
   }
 
+  /**
+   * Return editable flag
+   * @return
+   */
+  @Override public boolean isEditable() {
+    return editable;
+  }
+
+  /**
+   * Return removable flag
+   * @return
+   */
+  @Override public boolean isRemovable() {
+    return removable;
+  }
+
+  /**
+   * Return importable flag
+   * @return
+   */
+  @Override public boolean isImportable() {
+    return importable;
+  }
+
+  /**
+   * Return exportable flag
+   * @return
+   */
+  @Override public boolean isExportable() {
+    return exportable;
+  }
+
+  /**
+   * Return creatable flag
+   * @return
+   */
+  @Override public boolean isCreatable() {
+    return creatable;
+  }
+
 
   private final native JsArray<JavaScriptObject> getDelegateIds(JavaScriptObject datasourceServiceObject) /*-{
     return datasourceServiceObject.getIds();
@@ -98,4 +145,25 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
   private final native String getDelegateRemove(JavaScriptObject datasourceServiceObject, String id, JavaScriptObject callback) /*-{
     return datasourceServiceObject.doRemove(id, callback);
   }-*/;
+
+  private final native String getDelegateIsEditable(JavaScriptObject datasourceServiceObject)/*-{
+    return datasourceServiceObject.isEditable();
+  }-*/;
+
+  private final native String getDelegateIsRemovable(JavaScriptObject datasourceServiceObject)/*-{
+    return datasourceServiceObject.isRemovable();
+  }-*/;
+
+  private final native String getDelegateIsImportable(JavaScriptObject datasourceServiceObject)/*-{
+    return datasourceServiceObject.isImportable();
+  }-*/;
+
+  private final native String getDelegateIsExportable(JavaScriptObject datasourceServiceObject)/*-{
+    return datasourceServiceObject.isExportable();
+  }-*/;
+
+  private final native String getDelegateIsCreatable(JavaScriptObject datasourceServiceObject)/*-{
+    return datasourceServiceObject.isCreatable();
+  }-*/;
+
 }
