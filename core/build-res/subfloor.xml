@@ -27,9 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <!--===========================================================================
     == SUBFLOOR ==
     
-    $Rev: 113 $
-    $Date: 2010-09-03 15:02:57 -0400 (Fri, 03 Sep 2010) $
-    Project Home: http://code.google.com/p/subfloor/
+    $Date: Wed Nov  6 16:13:57 UTC 2013 $
+    Project Home: https://github.com/pentaho/subfloor/
     
     This file contains the default implementation of the ant tasks to 
     perform a build. This file should be included by the build.xml file 
@@ -178,7 +177,7 @@ TYPICAL TARGET SEQUENCE
             value="true"
             description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)" />
   <property name="ivy.url"
-            value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar"
+            value="http://repo.pentaho.org/artifactory/repo/org/apache/ivy/ivy/2.3.0/ivy-2.3.0.jar"
             description="The URL to the current release of Apache IVY" />
 	
   <!-- Enunciate properties -->
