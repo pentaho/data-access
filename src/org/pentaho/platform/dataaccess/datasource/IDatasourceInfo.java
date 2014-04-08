@@ -72,4 +72,10 @@ public interface IDatasourceInfo extends Serializable{
    * @return
    */
   public String getDisplayType();
+
+  /**
+   * Returns whether a datasource can be created
+   * @return
+   */
+  public boolean isCreatable();
 }

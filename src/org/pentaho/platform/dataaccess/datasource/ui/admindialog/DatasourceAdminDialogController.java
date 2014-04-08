@@ -280,7 +280,18 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           datasourceTypeMenuPopup.removeComponent(component);
         }
 
+        List<IDatasourceInfo> datasourceInfoList = datasourceAdminDialogModel.getDatasourcesList();
+
         for(String datasourceType:datasourceTypes) {
+
+          boolean creatable = true;
+
+          IUIDatasourceAdminService datasourceAdminService = manager.getService( datasourceType );
+
+          if(!datasourceAdminService.isCreatable()){
+            continue;
+          }
+
           XulMenuitem menuItem;
           try {
             menuItem = (XulMenuitem) document.createElement("menuitem");

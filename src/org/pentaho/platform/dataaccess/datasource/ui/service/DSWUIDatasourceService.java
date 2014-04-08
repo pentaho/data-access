@@ -33,6 +33,7 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
   private boolean removable = true;
   private boolean importable = false;
   private boolean exportable = true;
+  private boolean creatable = true;
   private String newUI = "builtin:";
   private String editUI= "builtin:";
   @Override
@@ -105,4 +106,43 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
     datasourceService.remove(dsInfo, callback);
   }
 
+  /**
+   * Return editable flag
+   * @return
+   */
+  @Override public boolean isEditable() {
+    return editable;
+  }
+
+  /**
+   * Return removable flag
+   * @return
+   */
+  @Override public boolean isRemovable() {
+    return removable;
+  }
+
+  /**
+   * Return importable flag
+   * @return
+   */
+  @Override public boolean isImportable() {
+    return importable;
+  }
+
+  /**
+   * Return exportable flag
+   * @return
+   */
+  @Override public boolean isExportable() {
+    return exportable;
+  }
+
+  /**
+   * Return creatable flag
+   * @return
+   */
+  @Override public boolean isCreatable() {
+    return creatable;
+  }
 }
