@@ -26,6 +26,9 @@
   <data-access-csv-sample-rows>10000</data-access-csv-sample-rows>
   <data-access-datasource-illegal-characters><![CDATA[$<>?&#%^*()!~:;[]{}|]]></data-access-datasource-illegal-characters>
 
+  <!-- Agile Mart Datasource  -->
+  <agile-mart-staging-datasource>AgileBI_temp</agile-mart-staging-datasource>
+
   <!-- Geography settings -->
   <geo>
     <roles>territory, continent, country, state, city, postal_code</roles>
