@@ -573,7 +573,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   private void showSelectionOrAdminDialog(final String context, final String selectDatasource,
       final JavaScriptObject callback, final DialogListener<LogicalModelSummary> listener) {
-    if ("manage".equals(context) && isAdmin) {
+    if ("manage".equals(context) && (isAdmin || hasPermissions)) {
       showAdminDialog(callback);
     } else {
       showSelectionDialog(context, Boolean.valueOf(selectDatasource), listener);
