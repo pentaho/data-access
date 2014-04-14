@@ -87,6 +87,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private static final String MONDRIAN_POSTANALYSIS_URL = "plugin/data-access/api/mondrian/postAnalysis";
 
+  public static final String ATTRIBUTE_STANDARD_CONNECTION = "STANDARD_CONNECTION"; //$NON-NLS-1$
+
   private static Logger logger = Logger.getLogger(AnalysisImportDialogController.class.getName());
 
   private BindingFactory bf;
@@ -391,7 +393,21 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
         public void onResponseReceived(Request request, Response response) {
           AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory,
               IDatabaseConnectionList.class, response.getText());
-          importDialogModel.setConnectionList(bean.as().getDatabaseConnections());
+          List<IDatabaseConnection> databaseConnections = bean.as().getDatabaseConnections();
+          List<IDatabaseConnection> standardDatabaseConnections = new ArrayList();
+
+          // take anything except connections where STANDARD_CONNECTION == false
+          for(IDatabaseConnection databaseConnection : databaseConnections ){
+            if( ( databaseConnection.getAttributes() == null ) ||
+              ( databaseConnection.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == null ) ||
+                ( databaseConnection.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == Boolean.TRUE.toString() )
+            ){
+              standardDatabaseConnections.add( databaseConnection );
+            }
+
+          }
+
+          importDialogModel.setConnectionList(standardDatabaseConnections);
         }
       });
     } catch (RequestException e) {
