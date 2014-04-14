@@ -76,6 +76,8 @@ public class AgileMartDatasourceHelper {
   public static final String USINGDOUBLEDECIMALASSCHEMATABLESEPERATOR = "usingDoubleDecimalAsSchemaTableSeparator";
   public static final String DEFAULT_USINGDOUBLEDECIMALASSCHEMATABLESEPERATOR_VALUE = "false";
   private static final String ATTRIBUTE_PORT_NUMBER = "PORT_NUMBER";
+  public static final String ATTRIBUTE_STANDARD_CONNECTION = "STANDARD_CONNECTION";
+  public static final String ATTRIBUTE_AGILE_MART_CONNECTION = "AGILE_MART_CONNECTION";
 
   public AgileMartDatasourceHelper( final IPluginResourceLoader resLoader ) {
     this.resLoader = resLoader;
@@ -156,6 +158,9 @@ public class AgileMartDatasourceHelper {
     Map<String, String> attributes = new HashMap<String, String>();
     attributes.put( ATTRIBUTE_PORT_NUMBER, useDefault ? agileMartDatasourceProperties
         .getProperty( DEFAULT_DATABASEPORT_VALUE ) : agileMartDatasourceProperties.getProperty( DATABASEPORT ) );
+
+    attributes.put( ATTRIBUTE_STANDARD_CONNECTION, Boolean.FALSE.toString() );
+    attributes.put( ATTRIBUTE_AGILE_MART_CONNECTION, Boolean.TRUE.toString() );
 
     databaseConnection.setAttributes( attributes );
 

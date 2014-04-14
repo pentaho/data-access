@@ -97,6 +97,8 @@ public class ConnectionController extends AbstractXulEventHandler {
   protected String previousConnectionName, existingConnectionName;
   
   private XulDialog successDetailsDialog;
+
+  public static final String ATTRIBUTE_STANDARD_CONNECTION = "STANDARD_CONNECTION"; //$NON-NLS-1$
   
   public ConnectionController(Document document) {
     this.document = document;
@@ -773,9 +775,19 @@ public class ConnectionController extends AbstractXulEventHandler {
           List<IDatabaseConnection> connectionBeanList = bean.as().getDatabaseConnections();
           List<IDatabaseConnection> connectionImplList = new ArrayList<IDatabaseConnection>();
 
+
+
+
           for (IDatabaseConnection connectionBean : connectionBeanList) {
             try{
-              connectionImplList.add(AutobeanUtilities.connectionBeanToImpl(connectionBean));
+              // take anything except connections where STANDARD_CONNECTION == false
+              if( ( connectionBean.getAttributes() == null ) ||
+                ( connectionBean.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == null ) ||
+                ( connectionBean.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == Boolean.TRUE.toString() )
+                ){
+                connectionImplList.add(AutobeanUtilities.connectionBeanToImpl(connectionBean));
+              }
+              
             }
             catch (Exception e){
               // skip invalid connections that couldn't be converted to IDatabaseConnection

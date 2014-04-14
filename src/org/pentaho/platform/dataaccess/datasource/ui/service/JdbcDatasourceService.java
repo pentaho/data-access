@@ -19,6 +19,7 @@ package org.pentaho.platform.dataaccess.datasource.ui.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.dataaccess.datasource.DatasourceInfo;
@@ -47,6 +48,8 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
   private boolean creatable = true;
   private String newUI = "builtin:";
   private String editUI = "builtin:";
+
+  public static final String ATTRIBUTE_STANDARD_CONNECTION = "STANDARD_CONNECTION"; //$NON-NLS-1$
 
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;  
 
@@ -120,6 +123,13 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
                   List<IDatabaseConnection> connections = bean.as().getDatabaseConnections();
                   List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
                   for(IDatabaseConnection connection:connections) {
+                    // check attributes to make sure we only return "standard" connections which can be managed
+                    Map<String,String> attributes = connection.getAttributes();
+                    if(attributes.containsKey( ATTRIBUTE_STANDARD_CONNECTION )){
+                      if(attributes.get( ATTRIBUTE_STANDARD_CONNECTION ).equals( Boolean.FALSE.toString() )){
+                        continue;
+                      }
+                    }
                     datasourceInfos.add(new DatasourceInfo(connection.getName(), connection.getName(), TYPE, editable, removable, importable, exportable));
                   }
                   callback.success(datasourceInfos);
