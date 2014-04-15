@@ -60,6 +60,7 @@ import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -270,6 +271,10 @@ public class DatasourceResource {
       String catalogRef = (String)logicalModel.getProperty(MONDRIAN_CATALOG_REF);
       mondrianCatalogService.removeCatalog(catalogRef, PentahoSessionHolder.getSession());
     }
+    try{
+      dswService.deleteLogicalModel( domain.getId(), logicalModel.getId() );
+    }
+    catch(DatasourceServiceException ex){}
     metadataDomainRepository.removeDomain(dswId);
 
     return Response.ok().build();

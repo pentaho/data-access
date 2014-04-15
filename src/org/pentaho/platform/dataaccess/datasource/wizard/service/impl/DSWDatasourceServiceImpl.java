@@ -189,32 +189,36 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       if (logicalModel == null) {
         logicalModel = model.getLogicalModel(ModelerPerspective.REPORTING);
       }
-      String modelState = (String) logicalModel.getProperty("datasourceModel");
+      LogicalModel logicalModelRep = model.getLogicalModel(ModelerPerspective.REPORTING);
+      //CSV related data is bounded to reporting model so need to perform some additional clean up here
+      if (logicalModelRep != null) {
+        String modelState = (String) logicalModelRep.getProperty("datasourceModel");
     	
-      // if CSV, drop the staged table
-      // TODO: use the edit story's stored info to do this
-      if ("CSV".equals(logicalModel.getProperty("DatasourceType")) ||
-          "true".equalsIgnoreCase((String)logicalModel.getProperty( LogicalModel.PROPERTY_TARGET_TABLE_STAGED ))) {
-        targetTable = ((SqlPhysicalTable)domain.getPhysicalModels().get(0).getPhysicalTables().get(0)).getTargetTable();
-        DatasourceDTO datasource = null;
-
-        if(modelState != null){
-          datasource = deSerializeModelState(modelState);
-        }
-        if(datasource != null){
-          CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta());
-          try {
-            csvTransformGenerator.dropTable(targetTable);
-          } catch (CsvTransformGeneratorException e) {
-              // table might not be there, it's OK that is what we were trying to do anyway
-              logger.warn(Messages.getErrorString(
-                "DatasourceServiceImpl.ERROR_0019_UNABLE_TO_DROP_TABLE", targetTable, domainId, e.getLocalizedMessage()), e);//$NON-NLS-1$
+        // if CSV, drop the staged table
+        // TODO: use the edit story's stored info to do this
+        if ("CSV".equals(logicalModelRep.getProperty("DatasourceType")) ||
+            "true".equalsIgnoreCase((String)logicalModelRep.getProperty( LogicalModel.PROPERTY_TARGET_TABLE_STAGED ))) {
+          targetTable = ((SqlPhysicalTable)domain.getPhysicalModels().get(0).getPhysicalTables().get(0)).getTargetTable();
+          DatasourceDTO datasource = null;
+  
+          if(modelState != null){
+            datasource = deSerializeModelState(modelState);
           }
-            String fileName = datasource.getCsvModelInfo().getFileInfo().getFilename();
-            FileUtils fileService = new FileUtils();
-            if(fileName != null) {
-              fileService.deleteFile(fileName);
+          if(datasource != null){
+            CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta());
+            try {
+              csvTransformGenerator.dropTable(targetTable);
+            } catch (CsvTransformGeneratorException e) {
+                // table might not be there, it's OK that is what we were trying to do anyway
+                logger.warn(Messages.getErrorString(
+                  "DatasourceServiceImpl.ERROR_0019_UNABLE_TO_DROP_TABLE", targetTable, domainId, e.getLocalizedMessage()), e);//$NON-NLS-1$
             }
+              String fileName = datasource.getCsvModelInfo().getFileInfo().getFilename();
+              FileUtils fileService = new FileUtils();
+              if(fileName != null) {
+                fileService.deleteFile(fileName);
+              }
+          }
         }
       }
 
@@ -223,7 +227,10 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
         // remove Mondrian schema
         IMondrianCatalogService service = PentahoSystem.get(IMondrianCatalogService.class, null);
         catalogRef = (String)logicalModel.getProperty("MondrianCatalogRef");
-        service.removeCatalog(catalogRef, PentahoSessionHolder.getSession());
+        // check if the model is not already removed
+        if ( service.getCatalog( catalogRef, PentahoSessionHolder.getSession() ) != null ) {
+          service.removeCatalog(catalogRef, PentahoSessionHolder.getSession());
+        }
       }
 
       metadataDomainRepository.removeModel(domainId, logicalModel.getId());
@@ -491,6 +498,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   public DatasourceDTO deSerializeModelState(String dtoStr) throws DatasourceServiceException {
     XStream xs = new XStream();
+    xs.setClassLoader( DatasourceDTO.class.getClassLoader() );
     return (DatasourceDTO) xs.fromXML(dtoStr);
   }
   
