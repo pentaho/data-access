@@ -36,7 +36,7 @@ public class AgileMartDatasourceHelper {
   private static final String AGILEMART_STAGING_PROPERTIES_FILE = "agile_mart_datasource.properties"; //$NON-NLS-1$
 
   public static final String NAME = "name";
-  public static final String DEFAULT_NAME_VALUE = "AgileBI_Temp";
+  public static final String DEFAULT_NAME_VALUE = "AgileBI";
   public static final String ACCESS_TYPE = "accessType";
   public static final String DEFAULT_ACCESS_TYPE_VALUE = "NATIVE";
   public static final String CHANGED = "changed";

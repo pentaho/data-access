@@ -27,7 +27,7 @@
   <data-access-datasource-illegal-characters><![CDATA[$<>?&#%^*()!~:;[]{}|]]></data-access-datasource-illegal-characters>
 
   <!-- Agile Mart Datasource  -->
-  <agile-mart-staging-datasource>AgileBI_temp</agile-mart-staging-datasource>
+  <agile-mart-staging-datasource>AgileBI</agile-mart-staging-datasource>
 
   <!-- Geography settings -->
   <geo>
