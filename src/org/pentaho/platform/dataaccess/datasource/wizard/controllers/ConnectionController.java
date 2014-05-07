@@ -23,6 +23,7 @@ import java.util.List;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
+import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.platform.dataaccess.datasource.beans.AutobeanUtilities;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
@@ -807,7 +808,7 @@ public class ConnectionController extends AbstractXulEventHandler {
   }
   
   public static String getServiceURL(String action) {
-    return URL.encode(getBaseURL() + action);
+    return getBaseURL() + action;
   }
 
   public static String getServiceURL(String action, String[][] parameters){
@@ -816,7 +817,7 @@ public class ConnectionController extends AbstractXulEventHandler {
       stringBuilder.append(i == 0 ? "?" : "&");
       stringBuilder.append(parameters[i][0]);
       stringBuilder.append("=");
-      stringBuilder.append(parameters[i][1]);
+      stringBuilder.append( NameUtils.URLEncode( parameters[i][1] ));
     }
 
     return getServiceURL(stringBuilder.toString());

@@ -23,6 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.xmlbeans.impl.common.NameUtil;
+import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardController;
@@ -383,7 +385,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
     } else {
       finishButton.setDisabled(false);
       MessageHandler.getInstance().showErrorDialog("Error", MessageHandler//$NON-NLS-1$
-          .getString("DatasourceEditor.ERROR_0005_INVALID_DATASOURCE_NAME", DEFAULT_INVALID_CHARACTERS), true); //$NON-NLS-1$ 
+          .getString("DatasourceEditor.ERROR_0005_INVALID_DATASOURCE_NAME", NameUtils.reservedCharListForDisplay(" ") ), true); //$NON-NLS-1$
     }
   }
     
@@ -494,7 +496,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   }
 
   private boolean isDatasourceNameValid(String datasourceName) {
-    return containsNone(datasourceName, DEFAULT_INVALID_CHARACTERS);
+    return NameUtils.isValidFileName( datasourceName );
   }
   
   /**
