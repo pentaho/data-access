@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.platform.dataaccess.datasource.DatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.ui.database.event.IConnectionAutoBeanFactory;
@@ -95,7 +96,7 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
   @Override
   public void getIds(final XulServiceCallback<List<IDatasourceInfo>> callback) {
 
-    RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getMetadataBaseURL() + "getDatasourcePermissions"));
+    RequestBuilder requestBuilder = new RequestBuilder( RequestBuilder.GET, getMetadataBaseURL() + "getDatasourcePermissions" );
     requestBuilder.setHeader("Content-Type", "application/json");
     try {
       requestBuilder.sendRequest(null, new RequestCallback() {
@@ -107,7 +108,7 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
 
           if (response.getText().equals("EDIT")) {
             String cacheBuster = "?ts=" + new java.util.Date().getTime();
-            RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list" + cacheBuster));
+            RequestBuilder listConnectionBuilder = new RequestBuilder( RequestBuilder.GET, getBaseURL() + "list" + cacheBuster );
             listConnectionBuilder.setHeader("Content-Type", "application/json");
             try {
                 listConnectionBuilder.sendRequest(null, new RequestCallback() {
@@ -176,7 +177,7 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService{
   @Override
   public void remove(IDatasourceInfo dsInfo, Object callback) {
 	final XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>) callback;
-    RequestBuilder deleteConnectionBuilder = new RequestBuilder(RequestBuilder.DELETE, URL.encode(getBaseURL() + "deletebyname?name=" + dsInfo.getName())); 
+    RequestBuilder deleteConnectionBuilder = new RequestBuilder( RequestBuilder.DELETE, getBaseURL() + "deletebyname?name=" + NameUtils.URLEncode(dsInfo.getName()) );
     try {
       deleteConnectionBuilder.sendRequest(null, new RequestCallback() {
     	  public void onResponseReceived(Request request, Response response) {

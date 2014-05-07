@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
@@ -376,8 +377,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private void reloadConnections() {
     String cacheBuster = "?ts=" + new java.util.Date().getTime();
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, URL.encode(getBaseURL() + "list"
-        + cacheBuster));
+    RequestBuilder listConnectionBuilder = new RequestBuilder( RequestBuilder.GET, getBaseURL() + "list" + cacheBuster );
 
     listConnectionBuilder.setHeader("Content-Type", "application/json");
     try {
@@ -748,7 +748,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     int indexOfContent = url.indexOf("content");
     if (indexOfContent > -1) {
       url = url.substring(0, indexOfContent);
-      url = url + "plugin/data-access/api/datasource/" + datasourceInfo.getId() + "/getAnalysisDatasourceInfo";
+      url = url + "plugin/data-access/api/datasource/" + NameUtils.URLEncode( datasourceInfo.getId() ) + "/getAnalysisDatasourceInfo";
     }
     RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
     try {
