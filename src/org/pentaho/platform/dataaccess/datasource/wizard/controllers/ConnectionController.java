@@ -825,14 +825,16 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   public static String getServiceURL(String action, String[][] parameters){
     StringBuilder stringBuilder = new StringBuilder(action);
+    String[] encodeArguments = new String[parameters.length];
     for (int i = 0; i < parameters.length; i++) {
       stringBuilder.append(i == 0 ? "?" : "&");
       stringBuilder.append(parameters[i][0]);
       stringBuilder.append("=");
-      stringBuilder.append( NameUtils.URLEncode( parameters[i][1] ));
+      stringBuilder.append("{" + i + "}");
+      encodeArguments[i] = parameters[i][1];
     }
 
-    return getServiceURL(stringBuilder.toString());
+    return getServiceURL( NameUtils.URLEncode( stringBuilder.toString(), encodeArguments ));
   }
   
   class DatabaseConnectionSetter implements DatabaseDialogListener {
