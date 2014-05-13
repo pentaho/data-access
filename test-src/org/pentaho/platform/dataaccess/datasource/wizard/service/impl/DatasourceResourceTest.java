@@ -19,11 +19,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import junit.framework.Assert;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
@@ -33,6 +29,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.olap.OlapDimension;
+import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.data.IDBDatasourceService;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoDefinableObjectFactory;
@@ -65,7 +62,7 @@ import org.pentaho.platform.plugin.services.importer.MondrianImportHandler;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importer.mimeType.MimeType;
-import org.pentaho.platform.plugin.services.importexport.ImportSource;
+import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryImporter;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginClassLoader;
@@ -109,7 +106,7 @@ public class DatasourceResourceTest {
     mp.define( ISecurityHelper.class, MockSecurityHelper.class );
     mp.define( UserDetailsService.class, MockUserDetailService.class );
     mp.define( "singleTenantAdminUserName", "admin" );
-    mp.defineInstance( IPentahoMetadataDomainRepositoryImporter.class, createMetadataDomainRepository() );
+    mp.defineInstance( IMetadataDomainRepository.class, createMetadataDomainRepository() );
     mp.defineInstance( IAuthorizationPolicy.class, mockAuthorizationPolicy );
     mp.defineInstance( IPluginResourceLoader.class, new PluginResourceLoader() {
       protected PluginClassLoader getOverrideClassloader() {
@@ -150,25 +147,23 @@ public class DatasourceResourceTest {
   public void DummyTest() throws Exception {
     
   }
-  @Ignore
-  public void test() throws Exception {
+  @Test
+  public void testMondrianImportExport() throws Exception {
     final String domainName = "SalesData";
     List<MimeType> mimeTypeList = new ArrayList<MimeType>();
-    mimeTypeList.add( new MimeType("Mondrian", "mondrian.xml") );
+    mimeTypeList.add( new MimeType( "Mondrian", "mondrian.xml" ) );
     System.setProperty( "org.osjava.sj.root", "test-res/solution1/system/simple-jndi" ); //$NON-NLS-1$ //$NON-NLS-2$
 
     File mondrian = new File( "test-res/dsw/testData/SalesData.mondrian.xml" );
-    RepositoryFile repoMondrianFile = new RepositoryFile.Builder( mondrian.getName() ).folder( false ).hidden( false ).build();
+    RepositoryFile repoMondrianFile = new RepositoryFile.Builder( mondrian.getName() ).folder( false ).hidden( false )
+        .build();
     RepositoryFileImportBundle bundle1 = new RepositoryFileImportBundle.Builder()
-    .file( repoMondrianFile ).charSet( "UTF-8" ).input( new FileInputStream(mondrian)).mime( "mondrian.xml" ).build() ; 
-    File ds = new File( "test-res/dsw/testData/datasources.xml" );
-    RepositoryFile repoDSFile = new RepositoryFile.Builder( ds.getName() ).folder( false ).hidden( false ).build();
-    RepositoryFileImportBundle bundle2 = new RepositoryFileImportBundle.Builder()
-    .file( repoDSFile ).charSet( "UTF-8" ).input( new FileInputStream(ds)).mime( "mondrian.xml" ).build() ; 
-    MondrianImportHandler mondrianImportHandler = new MondrianImportHandler( mimeTypeList, PentahoSystem.get( IMondrianCatalogService.class ) );
+    .file( repoMondrianFile ).charSet( "UTF-8" ).input( new FileInputStream( mondrian ) ).mime( "mondrian.xml" )
+        .withParam( "parameters", "Datasource=Pentaho;overwrite=true" ).withParam( "domain-id", "SalesData" ).build() ;
+    MondrianImportHandler mondrianImportHandler = new MondrianImportHandler( mimeTypeList,
+        PentahoSystem.get( IMondrianCatalogService.class ) );
     mondrianImportHandler.importFile( bundle1 );
-    mondrianImportHandler.importFile( bundle2 );
-    
+
     try {
       KettleEnvironment.init();
       Props.init( Props.TYPE_PROPERTIES_EMPTY );
@@ -207,16 +202,19 @@ public class DatasourceResourceTest {
     file.delete();
   }
 
-  @Ignore
-  public void testMetadataExport() throws PlatformInitializationException, IOException, PlatformImportException {
+  @Test
+  public void testMetadataImportExport() throws PlatformInitializationException, IOException, PlatformImportException {
     List<MimeType> mimeTypeList = new ArrayList<MimeType>();
     mimeTypeList.add( new MimeType("Metadata", ".xmi") );
 
     File metadata = new File( "test-res/dsw/testData/metadata.xmi" );
-    RepositoryFile repoMetadataFile = new RepositoryFile.Builder( metadata.getName() ).folder( false ).hidden( false ).build();
-    MetadataImportHandler metadataImportHandler = new MetadataImportHandler( mimeTypeList, PentahoSystem.get( IPentahoMetadataDomainRepositoryImporter.class ) );
+    RepositoryFile repoMetadataFile = new RepositoryFile.Builder( metadata.getName() ).folder( false ).hidden( false )
+        .build();
+    MetadataImportHandler metadataImportHandler = new MetadataImportHandler( mimeTypeList,
+        (IPentahoMetadataDomainRepositoryImporter) PentahoSystem.get( IMetadataDomainRepository.class ) );
     RepositoryFileImportBundle bundle1 = new RepositoryFileImportBundle.Builder()
-    .file( repoMetadataFile ).charSet( "UTF-8" ).input( new FileInputStream(metadata)).mime( ".xmi" ).build() ;
+    .file( repoMetadataFile ).charSet( "UTF-8" ).input( new FileInputStream( metadata ) ).mime( ".xmi" ).withParam(
+            "domain-id", "SalesData" ).build() ;
     metadataImportHandler.importFile( bundle1 );
 
     final Response salesData = new DatasourceResource().doGetDSWFilesAsDownload( "SalesData" );
