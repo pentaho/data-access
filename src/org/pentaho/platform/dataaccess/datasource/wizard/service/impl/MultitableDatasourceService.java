@@ -75,7 +75,11 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		if(this.connectionServiceImpl == null) {
 			return this.databaseMeta;
 		}
-		
+
+		// DatabaseConnection objects may be de-serialized from the client and missing extra parameters and attributes.
+		// Resolve the connection by name through ConnectionService before use.
+		// All public methods should use getDatabaseMeta to guarantee accurate connection info.
+		connection = connectionServiceImpl.getConnectionByName( connection.getName() );
 		connection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
 		DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta(connection);
 	    dbmeta.getDatabaseInterface().setQuoteAllFields(true);
