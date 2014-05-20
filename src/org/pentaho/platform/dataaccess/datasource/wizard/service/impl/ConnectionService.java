@@ -47,6 +47,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
@@ -59,8 +60,6 @@ import org.pentaho.ui.database.event.IDatabaseConnectionPoolParameterList;
 
 @Path("/data-access/api/connection")
 public class ConnectionService {
-  private static int MAX_RETURN_VALUE_LENGTH = 350;
-  private static final Log logger = LogFactory.getLog(ConnectionService.class);
   private ConnectionServiceImpl service;
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
@@ -194,15 +193,15 @@ public class ConnectionService {
   @Consumes({APPLICATION_JSON})
   @Produces({TEXT_PLAIN})
   public Response testConnection(DatabaseConnection connection) throws ConnectionServiceException {
-    DatabaseMeta meta = DatabaseUtil.convertToDatabaseMeta(connection);
-    String returnValue = meta.testConnection();
-    if (logger.isDebugEnabled()) {
-      logger.debug("Return Value from test connection:\n" + returnValue);
+    boolean success = false;
+    success = service.testConnection( connection );
+    if (success) { 
+      return Response.ok(Messages.getString("ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED"
+          , connection.getDatabaseName())).build();
+    } else {
+      return Response.serverError().entity(Messages.getErrorString("ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED"
+          , connection.getDatabaseName())).build();  
     }
-    if (returnValue == null || returnValue.length() < 1 || returnValue.contains("OK")) {  // No problem with the return
-      return Response.ok(returnValue.length() > MAX_RETURN_VALUE_LENGTH ? returnValue.substring(0, MAX_RETURN_VALUE_LENGTH-1) : returnValue).build();
-    }
-    return Response.serverError().entity(returnValue.length() > MAX_RETURN_VALUE_LENGTH ? returnValue.substring(0, MAX_RETURN_VALUE_LENGTH-1) : returnValue).build();
   }
     
   private static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[] {
