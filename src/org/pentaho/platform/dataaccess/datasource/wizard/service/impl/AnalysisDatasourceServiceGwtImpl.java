@@ -17,6 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
 import org.pentaho.platform.dataaccess.datasource.ui.importing.GwtImportDialog;
@@ -42,8 +43,8 @@ public class AnalysisDatasourceServiceGwtImpl {
     AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
       public void execute(final AsyncCallback callback) {
 
-        datasourceUrl = datasourceUrl.replaceAll("{analysisFile}", analysisFile);
-        datasourceUrl = datasourceUrl.replaceAll("{databaseConnection}", databaseConnection);
+        datasourceUrl = datasourceUrl.replaceAll("{analysisFile}", NameUtils.URLEncode( analysisFile ));
+        datasourceUrl = datasourceUrl.replaceAll("{databaseConnection}", NameUtils.URLEncode( databaseConnection));
 
         RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.PUT, datasourceUrl);
         requestBuilder.setHeader("accept", "text/*");

@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
@@ -248,12 +249,14 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   @Override
   public void export(IDatasourceInfo dsInfo) {
     String exportURL = null;
+    String datasourceId = NameUtils.URLEncode( dsInfo.getId() );
+
     if (dsInfo.getType() == MetadataUIDatasourceService.TYPE) {
-      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + dsInfo.getId() + "/download";
+      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + datasourceId + "/download";
     } else if (dsInfo.getType() == MondrianUIDatasourceService.TYPE) {
-      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + dsInfo.getId() + "/download";
+      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + datasourceId + "/download";
     } else if (dsInfo.getType() == DSWUIDatasourceService.TYPE) {
-      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + dsInfo.getId() + "/download";
+      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + datasourceId + "/download";
     }
     Window.open(exportURL, "_new", "");
   }
@@ -264,12 +267,14 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
   @Override
   public void remove(IDatasourceInfo dsInfo, final Object xulCallback) {
     final String removeURL;
+    String datasourceId = NameUtils.URLEncode( dsInfo.getId() );
+
     if (dsInfo.getType() == MetadataUIDatasourceService.TYPE) {
-      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + dsInfo.getId() + "/remove";
+      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + datasourceId + "/remove";
     } else if (dsInfo.getType() == MondrianUIDatasourceService.TYPE) {
-      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + dsInfo.getId() + "/remove";
+      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + datasourceId + "/remove";
     } else if (dsInfo.getType() == DSWUIDatasourceService.TYPE) {
-      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + dsInfo.getId() + "/remove";
+      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + datasourceId + "/remove";
     } else {
       removeURL = null;
     }
