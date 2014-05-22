@@ -380,6 +380,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     RequestBuilder listConnectionBuilder = new RequestBuilder( RequestBuilder.GET, getBaseURL() + "list" + cacheBuster );
 
     listConnectionBuilder.setHeader("Content-Type", "application/json");
+    listConnectionBuilder.setHeader( "If-Modified-Since", "01 Jan 1970 00:00:00 GMT" );
     try {
       listConnectionBuilder.sendRequest(null, new RequestCallback() {
 
@@ -751,6 +752,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       url = url + "plugin/data-access/api/datasource/" + NameUtils.URLEncode( datasourceInfo.getId() ) + "/getAnalysisDatasourceInfo";
     }
     RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, url);
+    requestBuilder.setHeader( "If-Modified-Since", "01 Jan 1970 00:00:00 GMT" );
     try {
       requestBuilder.sendRequest(null, new RequestCallback() {
 
