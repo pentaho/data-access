@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.apache.xmlbeans.impl.common.NameUtil;
 import org.pentaho.gwt.widgets.client.utils.NameUtils;
+import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
+import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.IWizardController;
@@ -362,12 +364,18 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
 
     // Validating whether the datasource name contains any illegal characters
     if(isDatasourceNameValid(datasourceName)) {
-      datasourceService.listDatasourceNames(new XulServiceCallback<List<String>>() {
-  
+        UIDatasourceServiceManager manager = UIDatasourceServiceManager.getInstance();
+        manager.getIds(new XulServiceCallback<List<IDatasourceInfo>>() {
         @Override
-        public void success(List<String> datasourceNames) {
+        public void success(List<IDatasourceInfo> datasourceInfos) {
           finishButton.setDisabled(false);
           boolean isEditing = wizardModel.isEditing();
+          List<String> datasourceNames = new ArrayList<String>();
+          for (IDatasourceInfo datasourceInfo : datasourceInfos) {
+            if (datasourceInfo.getType().equals( "Data Source Wizard" ) || datasourceInfo.getType().equals( "Analysis" )) {
+              datasourceNames.add( datasourceInfo.getName() );
+            }
+          }
           if(datasourceNames.contains(datasourceName) && !isEditing) {
             showWarningDialog();
           } else {
