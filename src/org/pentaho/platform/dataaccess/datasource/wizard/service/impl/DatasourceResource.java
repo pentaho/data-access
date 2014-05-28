@@ -295,7 +295,7 @@ public class DatasourceResource {
     if(!canAdminister()) {
       return Response.status(UNAUTHORIZED).build();
     }
-    metadataDomainRepository.removeDomain(metadataId);
+    metadataDomainRepository.removeDomain( fixEncodedSlashParam( metadataId ) );
     return Response.ok().build();
   }
 
@@ -313,7 +313,7 @@ public class DatasourceResource {
     if(!canAdminister()) {
       return Response.status(UNAUTHORIZED).build();
     }
-    mondrianCatalogService.removeCatalog(analysisId, PentahoSessionHolder.getSession());
+    mondrianCatalogService.removeCatalog( fixEncodedSlashParam( analysisId ), PentahoSessionHolder.getSession() );
     return Response.ok().build();
   }
 
@@ -331,6 +331,7 @@ public class DatasourceResource {
     if(!canAdminister()) {
       return Response.status(UNAUTHORIZED).build();
     }
+    dswId = fixEncodedSlashParam( dswId );
     Domain domain = metadataDomainRepository.getDomain(dswId);
     ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
     model.setDomain(domain);
@@ -429,5 +430,16 @@ public class DatasourceResource {
     return policy
         .isAllowed(RepositoryReadAction.NAME) && policy.isAllowed(RepositoryCreateAction.NAME)
         && (policy.isAllowed(AdministerSecurityAction.NAME));
+  }
+
+  /**
+   * Fix for "%5C" and "%2F" in datasource name ("/" and "\" are omitted and %5C, %2F are decoded
+   *    in PentahoPathDecodingFilter.EncodingAwareHttpServletRequestWrapper)
+   *
+   * @param param pathParam
+   * @return correct param
+   */
+  private String fixEncodedSlashParam( String param ) {
+    return param.replaceAll( "\\\\", "%5C" ).replaceAll( "/", "%2F" );
   }
 }

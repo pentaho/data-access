@@ -21,6 +21,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import com.google.gwt.user.client.ui.*;
+import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.ui.xul.binding.Binding;
@@ -272,6 +273,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     String msg = results;
     int code = new Integer(results).intValue();
     String messageId;
+    String[] parameters = new String[0];
     switch (code) {
       case 1: //PUBLISH_TO_SERVER_FAILED = 1;
         messageId = "Metadata.PUBLISH_TO_SERVER_FAILED";
@@ -291,11 +293,15 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
       case 8: //PUBLISH_SCHEMA_EXISTS_ERROR
         messageId = "Metadata.OVERWRITE_EXISTING_SCHEMA";
         break;
+      case 10: //PUBLISH_PROHIBITED_SYMBOLS_ERROR
+        messageId = "Metadata.PUBLISH_PROHIBITED_SYMBOLS_ERROR";
+        parameters = new String[]{ NameUtils.reservedCharListForDisplay( ", " ) };
+        break;
       default:
         messageId = "Metadata.ERROR";
         break;
     }
-    msg = messages.getString(messageId);
+    msg = messages.getString(messageId, parameters);
     return msg + " Metadata File: " + fileName;
   }
 

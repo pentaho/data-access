@@ -63,6 +63,7 @@ import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadActi
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
+import org.pentaho.platform.web.http.api.resources.FileResource;
 
 @Path("/data-access/api/metadata")
 public class MetadataDatasourceService {
@@ -75,6 +76,7 @@ public class MetadataDatasourceService {
 
   private static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final String SUCCESS = "3";
+  private static final String DENIED_CHAR = "10";
 
 	private static final Pattern[] patterns = new Pattern[] {
 	    Pattern.compile("(" + LANG + ").properties$"),
@@ -149,6 +151,16 @@ public class MetadataDatasourceService {
 		} catch (PentahoAccessControlException e) {
 			return Response.serverError().entity(e.toString()).build();
 		}
+
+    FileResource fr = new FileResource();
+    String reservedChars = (String) fr.doGetReservedChars().getEntity();
+    if ( reservedChars != null
+        // \ need to be replaced with \\ for Regex
+        && domainId.matches(  ".*[" + reservedChars.replaceAll( "\\\\", "\\\\\\\\" ) + "]+.*"  ) ) {
+      return Response.status( PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ).entity( Messages
+          .getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId
+              , ( String ) fr.doGetReservedCharactersDisplay().getEntity() ) ).build();
+    }
 
 		boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
     RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder()
