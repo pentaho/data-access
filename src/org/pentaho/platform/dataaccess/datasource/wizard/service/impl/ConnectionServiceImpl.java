@@ -26,6 +26,7 @@ import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.database.DatabaseDialectException;
 import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
+import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -246,6 +247,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       }
       IDatabaseDialect dialect = dialectService.getDialect(connection);
       String driverClass = null;
+
       if (connection.getDatabaseType().getShortName().equals("GENERIC")) {
         driverClass = connection.getAttributes().get(GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS);
       } else {   
@@ -253,8 +255,18 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       }      
       IPentahoConnection pentahoConnection = null;
       try {
-        pentahoConnection = PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, driverClass, dialect.getURLWithExtraOptions(connection), connection.getUsername(), ConnectionServiceHelper
-            .getConnectionPassword(connection.getName(), connection.getPassword()), null, this);
+
+        if(connection.getAccessType().equals( DatabaseAccessType.JNDI )){
+
+          pentahoConnection = PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, connection.getDatabaseName(), null, this);
+
+        } else {
+
+          pentahoConnection = PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, driverClass, dialect.getURLWithExtraOptions(connection), connection.getUsername(), ConnectionServiceHelper
+              .getConnectionPassword(connection.getName(), connection.getPassword()), null, this);
+
+        }
+
       } catch (DatabaseDialectException e) {
         throw new ConnectionServiceException(e);
       }
