@@ -359,6 +359,46 @@ public class WizardConnectionController extends AbstractXulEventHandler {
               currentConnection = AutobeanUtilities.connectionBeanToImpl(currentConnection);
               datasourceModel.getGuiStateModel().updateConnection(existingConnectionName, currentConnection);
               datasourceModel.setSelectedRelationalConnection(currentConnection);
+            } else if (response.getStatusCode() == Response.SC_INTERNAL_SERVER_ERROR) { // We assume that this means the connection doesn't exist to update so we'll add it
+              RequestBuilder deleteConnectionBuilder = new RequestBuilder(
+                  RequestBuilder.DELETE, 
+                  ConnectionController.getServiceURL("deletebyname", new String[][]{
+                    {"name", previousConnectionName}
+                  })
+                );
+                try {
+                  deleteConnectionBuilder.sendRequest(null, new RequestCallback() {
+
+                    @Override
+                    public void onError(Request request, Throwable exception) {
+                      displayErrorMessage(exception);
+                    }
+
+                    @Override
+                    public void onResponseReceived(Request request, Response response) {
+                      try {
+                        if (response.getStatusCode() == Response.SC_OK) {
+                          datasourceModel.getGuiStateModel().deleteConnection(datasourceModel.getSelectedRelationalConnection().getName());
+                          List<IDatabaseConnection> connections = datasourceModel.getGuiStateModel().getConnections();
+                          if (connections != null && connections.size() > 0) {
+                            datasourceModel.setSelectedRelationalConnection(connections.get(connections.size() - 1));
+                          } else {
+                            datasourceModel.setSelectedRelationalConnection(null);
+                          }
+                          addConnection();
+                        } else {
+                          openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
+                              .getString("ConnectionController.ERROR_0002_UNABLE_TO_DELETE_CONNECTION"));//$NON-NLS-1$
+                        }
+
+                      } catch (Exception e) {
+                        displayErrorMessage(e);
+                      }
+                    }
+                  });
+                } catch (RequestException e) {
+                  displayErrorMessage(e);
+                }
             } else {
               openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
                   .getString("ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION"));//$NON-NLS-1$
