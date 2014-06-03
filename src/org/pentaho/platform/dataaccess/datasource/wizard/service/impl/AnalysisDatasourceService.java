@@ -40,7 +40,9 @@ import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
@@ -62,6 +64,8 @@ public class AnalysisDatasourceService {
   private static final String XMLA_ENABLED_FLAG = "xmlaEnabledFlag";
 
   private static final String CATALOG_NAME = "catalogName";
+
+  private static final String ORIG_CATALOG_NAME = "origCatalogName";
 
   private static final String DATASOURCE_NAME = "datasourceName";
 
@@ -119,6 +123,7 @@ public class AnalysisDatasourceService {
       @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream,
       @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo,
       @FormDataParam(CATALOG_NAME) String catalogName, //Optional
+      @FormDataParam(ORIG_CATALOG_NAME) String origCatalogName, //Optional
       @FormDataParam(DATASOURCE_NAME) String datasourceName, //Optional
       @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
       @FormDataParam(XMLA_ENABLED_FLAG) String xmlaEnabledFlag,
@@ -128,7 +133,7 @@ public class AnalysisDatasourceService {
     try {
       validateAccess();
       String fileName = schemaFileInfo.getFileName();
-      processMondrianImport(dataInputStream, catalogName, overwrite, xmlaEnabledFlag, parameters, fileName);
+      processMondrianImport(dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters, fileName);
       statusCode = SUCCESS;
     } catch (PentahoAccessControlException pac) {
       logger.error(pac.getMessage());
@@ -149,7 +154,7 @@ public class AnalysisDatasourceService {
 
 
   /**
-   * This is the main method that handles the actual Import Handler to persit to PUR
+   * This is the main method that handles the actual Import Handler to persist to PUR
    * @param dataInputStream
    * @param catalogName
    * @param overwrite
@@ -158,11 +163,19 @@ public class AnalysisDatasourceService {
    * @param fileName
    * @throws PlatformImportException
    */
-  private void processMondrianImport(InputStream dataInputStream, String catalogName, String overwrite,
+  private void processMondrianImport(InputStream dataInputStream, String catalogName, String origCatalogName, String overwrite,
       String xmlaEnabledFlag, String parameters, String fileName) throws PlatformImportException {
     boolean overWriteInRepository = determineOverwriteFlag(parameters, overwrite);
     IPlatformImportBundle bundle = createPlatformBundle(parameters, dataInputStream, catalogName,
         overWriteInRepository, fileName, xmlaEnabledFlag);
+    if (!StringUtils.isEmpty(origCatalogName) && !bundle.getName().equals(origCatalogName)) {
+      // MONDRIAN-1731
+      // we are importing a mondrian catalog with a new schema (during edit), remove the old catalog first
+      // processing the bundle without doing this will result in a new catalog, giving the effect of adding 
+      // a catalog rather than editing
+      IMondrianCatalogService catalogService = PentahoSystem.get(IMondrianCatalogService.class, PentahoSessionHolder.getSession());
+      catalogService.removeCatalog(origCatalogName, PentahoSessionHolder.getSession());
+    }
     importer.importFile(bundle);
   }
 
@@ -192,13 +205,14 @@ public class AnalysisDatasourceService {
       @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream,
       @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo,
       @FormDataParam(CATALOG_NAME) String catalogName, //Optional
+      @FormDataParam(ORIG_CATALOG_NAME) String origCatalogName, //Optional
       @FormDataParam(DATASOURCE_NAME) String datasourceName, //Optional
       @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
       @FormDataParam(XMLA_ENABLED_FLAG) String xmlaEnabledFlag,
       @FormDataParam(PARAMETERS) String parameters) throws PentahoAccessControlException {
      //use existing Jersey post method - but translate into text/html for PUC Client
      ResponseBuilder responseBuilder;
-     Response response = this.putMondrianSchema(dataInputStream, schemaFileInfo, catalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters);
+     Response response = this.putMondrianSchema(dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters);
      responseBuilder=  Response.ok();
      responseBuilder.entity(String.valueOf(response.getStatus()));
      responseBuilder.status(200);

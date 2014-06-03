@@ -156,6 +156,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private XulButton uploadAnalysisButton;
 
+  private IDatasourceInfo datasourceInfo;
+  
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
 
   public void init() {
@@ -495,6 +497,10 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       if (file != null) {
         mainFormPanel.add(new Hidden("catalogName", file));
       }
+      // MONDRIAN-1731
+      if (datasourceInfo != null) {
+        mainFormPanel.add(new Hidden("origCatalogName", datasourceInfo.getId()));
+      }
     }
 
     // If user selects available data source, then pass the datasource as part of the parameters.
@@ -737,8 +743,9 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   public void editDatasource(final IDatasourceInfo datasourceInfo) {
 
+    this.datasourceInfo = datasourceInfo;
     boolean isEditMode = datasourceInfo != null;
-    uploadAnalysisButton.setDisabled(isEditMode);
+    // MONDRIAN-1731 uploadAnalysisButton.setDisabled(isEditMode);
     acceptButton.setLabel(isEditMode ? resBundle.getString("importDialog.SAVE") : resBundle
         .getString("importDialog.IMPORT"));
 
