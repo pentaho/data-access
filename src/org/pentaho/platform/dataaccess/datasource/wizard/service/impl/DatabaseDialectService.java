@@ -42,6 +42,7 @@ import org.pentaho.database.dialect.Hive2DatabaseDialect;
 import org.pentaho.database.dialect.HiveDatabaseDialect;
 import org.pentaho.database.dialect.HypersonicDatabaseDialect;
 import org.pentaho.database.dialect.ImpalaDatabaseDialect;
+import org.pentaho.database.dialect.InformixDatabaseDialect;
 import org.pentaho.database.dialect.MSSQLServerDatabaseDialect;
 import org.pentaho.database.dialect.MSSQLServerNativeDatabaseDialect;
 import org.pentaho.database.dialect.MonetDatabaseDialect;
@@ -88,6 +89,7 @@ public class DatabaseDialectService {
     registerDatabaseDialect( new MonetDatabaseDialect(), validateClasses );
     registerDatabaseDialect( new VerticaDatabaseDialect(), validateClasses );
     registerDatabaseDialect( new Vertica5DatabaseDialect(), validateClasses );
+    registerDatabaseDialect( new InformixDatabaseDialect(), validateClasses );
     // the generic service is special, because it plays a role
     // in generation from a URL and Driver
     registerDatabaseDialect( genericDialect, validateClasses );

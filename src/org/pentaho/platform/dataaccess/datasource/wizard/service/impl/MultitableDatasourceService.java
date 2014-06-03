@@ -82,7 +82,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 		connection = connectionServiceImpl.getConnectionByName( connection.getName() );
 		connection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
 		DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta(connection);
-	    dbmeta.getDatabaseInterface().setQuoteAllFields(true);
+    dbmeta.getDatabaseInterface().setQuoteAllFields( true ); //This line probably shouldn't be here.  It overrides the "Quote all in Database" checkbox
 	    return dbmeta;
   	}
 
