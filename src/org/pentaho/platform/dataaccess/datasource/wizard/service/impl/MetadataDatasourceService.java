@@ -147,13 +147,13 @@ public class MetadataDatasourceService {
 
     int pos = 0;
     if(localeFiles != null){
-      for(int i=0; i <= localeFiles.size(); i++) {
+      for(int i=0; i < localeFiles.size(); i++) {
         logger.info("create language file");
         IPlatformImportBundle localizationBundle = new RepositoryFileImportBundle.Builder()
-            .input(new ByteArrayInputStream(localeFiles.get(0).getValueAs(byte[].class)))
+            .input(new ByteArrayInputStream(localeFiles.get(i).getValueAs(byte[].class)))
             .charSet("UTF-8")
             .hidden(false)
-            .name(localeFilesInfo.get(pos).getFileName())
+            .name(localeFilesInfo.get(i).getFileName())
             .withParam("domain-id", domainId)
             .build();
 
