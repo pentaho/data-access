@@ -68,7 +68,8 @@ public class AutobeanUtilities {
     connectionImpl.setUsername(connectionBean.getUsername());
     connectionImpl.setUsingConnectionPool(connectionBean.isUsingConnectionPool());
     connectionImpl.setUsingDoubleDecimalAsSchemaTableSeparator(connectionBean.isUsingDoubleDecimalAsSchemaTableSeparator());
-
+    connectionImpl.setExtraOptions( connectionBean.getExtraOptions() );
+    
     return connectionImpl;
   }
 
