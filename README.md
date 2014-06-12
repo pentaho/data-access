@@ -5,6 +5,7 @@ Pentaho Data Access Wizard
 
 *** IMPORTANT ***
 
-master is now data-access-v2 for Pentaho 5.1 release
+'daytona' is now data-access-v2 for Pentaho 6.0 (?) release
 
-5.1-LEGACY is the branch for data-access-TRUNK-SNAPSHOT which is currently the default data-access used by the BI-SERVER
+master is the branch for data-access-TRUNK-SNAPSHOT which is currently the default data-access used by the BI-SERVER
+5.1 is the maintenance branch for the legacy version going into the 5.1 Pentaho Suite release.
