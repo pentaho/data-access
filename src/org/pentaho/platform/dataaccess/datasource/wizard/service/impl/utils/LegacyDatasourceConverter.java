@@ -172,8 +172,17 @@ public class LegacyDatasourceConverter implements Converter {
   private IDatabaseType resolveDatabaseType(String urlPrefix){
     DatabaseDialectService databaseDialectService = new DatabaseDialectService(false);
     List<IDatabaseDialect> databaseDialects = databaseDialectService.getDatabaseDialects();
+    String nativePre = null;
     for(IDatabaseDialect databaseDialect : databaseDialects){
-      if(databaseDialect.getNativeJdbcPre().startsWith(urlPrefix)){
+      //
+      // NOTE - The GenericDatabaseDialect and the AccessDatabaseDialect
+      // both return null for the value of getNativeJdbcPre - so - this
+      // requires a null-check.
+      // 
+      // MB
+      //
+      nativePre = databaseDialect.getNativeJdbcPre();
+      if( (nativePre != null) && (nativePre.startsWith(urlPrefix)) ) {
         return databaseDialect.getDatabaseType();
       }
     }
