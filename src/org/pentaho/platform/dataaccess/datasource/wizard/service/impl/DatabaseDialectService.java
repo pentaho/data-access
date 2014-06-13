@@ -19,11 +19,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -35,23 +30,6 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.database.IDatabaseDialect;
-import org.pentaho.database.dialect.DB2DatabaseDialect;
-import org.pentaho.database.dialect.GenericDatabaseDialect;
-import org.pentaho.database.dialect.H2DatabaseDialect;
-import org.pentaho.database.dialect.Hive2DatabaseDialect;
-import org.pentaho.database.dialect.HiveDatabaseDialect;
-import org.pentaho.database.dialect.HypersonicDatabaseDialect;
-import org.pentaho.database.dialect.ImpalaDatabaseDialect;
-import org.pentaho.database.dialect.InformixDatabaseDialect;
-import org.pentaho.database.dialect.MSSQLServerDatabaseDialect;
-import org.pentaho.database.dialect.MSSQLServerNativeDatabaseDialect;
-import org.pentaho.database.dialect.MonetDatabaseDialect;
-import org.pentaho.database.dialect.MySQLDatabaseDialect;
-import org.pentaho.database.dialect.OracleDatabaseDialect;
-import org.pentaho.database.dialect.PostgreSQLDatabaseDialect;
-import org.pentaho.database.dialect.Vertica5DatabaseDialect;
-import org.pentaho.database.dialect.VerticaDatabaseDialect;
-import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.ui.database.event.DefaultDatabaseDialectList;
@@ -60,46 +38,21 @@ import org.pentaho.ui.database.event.IDatabaseDialectList;
 import org.pentaho.ui.database.event.IDatabaseTypesList;
 
 @Path( "/data-access/api/dialect" )
-public class DatabaseDialectService {
-
-  private static final Log logger = LogFactory.getLog( DatabaseDialectService.class );
-
-  List<IDatabaseDialect> databaseDialects = new ArrayList<IDatabaseDialect>();
-  List<IDatabaseType> databaseTypes = new ArrayList<IDatabaseType>();
-  Map<IDatabaseType, IDatabaseDialect> typeToDialectMap = new HashMap<IDatabaseType, IDatabaseDialect>();
-  GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
+public class DatabaseDialectService extends org.pentaho.database.service.DatabaseDialectService {
 
   public DatabaseDialectService() {
     this( true );
   }
 
   public DatabaseDialectService( boolean validateClasses ) {
-    // temporary until we have a better approach
-    registerDatabaseDialect( new OracleDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new MySQLDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new HiveDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new Hive2DatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new HypersonicDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new ImpalaDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new MSSQLServerDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new MSSQLServerNativeDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new DB2DatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new PostgreSQLDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new H2DatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new MonetDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new VerticaDatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new Vertica5DatabaseDialect(), validateClasses );
-    registerDatabaseDialect( new InformixDatabaseDialect(), validateClasses );
-    // the generic service is special, because it plays a role
-    // in generation from a URL and Driver
-    registerDatabaseDialect( genericDialect, validateClasses );
+    super(validateClasses);
   }
 
   @POST
   @Path( "/registerDatabaseDialect" )
   @Consumes( { APPLICATION_JSON } )
-  public Response registerDatabaseDialect( IDatabaseDialect databaseDialect ) {
-    return registerDatabaseDialect( databaseDialect, true );
+  public Response registerDatabaseDialectWS( IDatabaseDialect databaseDialect ) {
+    return this.registerDatabaseDialectWS( databaseDialect, true );
   }
 
   /**
@@ -110,14 +63,10 @@ public class DatabaseDialectService {
   @POST
   @Path( "/registerDatabaseDialectWithValidation/{validateClassExists}" )
   @Consumes( { APPLICATION_JSON } )
-  public Response registerDatabaseDialect( IDatabaseDialect databaseDialect,
+  public Response registerDatabaseDialectWS( IDatabaseDialect databaseDialect,
       @PathParam( "validateClassExists" ) Boolean validateClassExists ) {
     try {
-      if ( !validateClassExists || validateJdbcDriverClassExists( databaseDialect.getNativeDriver() ) ) {
-        databaseTypes.add( databaseDialect.getDatabaseType() );
-        typeToDialectMap.put( databaseDialect.getDatabaseType(), databaseDialect );
-        databaseDialects.add( databaseDialect );
-      }
+      super.registerDatabaseDialect( databaseDialect );
     } catch ( Throwable e ) {
       Response.serverError().entity( e ).build();
     }
@@ -136,38 +85,16 @@ public class DatabaseDialectService {
   @Path( "/validateJdbcDriverClassExists" )
   @Consumes( { APPLICATION_JSON } )
   @Produces( { APPLICATION_JSON } )
-  public Boolean validateJdbcDriverClassExists( String classname ) {
-    // no need to test if the class exists if it is null
-    if ( classname == null ) {
-      return true;
-    }
-
-    try {
-      Class.forName( classname );
-      return true;
-    } catch ( NoClassDefFoundError e ) {
-      if ( logger.isDebugEnabled() ) {
-        logger.debug( "classExists returning false", e );
-      }
-    } catch ( ClassNotFoundException e ) {
-      if ( logger.isDebugEnabled() ) {
-        logger.debug( "classExists returning false", e );
-      }
-    } catch ( Exception e ) {
-      if ( logger.isDebugEnabled() ) {
-        logger.debug( "classExists returning false", e );
-      }
-    }
-    // if we've made it here, an exception has occurred.
-    return false;
+  public Boolean validateJdbcDriverClassExistsWS( String classname ) {
+    return super.validateJdbcDriverClassExists(  classname );
   }
 
   @GET
   @Path( "/getDatabaseTypes" )
   @Produces( { APPLICATION_JSON } )
-  public IDatabaseTypesList getDatabaseTypes() {
+  public IDatabaseTypesList getDatabaseTypesWS() {
     DefaultDatabaseTypesList value = new DefaultDatabaseTypesList();
-    value.setDbTypes( databaseTypes );
+    value.setDbTypes( super.getDatabaseTypes() );
     return value;
   }
 
@@ -175,8 +102,8 @@ public class DatabaseDialectService {
   @Path( "/getDialectByType" )
   @Consumes( { APPLICATION_JSON } )
   @Produces( { APPLICATION_JSON } )
-  public IDatabaseDialect getDialect( DatabaseType databaseType ) {
-    return typeToDialectMap.get( databaseType );
+  public IDatabaseDialect getDialectWS( IDatabaseType databaseType ) {
+    return super.getDialect( databaseType );
   }
 
   @POST
@@ -184,15 +111,15 @@ public class DatabaseDialectService {
   @Consumes( { APPLICATION_JSON } )
   @Produces( { APPLICATION_JSON } )
   public IDatabaseDialect getDialect( IDatabaseConnection connection ) {
-    return typeToDialectMap.get( connection.getDatabaseType() );
+    return super.getDialect( connection );
   }
 
   @GET
   @Path( "/getDatabaseDialects" )
   @Produces( { APPLICATION_JSON } )
-  public IDatabaseDialectList getDatabaseDialects() {
+  public IDatabaseDialectList getDatabaseDialectsWS() {
     IDatabaseDialectList value = new DefaultDatabaseDialectList();
-    value.setDialects( databaseDialects );
+    value.setDialects( super.getDatabaseDialects() );
     return value;
   }
 }
