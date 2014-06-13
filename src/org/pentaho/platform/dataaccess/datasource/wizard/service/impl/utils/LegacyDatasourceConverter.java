@@ -173,7 +173,7 @@ public class LegacyDatasourceConverter implements Converter {
     DatabaseDialectService databaseDialectService = new DatabaseDialectService(false);
     List<IDatabaseDialect> databaseDialects = databaseDialectService.getDatabaseDialects();
     for(IDatabaseDialect databaseDialect : databaseDialects){
-      if(databaseDialect.getNativeJdbcPre().startsWith(urlPrefix)){
+      if(databaseDialect.getNativeJdbcPre() != null && databaseDialect.getNativeJdbcPre().startsWith(urlPrefix)){
         return databaseDialect.getDatabaseType();
       }
     }
