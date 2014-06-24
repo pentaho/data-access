@@ -69,6 +69,13 @@ public class ConnectionService {
     this.dialectService = new DatabaseDialectService(true);
   }
 
+  /**
+   * Returns the list of database connections
+   *
+   * @return List of database connections
+   *
+   * @throws ConnectionServiceException
+   */
   @GET
   @Path("/list")
   @Produces({APPLICATION_JSON})
@@ -78,6 +85,14 @@ public class ConnectionService {
     return databaseConnections;
   }
 
+  /**
+   * Returns the list of database connections
+   *
+   * @param name String representing the name of the database to return
+   * @return Database connection by name
+   *
+   * @throws ConnectionServiceException
+   */
   @GET
   @Path("/get")
   @Produces({APPLICATION_JSON})
@@ -85,6 +100,14 @@ public class ConnectionService {
     return service.getConnectionByName(name);
   }
 
+  /**
+   * Returns a response based on the existence of a database connection
+   *
+   * @param name String representing the name of the database to check
+   * @return Response based on the boolean value of the connection existing
+   *
+   * @throws ConnectionServiceException
+   */
   @GET
   @Path("/checkexists")
   @Produces({APPLICATION_JSON})
@@ -121,6 +144,14 @@ public class ConnectionService {
      return response;
   }
 
+  /**
+   * Add a database connection
+   *
+   * @param connection A database connection object to add
+   * @return Response indicating the success of this operation
+   *
+   * @throws ConnectionServiceException
+   */
   @POST
   @Path("/add")
   @Consumes({APPLICATION_JSON})
@@ -139,6 +170,14 @@ public class ConnectionService {
     }
   }
 
+  /**
+   * Update an existing database connection
+   *
+   * @param connection Database connection object to update
+   * @return Response indicating the success of this operation
+   *
+   * @throws ConnectionServiceException
+   */
   @POST
   @Path("/update")
   @Consumes({APPLICATION_JSON})
@@ -156,6 +195,14 @@ public class ConnectionService {
     }
   }
 
+  /**
+   * Delete an existing database connection
+   *
+   * @param connection Database connection object to delete
+   * @return Response indicating the success of this operation
+   *
+   * @throws ConnectionServiceException
+   */
   @DELETE
   @Path("/delete")
   @Consumes({APPLICATION_JSON})
@@ -173,6 +220,13 @@ public class ConnectionService {
     }
   }
 
+  /**
+   * Delete an existing database connection by name
+   * @param name String representing the name of the database connection to delete
+   * @return Response indicating the success of this operation
+   *
+   * @throws ConnectionServiceException
+   */
   @DELETE
   @Path("/deletebyname")
   public Response deleteConnectionByName(@QueryParam("name")String name) throws ConnectionServiceException {
@@ -188,6 +242,13 @@ public class ConnectionService {
     }
   }
 
+  /**
+   * Tests the database connection
+   *
+   * @param connection Database connection object to test
+   * @return Response based on the boolean value of the connection test
+   * @throws ConnectionServiceException
+   */
   @PUT
   @Path("/test")
   @Consumes({APPLICATION_JSON})
@@ -229,7 +290,12 @@ public class ConnectionService {
     new DatabaseConnectionPoolParameter("removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed."), 
     new DatabaseConnectionPoolParameter("logAbandoned", "false", "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated."), 
   };
- 
+
+  /**
+   * Returns a list of the database connection pool parameters
+   *
+   * @return IDatabaseConnectionPoolParameterList a list of the pooling parameters
+   */
   @GET
   @Path("/poolingParameters")
   @Produces({APPLICATION_JSON})
@@ -243,6 +309,14 @@ public class ConnectionService {
     return value; 
   }
 
+  /**
+   * Create a database connection
+   *
+   * @param driver String name of the driver to use
+   * @param url String name of the url used to create the connection.
+   *
+   * @return IDatabaseConnection for the given parameters
+   */
   @GET
   @Path("/createDatabaseConnection")
   @Produces({APPLICATION_JSON})
@@ -264,6 +338,13 @@ public class ConnectionService {
     return conn;    
   }
 
+  /**
+   * Returns the database meta for the given connection.
+   *
+   * @param connection DatabaseConnection to retrieve meta from
+   *
+   * @return array containing the database connection metadata
+   */
   @POST
   @Path("/checkParams")
   @Consumes({APPLICATION_JSON})

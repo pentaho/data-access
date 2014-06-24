@@ -87,13 +87,15 @@ public class MetadataDatasourceService {
 
 	
   /**
-   * @param domainId
-   * @param metadataFile
-   * @param metadataFileInfo
-   * @param localeFiles
-   * @param localeFilesInfo
-   * @return
-   * @throws PentahoAccessControlException
+   * @param domainId  Unique identifier for the metadata datasource
+   * @param metadataFile Input stream for the metadata.xmi
+   * @param metadataFileInfo User selected name for the file
+   * @param localeFiles List of local files
+   * @param localeFilesInfo List of information for each local file
+   *
+   * @return Response containing the success of the method
+   *
+   * @throws PentahoAccessControlException Thrown when validation of access fails
    * 
    * A convenience method stubs out to the importMetadataDatasource method so that imports can be called from
    * a http form which requires a post.
@@ -117,7 +119,19 @@ public class MetadataDatasourceService {
     responseBuilder.status(200);
     return responseBuilder.build();
   }
-	
+
+  /**
+   * @param domainId  Unique identifier for the metadata datasource
+   * @param metadataFile Input stream for the metadata.xmi
+   * @param metadataFileInfo User selected name for the file
+   * @param localeFiles List of local files
+   * @param localeFilesInfo List of information for each local file
+   * @param overwrite Flag for overwriting existing version of the file
+   *
+   * @return Response containing the success of the method
+   *
+   * @throws PentahoAccessControlException Thrown when validation of access fails
+   */
   @PUT
 	@Path("/import")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -189,6 +203,15 @@ public class MetadataDatasourceService {
 
 	}
 
+  /**
+   * @param localizeBundleEntries
+   * @param domainId  Unique identifier for the metadata datasource
+   * @param metadataFile Input stream for the metadata.xmi
+   *
+   * @return Response containing the success of the method
+   *
+   * @throws PentahoAccessControlException Thrown when validation of access fails
+   */
   @PUT
   @Path("/uploadServletImport")
   @Consumes({ TEXT_PLAIN })
@@ -251,9 +274,14 @@ public class MetadataDatasourceService {
     }
   }
 
-
-
-
+  /**
+   * @param metadataFile Input stream for the metadata.xmi
+   * @param domainId  Unique identifier for the metadata datasource
+   *
+   * @return Response containing the success of the method
+   *
+   * @throws PentahoAccessControlException Thrown when validation of access fails
+   */
   @PUT
 	@Path("/storeDomain")
 	@Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
@@ -270,7 +298,16 @@ public class MetadataDatasourceService {
 			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
 	}
-	
+
+  /**
+   * @param domainId  Unique identifier for the metadata datasource
+   * @param locale String value of the locale
+   * @param propertiesFile Input stream of the properties file
+   *
+   * @return Response containing the success of the method
+   *
+   * @throws PentahoAccessControlException Thrown when validation of access fails
+   */
 	@PUT
 	@Path("/addLocalizationFile")
 	@Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
@@ -290,7 +327,8 @@ public class MetadataDatasourceService {
 	
   /**
    * internal validation of authorization
-   * @throws PentahoAccessControlException
+   *
+   * @throws PentahoAccessControlException Thrown when validation of access fails
    */
   private void validateAccess() throws PentahoAccessControlException {
     IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
