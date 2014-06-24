@@ -40,6 +40,11 @@ public class PlatformStagingDatabaseResource {
     this.stagingDatabase = stagingDatabase;
   }
 
+  /**
+   * Get the database metadata
+   *
+   * @return IDatabaseConnection containing the database meta
+   */
   @GET
   @Path( "/databaseMetadata" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )

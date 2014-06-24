@@ -48,6 +48,13 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
     super(validateClasses);
   }
 
+  /**
+   * Register a dialect, if the register fails it will return a server error.
+   *
+   * @param databaseDialect IDatabaseDialect object to register
+   *
+   * @return Response determines if the dialect was registered or not.
+   */
   @POST
   @Path( "/registerDatabaseDialect" )
   @Consumes( { APPLICATION_JSON } )
@@ -56,9 +63,12 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
   }
 
   /**
-   * 
-   * @param databaseDialect
+   * Register a dialect, if the register fails it will return a server error.
+   *
+   * @param databaseDialect IDatabaseDialect object to register
    * @param validateClassExists
+   *
+   * @return Response determines if the dialect was registered or not.
    */
   @POST
   @Path( "/registerDatabaseDialectWithValidation/{validateClassExists}" )
@@ -89,6 +99,11 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
     return super.validateJdbcDriverClassExists(  classname );
   }
 
+  /**
+   * Get a list of the database types
+   *
+   * @return IDatabaseTypesList containing the database types
+   */
   @GET
   @Path( "/getDatabaseTypes" )
   @Produces( { APPLICATION_JSON } )
@@ -98,6 +113,12 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
     return value;
   }
 
+  /**
+   * Get the dialect of the given IDatabaseType
+   *
+   * @param databaseType IDatabaseType object to get the dialect of
+   * @return IDatabaseDialect containing the dialect of databaseType
+   */
   @POST
   @Path( "/getDialectByType" )
   @Consumes( { APPLICATION_JSON } )
@@ -106,6 +127,13 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
     return super.getDialect( databaseType );
   }
 
+  /**
+   * Get the dialect of a given IDatabaseConnection
+   *
+   * @param connection IDatabaseConnection object to get the dialect of
+   *
+   * @return IDatabaseDialect of the given connection
+   */
   @POST
   @Path( "/getDialectByConnection" )
   @Consumes( { APPLICATION_JSON } )
@@ -114,6 +142,11 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
     return super.getDialect( connection );
   }
 
+  /**
+   * Get a list of the database dialects
+   *
+   * @return IDatabaseDialectList containing the database dialects
+   */
   @GET
   @Path( "/getDatabaseDialects" )
   @Produces( { APPLICATION_JSON } )

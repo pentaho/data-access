@@ -92,6 +92,11 @@ public class DatasourceResource {
     
   }
 
+  /**
+   * Get list of IDs of analysis datasource
+   *
+   * @return JaxbList<String> of analysis IDs
+   */
   @GET
   @Path("/analysis/ids")
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
@@ -107,6 +112,11 @@ public class DatasourceResource {
     return new JaxbList<String>(analysisIds);
   }
 
+  /**
+   * Get the Metadata datasource IDs
+   *
+   * @return JaxbList<String> of metadata IDs
+   */
   @GET
   @Path("/metadata/ids")
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
@@ -154,7 +164,12 @@ public class DatasourceResource {
       return true;
     }
   }
-  
+
+  /**
+   * Returns a list of datasource IDs from datasource wizard
+   *
+   * @return JaxbList<String> list of datasource IDs
+   */
   @GET
   @Path("/dsw/ids")
   @Produces( { APPLICATION_XML, APPLICATION_JSON })
@@ -179,7 +194,14 @@ public class DatasourceResource {
     }
     return new JaxbList<String>(datasourceList);
   }
-  
+
+  /**
+   * Download the metadata files for a given metadataId
+   *
+   * @param metadataId String Id of the metadata to retrieve
+   *
+   * @return Response containing the file data
+   */
   @GET
   @Path("/metadata/{metadataId : .+}/download")
   @Produces(WILDCARD)
@@ -194,6 +216,13 @@ public class DatasourceResource {
     return createAttachment(fileData, metadataId);
   }
 
+  /**
+   * Download the analysis files for a given analysis id
+   *
+   * @param analysisId String Id of the analysis data to retrieve
+   *
+   * @return Response containing the file data
+   */
   @GET
   @Path("/analysis/{analysisId : .+}/download")
   @Produces(WILDCARD)
@@ -207,7 +236,14 @@ public class DatasourceResource {
 
     return createAttachment(fileData, analysisId);
   }
-  
+
+  /**
+   * Download the data source wizard data for a given data source wizard ID
+   *
+   * @param dswId String Id of the data source wizard data to retrieve
+   *
+   * @return Response containing the file data
+   */
   @GET
   @Path("/dsw/{dswId : .+}/download")
   @Produces(WILDCARD)
@@ -245,6 +281,13 @@ public class DatasourceResource {
     }
   }
 
+  /**
+   * Remove the metadata for a given metadata ID
+   *
+   * @param metadataId String ID of the metadata to remove
+   *
+   * @return Response ok if successful
+   */
   @POST
   @Path("/metadata/{metadataId : .+}/remove")
   @Produces(WILDCARD)
@@ -255,7 +298,14 @@ public class DatasourceResource {
     metadataDomainRepository.removeDomain(metadataId);
     return Response.ok().build();
   }
-  
+
+  /**
+   * Remove the analysis data for a given analysis ID
+   *
+   * @param analysisId String ID of the analysis data to remove
+   *
+   * @return Response ok if successful
+   */
   @POST
   @Path("/analysis/{analysisId : .+}/remove")
   @Produces(WILDCARD)
@@ -266,7 +316,14 @@ public class DatasourceResource {
     mondrianCatalogService.removeCatalog(analysisId, PentahoSessionHolder.getSession());
     return Response.ok().build();
   }
-  
+
+  /**
+   * Remove the datasource wizard data for a given datasource wizard ID
+   *
+   * @param dswId String ID of the datasource wizard data to remove
+   *
+   * @return Response ok if successful
+   */
   @POST
   @Path("/dsw/{dswId : .+}/remove")
   @Produces(WILDCARD)
@@ -293,7 +350,14 @@ public class DatasourceResource {
 
     return Response.ok().build();
   }
-  
+
+  /**
+   * Get the data source wizard info (parameters) for a specific data source wizard id
+   *
+   * @param dswId String id for a data source wizard
+   *
+   * @return Response containing the parameter list
+   */
   @GET
   @Path("/{dswId : .+}/getAnalysisDatasourceInfo")
   @Produces(WILDCARD)

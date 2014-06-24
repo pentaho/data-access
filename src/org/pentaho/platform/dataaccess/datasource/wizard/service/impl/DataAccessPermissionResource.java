@@ -41,6 +41,11 @@ public class DataAccessPermissionResource
     dataAccessViewPermHandler = new SimpleDataAccessViewPermissionHandler();
   }
 
+  /**
+   * Return response based on the boolean value of hasDataAccess
+   *
+   * @return Response based on the boolean value of hasDataAccess
+   */
   @GET
   @Path("/hasDataAccess")
   @Produces( {APPLICATION_JSON })
@@ -49,6 +54,11 @@ public class DataAccessPermissionResource
        && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession()))).build();
   }
 
+  /**
+   * Return response based on the boolean value of the data access view permission
+   *
+   * @return Response based on the boolean value of the data access view permission
+   */
   @GET
   @Path("/hasDataAccessView")
   @Produces( {APPLICATION_JSON })
@@ -57,6 +67,11 @@ public class DataAccessPermissionResource
        && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession()))).build();
   }
 
+  /**
+   * Get the list of permitted roles
+   *
+   * @return StringListWrapper containing the permitted roles
+   */
   @GET
   @Path("/permittedRoles")
   @Produces( {APPLICATION_JSON })
@@ -67,6 +82,11 @@ public class DataAccessPermissionResource
     return new StringListWrapper(dataAccessViewPermHandler.getPermittedRoleList(PentahoSessionHolder.getSession()));
   }
 
+  /**
+   * Get the list of permitted users
+   *
+   * @return StringListWrapper containing the permitted users
+   */
   @GET
   @Path("/permittedUsers")
   @Produces( {APPLICATION_JSON })
