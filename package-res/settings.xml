@@ -31,7 +31,7 @@
 
   <!-- Geography settings -->
   <geo>
-    <roles>territory, continent, country, state, city, postal_code</roles>
+    <roles>territory, continent, country, state, county, city, postal_code</roles>
     <dimension-name>Geography</dimension-name>
 
     <territory>
@@ -50,6 +50,11 @@
       <aliases>state, province, st, stateprovince</aliases>
       <required-parents>country</required-parents>
     </state>
+
+    <county>
+      <aliases>CountrySecondarySubdivision, county</aliases>
+      <required-parents>country,state</required-parents>
+    </county> 
 
     <city>
       <aliases>city, town</aliases>
