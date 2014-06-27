@@ -501,6 +501,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   public void editFieldSettings() {
     summaryDialog.hide();
     wizardDialog.show();
+    finishButton.setDisabled( false );
   }
 
   private boolean isDatasourceNameValid(String datasourceName) {
