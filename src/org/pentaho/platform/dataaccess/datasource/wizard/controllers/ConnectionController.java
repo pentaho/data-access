@@ -17,9 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
@@ -42,13 +39,15 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.DialogController.DialogListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.autobean.shared.AutoBean;
 import com.google.web.bindery.autobean.shared.AutoBeanCodex;
@@ -68,7 +67,7 @@ public class ConnectionController extends AbstractXulEventHandler {
   private XulDialog saveConnectionConfirmationDialog;
 
   private XulDialog overwriteConnectionConfirmationDialog;
-  
+
   private XulDialog renameConnectionConfirmationDialog;
 
   private XulDialog errorDialog;
@@ -89,130 +88,131 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   IDatabaseConnection currentConnection;
 
-//  DialogListener listener;
+  //  DialogListener listener;
 
   DatabaseConnectionSetter connectionSetter;
 
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
-  
+
   protected String previousConnectionName, existingConnectionName;
-  
+
   private XulDialog successDetailsDialog;
 
   public static final String ATTRIBUTE_STANDARD_CONNECTION = "STANDARD_CONNECTION"; //$NON-NLS-1$
-  
-  public ConnectionController(Document document) {
+
+  public ConnectionController( Document document ) {
     this.document = document;
-    connectionAutoBeanFactory = GWT.create(IConnectionAutoBeanFactory.class);
+    connectionAutoBeanFactory = GWT.create( IConnectionAutoBeanFactory.class );
     init();
   }
-  
-  protected void copyDatabaseConnectionProperties(IDatabaseConnection source, IDatabaseConnection target){
-    target.setId(source.getId());
-    target.setAccessType(source.getAccessType());
-    target.setDatabaseType(source.getDatabaseType());
-    target.setExtraOptions(source.getExtraOptions());
-    target.setName(source.getName());
-    target.setHostname(source.getHostname());
-    target.setDatabaseName(source.getDatabaseName());
-    target.setDatabasePort(source.getDatabasePort());
-    target.setUsername(source.getUsername());
-    target.setPassword(source.getPassword());
-    target.setStreamingResults(source.isStreamingResults());
-    target.setDataTablespace(source.getDataTablespace());
-    target.setIndexTablespace(source.getIndexTablespace());
-    target.setSQLServerInstance(source.getSQLServerInstance());
-    target.setUsingDoubleDecimalAsSchemaTableSeparator(source.isUsingDoubleDecimalAsSchemaTableSeparator());
-    target.setInformixServername(source.getInformixServername());
+
+  protected void copyDatabaseConnectionProperties( IDatabaseConnection source, IDatabaseConnection target ) {
+    target.setId( source.getId() );
+    target.setAccessType( source.getAccessType() );
+    target.setDatabaseType( source.getDatabaseType() );
+    target.setExtraOptions( source.getExtraOptions() );
+    target.setName( source.getName() );
+    target.setHostname( source.getHostname() );
+    target.setDatabaseName( source.getDatabaseName() );
+    target.setDatabasePort( source.getDatabasePort() );
+    target.setUsername( source.getUsername() );
+    target.setPassword( source.getPassword() );
+    target.setStreamingResults( source.isStreamingResults() );
+    target.setDataTablespace( source.getDataTablespace() );
+    target.setIndexTablespace( source.getIndexTablespace() );
+    target.setUsingDoubleDecimalAsSchemaTableSeparator( source.isUsingDoubleDecimalAsSchemaTableSeparator() );
+    target.setInformixServername( source.getInformixServername() );
     //target.addExtraOption(String databaseTypeCode, String option, String value);
-    target.setAttributes(source.getAttributes());
-    target.setChanged(source.getChanged());
-    target.setQuoteAllFields(source.isQuoteAllFields());
+    target.setAttributes( source.getAttributes() );
+    target.setChanged( source.getChanged() );
+    target.setQuoteAllFields( source.isQuoteAllFields() );
     // advanced option (convert to enum with upper, lower, none?)
-    target.setForcingIdentifiersToLowerCase(source.isForcingIdentifiersToLowerCase());
-    target.setForcingIdentifiersToUpperCase(source.isForcingIdentifiersToUpperCase());
-    target.setConnectSql(source.getConnectSql());
-    target.setUsingConnectionPool(source.isUsingConnectionPool());
-    target.setInitialPoolSize(source.getInitialPoolSize());
-    target.setMaximumPoolSize(source.getMaximumPoolSize());
-    target.setPartitioned(source.isPartitioned());
-    target.setConnectionPoolingProperties(source.getConnectionPoolingProperties());
-    target.setPartitioningInformation(source.getPartitioningInformation());
+    target.setForcingIdentifiersToLowerCase( source.isForcingIdentifiersToLowerCase() );
+    target.setForcingIdentifiersToUpperCase( source.isForcingIdentifiersToUpperCase() );
+    target.setConnectSql( source.getConnectSql() );
+    target.setUsingConnectionPool( source.isUsingConnectionPool() );
+    target.setInitialPoolSize( source.getInitialPoolSize() );
+    target.setMaximumPoolSize( source.getMaximumPoolSize() );
+    target.setPartitioned( source.isPartitioned() );
+    target.setConnectionPoolingProperties( source.getConnectionPoolingProperties() );
+    target.setPartitioningInformation( source.getPartitioningInformation() );
   }
-  
-  protected AutoBean<IDatabaseConnection> createIDatabaseConnectionBean(IDatabaseConnection connection){
+
+  protected AutoBean<IDatabaseConnection> createIDatabaseConnectionBean( IDatabaseConnection connection ) {
     AutoBean<IDatabaseConnection> bean = connectionAutoBeanFactory.iDatabaseConnection();
     IDatabaseConnection connectionBean = bean.as();
-    copyDatabaseConnectionProperties(connection, connectionBean);
-    return AutoBeanUtils.getAutoBean(connectionBean); 
+    copyDatabaseConnectionProperties( connection, connectionBean );
+    return AutoBeanUtils.getAutoBean( connectionBean );
     //return connectionBean;
   }
 
   @Bindable
   public void init() {
     XulServiceCallback<List<IDatabaseType>> callback = new XulServiceCallback<List<IDatabaseType>>() {
-      public void error(String message, Throwable error) {
+      public void error( String message, Throwable error ) {
         error.printStackTrace();
       }
 
-      public void success(List<IDatabaseType> retVal) {
-        databaseTypeHelper = new DatabaseTypeHelper(retVal);
+      public void success( List<IDatabaseType> retVal ) {
+        databaseTypeHelper = new DatabaseTypeHelper( retVal );
       }
     };
-    dialectService.getDatabaseTypes(callback);
-    saveConnectionConfirmationDialog = (XulDialog) document.getElementById("saveConnectionConfirmationDialogConnectionController"); //$NON-NLS-1$
-    overwriteConnectionConfirmationDialog = (XulDialog) document.getElementById("overwriteConnectionConfirmationDialogConnectionController");
-    renameConnectionConfirmationDialog = (XulDialog) document.getElementById("renameConnectionConfirmationDialogConnectionController");
-    errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
-    errorLabel = (XulLabel) document.getElementById("errorLabel");//$NON-NLS-1$
-    successDialog = (XulDialog) document.getElementById("successDialog"); //$NON-NLS-1$
-    successLabel = (XulLabel) document.getElementById("successLabel");//$NON-NLS-1$
-    removeConfirmationDialog = (XulDialog) document.getElementById("removeConfirmationDialogConnectionController"); //$NON-NLS-1$
-    successDetailsDialog = (XulDialog) document.getElementById("successDetailsDialogConnectionController"); //$NON-NLS-1$
+    dialectService.getDatabaseTypes( callback );
+    saveConnectionConfirmationDialog =
+        (XulDialog) document.getElementById( "saveConnectionConfirmationDialogConnectionController" ); //$NON-NLS-1$
+    overwriteConnectionConfirmationDialog =
+        (XulDialog) document.getElementById( "overwriteConnectionConfirmationDialogConnectionController" );
+    renameConnectionConfirmationDialog =
+        (XulDialog) document.getElementById( "renameConnectionConfirmationDialogConnectionController" );
+    errorDialog = (XulDialog) document.getElementById( "errorDialog" ); //$NON-NLS-1$
+    errorLabel = (XulLabel) document.getElementById( "errorLabel" );//$NON-NLS-1$
+    successDialog = (XulDialog) document.getElementById( "successDialog" ); //$NON-NLS-1$
+    successLabel = (XulLabel) document.getElementById( "successLabel" );//$NON-NLS-1$
+    removeConfirmationDialog = (XulDialog) document.getElementById( "removeConfirmationDialogConnectionController" ); //$NON-NLS-1$
+    successDetailsDialog = (XulDialog) document.getElementById( "successDetailsDialogConnectionController" ); //$NON-NLS-1$
   }
 
   @Bindable
-  public void openErrorDialog(String title, String message) {
-    errorDialog.setTitle(title);
-    errorLabel.setValue(message);
+  public void openErrorDialog( String title, String message ) {
+    errorDialog.setTitle( title );
+    errorLabel.setValue( message );
     errorDialog.show();
   }
 
   @Bindable
   public void closeErrorDialog() {
-    if (!errorDialog.isHidden()) {
+    if ( !errorDialog.isHidden() ) {
       errorDialog.hide();
     }
   }
 
   @Bindable
-  public void openSuccesDialog(String title, String message) {
-    successDialog.setTitle(title);
-    successLabel.setValue(message);
+  public void openSuccesDialog( String title, String message ) {
+    successDialog.setTitle( title );
+    successLabel.setValue( message );
     successDialog.show();
   }
 
   @Bindable
   public void closeSuccessDialog() {
-    if (!successDialog.isHidden()) {
+    if ( !successDialog.isHidden() ) {
       successDialog.hide();
     }
   }
 
-  
   @Bindable
   public void toggleDetails() {
-    XulHbox details = (XulHbox) document.getElementById("details_hider"); //$NON-NLS-1$
-    details.setVisible(!details.isVisible());
+    XulHbox details = (XulHbox) document.getElementById( "details_hider" ); //$NON-NLS-1$
+    details.setVisible( !details.isVisible() );
   }
 
   @Bindable
   public void toggleSuccessDetails() {
-    XulHbox details = (XulHbox) document.getElementById("success_details_hider"); //$NON-NLS-1$
-    details.setVisible(!details.isVisible());
+    XulHbox details = (XulHbox) document.getElementById( "success_details_hider" ); //$NON-NLS-1$
+    details.setVisible( !details.isVisible() );
   }
-  
-  public void setDatasourceModel(DatasourceModel model) {
+
+  public void setDatasourceModel( DatasourceModel model ) {
     this.datasourceModel = model;
   }
 
@@ -226,7 +226,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   @Bindable
   public void closeDialog() {
-    for (ConnectionDialogListener listener : listeners) {
+    for ( ConnectionDialogListener listener : listeners ) {
       listener.onDialogCancel();
     }
   }
@@ -234,75 +234,76 @@ public class ConnectionController extends AbstractXulEventHandler {
   @Bindable
   public void handleDialogAccept() {
     //first, test the connection
-    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, ConnectionController.getServiceURL("test"));
-    testConnectionBuilder.setHeader("Content-Type", "application/json");
+    RequestBuilder testConnectionBuilder =
+        new RequestBuilder( RequestBuilder.PUT, ConnectionController.getServiceURL( "test" ) );
+    testConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
       //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
-      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
-      testConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
+      testConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
         @Override
-        public void onError(Request request, Throwable exception) {
+        public void onError( Request request, Throwable exception ) {
           saveConnectionConfirmationDialog.show();
         }
 
         @Override
-        public void onResponseReceived(Request request, Response response) {
+        public void onResponseReceived( Request request, Response response ) {
           try {
-            if (response.getStatusCode() == Response.SC_OK) {
+            if ( response.getStatusCode() == Response.SC_OK ) {
               //test is ok, now check if we are renaming
               renameCheck();
             } else {
               //confirm if we should continu saving this invalid connection.
               saveConnectionConfirmationDialog.show();
             }
-          } catch (Exception e) {
-            displayErrorMessage(e);
+          } catch ( Exception e ) {
+            displayErrorMessage( e );
           }
         }
 
-      });
-    } catch (RequestException e) {
-      displayErrorMessage(e);
+      } );
+    } catch ( RequestException e ) {
+      displayErrorMessage( e );
     }
   }
-  
+
   @Bindable
   public void renameCheck() {
-    if (!saveConnectionConfirmationDialog.isHidden()) closeSaveConnectionConfirmationDialog();
+    if ( !saveConnectionConfirmationDialog.isHidden() )
+      closeSaveConnectionConfirmationDialog();
 
-    if (datasourceModel.isEditing() && !previousConnectionName.equals(currentConnection.getName())) {
+    if ( datasourceModel.isEditing() && !previousConnectionName.equals( currentConnection.getName() ) ) {
       showRenameConnectionConfirmationDialog();
-    }
-    else {
+    } else {
       overwriteCheck();
     }
-    
+
   }
-  
+
   @Bindable
   public void overwriteCheck() {
-    if (!saveConnectionConfirmationDialog.isHidden()) closeSaveConnectionConfirmationDialog();
-    if (!renameConnectionConfirmationDialog.isHidden()) closeRenameConnectionConfirmationDialog();
-    
-    if (datasourceModel.isEditing() && previousConnectionName.equals(currentConnection.getName())){
+    if ( !saveConnectionConfirmationDialog.isHidden() )
+      closeSaveConnectionConfirmationDialog();
+    if ( !renameConnectionConfirmationDialog.isHidden() )
+      closeRenameConnectionConfirmationDialog();
+
+    if ( datasourceModel.isEditing() && previousConnectionName.equals( currentConnection.getName() ) ) {
       //if editing and no name change, proceed.
       updateConnection();
-    }
-    else {
+    } else {
       //either new connection, or editing involved a name change.
 
-      RequestBuilder checkConnectionBuilder = new RequestBuilder(
-          RequestBuilder.GET, 
-          getServiceURL("checkexists", new String[][]{{"name", currentConnection.getName()}})
-      );
-      checkConnectionBuilder.setHeader("Content-Type", "application/json");
+      RequestBuilder checkConnectionBuilder =
+          new RequestBuilder( RequestBuilder.GET, getServiceURL( "checkexists", new String[][] { { "name",
+            currentConnection.getName() } } ) );
+      checkConnectionBuilder.setHeader( "Content-Type", "application/json" );
 
       try {
-        checkConnectionBuilder.sendRequest(null, new RequestCallback() {
+        checkConnectionBuilder.sendRequest( null, new RequestCallback() {
 
-          public void onResponseReceived(Request request, Response response){
-            switch (response.getStatusCode()) {
+          public void onResponseReceived( Request request, Response response ) {
+            switch ( response.getStatusCode() ) {
               case Response.SC_OK:
                 showOverwriteConnectionConfirmationDialog();
                 break;
@@ -314,298 +315,266 @@ public class ConnectionController extends AbstractXulEventHandler {
                 saveConnection();
             }
           }
-          
-          public void onError(Request request, Throwable exception) {
-            displayErrorMessage(exception);
+
+          public void onError( Request request, Throwable exception ) {
+            displayErrorMessage( exception );
           }
-          
-        });
-      }
-      catch (Exception e){
-        displayErrorMessage(e);
+
+        } );
+      } catch ( Exception e ) {
+        displayErrorMessage( e );
       }
     }
   }
-  
+
   @Bindable
   public void updateConnection() {
-    RequestBuilder updateConnectionBuilder = new RequestBuilder(RequestBuilder.POST, ConnectionController.getServiceURL("update"));
-    updateConnectionBuilder.setHeader("Content-Type", "application/json");
+    RequestBuilder updateConnectionBuilder =
+        new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "update" ) );
+    updateConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
       //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection); 
-      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
-      updateConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
+      updateConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
         @Override
-        public void onError(Request request, Throwable exception) {
-          displayErrorMessage(exception);
+        public void onError( Request request, Throwable exception ) {
+          displayErrorMessage( exception );
         }
 
         @Override
-        public void onResponseReceived(Request request, Response response) {
+        public void onResponseReceived( Request request, Response response ) {
           try {
-            if (response.getStatusCode() == Response.SC_OK) {
-              datasourceModel.getGuiStateModel().updateConnection(existingConnectionName, currentConnection);
-              datasourceModel.setSelectedRelationalConnection(currentConnection);
+            if ( response.getStatusCode() == Response.SC_OK ) {
+              datasourceModel.getGuiStateModel().updateConnection( existingConnectionName, currentConnection );
+              datasourceModel.setSelectedRelationalConnection( currentConnection );
               DialogListener dialogListener = connectionSetter.getOuterListener();
-              if (dialogListener != null) {
-                dialogListener.onDialogAccept(currentConnection);
+              if ( dialogListener != null ) {
+                dialogListener.onDialogAccept( currentConnection );
               }
             } else {
-              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION"));//$NON-NLS-1$
+              openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
+                  .getString( "ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION" ) );//$NON-NLS-1$
             }
-          } catch (Exception e) {
-            displayErrorMessage(e);
+          } catch ( Exception e ) {
+            displayErrorMessage( e );
           }
         }
 
-      });
-    } catch (RequestException e) {
-      displayErrorMessage(e);
+      } );
+    } catch ( RequestException e ) {
+      displayErrorMessage( e );
     }
   }
 
   @Bindable
   public void addConnection() {
-    RequestBuilder addConnectionBuilder = new RequestBuilder(RequestBuilder.POST, ConnectionController.getServiceURL("add"));
-    addConnectionBuilder.setHeader("Content-Type", "application/json");
+    RequestBuilder addConnectionBuilder =
+        new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "add" ) );
+    addConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
       //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection); 
-      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean(currentConnection);
-      addConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
+      addConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
         @Override
-        public void onError(Request request, Throwable exception) {
-          displayErrorMessage(exception);
+        public void onError( Request request, Throwable exception ) {
+          displayErrorMessage( exception );
         }
 
         @Override
-        public void onResponseReceived(Request request, Response response) {
+        public void onResponseReceived( Request request, Response response ) {
           try {
-            if (response.getStatusCode() == Response.SC_OK) {
-              datasourceModel.getGuiStateModel().addConnection(currentConnection);
-              datasourceModel.setSelectedRelationalConnection(currentConnection);
+            if ( response.getStatusCode() == Response.SC_OK ) {
+              datasourceModel.getGuiStateModel().addConnection( currentConnection );
+              datasourceModel.setSelectedRelationalConnection( currentConnection );
               DialogListener dialogListener = connectionSetter.getOuterListener();
-              if (dialogListener != null) {
-                dialogListener.onDialogAccept(currentConnection);
+              if ( dialogListener != null ) {
+                dialogListener.onDialogAccept( currentConnection );
               }
             } else {
-              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
+              openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
+                  .getString( "ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION" ) );//$NON-NLS-1$
             }
-          } catch (Exception e) {
-            displayErrorMessage(e);
+          } catch ( Exception e ) {
+            displayErrorMessage( e );
           }
         }
 
-      });
-    } catch (RequestException e) {
-      displayErrorMessage(e);
+      } );
+    } catch ( RequestException e ) {
+      displayErrorMessage( e );
     }
   }
-  
+
   @Bindable
   public void overwriteConnection() {
-    if (!saveConnectionConfirmationDialog.isHidden()) closeSaveConnectionConfirmationDialog();
-    if (!renameConnectionConfirmationDialog.isHidden()) closeRenameConnectionConfirmationDialog();
-    if (!overwriteConnectionConfirmationDialog.isHidden()) overwriteConnectionConfirmationDialog.hide();
+    if ( !saveConnectionConfirmationDialog.isHidden() )
+      closeSaveConnectionConfirmationDialog();
+    if ( !renameConnectionConfirmationDialog.isHidden() )
+      closeRenameConnectionConfirmationDialog();
+    if ( !overwriteConnectionConfirmationDialog.isHidden() )
+      overwriteConnectionConfirmationDialog.hide();
     existingConnectionName = currentConnection.getName();
     updateConnection();
   }
-  
+
   @Bindable
   public void saveConnection() {
-    if (!saveConnectionConfirmationDialog.isHidden()) closeSaveConnectionConfirmationDialog();
-    if (!renameConnectionConfirmationDialog.isHidden()) closeRenameConnectionConfirmationDialog();
-    if (!overwriteConnectionConfirmationDialog.isHidden()) overwriteConnectionConfirmationDialog.hide();
-    
-    if (datasourceModel.isEditing()) updateConnection();
-    else addConnection();
+    if ( !saveConnectionConfirmationDialog.isHidden() )
+      closeSaveConnectionConfirmationDialog();
+    if ( !renameConnectionConfirmationDialog.isHidden() )
+      closeRenameConnectionConfirmationDialog();
+    if ( !overwriteConnectionConfirmationDialog.isHidden() )
+      overwriteConnectionConfirmationDialog.hide();
+
+    if ( datasourceModel.isEditing() )
+      updateConnection();
+    else
+      addConnection();
   }
 
   @Bindable
   public void closeSaveConnectionConfirmationDialog() {
     saveConnectionConfirmationDialog.hide();
   }
-/*
-  @Bindable
-  public void addConnection() {
-    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, getServiceURL("test"));
-    testConnectionBuilder.setHeader("Content-Type", "application/json");
-    try {
-      AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
-      testConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
 
-        @Override
-        public void onError(Request request, Throwable exception) {
-          saveConnectionConfirmationDialog.show();
-        }
+  /*
+    @Bindable
+    public void addConnection() {
+      RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, getServiceURL("test"));
+      testConnectionBuilder.setHeader("Content-Type", "application/json");
+      try {
+        AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
+        testConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
 
-        @Override
-        public void onResponseReceived(Request request, Response response) {
-          try {
-            if (response.getStatusCode() == Response.SC_OK) {
-              saveConnection();
-            } else {
-              saveConnectionConfirmationDialog.show();
-            }
-          } catch (Exception e) {
-            displayErrorMessage(e);
+          @Override
+          public void onError(Request request, Throwable exception) {
+            saveConnectionConfirmationDialog.show();
           }
-        }
 
-      });
-    } catch (RequestException e) {
-      displayErrorMessage(e);
+          @Override
+          public void onResponseReceived(Request request, Response response) {
+            try {
+              if (response.getStatusCode() == Response.SC_OK) {
+                saveConnection();
+              } else {
+                saveConnectionConfirmationDialog.show();
+              }
+            } catch (Exception e) {
+              displayErrorMessage(e);
+            }
+          }
+
+        });
+      } catch (RequestException e) {
+        displayErrorMessage(e);
+      }
     }
-  }
-*/
+  */
   @Bindable
   public void testConnection() {
-    RequestBuilder testConnectionBuilder = new RequestBuilder(RequestBuilder.PUT, getServiceURL("test"));
-    testConnectionBuilder.setHeader("Content-Type", "application/json");
+    RequestBuilder testConnectionBuilder = new RequestBuilder( RequestBuilder.PUT, getServiceURL( "test" ) );
+    testConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
-      AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
-      testConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+      AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean( currentConnection );
+      testConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
         @Override
-        public void onError(Request request, Throwable exception) {
-          displayErrorMessage(exception);
+        public void onError( Request request, Throwable exception ) {
+          displayErrorMessage( exception );
         }
 
         @Override
-        public void onResponseReceived(Request request, Response response) {
-          Boolean testPassed = new Boolean(response.getText());
+        public void onResponseReceived( Request request, Response response ) {
+          Boolean testPassed = new Boolean( response.getText() );
           try {
-            if (testPassed) {
-              openSuccesDialog(MessageHandler.getString("SUCCESS"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.CONNECTION_TEST_SUCCESS"));//$NON-NLS-1$
+            if ( testPassed ) {
+              openSuccesDialog( MessageHandler.getString( "SUCCESS" ), MessageHandler//$NON-NLS-1$
+                  .getString( "ConnectionController.CONNECTION_TEST_SUCCESS" ) );//$NON-NLS-1$
             } else {
-              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.ERROR_0003_CONNECTION_TEST_FAILED"));//$NON-NLS-1$
+              openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
+                  .getString( "ConnectionController.ERROR_0003_CONNECTION_TEST_FAILED" ) );//$NON-NLS-1$
             }
-          } catch (Exception e) {
-            displayErrorMessage(e);
+          } catch ( Exception e ) {
+            displayErrorMessage( e );
           }
         }
 
-      });
-    } catch (RequestException e) {
-      displayErrorMessage(e);
+      } );
+    } catch ( RequestException e ) {
+      displayErrorMessage( e );
     }
   }
 
   @Bindable
   public void deleteConnection() {
     removeConfirmationDialog.hide();
-    RequestBuilder deleteConnectionBuilder = new RequestBuilder(
-      RequestBuilder.DELETE, 
-      getServiceURL("deletebyname", new String[][]{
-        {"name", datasourceModel.getSelectedRelationalConnection().getName()}
-      })
-    );
+    RequestBuilder deleteConnectionBuilder =
+        new RequestBuilder( RequestBuilder.DELETE, getServiceURL( "deletebyname", new String[][] { { "name",
+          datasourceModel.getSelectedRelationalConnection().getName() } } ) );
     try {
-      deleteConnectionBuilder.sendRequest(null, new RequestCallback() {
+      deleteConnectionBuilder.sendRequest( null, new RequestCallback() {
 
         @Override
-        public void onError(Request request, Throwable exception) {
-          displayErrorMessage(exception);
+        public void onError( Request request, Throwable exception ) {
+          displayErrorMessage( exception );
         }
 
         @Override
-        public void onResponseReceived(Request request, Response response) {
+        public void onResponseReceived( Request request, Response response ) {
           try {
-            if (response.getStatusCode() == Response.SC_OK) {
-              openSuccesDialog(MessageHandler.getString("SUCCESS"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.CONNECTION_DELETED"));//$NON-NLS-1$
-//              Window.alert("In ConnectionController:Delete Connection");
-              datasourceModel.getGuiStateModel().deleteConnection(datasourceModel.getSelectedRelationalConnection().getName());
+            if ( response.getStatusCode() == Response.SC_OK ) {
+              openSuccesDialog( MessageHandler.getString( "SUCCESS" ), MessageHandler//$NON-NLS-1$
+                  .getString( "ConnectionController.CONNECTION_DELETED" ) );//$NON-NLS-1$
+              //              Window.alert("In ConnectionController:Delete Connection");
+              datasourceModel.getGuiStateModel().deleteConnection(
+                  datasourceModel.getSelectedRelationalConnection().getName() );
               List<IDatabaseConnection> connections = datasourceModel.getGuiStateModel().getConnections();
-              if (connections != null && connections.size() > 0) {
-                datasourceModel.setSelectedRelationalConnection(connections.get(connections.size() - 1));
+              if ( connections != null && connections.size() > 0 ) {
+                datasourceModel.setSelectedRelationalConnection( connections.get( connections.size() - 1 ) );
               } else {
-                datasourceModel.setSelectedRelationalConnection(null);
+                datasourceModel.setSelectedRelationalConnection( null );
               }
 
             } else {
-              openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                  .getString("ConnectionController.ERROR_0002_UNABLE_TO_DELETE_CONNECTION"));//$NON-NLS-1$
+              openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
+                  .getString( "ConnectionController.ERROR_0002_UNABLE_TO_DELETE_CONNECTION" ) );//$NON-NLS-1$
             }
 
-          } catch (Exception e) {
-            displayErrorMessage(e);
+          } catch ( Exception e ) {
+            displayErrorMessage( e );
           }
         }
-      });
-    } catch (RequestException e) {
-      displayErrorMessage(e);
+      } );
+    } catch ( RequestException e ) {
+      displayErrorMessage( e );
     }
   }
-/*
-  @Bindable
-  public void saveConnection() {
-    if (!saveConnectionConfirmationDialog.isHidden()) {
-      saveConnectionConfirmationDialog.hide();
-    }
 
-    RequestBuilder getConnectionBuilder = new RequestBuilder(
-      RequestBuilder.GET, 
-      getServiceURL("get", new String[][]{
-        {"name", currentConnection.getName()}
-      })
-    );
-    getConnectionBuilder.setHeader("Content-Type", "application/json");
-    try {
-      getConnectionBuilder.sendRequest(null, new RequestCallback() {
+  /*
+    @Bindable
+    public void saveConnection() {
+      if (!saveConnectionConfirmationDialog.isHidden()) {
+        saveConnectionConfirmationDialog.hide();
+      }
 
-        private void saveNew() {
-          RequestBuilder addConnectionBuilder = new RequestBuilder(RequestBuilder.POST, getServiceURL("add"));
-          addConnectionBuilder.setHeader("Content-Type", "application/json");
-          try {
-            AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
-            addConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+      RequestBuilder getConnectionBuilder = new RequestBuilder(
+        RequestBuilder.GET, 
+        getServiceURL("get", new String[][]{
+          {"name", currentConnection.getName()}
+        })
+      );
+      getConnectionBuilder.setHeader("Content-Type", "application/json");
+      try {
+        getConnectionBuilder.sendRequest(null, new RequestCallback() {
 
-              @Override
-              public void onError(Request request, Throwable exception) {
-                displayErrorMessage(exception);
-              }
-
-              @Override
-              public void onResponseReceived(Request request, Response response) {
-                try {
-                  if (response.getStatusCode() == Response.SC_OK) {
-                    datasourceModel.getGuiStateModel().addConnection(currentConnection);
-                    datasourceModel.setSelectedRelationalConnection(currentConnection);
-                    connectionSetter.getOuterListener().onDialogAccept(currentConnection);
-                  } else {
-                    openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
-                        .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
-                  }
-
-                } catch (Exception e) {
-                  displayErrorMessage(e);
-                }
-              }
-            });
-          } catch (RequestException e) {
-            displayErrorMessage(e);
-          }
-        }
-
-        @Override
-        public void onError(Request request, Throwable exception) {
-          saveNew();
-        }
-
-        @Override
-        public void onResponseReceived(Request request, Response response) {
-          if (response.getStatusCode() == Response.SC_OK) {
-            RequestBuilder updateConnectionBuilder = new RequestBuilder(RequestBuilder.POST, getServiceURL("update"));
-            updateConnectionBuilder.setHeader("Content-Type", "application/json");
+          private void saveNew() {
+            RequestBuilder addConnectionBuilder = new RequestBuilder(RequestBuilder.POST, getServiceURL("add"));
+            addConnectionBuilder.setHeader("Content-Type", "application/json");
             try {
               AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
-              updateConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+              addConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
 
                 @Override
                 public void onError(Request request, Throwable exception) {
@@ -618,10 +587,12 @@ public class ConnectionController extends AbstractXulEventHandler {
                     if (response.getStatusCode() == Response.SC_OK) {
                       datasourceModel.getGuiStateModel().addConnection(currentConnection);
                       datasourceModel.setSelectedRelationalConnection(currentConnection);
+                      connectionSetter.getOuterListener().onDialogAccept(currentConnection);
                     } else {
                       openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
                           .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
                     }
+
                   } catch (Exception e) {
                     displayErrorMessage(e);
                   }
@@ -630,86 +601,130 @@ public class ConnectionController extends AbstractXulEventHandler {
             } catch (RequestException e) {
               displayErrorMessage(e);
             }
-          } else {
+          }
+
+          @Override
+          public void onError(Request request, Throwable exception) {
             saveNew();
           }
-        }
-      });
-    } catch (RequestException e) {
-      displayErrorMessage(e);
+
+          @Override
+          public void onResponseReceived(Request request, Response response) {
+            if (response.getStatusCode() == Response.SC_OK) {
+              RequestBuilder updateConnectionBuilder = new RequestBuilder(RequestBuilder.POST, getServiceURL("update"));
+              updateConnectionBuilder.setHeader("Content-Type", "application/json");
+              try {
+                AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
+                updateConnectionBuilder.sendRequest(AutoBeanCodex.encode(bean).getPayload(), new RequestCallback() {
+
+                  @Override
+                  public void onError(Request request, Throwable exception) {
+                    displayErrorMessage(exception);
+                  }
+
+                  @Override
+                  public void onResponseReceived(Request request, Response response) {
+                    try {
+                      if (response.getStatusCode() == Response.SC_OK) {
+                        datasourceModel.getGuiStateModel().addConnection(currentConnection);
+                        datasourceModel.setSelectedRelationalConnection(currentConnection);
+                      } else {
+                        openErrorDialog(MessageHandler.getString("ERROR"), MessageHandler//$NON-NLS-1$
+                            .getString("ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION"));//$NON-NLS-1$
+                      }
+                    } catch (Exception e) {
+                      displayErrorMessage(e);
+                    }
+                  }
+                });
+              } catch (RequestException e) {
+                displayErrorMessage(e);
+              }
+            } else {
+              saveNew();
+            }
+          }
+        });
+      } catch (RequestException e) {
+        displayErrorMessage(e);
+      }
     }
-  }
-*/
-  public void addConnectionDialogListener(ConnectionDialogListener listener) {
-    if (listeners.contains(listener) == false) {
-      listeners.add(listener);
+  */
+  public void addConnectionDialogListener( ConnectionDialogListener listener ) {
+    if ( listeners.contains( listener ) == false ) {
+      listeners.add( listener );
     }
   }
 
-  public void removeConnectionDialogListener(ConnectionDialogListener listener) {
-    if (listeners.contains(listener)) {
-      listeners.remove(listener);
+  public void removeConnectionDialogListener( ConnectionDialogListener listener ) {
+    if ( listeners.contains( listener ) ) {
+      listeners.remove( listener );
     }
   }
 
-  public void displayErrorMessage(Throwable th) {
-    errorDialog.setTitle(ExceptionParser.getErrorHeader(th, MessageHandler.getString("DatasourceEditor.USER_ERROR_TITLE")));//$NON-NLS-1$
-    errorLabel.setValue(ExceptionParser.getErrorMessage(th, MessageHandler.getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED")));//$NON-NLS-1$
+  public void displayErrorMessage( Throwable th ) {
+    errorDialog.setTitle( ExceptionParser.getErrorHeader( th, MessageHandler
+        .getString( "DatasourceEditor.USER_ERROR_TITLE" ) ) );//$NON-NLS-1$
+    errorLabel.setValue( ExceptionParser.getErrorMessage( th, MessageHandler
+        .getString( "DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED" ) ) );//$NON-NLS-1$
     errorDialog.show();
   }
 
-  public void showAddConnectionDialog(DialogListener listener) {
-//    this.listener = listener;
+  public void showAddConnectionDialog( DialogListener listener ) {
+    //    this.listener = listener;
     previousConnectionName = null;
     existingConnectionName = previousConnectionName;
-    connectionSetter = new DatabaseConnectionSetter(listener);
+    connectionSetter = new DatabaseConnectionSetter( listener );
     showAddConnectionDialog();
   }
 
   @Bindable
   public void showAddConnectionDialog() {
-    datasourceModel.setEditing(false);
-    if (databaseDialog != null) {
-      databaseDialog.setDatabaseConnection(null);
+    datasourceModel.setEditing( false );
+    if ( databaseDialog != null ) {
+      databaseDialog.setDatabaseConnection( null );
       databaseDialog.show();
     } else {
       createNewDatabaseDialog();
     }
   }
-  
 
   private void createNewDatabaseDialog() {
-    if (databaseTypeHelper == null) {
+    if ( databaseTypeHelper == null ) {
       XulServiceCallback<List<IDatabaseType>> callback = new XulServiceCallback<List<IDatabaseType>>() {
-        public void error(String message, Throwable error) {
-          Window.alert(message + ":  " + error.getLocalizedMessage());
+        public void error( String message, Throwable error ) {
+          Window.alert( message + ":  " + error.getLocalizedMessage() );
           //error.printStackTrace();
         }
 
-        public void success(List<IDatabaseType> retVal) {
-          databaseTypeHelper = new DatabaseTypeHelper(retVal);
-          databaseDialog = new GwtDatabaseDialog(databaseTypeHelper, GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+        public void success( List<IDatabaseType> retVal ) {
+          databaseTypeHelper = new DatabaseTypeHelper( retVal );
+          databaseDialog =
+              new GwtDatabaseDialog( databaseTypeHelper,
+                  GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter ); //$NON-NLS-1$
         }
       };
-      dialectService.getDatabaseTypes(callback);
+      dialectService.getDatabaseTypes( callback );
     } else {
-      databaseDialog = new GwtDatabaseDialog(databaseTypeHelper, GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter); //$NON-NLS-1$
+      databaseDialog =
+          new GwtDatabaseDialog( databaseTypeHelper,
+              GWT.getModuleBaseURL() + "dataaccess-databasedialog.xul", connectionSetter ); //$NON-NLS-1$
     }
   }
-  
-  @SuppressWarnings("deprecation")
+
+  @SuppressWarnings( "deprecation" )
   @Bindable
   public void showEditConnectionDialog() {
-    showEditConnectionDialog(null);
+    showEditConnectionDialog( null );
   }
-    
-  @SuppressWarnings("deprecation")
-  public void showEditConnectionDialog(DialogListener dialogListener) {
-    connectionSetter = new DatabaseConnectionSetter(dialogListener);
-    datasourceModel.setEditing(true); 
-    if(databaseDialog != null) {
-      IDatabaseConnection connection = datasourceModel.getSelectedRelationalConnection(); 
-      databaseDialog.setDatabaseConnection(connection);
+
+  @SuppressWarnings( "deprecation" )
+  public void showEditConnectionDialog( DialogListener dialogListener ) {
+    connectionSetter = new DatabaseConnectionSetter( dialogListener );
+    datasourceModel.setEditing( true );
+    if ( databaseDialog != null ) {
+      IDatabaseConnection connection = datasourceModel.getSelectedRelationalConnection();
+      databaseDialog.setDatabaseConnection( connection );
       previousConnectionName = connection.getName();
       existingConnectionName = previousConnectionName;
       databaseDialog.show();
@@ -747,60 +762,58 @@ public class ConnectionController extends AbstractXulEventHandler {
   public void closeOverwriteConnectionConfirmationDialog() {
     overwriteConnectionConfirmationDialog.hide();
   }
-  
+
   @Bindable
   public void closeSuccessDetailsDialog() {
-    if (!successDetailsDialog.isHidden()) {
+    if ( !successDetailsDialog.isHidden() ) {
       successDetailsDialog.hide();
     }
   }
 
-
   public void reloadConnections() {
-    String cacheBuster = String.valueOf(new java.util.Date().getTime());
+    String cacheBuster = String.valueOf( new java.util.Date().getTime() );
     String[][] params = new String[][] { { "ts", cacheBuster } };
-    RequestBuilder listConnectionBuilder = new RequestBuilder(RequestBuilder.GET, getServiceURL("list", params));
-    listConnectionBuilder.setHeader("Content-Type", "application/json");
+    RequestBuilder listConnectionBuilder = new RequestBuilder( RequestBuilder.GET, getServiceURL( "list", params ) );
+    listConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
-      listConnectionBuilder.sendRequest(null, new RequestCallback() {
+      listConnectionBuilder.sendRequest( null, new RequestCallback() {
 
         @Override
-        public void onError(Request request, Throwable exception) {
-          MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString("DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", exception.getLocalizedMessage()));
+        public void onError( Request request, Throwable exception ) {
+          MessageHandler.getInstance().showErrorDialog(
+              MessageHandler.getString( "ERROR" ),
+              MessageHandler.getString( "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", exception
+                  .getLocalizedMessage() ) );
         }
 
         @Override
-        public void onResponseReceived(Request request, Response response) {
-          AutoBean<IDatabaseConnectionList> bean = AutoBeanCodex.decode(connectionAutoBeanFactory,
-              IDatabaseConnectionList.class, response.getText());
+        public void onResponseReceived( Request request, Response response ) {
+          AutoBean<IDatabaseConnectionList> bean =
+              AutoBeanCodex.decode( connectionAutoBeanFactory, IDatabaseConnectionList.class, response.getText() );
           List<IDatabaseConnection> connectionBeanList = bean.as().getDatabaseConnections();
           List<IDatabaseConnection> connectionImplList = new ArrayList<IDatabaseConnection>();
 
-
-
-
-          for (IDatabaseConnection connectionBean : connectionBeanList) {
-            try{
+          for ( IDatabaseConnection connectionBean : connectionBeanList ) {
+            try {
               // take anything except connections where STANDARD_CONNECTION == false
-              if( ( connectionBean.getAttributes() == null ) ||
-                ( connectionBean.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == null ) ||
-                ( connectionBean.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == Boolean.TRUE.toString() )
-                ){
-                connectionImplList.add(AutobeanUtilities.connectionBeanToImpl(connectionBean));
+              if ( ( connectionBean.getAttributes() == null )
+                  || ( connectionBean.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == null )
+                  || ( connectionBean.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == Boolean.TRUE.toString() ) ) {
+                connectionImplList.add( AutobeanUtilities.connectionBeanToImpl( connectionBean ) );
               }
-              
-            }
-            catch (Exception e){
+
+            } catch ( Exception e ) {
               // skip invalid connections that couldn't be converted to IDatabaseConnection
             }
           }
-          if(datasourceModel != null) {
-            datasourceModel.getGuiStateModel().setConnections(connectionImplList);
+          if ( datasourceModel != null ) {
+            datasourceModel.getGuiStateModel().setConnections( connectionImplList );
           }
         }
-      });
-    } catch (RequestException e) {
-      MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), "DatasourceEditor.ERROR_0004_CONNECTION_SERVICE_NULL");
+      } );
+    } catch ( RequestException e ) {
+      MessageHandler.getInstance().showErrorDialog( MessageHandler.getString( "ERROR" ),
+          "DatasourceEditor.ERROR_0004_CONNECTION_SERVICE_NULL" );
     }
   }
 
@@ -809,39 +822,39 @@ public class ConnectionController extends AbstractXulEventHandler {
     //
     //Set the base url appropriately based on the context in which we are running this client
     //
-    if (moduleUrl.indexOf("content") > -1) {
+    if ( moduleUrl.indexOf( "content" ) > -1 ) {
       //we are running the client in the context of a BI Server plugin, so 
       //point the request to the GWT rpc proxy servlet
-      String baseUrl = moduleUrl.substring(0, moduleUrl.indexOf("content"));
+      String baseUrl = moduleUrl.substring( 0, moduleUrl.indexOf( "content" ) );
       return baseUrl + "plugin/data-access/api/connection/";
     }
 
     return moduleUrl + "plugin/data-access/api/connection/";
   }
-  
-  public static String getServiceURL(String action) {
+
+  public static String getServiceURL( String action ) {
     return getBaseURL() + action;
   }
 
-  public static String getServiceURL(String action, String[][] parameters){
-    StringBuilder stringBuilder = new StringBuilder(action);
+  public static String getServiceURL( String action, String[][] parameters ) {
+    StringBuilder stringBuilder = new StringBuilder( action );
     String[] encodeArguments = new String[parameters.length];
-    for (int i = 0; i < parameters.length; i++) {
-      stringBuilder.append(i == 0 ? "?" : "&");
-      stringBuilder.append(parameters[i][0]);
-      stringBuilder.append("=");
-      stringBuilder.append("{" + i + "}");
+    for ( int i = 0; i < parameters.length; i++ ) {
+      stringBuilder.append( i == 0 ? "?" : "&" );
+      stringBuilder.append( parameters[i][0] );
+      stringBuilder.append( "=" );
+      stringBuilder.append( "{" + i + "}" );
       encodeArguments[i] = parameters[i][1];
     }
 
-    return getServiceURL( NameUtils.URLEncode( stringBuilder.toString(), encodeArguments ));
+    return getServiceURL( NameUtils.URLEncode( stringBuilder.toString(), encodeArguments ) );
   }
-  
+
   class DatabaseConnectionSetter implements DatabaseDialogListener {
 
     final DialogListener wrappedListener;
 
-    public DatabaseConnectionSetter(DialogListener listener) {
+    public DatabaseConnectionSetter( DialogListener listener ) {
       super();
       this.wrappedListener = listener;
     }
@@ -853,7 +866,7 @@ public class ConnectionController extends AbstractXulEventHandler {
     /* (non-Javadoc)
      * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogAccept(org.pentaho.database.model.IDatabaseConnection)
      */
-    public void onDialogAccept(final IDatabaseConnection connection) {
+    public void onDialogAccept( final IDatabaseConnection connection ) {
       currentConnection = connection;
       handleDialogAccept();
       //if (wrappedListener != null) wrappedListener.onDialogAccept(connection);
@@ -870,10 +883,10 @@ public class ConnectionController extends AbstractXulEventHandler {
      * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogReady()
      */
     public void onDialogReady() {
-      if (datasourceModel.isEditing() == false) {
-        showAddConnectionDialog(wrappedListener);
+      if ( datasourceModel.isEditing() == false ) {
+        showAddConnectionDialog( wrappedListener );
       } else {
-        showEditConnectionDialog(wrappedListener);
+        showEditConnectionDialog( wrappedListener );
       }
     }
   }
