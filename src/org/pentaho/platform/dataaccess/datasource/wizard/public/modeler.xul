@@ -646,7 +646,7 @@
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul" width="300" height="400" id="resolveColumnsDialog" title="Resolve Missing Columns"
     ondialogaccept="colResolver.done()" ondialogcancel="colResolver.cancel()" onload="colResolver.init()"  buttons="accept, cancel" buttonalign="right" buttonlabelaccept="${dialog.OK}" buttonlabelcancel="${dialog.cancel}">
     <groupbox flex="1">
-    <caption label="Choose a column from the available list"/>
+    <caption label="${chooseColumn}"/>
       <tree id="resolveColumnsTree" flex="1" editable="false" hiddenrootnode="true" preserveselection="false" height="400" width="295" >
         <treecols>
           <treecol flex="1" label="" primary="true"
