@@ -82,7 +82,7 @@ public class GuiStateModel extends XulEventSourceAdapter {
     conn.setPartitioningInformation( connection.getPartitioningInformation() );
     conn.setPassword( connection.getPassword() );
     conn.setQuoteAllFields( connection.isQuoteAllFields() );
-    conn.setSQLServerInstance( connection.getSQLServerInstance() );
+    conn.setExtraOptions( connection.getExtraOptions() );
     conn.setStreamingResults( connection.isStreamingResults() );
     conn.setUsername( connection.getUsername() );
     conn.setUsingConnectionPool( connection.isUsingConnectionPool() );
@@ -90,9 +90,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
 
     //Force an update of any views on the connection list.
     if ( !oldName.equals( newName ) ) {
-      List<IDatabaseConnection> empty = java.util.Collections.EMPTY_LIST;
-      this.firePropertyChange( "connections", previousValue, empty ); //$NON-NLS-1$
-      previousValue = empty;
+      this.firePropertyChange( "connections", previousValue, Collections.emptyList() ); //$NON-NLS-1$
+      previousValue = Collections.emptyList();
     }
     this.firePropertyChange( "connections", previousValue, connections ); //$NON-NLS-1$
   }

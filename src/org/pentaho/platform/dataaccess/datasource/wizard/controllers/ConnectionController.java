@@ -120,7 +120,6 @@ public class ConnectionController extends AbstractXulEventHandler {
     target.setStreamingResults( source.isStreamingResults() );
     target.setDataTablespace( source.getDataTablespace() );
     target.setIndexTablespace( source.getIndexTablespace() );
-    target.setSQLServerInstance( source.getSQLServerInstance() );
     target.setUsingDoubleDecimalAsSchemaTableSeparator( source.isUsingDoubleDecimalAsSchemaTableSeparator() );
     target.setInformixServername( source.getInformixServername() );
     //target.addExtraOption(String databaseTypeCode, String option, String value);
