@@ -17,13 +17,13 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author wseyler
@@ -51,84 +51,84 @@ public class GuiStateModel extends XulEventSourceAdapter {
     return connections;
   }
 
-  public void addConnection(IDatabaseConnection connection) {
+  public void addConnection( IDatabaseConnection connection ) {
     List<IDatabaseConnection> previousValue = getPreviousValue();
-    connections.add(connection);
-    this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
+    connections.add( connection );
+    this.firePropertyChange( "connections", previousValue, connections ); //$NON-NLS-1$
   }
 
-  public void updateConnection(String oldName, IDatabaseConnection connection) {
+  public void updateConnection( String oldName, IDatabaseConnection connection ) {
     List<IDatabaseConnection> previousValue = getPreviousValue();
-    IDatabaseConnection conn = getConnectionByName(oldName);
-    if (conn == null) return;
+    IDatabaseConnection conn = getConnectionByName( oldName );
+    if ( conn == null )
+      return;
     String newName = connection.getName();
-    conn.setName(newName);
-    conn.setAccessType(connection.getAccessType());
-    conn.setConnectionPoolingProperties(connection.getConnectionPoolingProperties());
-    conn.setConnectSql(connection.getConnectSql());
-    conn.setDatabaseName(connection.getDatabaseName());
-    conn.setDatabasePort(connection.getDatabasePort());
-    conn.setDatabaseType(connection.getDatabaseType());
-    conn.setDataTablespace(connection.getDataTablespace());
-    conn.setForcingIdentifiersToLowerCase(connection.isForcingIdentifiersToLowerCase());
-    conn.setForcingIdentifiersToUpperCase(connection.isForcingIdentifiersToUpperCase());
-    conn.setHostname(connection.getHostname());
-    conn.setIndexTablespace(connection.getIndexTablespace());
-    conn.setInformixServername(connection.getInformixServername());
-    conn.setInitialPoolSize(connection.getInitialPoolSize());
-    conn.setMaximumPoolSize(connection.getMaximumPoolSize());
-    conn.setPartitioned(connection.isPartitioned());
-    conn.setPartitioningInformation(connection.getPartitioningInformation());
-    conn.setPassword(connection.getPassword());
-    conn.setQuoteAllFields(connection.isQuoteAllFields());
-    conn.setSQLServerInstance(connection.getSQLServerInstance());
-    conn.setStreamingResults(connection.isStreamingResults());
-    conn.setUsername(connection.getUsername());
-    conn.setUsingConnectionPool(connection.isUsingConnectionPool());
-    conn.setUsingDoubleDecimalAsSchemaTableSeparator(connection.isUsingDoubleDecimalAsSchemaTableSeparator());
-    
+    conn.setName( newName );
+    conn.setAccessType( connection.getAccessType() );
+    conn.setConnectionPoolingProperties( connection.getConnectionPoolingProperties() );
+    conn.setConnectSql( connection.getConnectSql() );
+    conn.setDatabaseName( connection.getDatabaseName() );
+    conn.setDatabasePort( connection.getDatabasePort() );
+    conn.setDatabaseType( connection.getDatabaseType() );
+    conn.setDataTablespace( connection.getDataTablespace() );
+    conn.setForcingIdentifiersToLowerCase( connection.isForcingIdentifiersToLowerCase() );
+    conn.setForcingIdentifiersToUpperCase( connection.isForcingIdentifiersToUpperCase() );
+    conn.setHostname( connection.getHostname() );
+    conn.setIndexTablespace( connection.getIndexTablespace() );
+    conn.setInformixServername( connection.getInformixServername() );
+    conn.setInitialPoolSize( connection.getInitialPoolSize() );
+    conn.setMaximumPoolSize( connection.getMaximumPoolSize() );
+    conn.setPartitioned( connection.isPartitioned() );
+    conn.setPartitioningInformation( connection.getPartitioningInformation() );
+    conn.setPassword( connection.getPassword() );
+    conn.setQuoteAllFields( connection.isQuoteAllFields() );
+    conn.setExtraOptions( connection.getExtraOptions() );
+    conn.setStreamingResults( connection.isStreamingResults() );
+    conn.setUsername( connection.getUsername() );
+    conn.setUsingConnectionPool( connection.isUsingConnectionPool() );
+    conn.setUsingDoubleDecimalAsSchemaTableSeparator( connection.isUsingDoubleDecimalAsSchemaTableSeparator() );
+
     //Force an update of any views on the connection list.
-    if (!oldName.equals(newName)) {
-      List<IDatabaseConnection> empty = java.util.Collections.EMPTY_LIST;
-      this.firePropertyChange("connections", previousValue, empty); //$NON-NLS-1$
-      previousValue = empty;
+    if ( !oldName.equals( newName ) ) {
+      this.firePropertyChange( "connections", previousValue, Collections.emptyList() ); //$NON-NLS-1$
+      previousValue = Collections.emptyList();
     }
-    this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
+    this.firePropertyChange( "connections", previousValue, connections ); //$NON-NLS-1$
   }
-  
-  public void updateConnection(IDatabaseConnection connection) {
-    updateConnection(connection.getName(), connection);
+
+  public void updateConnection( IDatabaseConnection connection ) {
+    updateConnection( connection.getName(), connection );
   }
 
   @Bindable
   private List<IDatabaseConnection> getPreviousValue() {
     List<IDatabaseConnection> previousValue = new ArrayList<IDatabaseConnection>();
-    for (IDatabaseConnection conn : connections) {
-      previousValue.add(conn);
+    for ( IDatabaseConnection conn : connections ) {
+      previousValue.add( conn );
     }
     return previousValue;
   }
 
-  public void deleteConnection(IDatabaseConnection connection) {
+  public void deleteConnection( IDatabaseConnection connection ) {
     List<IDatabaseConnection> previousValue = getPreviousValue();
-    connections.remove(connections.indexOf(connection));
-    this.firePropertyChange("connections", previousValue, connections); //$NON-NLS-1$
+    connections.remove( connections.indexOf( connection ) );
+    this.firePropertyChange( "connections", previousValue, connections ); //$NON-NLS-1$
   }
 
-  public void deleteConnection(String name) {
-    for (IDatabaseConnection connection : connections) {
-      if (connection.getName().equals(name)) {
-        deleteConnection(connection);
+  public void deleteConnection( String name ) {
+    for ( IDatabaseConnection connection : connections ) {
+      if ( connection.getName().equals( name ) ) {
+        deleteConnection( connection );
         break;
       }
     }
   }
 
   @Bindable
-  public void setConnections(List<IDatabaseConnection> value) {
+  public void setConnections( List<IDatabaseConnection> value ) {
     List<IDatabaseConnection> previousValue = getPreviousValue();
     this.connections = value;
-    this.firePropertyChange("connections", previousValue, value); //$NON-NLS-1$
+    this.firePropertyChange( "connections", previousValue, value ); //$NON-NLS-1$
   }
 
   @Bindable
@@ -137,24 +137,24 @@ public class GuiStateModel extends XulEventSourceAdapter {
   }
 
   @Bindable
-  public void setPreviewLimit(String value) {
+  public void setPreviewLimit( String value ) {
     String previousVal = this.previewLimit;
     this.previewLimit = value;
-    this.firePropertyChange("previewLimit", previousVal, value); //$NON-NLS-1$
+    this.firePropertyChange( "previewLimit", previousVal, value ); //$NON-NLS-1$
   }
 
-  public IDatabaseConnection getConnectionByName(String name) {
-    for (IDatabaseConnection connection : connections) {
-      if (connection.getName().equals(name)) {
+  public IDatabaseConnection getConnectionByName( String name ) {
+    for ( IDatabaseConnection connection : connections ) {
+      if ( connection.getName().equals( name ) ) {
         return connection;
       }
     }
     return null;
   }
 
-  public Integer getConnectionIndex(IDatabaseConnection conn) {
-    IDatabaseConnection connection = getConnectionByName(conn.getName());
-    return connections.indexOf(connection);
+  public Integer getConnectionIndex( IDatabaseConnection conn ) {
+    IDatabaseConnection connection = getConnectionByName( conn.getName() );
+    return connections.indexOf( connection );
   }
 
   @Bindable
@@ -163,24 +163,24 @@ public class GuiStateModel extends XulEventSourceAdapter {
   }
 
   @Bindable
-  private void setRelationalValidated(boolean value) {
-    if(value != this.relationalValidated) {
+  private void setRelationalValidated( boolean value ) {
+    if ( value != this.relationalValidated ) {
       this.relationalValidated = value;
-      this.firePropertyChange("relationalValidated", !value, value);
+      this.firePropertyChange( "relationalValidated", !value, value );
     }
   }
 
   public void validateRelational() {
-    setRelationalPreviewValidated(true);
-    setRelationalApplyValidated(true);
-    setRelationalValidated(true);
+    setRelationalPreviewValidated( true );
+    setRelationalApplyValidated( true );
+    setRelationalValidated( true );
     fireRelationalModelValid();
   }
 
   public void invalidateRelational() {
-    setRelationalPreviewValidated(false);
-    setRelationalApplyValidated(false);
-    setRelationalValidated(false);
+    setRelationalPreviewValidated( false );
+    setRelationalApplyValidated( false );
+    setRelationalValidated( false );
     fireRelationalModelInValid();
   }
 
@@ -189,20 +189,20 @@ public class GuiStateModel extends XulEventSourceAdapter {
    */
   @Bindable
   public void clearModel() {
-    setPreviewLimit("10");
-    setSelectedCsvFile(null);
+    setPreviewLimit( "10" );
+    setSelectedCsvFile( null );
   }
 
-  public void addRelationalModelValidationListener(IRelationalModelValidationListener listener) {
-    if (relationalModelValidationListeners == null) {
+  public void addRelationalModelValidationListener( IRelationalModelValidationListener listener ) {
+    if ( relationalModelValidationListeners == null ) {
       relationalModelValidationListeners = new RelationalModelValidationListenerCollection();
     }
-    relationalModelValidationListeners.add(listener);
+    relationalModelValidationListeners.add( listener );
   }
 
-  public void removeRelationalListener(IRelationalModelValidationListener listener) {
-    if (relationalModelValidationListeners != null) {
-      relationalModelValidationListeners.remove(listener);
+  public void removeRelationalListener( IRelationalModelValidationListener listener ) {
+    if ( relationalModelValidationListeners != null ) {
+      relationalModelValidationListeners.remove( listener );
     }
   }
 
@@ -211,46 +211,48 @@ public class GuiStateModel extends XulEventSourceAdapter {
    */
   void fireRelationalModelValid() {
 
-    if (relationalModelValidationListeners != null) {
+    if ( relationalModelValidationListeners != null ) {
       relationalModelValidationListeners.fireRelationalModelValid();
     }
   }
-  
+
   /**
    * Fire all current {@link IRelationalModelValidationListener}.
    */
   void fireRelationalModelInValid() {
 
-    if (relationalModelValidationListeners != null) {
+    if ( relationalModelValidationListeners != null ) {
       relationalModelValidationListeners.fireRelationalModelInValid();
     }
   }
-  public void setRelationalPreviewValidated(boolean value) {
-    if (value != this.relationalPreviewValidated) {
+
+  public void setRelationalPreviewValidated( boolean value ) {
+    if ( value != this.relationalPreviewValidated ) {
       this.relationalPreviewValidated = value;
-      this.firePropertyChange("relationalPreviewValidated", !value, this.relationalPreviewValidated);
+      this.firePropertyChange( "relationalPreviewValidated", !value, this.relationalPreviewValidated );
     }
   }
+
   public boolean isRelationalPreviewValidated() {
     return this.relationalPreviewValidated;
   }
-  
+
   public boolean isRelationalApplyValidated() {
     return relationalApplyValidated;
   }
 
-  public void setRelationalApplyValidated(boolean value) {
-    if (value != this.relationalApplyValidated) {
+  public void setRelationalApplyValidated( boolean value ) {
+    if ( value != this.relationalApplyValidated ) {
       this.relationalApplyValidated = value;
-      this.firePropertyChange("relationalApplyValidated", !value, this.relationalApplyValidated);
-    }    
+      this.firePropertyChange( "relationalApplyValidated", !value, this.relationalApplyValidated );
+    }
   }
 
   public List<LogicalModel> getLogicalModels() {
     return logicalModels;
   }
 
-  public void setLogicalModels(List<LogicalModel> logicalModels) {
+  public void setLogicalModels( List<LogicalModel> logicalModels ) {
     this.logicalModels = logicalModels;
   }
 
@@ -258,14 +260,14 @@ public class GuiStateModel extends XulEventSourceAdapter {
     return localeCode;
   }
 
-  public void setLocaleCode(String localeCode) {
+  public void setLocaleCode( String localeCode ) {
     this.localeCode = localeCode;
   }
 
-  public void setDataStagingComplete(boolean status) {
+  public void setDataStagingComplete( boolean status ) {
     dataStagingComplete = status;
   }
-  
+
   public boolean isDataStagingComplete() {
     return dataStagingComplete;
   }
@@ -274,7 +276,7 @@ public class GuiStateModel extends XulEventSourceAdapter {
     return selectedCsvFile;
   }
 
-  public void setSelectedCsvFile(FileInfo selectedCsvFile) {
+  public void setSelectedCsvFile( FileInfo selectedCsvFile ) {
     this.selectedCsvFile = selectedCsvFile;
   }
 
@@ -284,8 +286,8 @@ public class GuiStateModel extends XulEventSourceAdapter {
   }
 
   @Bindable
-  public void setDirty(boolean dirty) {
+  public void setDirty( boolean dirty ) {
     this.dirty = dirty;
-    firePropertyChange("dirty", null, dirty);
+    firePropertyChange( "dirty", null, dirty );
   }
 }
