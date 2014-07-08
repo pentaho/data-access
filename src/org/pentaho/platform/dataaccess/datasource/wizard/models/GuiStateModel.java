@@ -24,6 +24,8 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+
 
 /**
  * @author wseyler
