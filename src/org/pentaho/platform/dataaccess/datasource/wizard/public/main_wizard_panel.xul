@@ -290,8 +290,7 @@
 				          <listbox id="rightKeyField" pen:binding="name" disabled="false" height="150" width="300"/>
 				        </vbox>
 				      </hbox>
-					  <hbox>
-					    <spacer width="530"/>
+					  <hbox align="end">
 					    <button id="createJoinButton" label="${multitable.CREATE_JOIN}" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
 					  </hbox>
 				      <hbox>
@@ -300,8 +299,7 @@
 				          <listbox id="joins" pen:binding="name" disabled="false" height="100" width="610"/>
 				        </vbox>
 				      </hbox>
-			          <hbox>
-					    <spacer width="530"/>
+			          <hbox align="end">
 					    <button id="deleteJoinButton" label="${multitable.DELETE_JOIN}" pen:disabledimage="" tooltiptext="" onclick="joinDefinitionStepController.deleteJoin()" disabled="false"/>
 					  </hbox>
 				    </vbox>
