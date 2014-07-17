@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<window xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="datasourceEditorWindow" title="${datasourceEditorDialog.TITLE}" orient="vertical" height="600" width="800">
-	<dialog xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="800" height="500" title="${WIZARD_TITLE}" onload="" resizable="false" padding="0" spacing="0"
+<window xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="datasourceEditorWindow" title="${datasourceEditorDialog.TITLE}" orient="vertical" height="700" width="900">
+	<dialog xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul" id="main_wizard_window" width="900" height="600" title="${WIZARD_TITLE}" onload="" resizable="false" padding="0" spacing="0"
           buttons="accept,cancel,extra1,extra2"
           pen:acceptbuttonalign="right"
           pen:cancelbuttonalign="right"
@@ -17,11 +17,11 @@
           buttonlabelextra2="${NEXT}"
           >
 
-		<hbox id="main_box" padding="0" spacing="0" width="800" height="500">
-			<vbox id="stepsPanel" width="150" height="500" padding="0" spacing="0">
+		<hbox id="main_box" padding="0" spacing="0" width="900" height="600">
+			<vbox id="stepsPanel" width="150" height="600" padding="0" spacing="0">
 				<hbox flex="1" padding="0" spacing="0">
 					<spacer width="2"/>
-					<vbox flex="1" padding="0" spacing="0" height="494">
+					<vbox flex="1" padding="0" spacing="0" height="594">
 						<spacer height="10"/>
 						<grid id="step_grid">
 							<columns>
@@ -34,9 +34,9 @@
 					</vbox>
 				</hbox>
 			</vbox>
-			<deck id="content_deck" height="500" width="650">
+			<deck id="content_deck" height="600" width="750">
 				<!-- Wizard "Source" Step -->
-					<vbox id="sourcestep" height="500" flex="1" spacing="3" padding="0">
+					<vbox id="sourcestep" height="600" flex="1" spacing="3" padding="0">
 						<vbox id="datasourceInfoBox" spacing="0" padding="0">
 							<label value="${datasourceDialog.DatasourceName}" tooltiptext="${datasourceDialog.DatasourceNameToolTip}"/>
 							<textbox id="datasourceName" width="200" multiline="false"/>
@@ -46,7 +46,7 @@
 								</menupopup>
 							</menulist>
 						</vbox>
-						<deck id="datasourceDialogDeck" height="400">
+						<deck id="datasourceDialogDeck" height="500">
 							<hbox id="NoopDatasource" flex="1">
 								<!-- Empty panel for select Database type menu item. -->
 							</hbox>
@@ -56,7 +56,7 @@
 								<!--  ###############################################################################  -->
 								<!--     SQL datasource step 1 -->
 								<!--  ###############################################################################  -->
-								<vbox height="400">
+								<vbox height="500">
 								    <vbox id="connectionsLbl">
 								    	<label value="${multitable.CONNECTIONS_LBL}" />
 								    </vbox>
@@ -70,7 +70,7 @@
 										
 										<button id="removeConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif" tooltiptext="${datasourceDialog.removeConnectionImageToolTip}" onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true" pen:classname="pentaho-deletebutton"/>
 									</hbox>
-									<listbox id="connectionList" pen:binding="modelName" disabled="true" height="275" width="180"/>									  
+									<listbox id="connectionList" pen:binding="modelName" disabled="true" height="475" width="280"/>
 									<vbox id="metadata" flex="1" height="80">
 									    <label value="${multitable.REPORTING_METADATA_GROUP_LABEL}" tooltiptext=""/>
 										<radiogroup id="metadataRadioGrup" padding="0">
@@ -79,12 +79,12 @@
 										</radiogroup>
 									</vbox>									
 								</vbox>
-								<spacer width="10" height="400"/>
-								<vbox id="queryBox" height="400" flex="1">
+								<spacer width="10" height="500"/>
+								<vbox id="queryBox" height="500" flex="1">
 									<hbox>
 										<label value="${datasourceDialog.Query}" tooltiptext="${datasourceDialog.QueryToolTip}" flex="1"/>
 									</hbox>
-									<textbox height="332" id="query"  multiline="true" disabled="false"/>
+									<textbox height="432" id="query"  multiline="true" disabled="false"/>
 									<hbox>
 										<spacer flex="1"/>
 										<label value="Limit:"/>
@@ -94,17 +94,17 @@
 								</vbox>
 							</hbox>
 							
-							<vbox id="csvDeckPanel" height="405" spacing="0" padding="0">
+							<vbox id="csvDeckPanel" height="505" spacing="0" padding="0">
 								<!--  ###############################################################################  -->
 								<!--     CSV datasource step 1 -->
 								<!--  ###############################################################################  -->
 							  <hbox spacing="0">				
 			                    <label id="fileLabel" value="${physicalDatasourceDialog.FILE}"/>
-			                    <spacer width="303"/> 	
+			                    <spacer width="403"/>
 			                    <label value="${physicalDatasourceDialog.ENCODING}" tooltiptext="${physicalDatasourceDialog.ENCODING_TOOLTIP}"/>
 			                  </hbox>
 			                  <hbox spacing="0">
-			                    <textbox id="uploadedFile" value="" disabled="true" height="20" width="190"/>
+			                    <textbox id="uploadedFile" value="" disabled="true" height="20" width="290"/>
 			                    <button id="addFileButton" label="${physicalDatasourceDialog.IMPORT}..." onclick="fileImportController.showFileImportDialog()" tooltiptext="${datasourceDialog.addFileToolTip}"/>
 								<spacer width="70"/>	
 								<menulist id="encodingTypeMenuList" editable="true" disabled="true" width="204">
@@ -168,9 +168,9 @@
 			                  </hbox>
 			                  <checkbox id="isHeaderCheckBox" checked="true" label="${physicalDatasourceDialog.IS_HEADER}" disabled="true" />
 			                  <spacer height="8"/>
-			                  <groupbox height="186">
+			                  <groupbox height="286">
 			                    <caption label="${physicalDatasourceDialog.PREVIEW}"/>
-			                    <label multiline="true" id="csvTextPreview" height="160" width="630" pre="true" />
+			                    <label multiline="true" id="csvTextPreview" height="260" width="730" pre="true" />
 			                  </groupbox>
 	                        </vbox>
 						</deck>
@@ -189,7 +189,7 @@
 				      <hbox>
 					    <vbox id="schemaTableVbox">
 				          <label value="${multitable.SCHEMA}" tooltiptext=""/>
-					      <menulist id="schemas" width="295">
+					      <menulist id="schemas" width="395">
 					        <menupopup>
 					          <menuitem label=""/>
 					        </menupopup>
@@ -199,7 +199,7 @@
 				      <hbox>
 				        <vbox>
 				          <label value="${multitable.AVAILABLE_TABLES}" tooltiptext=""/>
-				          <listbox id="availableTables" pen:binding="name" disabled="false" height="310" width="295" seltype="multi"/>
+				          <listbox id="availableTables" pen:binding="name" disabled="false" height="410" width="395" seltype="multi"/>
 				        </vbox>
 				        <vbox>
 				          <spacer height="150"/>
@@ -211,14 +211,14 @@
 				        </vbox>
 				        <vbox>
 				          <label value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
-				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="310" width="295" seltype="multi"/>
+				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="410" width="395" seltype="multi"/>
 				        </vbox>
 				      </hbox>
 				      <hbox>
-				        <spacer width="335"/>
+				        <spacer width="435"/>
 				      	<vbox id="factTableVbox">
 				          <label value="${multitable.FACT_TABLE}" tooltiptext=""/>
-   					      <menulist id="factTables" pen:binding="name" width="295">
+   					      <menulist id="factTables" pen:binding="name" width="395">
 					        <menupopup>
 					          <menuitem label=""/>
 					        </menupopup>
@@ -229,7 +229,7 @@
 	              <!--Multi-table STEP 2-->
 
 				<!-- Wizard "Stage Data" Step -->
-				<vbox id="stagedatastep" height="500">
+				<vbox id="stagedatastep" height="600">
 					<!--  ###############################################################################  -->
 					<!--    CSV datasource step 2 - stage data step -->
 					<!--  ###############################################################################  -->        		            
@@ -240,8 +240,8 @@
 					</hbox>
 					<!-- Columns -->
 					<vbox height="420" id="csvColumnsBox">
-						<hbox id="csvColumnsContent" flex="1" height="420">
-							<tree id="csvModelDataTable" seltype="single" width="630" height="415" pen:showalleditcontrols="false">
+						<hbox id="csvColumnsContent" flex="1" height="520">
+							<tree id="csvModelDataTable" seltype="single" width="730" height="415" pen:showalleditcontrols="false">
 								<treecols id="csvModelDataTableCols">
 									<treecol flex="1" id="csvColumnIncludeTreeCol" label="${stageDataStep.COLUMN_INCLUDE}" editable="true" pen:binding="include" type="checkbox"/>
 									<treecol id="csvColumnNameTreeCol" label="${stageDataStep.COLUMN_NAME}" flex="4" pen:binding="title" editable="true" type="text"/>
@@ -468,7 +468,7 @@
 	  <vbox id="errorDetailsDialogContainer">
       <label id="errorDetailsLabel" value="${errorDialog.errorOccurred}"/>
       <expandpanel id="errorDetailsExpander" expanded="false" header="${errorDialog.DETAILS}">
-        <label id="error_dialog_details" width="800" height="300" multiline="true" pre="true"/>
+        <label id="error_dialog_details" width="900" height="300" multiline="true" pre="true"/>
       </expandpanel>
     </vbox>
 	</dialog>
@@ -496,7 +496,7 @@
 		<label id="success_details_label" value="${successDialog.successMessage}"/>
 		<button id="toggle_success_details_button" label="Details..." onclick="wizardConnectionController.toggleSuccessDetails()" disabled="false"/>
 		<hbox id="success_details_hider" visible="false">
-			<textbox id="success_dialog_details" width="800" height="300" multiline="true"/>
+			<textbox id="success_dialog_details" width="900" height="300" multiline="true"/>
 		</hbox>
 	  </vbox>
 	</dialog>
@@ -509,7 +509,7 @@
 		<label id="success_details_label" value="${successDialog.successMessage}"/>
 		<button id="toggle_success_details_button" label="Details..." onclick="connectionController.toggleSuccessDetails()" disabled="false"/>
 		<hbox id="success_details_hider" visible="false">
-			<textbox id="success_dialog_details" width="800" height="300" multiline="true"/>
+			<textbox id="success_dialog_details" width="900" height="300" multiline="true"/>
 		</hbox>
 	  </vbox>
 	</dialog>
@@ -614,7 +614,7 @@
 	</dialog>
 
 	<dialog id="csvPreviewDialog" title="${physicalDatasourceDialog.PREVIEW}" buttonlabelaccept="${physicalDatasourceDialog.CLOSE}" buttons="accept" ondialogaccept="stageDataController.closePreviewDialog()" width="630" height="270" buttonalign="right" resizable="true">
-    <label multiline="true" id="csvTextPreviewLabel" height="225" width="630" pre="true"/>
+    <label multiline="true" id="csvTextPreviewLabel" height="325" width="730" pre="true"/>
 	</dialog>
   <dialog id="fileImportEditorWindow" title="${fileImportDialog.TITLE}"
     orient="vertical" height="140" width="325">
