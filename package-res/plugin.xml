@@ -10,6 +10,9 @@
    </static-paths>
    
    <overlays>
+        <overlay id="launch" resourcebundle="api/repos/data-access/resources/messages/messages" priority="10010">
+            <button id="datasource" label="${newDatasourceEllipsis}" command="window.top.pho.openDatasourceEditor(window.top.datasourceEditorCallback)"/>
+        </overlay>
 	    <overlay id="dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages" loadatstart="false">
 			<menubar id="filemenu">
 			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />
