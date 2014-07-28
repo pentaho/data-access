@@ -58,6 +58,7 @@ import com.google.gwt.user.client.Window;
 public class DatasourceAdminDialogController extends AbstractXulDialogController<IDatasourceInfo> implements BindingExceptionHandler{
 
   // ~ Static fields/initializers ======================================================================================
+  private static final String IMPORT_MSG_ID = "datasourceAdminDialog.IMPORT";
 
   // ~ Instance fields =================================================================================================
   private BindingFactory bf;
@@ -74,9 +75,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   
   private XulButton datasourceAddButton;
   private XulMenupopup datasourceTypeMenuPopup;
-  private XulButton exportDatasourceButton;
-  private XulButton editDatasourceButton;
-  private XulButton removeDatasourceButton;
+  private XulMenuitem exportDatasourceMenuItem;
+  private XulMenuitem editDatasourceMenuItem;
+  private XulMenuitem removeDatasourceMenuItem;
 
   private Binding editDatasourceButtonBinding; 
   private Binding removeDatasourceButtonBinding;
@@ -106,9 +107,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
     datasourceAddButton = (XulButton) document.getElementById("datasourceAddButton"); //$NON-NLS-1$
     datasourceTypeMenuPopup = (XulMenupopup) document.getElementById("datasourceTypeMenuPopup"); //$NON-NLS-1$
-    exportDatasourceButton = (XulButton) document.getElementById("exportDatasourceButton"); //$NON-NLS-1$
-    editDatasourceButton = (XulButton) document.getElementById("editDatasourceButton"); //$NON-NLS-1$
-    removeDatasourceButton = (XulButton) document.getElementById("removeDatasourceButton"); //$NON-NLS-1$
+    exportDatasourceMenuItem = (XulMenuitem) document.getElementById("exportDatasourceMenuItem"); //$NON-NLS-1$
+    editDatasourceMenuItem = (XulMenuitem) document.getElementById("editDatasourceMenuItem"); //$NON-NLS-1$
+    removeDatasourceMenuItem = (XulMenuitem) document.getElementById("removeDatasourceMenuItem"); //$NON-NLS-1$
     bf.setBindingType(Binding.Type.ONE_WAY);
     try {
       
@@ -149,11 +150,11 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         }
       };
       removeDatasourceButtonBinding = bf.createBinding(datasourceAdminDialogModel, "selectedDatasource", //$NON-NLS-1$
-          removeDatasourceButton, "!disabled", removeDatasourceButtonConvertor); //$NON-NLS-1$
+          removeDatasourceMenuItem, "!disabled", removeDatasourceButtonConvertor); //$NON-NLS-1$
       editDatasourceButtonBinding = bf.createBinding(datasourceAdminDialogModel, "selectedDatasource", //$NON-NLS-1$
-          editDatasourceButton, "!disabled", editDatasourceButtonConvertor); //$NON-NLS-1$
+          editDatasourceMenuItem, "!disabled", editDatasourceButtonConvertor); //$NON-NLS-1$
       exportDatasourceButtonBinding = bf.createBinding(datasourceAdminDialogModel, "selectedDatasource", //$NON-NLS-1$
-          exportDatasourceButton, "!disabled", exportDatasourceButtonConvertor); //$NON-NLS-1$
+          exportDatasourceMenuItem, "!disabled", exportDatasourceButtonConvertor); //$NON-NLS-1$
 
       bf.createBinding(datasourceAdminDialogModel, "datasources", datasourceTable, "elements");
       bf.createBinding(datasourceTable, "selectedItems", datasourceAdminDialogModel, "selectedDatasource", //$NON-NLS-1$//$NON-NLS-2$
@@ -260,9 +261,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           DatasourceAdminDialogController.super.showDialog();
           datasourceAdminDialogModel.setDatasourcesList(infoList);
           getDatasourceTypes();
-          exportDatasourceButton.setDisabled(true);
-          editDatasourceButton.setDisabled(true);
-          removeDatasourceButton.setDisabled(true);
+          exportDatasourceMenuItem.setDisabled(true);
+          editDatasourceMenuItem.setDisabled(true);
+          removeDatasourceMenuItem.setDisabled(true);
         }
   
         @Override
@@ -276,17 +277,31 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         List<String> datasourceTypes = manager.getTypes();
         // Clear out the current component list
         List<XulComponent> components = datasourceTypeMenuPopup.getChildNodes();
-        for(XulComponent component:components) {
-          datasourceTypeMenuPopup.removeComponent(component);
+        int addImportAt = 0;
+        for (int i = 0; i < components.size(); i++) {
+            XulComponent component = components.get(i);
+            if (component.getId() != null
+                    && component.getId().startsWith("import")) {
+                datasourceTypeMenuPopup.removeComponent(component);
+            } else if ("beforeImport".equals(component.getId())) {
+                addImportAt = i + 1;
+            }
         }
 
         List<IDatasourceInfo> datasourceInfoList = datasourceAdminDialogModel.getDatasourcesList();
 
         for(String datasourceType:datasourceTypes) {
-
           boolean creatable = true;
 
           IUIDatasourceAdminService datasourceAdminService = manager.getService( datasourceType );
+          if (datasourceAdminService instanceof DSWUIDatasourceService) {
+              // Data Source Wizard
+              continue;
+          }
+          if (datasourceAdminService instanceof JdbcDatasourceService) {
+              // JDBC
+              continue;
+          }
 
           if(!datasourceAdminService.isCreatable()){
             continue;
@@ -294,11 +309,13 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
           XulMenuitem menuItem;
           try {
+            String displayName = DatasourceInfo.getDisplayType(datasourceType, messageBundle);
+            String label = messageBundle.getString(IMPORT_MSG_ID, displayName);
             menuItem = (XulMenuitem) document.createElement("menuitem");
-            menuItem.setLabel(DatasourceInfo.getDisplayType(datasourceType, messageBundle));
+            menuItem.setLabel(label);
             menuItem.setCommand(getName() + ".launchNewUI(\""+ datasourceType + "\")");
-            menuItem.setId(datasourceType);
-            datasourceTypeMenuPopup.addChild(menuItem);
+            menuItem.setId("import" + datasourceType);
+            datasourceTypeMenuPopup.addChildAt(menuItem, addImportAt++);
           } catch (XulException e) {
             throw new RuntimeException(e);
           }
@@ -460,6 +477,15 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   }
   
   @Bindable
+  public void newConnection() {
+      launchNewUI("JDBC");
+  }
+  @Bindable
+  public void newDataSource() {
+      launchNewUI("Data Source Wizard");
+  }
+  
+  @Bindable
   public void removeDatasourceAccept() {
     final IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
     manager.remove(dsInfo, new XulServiceCallback<Boolean>() {
@@ -468,7 +494,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
        public void success(Boolean isOk) {
     	   if (isOk) {
     		   refreshDatasourceList();
-               editDatasourceButton.setDisabled(true);
+               editDatasourceMenuItem.setDisabled(true);
            } else {
         	   Window.alert(
                  messageBundle.getString("datasourceAdminDialogController.COULD_NOT_REMOVE")
