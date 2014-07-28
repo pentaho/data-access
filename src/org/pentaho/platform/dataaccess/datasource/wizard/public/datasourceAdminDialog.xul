@@ -18,21 +18,21 @@
   >
 
     <hbox flex="1" id="datasource-button-bar">
-      <spacer flex="1"/>
-      <button id="editDatasourceButton" image="images/spacer.gif" tooltiptext="${datasourceAdminDialog.EDIT}"
-        pen:disabledimage="images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.edit()" 
-        pen:classname="pentaho-editbutton"/>        
-      <label id="spacer-label" width="3" />
 
-      <button id="datasourceAddButton" image="images/spacer.gif" pen:classname="pentaho-addcombobutton" tooltiptext="${datasourceAdminDialog.ADD}" >
-       <menupopup id="datasourceTypeMenuPopup"/>
+      <spacer flex="1"/>
+
+      <button id="datasourceDropdownButton" image="images/spacer.gif" pen:classname="pentaho-optionsbutton" >
+        <menupopup id="datasourceTypeMenuPopup">
+          <menuitem id="editDatasourceMenuItem" label="${datasourceAdminDialog.EDIT}" command="datasourceAdminDialogController.edit()" />
+          <menuitem id="removeDatasourceMenuItem" label="${datasourceAdminDialog.REMOVE}" command="datasourceAdminDialogController.remove()" />
+          <menuseparator id="beforeImport"/>
+          <menuitem id="exportDatasourceMenuItem" label="${datasourceAdminDialog.EXPORT}" command="datasourceAdminDialogController.export()" />
+          <menuseparator/>
+          <menuitem id="newConnectionMenuItem" label="${datasourceAdminDialog.NEW_CONNECTION}" command="datasourceAdminDialogController.newConnection()" />
+        </menupopup>
       </button>
       <label id="spacer-label" width="3" />
-      
-      <button id="exportDatasourceButton" image="images/spacer.gif" tooltiptext="${datasourceAdminDialog.EXPORT}" pen:disabledimage="images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.export()" pen:classname="pentaho-exportbutton" />
-        <label id="spacer-label" width="3" />
-      
-      <button id="removeDatasourceButton" image="images/spacer.gif" tooltiptext="${datasourceAdminDialog.REMOVE}" pen:disabledimage="images/spacer.gif" disabled="true" onclick="datasourceAdminDialogController.remove()" pen:classname="pentaho-deletebutton"/>
+      <button id="newDataSourceButton" label="${datasourceAdminDialog.NEW_DATASOURCE}" pen:classname="pentaho-button" onclick="datasourceAdminDialogController.newDataSource()" />
     </hbox>
    <hbox id="csvColumnsContent" flex="1" height="175">
 		<tree height="175" width="480" id="datasourcesListTable" seltype="single">
