@@ -204,6 +204,7 @@
     <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" transitive="false"/>
 
     <override org="pentaho-kettle" rev="${dependency.kettle.revision}" />
+    <conflict org="pentaho" module='pentaho-database-.*' rev="${dependency.pentaho-database.revision}" matcher='regexp' />
 
   </dependencies>
 </ivy-module>
