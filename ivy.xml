@@ -203,5 +203,7 @@
     <dependency org="com.sun.jersey" name="jersey-server" rev="1.5" transitive="false"/>
     <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" transitive="false"/>
 
+    <override org="pentaho-kettle" rev="${dependency.kettle.revision}" />
+
   </dependencies>
 </ivy-module>
