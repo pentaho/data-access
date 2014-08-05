@@ -30,12 +30,6 @@ import com.google.gwt.core.client.JsArray;
 public class JSUIDatasourceService implements IUIDatasourceAdminService {
   private JavaScriptObject datasourceServiceObject;
 
-  private boolean editable = false;
-  private boolean removable = false;
-  private boolean importable = false;
-  private boolean exportable = false;
-  private boolean creatable = false;
-
   // Overlay types always have protected, zero argument constructors.
   public JSUIDatasourceService(JavaScriptObject datasourceServiceObject) {
     this.datasourceServiceObject = datasourceServiceObject;
@@ -87,7 +81,7 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
    * @return
    */
   @Override public boolean isEditable() {
-    return editable;
+    return getDelegateIsEditable( this.datasourceServiceObject );
   }
 
   /**
@@ -95,7 +89,7 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
    * @return
    */
   @Override public boolean isRemovable() {
-    return removable;
+    return getDelegateIsRemovable( this.datasourceServiceObject );
   }
 
   /**
@@ -103,7 +97,7 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
    * @return
    */
   @Override public boolean isImportable() {
-    return importable;
+    return getDelegateIsImportable( this.datasourceServiceObject );
   }
 
   /**
@@ -111,7 +105,7 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
    * @return
    */
   @Override public boolean isExportable() {
-    return exportable;
+    return getDelegateIsExportable( this.datasourceServiceObject );
   }
 
   /**
@@ -119,13 +113,13 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
    * @return
    */
   @Override public boolean isCreatable() {
-    return creatable;
+    return getDelegateIsCreatable( this.datasourceServiceObject );
   }
-
 
   private final native JsArray<JavaScriptObject> getDelegateIds(JavaScriptObject datasourceServiceObject) /*-{
     return datasourceServiceObject.getIds();
   }-*/;
+
   private final native String getDelegateNewUI(JavaScriptObject datasourceServiceObject) /*-{
     return datasourceServiceObject.getNewUI();
   }-*/;
@@ -146,24 +140,23 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
     return datasourceServiceObject.doRemove(id, callback);
   }-*/;
 
-  private final native String getDelegateIsEditable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsEditable(JavaScriptObject datasourceServiceObject)/*-{
     return datasourceServiceObject.isEditable();
   }-*/;
 
-  private final native String getDelegateIsRemovable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsRemovable(JavaScriptObject datasourceServiceObject)/*-{
     return datasourceServiceObject.isRemovable();
   }-*/;
 
-  private final native String getDelegateIsImportable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsImportable(JavaScriptObject datasourceServiceObject)/*-{
     return datasourceServiceObject.isImportable();
   }-*/;
 
-  private final native String getDelegateIsExportable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsExportable(JavaScriptObject datasourceServiceObject)/*-{
     return datasourceServiceObject.isExportable();
   }-*/;
 
-  private final native String getDelegateIsCreatable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsCreatable(JavaScriptObject datasourceServiceObject)/*-{
     return datasourceServiceObject.isCreatable();
   }-*/;
-
 }
