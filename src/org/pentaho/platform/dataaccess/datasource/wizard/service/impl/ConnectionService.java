@@ -33,6 +33,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.database.IDatabaseDialect;
@@ -81,7 +82,11 @@ public class ConnectionService {
   @Produces({APPLICATION_JSON})
   public IDatabaseConnectionList getConnections() throws ConnectionServiceException {
     IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
-    databaseConnections.setDatabaseConnections(service.getConnections());
+    List<IDatabaseConnection> conns = service.getConnections();
+    for (IDatabaseConnection conn : conns) {
+      hidePassword(conn);
+    }
+    databaseConnections.setDatabaseConnections(conns);
     return databaseConnections;
   }
 
@@ -97,7 +102,9 @@ public class ConnectionService {
   @Path("/get")
   @Produces({APPLICATION_JSON})
   public IDatabaseConnection getConnectionByName(@QueryParam("name") String name) throws ConnectionServiceException {
-    return service.getConnectionByName(name);
+    IDatabaseConnection conn = service.getConnectionByName(name);
+    hidePassword(conn);
+    return conn;
   }
 
   /**
@@ -137,6 +144,7 @@ public class ConnectionService {
     Response response;
     try{
      conn =service.getConnectionByName(name);
+     hidePassword(conn);
      response = Response.ok().entity(conn).build();
     }catch(Exception ex){
       response =  Response.serverError().entity(ex.getMessage()).build();
@@ -183,6 +191,7 @@ public class ConnectionService {
   @Consumes({APPLICATION_JSON})
   public Response updateConnection(DatabaseConnection connection) throws ConnectionServiceException {
     try {
+      applySavedPassword(connection);
       boolean success = service.updateConnection(connection);
       if (success) {
         return Response.ok().build();
@@ -255,6 +264,7 @@ public class ConnectionService {
   @Produces({TEXT_PLAIN})
   public Response testConnection(DatabaseConnection connection) throws ConnectionServiceException {
     boolean success = false;
+    applySavedPassword(connection);
     success = service.testConnection( connection );
     if (success) { 
       return Response.ok(Messages.getString("ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED"
@@ -371,6 +381,25 @@ public class ConnectionService {
         || policy.isAllowed(PublishAction.NAME));
     if (!isAdmin) {
       throw new PentahoAccessControlException("Access Denied");
+    }
+  }
+  
+  /**
+   * Hides password for connections for return to user.
+   */
+  private void hidePassword(IDatabaseConnection conn) {
+    conn.setPassword(null);
+  }
+  
+  /**
+   * If password is empty, that means connection sent from UI and user didn't
+   * change password. Since we cleaned password during sending to UI, we need
+   * to use stored password.
+   */
+  private void applySavedPassword(IDatabaseConnection conn) throws ConnectionServiceException {
+    if (StringUtils.isBlank(conn.getPassword())) {
+      IDatabaseConnection savedConn = service.getConnectionById(conn.getId());
+      conn.setPassword(savedConn.getPassword());
     }
   }
 }
