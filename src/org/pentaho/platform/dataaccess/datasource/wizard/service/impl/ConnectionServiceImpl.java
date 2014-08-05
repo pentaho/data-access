@@ -139,6 +139,28 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     }
   }
 
+  public IDatabaseConnection getConnectionById(String id) throws ConnectionServiceException {
+      ensureDataAccessPermission();
+      try {
+        IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceById(id);
+        if (connection == null) {
+          throw new ConnectionServiceException(Response.SC_NOT_FOUND, Messages.getErrorString(
+            "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", id)); //$NON-NLS-1$
+        } 
+        else {
+          return connection;
+        }
+      } 
+      catch (DatasourceMgmtServiceException dme) {
+        String message = Messages.getErrorString(
+          "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
+          dme.getLocalizedMessage()
+        );
+        logger.error(message);
+        throw new ConnectionServiceException(message, dme);
+      }
+    }
+
   public boolean addConnection(IDatabaseConnection connection) throws ConnectionServiceException {
     ensureDataAccessPermission();
     try {
