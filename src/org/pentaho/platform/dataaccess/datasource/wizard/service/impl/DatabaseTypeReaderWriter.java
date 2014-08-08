@@ -19,7 +19,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
-import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseType;
 
@@ -79,7 +78,7 @@ public class DatabaseTypeReaderWriter implements MessageBodyReader<DatabaseType>
                                 MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream ) throws IOException,
     WebApplicationException {
     JSONDeserializer<DatabaseType> jsonD = new JSONDeserializer<DatabaseType>();
-    return jsonD.deserialize( new InputStreamReader( entityStream ), DatabaseConnection.class );
+    return jsonD.deserialize( new InputStreamReader( entityStream ), DatabaseType.class );
   }
 
 }
