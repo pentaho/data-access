@@ -59,6 +59,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
   // ~ Static fields/initializers ======================================================================================
   private static final String IMPORT_MSG_ID = "datasourceAdminDialog.IMPORT";
+    private static final String PLUGIN_MSG_ID = "datasourceAdminDialog.PLUGIN";
 
   // ~ Instance fields =================================================================================================
   private BindingFactory bf;
@@ -277,22 +278,32 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         List<String> datasourceTypes = manager.getTypes();
         // Clear out the current component list
         List<XulComponent> components = datasourceTypeMenuPopup.getChildNodes();
-        int addImportAt = 0;
+        // remove exist import and plugins
         for (int i = 0; i < components.size(); i++) {
             XulComponent component = components.get(i);
-            if (component.getId() != null
-                    && component.getId().startsWith("import")) {
+            if (component.getId() == null) {
+                continue;
+            }
+            if (component.getId().startsWith("import") || component.getId().startsWith("plugin")) {
+                // remove import and plugins items
                 datasourceTypeMenuPopup.removeComponent(component);
-            } else if ("beforeImport".equals(component.getId())) {
-                addImportAt = i + 1;
             }
         }
-
+        // find separator
+        components = datasourceTypeMenuPopup.getChildNodes();
+        int beforePlugins = 0;
+        XulComponent beforePluginsMenuItem = null;
+        for (int i = 0; i < components.size(); i++) {
+            XulComponent component = components.get(i);
+            if ("beforePlugins".equals(component.getId())) {
+                beforePlugins = i;
+                beforePluginsMenuItem = component;
+            }
+        }
         List<IDatasourceInfo> datasourceInfoList = datasourceAdminDialogModel.getDatasourcesList();
 
+        // Add "Import..." items first
         for(String datasourceType:datasourceTypes) {
-          boolean creatable = true;
-
           IUIDatasourceAdminService datasourceAdminService = manager.getService( datasourceType );
           if (datasourceAdminService instanceof DSWUIDatasourceService) {
               // Data Source Wizard
@@ -300,6 +311,14 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           }
           if (datasourceAdminService instanceof JdbcDatasourceService) {
               // JDBC
+              continue;
+          }
+          if (datasourceAdminService instanceof MondrianUIDatasourceService) {
+              // Analysis - import
+          } else if (datasourceAdminService instanceof MetadataUIDatasourceService) {
+              // Metadata - import
+          } else {
+              // some plugin
               continue;
           }
 
@@ -315,11 +334,52 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
             menuItem.setLabel(label);
             menuItem.setCommand(getName() + ".launchNewUI(\""+ datasourceType + "\")");
             menuItem.setId("import" + datasourceType);
-            datasourceTypeMenuPopup.addChildAt(menuItem, addImportAt++);
+            datasourceTypeMenuPopup.addChildAt(menuItem, beforePlugins++);
           } catch (XulException e) {
             throw new RuntimeException(e);
           }
         }
+
+        // Add plugin items
+        boolean hasPlugins = false;
+        beforePlugins++;
+        for(String datasourceType:datasourceTypes) {
+          IUIDatasourceAdminService datasourceAdminService = manager.getService( datasourceType );
+          if (datasourceAdminService instanceof DSWUIDatasourceService) {
+              // Data Source Wizard
+              continue;
+          }
+          if (datasourceAdminService instanceof JdbcDatasourceService) {
+              // JDBC
+              continue;
+          }
+          if (datasourceAdminService instanceof MondrianUIDatasourceService) {
+              // Analysis - import
+              continue;
+          } else if (datasourceAdminService instanceof MetadataUIDatasourceService) {
+              // Metadata - import
+              continue;
+          }
+
+          if(!datasourceAdminService.isCreatable()){
+            continue;
+          }
+
+          hasPlugins = true;
+          XulMenuitem menuItem;
+          try {
+            String displayName = DatasourceInfo.getDisplayType(datasourceType, messageBundle);
+            String label = messageBundle.getString(PLUGIN_MSG_ID, displayName);
+            menuItem = (XulMenuitem) document.createElement("menuitem");
+            menuItem.setLabel(label);
+            menuItem.setCommand(getName() + ".launchNewUI(\""+ datasourceType + "\")");
+            menuItem.setId("plugin" + datasourceType);
+            datasourceTypeMenuPopup.addChildAt(menuItem, beforePlugins++);
+          } catch (XulException e) {
+            throw new RuntimeException(e);
+          }
+        }
+        beforePluginsMenuItem.setVisible(hasPlugins);
         datasourceAdminDialogModel.setDatasourceTypeList(datasourceTypes);
   }
 

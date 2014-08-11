@@ -23,10 +23,11 @@
 
       <button id="datasourceDropdownButton" image="images/spacer.gif" pen:classname="pentaho-optionsdatasourcebutton" >
         <menupopup id="datasourceTypeMenuPopup">
-          <menuitem id="editDatasourceMenuItem" label="${datasourceAdminDialog.EDIT}" command="datasourceAdminDialogController.edit()" />
-          <menuitem id="removeDatasourceMenuItem" label="${datasourceAdminDialog.REMOVE}" command="datasourceAdminDialogController.remove()" />
-          <menuseparator id="beforeImport"/>
-          <menuitem id="exportDatasourceMenuItem" label="${datasourceAdminDialog.EXPORT}" command="datasourceAdminDialogController.export()" />
+          <menuitem id="editDatasourceMenuItem" label="${datasourceAdminDialog.EDIT}" command="datasourceAdminDialogController.edit()" disabled="true" />
+          <menuitem id="removeDatasourceMenuItem" label="${datasourceAdminDialog.REMOVE}" command="datasourceAdminDialogController.remove()" disabled="true" />
+          <menuseparator/>
+          <menuitem id="exportDatasourceMenuItem" label="${datasourceAdminDialog.EXPORT}" command="datasourceAdminDialogController.export()" disabled="true" />
+          <menuseparator id="beforePlugins" />
           <menuseparator/>
           <menuitem id="newConnectionMenuItem" label="${datasourceAdminDialog.NEW_CONNECTION}" command="datasourceAdminDialogController.newConnection()" />
         </menupopup>
