@@ -17,22 +17,30 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import org.pentaho.metadata.repository.IMetadataDomainRepository;
-import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MetadataService extends DatasourceService {
-
-  private IMetadataDomainRepository metadataDomainRepository;
-
-  public MetadataService() {
-    metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
-  }
 
   public void removeMetadata( String metadataId ) throws UnauthorizedAccessException {
     if ( !canAdminister() ) {
       throw new UnauthorizedAccessException();
     }
     metadataDomainRepository.removeDomain( fixEncodedSlashParam( metadataId ) );
+  }
+
+  public List<String> getMetadataDatasourceIds() {
+    List<String> metadataIds = new ArrayList<String>();
+    try {
+      Thread.sleep( 100 );
+      for ( String id : metadataDomainRepository.getDomainIds() ) {
+        if ( isMetadataDatasource( id ) ) {
+          metadataIds.add( id );
+        }
+      }
+    } catch ( InterruptedException e ) {
+      e.printStackTrace();
+    }
+    return metadataIds;
   }
 }

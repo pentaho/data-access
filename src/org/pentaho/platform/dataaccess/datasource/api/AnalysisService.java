@@ -17,22 +17,34 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 
 public class AnalysisService extends DatasourceService {
 
-  private IMondrianCatalogService mondrianCatalogService;
-
-  public AnalysisService() {
-    mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
-  }
+  public static final String METADATA_EXT = ".xmi"; //$NON-NLS-1$
 
   public void removeAnalysis( String analysisId ) throws UnauthorizedAccessException {
     if ( !canAdminister() ) {
       throw new UnauthorizedAccessException();
     }
     mondrianCatalogService.removeCatalog( fixEncodedSlashParam( analysisId ), PentahoSessionHolder.getSession() );
+  }
+
+  public List<String> getAnalysisDatasourceIds() {
+    List<String> analysisIds = new ArrayList<String>();
+    for ( MondrianCatalog mondrianCatalog : mondrianCatalogService.listCatalogs( PentahoSessionHolder.getSession(),
+        false ) ) {
+      String domainId = mondrianCatalog.getName() + METADATA_EXT;
+      Set<String> ids = metadataDomainRepository.getDomainIds();
+      if ( ids.contains( domainId ) == false ) {
+        analysisIds.add( mondrianCatalog.getName() );
+      }
+    }
+    return analysisIds;
   }
 }

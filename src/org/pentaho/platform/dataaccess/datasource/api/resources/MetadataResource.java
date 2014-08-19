@@ -17,8 +17,11 @@
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,6 +30,7 @@ import javax.ws.rs.core.Response;
 
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService.UnauthorizedAccessException;
 import org.pentaho.platform.dataaccess.datasource.api.MetadataService;
+import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 @Path( "/data-access/api/datasource/metadata" )
 public class MetadataResource {
@@ -55,5 +59,17 @@ public class MetadataResource {
     } catch ( UnauthorizedAccessException e ) {
       return Response.status( e.getStatus() ).build();
     }
+  }
+
+  /**
+   * Get the Metadata datasource IDs
+   *
+   * @return JaxbList<String> of metadata IDs
+   */
+  @GET
+  @Path( "/ids" )
+  @Produces( { APPLICATION_XML, APPLICATION_JSON } )
+  public JaxbList<String> getMetadataDatasourceIds() {
+    return new JaxbList<String>( service.getMetadataDatasourceIds() );
   }
 }
