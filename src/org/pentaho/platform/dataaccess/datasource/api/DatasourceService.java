@@ -17,6 +17,10 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+
+import javax.ws.rs.core.Response.Status;
+
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
@@ -40,5 +44,12 @@ public class DatasourceService {
    */
   public String fixEncodedSlashParam( String param ) {
     return param.replaceAll( "\\\\", "%5C" ).replaceAll( "/", "%2F" );
+  }
+
+  public class UnauthorizedAccessException extends Exception {
+
+    public Status getStatus() {
+      return UNAUTHORIZED;
+    }
   }
 }

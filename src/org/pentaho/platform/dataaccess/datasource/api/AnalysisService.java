@@ -29,7 +29,10 @@ public class AnalysisService extends DatasourceService {
     mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
   }
 
-  public void removeAnalysis( String analysisId ) {
+  public void removeAnalysis( String analysisId ) throws UnauthorizedAccessException {
+    if ( !canAdminister() ) {
+      throw new UnauthorizedAccessException();
+    }
     mondrianCatalogService.removeCatalog( fixEncodedSlashParam( analysisId ), PentahoSessionHolder.getSession() );
   }
 }
