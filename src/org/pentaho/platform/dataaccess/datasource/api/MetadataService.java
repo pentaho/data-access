@@ -27,10 +27,12 @@ public class MetadataService extends DatasourceService {
 
   public MetadataService() {
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
-
   }
 
-  public void removeMetadata( String metadataId ) {
+  public void removeMetadata( String metadataId ) throws UnauthorizedAccessException {
+    if ( !canAdminister() ) {
+      throw new UnauthorizedAccessException();
+    }
     metadataDomainRepository.removeDomain( fixEncodedSlashParam( metadataId ) );
   }
 }

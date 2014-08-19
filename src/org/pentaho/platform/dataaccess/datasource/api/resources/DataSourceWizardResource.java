@@ -18,7 +18,6 @@
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
 import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
+import org.pentaho.platform.dataaccess.datasource.api.DatasourceService.UnauthorizedAccessException;
 
 @Path( "/data-access/api/datasource/dsw" )
 public class DataSourceWizardResource {
@@ -49,10 +49,11 @@ public class DataSourceWizardResource {
   @Path( "/{dswId : .+}/remove" )
   @Produces( WILDCARD )
   public Response doRemoveDSW( @PathParam( "dswId" ) String dswId ) {
-    if ( !service.canAdminister() ) {
-      return Response.status( UNAUTHORIZED ).build();
+    try {
+      service.removeDSW( dswId );
+      return Response.ok().build();
+    } catch ( UnauthorizedAccessException e ) {
+      return Response.status( e.getStatus() ).build();
     }
-    service.removeDSW( dswId );
-    return Response.ok().build();
   }
 }

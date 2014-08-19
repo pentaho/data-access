@@ -44,8 +44,10 @@ public class DataSourceWizardService extends DatasourceService {
     dswService = new DSWDatasourceServiceImpl();
   }
 
-  public void removeDSW( String dswId ) {
-
+  public void removeDSW( String dswId ) throws UnauthorizedAccessException {
+    if ( !canAdminister() ) {
+      throw new UnauthorizedAccessException();
+    }
     dswId = fixEncodedSlashParam( dswId );
     Domain domain = metadataDomainRepository.getDomain( dswId );
     ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );

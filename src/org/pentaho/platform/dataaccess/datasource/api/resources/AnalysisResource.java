@@ -18,7 +18,6 @@
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
 import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
+import org.pentaho.platform.dataaccess.datasource.api.DatasourceService.UnauthorizedAccessException;
 
 @Path( "/data-access/api/datasource/analysis" )
 public class AnalysisResource {
@@ -49,10 +49,11 @@ public class AnalysisResource {
   @Path( "/{analysisId : .+}/remove" )
   @Produces( WILDCARD )
   public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
-    if ( !service.canAdminister() ) {
-      return Response.status( UNAUTHORIZED ).build();
+    try {
+      service.removeAnalysis( analysisId );
+      return Response.ok().build();
+    } catch ( UnauthorizedAccessException e ) {
+      return Response.status( e.getStatus() ).build();
     }
-    service.removeAnalysis( analysisId );
-    return Response.ok().build();
   }
 }
