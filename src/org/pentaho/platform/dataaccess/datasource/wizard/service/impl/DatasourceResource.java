@@ -37,7 +37,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -56,7 +55,6 @@ import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -282,77 +280,6 @@ public class DatasourceResource {
   }
 
   /**
-   * Remove the metadata for a given metadata ID
-   *
-   * @param metadataId String ID of the metadata to remove
-   *
-   * @return Response ok if successful
-   */
-  @POST
-  @Path("/metadata/{metadataId : .+}/remove")
-  @Produces(WILDCARD)
-  public Response doRemoveMetadata(@PathParam("metadataId") String metadataId) {
-    if(!canAdminister()) {
-      return Response.status(UNAUTHORIZED).build();
-    }
-    metadataDomainRepository.removeDomain( fixEncodedSlashParam( metadataId ) );
-    return Response.ok().build();
-  }
-
-  /**
-   * Remove the analysis data for a given analysis ID
-   *
-   * @param analysisId String ID of the analysis data to remove
-   *
-   * @return Response ok if successful
-   */
-  @POST
-  @Path("/analysis/{analysisId : .+}/remove")
-  @Produces(WILDCARD)
-  public Response doRemoveAnalysis(@PathParam("analysisId") String analysisId) {
-    if(!canAdminister()) {
-      return Response.status(UNAUTHORIZED).build();
-    }
-    mondrianCatalogService.removeCatalog( fixEncodedSlashParam( analysisId ), PentahoSessionHolder.getSession() );
-    return Response.ok().build();
-  }
-
-  /**
-   * Remove the datasource wizard data for a given datasource wizard ID
-   *
-   * @param dswId String ID of the datasource wizard data to remove
-   *
-   * @return Response ok if successful
-   */
-  @POST
-  @Path("/dsw/{dswId : .+}/remove")
-  @Produces(WILDCARD)
-  public Response doRemoveDSW(@PathParam("dswId") String dswId) {
-    if(!canAdminister()) {
-      return Response.status(UNAUTHORIZED).build();
-    }
-    dswId = fixEncodedSlashParam( dswId );
-    Domain domain = metadataDomainRepository.getDomain(dswId);
-    ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
-    model.setDomain(domain);
-    LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
-    if (logicalModel == null) {
-      logicalModel = model.getLogicalModel(ModelerPerspective.REPORTING);
-    }
-    if (logicalModel.getProperty(MONDRIAN_CATALOG_REF) != null) {
-      String catalogRef = (String)logicalModel.getProperty(MONDRIAN_CATALOG_REF);
-      mondrianCatalogService.removeCatalog(catalogRef, PentahoSessionHolder.getSession());
-    }
-    try{
-      dswService.deleteLogicalModel( domain.getId(), logicalModel.getId() );
-    }
-    catch(DatasourceServiceException ex){}
-    metadataDomainRepository.removeDomain(dswId);
-
-    return Response.ok().build();
-  }
-
-  /**
    * Get the data source wizard info (parameters) for a specific data source wizard id
    *
    * @param dswId String id for a data source wizard
@@ -430,16 +357,5 @@ public class DatasourceResource {
     return policy
         .isAllowed(RepositoryReadAction.NAME) && policy.isAllowed(RepositoryCreateAction.NAME)
         && (policy.isAllowed(AdministerSecurityAction.NAME));
-  }
-
-  /**
-   * Fix for "%5C" and "%2F" in datasource name ("/" and "\" are omitted and %5C, %2F are decoded
-   *    in PentahoPathDecodingFilter.EncodingAwareHttpServletRequestWrapper)
-   *
-   * @param param pathParam
-   * @return correct param
-   */
-  private String fixEncodedSlashParam( String param ) {
-    return param.replaceAll( "\\\\", "%5C" ).replaceAll( "/", "%2F" );
   }
 }
