@@ -18,8 +18,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -29,10 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -52,9 +47,8 @@ import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
-import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
-import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
+import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -63,10 +57,6 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.repository2.unified.fileio.RepositoryFileInputStream;
-import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
-import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
-import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
-import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 
 @Path("/data-access/api/datasource")
@@ -87,110 +77,6 @@ public class DatasourceResource {
     mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, PentahoSessionHolder.getSession());
     dswService = new DSWDatasourceServiceImpl();
     modelerService = new ModelerService();
-    
-  }
-
-  /**
-   * Get list of IDs of analysis datasource
-   *
-   * @return JaxbList<String> of analysis IDs
-   */
-  @GET
-  @Path("/analysis/ids")
-  @Produces( { APPLICATION_XML, APPLICATION_JSON })
-  public JaxbList<String> getAnalysisDatasourceIds() {
-    List<String> analysisIds = new ArrayList<String>();
-    for(MondrianCatalog mondrianCatalog: mondrianCatalogService.listCatalogs(PentahoSessionHolder.getSession(), false)) {
-      String domainId = mondrianCatalog.getName() + METADATA_EXT;
-      Set<String> ids = metadataDomainRepository.getDomainIds();
-      if(ids.contains(domainId) == false){
-        analysisIds.add(mondrianCatalog.getName());
-      }
-    }
-    return new JaxbList<String>(analysisIds);
-  }
-
-  /**
-   * Get the Metadata datasource IDs
-   *
-   * @return JaxbList<String> of metadata IDs
-   */
-  @GET
-  @Path("/metadata/ids")
-  @Produces( { APPLICATION_XML, APPLICATION_JSON })
-  public JaxbList<String> getMetadataDatasourceIds() {
-    List<String> metadataIds = new ArrayList<String>();
-    try {
-		Thread.sleep(100);
-		for(String id:metadataDomainRepository.getDomainIds()) {
-		    if(isMetadataDatasource(id)) {
-		      metadataIds.add(id);
-		    }
-		}
-	} catch (InterruptedException e) {
-		e.printStackTrace();
-	}
-    return new JaxbList<String>(metadataIds);
-  }
-  
-  private boolean isMetadataDatasource(String id) {
-    Domain domain;
-    try { 
-      domain = metadataDomainRepository.getDomain(id);
-      if(domain == null) return false;
-    } catch (Exception e) { // If we can't load the domain then we MUST return false
-      return false;
-    }
-    
-    List<LogicalModel> logicalModelList = domain.getLogicalModels();
-    if(logicalModelList != null && logicalModelList.size() >= 1) {
-      for(LogicalModel logicalModel : logicalModelList) {
-        // keep this check for backwards compatibility for now
-        Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
-        if(property != null) {
-          return false;
-        }
-
-        // moving forward any non metadata generated datasource should have this property
-    	  property = logicalModel.getProperty("WIZARD_GENERATED_SCHEMA"); //$NON-NLS-1$
-    	  if(property != null) {
-    		  return false;    
-    	  }
-      }
-      return true;
-    } else {
-      return true;
-    }
-  }
-
-  /**
-   * Returns a list of datasource IDs from datasource wizard
-   *
-   * @return JaxbList<String> list of datasource IDs
-   */
-  @GET
-  @Path("/dsw/ids")
-  @Produces( { APPLICATION_XML, APPLICATION_JSON })
-  public JaxbList<String> getDSWDatasourceIds() {
-    List<String> datasourceList = new ArrayList<String>();
-    try {
-      nextModel: for(LogicalModelSummary summary:dswService.getLogicalModels(null)) {
-        Domain domain = modelerService.loadDomain(summary.getDomainId());
-        List<LogicalModel> logicalModelList = domain.getLogicalModels();
-        if(logicalModelList != null && logicalModelList.size() >= 1) {
-          for(LogicalModel logicalModel : logicalModelList) {	
-        	  Object property = logicalModel.getProperty("AGILE_BI_GENERATED_SCHEMA"); //$NON-NLS-1$
-        	  if(property != null) {
-        		  datasourceList.add(summary.getDomainId());
-        		  continue nextModel;
-        	  }
-          }
-        }
-      }
-    } catch (Throwable e) {
-      return null;
-    }
-    return new JaxbList<String>(datasourceList);
   }
 
   /**
@@ -204,7 +90,7 @@ public class DatasourceResource {
   @Path("/metadata/{metadataId : .+}/download")
   @Produces(WILDCARD)
   public Response doGetMetadataFilesAsDownload(@PathParam("metadataId") String metadataId) {
-    if(!canAdminister()) {
+    if(!DatasourceService.canAdminister()) {
       return Response.status(UNAUTHORIZED).build();
     }
     if (! (metadataDomainRepository instanceof IPentahoMetadataDomainRepositoryExporter)) {
@@ -225,7 +111,7 @@ public class DatasourceResource {
   @Path("/analysis/{analysisId : .+}/download")
   @Produces(WILDCARD)
   public Response doGetAnalysisFilesAsDownload(@PathParam("analysisId") String analysisId) {
-    if(!canAdminister()) {
+    if(!DatasourceService.canAdminister()) {
       return Response.status(UNAUTHORIZED).build();
     }
     MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper(PentahoSystem.get(IUnifiedRepository.class));
@@ -246,7 +132,7 @@ public class DatasourceResource {
   @Path("/dsw/{dswId : .+}/download")
   @Produces(WILDCARD)
   public Response doGetDSWFilesAsDownload(@PathParam("dswId") String dswId) {
-    if(!canAdminister()) {
+    if(!DatasourceService.canAdminister()) {
       return Response.status(UNAUTHORIZED).build();
     }
     // First get the metadata files;
@@ -349,13 +235,5 @@ public class DatasourceResource {
       return Response.ok(streamingOutput, mimeType).header("Content-Disposition", "attachment; filename=" + quotedFileName).build(); //$NON-NLS-1$ //$NON-NLS-2$
     }
     return Response.serverError().build();
-  }
-  
-  private boolean canAdminister() {
-    IAuthorizationPolicy policy = PentahoSystem
-        .get(IAuthorizationPolicy.class);
-    return policy
-        .isAllowed(RepositoryReadAction.NAME) && policy.isAllowed(RepositoryCreateAction.NAME)
-        && (policy.isAllowed(AdministerSecurityAction.NAME));
   }
 }

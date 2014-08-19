@@ -17,31 +17,32 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 
 public class DataSourceWizardService extends DatasourceService {
 
-  private IMetadataDomainRepository metadataDomainRepository;
-  private IMondrianCatalogService mondrianCatalogService;
   private IDSWDatasourceService dswService;
+  private IModelerService modelerService;
 
   private static final String MONDRIAN_CATALOG_REF = "MondrianCatalogRef"; //$NON-NLS-1$
 
   public DataSourceWizardService() {
-    metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
-    mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
     dswService = new DSWDatasourceServiceImpl();
+    modelerService = new ModelerService();
   }
 
   public void removeDSW( String dswId ) throws UnauthorizedAccessException {
@@ -65,5 +66,27 @@ public class DataSourceWizardService extends DatasourceService {
     } catch ( DatasourceServiceException ex ) {
     }
     metadataDomainRepository.removeDomain( dswId );
+  }
+
+  public List<String> getDSWDatasourceIds() {
+    List<String> datasourceList = new ArrayList<String>();
+    try {
+      nextModel: for ( LogicalModelSummary summary : dswService.getLogicalModels( null ) ) {
+        Domain domain = modelerService.loadDomain( summary.getDomainId() );
+        List<LogicalModel> logicalModelList = domain.getLogicalModels();
+        if ( logicalModelList != null && logicalModelList.size() >= 1 ) {
+          for ( LogicalModel logicalModel : logicalModelList ) {
+            Object property = logicalModel.getProperty( "AGILE_BI_GENERATED_SCHEMA" ); //$NON-NLS-1$
+            if ( property != null ) {
+              datasourceList.add( summary.getDomainId() );
+              continue nextModel;
+            }
+          }
+        }
+      }
+    } catch ( Throwable e ) {
+      return null;
+    }
+    return datasourceList;
   }
 }

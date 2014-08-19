@@ -19,16 +19,32 @@ package org.pentaho.platform.dataaccess.datasource.api;
 
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
+import java.util.List;
+
 import javax.ws.rs.core.Response.Status;
 
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 
 public class DatasourceService {
-  public boolean canAdminister() {
+
+  protected IMetadataDomainRepository metadataDomainRepository;
+  protected IMondrianCatalogService mondrianCatalogService;
+
+  public DatasourceService() {
+    metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
+    mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
+  }
+
+  public static boolean canAdminister() {
     IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
     return policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
         && ( policy.isAllowed( AdministerSecurityAction.NAME ) );
@@ -42,12 +58,42 @@ public class DatasourceService {
    *          pathParam
    * @return correct param
    */
-  public String fixEncodedSlashParam( String param ) {
+  protected String fixEncodedSlashParam( String param ) {
     return param.replaceAll( "\\\\", "%5C" ).replaceAll( "/", "%2F" );
   }
 
-  public class UnauthorizedAccessException extends Exception {
+  protected boolean isMetadataDatasource( String id ) {
+    Domain domain;
+    try {
+      domain = metadataDomainRepository.getDomain( id );
+      if ( domain == null )
+        return false;
+    } catch ( Exception e ) { // If we can't load the domain then we MUST return false
+      return false;
+    }
 
+    List<LogicalModel> logicalModelList = domain.getLogicalModels();
+    if ( logicalModelList != null && logicalModelList.size() >= 1 ) {
+      for ( LogicalModel logicalModel : logicalModelList ) {
+        // keep this check for backwards compatibility for now
+        Object property = logicalModel.getProperty( "AGILE_BI_GENERATED_SCHEMA" ); //$NON-NLS-1$
+        if ( property != null ) {
+          return false;
+        }
+
+        // moving forward any non metadata generated datasource should have this property
+        property = logicalModel.getProperty( "WIZARD_GENERATED_SCHEMA" ); //$NON-NLS-1$
+        if ( property != null ) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      return true;
+    }
+  }
+
+  public class UnauthorizedAccessException extends Exception {
     public Status getStatus() {
       return UNAUTHORIZED;
     }

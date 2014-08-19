@@ -17,8 +17,11 @@
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,6 +30,7 @@ import javax.ws.rs.core.Response;
 
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService.UnauthorizedAccessException;
+import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 @Path( "/data-access/api/datasource/dsw" )
 public class DataSourceWizardResource {
@@ -55,5 +59,17 @@ public class DataSourceWizardResource {
     } catch ( UnauthorizedAccessException e ) {
       return Response.status( e.getStatus() ).build();
     }
+  }
+
+  /**
+   * Returns a list of datasource IDs from datasource wizard
+   *
+   * @return JaxbList<String> list of datasource IDs
+   */
+  @GET
+  @Path( "/ids" )
+  @Produces( { APPLICATION_XML, APPLICATION_JSON } )
+  public JaxbList<String> getDSWDatasourceIds() {
+    return new JaxbList<String>( service.getDSWDatasourceIds() );
   }
 }
