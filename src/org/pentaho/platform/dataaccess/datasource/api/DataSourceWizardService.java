@@ -26,6 +26,7 @@ import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
@@ -45,9 +46,9 @@ public class DataSourceWizardService extends DatasourceService {
     modelerService = new ModelerService();
   }
 
-  public void removeDSW( String dswId ) throws UnauthorizedAccessException {
+  public void removeDSW( String dswId ) throws PentahoAccessControlException {
     if ( !canAdminister() ) {
-      throw new UnauthorizedAccessException();
+      throw new PentahoAccessControlException();
     }
     dswId = fixEncodedSlashParam( dswId );
     Domain domain = metadataDomainRepository.getDomain( dswId );

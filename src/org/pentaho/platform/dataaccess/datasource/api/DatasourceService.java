@@ -17,20 +17,18 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
-
 import java.util.List;
-
-import javax.ws.rs.core.Response.Status;
 
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
+import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 
@@ -48,6 +46,16 @@ public class DatasourceService {
     IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
     return policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
         && ( policy.isAllowed( AdministerSecurityAction.NAME ) );
+  }
+
+  public static void validateAccess() throws PentahoAccessControlException {
+    IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
+    boolean isAdmin =
+        policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
+            && ( policy.isAllowed( AdministerSecurityAction.NAME ) || policy.isAllowed( PublishAction.NAME ) );
+    if ( !isAdmin ) {
+      throw new PentahoAccessControlException( "Access Denied" );
+    }
   }
 
   /**
@@ -90,12 +98,6 @@ public class DatasourceService {
       return true;
     } else {
       return true;
-    }
-  }
-
-  public class UnauthorizedAccessException extends Exception {
-    public Status getStatus() {
-      return UNAUTHORIZED;
     }
   }
 }

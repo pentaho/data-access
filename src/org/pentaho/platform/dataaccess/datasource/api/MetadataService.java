@@ -17,14 +17,34 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
+import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
+import org.pentaho.platform.plugin.services.importer.PlatformImportException;
+import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
+import org.pentaho.platform.web.http.api.resources.FileResource;
+
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
+
 public class MetadataService extends DatasourceService {
 
-  public void removeMetadata( String metadataId ) throws UnauthorizedAccessException {
+  private static final Log logger = LogFactory.getLog( MetadataService.class );
+
+  public void removeMetadata( String metadataId ) throws PentahoAccessControlException {
     if ( !canAdminister() ) {
-      throw new UnauthorizedAccessException();
+      throw new PentahoAccessControlException();
     }
     metadataDomainRepository.removeDomain( fixEncodedSlashParam( metadataId ) );
   }
@@ -42,5 +62,49 @@ public class MetadataService extends DatasourceService {
       e.printStackTrace();
     }
     return metadataIds;
+  }
+
+  public void importMetadataDatasource( String domainId, InputStream metadataFile,
+      FormDataContentDisposition metadataFileInfo, String overwrite, List<FormDataBodyPart> localeFiles,
+      List<FormDataContentDisposition> localeFilesInfo ) throws PentahoAccessControlException, PlatformImportException,
+    Exception {
+
+    validateAccess();
+
+    FileResource fr = new FileResource();
+    String reservedChars = (String) fr.doGetReservedChars().getEntity();
+    if ( reservedChars != null
+    // \ need to be replaced with \\ for Regex
+        && domainId.matches( ".*[" + reservedChars.replaceAll( "\\\\", "\\\\\\\\" ) + "]+.*" ) ) {
+      String msg =
+          Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
+              .doGetReservedCharactersDisplay().getEntity() );
+      throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
+    }
+
+    boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
+    RepositoryFileImportBundle.Builder bundleBuilder =
+        new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
+            .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
+
+    if ( localeFiles != null ) {
+      for ( int i = 0; i < localeFiles.size(); i++ ) {
+        logger.info( "create language file" );
+        IPlatformImportBundle localizationBundle =
+            new RepositoryFileImportBundle.Builder().input(
+                new ByteArrayInputStream( localeFiles.get( i ).getValueAs( byte[].class ) ) ).charSet( "UTF-8" )
+                .hidden( false ).name( localeFilesInfo.get( i ).getFileName() ).withParam( "domain-id", domainId )
+                .build();
+
+        bundleBuilder.addChildBundle( localizationBundle );
+      }
+    }
+
+    IPlatformImportBundle bundle = bundleBuilder.build();
+    IPlatformImporter importer = PentahoSystem.get( IPlatformImporter.class );
+    importer.importFile( bundle );
+    IPentahoSession pentahoSession = PentahoSessionHolder.getSession();
+    PentahoSystem.publish( pentahoSession, org.pentaho.platform.engine.services.metadata.MetadataPublisher.class
+        .getName() );
   }
 }
