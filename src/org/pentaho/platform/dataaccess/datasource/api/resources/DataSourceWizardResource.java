@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,8 +29,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
-import org.pentaho.platform.dataaccess.datasource.api.DatasourceService.UnauthorizedAccessException;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 @Path( "/data-access/api/datasource/dsw" )
@@ -56,8 +57,8 @@ public class DataSourceWizardResource {
     try {
       service.removeDSW( dswId );
       return Response.ok().build();
-    } catch ( UnauthorizedAccessException e ) {
-      return Response.status( e.getStatus() ).build();
+    } catch ( PentahoAccessControlException e ) {
+      return Response.status( UNAUTHORIZED ).build();
     }
   }
 

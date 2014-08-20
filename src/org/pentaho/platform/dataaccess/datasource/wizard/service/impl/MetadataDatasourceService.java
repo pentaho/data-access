@@ -19,7 +19,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -42,28 +41,21 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
-import org.pentaho.platform.api.engine.IAuthorizationPolicy;
-import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
+import org.pentaho.platform.dataaccess.datasource.api.MetadataService;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
-import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
-import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
-import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
-import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
-import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
-import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
+import org.pentaho.platform.web.http.api.resources.FileResource;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
-import org.pentaho.platform.web.http.api.resources.FileResource;
 
 @Path("/data-access/api/metadata")
 public class MetadataDatasourceService {
@@ -76,7 +68,6 @@ public class MetadataDatasourceService {
 
   private static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final String SUCCESS = "3";
-  private static final String DENIED_CHAR = "10";
 
 	private static final Pattern[] patterns = new Pattern[] {
 	    Pattern.compile("(" + LANG + ").properties$"),
@@ -145,74 +136,35 @@ public class MetadataDatasourceService {
                                             @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
                                             @FormDataParam("localeFiles") List<FormDataContentDisposition> localeFilesInfo)
       throws PentahoAccessControlException {
-
-		try {
-			validateAccess();
-		} catch (PentahoAccessControlException e) {
-			return Response.serverError().entity(e.toString()).build();
-		}
-
-    FileResource fr = new FileResource();
-    String reservedChars = (String) fr.doGetReservedChars().getEntity();
-    if ( reservedChars != null
-        // \ need to be replaced with \\ for Regex
-        && domainId.matches(  ".*[" + reservedChars.replaceAll( "\\\\", "\\\\\\\\" ) + "]+.*"  ) ) {
-      return Response.status( PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ).entity( Messages
-          .getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId
-              , ( String ) fr.doGetReservedCharactersDisplay().getEntity() ) ).build();
-    }
-
-		boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
-    RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder()
-        .input(metadataFile)
-        .charSet("UTF-8")
-        .hidden(false)
-        .overwriteFile(overWriteInRepository)
-        .mime("text/xmi+xml")
-        .withParam("domain-id", domainId);
-
-    int pos = 0;
-    if(localeFiles != null){
-      for(int i=0; i < localeFiles.size(); i++) {
-        logger.info("create language file");
-        IPlatformImportBundle localizationBundle = new RepositoryFileImportBundle.Builder()
-            .input(new ByteArrayInputStream(localeFiles.get(i).getValueAs(byte[].class)))
-            .charSet("UTF-8")
-            .hidden(false)
-            .name(localeFilesInfo.get(i).getFileName())
-            .withParam("domain-id", domainId)
-            .build();
-
-        bundleBuilder.addChildBundle(localizationBundle);
+    MetadataService service = new MetadataService();
+    try {
+      service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
+      return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
+    } catch (PentahoAccessControlException e) {
+      return Response.serverError().entity( e.toString() ).build();
+    } catch (PlatformImportException e) {
+      if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR) {
+        FileResource fr = new FileResource();
+        return Response.status( PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ).entity(
+            Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
+                .doGetReservedCharactersDisplay().getEntity() ) ).build();  
+      } else {
+        String msg = e.getMessage();
+        logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
+        Throwable throwable = e.getCause();
+        if ( throwable != null ) {
+          msg = throwable.getMessage();
+          logger.error( "Root cause: " + msg );
+        }
+        int statusCode = e.getErrorStatus();
+        Response response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+        return response;
       }
+    } catch ( Exception e ) {
+      logger.error( e );
+      return Response.serverError().entity(
+          Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
     }
-
-    IPlatformImportBundle bundle = bundleBuilder.build();
-    try{
-      IPlatformImporter importer = PentahoSystem.get(IPlatformImporter.class);
-      importer.importFile(bundle);
-      IPentahoSession pentahoSession = PentahoSessionHolder.getSession();
-      PentahoSystem.publish(pentahoSession, org.pentaho.platform.engine.services.metadata.MetadataPublisher.class.getName());
-      return Response.ok().status(new Integer(SUCCESS)).type(MediaType.TEXT_PLAIN).build();
-
-    } catch (PlatformImportException pe) {
-      String msg = pe.getMessage();
-      logger.error("Error import metadata: " + msg + " status = " + pe.getErrorStatus());
-      Throwable throwable = pe.getCause();
-      if (throwable != null) {
-        msg = throwable.getMessage();
-        logger.error("Root cause: " + msg);
-      }
-      int statusCode = pe.getErrorStatus();
-      Response response = Response.ok().status(statusCode).type(MediaType.TEXT_PLAIN).build();
-      return response;
-    } catch (Exception e) {
-      logger.error(e);
-			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
-		}
-
-
-
 	}
 
   /**
@@ -231,7 +183,7 @@ public class MetadataDatasourceService {
   @Deprecated
   public Response uploadServletImportMetadataDatasource(String localizeBundleEntries, @QueryParam("domainId") String domainId, @QueryParam("metadataFile") String metadataFile) throws PentahoAccessControlException {
     try {
-      validateAccess();
+      DatasourceService.validateAccess();
     } catch (PentahoAccessControlException e) {
       return Response.serverError().entity(e.toString()).build();
     }
@@ -300,7 +252,7 @@ public class MetadataDatasourceService {
 	@Produces("text/plain")
 	public Response storeDomain(InputStream metadataFile, @QueryParam("domainId") String domainId) throws PentahoAccessControlException {
 		try {
-			validateAccess();
+		  DatasourceService.validateAccess();
 			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
 			metadataImporter.storeDomain(metadataFile, domainId, true);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
@@ -326,7 +278,7 @@ public class MetadataDatasourceService {
 	@Produces("text/plain")
 	public Response addLocalizationFile(@QueryParam("domainId") String domainId, @QueryParam("locale") String locale, InputStream propertiesFile) throws PentahoAccessControlException {
 		try {
-			validateAccess();
+			DatasourceService.validateAccess();
 			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
 			metadataImporter.addLocalizationFile(domainId, locale, propertiesFile, true);
 			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
@@ -336,20 +288,4 @@ public class MetadataDatasourceService {
 			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
 	}
-	
-  /**
-   * internal validation of authorization
-   *
-   * @throws PentahoAccessControlException Thrown when validation of access fails
-   */
-  private void validateAccess() throws PentahoAccessControlException {
-    IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
-    boolean isAdmin = policy.isAllowed(RepositoryReadAction.NAME)
-        && policy.isAllowed(RepositoryCreateAction.NAME)
-        && (policy.isAllowed(AdministerSecurityAction.NAME)
-            || policy.isAllowed(PublishAction.NAME));
-    if (!isAdmin) {
-      throw new PentahoAccessControlException("Access Denied");
-    }
-  }
 }
