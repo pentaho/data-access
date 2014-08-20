@@ -75,4 +75,7 @@
     </longitude>
   </geo>
 
+    <!-- Settings for the PUC "new" toolbar dropdown: priority, label, tabName, action-url -->  
+    <new-toolbar-button>9,newDataAccess,dataaccess,javascript:window.top.pho.openDatasourceEditor(window.top.datasourceEditorCallback)</new-toolbar-button>
+
 </settings>
