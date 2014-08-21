@@ -45,6 +45,7 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.api.MetadataService;
+import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataResource;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -57,25 +58,25 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
-@Path("/data-access/api/metadata")
-public class MetadataDatasourceService {
+@Path( "/data-access/api" )
+public class MetadataDatasourceService extends MetadataResource {
 
 	private static final String LANG = "[a-z]{2}";
 	private static final String LANG_CC = LANG + "_[A-Z]{2}";
 	private static final String LANG_CC_EXT = LANG_CC + "_[^/]+";
-	private static final List<String> ENCODINGS = Arrays.asList("", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR", "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251", "windows-1256", "KOI8-R", "ISO-8859-9");
-	private static final Log logger = LogFactory.getLog(MetadataDatasourceService.class);
+	private static final List<String> ENCODINGS = Arrays.asList( "", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR", "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251", "windows-1256", "KOI8-R", "ISO-8859-9" );
+	private static final Log logger = LogFactory.getLog( MetadataDatasourceService.class );
 
   private static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final String SUCCESS = "3";
 
 	private static final Pattern[] patterns = new Pattern[] {
-	    Pattern.compile("(" + LANG + ").properties$"),
-	    Pattern.compile("(" + LANG_CC + ").properties$"),
-	    Pattern.compile("(" + LANG_CC_EXT + ").properties$"),
-	    Pattern.compile("([^/]+)_(" + LANG + ")\\.properties$"),
-	    Pattern.compile("([^/]+)_(" + LANG_CC + ")\\.properties$"),
-	    Pattern.compile("([^/]+)_(" + LANG_CC_EXT + ")\\.properties$"),
+	    Pattern.compile( "(" + LANG + ").properties$" ),
+	    Pattern.compile( "(" + LANG_CC + ").properties$" ),
+	    Pattern.compile( "(" + LANG_CC_EXT + ").properties$" ),
+	    Pattern.compile( "([^/]+)_(" + LANG + ")\\.properties$" ),
+	    Pattern.compile( "([^/]+)_(" + LANG_CC + ")\\.properties$" ),
+	    Pattern.compile( "([^/]+)_(" + LANG_CC_EXT + ")\\.properties$" ),
 	};
 
 	
@@ -94,22 +95,22 @@ public class MetadataDatasourceService {
    * a http form which requires a post.
    */
   @POST
-  @Path("/postimport")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces("text/html")
-  public Response importMetadataDatasourceWithPost( @FormDataParam("domainId") String domainId,
-                                            @FormDataParam("metadataFile") InputStream metadataFile,
-                                            @FormDataParam("metadataFile") FormDataContentDisposition metadataFileInfo,
-                                            @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
-                                            @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam("localeFiles") List<FormDataContentDisposition> localeFilesInfo)
+  @Path( "/metadata/postimport" )
+  @Consumes( MediaType.MULTIPART_FORM_DATA )
+  @Produces( "text/html" )
+  public Response importMetadataDatasourceWithPost( @FormDataParam( "domainId" ) String domainId,
+                                            @FormDataParam( "metadataFile" ) InputStream metadataFile,
+                                            @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+                                            @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+                                            @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+                                            @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo )
       throws PentahoAccessControlException {
-    Response response = importMetadataDatasource(domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
-        localeFilesInfo);
+    Response response = importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
+        localeFilesInfo );
     ResponseBuilder responseBuilder;
     responseBuilder = Response.ok();
-    responseBuilder.entity(String.valueOf(response.getStatus()));
-    responseBuilder.status(200);
+    responseBuilder.entity( String.valueOf( response.getStatus() ) );
+    responseBuilder.status( 200 );
     return responseBuilder.build();
   }
 
@@ -126,24 +127,24 @@ public class MetadataDatasourceService {
    * @throws PentahoAccessControlException Thrown when validation of access fails
    */
   @PUT
-	@Path("/import")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces("text/plain")
-	public Response importMetadataDatasource( @FormDataParam("domainId") String domainId,
-                                            @FormDataParam("metadataFile") InputStream metadataFile,
-                                            @FormDataParam("metadataFile") FormDataContentDisposition metadataFileInfo,
-                                            @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
-                                            @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam("localeFiles") List<FormDataContentDisposition> localeFilesInfo)
+	@Path( "/metadata/import" )
+  @Consumes( MediaType.MULTIPART_FORM_DATA )
+  @Produces( "text/plain" )
+	public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
+                                            @FormDataParam( "metadataFile" ) InputStream metadataFile,
+                                            @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+                                            @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+                                            @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+                                            @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo )
       throws PentahoAccessControlException {
     MetadataService service = new MetadataService();
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
       return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
-    } catch (PentahoAccessControlException e) {
+    } catch ( PentahoAccessControlException e ) {
       return Response.serverError().entity( e.toString() ).build();
     } catch (PlatformImportException e) {
-      if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR) {
+      if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
         FileResource fr = new FileResource();
         return Response.status( PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ).entity(
             Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
@@ -177,64 +178,64 @@ public class MetadataDatasourceService {
    * @throws PentahoAccessControlException Thrown when validation of access fails
    */
   @PUT
-  @Path("/uploadServletImport")
-  @Consumes({ TEXT_PLAIN })
-  @Produces("text/plain")
+  @Path( "/metadata/uploadServletImport" )
+  @Consumes( { TEXT_PLAIN } )
+  @Produces( "text/plain" )
   @Deprecated
-  public Response uploadServletImportMetadataDatasource(String localizeBundleEntries, @QueryParam("domainId") String domainId, @QueryParam("metadataFile") String metadataFile) throws PentahoAccessControlException {
+  public Response uploadServletImportMetadataDatasource( String localizeBundleEntries, @QueryParam("domainId") String domainId, @QueryParam( "metadataFile" ) String metadataFile ) throws PentahoAccessControlException {
     try {
       DatasourceService.validateAccess();
-    } catch (PentahoAccessControlException e) {
-      return Response.serverError().entity(e.toString()).build();
+    } catch ( PentahoAccessControlException e ) {
+      return Response.serverError().entity( e.toString() ).build();
     }
 
-    IMetadataDomainRepository metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, PentahoSessionHolder.getSession());
-    PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
+    IMetadataDomainRepository metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
+    PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository( PentahoSystem.get( IUnifiedRepository.class ) );
     CsvUtils csvUtils = new CsvUtils();
     boolean validPropertyFiles = true;
     StringBuffer invalidFiles = new StringBuffer();
     try {
       String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "tmp" + File.separatorChar;
-      String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
-      FileInputStream metadataInputStream = new FileInputStream(sysTmpDir + File.separatorChar + metadataFile);
-      metadataImporter.storeDomain(metadataInputStream, domainId, true);
-      metadataDomainRepository.getDomain(domainId);
+      String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath( TMP_FILE_PATH );
+      FileInputStream metadataInputStream = new FileInputStream( sysTmpDir + File.separatorChar + metadataFile );
+      metadataImporter.storeDomain( metadataInputStream, domainId, true );
+      metadataDomainRepository.getDomain( domainId );
 
-      StringTokenizer bundleEntriesParam = new StringTokenizer(localizeBundleEntries, ";");
-      while (bundleEntriesParam.hasMoreTokens()) {
+      StringTokenizer bundleEntriesParam = new StringTokenizer( localizeBundleEntries, ";" );
+      while ( bundleEntriesParam.hasMoreTokens() ) {
         String localizationBundleElement = bundleEntriesParam.nextToken();
-        StringTokenizer localizationBundle = new StringTokenizer(localizationBundleElement, "=");
+        StringTokenizer localizationBundle = new StringTokenizer( localizationBundleElement, "=" );
         String localizationFileName = localizationBundle.nextToken();
         String localizationFile = localizationBundle.nextToken();
 
-        if (localizationFileName.endsWith(".properties")) {
-          String encoding = csvUtils.getEncoding(localizationFile);
-          if(ENCODINGS.contains(encoding)) {
-            for (final Pattern propertyBundlePattern : patterns) {
-              final Matcher propertyBundleMatcher = propertyBundlePattern.matcher(localizationFileName);
-              if (propertyBundleMatcher.matches()) {
-                FileInputStream bundleFileInputStream = new FileInputStream(sysTmpDir + File.separatorChar + localizationFile);
-                metadataImporter.addLocalizationFile(domainId, propertyBundleMatcher.group(2), bundleFileInputStream, true);
+        if ( localizationFileName.endsWith( ".properties" ) ) {
+          String encoding = csvUtils.getEncoding( localizationFile );
+          if( ENCODINGS.contains( encoding ) ) {
+            for ( final Pattern propertyBundlePattern : patterns ) {
+              final Matcher propertyBundleMatcher = propertyBundlePattern.matcher( localizationFileName );
+              if ( propertyBundleMatcher.matches() ) {
+                FileInputStream bundleFileInputStream = new FileInputStream( sysTmpDir + File.separatorChar + localizationFile );
+                metadataImporter.addLocalizationFile( domainId, propertyBundleMatcher.group( 2 ), bundleFileInputStream, true );
                 break;
               }
             }
           } else {
             validPropertyFiles =  false;
-            invalidFiles.append(localizationFileName);
+            invalidFiles.append( localizationFileName );
           }
         } else {
           validPropertyFiles =  false;
-          invalidFiles.append(localizationFileName);
+          invalidFiles.append( localizationFileName );
         }
       }
 
-      if(!validPropertyFiles) {
-        return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_002_PROPERTY_FILES_ERROR") + invalidFiles.toString()).build();
+      if( !validPropertyFiles ) {
+        return Response.serverError().entity( Messages.getString( "MetadataDatasourceService.ERROR_002_PROPERTY_FILES_ERROR" ) + invalidFiles.toString() ).build();
       }
-      return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
-    } catch (Exception e) {
-      metadataImporter.removeDomain(domainId);
-      return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+      return Response.ok( "SUCCESS" ).type( MediaType.TEXT_PLAIN ).build();
+    } catch ( Exception e ) {
+      metadataImporter.removeDomain( domainId );
+      return Response.serverError().entity( Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
     }
   }
 
@@ -247,19 +248,19 @@ public class MetadataDatasourceService {
    * @throws PentahoAccessControlException Thrown when validation of access fails
    */
   @PUT
-	@Path("/storeDomain")
-	@Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
-	@Produces("text/plain")
-	public Response storeDomain(InputStream metadataFile, @QueryParam("domainId") String domainId) throws PentahoAccessControlException {
+	@Path( "/metadata/storeDomain" )
+	@Consumes( { MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN } )
+	@Produces( "text/plain" )
+	public Response storeDomain( InputStream metadataFile, @QueryParam( "domainId" ) String domainId ) throws PentahoAccessControlException {
 		try {
 		  DatasourceService.validateAccess();
-			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
-			metadataImporter.storeDomain(metadataFile, domainId, true);
-			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
-		} catch (PentahoAccessControlException e) {
-			return Response.serverError().entity(e.toString()).build();
-		} catch(Exception e) {
-			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository( PentahoSystem.get( IUnifiedRepository.class ) );
+			metadataImporter.storeDomain( metadataFile, domainId, true );
+			return Response.ok( "SUCCESS" ).type( MediaType.TEXT_PLAIN ).build();
+		} catch ( PentahoAccessControlException e ) {
+			return Response.serverError().entity( e.toString() ).build();
+		} catch( Exception e ) {
+			return Response.serverError().entity( Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR") ).build();
 		}
 	}
 
@@ -273,19 +274,19 @@ public class MetadataDatasourceService {
    * @throws PentahoAccessControlException Thrown when validation of access fails
    */
 	@PUT
-	@Path("/addLocalizationFile")
-	@Consumes({ MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN })
-	@Produces("text/plain")
-	public Response addLocalizationFile(@QueryParam("domainId") String domainId, @QueryParam("locale") String locale, InputStream propertiesFile) throws PentahoAccessControlException {
+	@Path( "/metadata/addLocalizationFile" )
+	@Consumes( { MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN } )
+	@Produces( "text/plain" )
+	public Response addLocalizationFile( @QueryParam( "domainId" ) String domainId, @QueryParam( "locale" ) String locale, InputStream propertiesFile ) throws PentahoAccessControlException {
 		try {
 			DatasourceService.validateAccess();
-			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository(PentahoSystem.get(IUnifiedRepository.class));
-			metadataImporter.addLocalizationFile(domainId, locale, propertiesFile, true);
-			return Response.ok("SUCCESS").type(MediaType.TEXT_PLAIN).build();
-		} catch (PentahoAccessControlException e) {
-			return Response.serverError().entity(e.toString()).build();
-		} catch(Exception e) {
-			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
+			PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository( PentahoSystem.get( IUnifiedRepository.class ) );
+			metadataImporter.addLocalizationFile( domainId, locale, propertiesFile, true );
+			return Response.ok("SUCCESS").type( MediaType.TEXT_PLAIN ).build();
+		} catch ( PentahoAccessControlException e ) {
+			return Response.serverError().entity( e.toString() ).build();
+		} catch( Exception e ) {
+			return Response.serverError().entity( Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
 		}
 	}
 }

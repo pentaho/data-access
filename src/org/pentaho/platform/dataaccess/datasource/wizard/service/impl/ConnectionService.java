@@ -34,8 +34,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.model.DatabaseConnection;
@@ -44,9 +42,9 @@ import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnectionPoolParameter;
 import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.database.util.DatabaseUtil;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.dataaccess.datasource.api.resources.JDBCDatasourceResource;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -59,15 +57,16 @@ import org.pentaho.ui.database.event.DefaultDatabaseConnectionPoolParameterList;
 import org.pentaho.ui.database.event.IDatabaseConnectionList;
 import org.pentaho.ui.database.event.IDatabaseConnectionPoolParameterList;
 
-@Path("/data-access/api/connection")
-public class ConnectionService {
+@Path( "/data-access/api" )
+public class ConnectionService extends JDBCDatasourceResource {
+  
   private ConnectionServiceImpl service;
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
   
   public ConnectionService() {
     service = new ConnectionServiceImpl();
-    this.dialectService = new DatabaseDialectService(true);
+    this.dialectService = new DatabaseDialectService( true );
   }
 
   /**
@@ -78,15 +77,15 @@ public class ConnectionService {
    * @throws ConnectionServiceException
    */
   @GET
-  @Path("/list")
-  @Produces({APPLICATION_JSON})
+  @Path( "/connection/list" )
+  @Produces( {APPLICATION_JSON} )
   public IDatabaseConnectionList getConnections() throws ConnectionServiceException {
     IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
     List<IDatabaseConnection> conns = service.getConnections();
     for (IDatabaseConnection conn : conns) {
-      hidePassword(conn);
+      hidePassword( conn );
     }
-    databaseConnections.setDatabaseConnections(conns);
+    databaseConnections.setDatabaseConnections( conns );
     return databaseConnections;
   }
 
@@ -99,11 +98,11 @@ public class ConnectionService {
    * @throws ConnectionServiceException
    */
   @GET
-  @Path("/get")
-  @Produces({APPLICATION_JSON})
-  public IDatabaseConnection getConnectionByName(@QueryParam("name") String name) throws ConnectionServiceException {
-    IDatabaseConnection conn = service.getConnectionByName(name);
-    hidePassword(conn);
+  @Path( "/connection/get" )
+  @Produces( {APPLICATION_JSON} )
+  public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
+    IDatabaseConnection conn = service.getConnectionByName( name );
+    hidePassword( conn );
     return conn;
   }
 
@@ -116,17 +115,17 @@ public class ConnectionService {
    * @throws ConnectionServiceException
    */
   @GET
-  @Path("/checkexists")
-  @Produces({APPLICATION_JSON})
-  public Response isConnectionExist(@QueryParam("name") String name) throws ConnectionServiceException {
-    boolean exists = service.isConnectionExist(name);
+  @Path( "/connection/checkexists" )
+  @Produces( {APPLICATION_JSON} )
+  public Response isConnectionExist( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
+    boolean exists = service.isConnectionExist( name );
     try {
-      if (exists) {
+      if ( exists ) {
         return Response.ok().build();
       } else {
         return Response.notModified().build();
       }
-    } catch (Throwable t) {
+    } catch ( Throwable t ) {
       t.printStackTrace();
       return Response.serverError().build();
     }
@@ -137,17 +136,17 @@ public class ConnectionService {
    * use getEntity(Connection.class) and getStatus() to determine success
    */
   @GET
-  @Path("/getresponse")
-  @Produces({APPLICATION_JSON})
-  public Response getConnectionByNameWithResponse(@QueryParam("name") String name) throws ConnectionServiceException {
+  @Path( "/connection/getresponse" )
+  @Produces( {APPLICATION_JSON} )
+  public Response getConnectionByNameWithResponse( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     IDatabaseConnection conn = null;
     Response response;
     try{
-     conn =service.getConnectionByName(name);
+     conn =service.getConnectionByName( name );
      hidePassword(conn);
-     response = Response.ok().entity(conn).build();
-    }catch(Exception ex){
-      response =  Response.serverError().entity(ex.getMessage()).build();
+     response = Response.ok().entity( conn ).build();
+    } catch ( Exception ex ) {
+      response =  Response.serverError().entity( ex.getMessage() ).build();
     }    
      return response;
   }
@@ -161,18 +160,18 @@ public class ConnectionService {
    * @throws ConnectionServiceException
    */
   @POST
-  @Path("/add")
-  @Consumes({APPLICATION_JSON})
-  public Response addConnection(DatabaseConnection connection) throws ConnectionServiceException {
+  @Path( "/connection/add" )
+  @Consumes( {APPLICATION_JSON} )
+  public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
       validateAccess();
-      boolean success = service.addConnection(connection);
+      boolean success = service.addConnection( connection );
       if (success) {
         return Response.ok().build();
       } else {
         return Response.notModified().build();
       }
-    } catch (Throwable t) {
+    } catch ( Throwable t ) {
       t.printStackTrace();
       return Response.serverError().build();
     }
@@ -187,13 +186,13 @@ public class ConnectionService {
    * @throws ConnectionServiceException
    */
   @POST
-  @Path("/update")
-  @Consumes({APPLICATION_JSON})
-  public Response updateConnection(DatabaseConnection connection) throws ConnectionServiceException {
+  @Path( "/connection/update" )
+  @Consumes( {APPLICATION_JSON} )
+  public Response updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
-      applySavedPassword(connection);
-      boolean success = service.updateConnection(connection);
-      if (success) {
+      applySavedPassword( connection );
+      boolean success = service.updateConnection( connection );
+      if ( success ) {
         return Response.ok().build();
       } else {
         return Response.notModified().build();
@@ -213,17 +212,17 @@ public class ConnectionService {
    * @throws ConnectionServiceException
    */
   @DELETE
-  @Path("/delete")
-  @Consumes({APPLICATION_JSON})
-  public Response deleteConnection(DatabaseConnection connection) throws ConnectionServiceException {
+  @Path( "/connection/delete" )
+  @Consumes( {APPLICATION_JSON} )
+  public Response deleteConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
-      boolean success = service.deleteConnection(connection);
-      if (success) {
+      boolean success = service.deleteConnection( connection );
+      if ( success ) {
         return Response.ok().build();
       } else {
         return Response.notModified().build();
       }
-    } catch (Throwable t) {
+    } catch ( Throwable t ) {
       t.printStackTrace();
       return Response.serverError().build();
     }
@@ -237,16 +236,16 @@ public class ConnectionService {
    * @throws ConnectionServiceException
    */
   @DELETE
-  @Path("/deletebyname")
-  public Response deleteConnectionByName(@QueryParam("name")String name) throws ConnectionServiceException {
+  @Path( "/connection/deletebyname" )
+  public Response deleteConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     try {
-      boolean success = service.deleteConnection(name);
-      if (success) {
-      return Response.ok().build();
+      boolean success = service.deleteConnection( name );
+      if ( success ) {
+        return Response.ok().build();
       } else {
         return Response.notModified().build();
       }
-    } catch (Throwable t) {
+    } catch ( Throwable t ) {
       return Response.serverError().build();
     }
   }
@@ -259,46 +258,46 @@ public class ConnectionService {
    * @throws ConnectionServiceException
    */
   @PUT
-  @Path("/test")
-  @Consumes({APPLICATION_JSON})
-  @Produces({TEXT_PLAIN})
-  public Response testConnection(DatabaseConnection connection) throws ConnectionServiceException {
+  @Path( "/connection/test" )
+  @Consumes( {APPLICATION_JSON} )
+  @Produces( {TEXT_PLAIN} )
+  public Response testConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     boolean success = false;
-    applySavedPassword(connection);
+    applySavedPassword( connection );
     success = service.testConnection( connection );
-    if (success) { 
-      return Response.ok(Messages.getString("ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED"
-          , connection.getDatabaseName())).build();
+    if ( success ) { 
+      return Response.ok( Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED"
+          , connection.getDatabaseName() ) ).build();
     } else {
-      return Response.serverError().entity(Messages.getErrorString("ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED"
-          , connection.getDatabaseName())).build();  
+      return Response.serverError().entity( Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED"
+          , connection.getDatabaseName() ) ).build();  
     }
   }
     
   private static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[] {
-    new DatabaseConnectionPoolParameter("defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool."), 
-    new DatabaseConnectionPoolParameter("defaultReadOnly", null, "The default read-only state of connections created by this pool.\nIf not set then the setReadOnly method will not be called.\n (Some drivers don't support read only mode, ex: Informix)"), 
-    new DatabaseConnectionPoolParameter("defaultTransactionIsolation", null, "the default TransactionIsolation state of connections created by this pool. One of the following: (see javadoc)\n\n  * NONE\n  * READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n"), 
-    new DatabaseConnectionPoolParameter("defaultCatalog", null, "The default catalog of connections created by this pool."),
+    new DatabaseConnectionPoolParameter( "defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool." ), 
+    new DatabaseConnectionPoolParameter( "defaultReadOnly", null, "The default read-only state of connections created by this pool.\nIf not set then the setReadOnly method will not be called.\n (Some drivers don't support read only mode, ex: Informix)" ), 
+    new DatabaseConnectionPoolParameter( "defaultTransactionIsolation", null, "the default TransactionIsolation state of connections created by this pool. One of the following: (see javadoc)\n\n  * NONE\n  * READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n" ), 
+    new DatabaseConnectionPoolParameter( "defaultCatalog", null, "The default catalog of connections created by this pool." ),
     
-    new DatabaseConnectionPoolParameter("initialSize", "0", "The initial number of connections that are created when the pool is started."), 
-    new DatabaseConnectionPoolParameter("maxActive", "8", "The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit."), 
-    new DatabaseConnectionPoolParameter("maxIdle", "8", "The maximum number of connections that can remain idle in the pool, without extra ones being released, or negative for no limit."), 
-    new DatabaseConnectionPoolParameter("minIdle", "0", "The minimum number of connections that can remain idle in the pool, without extra ones being created, or zero to create none."), 
-    new DatabaseConnectionPoolParameter("maxWait", "-1", "The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception, or -1 to wait indefinitely."),
+    new DatabaseConnectionPoolParameter( "initialSize", "0", "The initial number of connections that are created when the pool is started." ), 
+    new DatabaseConnectionPoolParameter( "maxActive", "8", "The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit." ), 
+    new DatabaseConnectionPoolParameter( "maxIdle", "8", "The maximum number of connections that can remain idle in the pool, without extra ones being released, or negative for no limit." ), 
+    new DatabaseConnectionPoolParameter( "minIdle", "0", "The minimum number of connections that can remain idle in the pool, without extra ones being created, or zero to create none." ), 
+    new DatabaseConnectionPoolParameter( "maxWait", "-1", "The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception, or -1 to wait indefinitely." ),
     
-    new DatabaseConnectionPoolParameter("validationQuery", null, "The SQL query that will be used to validate connections from this pool before returning them to the caller.\nIf specified, this query MUST be an SQL SELECT statement that returns at least one row."), 
-    new DatabaseConnectionPoolParameter("testOnBorrow", "true", "The indication of whether objects will be validated before being borrowed from the pool.\nIf the object fails to validate, it will be dropped from the pool, and we will attempt to borrow another.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."), 
-    new DatabaseConnectionPoolParameter("testOnReturn", "false", "The indication of whether objects will be validated before being returned to the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."), 
-    new DatabaseConnectionPoolParameter("testWhileIdle", "false", "The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."), 
-    new DatabaseConnectionPoolParameter("timeBetweenEvictionRunsMillis", null, "The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run."),
+    new DatabaseConnectionPoolParameter( "validationQuery", null, "The SQL query that will be used to validate connections from this pool before returning them to the caller.\nIf specified, this query MUST be an SQL SELECT statement that returns at least one row." ), 
+    new DatabaseConnectionPoolParameter( "testOnBorrow", "true", "The indication of whether objects will be validated before being borrowed from the pool.\nIf the object fails to validate, it will be dropped from the pool, and we will attempt to borrow another.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ), 
+    new DatabaseConnectionPoolParameter( "testOnReturn", "false", "The indication of whether objects will be validated before being returned to the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ), 
+    new DatabaseConnectionPoolParameter( "testWhileIdle", "false", "The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ), 
+    new DatabaseConnectionPoolParameter( "timeBetweenEvictionRunsMillis", null, "The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run." ),
     
-    new DatabaseConnectionPoolParameter("poolPreparedStatements", "false", "Enable prepared statement pooling for this pool."), 
-    new DatabaseConnectionPoolParameter("maxOpenPreparedStatements", "-1", "The maximum number of open statements that can be allocated from the statement pool at the same time, or zero for no limit."), 
-    new DatabaseConnectionPoolParameter("accessToUnderlyingConnectionAllowed", "false", "Controls if the PoolGuard allows access to the underlying connection."), 
-    new DatabaseConnectionPoolParameter("removeAbandoned", "false", "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\nIf set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection."), 
-    new DatabaseConnectionPoolParameter("removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed."), 
-    new DatabaseConnectionPoolParameter("logAbandoned", "false", "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated."), 
+    new DatabaseConnectionPoolParameter( "poolPreparedStatements", "false", "Enable prepared statement pooling for this pool." ), 
+    new DatabaseConnectionPoolParameter( "maxOpenPreparedStatements", "-1", "The maximum number of open statements that can be allocated from the statement pool at the same time, or zero for no limit." ), 
+    new DatabaseConnectionPoolParameter( "accessToUnderlyingConnectionAllowed", "false", "Controls if the PoolGuard allows access to the underlying connection." ), 
+    new DatabaseConnectionPoolParameter( "removeAbandoned", "false", "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\nIf set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection." ), 
+    new DatabaseConnectionPoolParameter( "removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed." ), 
+    new DatabaseConnectionPoolParameter( "logAbandoned", "false", "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated." ), 
   };
 
   /**
@@ -307,15 +306,15 @@ public class ConnectionService {
    * @return IDatabaseConnectionPoolParameterList a list of the pooling parameters
    */
   @GET
-  @Path("/poolingParameters")
-  @Produces({APPLICATION_JSON})
+  @Path( "/connection/poolingParameters" )
+  @Produces( {APPLICATION_JSON} )
   public IDatabaseConnectionPoolParameterList getPoolingParameters() {
     IDatabaseConnectionPoolParameterList value = new DefaultDatabaseConnectionPoolParameterList();
     List<IDatabaseConnectionPoolParameter> paramList = new ArrayList<IDatabaseConnectionPoolParameter>();
-    for(DatabaseConnectionPoolParameter param : poolingParameters) {
-      paramList.add(param);
+    for( DatabaseConnectionPoolParameter param : poolingParameters ) {
+      paramList.add( param );
     }
-    value.setDatabaseConnectionPoolParameters(paramList);
+    value.setDatabaseConnectionPoolParameters( paramList );
     return value; 
   }
 
@@ -328,14 +327,14 @@ public class ConnectionService {
    * @return IDatabaseConnection for the given parameters
    */
   @GET
-  @Path("/createDatabaseConnection")
-  @Produces({APPLICATION_JSON})
-  public IDatabaseConnection createDatabaseConnection(@QueryParam("driver") String driver, @QueryParam("url") String url) {
-    for (IDatabaseDialect dialect : dialectService.getDatabaseDialects()) {
-      if (dialect.getNativeDriver() != null && 
-          dialect.getNativeDriver().equals(driver)) {
-        if (dialect.getNativeJdbcPre() != null && url.startsWith(dialect.getNativeJdbcPre())) {
-          return dialect.createNativeConnection(url);
+  @Path( "/connection/createDatabaseConnection" )
+  @Produces( {APPLICATION_JSON} )
+  public IDatabaseConnection createDatabaseConnection( @QueryParam( "driver" ) String driver, @QueryParam( "url" ) String url ) {
+    for ( IDatabaseDialect dialect : dialectService.getDatabaseDialects() ) {
+      if ( dialect.getNativeDriver() != null && 
+          dialect.getNativeDriver().equals( driver ) ) {
+        if ( dialect.getNativeJdbcPre() != null && url.startsWith( dialect.getNativeJdbcPre() ) ) {
+          return dialect.createNativeConnection( url );
         }
       }
     }
@@ -343,7 +342,7 @@ public class ConnectionService {
     // if no native driver was found, create a custom dialect object.
     
     IDatabaseConnection conn = genericDialect.createNativeConnection(url);
-    conn.getAttributes().put(GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS, driver);
+    conn.getAttributes().put( GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS, driver );
     
     return conn;    
   }
@@ -356,15 +355,15 @@ public class ConnectionService {
    * @return array containing the database connection metadata
    */
   @POST
-  @Path("/checkParams")
-  @Consumes({APPLICATION_JSON})
-  @Produces({APPLICATION_JSON})
-  public StringArrayWrapper checkParameters(DatabaseConnection connection) {
+  @Path( "/connection/checkParams" )
+  @Consumes( {APPLICATION_JSON} )
+  @Produces( {APPLICATION_JSON} )
+  public StringArrayWrapper checkParameters( DatabaseConnection connection ) {
     StringArrayWrapper array = null;
-    String[] rawValues = DatabaseUtil.convertToDatabaseMeta(connection).checkParameters();
-    if (rawValues.length > 0) {
+    String[] rawValues = DatabaseUtil.convertToDatabaseMeta( connection ).checkParameters();
+    if ( rawValues.length > 0 ) {
       array = new StringArrayWrapper();
-      array.setArray(rawValues);
+      array.setArray( rawValues );
     }
     return array;
   }
@@ -374,21 +373,21 @@ public class ConnectionService {
    * @throws PentahoAccessControlException
    */
   private void validateAccess() throws PentahoAccessControlException {
-    IAuthorizationPolicy policy = PentahoSystem.get(IAuthorizationPolicy.class);
-    boolean isAdmin = policy.isAllowed(RepositoryReadAction.NAME)
-        && policy.isAllowed(RepositoryCreateAction.NAME)
-        && (policy.isAllowed(AdministerSecurityAction.NAME)
-        || policy.isAllowed(PublishAction.NAME));
-    if (!isAdmin) {
-      throw new PentahoAccessControlException("Access Denied");
+    IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
+    boolean isAdmin = policy.isAllowed( RepositoryReadAction.NAME )
+        && policy.isAllowed( RepositoryCreateAction.NAME )
+        && (policy.isAllowed( AdministerSecurityAction.NAME )
+        || policy.isAllowed( PublishAction.NAME ) );
+    if ( !isAdmin ) {
+      throw new PentahoAccessControlException( "Access Denied" );
     }
   }
   
   /**
    * Hides password for connections for return to user.
    */
-  private void hidePassword(IDatabaseConnection conn) {
-    conn.setPassword(null);
+  private void hidePassword( IDatabaseConnection conn ) {
+    conn.setPassword( null );
   }
   
   /**
@@ -396,10 +395,10 @@ public class ConnectionService {
    * change password. Since we cleaned password during sending to UI, we need
    * to use stored password.
    */
-  private void applySavedPassword(IDatabaseConnection conn) throws ConnectionServiceException {
-    if (StringUtils.isBlank(conn.getPassword())) {
-      IDatabaseConnection savedConn = service.getConnectionById(conn.getId());
-      conn.setPassword(savedConn.getPassword());
+  private void applySavedPassword( IDatabaseConnection conn ) throws ConnectionServiceException {
+    if ( StringUtils.isBlank( conn.getPassword() ) ) {
+      IDatabaseConnection savedConn = service.getConnectionById( conn.getId() );
+      conn.setPassword( savedConn.getPassword() );
     }
   }
 }
