@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -38,6 +39,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.enunciate.Facet;
+import org.codehaus.enunciate.jaxrs.ResponseCode;
+import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
@@ -68,17 +72,30 @@ public class MetadataResource {
     service = new MetadataService();
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
   }
-
+  
   /**
-   * Download the metadata files for a given metadataId
+   * Export a metadata datasource.
    *
-   * @param metadataId String Id of the metadata to retrieve
+   * <p><b>Example Request:</b><br/>
+   *   GET /pentaho/plugin/data-access/api/datasource/metadata/FoodMart/download
+   * </p>
    *
-   * @return Response containing the file data
+   * @param metadataId The id of the Metadata datasource to export
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               FoodMart
+   *               }
+   *               </pre>
+   * @return A Response object containing the metadata xmi file.
    */
   @GET
   @Path( "/datasource/metadata/{metadataId : .+}/download" )
   @Produces( WILDCARD )
+  @StatusCodes({
+      @ResponseCode( code = 200, condition = "Metadata datasource export succeeded." ),
+      @ResponseCode( code = 401, condition = "User is not authorized to export Metadata datasource." ),
+      @ResponseCode( code = 500, condition = "Failure to export Metadata datasource." )
+  })  
   public Response doGetMetadataFilesAsDownload( @PathParam( "metadataId" ) String metadataId ) {
     if( !DatasourceService.canAdminister() ) {
       return Response.status( UNAUTHORIZED ).build();
@@ -89,18 +106,55 @@ public class MetadataResource {
     Map<String, InputStream> fileData = ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( metadataId );
     return ResourceUtil.createAttachment( fileData, metadataId );
   }  
-  
+
   /**
    * Remove the metadata for a given metadata ID
    *
-   * @param metadataId
-   *          String ID of the metadata to remove
+   * <p><b>Example Request:</b><br/>
+   *   POST /pentaho/plugin/data-access/api/datasource/metadata/FoodMart/remove
+   * </p>
    *
-   * @return Response ok if successful
+   * @param metadataId The id of the Metadata datasource to remove
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               FoodMart
+   *               }
+   *               </pre>
    */
   @POST
   @Path( "/datasource/metadata/{metadataId : .+}/remove" )
   @Produces( WILDCARD )
+  @StatusCodes({
+    @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
+    @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." ),
+  })    
+  @Deprecated
+  @Facet( name = "Unsupported" )  
+  public Response doPostRemoveMetadata( @PathParam( "metadataId" ) String metadataId ) {
+    return doRemoveMetadata( metadataId );
+  }
+  
+  /**
+   * Remove the metadata for a given metadata ID
+   *
+   * <p><b>Example Request:</b><br/>
+   *   POST /pentaho/plugin/data-access/api/datasource/metadata/FoodMart/delete
+   * </p>
+   *
+   * @param metadataId The id of the Metadata datasource to remove
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               FoodMart
+   *               }
+   *               </pre>
+   */
+  @DELETE
+  @Path( "/datasource/metadata/{metadataId : .+}/delete" )
+  @Produces( WILDCARD )
+  @StatusCodes({
+    @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
+    @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." ),
+  })      
   public Response doRemoveMetadata( @PathParam( "metadataId" ) String metadataId ) {
     try {
       service.removeMetadata( metadataId );
@@ -113,7 +167,16 @@ public class MetadataResource {
   /**
    * Get the Metadata datasource IDs
    *
-   * @return JaxbList<String> of metadata IDs
+   * <p><b>Example Request:</b><br/>
+   *   GET /pentaho/plugin/data-access/api/datasource/metadata/ids
+   * </p>
+   *
+   * @return JaxbList<String> of Metadata datasource IDs
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               {"Item":{"@type":"xs:string","$":"steel-wheels"}}
+   *               }
+   *               </pre>
    */
   @GET
   @Path( "/datasource/metadata/ids" )
@@ -121,12 +184,19 @@ public class MetadataResource {
   public JaxbList<String> getMetadataDatasourceIds() {
     return new JaxbList<String>( service.getMetadataDatasourceIds() );
   }
-
+  
   /**
+   * Import a Metadata datasource
+   * 
    * @param domainId
    *          Unique identifier for the metadata datasource
+   *          <pre function="syntax.xml">
+   *          {@code
+   *          {"Item":{"@type":"xs:string","$":"steel-wheels"}}
+   *          }
+   *          </pre>
    * @param metadataFile
-   *          Input stream for the metadata.xmi
+   *          input stream for the metadata.xmi
    * @param metadataFileInfo
    *          User selected name for the file
    * @param localeFiles
@@ -135,23 +205,33 @@ public class MetadataResource {
    *          List of information for each local file
    * @param overwrite
    *          Flag for overwriting existing version of the file
+   *          <pre function="syntax.xml">
+   *          {@code
+   *          true
+   *          }
+   *          </pre>
    *
-   * @return Response containing the success of the method
-   *
-   * @throws PentahoAccessControlException
-   *           Thrown when validation of access fails
+   * @return Response containing the success of the method, a response of:
+   *  2: unspecified general error has occurred
+   *  3: indicates successful import
+   *  9: content already exists (use overwrite flag to force)
+   * 10: import failed because publish is prohibited
+   * 
    */
   @PUT
   @Path( "/datasource/metadata/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
+  @StatusCodes({
+    @ResponseCode( code = 200, condition = "Metadata datasource import succeeded." ),
+    @ResponseCode( code = 500, condition = "Metadata datasource import failed.  Error code or message included in response entity" ),
+  })   
   public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo )
-    throws PentahoAccessControlException {
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) {
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
           localeFilesInfo );
