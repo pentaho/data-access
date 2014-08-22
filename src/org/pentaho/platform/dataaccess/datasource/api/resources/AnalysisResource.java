@@ -23,6 +23,7 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import java.io.InputStream;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -37,14 +38,18 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
+import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
+import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
-@Path( "/data-access/api/datasource/analysis" )
+@Path( "/data-access/api" )
 public class AnalysisResource {
 
   private static final String UPLOAD_ANALYSIS = "uploadAnalysis";
@@ -64,6 +69,27 @@ public class AnalysisResource {
   }
 
   /**
+   * Download the analysis files for a given analysis id
+   *
+   * @param analysisId String Id of the analysis data to retrieve
+   *
+   * @return Response containing the file data
+   */
+  @GET
+  @Path(" /datasource/analysis/{analysisId : .+}/download" )
+  @Produces( WILDCARD )
+  public Response doGetAnalysisFilesAsDownload( @PathParam( "analysisId" ) String analysisId ) {
+    if( !DatasourceService.canAdminister() ) {
+      return Response.status( UNAUTHORIZED ).build();
+    }
+    MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
+    Map<String, InputStream> fileData = helper.getModrianSchemaFiles( analysisId );
+    ResourceUtil.parseMondrianSchemaName( analysisId, fileData );
+
+    return ResourceUtil.createAttachment( fileData, analysisId );
+  }  
+  
+  /**
    * Remove the analysis data for a given analysis ID
    *
    * @param analysisId
@@ -72,7 +98,7 @@ public class AnalysisResource {
    * @return Response ok if successful
    */
   @POST
-  @Path( "/{analysisId : .+}/remove" )
+  @Path( "/datasource/analysis/{analysisId : .+}/remove" )
   @Produces( WILDCARD )
   public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
     try {
@@ -89,7 +115,7 @@ public class AnalysisResource {
    * @return JaxbList<String> of analysis IDs
    */
   @GET
-  @Path( "/ids" )
+  @Path( "/datasource/analysis/ids" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )
   public JaxbList<String> getAnalysisDatasourceIds() {
     return new JaxbList<String>( service.getAnalysisDatasourceIds() );
@@ -110,7 +136,7 @@ public class AnalysisResource {
    * @throws PentahoAccessControlException
    */
   @PUT
-  @Path( "/import" )
+  @Path( "/datasource/analysis/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
   public Response putMondrianSchema(
@@ -143,4 +169,5 @@ public class AnalysisResource {
     logger.debug( "putMondrianSchema Response " + response );
     return response;
   }
+  
 }

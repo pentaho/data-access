@@ -34,7 +34,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionService;
 import org.pentaho.ui.database.event.IDatabaseConnectionList;
 
-@Path( "/data-access/api/jdbc" )
+@Path( "/data-access/api" )
 public class JDBCDatasourceResource {
 
   private ConnectionService service;
@@ -53,7 +53,7 @@ public class JDBCDatasourceResource {
    * @throws ConnectionServiceException
    */
   @DELETE
-  @Path( "/delete" )
+  @Path( "/datasource/jdbc/delete" )
   public Response deleteConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     return service.deleteConnectionByName( name );
   }
@@ -66,7 +66,7 @@ public class JDBCDatasourceResource {
    * @throws ConnectionServiceException
    */
   @GET
-  @Path( "/list" )
+  @Path( "/datasource/jdbc/list" )
   @Produces( { APPLICATION_JSON } )
   public IDatabaseConnectionList getConnections() throws ConnectionServiceException {
     return service.getConnections();
@@ -82,30 +82,27 @@ public class JDBCDatasourceResource {
    * @throws ConnectionServiceException
    */
   @GET
-  @Path( "/get" )
+  @Path( "/datasource/jdbc/get" )
   @Produces( { APPLICATION_JSON } )
   public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     return service.getConnectionByName( name );
   }
 
   /**
-   * Create a database connection
+   * Add a database connection
    *
-   * @param driver
-   *          String name of the driver to use
-   * @param url
-   *          String name of the url used to create the connection.
+   * @param connection A database connection object to add
+   * @return Response indicating the success of this operation
    *
-   * @return IDatabaseConnection for the given parameters
+   * @throws ConnectionServiceException
    */
-  @GET
-  @Path( "/create" )
-  @Produces( { APPLICATION_JSON } )
-  public IDatabaseConnection createDatabaseConnection( @QueryParam( "driver" ) String driver,
-      @QueryParam( "url" ) String url ) {
-    return service.createDatabaseConnection( driver, url );
+  @POST
+  @Path( "/datasource/jdbc/add" )
+  @Consumes( {APPLICATION_JSON} )
+  public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
+    return service.addConnection( connection );
   }
-
+  
   /**
    * Update an existing database connection
    *
@@ -116,7 +113,7 @@ public class JDBCDatasourceResource {
    * @throws ConnectionServiceException
    */
   @POST
-  @Path( "/update" )
+  @Path( "/datasource/jdbc/update" )
   @Consumes( { APPLICATION_JSON } )
   public Response updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     return service.updateConnection( connection );

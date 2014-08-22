@@ -32,13 +32,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
+import org.pentaho.platform.dataaccess.datasource.api.resources.AnalysisResource;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
-@Path("/data-access/api/mondrian")
-public class AnalysisDatasourceService {
+@Path( "/data-access/api" )
+public class AnalysisDatasourceService extends AnalysisResource {
 
   private static final String XMLA_ENABLED_FLAG = "xmlaEnabledFlag";
 
@@ -77,37 +78,37 @@ public class AnalysisDatasourceService {
    * @throws PentahoAccessControlException
    */
   @PUT
-  @Path("/putSchema")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces("text/plain")
+  @Path( "/mondrian/putSchema" )
+  @Consumes( MediaType.MULTIPART_FORM_DATA )
+  @Produces( "text/plain" )
   public Response putMondrianSchema(
-      @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream,
-      @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo,
-      @FormDataParam(CATALOG_NAME) String catalogName, //Optional
-      @FormDataParam(ORIG_CATALOG_NAME) String origCatalogName, //Optional
-      @FormDataParam(DATASOURCE_NAME) String datasourceName, //Optional
-      @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
-      @FormDataParam(XMLA_ENABLED_FLAG) String xmlaEnabledFlag,
-      @FormDataParam(PARAMETERS) String parameters) throws PentahoAccessControlException {
+      @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
+      @FormDataParam( UPLOAD_ANALYSIS )FormDataContentDisposition schemaFileInfo,
+      @FormDataParam( CATALOG_NAME ) String catalogName, //Optional
+      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, //Optional
+      @FormDataParam( DATASOURCE_NAME ) String datasourceName, //Optional
+      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag,
+      @FormDataParam( PARAMETERS ) String parameters) throws PentahoAccessControlException {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
       AnalysisService service = new AnalysisService();
       service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters );
       statusCode = SUCCESS;
-    } catch (PentahoAccessControlException pac) {
+    } catch ( PentahoAccessControlException pac ) {
       logger.error(pac.getMessage());
       statusCode = PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL;
     } catch (PlatformImportException pe) {
       statusCode = pe.getErrorStatus();
-      logger.error("Error putMondrianSchema " + pe.getMessage() + " status = " + statusCode);
+      logger.error( "Error putMondrianSchema " + pe.getMessage() + " status = " + statusCode );
     } catch (Exception e) {
-      logger.error("Error putMondrianSchema " + e.getMessage());
+      logger.error( "Error putMondrianSchema " + e.getMessage() );
       statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
 
-    response = Response.ok().status(statusCode).type(MediaType.TEXT_PLAIN).build();
-    logger.debug("putMondrianSchema Response " + response);
+    response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+    logger.debug( "putMondrianSchema Response " + response );
     return response;
   }
 
@@ -126,25 +127,24 @@ public class AnalysisDatasourceService {
    * @throws PentahoAccessControlException
    */
   @POST
-  @Path("/postAnalysis")
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  @Produces({"text/plain","text/html"})
-
+  @Path( "/mondrian/postAnalysis" )
+  @Consumes( MediaType.MULTIPART_FORM_DATA )
+  @Produces( {"text/plain","text/html" } )
   public Response postMondrainSchema(
-      @FormDataParam(UPLOAD_ANALYSIS) InputStream dataInputStream,
-      @FormDataParam(UPLOAD_ANALYSIS)FormDataContentDisposition schemaFileInfo,
-      @FormDataParam(CATALOG_NAME) String catalogName, //Optional
-      @FormDataParam(ORIG_CATALOG_NAME) String origCatalogName, //Optional
-      @FormDataParam(DATASOURCE_NAME) String datasourceName, //Optional
-      @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
-      @FormDataParam(XMLA_ENABLED_FLAG) String xmlaEnabledFlag,
-      @FormDataParam(PARAMETERS) String parameters) throws PentahoAccessControlException {
+      @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
+      @FormDataParam( UPLOAD_ANALYSIS )FormDataContentDisposition schemaFileInfo,
+      @FormDataParam( CATALOG_NAME ) String catalogName, //Optional
+      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, //Optional
+      @FormDataParam( DATASOURCE_NAME ) String datasourceName, //Optional
+      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag,
+      @FormDataParam( PARAMETERS ) String parameters) throws PentahoAccessControlException {
      //use existing Jersey post method - but translate into text/html for PUC Client
      ResponseBuilder responseBuilder;
-     Response response = this.putMondrianSchema(dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters);
+     Response response = this.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters );
      responseBuilder=  Response.ok();
-     responseBuilder.entity(String.valueOf(response.getStatus()));
-     responseBuilder.status(200);
+     responseBuilder.entity( String.valueOf( response.getStatus() ) );
+     responseBuilder.status( 200 );
      return responseBuilder.build();
   }
 }
