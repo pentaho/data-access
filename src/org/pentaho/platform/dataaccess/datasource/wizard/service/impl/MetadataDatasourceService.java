@@ -38,21 +38,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.codehaus.enunciate.Facet;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
-import org.pentaho.platform.dataaccess.datasource.api.MetadataService;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataResource;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
-import org.pentaho.platform.web.http.api.resources.FileResource;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -65,10 +61,8 @@ public class MetadataDatasourceService extends MetadataResource {
 	private static final String LANG_CC = LANG + "_[A-Z]{2}";
 	private static final String LANG_CC_EXT = LANG_CC + "_[^/]+";
 	private static final List<String> ENCODINGS = Arrays.asList( "", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR", "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251", "windows-1256", "KOI8-R", "ISO-8859-9" );
-	private static final Log logger = LogFactory.getLog( MetadataDatasourceService.class );
 
   private static final String OVERWRITE_IN_REPOS = "overwrite";
-  private static final String SUCCESS = "3";
 
 	private static final Pattern[] patterns = new Pattern[] {
 	    Pattern.compile( "(" + LANG + ").properties$" ),
@@ -124,48 +118,22 @@ public class MetadataDatasourceService extends MetadataResource {
    *
    * @return Response containing the success of the method
    *
-   * @throws PentahoAccessControlException Thrown when validation of access fails
    */
   @PUT
 	@Path( "/metadata/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
+  @Deprecated
+  @Facet( name = "Unsupported" )    
 	public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
                                             @FormDataParam( "metadataFile" ) InputStream metadataFile,
                                             @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
                                             @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo )
-      throws PentahoAccessControlException {
-    MetadataService service = new MetadataService();
-    try {
-      service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
-      return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
-    } catch ( PentahoAccessControlException e ) {
-      return Response.serverError().entity( e.toString() ).build();
-    } catch (PlatformImportException e) {
-      if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
-        FileResource fr = new FileResource();
-        return Response.status( PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ).entity(
-            Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
-                .doGetReservedCharactersDisplay().getEntity() ) ).build();  
-      } else {
-        String msg = e.getMessage();
-        logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
-        Throwable throwable = e.getCause();
-        if ( throwable != null ) {
-          msg = throwable.getMessage();
-          logger.error( "Root cause: " + msg );
-        }
-        int statusCode = e.getErrorStatus();
-        Response response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
-        return response;
-      }
-    } catch ( Exception e ) {
-      logger.error( e );
-      return Response.serverError().entity(
-          Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
-    }
+                                            @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) 
+  {
+    return super.importMetadataDatasource(
+        domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
 	}
 
   /**
