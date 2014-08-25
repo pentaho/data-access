@@ -70,6 +70,19 @@ public class AnalysisService extends DatasourceService {
     importer = PentahoSystem.get( IPlatformImporter.class );
   }
 
+  public Map<String, InputStream> doGetAnalysisFilesAsDownload( String analysisId )
+    throws PentahoAccessControlException {
+    if ( !canAdminister() ) {
+      throw new PentahoAccessControlException();
+    }
+
+    MondrianCatalogRepositoryHelper helper =
+      new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
+    Map<String, InputStream> fileData = helper.getModrianSchemaFiles( analysisId );
+
+    return fileData;
+  }
+
   public void removeAnalysis( String analysisId ) throws PentahoAccessControlException {
     if ( !canAdminister() ) {
       throw new PentahoAccessControlException();
