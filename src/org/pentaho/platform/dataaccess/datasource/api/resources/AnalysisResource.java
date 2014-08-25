@@ -45,6 +45,9 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
+import org.codehaus.enunciate.Facet;
+import org.codehaus.enunciate.jaxrs.ResponseCode;
+import org.codehaus.enunciate.jaxrs.StatusCodes;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
@@ -71,31 +74,47 @@ public class AnalysisResource {
   /**
    * Download the analysis files for a given analysis id
    *
-   * @param analysisId String Id of the analysis data to retrieve
+   * <p><b>Example Request:</b><br />
+   *  GET plugin/data-access/api/datasource/analysis/SampleData/download
+   * </p>
    *
-   * @return Response containing the file data
+   * @param analysisId String Id of the analysis data to retrieve
+   * <pre function="syntax.xml">
+   *  SampleData
+   * </pre>
+   *
+   * @return Response containing the analysis file data XML
    */
   @GET
-  @Path(" /datasource/analysis/{analysisId : .+}/download" )
+  @Path( "/datasource/analysis/{analysisId : .+}/download" )
   @Produces( WILDCARD )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Successfully downloaded the analysis file" ),
+    @ResponseCode( code = 401, condition = "Unauthorized" ),
+    @ResponseCode( code = 500, condition = "Unabled to download analysis file" )
+  } )
   public Response doGetAnalysisFilesAsDownload( @PathParam( "analysisId" ) String analysisId ) {
-    if( !DatasourceService.canAdminister() ) {
+    try {
+      Map<String, InputStream> fileData = service.doGetAnalysisFilesAsDownload( analysisId );
+      return ResourceUtil.createAttachment( fileData, analysisId );
+    } catch ( PentahoAccessControlException e ) {
       return Response.status( UNAUTHORIZED ).build();
     }
-    MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
-    Map<String, InputStream> fileData = helper.getModrianSchemaFiles( analysisId );
-    ResourceUtil.parseMondrianSchemaName( analysisId, fileData );
-
-    return ResourceUtil.createAttachment( fileData, analysisId );
-  }  
+  }
   
   /**
    * Remove the analysis data for a given analysis ID
    *
-   * @param analysisId
-   *          String ID of the analysis data to remove
+   * <p><b>Example Request:</b>
+   *  GET plugin/data-access/api/datasource/analysis/SampleData/remove
+   * </p>
    *
-   * @return Response ok if successful
+   * @param analysisId ID of the analysis data to remove
+   * <pre function="syntax.xml">
+   *  SampleData
+   * </pre>
+   *
+   * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
   @Path( "/datasource/analysis/{analysisId : .+}/remove" )
@@ -110,49 +129,102 @@ public class AnalysisResource {
   }
 
   /**
-   * Get list of IDs of analysis datasource
+   * Get a list of analysis data source ids
    *
-   * @return JaxbList<String> of analysis IDs
+   * <p><b>Example Request:</b><br />
+   *  GET /data-access/api/datasource/analysis/ids
+   * </p>
+   *
+   * @return A list of analysis IDs
+   *
+   * <p><b>Example Response:</b></p>
+   * <pre function="syntax.xml">
+   *  {
+   *   "Item":[
+   *     {
+   *       "@type":"xs:string",
+   *       "$":"SampleData"
+   *     },
+   *     {
+   *       "@type":"xs:string",
+   *       "$":"SteelWheels"
+   *     },
+   *     {
+   *       "@type":"xs:string",
+   *       "$":"pentaho_operations_mart"
+   *     }
+   *   ]
+   *  }
+   * </pre>
    */
   @GET
   @Path( "/datasource/analysis/ids" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Successfully retrieved the list of analysis IDs" )
+  } )
   public JaxbList<String> getAnalysisDatasourceIds() {
     return new JaxbList<String>( service.getAnalysisDatasourceIds() );
   }
 
   /**
    * This is used by PUC to use a Jersey put to import a Mondrian Schema XML into PUR
-   * 
-   * @author: tband date: 7/10/12
-   * @param dataInputStream
-   * @param schemaFileInfo
-   * @param catalogName
-   * @param datasourceName
-   * @param overwrite
-   * @param xmlaEnabledFlag
-   * @param parameters
-   * @return this method returns a response of "3" for success, 8 if exists, etc.
-   * @throws PentahoAccessControlException
+   *
+   * <p><b>Example Request:</b>
+   *  PUT /data-access/api/datasource/analysis/import
+   * </p>
+   *
+   * @param dataInputStream A Mondrian schema XML file
+   * @param schemaFileInfo User selected name for the file
+   * <pre function="syntax.xml">
+   *  schema.xml
+   * </pre>
+   * @param catalogName (optional) The catalog name
+   * @param overwrite Flag for overwriting existing version of the file
+   * <pre function="syntax.xml">
+   *  true
+   * </pre>
+   * @param xmlaEnabledFlag Is XMLA enabled or not
+   * <pre function="syntax.xml">
+   *  true
+   * </pre>
+   * @param parameters Import parameters
+   * <pre function="syntax.xml">
+   *  name1=value1;name2=value2
+   * </pre>
+   *
+   * @return Response containing the success of the method, a response of:
+   *  2: unspecified general error has occurred
+   *  3: success
+   *  5: Authorization error
+   *
+   * <p><b>Example Response:</b></p>
+   * <pre function="syntax.xml">
+   *   3
+   * </pre>
    */
   @PUT
   @Path( "/datasource/analysis/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
+  @StatusCodes( {
+    @ResponseCode( code = 200,
+      condition = "Status code indicating a success or failure while importing Mondrian schema XML" )
+  } )
   public Response putMondrianSchema(
-      @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
-      @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
-      @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
-      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
-      @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
-      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
+    @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
+    @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
+    @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
+    @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
+    @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
+    @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+    @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
     throws PentahoAccessControlException {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
       service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-          overwrite, xmlaEnabledFlag, parameters );
+        overwrite, xmlaEnabledFlag, parameters );
       statusCode = SUCCESS;
     } catch ( PentahoAccessControlException pac ) {
       logger.error( pac.getMessage() );
@@ -169,5 +241,4 @@ public class AnalysisResource {
     logger.debug( "putMondrianSchema Response " + response );
     return response;
   }
-  
 }
