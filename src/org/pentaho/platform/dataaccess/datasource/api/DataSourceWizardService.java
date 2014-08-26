@@ -17,8 +17,10 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -27,12 +29,16 @@ import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
+import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 
 public class DataSourceWizardService extends DatasourceService {
 
@@ -46,6 +52,32 @@ public class DataSourceWizardService extends DatasourceService {
     modelerService = new ModelerService();
   }
 
+
+  public  Map<String, InputStream> doGetDSWFilesAsDownload( String dswId ) throws PentahoAccessControlException {
+    if ( !canAdminister() ) {
+      throw new PentahoAccessControlException();
+    }
+    // First get the metadata files;
+    Map<String, InputStream> fileData = ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( dswId ); 
+  
+    // Then get the corresponding mondrian files
+    Domain domain = metadataDomainRepository.getDomain( dswId );
+    ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+    model.setDomain( domain );
+    LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    if ( logicalModel == null ) {
+      logicalModel = model.getLogicalModel( ModelerPerspective.REPORTING );
+    }
+    if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null) {
+      MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
+      String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
+      fileData.putAll( helper.getModrianSchemaFiles( catalogRef ) );
+      parseMondrianSchemaName( dswId, fileData );
+    }
+
+    return fileData;
+  }
+  
   public void removeDSW( String dswId ) throws PentahoAccessControlException {
     if ( !canAdminister() ) {
       throw new PentahoAccessControlException();
