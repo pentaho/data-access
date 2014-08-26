@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -39,7 +38,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.enunciate.Facet;
 import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
@@ -111,7 +109,7 @@ public class MetadataResource {
    * Remove the metadata for a given metadata ID
    *
    * <p><b>Example Request:</b><br/>
-   *   POST /pentaho/plugin/data-access/api/datasource/metadata/FoodMart/remove
+   *   POST /pentaho/plugin/data-access/api/datasource/metadata/FoodMart/delete
    * </p>
    *
    * @param metadataId The id of the Metadata datasource to remove
@@ -123,33 +121,6 @@ public class MetadataResource {
    */
   @POST
   @Path( "/datasource/metadata/{metadataId : .+}/remove" )
-  @Produces( WILDCARD )
-  @StatusCodes({
-    @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
-    @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." ),
-  })    
-  @Deprecated
-  @Facet( name = "Unsupported" )  
-  public Response doPostRemoveMetadata( @PathParam( "metadataId" ) String metadataId ) {
-    return doRemoveMetadata( metadataId );
-  }
-  
-  /**
-   * Remove the metadata for a given metadata ID
-   *
-   * <p><b>Example Request:</b><br/>
-   *   POST /pentaho/plugin/data-access/api/datasource/metadata/FoodMart/delete
-   * </p>
-   *
-   * @param metadataId The id of the Metadata datasource to remove
-   *               <pre function="syntax.xml">
-   *               {@code
-   *               FoodMart
-   *               }
-   *               </pre>
-   */
-  @DELETE
-  @Path( "/datasource/metadata/{metadataId : .+}/delete" )
   @Produces( WILDCARD )
   @StatusCodes({
     @ResponseCode( code = 200, condition = "Metadata datasource removed." ),

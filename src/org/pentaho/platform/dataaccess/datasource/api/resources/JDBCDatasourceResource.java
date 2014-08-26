@@ -18,104 +18,340 @@
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.WILDCARD;
+
+import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.enunciate.jaxrs.ResponseCode;
+import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionService;
-import org.pentaho.ui.database.event.IDatabaseConnectionList;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
+import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 @Path( "/data-access/api" )
 public class JDBCDatasourceResource {
 
-  private ConnectionService service;
-
+  private ConnectionServiceImpl service;
+  private static final Log logger = LogFactory.getLog( JDBCDatasourceResource.class );
+  
   public JDBCDatasourceResource() {
-    service = new ConnectionService();
+    service = new ConnectionServiceImpl();
   }
 
   /**
-   * Delete an existing database connection by name
-   * 
-   * @param name
-   *          String representing the name of the database connection to delete
-   * @return Response indicating the success of this operation
+   * Remove the JDBC data source for a given JDBC ID
    *
-   * @throws ConnectionServiceException
-   */
-  @DELETE
-  @Path( "/datasource/jdbc/delete" )
-  public Response deleteConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
-    return service.deleteConnectionByName( name );
-  }
-
-  /**
-   * Returns the list of database connections
+   * <p><b>Example Request:</b><br/>
+   *   POST /pentaho/plugin/data-access/api/datasource/jdbc/SampleData/remove
+   * </p>
    *
-   * @return List of database connections
-   *
-   * @throws ConnectionServiceException
-   */
-  @GET
-  @Path( "/datasource/jdbc/list" )
-  @Produces( { APPLICATION_JSON } )
-  public IDatabaseConnectionList getConnections() throws ConnectionServiceException {
-    return service.getConnections();
-  }
-
-  /**
-   * Returns the list of database connections
-   *
-   * @param name
-   *          String representing the name of the database to return
-   * @return Database connection by name
-   *
-   * @throws ConnectionServiceException
-   */
-  @GET
-  @Path( "/datasource/jdbc/get" )
-  @Produces( { APPLICATION_JSON } )
-  public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
-    return service.getConnectionByName( name );
-  }
-
-  /**
-   * Add a database connection
-   *
-   * @param connection A database connection object to add
-   * @return Response indicating the success of this operation
-   *
-   * @throws ConnectionServiceException
+   * @param name The name of the JDBC datasource to remove
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               SampleData
+   *               }
+   *               </pre>
    */
   @POST
-  @Path( "/datasource/jdbc/add" )
+  @Path( "/datasource/jdbc/{name : .+}/remove" )
+  @StatusCodes({
+    @ResponseCode( code = 200, condition = "JDBC datasource removed successfully." ),
+    @ResponseCode( code = 304, condition = "User is not authorized to remove the JDBC datasource or the connection does not exist." ),
+    @ResponseCode( code = 500, condition = "An unexected error occurred while deleting the JDBC datasource." )
+  }) 
+  public Response deleteConnection( @PathParam( "name" ) String name ) {
+    try {
+      boolean success = service.deleteConnection( name );
+      if ( success ) {
+        return Response.ok().build();
+      } else {
+        return Response.notModified().build();
+      }
+    } catch ( Throwable t ) {
+      return Response.serverError().build();
+    }
+
+  }  
+  
+  /**
+   * Get a list of JDBC datasource IDs
+   *
+   * <p><b>Example Request:</b><br />
+   *  GET /data-access/api/datasource/jdbc/ids
+   * </p>
+   *
+   * @return A list of JDBC datasource IDs
+   *
+   * <p><b>Example Response:</b></p>
+   * <pre function="syntax.xml">
+   *  {@code
+   *  {
+   *   "Item":[
+   *     {
+   *       "@type":"xs:string",
+   *       "$":"SampleData"
+   *     },
+   *     {
+   *       "@type":"xs:string",
+   *       "$":"Conn123"
+   *     },
+   *     {
+   *       "@type":"xs:string",
+   *       "$":"MyConnection"
+   *     }
+   *   ]
+   *  }
+   *  }
+   * </pre>
+   */
+  @GET
+  @Path( "/datasource/jdbc/ids" )
+  @Produces( { WILDCARD } )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Successfully retrieved the list of JDBC datasource IDs" ),
+    @ResponseCode( code = 500, condition = "An error occurred retrieving the list of JDBC datasource IDs" )
+  } )  
+  public Response getConnectionIDs() {
+    try {
+      JaxbList<String> connections = new JaxbList<String>();
+
+      List<IDatabaseConnection> conns = service.getConnections();
+      for (IDatabaseConnection conn : conns) {
+        conn.setPassword( null );
+        connections.getList().add( conn.getId() );
+      }
+      return Response.ok( connections ).build();
+    } catch ( ConnectionServiceException e ) {
+      logger.error( "Error " + e.getMessage() );
+      return Response.serverError().build();
+    }
+  }
+
+  /**
+   * Export a JDBC datasource connection.
+   *
+   * <p><b>Example Request:</b><br/>
+   *   GET /pentaho/plugin/data-access/api/datasource/jdbc/SampleData/download
+   * </p>
+   *
+   * @param name The name of the JDBC datasource to retrieve
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               SampleData
+   *               }
+   *               </pre>
+   * @return A Response object containing the JDBC connection in XML or JSON form
+   * 
+   * <p><b>Example Response:</b></p>
+   * <pre function="syntax.xml">
+   * {@code
+   *   {
+   *   "SQLServerInstance":null,
+   *   "accessType":"NATIVE",
+   *   "accessTypeValue":"NATIVE",
+   *   "attributes":{  
+   *     "PORT_NUMBER":"9001"
+   *   },
+   *   "changed":false,
+   *   "connectSql":"",
+   *   "connectionPoolingProperties":{  
+   *   },
+   *   "dataTablespace":"",
+   *   "databaseName":"SampleData",
+   *   "databasePort":"9001",
+   *   "databaseType":{  
+   *     "defaultDatabasePort":9001,
+   *     "extraOptionsHelpUrl":"http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
+   *     "name":"Hypersonic",
+   *     "shortName":"HYPERSONIC"
+   *   },
+   *   "extraOptions":{  
+   *     "HYPERSONIC.parameter3":"value3",
+   *     "HYPERSONIC.parameter2":"value2"
+   *   },
+   *   "forcingIdentifiersToLowerCase":false,
+   *   "forcingIdentifiersToUpperCase":false,
+   *   "hostname":"localhost",
+   *   "id":"12e88903-9cfd-419a-9cd1-728093aaf2cf",
+   *   "indexTablespace":"",
+   *   "informixServername":"",
+   *   "initialPoolSize":0,
+   *   "maximumPoolSize":0,
+   *   "name":"SampleData",
+   *   "partitioned":false,
+   *   "password":"password",
+   *   "quoteAllFields":false,
+   *   "streamingResults":false,
+   *   "username":"pentaho_user",
+   *   "usingConnectionPool":true,
+   *   "usingDoubleDecimalAsSchemaTableSeparator":false
+   *   }
+   * }
+   * </pre>
+   */
+  @GET
+  @Path( "/datasource/jdbc/{name : .+}/download" )
+  @Produces( { WILDCARD } )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Successfully retrieved the JDBC datasource" ),
+    @ResponseCode( code = 500, condition = "An error occurred retrieving the JDBC datasource" )
+  } )  
+  public Response getConnection( @PathParam( "name" ) String name ) {
+    try {
+      return Response.ok( service.getConnectionByName( name ) ).build();
+    } catch ( ConnectionServiceException e ) {
+      logger.error( "Error " + e.getMessage() );
+      return Response.serverError().build();
+    }    
+  }
+
+  /**
+   * Add a JDBC datasource connection.
+   *
+   * <p><b>Example Request:</b><br/>
+   *   GET /pentaho/plugin/data-access/api/datasource/jdbc/import
+   * </p>
+   *
+   * @param connection A DatabaseConnection in JSON representation
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               {  
+   *                 "changed":true,
+   *                 "usingConnectionPool":true,
+   *                 "connectSql":"",
+   *                 "databaseName":"SampleData",
+   *                 "databasePort":"9001",
+   *                 "hostname":"localhost",
+   *                 "name":"Test123",
+   *                 "password":"password",
+   *                 "username":"pentaho_user",
+   *                 "attributes":{  
+   *                 },
+   *                 "connectionPoolingProperties":{  
+   *                 },
+   *                 "extraOptions":{  
+   *                 },
+   *                 "accessType":"NATIVE",
+   *                 "databaseType":{  
+   *                   "defaultDatabasePort":9001,
+   *                   "extraOptionsHelpUrl":"http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
+   *                   "name":"Hypersonic",
+   *                   "shortName":"HYPERSONIC",
+   *                   "supportedAccessTypes":[  
+   *                     "NATIVE",
+   *                     "ODBC",
+   *                     "JNDI"
+   *                   ]
+   *                 }
+   *               }
+   *               }
+   *               </pre>
+   * @return A jax-rs Response object with the appropriate status code, header, and body.
+   */
+  @POST
+  @Path( "/datasource/jdbc/import" )
   @Consumes( {APPLICATION_JSON} )
-  public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
-    return service.addConnection( connection );
+  @StatusCodes({
+    @ResponseCode( code = 200, condition = "JDBC datasource added successfully." ),
+    @ResponseCode( code = 304, condition = "User is not authorized to add JDBC datasources." ),
+    @ResponseCode( code = 500, condition = "An unexected error occurred while adding the JDBC datasource." )
+  })   
+  public Response add( DatabaseConnection connection ) {
+    try {
+      DatasourceService.validateAccess();
+      boolean success = service.addConnection( connection );
+      if (success) {
+        return Response.ok().build();
+      } else {
+        return Response.notModified().build();
+      }
+    } catch ( Throwable t ) {
+      logger.error( "Error " + t.getMessage() );
+      return Response.serverError().build();
+    }    
   }
   
   /**
-   * Update an existing database connection
+   * Update an existing JDBC datasource connection.
    *
-   * @param connection
-   *          Database connection object to update
-   * @return Response indicating the success of this operation
+   * <p><b>Example Request:</b><br/>
+   *   GET /pentaho/plugin/data-access/api/datasource/jdbc/update
+   * </p>
    *
-   * @throws ConnectionServiceException
+   * @param connection A DatabaseConnection in JSON representation
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               {  
+   *                 "changed":true,
+   *                 "usingConnectionPool":true,
+   *                 "connectSql":"",
+   *                 "databaseName":"SampleData",
+   *                 "databasePort":"9001",
+   *                 "hostname":"localhost",
+   *                 "name":"Test123",
+   *                 "password":"password",
+   *                 "username":"pentaho_user",
+   *                 "attributes":{  
+   *                 },
+   *                 "connectionPoolingProperties":{  
+   *                 },
+   *                 "extraOptions":{  
+   *                 },
+   *                 "accessType":"NATIVE",
+   *                 "databaseType":{  
+   *                   "defaultDatabasePort":9001,
+   *                   "extraOptionsHelpUrl":"http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
+   *                   "name":"Hypersonic",
+   *                   "shortName":"HYPERSONIC",
+   *                   "supportedAccessTypes":[  
+   *                     "NATIVE",
+   *                     "ODBC",
+   *                     "JNDI"
+   *                   ]
+   *                 }
+   *               }
+   *               }
+   *               </pre>
+   * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
   @Path( "/datasource/jdbc/update" )
   @Consumes( { APPLICATION_JSON } )
-  public Response updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
-    return service.updateConnection( connection );
+  @StatusCodes({
+    @ResponseCode( code = 200, condition = "JDBC datasource updated successfully." ),
+    @ResponseCode( code = 304, condition = "User is not authorized to update the JDBC datasource or the connection does not exist." ),
+    @ResponseCode( code = 500, condition = "An unexected error occurred while updating the JDBC datasource." )
+  }) 
+  public Response update( DatabaseConnection connection ) {
+    try {
+      if ( StringUtils.isBlank( connection.getPassword() ) ) {
+        IDatabaseConnection savedConn = service.getConnectionById( connection.getId() );
+        connection.setPassword( savedConn.getPassword() );
+      }
+      boolean success = service.updateConnection( connection );
+      if ( success ) {
+        return Response.ok().build();
+      } else {
+        return Response.notModified().build();
+      }
+    } catch (Throwable t) {
+      logger.error( "Error " + t.getMessage() );
+      return Response.serverError().build();
+    }
   }
+
 }
