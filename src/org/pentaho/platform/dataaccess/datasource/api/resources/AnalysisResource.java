@@ -37,17 +37,12 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
-import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
-import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.plugin.services.importer.PlatformImportException;
-import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
-import org.pentaho.platform.web.http.api.resources.JaxbList;
-import org.codehaus.enunciate.Facet;
 import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
+import org.pentaho.platform.plugin.services.importer.PlatformImportException;
+import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;

@@ -32,81 +32,83 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.pentaho.agilebi.modeler.ModelerPerspective;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
-import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.codehaus.enunciate.jaxrs.ResponseCode;
+import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
-import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
-import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
-import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 @Path( "/data-access/api" )
 public class DataSourceWizardResource {
 
-  private static final String MONDRIAN_CATALOG_REF = "MondrianCatalogRef"; //$NON-NLS-1$
   private DataSourceWizardService service;
   
-  private IMetadataDomainRepository metadataDomainRepository;
-
   public DataSourceWizardResource() {
     service = new DataSourceWizardService();
-    metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
   }
 
   /**
-   * Download the data source wizard data for a given data source wizard ID
    *
    * @param dswId String Id of the data source wizard data to retrieve
    *
    * @return Response containing the file data
    */
+  
+  
+  /**
+   * Export the DSW data source for the given DSW ID.  The response will be zipped if there are
+   * more than one file.  The response will contain an XMI and/or a mondrian cube definition file.
+   *
+   * <p><b>Example Request:</b><br/>
+   *   GET /pentaho/plugin/data-access/api/datasource/dsw/MyDSWDS/download
+   * </p>
+   *
+   * @param dswId The id of the DSW datasource to export
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               MyDSWDS
+   *               }
+   *               </pre>
+   * @return A Response object containing the DSW data source files.
+   */  
   @GET
   @Path( "/datasource/dsw/{dswId : .+}/download" )
   @Produces(WILDCARD)
+  @StatusCodes({
+    @ResponseCode( code = 200, condition = "DSW datasource export succeeded." ),
+    @ResponseCode( code = 401, condition = "User is not authorized to export DSW datasource." ),
+    @ResponseCode( code = 500, condition = "Failure to export DSW datasource." )
+  })  
   public Response doGetDSWFilesAsDownload( @PathParam( "dswId" ) String dswId ) {
-    if ( !DatasourceService.canAdminister() ) {
-      return Response.status (UNAUTHORIZED ).build();
+    try {
+      Map<String, InputStream> fileData = service.doGetDSWFilesAsDownload( dswId );
+      return ResourceUtil.createAttachment( fileData, dswId );
+    } catch ( PentahoAccessControlException e ) {
+      return Response.status( UNAUTHORIZED ).build();
     }
-    // First get the metadata files;
-    Map<String, InputStream> fileData = ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( dswId ); 
-  
-    // Then get the corresponding mondrian files
-    Domain domain = metadataDomainRepository.getDomain( dswId );
-    ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
-    model.setDomain( domain );
-    LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    if ( logicalModel == null ) {
-      logicalModel = model.getLogicalModel( ModelerPerspective.REPORTING );
-    }
-    if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null) {
-      MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
-      String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
-      fileData.putAll( helper.getModrianSchemaFiles( catalogRef ) );
-      ResourceUtil.parseMondrianSchemaName( dswId, fileData );
-    }
-
-    return ResourceUtil.createAttachment( fileData, dswId );
   }  
   
   /**
-   * Remove the datasource wizard data for a given datasource wizard ID
+   * Remove the DSW data source for a given DSW ID
    *
-   * @param dswId
-   *          String ID of the datasource wizard data to remove
+   * <p><b>Example Request:</b><br/>
+   *   POST /pentaho/plugin/data-access/api/datasource/dsw/MyDSWDS/delete
+   * </p>
    *
-   * @return Response ok if successful
+   * @param dswId The id of the DSW datasource to remove
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               MyDSWDS
+   *               }
+   *               </pre>
    */
   @POST
   @Path( "/datasource/dsw/{dswId : .+}/remove" )
   @Produces( WILDCARD )
+  @StatusCodes({
+    @ResponseCode( code = 200, condition = "DSW datasource removed successfully." ),
+    @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." ),
+  })    
   public Response doRemoveDSW( @PathParam( "dswId" ) String dswId ) {
     try {
       service.removeDSW( dswId );
@@ -117,9 +119,18 @@ public class DataSourceWizardResource {
   }
 
   /**
-   * Returns a list of datasource IDs from datasource wizard
+   * Get the DSW datasource IDs
    *
-   * @return JaxbList<String> list of datasource IDs
+   * <p><b>Example Request:</b><br/>
+   *   GET /pentaho/plugin/data-access/api/datasource/dsw/ids
+   * </p>
+   *
+   * @return JaxbList<String> of DSW datasource IDs
+   *               <pre function="syntax.xml">
+   *               {@code
+   *               {"Item":{"@type":"xs:string","$":"MyDSWDS"}}
+   *               }
+   *               </pre>
    */
   @GET
   @Path( "/datasource/dsw/ids" )

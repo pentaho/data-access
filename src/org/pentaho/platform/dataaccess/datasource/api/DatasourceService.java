@@ -17,7 +17,9 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -100,4 +102,13 @@ public class DatasourceService {
       return true;
     }
   }
+  
+  public static void parseMondrianSchemaName( String dswId, Map<String, InputStream> fileData ) {
+    final String keySchema = "schema.xml";//$NON-NLS-1$
+    if ( fileData.containsKey( keySchema ) ) {
+      final int xmiIndex = dswId.lastIndexOf( ".xmi" );//$NON-NLS-1$
+      fileData.put( ( xmiIndex > 0 ? dswId.substring( 0, xmiIndex ) : dswId ) + ".mondrian.xml", fileData.get( keySchema ) );//$NON-NLS-1$
+      fileData.remove( keySchema );
+    }
+  } 
 }
