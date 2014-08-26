@@ -92,7 +92,7 @@ public class DataSourceWizardResource {
    * Remove the DSW data source for a given DSW ID
    *
    * <p><b>Example Request:</b><br/>
-   *   POST /pentaho/plugin/data-access/api/datasource/dsw/MyDSWDS/delete
+   *   POST /pentaho/plugin/data-access/api/datasource/dsw/MyDSWDS/remove
    * </p>
    *
    * @param dswId The id of the DSW datasource to remove
