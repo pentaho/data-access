@@ -130,7 +130,7 @@ public class JDBCDatasourceResource {
       List<IDatabaseConnection> conns = service.getConnections();
       for (IDatabaseConnection conn : conns) {
         conn.setPassword( null );
-        connStrList.add( conn.getId() );
+        connStrList.add( conn.getName() );
       }
     } catch ( ConnectionServiceException e ) {
       logger.error( "Error " + e.getMessage() );
