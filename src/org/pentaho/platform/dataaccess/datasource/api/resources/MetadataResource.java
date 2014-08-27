@@ -64,12 +64,12 @@ public class MetadataResource {
 
   private MetadataService service;
   private IMetadataDomainRepository metadataDomainRepository;
-  
+
   public MetadataResource() {
     service = new MetadataService();
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
   }
-  
+
   /**
    * Export a metadata datasource.
    *
@@ -88,21 +88,22 @@ public class MetadataResource {
   @GET
   @Path( "/{metadataId : .+}/download" )
   @Produces( WILDCARD )
-  @StatusCodes({
+  @StatusCodes( {
       @ResponseCode( code = 200, condition = "Metadata datasource export succeeded." ),
       @ResponseCode( code = 401, condition = "User is not authorized to export Metadata datasource." ),
       @ResponseCode( code = 500, condition = "Failure to export Metadata datasource." )
-  })  
+  } )
   public Response doGetMetadataFilesAsDownload( @PathParam( "metadataId" ) String metadataId ) {
-    if( !DatasourceService.canAdminister() ) {
+    if ( !DatasourceService.canAdminister() ) {
       return Response.status( UNAUTHORIZED ).build();
     }
     if ( !( metadataDomainRepository instanceof IPentahoMetadataDomainRepositoryExporter ) ) {
       return Response.serverError().build();
     }
-    Map<String, InputStream> fileData = ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( metadataId );
+    Map<String, InputStream> fileData =
+      ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( metadataId );
     return ResourceUtil.createAttachment( fileData, metadataId );
-  }  
+  }
 
   /**
    * Remove the metadata for a given metadata ID
@@ -121,10 +122,10 @@ public class MetadataResource {
   @POST
   @Path( "/{metadataId : .+}/remove" )
   @Produces( WILDCARD )
-  @StatusCodes({
+  @StatusCodes( {
     @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
-    @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." ),
-  })      
+    @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." )
+  } )
   public Response doRemoveMetadata( @PathParam( "metadataId" ) String metadataId ) {
     try {
       service.removeMetadata( metadataId );
@@ -154,7 +155,7 @@ public class MetadataResource {
   public JaxbList<String> getMetadataDatasourceIds() {
     return new JaxbList<String>( service.getMetadataDatasourceIds() );
   }
-  
+
   /**
    * Import a Metadata datasource
    * 
@@ -192,10 +193,10 @@ public class MetadataResource {
   @Path( "/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
-  @StatusCodes({
+  @StatusCodes( {
     @ResponseCode( code = 200, condition = "Metadata datasource import succeeded." ),
-    @ResponseCode( code = 500, condition = "Metadata datasource import failed.  Error code or message included in response entity" ),
-  })   
+    @ResponseCode( code = 500, condition = "Metadata datasource import failed.  Error code or message included in response entity" )
+  } )
   public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
@@ -205,7 +206,7 @@ public class MetadataResource {
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
           localeFilesInfo );
-      return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
+      return Response.ok( String.valueOf( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return Response.serverError().entity( e.toString() ).build();
     } catch ( PlatformImportException e ) {
@@ -223,7 +224,7 @@ public class MetadataResource {
           logger.error( "Root cause: " + msg );
         }
         int statusCode = e.getErrorStatus();
-        Response response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+        Response response = Response.ok( String.valueOf( statusCode ) ).type( MediaType.TEXT_PLAIN ).build();
         return response;
       }
     } catch ( Exception e ) {
