@@ -17,40 +17,69 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.ws.rs.core.Response;
+
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
-import org.jmock.Expectations;
+import org.apache.commons.io.IOUtils;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
-import org.pentaho.platform.api.engine.ICacheManager;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.ISecurityHelper;
+import org.pentaho.platform.api.engine.ISolutionEngine;
+import org.pentaho.platform.api.engine.IUserRoleListService;
 import org.pentaho.platform.api.mt.ITenant;
+import org.pentaho.platform.api.repository.IClientRepositoryPathsStrategy;
+import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
+import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.core.mt.Tenant;
+import org.pentaho.platform.dataaccess.datasource.wizard.csv.SerializeMultiTableServiceTest.MockUserDetailService;
+import org.pentaho.platform.dataaccess.datasource.wizard.csv.SerializeMultiTableServiceTest.TestFileSystemBackedUnifiedRepository;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
+import org.pentaho.platform.engine.core.system.SystemSettings;
+import org.pentaho.platform.engine.services.solution.SolutionEngine;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
+import org.pentaho.platform.plugin.action.mondrian.mapper.MondrianOneToOneUserRoleListMapper;
+import org.pentaho.platform.plugin.services.connections.mondrian.MDXConnection;
+import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepositoryInfo;
+import org.pentaho.platform.repository2.unified.RepositoryUtils;
 import org.pentaho.platform.repository2.unified.ServerRepositoryPaths;
+import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository;
 import org.pentaho.platform.repository2.unified.jcr.SimpleJcrTestUtils;
 import org.pentaho.test.platform.MethodTrackingData;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.pentaho.test.platform.engine.security.MockSecurityHelper;
-import org.pentaho.test.platform.repository2.unified.MockUnifiedRepository;
 import org.springframework.extensions.jcr.JcrTemplate;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
@@ -59,6 +88,7 @@ import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.userdetails.UserDetailsService;
 
 @SuppressWarnings("nls")
 public class MetadataDatasourceServiceTest extends TestCase  {
@@ -68,7 +98,7 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 
 	private MicroPlatform booter;
 
-	private IUnifiedRepository repository;
+	private FileTrackingRepository repository;
 	
 	private String repositoryAdminUsername = "pentahoRepoAdmin";
 	
@@ -88,6 +118,7 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 		FileUtils.deleteDirectory(new File("/tmp/jackrabbit-test-TRUNK"));
 		PentahoSessionHolder.setStrategyName(PentahoSessionHolder.MODE_GLOBAL);
 		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
+		PentahoSystemHelper.init();
 	}
 
 	@AfterClass
@@ -95,35 +126,42 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 		PentahoSessionHolder.setStrategyName(PentahoSessionHolder.MODE_INHERITABLETHREADLOCAL);
 	}
 
-	@Before
-	public void setUp() throws Exception {
-		Mockery context = new JUnit4Mockery();
-		manager = new MockBackingRepositoryLifecycleManager(new MockSecurityHelper());
-		booter = new MicroPlatform("test-res");
+  @Before
+  public void setUp() throws Exception {
+    Mockery context = new JUnit4Mockery();
+    manager = new MockBackingRepositoryLifecycleManager( new MockSecurityHelper() );
+    IAuthorizationPolicy mockAuthorizationPolicy = mock( IAuthorizationPolicy.class );
+    when( mockAuthorizationPolicy.isAllowed( anyString() ) ).thenReturn( true );
+    // not just where to write, needs the right configs
+    repository = new FileTrackingRepository( "test-res/solution1" );
+    IUserRoleListService mockUserRoleListService = mock( IUserRoleListService.class );
 
-		// Clear up the cache
-		final ICacheManager cacheMgr = PentahoSystem.getCacheManager(null);
-		cacheMgr.clearRegionCache(MondrianCatalogHelper.MONDRIAN_CATALOG_CACHE_REGION);
+    booter = new MicroPlatform( "test-res/solution1" );
 
-		// Define a repository for testing
-		repository = new MockUnifiedRepository(new MockUserProvider());
-		repository.createFolder(repository.getFile("/etc").getId(), new RepositoryFile.Builder("metadata").folder(true).build(), "initialization");
+    booter.define( ISolutionEngine.class, SolutionEngine.class );
+    booter.define( IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class );
+    booter.define( IMondrianCatalogService.class, MondrianCatalogHelper.class );
 
-		final IAuthorizationPolicy policy =  context.mock(IAuthorizationPolicy.class);
-		booter.defineInstance(IAuthorizationPolicy.class, policy);
-		booter.defineInstance(IUnifiedRepository.class, repository);
-		booter.start();
-		logout();
-		manager.startup();
-		
-		context.checking(new Expectations() {{
-			oneOf (policy); will(returnValue(true));
-			oneOf (policy); will(returnValue(true));
-			oneOf (policy); will(returnValue(true));
-	    }});
-	}
+    booter.define( MDXConnection.MDX_CONNECTION_MAPPER_KEY, MondrianOneToOneUserRoleListMapper.class );
+    booter.defineInstance( IDatasourceMgmtService.class, context.mock( IDatasourceMgmtService.class ) );
+    booter.defineInstance( IClientRepositoryPathsStrategy.class, context.mock( IClientRepositoryPathsStrategy.class ) );
+    booter.defineInstance( IMetadataDomainRepository.class, createMetadataDomainRepository() );
+    booter.define( ISecurityHelper.class, MockSecurityHelper.class );
+    booter.define( UserDetailsService.class, MockUserDetailService.class );
+    booter.define( "singleTenantAdminUserName", new String( "admin" ) );
+    booter.defineInstance( IAuthorizationPolicy.class, mockAuthorizationPolicy );
+
+    booter.defineInstance( IUserRoleListService.class, mockUserRoleListService );
+
+    booter.setSettingsProvider( new SystemSettings() );
+    booter.start();
+
+    PentahoSessionHolder.setStrategyName( PentahoSessionHolder.MODE_GLOBAL );
+    SecurityContextHolder.setStrategyName( SecurityContextHolder.MODE_GLOBAL );
+  }
 
 	@Test
+	// XXX doesn't really test import
 	public void testImportSchema() throws Exception {
 		try {
 			login("joe", "duff", false);
@@ -138,23 +176,32 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 			assertEquals(3, children.size());
 		}
 	}
-	
+
+  @Test
+  public void testImportDswMetadata() throws Exception {
+    login( "joe", "duff", false );
+    MetadataDatasourceService service = new MetadataDatasourceService();
+    FileInputStream in = new FileInputStream( new File( new File( "test-res" ), "Sample_CSV.xmi" ) );
+    try {
+      repository.clearFileLists();
+      Response resp = service.importMetadataDatasource( "Sample CSV", in, null, "True", null, null, true );
+      assertEquals( Response.Status.CREATED, Response.Status.fromStatusCode( resp.getStatus() ) );
+      Collection<Serializable> createdFiles = repository.getCreatedFiles();
+      Collection<Serializable> updatedFiles = repository.getUpdatedFiles();
+      // xmi, schema, schema meta
+      assertEquals( 3, createdFiles.size() + updatedFiles.size() );
+      logout();
+    } finally {
+      IOUtils.closeQuietly( in );
+      repository.deleteCreatedFiles();
+      repository.clearFileLists();
+    }
+  }
+
 	protected void clearRoleBindings() throws Exception {
 		loginAsRepositoryAdmin();
 		SimpleJcrTestUtils.deleteItem(testJcrTemplate, ServerRepositoryPaths.getTenantRootFolderPath(new Tenant("duff", true)) + ".authz");
 		SimpleJcrTestUtils.deleteItem(testJcrTemplate, ServerRepositoryPaths.getTenantRootFolderPath(new Tenant("duff", true)) + ".authz");
-	}
-
-	private class MockUserProvider implements MockUnifiedRepository.ICurrentUserProvider {
-		@Override
-		public String getUser() {
-			return MockUnifiedRepository.root().getName();
-		}
-
-		@Override
-		public List<String> getRoles() {
-			return new ArrayList<String>();
-		}
 	}
 
 	/**
@@ -208,6 +255,81 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 	protected void login(final String username, final String tenantId) {
 		login(username, tenantId, false);
 	}
+
+  public PentahoMetadataDomainRepository createMetadataDomainRepository() throws Exception {
+    booter.defineInstance(IUnifiedRepository.class, repository);
+    Assert.assertNotNull(new RepositoryUtils(repository).getFolder("/etc/metadata", true, true, null));
+    Assert.assertNotNull(new RepositoryUtils(repository).getFolder("/etc/mondrian", true, true, null));
+    Assert.assertNotNull(new RepositoryUtils(repository).getFolder("/savetest", true, true, null));    
+    PentahoMetadataDomainRepository pentahoMetadataDomainRepository = new PentahoMetadataDomainRepository(repository);
+    return pentahoMetadataDomainRepository;
+  }
+
+  /**
+   * Keeps tracks of files that were created and updated via the api.
+   */
+  public static class FileTrackingRepository extends FileSystemBackedUnifiedRepository {
+
+    private Set<Serializable> createdFiles = new HashSet<Serializable>();
+    private Set<Serializable> updatedFiles = new HashSet<Serializable>();
+
+    public FileTrackingRepository( final String baseDir ) {
+      super( baseDir );
+    }
+
+    @Override
+    public RepositoryFile createFile( Serializable parentFolderId, RepositoryFile file, IRepositoryFileData data,
+        RepositoryFileAcl acl, String versionMessage ) {
+      RepositoryFile created = super.createFile( parentFolderId, file, data, acl, versionMessage );
+      if (created != null && created.getId() != null ) {
+        createdFiles.add( created.getId() );
+      }
+      return created;
+    }
+    @Override
+    public RepositoryFile createFile( Serializable parentFolderId, RepositoryFile file, IRepositoryFileData data,
+        String versionMessage ) {
+      RepositoryFile created = super.createFile( parentFolderId, file, data, versionMessage );
+      if ( created != null && created.getId() != null ) {
+        createdFiles.add( created.getId() );
+      }
+      return created;
+    }
+    @Override
+    public RepositoryFile updateFile( RepositoryFile file, IRepositoryFileData data, String versionMessage ) {
+      RepositoryFile updated = super.updateFile( file, data, versionMessage );
+      if ( updated != null && updated.getId() != null ) {
+        updatedFiles.add( updated.getId() );
+      }
+      return updated;
+    }
+
+    public Collection<Serializable> getCreatedFiles() {
+      return createdFiles;
+    }
+    public Collection<Serializable> getUpdatedFiles() {
+      return updatedFiles;
+    }
+
+    public int deleteCreatedFiles() {
+      int deleted = 0;
+      for ( Serializable fileId : createdFiles ) {
+        try {
+          deleteFile( fileId, "cleanup" );
+          deleted++;
+        }
+        catch (Throwable t) {
+          t.printStackTrace( System.err );
+        }
+      }
+      return deleted;
+    }
+
+    public void clearFileLists() {
+      createdFiles.clear();
+      updatedFiles.clear();
+    }
+  }
 	
 	private class MockBackingRepositoryLifecycleManager implements IBackingRepositoryLifecycleManager {
 	    public static final String UNIT_TEST_EXCEPTION_MESSAGE = "Unit Test Exception";
