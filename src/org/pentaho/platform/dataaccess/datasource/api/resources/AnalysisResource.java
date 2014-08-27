@@ -113,6 +113,10 @@ public class AnalysisResource {
   @POST
   @Path( "/{analysisId : .+}/remove" )
   @Produces( WILDCARD )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Successfully removed the analysis data" ),
+    @ResponseCode( code = 500, condition = "Unable to remove the analysis data." )
+  } )
   public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
     try {
       service.removeAnalysis( analysisId );
