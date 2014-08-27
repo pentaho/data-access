@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -41,7 +42,10 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.drools.util.StringUtils;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
@@ -63,6 +67,7 @@ import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadActi
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
+
 import org.pentaho.platform.web.http.api.resources.FileResource;
 
 @Path("/data-access/api/metadata")
@@ -75,6 +80,7 @@ public class MetadataDatasourceService {
 	private static final Log logger = LogFactory.getLog(MetadataDatasourceService.class);
 
   private static final String OVERWRITE_IN_REPOS = "overwrite";
+  public static final String PRESERVE_DSW = "preserveDsw";
   private static final String SUCCESS = "3";
   private static final String DENIED_CHAR = "10";
 
@@ -92,8 +98,10 @@ public class MetadataDatasourceService {
    * @param domainId  Unique identifier for the metadata datasource
    * @param metadataFile Input stream for the metadata.xmi
    * @param metadataFileInfo User selected name for the file
+   * @param overwrite Flag for overwriting existing version of the file
    * @param localeFiles List of local files
    * @param localeFilesInfo List of information for each local file
+   * @param preserveDsw Keep OLAP model in xmi and publish as a DSW
    *
    * @return Response containing the success of the method
    *
@@ -106,15 +114,17 @@ public class MetadataDatasourceService {
   @Path("/postimport")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/html")
-  public Response importMetadataDatasourceWithPost( @FormDataParam("domainId") String domainId,
-                                            @FormDataParam("metadataFile") InputStream metadataFile,
-                                            @FormDataParam("metadataFile") FormDataContentDisposition metadataFileInfo,
-                                            @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
-                                            @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam("localeFiles") List<FormDataContentDisposition> localeFilesInfo)
+  public Response importMetadataDatasourceWithPost( @FormDataParam( "domainId" ) String domainId,
+      @FormDataParam( "metadataFile" ) InputStream metadataFile,
+      @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+      @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
+      @FormDataParam( PRESERVE_DSW ) @DefaultValue( "false" ) boolean preserveDsw )
       throws PentahoAccessControlException {
-    Response response = importMetadataDatasource(domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
-        localeFilesInfo);
+    Response response =
+        importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo,
+            preserveDsw );
     ResponseBuilder responseBuilder;
     responseBuilder = Response.ok();
     responseBuilder.entity(String.valueOf(response.getStatus()));
@@ -126,9 +136,10 @@ public class MetadataDatasourceService {
    * @param domainId  Unique identifier for the metadata datasource
    * @param metadataFile Input stream for the metadata.xmi
    * @param metadataFileInfo User selected name for the file
+   * @param overwrite Flag for overwriting existing version of the file
    * @param localeFiles List of local files
    * @param localeFilesInfo List of information for each local file
-   * @param overwrite Flag for overwriting existing version of the file
+   * @param preserveDsw Keep OLAP model in xmi and publish as a DSW
    *
    * @return Response containing the success of the method
    *
@@ -138,13 +149,14 @@ public class MetadataDatasourceService {
 	@Path("/import")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/plain")
-	public Response importMetadataDatasource( @FormDataParam("domainId") String domainId,
-                                            @FormDataParam("metadataFile") InputStream metadataFile,
-                                            @FormDataParam("metadataFile") FormDataContentDisposition metadataFileInfo,
-                                            @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
-                                            @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam("localeFiles") List<FormDataContentDisposition> localeFilesInfo)
-      throws PentahoAccessControlException {
+  public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
+      @FormDataParam( "metadataFile" ) InputStream metadataFile,
+      @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+      @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
+      @FormDataParam( PRESERVE_DSW ) @DefaultValue( "false" ) boolean preserveDsw )
+    throws PentahoAccessControlException {
 
 		try {
 			validateAccess();
@@ -154,7 +166,7 @@ public class MetadataDatasourceService {
 
     FileResource fr = new FileResource();
     String reservedChars = (String) fr.doGetReservedChars().getEntity();
-    if ( reservedChars != null
+    if ( !StringUtils.isEmpty( reservedChars )
         // \ need to be replaced with \\ for Regex
         && domainId.matches(  ".*[" + reservedChars.replaceAll( "\\\\", "\\\\\\\\" ) + "]+.*"  ) ) {
       return Response.status( PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ).entity( Messages
@@ -163,6 +175,11 @@ public class MetadataDatasourceService {
     }
 
 		boolean overWriteInRepository = "True".equalsIgnoreCase(overwrite) ? true : false;
+
+    if ( preserveDsw ) {
+      return publishDsw( domainId, metadataFile, overWriteInRepository );
+    }
+
     RepositoryFileImportBundle.Builder bundleBuilder = new RepositoryFileImportBundle.Builder()
         .input(metadataFile)
         .charSet("UTF-8")
@@ -171,7 +188,6 @@ public class MetadataDatasourceService {
         .mime("text/xmi+xml")
         .withParam("domain-id", domainId);
 
-    int pos = 0;
     if(localeFiles != null){
       for(int i=0; i < localeFiles.size(); i++) {
         logger.info("create language file");
@@ -194,7 +210,6 @@ public class MetadataDatasourceService {
       IPentahoSession pentahoSession = PentahoSessionHolder.getSession();
       PentahoSystem.publish(pentahoSession, org.pentaho.platform.engine.services.metadata.MetadataPublisher.class.getName());
       return Response.ok().status(new Integer(SUCCESS)).type(MediaType.TEXT_PLAIN).build();
-
     } catch (PlatformImportException pe) {
       String msg = pe.getMessage();
       logger.error("Error import metadata: " + msg + " status = " + pe.getErrorStatus());
@@ -210,10 +225,35 @@ public class MetadataDatasourceService {
       logger.error(e);
 			return Response.serverError().entity(Messages.getString("MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR")).build();
 		}
-
-
-
 	}
+
+  private Response publishDsw(String domainId, InputStream metadataFile, boolean overwrite) {
+    try {
+
+      ModelerService modelerService = new ModelerService();
+      XmiParser xmiParser = new XmiParser();
+      Domain domain = xmiParser.parseXmi( metadataFile );
+      // publish metadata and initial schema
+      modelerService.serializeModels( domain, domainId, true, overwrite );
+      return Response.ok().status( Response.Status.CREATED ).type( MediaType.TEXT_PLAIN ).build();
+
+    } catch ( PlatformImportException pe ) {
+      String msg = pe.getMessage();
+      logger.error( "Error import metadata DSW: " + msg + " status = " + pe.getErrorStatus() );
+      Throwable throwable = pe.getCause();
+      if ( throwable != null ) {
+        msg = throwable.getMessage();
+        logger.error( "Root cause: " + msg );
+      }
+      int statusCode = pe.getErrorStatus();
+      Response response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+      return response;
+    } catch ( Exception e ) {
+      logger.error( e );
+      return Response.serverError().entity(
+          Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
+    }
+  }
 
   /**
    * @param localizeBundleEntries

@@ -138,6 +138,11 @@ public class ModelerService extends PentahoBase implements IModelerService {
   }
 
   public String serializeModels(final Domain domain, final String name, final boolean doOlap) throws Exception {
+    return serializeModels( domain, name, doOlap, true);
+  }
+
+  public String serializeModels( final Domain domain, final String name, final boolean doOlap,
+      final boolean overwriteDomain ) throws Exception {
     String domainId = null;
     initKettle();
 
@@ -173,8 +178,8 @@ public class ModelerService extends PentahoBase implements IModelerService {
 
             // Stores metadata into JCR.      
             IMetadataDomainRepository metadataDomainRep = PentahoSystem.get(IMetadataDomainRepository.class);
-            if (metadataDomainRep != null) {
-              metadataDomainRep.storeDomain(model.getDomain(), true);
+            if ( metadataDomainRep != null ) {
+              metadataDomainRep.storeDomain( model.getDomain(), overwriteDomain );
             }
             // Serialize domain to olap schema.
             if (doOlap) {
