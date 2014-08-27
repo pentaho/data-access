@@ -18,8 +18,9 @@
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.WILDCARD;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -42,7 +43,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
-@Path( "/data-access/api" )
 public class JDBCDatasourceResource {
 
   private ConnectionServiceImpl service;
@@ -67,7 +67,7 @@ public class JDBCDatasourceResource {
    *               </pre>
    */
   @POST
-  @Path( "/datasource/jdbc/{name : .+}/remove" )
+  @Path( "/{name : .+}/remove" )
   @StatusCodes({
     @ResponseCode( code = 200, condition = "JDBC datasource removed successfully." ),
     @ResponseCode( code = 304, condition = "User is not authorized to remove the JDBC datasource or the connection does not exist." ),
@@ -119,26 +119,24 @@ public class JDBCDatasourceResource {
    * </pre>
    */
   @GET
-  @Path( "/datasource/jdbc/ids" )
-  @Produces( { WILDCARD } )
+  @Path( "/ids" )
+  @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of JDBC datasource IDs" ),
-    @ResponseCode( code = 500, condition = "An error occurred retrieving the list of JDBC datasource IDs" )
   } )  
-  public Response getConnectionIDs() {
+  public JaxbList<String> getConnectionIDs() {
+    List<String> connStrList = new ArrayList<String>();
     try {
-      JaxbList<String> connections = new JaxbList<String>();
-
       List<IDatabaseConnection> conns = service.getConnections();
       for (IDatabaseConnection conn : conns) {
         conn.setPassword( null );
-        connections.getList().add( conn.getId() );
+        connStrList.add( conn.getId() );
       }
-      return Response.ok( connections ).build();
     } catch ( ConnectionServiceException e ) {
       logger.error( "Error " + e.getMessage() );
-      return Response.serverError().build();
     }
+    JaxbList<String> connections = new JaxbList<String>( connStrList );
+    return connections;
   }
 
   /**
@@ -204,8 +202,8 @@ public class JDBCDatasourceResource {
    * </pre>
    */
   @GET
-  @Path( "/datasource/jdbc/{name : .+}/download" )
-  @Produces( { WILDCARD } )
+  @Path( "/{name : .+}/download" )
+  @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the JDBC datasource" ),
     @ResponseCode( code = 500, condition = "An error occurred retrieving the JDBC datasource" )
@@ -263,8 +261,8 @@ public class JDBCDatasourceResource {
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
-  @Path( "/datasource/jdbc/import" )
-  @Consumes( {APPLICATION_JSON} )
+  @Path( "/import" )
+  @Consumes( { APPLICATION_JSON } )
   @StatusCodes({
     @ResponseCode( code = 200, condition = "JDBC datasource added successfully." ),
     @ResponseCode( code = 304, condition = "User is not authorized to add JDBC datasources." ),
@@ -329,7 +327,7 @@ public class JDBCDatasourceResource {
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
-  @Path( "/datasource/jdbc/update" )
+  @Path( "/update" )
   @Consumes( { APPLICATION_JSON } )
   @StatusCodes({
     @ResponseCode( code = 200, condition = "JDBC datasource updated successfully." ),

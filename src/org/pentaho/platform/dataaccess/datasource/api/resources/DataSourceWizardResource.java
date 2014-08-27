@@ -38,7 +38,6 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
-@Path( "/data-access/api" )
 public class DataSourceWizardResource {
 
   private DataSourceWizardService service;
