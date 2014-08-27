@@ -115,6 +115,7 @@ public class AnalysisResource {
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully removed the analysis data" ),
+    @ResponseCode( code = 401, condition = "User is not authorized to delete the analysis datasource" ),
     @ResponseCode( code = 500, condition = "Unable to remove the analysis data." )
   } )
   public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
