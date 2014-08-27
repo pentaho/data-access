@@ -186,7 +186,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    * @return Response containing the file data
    */
   public Response doGetDSWFilesAsDownload( @PathParam( "dswId" ) String dswId ) {
-    return new DataSourceWizardResource().doGetDSWFilesAsDownload( dswId );
+    return new DataSourceWizardResource().download( dswId );
   }
 
   
@@ -220,7 +220,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    * @return Response ok if successful
    */
   public Response doRemoveDSW( @PathParam( "dswId" ) String dswId ) {
-    return new DataSourceWizardResource().doRemoveDSW( dswId );
+    return new DataSourceWizardResource().remove( dswId );
   }
   
   /**

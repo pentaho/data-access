@@ -78,7 +78,7 @@ public class DataSourceWizardResource {
     @ResponseCode( code = 401, condition = "User is not authorized to export DSW datasource." ),
     @ResponseCode( code = 500, condition = "Failure to export DSW datasource." )
   })  
-  public Response doGetDSWFilesAsDownload( @PathParam( "dswId" ) String dswId ) {
+  public Response download( @PathParam( "dswId" ) String dswId ) {
     try {
       Map<String, InputStream> fileData = service.doGetDSWFilesAsDownload( dswId );
       return ResourceUtil.createAttachment( fileData, dswId );
@@ -108,7 +108,7 @@ public class DataSourceWizardResource {
     @ResponseCode( code = 200, condition = "DSW datasource removed successfully." ),
     @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." ),
   })    
-  public Response doRemoveDSW( @PathParam( "dswId" ) String dswId ) {
+  public Response remove( @PathParam( "dswId" ) String dswId ) {
     try {
       service.removeDSW( dswId );
       return Response.ok().build();
