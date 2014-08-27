@@ -95,12 +95,12 @@ public class AnalysisResource {
       return Response.status( UNAUTHORIZED ).build();
     }
   }
-  
+
   /**
    * Remove the analysis data for a given analysis ID
    *
    * <p><b>Example Request:</b>
-   *  GET plugin/data-access/api/datasource/analysis/SampleData/remove
+   *  POST plugin/data-access/api/datasource/analysis/SampleData/remove
    * </p>
    *
    * @param analysisId ID of the analysis data to remove
@@ -231,7 +231,7 @@ public class AnalysisResource {
       statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
 
-    response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+    response = Response.ok( String.valueOf( statusCode ) ).type( MediaType.TEXT_PLAIN ).build();
     logger.debug( "putMondrianSchema Response " + response );
     return response;
   }
