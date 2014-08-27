@@ -44,7 +44,7 @@ import org.pentaho.platform.api.mt.ITenant;
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.util.IPasswordService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceResource;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
 import org.pentaho.platform.engine.core.system.SystemSettings;
@@ -151,7 +151,7 @@ public class DatasourceWebServicesSecurityTest {
 	@Test
 	public void testImportMetadataDatasource() throws Exception {
 		login("joe", "duff", false);
-		MetadataDatasourceService analysisDatasourceService = new MetadataDatasourceService();
+		DatasourceResource analysisDatasourceService = new DatasourceResource();
 
 		Response res = analysisDatasourceService.storeDomain(null, null);
 		Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
