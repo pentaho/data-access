@@ -78,11 +78,9 @@ public class MetadataResource {
    * </p>
    *
    * @param metadataId The id of the Metadata datasource to export
-   *               <pre function="syntax.xml">
-   *               {@code
-   *               FoodMart
-   *               }
-   *               </pre>
+   * <pre function="syntax.xml">
+   *  FoodMart
+   * </pre>
    * @return A Response object containing the metadata xmi file.
    */
   @GET
@@ -113,11 +111,9 @@ public class MetadataResource {
    * </p>
    *
    * @param metadataId The id of the Metadata datasource to remove
-   *               <pre function="syntax.xml">
-   *               {@code
-   *               FoodMart
-   *               }
-   *               </pre>
+   * <pre function="syntax.xml">
+   *  FoodMart
+   * </pre>
    */
   @POST
   @Path( "/{metadataId : .+}/remove" )
@@ -143,15 +139,16 @@ public class MetadataResource {
    * </p>
    *
    * @return JaxbList<String> of Metadata datasource IDs
-   *               <pre function="syntax.xml">
-   *               {@code
-   *               {"Item":{"@type":"xs:string","$":"steel-wheels"}}
-   *               }
-   *               </pre>
+   * <pre function="syntax.xml">
+   *  {"Item":{"@type":"xs:string","$":"steel-wheels"}}
+   * </pre>
    */
   @GET
   @Path( "/ids" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Successfully retrieved the list of metadata IDs" )
+  } )
   public JaxbList<String> getMetadataDatasourceIds() {
     return new JaxbList<String>( service.getMetadataDatasourceIds() );
   }
@@ -162,9 +159,7 @@ public class MetadataResource {
    * @param domainId
    *          Unique identifier for the metadata datasource
    *          <pre function="syntax.xml">
-   *          {@code
    *          {"Item":{"@type":"xs:string","$":"steel-wheels"}}
-   *          }
    *          </pre>
    * @param metadataFile
    *          input stream for the metadata.xmi
@@ -177,9 +172,7 @@ public class MetadataResource {
    * @param overwrite
    *          Flag for overwriting existing version of the file
    *          <pre function="syntax.xml">
-   *          {@code
    *          true
-   *          }
    *          </pre>
    *
    * @return Response containing the success of the method, a response of:
@@ -187,7 +180,11 @@ public class MetadataResource {
    *  3: indicates successful import
    *  9: content already exists (use overwrite flag to force)
    * 10: import failed because publish is prohibited
-   * 
+   *
+   * <p><b>Example Response:</b></p>
+   * <pre function="syntax.xml">
+   *   3
+   * </pre>
    */
   @PUT
   @Path( "/import" )
