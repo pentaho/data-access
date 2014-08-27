@@ -47,7 +47,6 @@ import org.pentaho.platform.web.http.api.resources.JaxbList;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
-@Path( "/data-access/api" )
 public class AnalysisResource {
 
   private static final String UPLOAD_ANALYSIS = "uploadAnalysis";
@@ -81,7 +80,7 @@ public class AnalysisResource {
    * @return Response containing the analysis file data XML
    */
   @GET
-  @Path( "/datasource/analysis/{analysisId : .+}/download" )
+  @Path( "/{analysisId : .+}/download" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully downloaded the analysis file" ),
@@ -112,7 +111,7 @@ public class AnalysisResource {
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
-  @Path( "/datasource/analysis/{analysisId : .+}/remove" )
+  @Path( "/{analysisId : .+}/remove" )
   @Produces( WILDCARD )
   public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
     try {
@@ -153,7 +152,7 @@ public class AnalysisResource {
    * </pre>
    */
   @GET
-  @Path( "/datasource/analysis/ids" )
+  @Path( "/ids" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of analysis IDs" )
@@ -199,7 +198,7 @@ public class AnalysisResource {
    * </pre>
    */
   @PUT
-  @Path( "/datasource/analysis/import" )
+  @Path( "/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
   @StatusCodes( {

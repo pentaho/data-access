@@ -54,7 +54,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
-@Path( "/data-access/api" )
+@Path( "/data-access/api/datasource/metadata" )
 public class MetadataDatasourceService extends MetadataResource {
 
 	private static final String LANG = "[a-z]{2}";
@@ -89,7 +89,7 @@ public class MetadataDatasourceService extends MetadataResource {
    * a http form which requires a post.
    */
   @POST
-  @Path( "/metadata/postimport" )
+  @Path( "/postimport" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/html" )
   public Response importMetadataDatasourceWithPost( @FormDataParam( "domainId" ) String domainId,
@@ -120,7 +120,7 @@ public class MetadataDatasourceService extends MetadataResource {
    *
    */
   @PUT
-	@Path( "/metadata/import" )
+	@Path( "/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
   @Deprecated
@@ -146,7 +146,7 @@ public class MetadataDatasourceService extends MetadataResource {
    * @throws PentahoAccessControlException Thrown when validation of access fails
    */
   @PUT
-  @Path( "/metadata/uploadServletImport" )
+  @Path( "/uploadServletImport" )
   @Consumes( { TEXT_PLAIN } )
   @Produces( "text/plain" )
   @Deprecated
@@ -216,7 +216,7 @@ public class MetadataDatasourceService extends MetadataResource {
    * @throws PentahoAccessControlException Thrown when validation of access fails
    */
   @PUT
-	@Path( "/metadata/storeDomain" )
+	@Path( "/storeDomain" )
 	@Consumes( { MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN } )
 	@Produces( "text/plain" )
 	public Response storeDomain( InputStream metadataFile, @QueryParam( "domainId" ) String domainId ) throws PentahoAccessControlException {
@@ -242,7 +242,7 @@ public class MetadataDatasourceService extends MetadataResource {
    * @throws PentahoAccessControlException Thrown when validation of access fails
    */
 	@PUT
-	@Path( "/metadata/addLocalizationFile" )
+	@Path( "/addLocalizationFile" )
 	@Consumes( { MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN } )
 	@Produces( "text/plain" )
 	public Response addLocalizationFile( @QueryParam( "domainId" ) String domainId, @QueryParam( "locale" ) String locale, InputStream propertiesFile ) throws PentahoAccessControlException {

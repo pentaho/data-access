@@ -56,7 +56,6 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
-@Path( "/data-access/api" )
 public class MetadataResource {
 
   private static final Log logger = LogFactory.getLog( MetadataResource.class );
@@ -87,7 +86,7 @@ public class MetadataResource {
    * @return A Response object containing the metadata xmi file.
    */
   @GET
-  @Path( "/datasource/metadata/{metadataId : .+}/download" )
+  @Path( "/{metadataId : .+}/download" )
   @Produces( WILDCARD )
   @StatusCodes({
       @ResponseCode( code = 200, condition = "Metadata datasource export succeeded." ),
@@ -120,7 +119,7 @@ public class MetadataResource {
    *               </pre>
    */
   @POST
-  @Path( "/datasource/metadata/{metadataId : .+}/remove" )
+  @Path( "/{metadataId : .+}/remove" )
   @Produces( WILDCARD )
   @StatusCodes({
     @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
@@ -150,7 +149,7 @@ public class MetadataResource {
    *               </pre>
    */
   @GET
-  @Path( "/datasource/metadata/ids" )
+  @Path( "/ids" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )
   public JaxbList<String> getMetadataDatasourceIds() {
     return new JaxbList<String>( service.getMetadataDatasourceIds() );
@@ -190,7 +189,7 @@ public class MetadataResource {
    * 
    */
   @PUT
-  @Path( "/datasource/metadata/import" )
+  @Path( "/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
   @StatusCodes({
