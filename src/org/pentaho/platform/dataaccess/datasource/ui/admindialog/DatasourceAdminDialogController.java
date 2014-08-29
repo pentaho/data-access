@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
+import org.pentaho.gwt.widgets.client.dialogs.MessageDialogBox;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.DatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
@@ -458,17 +459,39 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   @Bindable
   public void export() {
     IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
+    if (dsInfo == null) {
+        showErrorDialog("datasourceAdminErrorDialog.SELECT_DATASOURCE",
+                "datasourceAdminErrorDialog.SELECT_DATASOURCE_EXPORT");
+        return;
+    }
+    if (JdbcDatasourceService.TYPE.equals(dsInfo.getType())) {
+        showErrorDialog("datasourceAdminErrorDialog.CANNOT_EXPORT_HEADER",
+                "datasourceAdminErrorDialog.CANNOT_EXPORT_TEXT");
+        return;
+    }
+
     manager.exportDatasource(dsInfo);
   }
   
   @Bindable
   public void remove() {
+    IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
+    if (dsInfo == null) {
+        showErrorDialog("datasourceAdminErrorDialog.SELECT_DATASOURCE",
+                "datasourceAdminErrorDialog.SELECT_DATASOURCE_DELETE");
+        return;
+    }
     removeDatasourceConfirmationDialog.show();
   }
   
   @Bindable
   public void edit() {
     IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
+    if (dsInfo == null) {
+        showErrorDialog("datasourceAdminErrorDialog.SELECT_DATASOURCE",
+                "datasourceAdminErrorDialog.SELECT_DATASOURCE_EDIT");
+        return;
+    }
     String type = dsInfo.getType();
     final String dsId = dsInfo.getId();
     if (DSWUIDatasourceService.TYPE.equals(type)) {
@@ -534,6 +557,12 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       IDatasourceInfo datasourceInfo = datasourceAdminDialogModel.getSelectedDatasource();	
       entryPoint.showEditAnalysisDialog(adminDatasourceListener, datasourceInfo);
     }
+    else
+    if (MetadataUIDatasourceService.TYPE.equals(type)) {
+      showErrorDialog("datasourceAdminErrorDialog.CANNOT_EDIT_HEADER",
+                "datasourceAdminErrorDialog.CANNOT_EDIT_TEXT");
+      return;
+    }
   }
   
   @Bindable
@@ -581,4 +610,14 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   public void setMessageBundle(GwtDatasourceMessages messageBundle) {
     this.messageBundle = messageBundle;
   }
+
+    private void showErrorDialog(String titleKey, String messageKey) {
+        MessageDialogBox b = new MessageDialogBox(
+                messageBundle.getString(titleKey),
+                messageBundle.getString(messageKey), false, false, true,
+                messageBundle.getString("dialog.button.ok"));
+        b.getElement().getStyle().setZIndex(Short.MAX_VALUE);
+        b.center();
+        b.show();
+    }
 }
