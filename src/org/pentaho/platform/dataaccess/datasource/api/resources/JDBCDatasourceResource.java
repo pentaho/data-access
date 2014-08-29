@@ -38,6 +38,7 @@ import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
@@ -45,77 +46,51 @@ import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 public class JDBCDatasourceResource {
 
-  private ConnectionServiceImpl service;
+  protected ConnectionServiceImpl service;
   private static final Log logger = LogFactory.getLog( JDBCDatasourceResource.class );
-  
+
   public JDBCDatasourceResource() {
     service = new ConnectionServiceImpl();
   }
 
   /**
-   * Remove the JDBC data source for a given JDBC ID
-   *
-   * <p><b>Example Request:</b><br/>
-   *   POST /pentaho/plugin/data-access/api/datasource/jdbc/SampleData/remove
-   * </p>
+   * Remove the JDBC data source for a given JDBC ID.
+   * <p/>
+   * <p><b>Example Request:</b><br/> GET /pentaho/plugin/data-access/api/datasource/jdbc/SampleData/remove </p>
    *
    * @param name The name of the JDBC datasource to remove
-   *               <pre function="syntax.xml">
-   *               {@code
-   *               SampleData
-   *               }
-   *               </pre>
    */
-  @POST
+  @GET
   @Path( "/{name : .+}/remove" )
-  @StatusCodes({
+  @StatusCodes( {
     @ResponseCode( code = 200, condition = "JDBC datasource removed successfully." ),
-    @ResponseCode( code = 304, condition = "User is not authorized to remove the JDBC datasource or the connection does not exist." ),
+    @ResponseCode( code = 304,
+      condition = "User is not authorized to remove the JDBC datasource or the connection does not exist." ),
     @ResponseCode( code = 500, condition = "An unexected error occurred while deleting the JDBC datasource." )
-  }) 
+  } )
   public Response deleteConnection( @PathParam( "name" ) String name ) {
     try {
       boolean success = service.deleteConnection( name );
       if ( success ) {
-        return Response.ok().build();
+        return buildOkResponse();
       } else {
-        return Response.notModified().build();
+        return buildNotModifiedResponse();
       }
     } catch ( Throwable t ) {
-      return Response.serverError().build();
+      return buildServerErrorResponse();
     }
 
-  }  
-  
+  }
+
   /**
    * Get a list of JDBC datasource IDs
-   *
-   * <p><b>Example Request:</b><br />
-   *  GET /data-access/api/datasource/jdbc/ids
-   * </p>
+   * <p/>
+   * <p><b>Example Request:</b><br /> GET /data-access/api/datasource/jdbc/ids </p>
    *
    * @return A list of JDBC datasource IDs
-   *
-   * <p><b>Example Response:</b></p>
-   * <pre function="syntax.xml">
-   *  {@code
-   *  {
-   *   "Item":[
-   *     {
-   *       "@type":"xs:string",
-   *       "$":"SampleData"
-   *     },
-   *     {
-   *       "@type":"xs:string",
-   *       "$":"Conn123"
-   *     },
-   *     {
-   *       "@type":"xs:string",
-   *       "$":"MyConnection"
-   *     }
-   *   ]
-   *  }
-   *  }
+   * <p/>
+   * <p><b>Example Response:</b></p> <pre function="syntax.xml"> {@code { "Item":[ { "@type":"xs:string",
+   * "$":"SampleData" }, { "@type":"xs:string", "$":"Conn123" }, { "@type":"xs:string", "$":"MyConnection" } ] } }
    * </pre>
    */
   @GET
@@ -123,12 +98,12 @@ public class JDBCDatasourceResource {
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of JDBC datasource IDs" ),
-  } )  
+  } )
   public JaxbList<String> getConnectionIDs() {
     List<String> connStrList = new ArrayList<String>();
     try {
       List<IDatabaseConnection> conns = service.getConnections();
-      for (IDatabaseConnection conn : conns) {
+      for ( IDatabaseConnection conn : conns ) {
         conn.setPassword( null );
         connStrList.add( conn.getName() );
       }
@@ -141,65 +116,23 @@ public class JDBCDatasourceResource {
 
   /**
    * Export a JDBC datasource connection.
-   *
-   * <p><b>Example Request:</b><br/>
-   *   GET /pentaho/plugin/data-access/api/datasource/jdbc/SampleData/download
-   * </p>
+   * <p/>
+   * <p><b>Example Request:</b><br/> GET /pentaho/plugin/data-access/api/datasource/jdbc/SampleData/download </p>
    *
    * @param name The name of the JDBC datasource to retrieve
-   *               <pre function="syntax.xml">
-   *               {@code
-   *               SampleData
-   *               }
-   *               </pre>
    * @return A Response object containing the JDBC connection in XML or JSON form
-   * 
-   * <p><b>Example Response:</b></p>
-   * <pre function="syntax.xml">
-   * {@code
-   *   {
-   *   "SQLServerInstance":null,
-   *   "accessType":"NATIVE",
-   *   "accessTypeValue":"NATIVE",
-   *   "attributes":{  
-   *     "PORT_NUMBER":"9001"
-   *   },
-   *   "changed":false,
-   *   "connectSql":"",
-   *   "connectionPoolingProperties":{  
-   *   },
-   *   "dataTablespace":"",
-   *   "databaseName":"SampleData",
-   *   "databasePort":"9001",
-   *   "databaseType":{  
-   *     "defaultDatabasePort":9001,
-   *     "extraOptionsHelpUrl":"http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
-   *     "name":"Hypersonic",
-   *     "shortName":"HYPERSONIC"
-   *   },
-   *   "extraOptions":{  
-   *     "HYPERSONIC.parameter3":"value3",
-   *     "HYPERSONIC.parameter2":"value2"
-   *   },
-   *   "forcingIdentifiersToLowerCase":false,
-   *   "forcingIdentifiersToUpperCase":false,
-   *   "hostname":"localhost",
-   *   "id":"12e88903-9cfd-419a-9cd1-728093aaf2cf",
-   *   "indexTablespace":"",
-   *   "informixServername":"",
-   *   "initialPoolSize":0,
-   *   "maximumPoolSize":0,
-   *   "name":"SampleData",
-   *   "partitioned":false,
-   *   "password":"password",
-   *   "quoteAllFields":false,
-   *   "streamingResults":false,
-   *   "username":"pentaho_user",
-   *   "usingConnectionPool":true,
-   *   "usingDoubleDecimalAsSchemaTableSeparator":false
-   *   }
-   * }
-   * </pre>
+   * <p/>
+   * <p><b>Example Response:</b></p> <pre function="syntax.xml"> {@code { "SQLServerInstance":null,
+   * "accessType":"NATIVE", "accessTypeValue":"NATIVE", "attributes":{ "PORT_NUMBER":"9001" }, "changed":false,
+   * "connectSql":"", "connectionPoolingProperties":{ }, "dataTablespace":"", "databaseName":"SampleData",
+   * "databasePort":"9001", "databaseType":{ "defaultDatabasePort":9001, "extraOptionsHelpUrl":"http://hsqldb
+   * .sourceforge.net/doc/guide/ch04.html#N109DA",
+   * "name":"Hypersonic", "shortName":"HYPERSONIC" }, "extraOptions":{ "HYPERSONIC.parameter3":"value3",
+   * "HYPERSONIC.parameter2":"value2" }, "forcingIdentifiersToLowerCase":false, "forcingIdentifiersToUpperCase":false,
+   * "hostname":"localhost", "id":"12e88903-9cfd-419a-9cd1-728093aaf2cf", "indexTablespace":"", "informixServername":"",
+   * "initialPoolSize":0, "maximumPoolSize":0, "name":"SampleData", "partitioned":false, "password":"password",
+   * "quoteAllFields":false, "streamingResults":false, "username":"pentaho_user", "usingConnectionPool":true,
+   * "usingDoubleDecimalAsSchemaTableSeparator":false } } </pre>
    */
   @GET
   @Path( "/{name : .+}/download" )
@@ -207,133 +140,78 @@ public class JDBCDatasourceResource {
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the JDBC datasource" ),
     @ResponseCode( code = 500, condition = "An error occurred retrieving the JDBC datasource" )
-  } )  
+  } )
   public Response getConnection( @PathParam( "name" ) String name ) {
     try {
-      return Response.ok( service.getConnectionByName( name ) ).build();
+      return buildOkResponse( service.getConnectionByName( name ) );
     } catch ( ConnectionServiceException e ) {
       logger.error( "Error " + e.getMessage() );
-      return Response.serverError().build();
-    }    
+      return buildServerErrorResponse();
+    }
   }
 
   /**
    * Add a JDBC datasource connection.
+   * <p/>
+   * <p><b>Example Request:</b><br/> POST /pentaho/plugin/data-access/api/datasource/jdbc/import </p>
    *
-   * <p><b>Example Request:</b><br/>
-   *   GET /pentaho/plugin/data-access/api/datasource/jdbc/import
-   * </p>
-   *
-   * @param connection A DatabaseConnection in JSON representation
-   *               <pre function="syntax.xml">
-   *               {@code
-   *               {  
-   *                 "changed":true,
-   *                 "usingConnectionPool":true,
-   *                 "connectSql":"",
-   *                 "databaseName":"SampleData",
-   *                 "databasePort":"9001",
-   *                 "hostname":"localhost",
-   *                 "name":"Test123",
-   *                 "password":"password",
-   *                 "username":"pentaho_user",
-   *                 "attributes":{  
-   *                 },
-   *                 "connectionPoolingProperties":{  
-   *                 },
-   *                 "extraOptions":{  
-   *                 },
-   *                 "accessType":"NATIVE",
-   *                 "databaseType":{  
-   *                   "defaultDatabasePort":9001,
-   *                   "extraOptionsHelpUrl":"http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
-   *                   "name":"Hypersonic",
-   *                   "shortName":"HYPERSONIC",
-   *                   "supportedAccessTypes":[  
-   *                     "NATIVE",
-   *                     "ODBC",
-   *                     "JNDI"
-   *                   ]
-   *                 }
-   *               }
-   *               }
-   *               </pre>
+   * @param connection A DatabaseConnection in JSON representation <pre function="syntax.xml"> {@code { "changed":true,
+   *                   "usingConnectionPool":true, "connectSql":"", "databaseName":"SampleData", "databasePort":"9001",
+   *                   "hostname":"localhost", "name":"Test123", "password":"password", "username":"pentaho_user",
+   *                   "attributes":{ }, "connectionPoolingProperties":{ }, "extraOptions":{ }, "accessType":"NATIVE",
+   *                   "databaseType":{ "defaultDatabasePort":9001, "extraOptionsHelpUrl":"http://hsqldb.sourceforge
+   *                   .net/doc/guide/ch04.html#N109DA",
+   *                   "name":"Hypersonic", "shortName":"HYPERSONIC", "supportedAccessTypes":[ "NATIVE", "ODBC", "JNDI"
+   *                   ] } } } </pre>
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
   @Path( "/import" )
   @Consumes( { APPLICATION_JSON } )
-  @StatusCodes({
+  @StatusCodes( {
     @ResponseCode( code = 200, condition = "JDBC datasource added successfully." ),
     @ResponseCode( code = 304, condition = "User is not authorized to add JDBC datasources." ),
     @ResponseCode( code = 500, condition = "An unexected error occurred while adding the JDBC datasource." )
-  })   
+  } )
   public Response add( DatabaseConnection connection ) {
     try {
-      DatasourceService.validateAccess();
+      validateAccess();
       boolean success = service.addConnection( connection );
-      if (success) {
-        return Response.ok().build();
+      if ( success ) {
+        return buildOkResponse();
       } else {
-        return Response.notModified().build();
+        return buildNotModifiedResponse();
       }
     } catch ( Throwable t ) {
       logger.error( "Error " + t.getMessage() );
-      return Response.serverError().build();
-    }    
+      return buildServerErrorResponse();
+    }
   }
-  
+
   /**
    * Update an existing JDBC datasource connection.
+   * <p/>
+   * <p><b>Example Request:</b><br/> POST /pentaho/plugin/data-access/api/datasource/jdbc/update </p>
    *
-   * <p><b>Example Request:</b><br/>
-   *   GET /pentaho/plugin/data-access/api/datasource/jdbc/update
-   * </p>
-   *
-   * @param connection A DatabaseConnection in JSON representation
-   *               <pre function="syntax.xml">
-   *               {@code
-   *               {  
-   *                 "changed":true,
-   *                 "usingConnectionPool":true,
-   *                 "connectSql":"",
-   *                 "databaseName":"SampleData",
-   *                 "databasePort":"9001",
-   *                 "hostname":"localhost",
-   *                 "name":"Test123",
-   *                 "password":"password",
-   *                 "username":"pentaho_user",
-   *                 "attributes":{  
-   *                 },
-   *                 "connectionPoolingProperties":{  
-   *                 },
-   *                 "extraOptions":{  
-   *                 },
-   *                 "accessType":"NATIVE",
-   *                 "databaseType":{  
-   *                   "defaultDatabasePort":9001,
-   *                   "extraOptionsHelpUrl":"http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
-   *                   "name":"Hypersonic",
-   *                   "shortName":"HYPERSONIC",
-   *                   "supportedAccessTypes":[  
-   *                     "NATIVE",
-   *                     "ODBC",
-   *                     "JNDI"
-   *                   ]
-   *                 }
-   *               }
-   *               }
-   *               </pre>
+   * @param connection A DatabaseConnection in JSON representation <pre function="syntax.xml"> {@code { "changed":true,
+   *                   "usingConnectionPool":true, "connectSql":"", "databaseName":"SampleData", "databasePort":"9001",
+   *                   "hostname":"localhost", "name":"Test123", "password":"password", "username":"pentaho_user",
+   *                   "attributes":{ }, "connectionPoolingProperties":{ }, "extraOptions":{ }, "accessType":"NATIVE",
+   *                   "databaseType":{ "defaultDatabasePort":9001, "extraOptionsHelpUrl":"http://hsqldb.sourceforge
+   *                   .net/doc/guide/ch04.html#N109DA",
+   *                   "name":"Hypersonic", "shortName":"HYPERSONIC", "supportedAccessTypes":[ "NATIVE", "ODBC", "JNDI"
+   *                   ] } } } </pre>
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
   @Path( "/update" )
   @Consumes( { APPLICATION_JSON } )
-  @StatusCodes({
+  @StatusCodes( {
     @ResponseCode( code = 200, condition = "JDBC datasource updated successfully." ),
-    @ResponseCode( code = 304, condition = "User is not authorized to update the JDBC datasource or the connection does not exist." ),
+    @ResponseCode( code = 304,
+      condition = "User is not authorized to update the JDBC datasource or the connection does not exist." ),
     @ResponseCode( code = 500, condition = "An unexected error occurred while updating the JDBC datasource." )
-  }) 
+  } )
   public Response update( DatabaseConnection connection ) {
     try {
       if ( StringUtils.isBlank( connection.getPassword() ) ) {
@@ -342,14 +220,34 @@ public class JDBCDatasourceResource {
       }
       boolean success = service.updateConnection( connection );
       if ( success ) {
-        return Response.ok().build();
+        return buildOkResponse();
       } else {
-        return Response.notModified().build();
+        return buildNotModifiedResponse();
       }
-    } catch (Throwable t) {
+    } catch ( Throwable t ) {
       logger.error( "Error " + t.getMessage() );
-      return Response.serverError().build();
+      return buildServerErrorResponse();
     }
+  }
+
+  protected Response buildOkResponse() {
+    return Response.ok().build();
+  }
+
+  protected Response buildOkResponse( IDatabaseConnection connection ) {
+    return Response.ok( connection ).build();
+  }
+
+  protected Response buildNotModifiedResponse() {
+    return Response.notModified().build();
+  }
+
+  protected Response buildServerErrorResponse() {
+    return Response.serverError().build();
+  }
+
+  protected void validateAccess() throws PentahoAccessControlException {
+    DatasourceService.validateAccess();
   }
 
 }
