@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
@@ -55,32 +55,33 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   private IDataAccessPermissionHandler dataAccessPermHandler;
 
   private IDatasourceMgmtService datasourceMgmtSvc;
-  
+
   private DatabaseDialectService dialectService = new DatabaseDialectService();
-  
+
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
 
-  private static final Log logger = LogFactory.getLog(ConnectionServiceImpl.class);
+  private static final Log logger = LogFactory.getLog( ConnectionServiceImpl.class );
 
   public Log getLogger() {
     return logger;
   }
-  
+
   public ConnectionServiceImpl() {
     IPentahoSession session = PentahoSessionHolder.getSession();
-    datasourceMgmtSvc = PentahoSystem.get(IDatasourceMgmtService.class, session);
+    datasourceMgmtSvc = PentahoSystem.get( IDatasourceMgmtService.class, session );
     String dataAccessClassName;
     try {
-      //FIXME: we should be using an object factory of some kind here
-      IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
-      dataAccessClassName = resLoader.getPluginSetting(getClass(),
-          "settings/data-access-permission-handler", SimpleDataAccessPermissionHandler.class.getName()); //$NON-NLS-1$ 
-      Class<?> clazz = Class.forName(dataAccessClassName, true, getClass().getClassLoader());
-      Constructor<?> defaultConstructor = clazz.getConstructor(new Class[] {});
+      // FIXME: we should be using an object factory of some kind here
+      IPluginResourceLoader resLoader = PentahoSystem.get( IPluginResourceLoader.class, null );
+      dataAccessClassName =
+          resLoader.getPluginSetting( getClass(),
+              "settings/data-access-permission-handler", SimpleDataAccessPermissionHandler.class.getName() ); //$NON-NLS-1$ 
+      Class<?> clazz = Class.forName( dataAccessClassName, true, getClass().getClassLoader() );
+      Constructor<?> defaultConstructor = clazz.getConstructor( new Class[] {} );
       dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance();
-    } catch (Exception e) {
-      logger.error(Messages.getErrorString("ConnectionServiceImpl.ERROR_0007_DATAACCESS_PERMISSIONS_INIT_ERROR", e //$NON-NLS-1$
-          .getLocalizedMessage()), e);
+    } catch ( Exception e ) {
+      logger.error( Messages.getErrorString( "ConnectionServiceImpl.ERROR_0007_DATAACCESS_PERMISSIONS_INIT_ERROR", e //$NON-NLS-1$
+          .getLocalizedMessage() ), e );
       // TODO: Unhardcode once this is an actual plugin
       dataAccessPermHandler = new SimpleDataAccessPermissionHandler();
     }
@@ -89,14 +90,14 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
 
   protected boolean hasDataAccessPermission() {
     return dataAccessPermHandler != null
-        && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession());
+        && dataAccessPermHandler.hasDataAccessPermission( PentahoSessionHolder.getSession() );
   }
-  
-  protected void ensureDataAccessPermission() throws ConnectionServiceException{
-    if (!hasDataAccessPermission()) {
-      String message = Messages.getErrorString("ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED"); //$NON-NLS-1$
-      logger.error(message); 
-      throw new ConnectionServiceException(Response.SC_FORBIDDEN, message); //$NON-NLS-1$
+
+  protected void ensureDataAccessPermission() throws ConnectionServiceException {
+    if ( !hasDataAccessPermission() ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED" ); //$NON-NLS-1$
+      logger.error( message );
+      throw new ConnectionServiceException( Response.SC_FORBIDDEN, message ); //$NON-NLS-1$
     }
   }
 
@@ -105,228 +106,189 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     List<IDatabaseConnection> connectionList = null;
     try {
       connectionList = datasourceMgmtSvc.getDatasources();
-    } 
-    catch (DatasourceMgmtServiceException dme) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0002_UNABLE_TO_GET_CONNECTION_LIST", //$NON-NLS-1$
-        dme.getLocalizedMessage()
-      );
-      logger.error(message);
-      throw new ConnectionServiceException(message, dme);
+    } catch ( DatasourceMgmtServiceException dme ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0002_UNABLE_TO_GET_CONNECTION_LIST", //$NON-NLS-1$
+          dme.getLocalizedMessage() );
+      logger.error( message );
+      throw new ConnectionServiceException( message, dme );
     }
     return connectionList;
   }
 
-  public IDatabaseConnection getConnectionByName(String name) throws ConnectionServiceException {
+  public IDatabaseConnection getConnectionByName( String name ) throws ConnectionServiceException {
     ensureDataAccessPermission();
     try {
-      IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceByName(name);
-      if (connection == null) {
-        throw new ConnectionServiceException(Response.SC_NOT_FOUND, Messages.getErrorString(
-          "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name)); //$NON-NLS-1$
-      } 
-      else {
+      IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceByName( name );
+      if ( connection == null ) {
+        throw new ConnectionServiceException( Response.SC_NOT_FOUND, Messages.getErrorString(
+            "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name ) ); //$NON-NLS-1$
+      } else {
         return connection;
       }
-    } 
-    catch (DatasourceMgmtServiceException dme) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
-        dme.getLocalizedMessage()
-      );
-      logger.error(message);
-      throw new ConnectionServiceException(message, dme);
+    } catch ( DatasourceMgmtServiceException dme ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
+          dme.getLocalizedMessage() );
+      logger.error( message );
+      throw new ConnectionServiceException( message, dme );
     }
   }
 
-  public IDatabaseConnection getConnectionById(String id) throws ConnectionServiceException {
-      ensureDataAccessPermission();
-      try {
-        IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceById(id);
-        if (connection == null) {
-          throw new ConnectionServiceException(Response.SC_NOT_FOUND, Messages.getErrorString(
-            "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", id)); //$NON-NLS-1$
-        } 
-        else {
-          return connection;
-        }
-      } 
-      catch (DatasourceMgmtServiceException dme) {
-        String message = Messages.getErrorString(
-          "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
-          dme.getLocalizedMessage()
-        );
-        logger.error(message);
-        throw new ConnectionServiceException(message, dme);
+  public IDatabaseConnection getConnectionById( String id ) throws ConnectionServiceException {
+    ensureDataAccessPermission();
+    try {
+      IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceById( id );
+      if ( connection == null ) {
+        throw new ConnectionServiceException( Response.SC_NOT_FOUND, Messages.getErrorString(
+            "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", id ) ); //$NON-NLS-1$
+      } else {
+        return connection;
       }
-    }
-
-  public boolean addConnection(IDatabaseConnection connection) throws ConnectionServiceException {
-    ensureDataAccessPermission();
-    try {
-      datasourceMgmtSvc.createDatasource(connection);
-      return true;
-    } catch (DuplicateDatasourceException duplicateDatasourceException) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", //$NON-NLS-1$
-        connection.getName(),
-        duplicateDatasourceException.getLocalizedMessage()
-      );
-      logger.error(message);
-      throw new ConnectionServiceException(Response.SC_CONFLICT, message, duplicateDatasourceException);
-    } catch (Exception e) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", //$NON-NLS-1$
-        connection.getName(),
-        e.getLocalizedMessage()
-      );
-      logger.error(message);
-      throw new ConnectionServiceException(message, e);
+    } catch ( DatasourceMgmtServiceException dme ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
+          dme.getLocalizedMessage() );
+      logger.error( message );
+      throw new ConnectionServiceException( message, dme );
     }
   }
 
-  public boolean updateConnection(IDatabaseConnection connection) throws ConnectionServiceException {
+  public boolean addConnection( IDatabaseConnection connection ) throws ConnectionServiceException {
     ensureDataAccessPermission();
     try {
-      connection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection
-          .getPassword()));
-      datasourceMgmtSvc.updateDatasourceByName(connection.getName(), connection);
+      datasourceMgmtSvc.createDatasource( connection );
       return true;
-    } 
-    catch (NonExistingDatasourceException nonExistingDatasourceException) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION", //$NON-NLS-1$
-        connection.getName(),
-        nonExistingDatasourceException.getLocalizedMessage()
-      );
-      throw new ConnectionServiceException(Response.SC_NOT_FOUND, message, nonExistingDatasourceException);
-    }
-    catch (Exception e) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION", //$NON-NLS-1$
-        connection.getName(),
-        e.getLocalizedMessage()
-      );
-      logger.error(message);
-      throw new ConnectionServiceException(message, e);
+    } catch ( DuplicateDatasourceException duplicateDatasourceException ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", //$NON-NLS-1$
+          connection.getName(), duplicateDatasourceException.getLocalizedMessage() );
+      logger.error( message );
+      throw new ConnectionServiceException( Response.SC_CONFLICT, message, duplicateDatasourceException );
+    } catch ( Exception e ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0004_UNABLE_TO_ADD_CONNECTION", //$NON-NLS-1$
+          connection.getName(), e.getLocalizedMessage() );
+      logger.error( message );
+      throw new ConnectionServiceException( message, e );
     }
   }
 
-  public boolean deleteConnection(IDatabaseConnection connection) throws ConnectionServiceException {
+  public boolean updateConnection( IDatabaseConnection connection ) throws ConnectionServiceException {
     ensureDataAccessPermission();
     try {
-      datasourceMgmtSvc.deleteDatasourceByName(connection.getName());
+      connection.setPassword( ConnectionServiceHelper.getConnectionPassword( connection.getName(), connection
+          .getPassword() ) );
+      datasourceMgmtSvc.updateDatasourceByName( connection.getName(), connection );
       return true;
-    } 
-    catch (NonExistingDatasourceException nonExistingDatasourceException) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
-        connection.getName(),
-        nonExistingDatasourceException.getLocalizedMessage()
-      );
-      throw new ConnectionServiceException(Response.SC_NOT_FOUND, message, nonExistingDatasourceException);
-    } catch (Exception e) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
-        connection.getName(),
-        e.getLocalizedMessage()
-      );
-      logger.error(message);
-      throw new ConnectionServiceException(message, e);
+    } catch ( NonExistingDatasourceException nonExistingDatasourceException ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION", //$NON-NLS-1$
+          connection.getName(), nonExistingDatasourceException.getLocalizedMessage() );
+      throw new ConnectionServiceException( Response.SC_NOT_FOUND, message, nonExistingDatasourceException );
+    } catch ( Exception e ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0005_UNABLE_TO_UPDATE_CONNECTION", //$NON-NLS-1$
+          connection.getName(), e.getLocalizedMessage() );
+      logger.error( message );
+      throw new ConnectionServiceException( message, e );
     }
   }
 
-  public boolean deleteConnection(String name) throws ConnectionServiceException {
+  public boolean deleteConnection( IDatabaseConnection connection ) throws ConnectionServiceException {
     ensureDataAccessPermission();
     try {
-      datasourceMgmtSvc.deleteDatasourceByName(name);
+      datasourceMgmtSvc.deleteDatasourceByName( connection.getName() );
       return true;
-    }
-    catch (NonExistingDatasourceException nonExistingDatasourceException) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
-        name,
-        nonExistingDatasourceException.getLocalizedMessage()
-      );
-      throw new ConnectionServiceException(Response.SC_NOT_FOUND, message, nonExistingDatasourceException);
-    } 
-    catch (Exception e) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
-        name,
-        e.getLocalizedMessage()
-      );
-      logger.error(message);
-      throw new ConnectionServiceException(message, e);
+    } catch ( NonExistingDatasourceException nonExistingDatasourceException ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+          connection.getName(), nonExistingDatasourceException.getLocalizedMessage() );
+      throw new ConnectionServiceException( Response.SC_NOT_FOUND, message, nonExistingDatasourceException );
+    } catch ( Exception e ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+          connection.getName(), e.getLocalizedMessage() );
+      logger.error( message );
+      throw new ConnectionServiceException( message, e );
     }
   }
 
-  public boolean testConnection(IDatabaseConnection connection) throws ConnectionServiceException {
+  public boolean deleteConnection( String name ) throws ConnectionServiceException {
     ensureDataAccessPermission();
-    if (connection != null) {
-      if (connection.getPassword() == null) { // Can have an empty password but not a null one
-        connection.setPassword(""); //$NON-NLS-1$
+    try {
+      datasourceMgmtSvc.deleteDatasourceByName( name );
+      return true;
+    } catch ( NonExistingDatasourceException nonExistingDatasourceException ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+          name, nonExistingDatasourceException.getLocalizedMessage() );
+      throw new ConnectionServiceException( Response.SC_NOT_FOUND, message, nonExistingDatasourceException );
+    } catch ( Exception e ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+          name, e.getLocalizedMessage() );
+      logger.error( message );
+      throw new ConnectionServiceException( message, e );
+    }
+  }
+
+  public boolean testConnection( IDatabaseConnection connection ) throws ConnectionServiceException {
+    ensureDataAccessPermission();
+    if ( connection != null ) {
+      if ( connection.getPassword() == null ) { // Can have an empty password but not a null one
+        connection.setPassword( "" ); //$NON-NLS-1$
       }
-      IDatabaseDialect dialect = dialectService.getDialect(connection);
+      IDatabaseDialect dialect = dialectService.getDialect( connection );
       String driverClass = null;
 
-      if (connection.getDatabaseType().getShortName().equals("GENERIC")) {
-        driverClass = connection.getAttributes().get(GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS);
-      } else {   
+      if ( connection.getDatabaseType().getShortName().equals( "GENERIC" ) ) {
+        driverClass = connection.getAttributes().get( GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS );
+      } else {
         driverClass = dialect.getNativeDriver();
-      }      
+      }
       IPentahoConnection pentahoConnection = null;
       try {
 
-        if(connection.getAccessType().equals( DatabaseAccessType.JNDI )){
+        if ( connection.getAccessType().equals( DatabaseAccessType.JNDI ) ) {
 
-          pentahoConnection = PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, connection.getDatabaseName(), null, this);
+          pentahoConnection =
+              PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE, connection.getDatabaseName(),
+                  null, this );
 
         } else {
 
-          pentahoConnection = PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, driverClass, dialect.getURLWithExtraOptions(connection), connection.getUsername(), ConnectionServiceHelper
-              .getConnectionPassword(connection.getName(), connection.getPassword()), null, this);
+          pentahoConnection =
+              PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE, driverClass, dialect
+                  .getURLWithExtraOptions( connection ), connection.getUsername(), ConnectionServiceHelper
+                  .getConnectionPassword( connection.getName(), connection.getPassword() ), null, this );
 
         }
 
-      } catch (DatabaseDialectException e) {
-        throw new ConnectionServiceException(e);
+      } catch ( DatabaseDialectException e ) {
+        throw new ConnectionServiceException( e );
       }
-      if (pentahoConnection != null) {
+      if ( pentahoConnection != null ) {
         // make sure we have a native connection behind the SQLConnection object
         // if the native connection is null, the test of the connection failed
-        boolean testedOk = ((SQLConnection) pentahoConnection).getNativeConnection() != null;
+        boolean testedOk = ( (SQLConnection) pentahoConnection ).getNativeConnection() != null;
         pentahoConnection.close();
         return testedOk;
       } else {
         return false;
       }
     } else {
-      String message = Messages.getErrorString("ConnectionServiceImpl.ERROR_0008_UNABLE_TO_TEST_NULL_CONNECTION"); //$NON-NLS-1$
-      logger.error(message);
-      throw new ConnectionServiceException(Response.SC_BAD_REQUEST, message); //$NON-NLS-1$
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0008_UNABLE_TO_TEST_NULL_CONNECTION" ); //$NON-NLS-1$
+      logger.error( message );
+      throw new ConnectionServiceException( Response.SC_BAD_REQUEST, message ); //$NON-NLS-1$
     }
   }
 
-  public boolean isConnectionExist(String connectionName)
-      throws ConnectionServiceException {
+  public String isConnectionExist( String connectionName ) throws ConnectionServiceException {
     ensureDataAccessPermission();
 
     try {
-      IDatabaseConnection connection = datasourceMgmtSvc
-          .getDatasourceByName(connectionName);
-      if (connection == null) {
-        return false;
+      String connectionId = null;
+      IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceByName( connectionName );
+      if ( connection != null ) {
+        connectionId = connection.getId();
       }
-      return true;
+      return connectionId;
 
-    } catch (DatasourceMgmtServiceException dme) {
-      String message = Messages
-          .getErrorString(
-              "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
-              dme.getLocalizedMessage());
-      logger.error(message);
-      throw new ConnectionServiceException(message, dme);
+    } catch ( DatasourceMgmtServiceException dme ) {
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
+          dme.getLocalizedMessage() );
+      logger.error( message );
+      throw new ConnectionServiceException( message, dme );
     }
 
   }
