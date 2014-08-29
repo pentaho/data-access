@@ -163,6 +163,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    *
    * @return Response containing the file data
    */
+  @Facet ( name = "Unsupported" )
   public Response doGetMetadataFilesAsDownload( @PathParam( "metadataId" ) String metadataId ) {
     return new MetadataResource().doGetMetadataFilesAsDownload( metadataId );
   }
@@ -174,6 +175,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    *
    * @return Response containing the file data
    */
+  @Facet ( name = "Unsupported" )
   public Response doGetAnalysisFilesAsDownload( @PathParam( "analysisId" ) String analysisId ) {
     return new AnalysisResource().doGetAnalysisFilesAsDownload( analysisId );
   }
@@ -197,6 +199,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    *
    * @return Response ok if successful
    */
+  @Facet ( name = "Unsupported" )
   public Response doRemoveMetadata( @PathParam( "metadataId" ) String metadataId ) {
     return new MetadataResource().doRemoveMetadata( metadataId );
   }
@@ -208,6 +211,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    *
    * @return Response ok if successful
    */
+  @Facet ( name = "Unsupported" )
   public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
     return new AnalysisResource().doRemoveAnalysis( analysisId );
   }
@@ -219,6 +223,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    *
    * @return Response ok if successful
    */
+  @Facet ( name = "Unsupported" )
   public Response doRemoveDSW( @PathParam( "dswId" ) String dswId ) {
     return new DataSourceWizardResource().remove( dswId );
   }
@@ -233,6 +238,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @GET
   @Path( "/{dswId : .+}/getAnalysisDatasourceInfo" )
   @Produces(WILDCARD)
+  @Facet ( name = "Unsupported" )
   public Response getAnalysisDatasourceInfo( @PathParam( "dswId" ) String dswId ) {
     IMondrianCatalogService mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
 	  MondrianCatalog catalog = mondrianCatalogService.getCatalog( dswId, PentahoSessionHolder.getSession() );
@@ -265,6 +271,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @Path( "/mondrian/putSchema" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
+  @Facet ( name = "Unsupported" )
   public Response putMondrianSchema(
       @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
       @FormDataParam( UPLOAD_ANALYSIS )FormDataContentDisposition schemaFileInfo,
@@ -314,6 +321,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @Path( "/mondrian/postAnalysis" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( {"text/plain","text/html" } )
+  @Facet ( name = "Unsupported" )
   public Response postMondrainSchema(
       @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
       @FormDataParam( UPLOAD_ANALYSIS )FormDataContentDisposition schemaFileInfo,
@@ -353,6 +361,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @Path( "/metadata/postimport" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/html" )
+  @Facet ( name = "Unsupported" )
   public Response importMetadataDatasourceWithPost( @FormDataParam( "domainId" ) String domainId,
                                             @FormDataParam( "metadataFile" ) InputStream metadataFile,
                                             @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
@@ -411,6 +420,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @Consumes( { TEXT_PLAIN } )
   @Produces( "text/plain" )
   @Deprecated
+  @Facet ( name = "Unsupported" )
   public Response uploadServletImportMetadataDatasource( String localizeBundleEntries, @QueryParam("domainId") String domainId, @QueryParam( "metadataFile" ) String metadataFile ) throws PentahoAccessControlException {
     try {
       DatasourceService.validateAccess();
@@ -480,6 +490,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @Path( "/metadata/storeDomain" )
   @Consumes( { MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN } )
   @Produces( "text/plain" )
+  @Facet ( name = "Unsupported" )
   public Response storeDomain( InputStream metadataFile, @QueryParam( "domainId" ) String domainId ) throws PentahoAccessControlException {
     try {
       DatasourceService.validateAccess();
@@ -506,6 +517,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @Path( "/metadata/addLocalizationFile" )
   @Consumes( { MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN } )
   @Produces( "text/plain" )
+  @Facet ( name = "Unsupported" )
   public Response addLocalizationFile( @QueryParam( "domainId" ) String domainId, @QueryParam( "locale" ) String locale, InputStream propertiesFile ) throws PentahoAccessControlException {
     try {
       DatasourceService.validateAccess();
@@ -532,6 +544,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @GET
   @Path( "/connection/list" )
   @Produces( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public IDatabaseConnectionList getConnections() throws ConnectionServiceException {
     IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
     List<IDatabaseConnection> conns = connectionService.getConnections();
@@ -553,6 +566,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @GET
   @Path( "/connection/get" )
   @Produces( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     IDatabaseConnection conn = connectionService.getConnectionByName( name );
     hidePassword( conn );
@@ -570,6 +584,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @GET
   @Path( "/connection/checkexists" )
   @Produces( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public Response isConnectionExist( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     boolean exists = connectionService.isConnectionExist( name );
     try {
@@ -591,6 +606,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @GET
   @Path( "/connection/getresponse" )
   @Produces( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public Response getConnectionByNameWithResponse( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     IDatabaseConnection conn = null;
     Response response;
@@ -615,6 +631,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @POST
   @Path( "/connection/add" )
   @Consumes( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
       validateAccess();
@@ -641,6 +658,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @POST
   @Path( "/connection/update" )
   @Consumes( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public Response updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
       applySavedPassword( connection );
@@ -667,6 +685,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @DELETE
   @Path( "/connection/delete" )
   @Consumes( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public Response deleteConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
       boolean success = connectionService.deleteConnection( connection );
@@ -690,6 +709,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    */
   @DELETE
   @Path( "/connection/deletebyname" )
+  @Facet ( name = "Unsupported" )
   public Response deleteConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     try {
       boolean success = connectionService.deleteConnection( name );
@@ -714,6 +734,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @Path( "/connection/test" )
   @Consumes( {APPLICATION_JSON} )
   @Produces( {TEXT_PLAIN} )
+  @Facet ( name = "Unsupported" )
   public Response testConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     boolean success = false;
     applySavedPassword( connection );
@@ -761,6 +782,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @GET
   @Path( "/connection/poolingParameters" )
   @Produces( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public IDatabaseConnectionPoolParameterList getPoolingParameters() {
     IDatabaseConnectionPoolParameterList value = new DefaultDatabaseConnectionPoolParameterList();
     List<IDatabaseConnectionPoolParameter> paramList = new ArrayList<IDatabaseConnectionPoolParameter>();
@@ -782,6 +804,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @GET
   @Path( "/connection/createDatabaseConnection" )
   @Produces( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public IDatabaseConnection createDatabaseConnection( @QueryParam( "driver" ) String driver, @QueryParam( "url" ) String url ) {
     for ( IDatabaseDialect dialect : dialectService.getDatabaseDialects() ) {
       if ( dialect.getNativeDriver() != null && 
@@ -811,6 +834,7 @@ public class DatasourceResource extends DataSourceWizardResource {
   @Path( "/connection/checkParams" )
   @Consumes( {APPLICATION_JSON} )
   @Produces( {APPLICATION_JSON} )
+  @Facet ( name = "Unsupported" )
   public StringArrayWrapper checkParameters( DatabaseConnection connection ) {
     StringArrayWrapper array = null;
     String[] rawValues = DatabaseUtil.convertToDatabaseMeta( connection ).checkParameters();
