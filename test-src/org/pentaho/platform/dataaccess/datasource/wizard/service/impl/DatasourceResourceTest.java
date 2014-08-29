@@ -19,6 +19,13 @@ import javax.ws.rs.core.StreamingOutput;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.IOUtils;
+import org.hamcrest.Description;
+import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.junit.*;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
@@ -57,12 +64,13 @@ import org.pentaho.platform.plugin.action.mondrian.mapper.MondrianOneToOneUserRo
 import org.pentaho.platform.plugin.services.connections.mondrian.MDXConnection;
 import org.pentaho.platform.plugin.services.connections.mondrian.MDXOlap4jConnection;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
+import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
+import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.MetadataImportHandler;
 import org.pentaho.platform.plugin.services.importer.MondrianImportHandler;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importer.mimeType.MimeType;
-import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryImporter;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginClassLoader;
@@ -223,6 +231,52 @@ public class DatasourceResourceTest {
     Assert.assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
     Assert.assertEquals( salesData.getMetadata().getFirst( "Content-Disposition" ).getClass(), String.class );
     Assert.assertTrue( ( (String) salesData.getMetadata().getFirst( "Content-Disposition" ) ).endsWith( ".xmi\"" ) );
+  }
+
+
+  @Test
+  public void testPublishDsw() throws Exception {
+    DatasourceResource service = new DatasourceResource();
+    Mockery mockery = new Mockery();
+    final IPlatformImporter mockImporter = mockery.mock( IPlatformImporter.class );
+    mp.defineInstance( IPlatformImporter.class, mockImporter );
+    mockery.checking( new Expectations() {
+      {
+        oneOf( mockImporter ).importFile( with( match( new TypeSafeMatcher<IPlatformImportBundle>() {
+          public boolean matchesSafely( IPlatformImportBundle bundle ) {
+            return bundle.isPreserveDsw() && bundle.getProperty( "domain-id" ).equals( "AModel.xmi" )
+                && bundle.getMimeType().equals( "text/xmi+xml" );
+          }
+          public void describeTo( Description description ) {
+            description.appendText( "bundle with xmi" );
+          }
+        } ) ) );
+        oneOf( mockImporter ).importFile( with( match( new TypeSafeMatcher<IPlatformImportBundle>() {
+          public boolean matchesSafely( IPlatformImportBundle bundle ) {
+            return bundle.getProperty( "domain-id" ).equals( "AModel" )
+                && bundle.getMimeType().equals( "application/vnd.pentaho.mondrian+xml" );
+          }
+          public void describeTo( Description description ) {
+            description.appendText( "bundle with mondrian schema" );
+          }
+        } ) ) );
+      }
+    } );
+    FileInputStream in = new FileInputStream( new File( new File( "test-res" ), "SampleDataOlap.xmi" ) );
+    try {
+      Response resp = service.publishDsw( "AModel.xmi", in, true, false );
+      Assert.assertEquals(
+          Response.Status.Family.SUCCESSFUL,
+          Response.Status.fromStatusCode( resp.getStatus() ).getFamily() );
+      mockery.assertIsSatisfied();
+    } finally {
+      IOUtils.closeQuietly( in );
+    }
+  }
+
+  @Factory
+  public static <T> Matcher<T> match( Matcher<T> matcher ) {
+    return matcher;
   }
 
   private static PentahoMetadataDomainRepository createMetadataDomainRepository() throws Exception {
