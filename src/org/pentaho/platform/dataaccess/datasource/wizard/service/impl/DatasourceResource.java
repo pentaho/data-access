@@ -1,22 +1,21 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
-
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -89,7 +88,6 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
-
 @Path( "/data-access/api" )
 public class DatasourceResource extends DataSourceWizardResource {
 
@@ -102,8 +100,8 @@ public class DatasourceResource extends DataSourceWizardResource {
   private static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final int SUCCESS = 3;
 
-  private static final Log logger = LogFactory.getLog( DatasourceResource.class );  
-  
+  private static final Log logger = LogFactory.getLog( DatasourceResource.class );
+
   private ConnectionServiceImpl connectionService;
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
@@ -111,18 +109,17 @@ public class DatasourceResource extends DataSourceWizardResource {
   private static final String LANG = "[a-z]{2}";
   private static final String LANG_CC = LANG + "_[A-Z]{2}";
   private static final String LANG_CC_EXT = LANG_CC + "_[^/]+";
-  private static final List<String> ENCODINGS = Arrays.asList( "", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE", "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR", "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251", "windows-1256", "KOI8-R", "ISO-8859-9" );
+  private static final List<String> ENCODINGS = Arrays.asList( "", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE",
+      "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR",
+      "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251",
+      "windows-1256", "KOI8-R", "ISO-8859-9" );
 
+  private static final Pattern[] patterns = new Pattern[] { Pattern.compile( "(" + LANG + ").properties$" ),
+    Pattern.compile( "(" + LANG_CC + ").properties$" ), Pattern.compile( "(" + LANG_CC_EXT + ").properties$" ),
+    Pattern.compile( "([^/]+)_(" + LANG + ")\\.properties$" ),
+    Pattern.compile( "([^/]+)_(" + LANG_CC + ")\\.properties$" ),
+    Pattern.compile( "([^/]+)_(" + LANG_CC_EXT + ")\\.properties$" ), };
 
-  private static final Pattern[] patterns = new Pattern[] {
-      Pattern.compile( "(" + LANG + ").properties$" ),
-      Pattern.compile( "(" + LANG_CC + ").properties$" ),
-      Pattern.compile( "(" + LANG_CC_EXT + ").properties$" ),
-      Pattern.compile( "([^/]+)_(" + LANG + ")\\.properties$" ),
-      Pattern.compile( "([^/]+)_(" + LANG_CC + ")\\.properties$" ),
-      Pattern.compile( "([^/]+)_(" + LANG_CC_EXT + ")\\.properties$" ),
-  };
-  
   public DatasourceResource() {
     super();
     connectionService = new ConnectionServiceImpl();
@@ -131,36 +128,37 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Get list of IDs of analysis datasource
-   *
+   * 
    * @return JaxbList<String> of analysis IDs
    */
   public JaxbList<String> getAnalysisDatasourceIds() {
     return new AnalysisResource().getAnalysisDatasourceIds();
   }
-  
+
   /**
    * Get the Metadata datasource IDs
-   *
+   * 
    * @return JaxbList<String> of metadata IDs
    */
   public JaxbList<String> getMetadataDatasourceIds() {
     return new MetadataResource().getMetadataDatasourceIds();
   }
-  
+
   /**
    * Returns a list of datasource IDs from datasource wizard
-   *
+   * 
    * @return JaxbList<String> list of datasource IDs
    */
   public JaxbList<String> getDSWDatasourceIds() {
     return new DataSourceWizardResource().getDSWDatasourceIds();
   }
-  
+
   /**
    * Download the metadata files for a given metadataId
-   *
-   * @param metadataId String Id of the metadata to retrieve
-   *
+   * 
+   * @param metadataId
+   *          String Id of the metadata to retrieve
+   * 
    * @return Response containing the file data
    */
   public Response doGetMetadataFilesAsDownload( @PathParam( "metadataId" ) String metadataId ) {
@@ -169,9 +167,10 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Download the analysis files for a given analysis id
-   *
-   * @param analysisId String Id of the analysis data to retrieve
-   *
+   * 
+   * @param analysisId
+   *          String Id of the analysis data to retrieve
+   * 
    * @return Response containing the file data
    */
   public Response doGetAnalysisFilesAsDownload( @PathParam( "analysisId" ) String analysisId ) {
@@ -180,77 +179,75 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Download the data source wizard data for a given data source wizard ID
-   *
-   * @param dswId String Id of the data source wizard data to retrieve
-   *
+   * 
+   * @param dswId
+   *          String Id of the data source wizard data to retrieve
+   * 
    * @return Response containing the file data
    */
   public Response doGetDSWFilesAsDownload( @PathParam( "dswId" ) String dswId ) {
     return new DataSourceWizardResource().download( dswId );
   }
 
-  
   /**
    * Remove the metadata for a given metadata ID
-   *
-   * @param metadataId String ID of the metadata to remove
-   *
+   * 
+   * @param metadataId
+   *          String ID of the metadata to remove
+   * 
    * @return Response ok if successful
    */
   public Response doRemoveMetadata( @PathParam( "metadataId" ) String metadataId ) {
     return new MetadataResource().doRemoveMetadata( metadataId );
   }
-  
+
   /**
    * Remove the analysis data for a given analysis ID
-   *
-   * @param analysisId String ID of the analysis data to remove
-   *
+   * 
+   * @param analysisId
+   *          String ID of the analysis data to remove
+   * 
    * @return Response ok if successful
    */
   public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
     return new AnalysisResource().doRemoveAnalysis( analysisId );
   }
-  
+
   /**
    * Remove the datasource wizard data for a given datasource wizard ID
-   *
-   * @param dswId String ID of the datasource wizard data to remove
-   *
+   * 
+   * @param dswId
+   *          String ID of the datasource wizard data to remove
+   * 
    * @return Response ok if successful
    */
   public Response doRemoveDSW( @PathParam( "dswId" ) String dswId ) {
     return new DataSourceWizardResource().remove( dswId );
   }
-  
+
   /**
    * Get the data source wizard info (parameters) for a specific data source wizard id
-   *
-   * @param dswId String id for a data source wizard
-   *
+   * 
+   * @param dswId
+   *          String id for a data source wizard
+   * 
    * @return Response containing the parameter list
    */
   @GET
   @Path( "/{dswId : .+}/getAnalysisDatasourceInfo" )
-  @Produces(WILDCARD)
+  @Produces( WILDCARD )
   public Response getAnalysisDatasourceInfo( @PathParam( "dswId" ) String dswId ) {
-    IMondrianCatalogService mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
-	  MondrianCatalog catalog = mondrianCatalogService.getCatalog( dswId, PentahoSessionHolder.getSession() );
-	  String parameters = catalog.getDataSourceInfo();
-	  return Response.ok().entity( parameters ).build();
-  }  
+    IMondrianCatalogService mondrianCatalogService =
+        PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
+    MondrianCatalog catalog = mondrianCatalogService.getCatalog( dswId, PentahoSessionHolder.getSession() );
+    String parameters = catalog.getDataSourceInfo();
+    return Response.ok().entity( parameters ).build();
+  }
 
-  
-  
-  
-  
-  
-  
-  
   /**
    * This is used by PUC to use a Jersey put to import a Mondrian Schema XML into PUR
-   * @author: tband
-   * date: 7/10/12
+   * 
+   * @author: tband date: 7/10/12
    * @param dataInputStream
    * @param schemaFileInfo
    * @param catalogName
@@ -267,26 +264,27 @@ public class DatasourceResource extends DataSourceWizardResource {
   @Produces( "text/plain" )
   public Response putMondrianSchema(
       @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
-      @FormDataParam( UPLOAD_ANALYSIS )FormDataContentDisposition schemaFileInfo,
-      @FormDataParam( CATALOG_NAME ) String catalogName, //Optional
-      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, //Optional
-      @FormDataParam( DATASOURCE_NAME ) String datasourceName, //Optional
+      @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
+      @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
+      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
+      @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag,
-      @FormDataParam( PARAMETERS ) String parameters) throws PentahoAccessControlException {
+      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
+    throws PentahoAccessControlException {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
       AnalysisService service = new AnalysisService();
-      service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters );
+      service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
+          overwrite, xmlaEnabledFlag, parameters );
       statusCode = SUCCESS;
     } catch ( PentahoAccessControlException pac ) {
-      logger.error(pac.getMessage());
+      logger.error( pac.getMessage() );
       statusCode = PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL;
-    } catch (PlatformImportException pe) {
+    } catch ( PlatformImportException pe ) {
       statusCode = pe.getErrorStatus();
       logger.error( "Error putMondrianSchema " + pe.getMessage() + " status = " + statusCode );
-    } catch (Exception e) {
+    } catch ( Exception e ) {
       logger.error( "Error putMondrianSchema " + e.getMessage() );
       statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
@@ -298,8 +296,8 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * This is used by PUC to use a form post to import a Mondrian Schema XML into PUR
-   * @author: tband
-   * date: 7/10/12
+   * 
+   * @author: tband date: 7/10/12
    * @param dataInputStream
    * @param schemaFileInfo
    * @param catalogName
@@ -313,55 +311,60 @@ public class DatasourceResource extends DataSourceWizardResource {
   @POST
   @Path( "/mondrian/postAnalysis" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
-  @Produces( {"text/plain","text/html" } )
+  @Produces( { "text/plain", "text/html" } )
   public Response postMondrainSchema(
       @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
-      @FormDataParam( UPLOAD_ANALYSIS )FormDataContentDisposition schemaFileInfo,
-      @FormDataParam( CATALOG_NAME ) String catalogName, //Optional
-      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, //Optional
-      @FormDataParam( DATASOURCE_NAME ) String datasourceName, //Optional
+      @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
+      @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
+      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
+      @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag,
-      @FormDataParam( PARAMETERS ) String parameters) throws PentahoAccessControlException {
-     //use existing Jersey post method - but translate into text/html for PUC Client
-     ResponseBuilder responseBuilder;
-     Response response = this.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters );
-     responseBuilder=  Response.ok();
-     responseBuilder.entity( String.valueOf( response.getStatus() ) );
-     responseBuilder.status( 200 );
-     return responseBuilder.build();
-  }  
-  
-  
+      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
+    throws PentahoAccessControlException {
+    // use existing Jersey post method - but translate into text/html for PUC Client
+    ResponseBuilder responseBuilder;
+    Response response =
+        this.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
+            overwrite, xmlaEnabledFlag, parameters );
+    responseBuilder = Response.ok();
+    responseBuilder.entity( String.valueOf( response.getStatus() ) );
+    responseBuilder.status( 200 );
+    return responseBuilder.build();
+  }
 
-  
   /**
-   * @param domainId  Unique identifier for the metadata datasource
-   * @param metadataFile Input stream for the metadata.xmi
-   * @param metadataFileInfo User selected name for the file
-   * @param localeFiles List of local files
-   * @param localeFilesInfo List of information for each local file
-   *
-   * @return Response containing the success of the method
-   *
-   * @throws PentahoAccessControlException Thrown when validation of access fails
+   * @param domainId
+   *          Unique identifier for the metadata datasource
+   * @param metadataFile
+   *          Input stream for the metadata.xmi
+   * @param metadataFileInfo
+   *          User selected name for the file
+   * @param localeFiles
+   *          List of local files
+   * @param localeFilesInfo
+   *          List of information for each local file
    * 
-   * A convenience method stubs out to the importMetadataDatasource method so that imports can be called from
-   * a http form which requires a post.
+   * @return Response containing the success of the method
+   * 
+   * @throws PentahoAccessControlException
+   *           Thrown when validation of access fails
+   * 
+   *           A convenience method stubs out to the importMetadataDatasource method so that imports can be called from
+   *           a http form which requires a post.
    */
   @POST
   @Path( "/metadata/postimport" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/html" )
   public Response importMetadataDatasourceWithPost( @FormDataParam( "domainId" ) String domainId,
-                                            @FormDataParam( "metadataFile" ) InputStream metadataFile,
-                                            @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
-                                            @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-                                            @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo )
-      throws PentahoAccessControlException {
-    Response response = importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
-        localeFilesInfo );
+      @FormDataParam( "metadataFile" ) InputStream metadataFile,
+      @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+      @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo )
+    throws PentahoAccessControlException {
+    Response response =
+        importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
     ResponseBuilder responseBuilder;
     responseBuilder = Response.ok();
     responseBuilder.entity( String.valueOf( response.getStatus() ) );
@@ -370,56 +373,68 @@ public class DatasourceResource extends DataSourceWizardResource {
   }
 
   /**
-   * @param domainId  Unique identifier for the metadata datasource
-   * @param metadataFile Input stream for the metadata.xmi
-   * @param metadataFileInfo User selected name for the file
-   * @param localeFiles List of local files
-   * @param localeFilesInfo List of information for each local file
-   * @param overwrite Flag for overwriting existing version of the file
-   *
+   * @param domainId
+   *          Unique identifier for the metadata datasource
+   * @param metadataFile
+   *          Input stream for the metadata.xmi
+   * @param metadataFileInfo
+   *          User selected name for the file
+   * @param localeFiles
+   *          List of local files
+   * @param localeFilesInfo
+   *          List of information for each local file
+   * @param overwrite
+   *          Flag for overwriting existing version of the file
+   * 
    * @return Response containing the success of the method
-   *
+   * 
    */
   @PUT
   @Path( "/metadata/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
   @Deprecated
-  @Facet( name = "Unsupported" )    
+  @Facet( name = "Unsupported" )
   public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
-                                            @FormDataParam( "metadataFile" ) InputStream metadataFile,
-                                            @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
-                                            @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-                                            @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) 
-  {
-    return new MetadataResource().importMetadataDatasource(
-        domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
+      @FormDataParam( "metadataFile" ) InputStream metadataFile,
+      @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+      @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) {
+    return new MetadataResource().importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
+        localeFiles, localeFilesInfo );
   }
 
   /**
    * @param localizeBundleEntries
-   * @param domainId  Unique identifier for the metadata datasource
-   * @param metadataFile Input stream for the metadata.xmi
-   *
+   * @param domainId
+   *          Unique identifier for the metadata datasource
+   * @param metadataFile
+   *          Input stream for the metadata.xmi
+   * 
    * @return Response containing the success of the method
-   *
-   * @throws PentahoAccessControlException Thrown when validation of access fails
+   * 
+   * @throws PentahoAccessControlException
+   *           Thrown when validation of access fails
    */
   @PUT
   @Path( "/metadata/uploadServletImport" )
   @Consumes( { TEXT_PLAIN } )
   @Produces( "text/plain" )
   @Deprecated
-  public Response uploadServletImportMetadataDatasource( String localizeBundleEntries, @QueryParam("domainId") String domainId, @QueryParam( "metadataFile" ) String metadataFile ) throws PentahoAccessControlException {
+  public Response uploadServletImportMetadataDatasource( String localizeBundleEntries,
+      @QueryParam( "domainId" ) String domainId, @QueryParam( "metadataFile" ) String metadataFile )
+    throws PentahoAccessControlException {
     try {
       DatasourceService.validateAccess();
     } catch ( PentahoAccessControlException e ) {
       return Response.serverError().entity( e.toString() ).build();
     }
 
-    IMetadataDomainRepository metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
-    PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository( PentahoSystem.get( IUnifiedRepository.class ) );
+    IMetadataDomainRepository metadataDomainRepository =
+        PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
+    PentahoMetadataDomainRepository metadataImporter =
+        new PentahoMetadataDomainRepository( PentahoSystem.get( IUnifiedRepository.class ) );
     CsvUtils csvUtils = new CsvUtils();
     boolean validPropertyFiles = true;
     StringBuffer invalidFiles = new StringBuffer();
@@ -439,103 +454,118 @@ public class DatasourceResource extends DataSourceWizardResource {
 
         if ( localizationFileName.endsWith( ".properties" ) ) {
           String encoding = csvUtils.getEncoding( localizationFile );
-          if( ENCODINGS.contains( encoding ) ) {
+          if ( ENCODINGS.contains( encoding ) ) {
             for ( final Pattern propertyBundlePattern : patterns ) {
               final Matcher propertyBundleMatcher = propertyBundlePattern.matcher( localizationFileName );
               if ( propertyBundleMatcher.matches() ) {
-                FileInputStream bundleFileInputStream = new FileInputStream( sysTmpDir + File.separatorChar + localizationFile );
-                metadataImporter.addLocalizationFile( domainId, propertyBundleMatcher.group( 2 ), bundleFileInputStream, true );
+                FileInputStream bundleFileInputStream =
+                    new FileInputStream( sysTmpDir + File.separatorChar + localizationFile );
+                metadataImporter.addLocalizationFile( domainId, propertyBundleMatcher.group( 2 ),
+                    bundleFileInputStream, true );
                 break;
               }
             }
           } else {
-            validPropertyFiles =  false;
+            validPropertyFiles = false;
             invalidFiles.append( localizationFileName );
           }
         } else {
-          validPropertyFiles =  false;
+          validPropertyFiles = false;
           invalidFiles.append( localizationFileName );
         }
       }
 
-      if( !validPropertyFiles ) {
-        return Response.serverError().entity( Messages.getString( "MetadataDatasourceService.ERROR_002_PROPERTY_FILES_ERROR" ) + invalidFiles.toString() ).build();
+      if ( !validPropertyFiles ) {
+        return Response.serverError().entity(
+            Messages.getString( "MetadataDatasourceService.ERROR_002_PROPERTY_FILES_ERROR" ) + invalidFiles.toString() )
+            .build();
       }
       return Response.ok( "SUCCESS" ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( Exception e ) {
       metadataImporter.removeDomain( domainId );
-      return Response.serverError().entity( Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
+      return Response.serverError().entity(
+          Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
     }
   }
 
   /**
-   * @param metadataFile Input stream for the metadata.xmi
-   * @param domainId  Unique identifier for the metadata datasource
-   *
+   * @param metadataFile
+   *          Input stream for the metadata.xmi
+   * @param domainId
+   *          Unique identifier for the metadata datasource
+   * 
    * @return Response containing the success of the method
-   *
-   * @throws PentahoAccessControlException Thrown when validation of access fails
+   * 
+   * @throws PentahoAccessControlException
+   *           Thrown when validation of access fails
    */
   @PUT
   @Path( "/metadata/storeDomain" )
   @Consumes( { MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN } )
   @Produces( "text/plain" )
-  public Response storeDomain( InputStream metadataFile, @QueryParam( "domainId" ) String domainId ) throws PentahoAccessControlException {
+  public Response storeDomain( InputStream metadataFile, @QueryParam( "domainId" ) String domainId )
+    throws PentahoAccessControlException {
     try {
       DatasourceService.validateAccess();
-      PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository( PentahoSystem.get( IUnifiedRepository.class ) );
+      PentahoMetadataDomainRepository metadataImporter =
+          new PentahoMetadataDomainRepository( PentahoSystem.get( IUnifiedRepository.class ) );
       metadataImporter.storeDomain( metadataFile, domainId, true );
       return Response.ok( "SUCCESS" ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return Response.serverError().entity( e.toString() ).build();
-    } catch( Exception e ) {
-      return Response.serverError().entity( Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR") ).build();
+    } catch ( Exception e ) {
+      return Response.serverError().entity(
+          Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
     }
   }
 
   /**
-   * @param domainId  Unique identifier for the metadata datasource
-   * @param locale String value of the locale
-   * @param propertiesFile Input stream of the properties file
-   *
+   * @param domainId
+   *          Unique identifier for the metadata datasource
+   * @param locale
+   *          String value of the locale
+   * @param propertiesFile
+   *          Input stream of the properties file
+   * 
    * @return Response containing the success of the method
-   *
-   * @throws PentahoAccessControlException Thrown when validation of access fails
+   * 
+   * @throws PentahoAccessControlException
+   *           Thrown when validation of access fails
    */
   @PUT
   @Path( "/metadata/addLocalizationFile" )
   @Consumes( { MediaType.APPLICATION_OCTET_STREAM, TEXT_PLAIN } )
   @Produces( "text/plain" )
-  public Response addLocalizationFile( @QueryParam( "domainId" ) String domainId, @QueryParam( "locale" ) String locale, InputStream propertiesFile ) throws PentahoAccessControlException {
+  public Response addLocalizationFile( @QueryParam( "domainId" ) String domainId,
+      @QueryParam( "locale" ) String locale, InputStream propertiesFile ) throws PentahoAccessControlException {
     try {
       DatasourceService.validateAccess();
-      PentahoMetadataDomainRepository metadataImporter = new PentahoMetadataDomainRepository( PentahoSystem.get( IUnifiedRepository.class ) );
+      PentahoMetadataDomainRepository metadataImporter =
+          new PentahoMetadataDomainRepository( PentahoSystem.get( IUnifiedRepository.class ) );
       metadataImporter.addLocalizationFile( domainId, locale, propertiesFile, true );
-      return Response.ok("SUCCESS").type( MediaType.TEXT_PLAIN ).build();
+      return Response.ok( "SUCCESS" ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return Response.serverError().entity( e.toString() ).build();
-    } catch( Exception e ) {
-      return Response.serverError().entity( Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
+    } catch ( Exception e ) {
+      return Response.serverError().entity(
+          Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
     }
-  }  
-  
-  
-  
-  
+  }
+
   /**
    * Returns the list of database connections
-   *
+   * 
    * @return List of database connections
-   *
+   * 
    * @throws ConnectionServiceException
    */
   @GET
   @Path( "/connection/list" )
-  @Produces( {APPLICATION_JSON} )
+  @Produces( { APPLICATION_JSON } )
   public IDatabaseConnectionList getConnections() throws ConnectionServiceException {
     IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
     List<IDatabaseConnection> conns = connectionService.getConnections();
-    for (IDatabaseConnection conn : conns) {
+    for ( IDatabaseConnection conn : conns ) {
       hidePassword( conn );
     }
     databaseConnections.setDatabaseConnections( conns );
@@ -544,15 +574,16 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Returns the list of database connections
-   *
-   * @param name String representing the name of the database to return
+   * 
+   * @param name
+   *          String representing the name of the database to return
    * @return Database connection by name
-   *
+   * 
    * @throws ConnectionServiceException
    */
   @GET
   @Path( "/connection/get" )
-  @Produces( {APPLICATION_JSON} )
+  @Produces( { APPLICATION_JSON } )
   public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     IDatabaseConnection conn = connectionService.getConnectionByName( name );
     hidePassword( conn );
@@ -561,20 +592,21 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Returns a response based on the existence of a database connection
-   *
-   * @param name String representing the name of the database to check
+   * 
+   * @param name
+   *          String representing the name of the database to check
    * @return Response based on the boolean value of the connection existing
-   *
+   * 
    * @throws ConnectionServiceException
    */
   @GET
   @Path( "/connection/checkexists" )
-  @Produces( {APPLICATION_JSON} )
+  @Produces( { APPLICATION_JSON } )
   public Response isConnectionExist( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
-    boolean exists = connectionService.isConnectionExist( name );
+    String connectionId = connectionService.isConnectionExist( name );
     try {
-      if ( exists ) {
-        return Response.ok().build();
+      if ( connectionId != null ) {
+        return Response.ok( connectionId ).build();
       } else {
         return Response.notModified().build();
       }
@@ -585,41 +617,43 @@ public class DatasourceResource extends DataSourceWizardResource {
   }
 
   /**
-   * this is a method to return a response object with an error message
-   * use getEntity(Connection.class) and getStatus() to determine success
+   * this is a method to return a response object with an error message use getEntity(Connection.class) and getStatus()
+   * to determine success
    */
   @GET
   @Path( "/connection/getresponse" )
-  @Produces( {APPLICATION_JSON} )
-  public Response getConnectionByNameWithResponse( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
+  @Produces( { APPLICATION_JSON } )
+  public Response getConnectionByNameWithResponse( @QueryParam( "name" ) String name )
+    throws ConnectionServiceException {
     IDatabaseConnection conn = null;
     Response response;
-    try{
-     conn = connectionService.getConnectionByName( name );
-     hidePassword(conn);
-     response = Response.ok().entity( conn ).build();
+    try {
+      conn = connectionService.getConnectionByName( name );
+      hidePassword( conn );
+      response = Response.ok().entity( conn ).build();
     } catch ( Exception ex ) {
-      response =  Response.serverError().entity( ex.getMessage() ).build();
-    }    
-     return response;
+      response = Response.serverError().entity( ex.getMessage() ).build();
+    }
+    return response;
   }
 
   /**
    * Add a database connection
-   *
-   * @param connection A database connection object to add
+   * 
+   * @param connection
+   *          A database connection object to add
    * @return Response indicating the success of this operation
-   *
+   * 
    * @throws ConnectionServiceException
    */
   @POST
   @Path( "/connection/add" )
-  @Consumes( {APPLICATION_JSON} )
+  @Consumes( { APPLICATION_JSON } )
   public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
       validateAccess();
       boolean success = connectionService.addConnection( connection );
-      if (success) {
+      if ( success ) {
         return Response.ok().build();
       } else {
         return Response.notModified().build();
@@ -632,15 +666,16 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Update an existing database connection
-   *
-   * @param connection Database connection object to update
+   * 
+   * @param connection
+   *          Database connection object to update
    * @return Response indicating the success of this operation
-   *
+   * 
    * @throws ConnectionServiceException
    */
   @POST
   @Path( "/connection/update" )
-  @Consumes( {APPLICATION_JSON} )
+  @Consumes( { APPLICATION_JSON } )
   public Response updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
       applySavedPassword( connection );
@@ -650,7 +685,7 @@ public class DatasourceResource extends DataSourceWizardResource {
       } else {
         return Response.notModified().build();
       }
-    } catch (Throwable t) {
+    } catch ( Throwable t ) {
       t.printStackTrace();
       return Response.serverError().build();
     }
@@ -658,15 +693,16 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Delete an existing database connection
-   *
-   * @param connection Database connection object to delete
+   * 
+   * @param connection
+   *          Database connection object to delete
    * @return Response indicating the success of this operation
-   *
+   * 
    * @throws ConnectionServiceException
    */
   @DELETE
   @Path( "/connection/delete" )
-  @Consumes( {APPLICATION_JSON} )
+  @Consumes( { APPLICATION_JSON } )
   public Response deleteConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
       boolean success = connectionService.deleteConnection( connection );
@@ -683,9 +719,11 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Delete an existing database connection by name
-   * @param name String representing the name of the database connection to delete
+   * 
+   * @param name
+   *          String representing the name of the database connection to delete
    * @return Response indicating the success of this operation
-   *
+   * 
    * @throws ConnectionServiceException
    */
   @DELETE
@@ -705,112 +743,167 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Tests the database connection
-   *
-   * @param connection Database connection object to test
+   * 
+   * @param connection
+   *          Database connection object to test
    * @return Response based on the boolean value of the connection test
    * @throws ConnectionServiceException
    */
   @PUT
   @Path( "/connection/test" )
-  @Consumes( {APPLICATION_JSON} )
-  @Produces( {TEXT_PLAIN} )
+  @Consumes( { APPLICATION_JSON } )
+  @Produces( { TEXT_PLAIN } )
   public Response testConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     boolean success = false;
     applySavedPassword( connection );
     success = connectionService.testConnection( connection );
-    if ( success ) { 
-      return Response.ok( Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED"
-          , connection.getDatabaseName() ) ).build();
+    if ( success ) {
+      return Response.ok(
+          Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED", connection.getDatabaseName() ) )
+          .build();
     } else {
-      return Response.serverError().entity( Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED"
-          , connection.getDatabaseName() ) ).build();  
+      return Response.serverError()
+          .entity(
+              Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED", connection
+                  .getDatabaseName() ) ).build();
     }
   }
-    
-  private static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[] {
-    new DatabaseConnectionPoolParameter( "defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool." ), 
-    new DatabaseConnectionPoolParameter( "defaultReadOnly", null, "The default read-only state of connections created by this pool.\nIf not set then the setReadOnly method will not be called.\n (Some drivers don't support read only mode, ex: Informix)" ), 
-    new DatabaseConnectionPoolParameter( "defaultTransactionIsolation", null, "the default TransactionIsolation state of connections created by this pool. One of the following: (see javadoc)\n\n  * NONE\n  * READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n" ), 
-    new DatabaseConnectionPoolParameter( "defaultCatalog", null, "The default catalog of connections created by this pool." ),
-    
-    new DatabaseConnectionPoolParameter( "initialSize", "0", "The initial number of connections that are created when the pool is started." ), 
-    new DatabaseConnectionPoolParameter( "maxActive", "8", "The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit." ), 
-    new DatabaseConnectionPoolParameter( "maxIdle", "8", "The maximum number of connections that can remain idle in the pool, without extra ones being released, or negative for no limit." ), 
-    new DatabaseConnectionPoolParameter( "minIdle", "0", "The minimum number of connections that can remain idle in the pool, without extra ones being created, or zero to create none." ), 
-    new DatabaseConnectionPoolParameter( "maxWait", "-1", "The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception, or -1 to wait indefinitely." ),
-    
-    new DatabaseConnectionPoolParameter( "validationQuery", null, "The SQL query that will be used to validate connections from this pool before returning them to the caller.\nIf specified, this query MUST be an SQL SELECT statement that returns at least one row." ), 
-    new DatabaseConnectionPoolParameter( "testOnBorrow", "true", "The indication of whether objects will be validated before being borrowed from the pool.\nIf the object fails to validate, it will be dropped from the pool, and we will attempt to borrow another.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ), 
-    new DatabaseConnectionPoolParameter( "testOnReturn", "false", "The indication of whether objects will be validated before being returned to the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ), 
-    new DatabaseConnectionPoolParameter( "testWhileIdle", "false", "The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ), 
-    new DatabaseConnectionPoolParameter( "timeBetweenEvictionRunsMillis", null, "The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run." ),
-    
-    new DatabaseConnectionPoolParameter( "poolPreparedStatements", "false", "Enable prepared statement pooling for this pool." ), 
-    new DatabaseConnectionPoolParameter( "maxOpenPreparedStatements", "-1", "The maximum number of open statements that can be allocated from the statement pool at the same time, or zero for no limit." ), 
-    new DatabaseConnectionPoolParameter( "accessToUnderlyingConnectionAllowed", "false", "Controls if the PoolGuard allows access to the underlying connection." ), 
-    new DatabaseConnectionPoolParameter( "removeAbandoned", "false", "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\nIf set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection." ), 
-    new DatabaseConnectionPoolParameter( "removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed." ), 
-    new DatabaseConnectionPoolParameter( "logAbandoned", "false", "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated." ), 
-  };
+
+  private static final DatabaseConnectionPoolParameter[] poolingParameters =
+      new DatabaseConnectionPoolParameter[] {
+        new DatabaseConnectionPoolParameter( "defaultAutoCommit", "true",
+            "The default auto-commit state of connections created by this pool." ),
+        new DatabaseConnectionPoolParameter(
+            "defaultReadOnly",
+            null,
+            "The default read-only state of connections created by this pool.\nIf not set then the setReadOnly method will not be called.\n (Some drivers don't support read only mode, ex: Informix)" ),
+        new DatabaseConnectionPoolParameter(
+            "defaultTransactionIsolation",
+            null,
+            "the default TransactionIsolation state of connections created by this pool. One of the following: (see javadoc)\n\n  * NONE\n  * READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n" ),
+        new DatabaseConnectionPoolParameter( "defaultCatalog", null,
+            "The default catalog of connections created by this pool." ),
+
+        new DatabaseConnectionPoolParameter( "initialSize", "0",
+            "The initial number of connections that are created when the pool is started." ),
+        new DatabaseConnectionPoolParameter(
+            "maxActive",
+            "8",
+            "The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit." ),
+        new DatabaseConnectionPoolParameter(
+            "maxIdle",
+            "8",
+            "The maximum number of connections that can remain idle in the pool, without extra ones being released, or negative for no limit." ),
+        new DatabaseConnectionPoolParameter(
+            "minIdle",
+            "0",
+            "The minimum number of connections that can remain idle in the pool, without extra ones being created, or zero to create none." ),
+        new DatabaseConnectionPoolParameter(
+            "maxWait",
+            "-1",
+            "The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception, or -1 to wait indefinitely." ),
+
+        new DatabaseConnectionPoolParameter(
+            "validationQuery",
+            null,
+            "The SQL query that will be used to validate connections from this pool before returning them to the caller.\nIf specified, this query MUST be an SQL SELECT statement that returns at least one row." ),
+        new DatabaseConnectionPoolParameter(
+            "testOnBorrow",
+            "true",
+            "The indication of whether objects will be validated before being borrowed from the pool.\nIf the object fails to validate, it will be dropped from the pool, and we will attempt to borrow another.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ),
+        new DatabaseConnectionPoolParameter(
+            "testOnReturn",
+            "false",
+            "The indication of whether objects will be validated before being returned to the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ),
+        new DatabaseConnectionPoolParameter(
+            "testWhileIdle",
+            "false",
+            "The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ),
+        new DatabaseConnectionPoolParameter(
+            "timeBetweenEvictionRunsMillis",
+            null,
+            "The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run." ),
+
+        new DatabaseConnectionPoolParameter( "poolPreparedStatements", "false",
+            "Enable prepared statement pooling for this pool." ),
+        new DatabaseConnectionPoolParameter(
+            "maxOpenPreparedStatements",
+            "-1",
+            "The maximum number of open statements that can be allocated from the statement pool at the same time, or zero for no limit." ),
+        new DatabaseConnectionPoolParameter( "accessToUnderlyingConnectionAllowed", "false",
+            "Controls if the PoolGuard allows access to the underlying connection." ),
+        new DatabaseConnectionPoolParameter(
+            "removeAbandoned",
+            "false",
+            "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\nIf set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection." ),
+        new DatabaseConnectionPoolParameter( "removeAbandonedTimeout", "300",
+            "Timeout in seconds before an abandoned connection can be removed." ),
+        new DatabaseConnectionPoolParameter(
+            "logAbandoned",
+            "false",
+            "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated." ), };
 
   /**
    * Returns a list of the database connection pool parameters
-   *
+   * 
    * @return IDatabaseConnectionPoolParameterList a list of the pooling parameters
    */
   @GET
   @Path( "/connection/poolingParameters" )
-  @Produces( {APPLICATION_JSON} )
+  @Produces( { APPLICATION_JSON } )
   public IDatabaseConnectionPoolParameterList getPoolingParameters() {
     IDatabaseConnectionPoolParameterList value = new DefaultDatabaseConnectionPoolParameterList();
     List<IDatabaseConnectionPoolParameter> paramList = new ArrayList<IDatabaseConnectionPoolParameter>();
-    for( DatabaseConnectionPoolParameter param : poolingParameters ) {
+    for ( DatabaseConnectionPoolParameter param : poolingParameters ) {
       paramList.add( param );
     }
     value.setDatabaseConnectionPoolParameters( paramList );
-    return value; 
+    return value;
   }
 
   /**
    * Create a database connection
-   *
-   * @param driver String name of the driver to use
-   * @param url String name of the url used to create the connection.
-   *
+   * 
+   * @param driver
+   *          String name of the driver to use
+   * @param url
+   *          String name of the url used to create the connection.
+   * 
    * @return IDatabaseConnection for the given parameters
    */
   @GET
   @Path( "/connection/createDatabaseConnection" )
-  @Produces( {APPLICATION_JSON} )
-  public IDatabaseConnection createDatabaseConnection( @QueryParam( "driver" ) String driver, @QueryParam( "url" ) String url ) {
+  @Produces( { APPLICATION_JSON } )
+  public IDatabaseConnection createDatabaseConnection( @QueryParam( "driver" ) String driver,
+      @QueryParam( "url" ) String url ) {
     for ( IDatabaseDialect dialect : dialectService.getDatabaseDialects() ) {
-      if ( dialect.getNativeDriver() != null && 
-          dialect.getNativeDriver().equals( driver ) ) {
+      if ( dialect.getNativeDriver() != null && dialect.getNativeDriver().equals( driver ) ) {
         if ( dialect.getNativeJdbcPre() != null && url.startsWith( dialect.getNativeJdbcPre() ) ) {
           return dialect.createNativeConnection( url );
         }
       }
     }
-    
+
     // if no native driver was found, create a custom dialect object.
-    
-    IDatabaseConnection conn = genericDialect.createNativeConnection(url);
+
+    IDatabaseConnection conn = genericDialect.createNativeConnection( url );
     conn.getAttributes().put( GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS, driver );
-    
-    return conn;    
+
+    return conn;
   }
 
   /**
    * Returns the database meta for the given connection.
-   *
-   * @param connection DatabaseConnection to retrieve meta from
-   *
+   * 
+   * @param connection
+   *          DatabaseConnection to retrieve meta from
+   * 
    * @return array containing the database connection metadata
    */
   @POST
   @Path( "/connection/checkParams" )
-  @Consumes( {APPLICATION_JSON} )
-  @Produces( {APPLICATION_JSON} )
+  @Consumes( { APPLICATION_JSON } )
+  @Produces( { APPLICATION_JSON } )
   public StringArrayWrapper checkParameters( DatabaseConnection connection ) {
     StringArrayWrapper array = null;
     String[] rawValues = DatabaseUtil.convertToDatabaseMeta( connection ).checkParameters();
@@ -820,39 +913,38 @@ public class DatasourceResource extends DataSourceWizardResource {
     }
     return array;
   }
-  
+
   /**
    * internal validation of authorization
+   * 
    * @throws PentahoAccessControlException
    */
   private void validateAccess() throws PentahoAccessControlException {
     IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
-    boolean isAdmin = policy.isAllowed( RepositoryReadAction.NAME )
-        && policy.isAllowed( RepositoryCreateAction.NAME )
-        && (policy.isAllowed( AdministerSecurityAction.NAME )
-        || policy.isAllowed( PublishAction.NAME ) );
+    boolean isAdmin =
+        policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
+            && ( policy.isAllowed( AdministerSecurityAction.NAME ) || policy.isAllowed( PublishAction.NAME ) );
     if ( !isAdmin ) {
       throw new PentahoAccessControlException( "Access Denied" );
     }
   }
-  
+
   /**
    * Hides password for connections for return to user.
    */
   private void hidePassword( IDatabaseConnection conn ) {
     conn.setPassword( null );
   }
-  
+
   /**
-   * If password is empty, that means connection sent from UI and user didn't
-   * change password. Since we cleaned password during sending to UI, we need
-   * to use stored password.
+   * If password is empty, that means connection sent from UI and user didn't change password. Since we cleaned password
+   * during sending to UI, we need to use stored password.
    */
   private void applySavedPassword( IDatabaseConnection conn ) throws ConnectionServiceException {
     if ( StringUtils.isBlank( conn.getPassword() ) ) {
       IDatabaseConnection savedConn = connectionService.getConnectionById( conn.getId() );
       conn.setPassword( savedConn.getPassword() );
     }
-  }  
-  
+  }
+
 }
