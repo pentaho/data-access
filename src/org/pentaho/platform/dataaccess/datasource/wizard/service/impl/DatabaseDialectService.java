@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.enunciate.Facet;
 import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
@@ -58,6 +59,7 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
   @POST
   @Path( "/registerDatabaseDialect" )
   @Consumes( { APPLICATION_JSON } )
+  @Facet ( name = "Unsupported" )
   public Response registerDatabaseDialectWS( IDatabaseDialect databaseDialect ) {
     return this.registerDatabaseDialectWS( databaseDialect, true );
   }
@@ -73,6 +75,7 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
   @POST
   @Path( "/registerDatabaseDialectWithValidation/{validateClassExists}" )
   @Consumes( { APPLICATION_JSON } )
+  @Facet ( name = "Unsupported" )
   public Response registerDatabaseDialectWS( IDatabaseDialect databaseDialect,
       @PathParam( "validateClassExists" ) Boolean validateClassExists ) {
     try {
@@ -95,6 +98,7 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
   @Path( "/validateJdbcDriverClassExists" )
   @Consumes( { APPLICATION_JSON } )
   @Produces( { APPLICATION_JSON } )
+  @Facet ( name = "Unsupported" )
   public Boolean validateJdbcDriverClassExistsWS( String classname ) {
     return super.validateJdbcDriverClassExists(  classname );
   }
@@ -106,6 +110,7 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
    */
   @GET
   @Path( "/getDatabaseTypes" )
+  @Facet ( name = "Unsupported" )
   @Produces( { APPLICATION_JSON } )
   public IDatabaseTypesList getDatabaseTypesWS() {
     DefaultDatabaseTypesList value = new DefaultDatabaseTypesList();
@@ -123,6 +128,7 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
   @Path( "/getDialectByType" )
   @Consumes( { APPLICATION_JSON } )
   @Produces( { APPLICATION_JSON } )
+  @Facet ( name = "Unsupported" )
   public IDatabaseDialect getDialectWS( IDatabaseType databaseType ) {
     return super.getDialect( databaseType );
   }
@@ -138,6 +144,7 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
   @Path( "/getDialectByConnection" )
   @Consumes( { APPLICATION_JSON } )
   @Produces( { APPLICATION_JSON } )
+  @Facet ( name = "Unsupported" )
   public IDatabaseDialect getDialect( IDatabaseConnection connection ) {
     return super.getDialect( connection );
   }
@@ -150,6 +157,7 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
   @GET
   @Path( "/getDatabaseDialects" )
   @Produces( { APPLICATION_JSON } )
+  @Facet ( name = "Unsupported" )
   public IDatabaseDialectList getDatabaseDialectsWS() {
     IDatabaseDialectList value = new DefaultDatabaseDialectList();
     value.setDialects( super.getDatabaseDialects() );

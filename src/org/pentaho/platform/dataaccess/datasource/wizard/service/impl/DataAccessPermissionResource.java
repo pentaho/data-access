@@ -17,6 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import org.codehaus.enunciate.Facet;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.web.http.api.resources.StringListWrapper;
 
@@ -31,6 +32,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  * @author Rowell Belen
  */
 @Path("/data-access/api/permissions")
+@Facet ( name = "Unsupported" )
 public class DataAccessPermissionResource
 {
   private SimpleDataAccessPermissionHandler dataAccessPermHandler;
@@ -48,6 +50,7 @@ public class DataAccessPermissionResource
    */
   @GET
   @Path("/hasDataAccess")
+  @Facet ( name = "Unsupported" )
   @Produces( {APPLICATION_JSON })
   public Response hasDataAccessPermission() {
     return Response.ok("" + (dataAccessPermHandler != null
@@ -62,6 +65,7 @@ public class DataAccessPermissionResource
   @GET
   @Path("/hasDataAccessView")
   @Produces( {APPLICATION_JSON })
+  @Facet ( name = "Unsupported" )
   public Response hasDataAccessViewPermission() {
     return Response.ok("" + (dataAccessViewPermHandler != null
        && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession()))).build();
@@ -75,6 +79,7 @@ public class DataAccessPermissionResource
   @GET
   @Path("/permittedRoles")
   @Produces( {APPLICATION_JSON })
+  @Facet ( name = "Unsupported" )
   public StringListWrapper getPermittedRoleList() {
     if (dataAccessViewPermHandler == null) {
       return new StringListWrapper();
@@ -90,6 +95,7 @@ public class DataAccessPermissionResource
   @GET
   @Path("/permittedUsers")
   @Produces( {APPLICATION_JSON })
+  @Facet ( name = "Unsupported" )
   public StringListWrapper getPermittedUserList() {
     if (dataAccessViewPermHandler == null) {
       return new StringListWrapper();
