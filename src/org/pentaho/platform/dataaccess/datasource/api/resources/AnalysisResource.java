@@ -173,7 +173,7 @@ public class AnalysisResource {
    *  PUT /data-access/api/datasource/analysis/import
    * </p>
    *
-   * @param dataInputStream A Mondrian schema XML file
+   * @param uploadAnalysis A Mondrian schema XML file
    * @param schemaFileInfo User selected name for the file
    * <pre function="syntax.xml">
    *  schema.xml
@@ -211,7 +211,7 @@ public class AnalysisResource {
       condition = "Status code indicating a success or failure while importing Mondrian schema XML" )
   } )
   public Response putMondrianSchema(
-    @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
+    @FormDataParam( UPLOAD_ANALYSIS ) InputStream uploadAnalysis,
     @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
     @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
     @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
@@ -222,7 +222,7 @@ public class AnalysisResource {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
-      service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
+      service.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
         overwrite, xmlaEnabledFlag, parameters );
       statusCode = SUCCESS;
     } catch ( PentahoAccessControlException pac ) {
