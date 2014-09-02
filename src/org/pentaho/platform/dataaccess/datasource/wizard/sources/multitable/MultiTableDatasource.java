@@ -228,7 +228,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
 
         public void success( final MultiTableDatasourceDTO datasourceDTO ) {
           tablesSelectionStep.setDatasourceDTO( datasourceDTO );
-          joinGuiModel.setDoOlap( datasourceDTO.isDoOlap() );          
+          joinGuiModel.setDoOlap( datasourceDTO.isDoOlap() );
           wizardModel.setDatasourceName( datasourceDTO.getDatasourceName() );
           MultiTableDatasource.this.connectionSelectionStep.selectConnectionByName( datasourceDTO
             .getSelectedConnection().getName() );

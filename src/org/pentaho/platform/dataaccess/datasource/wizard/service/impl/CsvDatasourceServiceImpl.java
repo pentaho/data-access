@@ -50,27 +50,27 @@ import org.pentaho.reporting.libraries.base.util.StringUtils;
 
 import com.thoughtworks.xstream.XStream;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings( "unchecked" )
 public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasourceService {
-  public static final byte[] lock = new byte[0];
-  
+  public static final byte[] lock = new byte[ 0 ];
+
   private static final long serialVersionUID = 2498165533158485182L;
 
-  private Log logger = LogFactory.getLog(CsvDatasourceServiceImpl.class);
+  private Log logger = LogFactory.getLog( CsvDatasourceServiceImpl.class );
 
   private ModelerService modelerService = new ModelerService();
   private DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();
 
   private ModelerWorkspace modelerWorkspace;
 
-  public CsvDatasourceServiceImpl(){
+  public CsvDatasourceServiceImpl() {
     super();
-    modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
+    modelerWorkspace = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
 
     try {
-      modelerWorkspace.setGeoContext(datasourceService.getGeoContext());
-    } catch (DatasourceServiceException e) {
-      logger.warn("Could not get a GeoContext, auto-modeling will not use be able to auto detect geographies", e);
+      modelerWorkspace.setGeoContext( datasourceService.getGeoContext() );
+    } catch ( DatasourceServiceException e ) {
+      logger.warn( "Could not get a GeoContext, auto-modeling will not use be able to auto detect geographies", e );
     }
 
 
@@ -80,27 +80,30 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   public Log getLogger() {
     return logger;
   }
-  
-	public String getEncoding(String fileName) {
-		String encoding = null;
-		try {
-			CsvUtils csvModelService = new CsvUtils();
-			encoding = csvModelService.getEncoding(fileName);
-		} catch (Exception e) {
-			logger.error(e);
-		}
-		return encoding;
-	}
 
-  public ModelInfo stageFile(String fileName, String delimiter, String enclosure, boolean isFirstRowHeader, String encoding)
-      throws Exception {
+  public String getEncoding( String fileName ) {
+    String encoding = null;
+    try {
+      CsvUtils csvModelService = new CsvUtils();
+      encoding = csvModelService.getEncoding( fileName );
+    } catch ( Exception e ) {
+      logger.error( e );
+    }
+    return encoding;
+  }
+
+  public ModelInfo stageFile( String fileName, String delimiter, String enclosure, boolean isFirstRowHeader,
+                              String encoding )
+    throws Exception {
     ModelInfo modelInfo;
     try {
       CsvUtils csvModelService = new CsvUtils();
       int headerRows = isFirstRowHeader ? 1 : 0;
-      modelInfo = csvModelService.generateFields("", fileName, AgileHelper.getCsvSampleRowSize(), delimiter, enclosure, headerRows, true, true, encoding); //$NON-NLS-1$
-    } catch (Exception e) {
-      logger.error(e);
+      modelInfo = csvModelService
+        .generateFields( "", fileName, AgileHelper.getCsvSampleRowSize(), delimiter, enclosure, headerRows, true, true,
+          encoding ); //$NON-NLS-1$
+    } catch ( Exception e ) {
+      logger.error( e );
       throw e;
     }
     return modelInfo;
@@ -111,128 +114,135 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
     try {
       FileUtils fileService = new FileUtils();
       files = fileService.listFiles();
-    } catch (Exception e) {
-      logger.error(e);
+    } catch ( Exception e ) {
+      logger.error( e );
       throw e;
     }
     return files;
   }
 
-  public FileTransformStats generateDomain(DatasourceDTO datasourceDto) throws Exception {
-    synchronized (lock) {
+  public FileTransformStats generateDomain( DatasourceDTO datasourceDto ) throws Exception {
+    synchronized ( lock ) {
       ModelInfo modelInfo = datasourceDto.getCsvModelInfo();
       IPentahoSession pentahoSession = null;
       try {
         pentahoSession = PentahoSessionHolder.getSession();
-        KettleSystemListener.environmentInit(pentahoSession);
-        
-        String statsKey = FileTransformStats.class.getSimpleName() + "_" + modelInfo.getFileInfo().getTmpFilename(); //$NON-NLS-1$
-  
+        KettleSystemListener.environmentInit( pentahoSession );
+
+        String statsKey =
+          FileTransformStats.class.getSimpleName() + "_" + modelInfo.getFileInfo().getTmpFilename(); //$NON-NLS-1$
+
         FileTransformStats stats = new FileTransformStats();
-        pentahoSession.setAttribute(statsKey, stats);
-        CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(modelInfo, AgileHelper.getDatabaseMeta());
-        csvTransformGenerator.setTransformStats(stats);
-        
-        
+        pentahoSession.setAttribute( statsKey, stats );
+        CsvTransformGenerator csvTransformGenerator =
+          new CsvTransformGenerator( modelInfo, AgileHelper.getDatabaseMeta() );
+        csvTransformGenerator.setTransformStats( stats );
+
+
         try {
-          csvTransformGenerator.dropTable(modelInfo.getStageTableName());
-        } catch (CsvTransformGeneratorException e) {
+          csvTransformGenerator.dropTable( modelInfo.getStageTableName() );
+        } catch ( CsvTransformGeneratorException e ) {
           // this is ok, the table may not have existed.
-          logger.info("Could not drop table before staging"); //$NON-NLS-1$
+          logger.info( "Could not drop table before staging" ); //$NON-NLS-1$
         }
-        csvTransformGenerator.createOrModifyTable(pentahoSession);
-  
+        csvTransformGenerator.createOrModifyTable( pentahoSession );
+
         // no longer need to truncate the table since we dropped it a few lines up, so just pass false
-        csvTransformGenerator.loadTable(false, pentahoSession, true);
-  
-        ArrayList<String> combinedErrors = new ArrayList<String>(modelInfo.getCsvInputErrors());
-        combinedErrors.addAll(modelInfo.getTableOutputErrors());
-        stats.setErrors(combinedErrors);
-        
+        csvTransformGenerator.loadTable( false, pentahoSession, true );
+
+        ArrayList<String> combinedErrors = new ArrayList<String>( modelInfo.getCsvInputErrors() );
+        combinedErrors.addAll( modelInfo.getTableOutputErrors() );
+        stats.setErrors( combinedErrors );
+
         // wait until it it done
-        while (!stats.isRowsFinished()) {
-          Thread.sleep(200);
+        while ( !stats.isRowsFinished() ) {
+          Thread.sleep( 200 );
         }
-  
-        modelerWorkspace.setDomain(modelerService.generateCSVDomain(modelInfo.getStageTableName(), modelInfo.getDatasourceName()));
-        modelerWorkspace.getWorkspaceHelper().autoModelFlat(modelerWorkspace);
-        modelerWorkspace.getWorkspaceHelper().autoModelRelationalFlat(modelerWorkspace);
-        modelerWorkspace.setModelName(modelInfo.getDatasourceName());
-        modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
+
+        modelerWorkspace.setDomain(
+          modelerService.generateCSVDomain( modelInfo.getStageTableName(), modelInfo.getDatasourceName() ) );
+        modelerWorkspace.getWorkspaceHelper().autoModelFlat( modelerWorkspace );
+        modelerWorkspace.getWorkspaceHelper().autoModelRelationalFlat( modelerWorkspace );
+        modelerWorkspace.setModelName( modelInfo.getDatasourceName() );
+        modelerWorkspace.getWorkspaceHelper().populateDomain( modelerWorkspace );
         Domain workspaceDomain = modelerWorkspace.getDomain();
-        
+
         XStream xstream = new XStream();
-        String serializedDto = xstream.toXML(datasourceDto);
-        workspaceDomain.getLogicalModels().get(0).setProperty("datasourceModel", serializedDto);
-        workspaceDomain.getLogicalModels().get(0).setProperty("DatasourceType", "CSV");
-        prepareForSerialization(workspaceDomain);
-  
-        modelerService.serializeModels(workspaceDomain, modelerWorkspace.getModelName());
-        stats.setDomain(modelerWorkspace.getDomain());
-  
+        String serializedDto = xstream.toXML( datasourceDto );
+        workspaceDomain.getLogicalModels().get( 0 ).setProperty( "datasourceModel", serializedDto );
+        workspaceDomain.getLogicalModels().get( 0 ).setProperty( "DatasourceType", "CSV" );
+        prepareForSerialization( workspaceDomain );
+
+        modelerService.serializeModels( workspaceDomain, modelerWorkspace.getModelName() );
+        stats.setDomain( modelerWorkspace.getDomain() );
+
         return stats;
-      } catch (Exception e) {
-        logger.error(e);
+      } catch ( Exception e ) {
+        logger.error( e );
         throw e;
       } finally {
-        if (pentahoSession != null) {
+        if ( pentahoSession != null ) {
           pentahoSession.destroy();
         }
-    }
+      }
     }
   }
-  
-  protected void prepareForSerialization(Domain domain) throws IOException {
+
+  protected void prepareForSerialization( Domain domain ) throws IOException {
 
 		/*
-		 * This method is responsible for cleaning up legacy information when
+     * This method is responsible for cleaning up legacy information when
 		 * changing datasource types and also manages CSV files for CSV based
 		 * datasources.
 		 */
 
-		String relativePath = PentahoSystem.getSystemSetting("file-upload-defaults/relative-path", String.valueOf(FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$
-		String path = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
-		String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
-		String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath(TMP_FILE_PATH);
-		LogicalModel logicalModel = domain.getLogicalModels().get(0);
-		String modelState = (String) logicalModel.getProperty("datasourceModel"); //$NON-NLS-1$
+    String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
+      String.valueOf( FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) ); //$NON-NLS-1$
+    String path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
+    String TMP_FILE_PATH =
+      File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
+    String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath( TMP_FILE_PATH );
+    LogicalModel logicalModel = domain.getLogicalModels().get( 0 );
+    String modelState = (String) logicalModel.getProperty( "datasourceModel" ); //$NON-NLS-1$
 
-		if (modelState != null) {
+    if ( modelState != null ) {
 
-			XStream xs = new XStream();
-			DatasourceDTO datasource = (DatasourceDTO) xs.fromXML(modelState);
-			CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
-			String tmpFileName = csvFileInfo.getTmpFilename();
-			String csvFileName = csvFileInfo.getFilename();
-			File tmpFile = new File(sysTmpDir + File.separatorChar + tmpFileName);
+      XStream xs = new XStream();
+      DatasourceDTO datasource = (DatasourceDTO) xs.fromXML( modelState );
+      CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
+      String tmpFileName = csvFileInfo.getTmpFilename();
+      String csvFileName = csvFileInfo.getFilename();
+      File tmpFile = new File( sysTmpDir + File.separatorChar + tmpFileName );
 
-			// Move CSV temporary file to final destination.
-			if (tmpFile.exists()) {
-				File csvFile = new File(path + File.separatorChar + csvFileName);
-				org.apache.commons.io.FileUtils.copyFile(tmpFile, csvFile);
-			}
+      // Move CSV temporary file to final destination.
+      if ( tmpFile.exists() ) {
+        File csvFile = new File( path + File.separatorChar + csvFileName );
+        org.apache.commons.io.FileUtils.copyFile( tmpFile, csvFile );
+      }
 
-			// Cleanup logic when updating from SQL datasource to CSV
-			// datasource.
-			datasource.setQuery(null);
-			// Update datasourceModel with the new modelState
-			modelState = xs.toXML(datasource);
-		    logicalModel.setProperty("datasourceModel", modelState);
-		}
-	}
+      // Cleanup logic when updating from SQL datasource to CSV
+      // datasource.
+      datasource.setQuery( null );
+      // Update datasourceModel with the new modelState
+      modelState = xs.toXML( datasource );
+      logicalModel.setProperty( "datasourceModel", modelState );
+    }
+  }
 
-  public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception {
+  public List<String> getPreviewRows( String filename, boolean isFirstRowHeader, int rows, String encoding )
+    throws Exception {
     List<String> previewRows = null;
-    if(!StringUtils.isEmpty(filename)) {
+    if ( !StringUtils.isEmpty( filename ) ) {
       CsvUtils service = new CsvUtils();
-      ModelInfo mi = service.getFileContents("", filename, ",", "\"", rows, isFirstRowHeader, encoding); //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$  
+      ModelInfo mi = service.getFileContents( "", filename, ",", "\"", rows, isFirstRowHeader,
+        encoding ); //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
       previewRows = mi.getFileInfo().getContents();
     }
     return previewRows;
   }
 
   @Override
-  public BogoPojo gwtWorkaround(BogoPojo pojo) {
+  public BogoPojo gwtWorkaround( BogoPojo pojo ) {
     return pojo;
   }
 

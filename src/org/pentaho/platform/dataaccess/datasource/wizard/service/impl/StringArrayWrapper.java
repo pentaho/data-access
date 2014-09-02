@@ -17,7 +17,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author wseyler
- *
  */
 @XmlRootElement
 public class StringArrayWrapper {
@@ -32,8 +31,8 @@ public class StringArrayWrapper {
     return items;
   }
 
-  public void setArray(String[] items) {
+  public void setArray( String[] items ) {
     this.items = items;
   }
-  
+
 }

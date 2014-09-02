@@ -30,32 +30,31 @@ import com.sun.jersey.api.json.JSONJAXBContext;
 
 /**
  * @author wseyler
- *
  */
 @Provider
 public class PentahoJAXBContextResolver implements ContextResolver<JAXBContext> {
   private JAXBContext context;
-  private Class[] types = {DatabaseConnection.class,
-      DefaultDatabaseConnectionList.class,
-      DefaultDatabaseDialectList.class,
-      DatabaseType.class,
-      DefaultDatabaseTypesList.class,
-      DefaultDatabaseConnectionPoolParameterList.class};
+  private Class[] types = { DatabaseConnection.class,
+    DefaultDatabaseConnectionList.class,
+    DefaultDatabaseDialectList.class,
+    DatabaseType.class,
+    DefaultDatabaseTypesList.class,
+    DefaultDatabaseConnectionPoolParameterList.class };
 
   public PentahoJAXBContextResolver() throws JAXBException {
-    this.context = new JSONJAXBContext(JSONConfiguration.natural().build(), types);
+    this.context = new JSONJAXBContext( JSONConfiguration.natural().build(), types );
   }
 
   /* (non-Javadoc)
    * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
    */
   @Override
-  public JAXBContext getContext(Class<?> objectType) {
-    for(Class c : types) {
-      if(c.equals(objectType)) {
-        return(context);
+  public JAXBContext getContext( Class<?> objectType ) {
+    for ( Class c : types ) {
+      if ( c.equals( objectType ) ) {
+        return ( context );
       }
     }
-    return(null);
+    return ( null );
   }
 }

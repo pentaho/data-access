@@ -29,15 +29,17 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface ICsvDatasourceService extends RemoteService {
 
-	public ModelInfo stageFile(String name, String delimiter, String enclosure, boolean isFirstRowHeader, String encoding) throws Exception;
+  public ModelInfo stageFile( String name, String delimiter, String enclosure, boolean isFirstRowHeader,
+                              String encoding ) throws Exception;
 
-	public FileInfo[] getStagedFiles() throws Exception;
+  public FileInfo[] getStagedFiles() throws Exception;
 
-	public FileTransformStats generateDomain(DatasourceDTO datasourceDto) throws Exception;
+  public FileTransformStats generateDomain( DatasourceDTO datasourceDto ) throws Exception;
 
-	public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception;
+  public List<String> getPreviewRows( String filename, boolean isFirstRowHeader, int rows, String encoding )
+    throws Exception;
 
-	public String getEncoding(String fileName) throws Exception;
+  public String getEncoding( String fileName ) throws Exception;
 
-	public BogoPojo gwtWorkaround(BogoPojo pojo);
+  public BogoPojo gwtWorkaround( BogoPojo pojo );
 }

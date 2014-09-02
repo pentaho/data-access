@@ -80,7 +80,7 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
 
   protected IWizardModel wizardModel;
 
-  protected AbstractWizardStep(IWizardDatasource parentDatasource) {
+  protected AbstractWizardStep( IWizardDatasource parentDatasource ) {
     super();
     this.parentDatasource = parentDatasource;
   }
@@ -96,18 +96,18 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
   }
 
   @Bindable
-  public void setValid(final boolean valid) {
+  public void setValid( final boolean valid ) {
     this.valid = valid;
 
-    this.firePropertyChange(VALID_PROPERTY_NAME, !valid, this.valid);
+    this.firePropertyChange( VALID_PROPERTY_NAME, !valid, this.valid );
   }
 
   /**
-   * @throws XulException  
+   * @throws XulException
    */
-  public void init(IWizardModel wizardModel) throws XulException {
+  public void init( IWizardModel wizardModel ) throws XulException {
     this.wizardModel = wizardModel;
-    bf = new GwtBindingFactory(document);
+    bf = new GwtBindingFactory( document );
     this.setBindings();
   }
 
@@ -115,26 +115,26 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
   public void activating() throws XulException {
 
     // get the grid itself so we can update it later
-    final XulGrid stepGrid = (XulGrid) document.getElementById(STEP_GRID_ID);
+    final XulGrid stepGrid = (XulGrid) document.getElementById( STEP_GRID_ID );
 
     // grab the rows and add a new row to it
-    final XulRows stepRows = (XulRows) document.getElementById(STEP_ROWS_ID);
-    stepRow = (XulRow) document.createElement(XUL_ROW_TYPE);
-    stepRows.addChild(stepRow);
+    final XulRows stepRows = (XulRows) document.getElementById( STEP_ROWS_ID );
+    stepRow = (XulRow) document.createElement( XUL_ROW_TYPE );
+    stepRows.addChild( stepRow );
 
     // Create and add the activeImage to the row (goes in the first column)
-    stepImage = (XulImage) document.createElement(XUL_IMAGE_TYPE);
-    stepImage.setSrc(STEP_IMAGE_SRC);
-    stepImage.setId(this.getStepName());
-    stepImage.setVisible(false);
-    ((GwtImage) stepImage).setAttribute("pen:classname", "pentaho-chevron"); //$NON-NLS-1$ //$NON-NLS-2$
-    stepRow.addChild(stepImage);
+    stepImage = (XulImage) document.createElement( XUL_IMAGE_TYPE );
+    stepImage.setSrc( STEP_IMAGE_SRC );
+    stepImage.setId( this.getStepName() );
+    stepImage.setVisible( false );
+    ( (GwtImage) stepImage ).setAttribute( "pen:classname", "pentaho-chevron" ); //$NON-NLS-1$ //$NON-NLS-2$
+    stepRow.addChild( stepImage );
 
     // Create and add the text label to the row (goes in the second column)
-    stepLabel = (XulLabel) document.createElement(XUL_LABEL_TYPE);
-    stepLabel.setValue(this.getStepName());
-    stepLabel.setFlex(1);
-    stepRow.addChild(stepLabel);
+    stepLabel = (XulLabel) document.createElement( XUL_LABEL_TYPE );
+    stepLabel.setValue( this.getStepName() );
+    stepLabel.setFlex( 1 );
+    stepRow.addChild( stepLabel );
 
     stepGrid.update();
     activated = true;
@@ -142,9 +142,9 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
 
   public void deactivate() {
 
-    XulGrid stepGrid = (XulGrid) document.getElementById(STEP_GRID_ID);
-    XulRows stepRows = (XulRows) document.getElementById(STEP_ROWS_ID);
-    stepRows.removeChild(stepRow);
+    XulGrid stepGrid = (XulGrid) document.getElementById( STEP_GRID_ID );
+    XulRows stepRows = (XulRows) document.getElementById( STEP_ROWS_ID );
+    stepRows.removeChild( stepRow );
     stepGrid.update();
   }
 
@@ -152,41 +152,41 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
     return disabled;
   }
 
-  public void setDisabled(boolean disabled) {
+  public void setDisabled( boolean disabled ) {
     boolean oldDisabled = this.disabled;
     this.disabled = disabled;
-    if (stepLabel != null) {
-      stepLabel.setDisabled(this.disabled);
+    if ( stepLabel != null ) {
+      stepLabel.setDisabled( this.disabled );
     }
 
-    this.firePropertyChange(DISABLED_PROPERTY_NAME, oldDisabled, this.disabled);
+    this.firePropertyChange( DISABLED_PROPERTY_NAME, oldDisabled, this.disabled );
   }
 
   /* (non-Javadoc)
    * @see org.pentaho.reporting.engine.classic.wizard.ui.xul.components.WizardStep#stepActivatingForward()
    */
   public void stepActivatingForward() {
-    setStepImageVisible(true);
+    setStepImageVisible( true );
   }
 
   /* (non-Javadoc)
    * @see org.pentaho.reporting.engine.classic.wizard.ui.xul.components.WizardStep#stepActivatingReverse()
    */
   public void stepActivatingReverse() {
-    setStepImageVisible(true);
+    setStepImageVisible( true );
   }
 
   /* (non-Javadoc)
    * @see org.pentaho.reporting.engine.classic.wizard.ui.xul.components.WizardStep#stepDeactivatingForward()
    */
   public boolean stepDeactivatingForward() {
-    setStepImageVisible(false);
+    setStepImageVisible( false );
     return true;
   }
 
-  public void setStepImageVisible(boolean visible) {
-    if (stepImage != null) {
-      stepImage.setVisible(visible);
+  public void setStepImageVisible( boolean visible ) {
+    if ( stepImage != null ) {
+      stepImage.setVisible( visible );
     }
   }
 

@@ -30,21 +30,32 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.ui.xul.XulServiceCallback;
 
 public interface IXulAsyncDSWDatasourceService {
-  void getLogicalModels(String context, XulServiceCallback<List<LogicalModelSummary>> callback);
-  void deleteLogicalModel(String domainId, String modelName, XulServiceCallback<Boolean> callback);
-  void doPreview(String connectionName, String query, String previewLimit, XulServiceCallback<SerializedResultSet> callback);
-  void generateLogicalModel(String modelName, String connectionName, String dbType, String query, String previewLimit, XulServiceCallback<BusinessData> callback); 
-  void saveLogicalModel(Domain domain, boolean overwrite,XulServiceCallback<Boolean> callback);
-  void hasPermission(XulServiceCallback<Boolean> callback);
-  void loadBusinessData(String domainId, String modelId, XulServiceCallback<BusinessData> callback);
-  void serializeModelState(DatasourceDTO dto, XulServiceCallback<String> callback);
-  void deSerializeModelState(String dtoStr, XulServiceCallback<DatasourceDTO> callback);
+  void getLogicalModels( String context, XulServiceCallback<List<LogicalModelSummary>> callback );
 
-  public void listDatasourceNames(XulServiceCallback<List<String>> callback);
+  void deleteLogicalModel( String domainId, String modelName, XulServiceCallback<Boolean> callback );
 
-  void generateQueryDomain(String name, String query, DatabaseConnection connection, DatasourceDTO datasourceDTO, XulServiceCallback<IDatasourceSummary> callback);
-  void getDatasourceIllegalCharacters(XulServiceCallback<String> callback);
-  void getGeoContext(XulServiceCallback<GeoContext> callback);
+  void doPreview( String connectionName, String query, String previewLimit,
+                  XulServiceCallback<SerializedResultSet> callback );
+
+  void generateLogicalModel( String modelName, String connectionName, String dbType, String query, String previewLimit,
+                             XulServiceCallback<BusinessData> callback );
+
+  void saveLogicalModel( Domain domain, boolean overwrite, XulServiceCallback<Boolean> callback );
+
+  void hasPermission( XulServiceCallback<Boolean> callback );
+
+  void loadBusinessData( String domainId, String modelId, XulServiceCallback<BusinessData> callback );
+
+  void serializeModelState( DatasourceDTO dto, XulServiceCallback<String> callback );
+
+  void deSerializeModelState( String dtoStr, XulServiceCallback<DatasourceDTO> callback );
+
+  public void listDatasourceNames( XulServiceCallback<List<String>> callback );
+
+  void generateQueryDomain( String name, String query, DatabaseConnection connection, DatasourceDTO datasourceDTO,
+                            XulServiceCallback<IDatasourceSummary> callback );
+
+  void getDatasourceIllegalCharacters( XulServiceCallback<String> callback );
+
+  void getGeoContext( XulServiceCallback<GeoContext> callback );
 }
-
-  

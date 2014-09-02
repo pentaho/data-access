@@ -24,12 +24,12 @@ import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-public class Aggregation  extends XulEventSourceAdapter{
-  
-  public Aggregation(List<AggregationType> aggregationList, AggregationType defaultAggregationType) {
+public class Aggregation extends XulEventSourceAdapter {
+
+  public Aggregation( List<AggregationType> aggregationList, AggregationType defaultAggregationType ) {
     super();
-    setAggregationList(aggregationList);
-    setDefaultAggregationType(defaultAggregationType);
+    setAggregationList( aggregationList );
+    setDefaultAggregationType( defaultAggregationType );
   }
 
   public Aggregation() {
@@ -43,11 +43,11 @@ public class Aggregation  extends XulEventSourceAdapter{
     @Override
     public String toString() {
       StringBuffer buffer = new StringBuffer();
-      for(int i=0;i<this.size();i++) {
-        buffer.append(this.get(i));
-        if(i<this.size()-1 && (buffer.length()
-            + this.get(i+1).name().length() < MAX_COL_SIZE)) {
-          buffer.append(',');  
+      for ( int i = 0; i < this.size(); i++ ) {
+        buffer.append( this.get( i ) );
+        if ( i < this.size() - 1 && ( buffer.length()
+          + this.get( i + 1 ).name().length() < MAX_COL_SIZE ) ) {
+          buffer.append( ',' );
         } else {
           break;
         }
@@ -55,22 +55,22 @@ public class Aggregation  extends XulEventSourceAdapter{
       return buffer.toString();
     }
 
-    
+
   };
-  
+
 
   /**
    * @param aggregationList the aggregationList to set
    */
   @Bindable
-  public void setAggregationList(List<AggregationType> aggregationList) {
+  public void setAggregationList( List<AggregationType> aggregationList ) {
     this.aggregationList.clear();
-    if(aggregationList != null && aggregationList.size() > 0) {
-      this.aggregationList.addAll(aggregationList);
+    if ( aggregationList != null && aggregationList.size() > 0 ) {
+      this.aggregationList.addAll( aggregationList );
     } else {
-      this.aggregationList.add(AggregationType.NONE);
+      this.aggregationList.add( AggregationType.NONE );
     }
-    firePropertyChange("aggregationList", null, aggregationList); //$NON-NLS-1$
+    firePropertyChange( "aggregationList", null, aggregationList ); //$NON-NLS-1$
   }
 
   /**
@@ -82,16 +82,16 @@ public class Aggregation  extends XulEventSourceAdapter{
   }
 
   @Bindable
-  public void setDefaultAggregationType(AggregationType defaultAggregationType) {
+  public void setDefaultAggregationType( AggregationType defaultAggregationType ) {
     this.defaultAggregationType = defaultAggregationType;
-    firePropertyChange("defaultAggregationType", null, defaultAggregationType);//$NON-NLS-1$
+    firePropertyChange( "defaultAggregationType", null, defaultAggregationType ); //$NON-NLS-1$
   }
 
   @Bindable
   public AggregationType getDefaultAggregationType() {
     return defaultAggregationType;
   }
-  
+
   public String toString() {
     return aggregationList.toString();
   }

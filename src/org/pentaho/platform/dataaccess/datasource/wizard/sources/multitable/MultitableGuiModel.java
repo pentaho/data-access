@@ -240,8 +240,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
 
     List<JoinTableModel> joinTables = new ArrayList<JoinTableModel>();
     if ( tables.size() > 0 ) {
-
-      mainLoop:
+    mainLoop:
       for ( String table : tables ) {
         JoinTableModel joinTable = new JoinTableModel();
         joinTable.setName( table );
@@ -321,7 +320,7 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
       this.computeJoins( dto );
 
       // Populate fact table.
-      if (dto.isDoOlap()) {
+      if ( dto.isDoOlap() ) {
         for ( JoinTableModel table : this.selectedTables ) {
           if ( tablesAreEqual( table.getName(), dto.getSchemaModel().getFactTable().getName() ) ) {
             this.setFactTable( table );
@@ -362,14 +361,14 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
    * @return int > 0 if found
    */
   public int getTableIndex( JoinTableModel joinTable ) {
-    return ( this.getSelectedTables() == null || this.getSelectedTables().isEmpty() ) ? 0 :
-      this.getSelectedTables().indexOf( joinTable );
+    return ( this.getSelectedTables() == null
+      || this.getSelectedTables().isEmpty() ) ? 0 : this.getSelectedTables().indexOf( joinTable );
   }
 
   private void addFieldsToTables( Domain domain, AbstractModelList<JoinTableModel> availableTables ) {
 
     String locale = LocalizedString.DEFAULT_LOCALE;
-    Outter:
+  Outter:
     for ( JoinTableModel table : availableTables ) {
       for ( LogicalTable tbl : domain.getLogicalModels().get( 0 ).getLogicalTables() ) {
         if ( tbl.getPhysicalTable().getProperty( "target_table" ).equals( table.getName() ) ) {

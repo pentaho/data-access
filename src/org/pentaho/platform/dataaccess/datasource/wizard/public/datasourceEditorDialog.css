@@ -1,129 +1,131 @@
-.checkbox label{
-	padding-left:3px;
-  	font-family: Tahoma, Helvetica, Arial, sans-serif;
-  	font-size: 13px;
+.checkbox label {
+  padding-left: 3px;
+  font-family: Tahoma, Helvetica, Arial, sans-serif;
+  font-size: 13px;
 }
 
 aggregation-dialog-checkbox-label {
-    padding-left:3px;
-    font-family: Tahoma, Helvetica, Arial, sans-serif;
-    font-size: 0.65em;
+  padding-left: 3px;
+  font-family: Tahoma, Helvetica, Arial, sans-serif;
+  font-size: 0.65em;
 }
 
 .waiting .waiting-indicator {
-    background: white;
-    color: #444;
-    font: bold 13px Tahoma, Helvetica, Arial, sans-serif;
-    padding: 10px;
-    margin: 0;
-    height: auto;
+  background: white;
+  color: #444;
+  font: bold 13px Tahoma, Helvetica, Arial, sans-serif;
+  padding: 10px;
+  margin: 0;
+  height: auto;
 }
 
 .waiting .waiting-indicator-img {
-    background: white;
-    margin-right:8px;
-    float:left;
-    vertical-align:top;
+  background: white;
+  margin-right: 8px;
+  float: left;
+  vertical-align: top;
 }
 
 .waiting-msg {
-    background: white;
-    font: normal 10px Tahoma, Helvetica, Arial, sans-serif;
+  background: white;
+  font: normal 10px Tahoma, Helvetica, Arial, sans-serif;
 }
 
 .modalDialogPageBackground {
-    opacity: 0.20;
-    background-color:  #000000;
-    /* Transparency for IE */
-    background-image: expression('url(wait-background.gif)');
-    background-color: expression('transparent');
-    /*
-    opacity: 0.20;
-    position: expression('absolute');
-    height: expression(document.documentElement.scrollHeight+'px');
-    width: expression(document.documentElement.scrollWidth+'px');
-    */
-    cursor: wait;
+  opacity: 0.20;
+  background-color: #000000;
+  /* Transparency for IE */
+  background-image: expression('url(wait-background.gif)');
+  background-color: expression('transparent');
+  /*
+  opacity: 0.20;
+  position: expression('absolute');
+  height: expression(document.documentElement.scrollHeight+'px');
+  width: expression(document.documentElement.scrollWidth+'px');
+  */
+  cursor: wait;
 }
 
-
-.waitingDialog{
-    position: absolute;
-    left: 44%;
-    top: 44%;
-    padding: 15px 8px;
-    z-index: 20001;
-    height: auto;
-    border: 1px solid #ccc;
-    background: white;
-    border-collapse: separate;
-}
-.waitingDialog_table{
-    color: #444;
-    background-image: url(large-loading.gif);
-    background-position: left center;
-    background-repeat: no-repeat;
-    font: bold 13px Tahoma, Helvetica, Arial, sans-serif;
+.waitingDialog {
+  position: absolute;
+  left: 44%;
+  top: 44%;
+  padding: 15px 8px;
+  z-index: 20001;
+  height: auto;
+  border: 1px solid #ccc;
+  background: white;
+  border-collapse: separate;
 }
 
-.waitingDialog_title{
-
-    color: #444;
-    font: bold 14px tahoma, arial, helvetica;
-    margin-left: 40px;
-    padding-bottom: 3px;
+.waitingDialog_table {
+  color: #444;
+  background-image: url(large-loading.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+  font: bold 13px Tahoma, Helvetica, Arial, sans-serif;
 }
 
-.waitingDialog_msg{
-    font: normal 12px Tahoma, Helvetica, Arial, sans-serif;
-    margin-left: 40px;
+.waitingDialog_title {
+
+  color: #444;
+  font: bold 14px tahoma, arial, helvetica;
+  margin-left: 40px;
+  padding-bottom: 3px;
+}
+
+.waitingDialog_msg {
+  font: normal 12px Tahoma, Helvetica, Arial, sans-serif;
+  margin-left: 40px;
 }
 
 #waitingDialog,
 #waitingForSomethingBox {
-    border-collapse: separate;
+  border-collapse: separate;
 }
 
 #csvColumnsHeader {
-    border-spacing: 0px;
-    padding: 10px;
-    background-color: #cccccc;
-    border-bottom: thin solid black;
+  border-spacing: 0px;
+  padding: 10px;
+  background-color: #cccccc;
+  border-bottom: thin solid black;
 }
 
 #csvPreviewPanel {
-    border-spacing: 0px;
+  border-spacing: 0px;
 }
 
 #csvColumnsBox {
-    border-spacing: 0px;
+  border-spacing: 0px;
 }
 
 #csvColumnsContent {
-    /*margin-left: 10px;*/
+  /*margin-left: 10px;*/
 }
 
 #csvEnclosure {
-    padding-left: 10px;
-    position: relative;
-    top: -4px;
+  padding-left: 10px;
+  position: relative;
+  top: -4px;
 }
 
 .gwt-FileUpload {
-    size: 160;
+  size: 160;
 }
 
-#columnsHeaderLabel{
+#columnsHeaderLabel {
 }
 
 #enclosureRadioGroup .radio {
-	font-size: 13px;
+  font-size: 13px;
 }
 
 #delimiterRadioGroup .radio {
-	font-size: 13px;
+  font-size: 13px;
 }
-#csvModelDataTable {}
+
+#csvModelDataTable {
+}
 
 .dialogContent,
 .dialog-content,
@@ -140,75 +142,78 @@ aggregation-dialog-checkbox-label {
 #filesListBox,
 #csvPreviewDialog,
 #filesPropertiesBox {
-    border-spacing: 0px;
-    border-collapse: collapse;
+  border-spacing: 0px;
+  border-collapse: collapse;
 }
 
 .IE .dialogContent,
 .IE .dialog-content {
-    border-spacing: inherit;
-    border-collapse: inherit;
+  border-spacing: inherit;
+  border-collapse: inherit;
 }
 
 .dialog-content {
-    border-collapse: expression('separate', cellSpacing = '0px');  /* IE hack  */
-    border-collapse: separate;
-    height:auto !important;
+  border-collapse: expression('separate', cellSpacing = '0px'); /* IE hack  */
+  border-collapse: separate;
+  height: auto !important;
 }
 
 #controller_panel {
-    /*border-top: 1px solid black;*/
-    padding-top: 5px;
-    border-collapse: separate;
+  /*border-top: 1px solid black;*/
+  padding-top: 5px;
+  border-collapse: separate;
 }
 
 #stepsPanel {
-    /*border-right: 1px solid black;*/
-    background-image: url(images/bg_steps.png);
-    background-repeat: no-repeat;
-    overflow: hidden;
-    height: 500px;
+  /*border-right: 1px solid black;*/
+  background-image: url(images/bg_steps.png);
+  background-repeat: no-repeat;
+  overflow: hidden;
+  height: 500px;
 }
+
 #step_grid td {
-    padding-top: 5px;
-    padding-bottom: 10px;
+  padding-top: 5px;
+  padding-bottom: 10px;
 }
+
 .roundedbutton-label {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 #filesLabel {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 #csvDescriptionLabel {
-    white-space: normal;
+  white-space: normal;
 }
 
 #modelerDecision .radio {
-	font-size: 13px;
+  font-size: 13px;
 }
 
 #summaryDialogContainer {
-    padding: 5px;
+  padding: 5px;
 }
+
 #summaryDialogRowsLoaded {
 }
 
 #errorLogExpander {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
-#fileUpload > tbody > tr > td> form {
-    margin-bottom: 0px;
+#fileUpload > tbody > tr > td > form {
+  margin-bottom: 0px;
 }
 
 #configOptionsBox > tbody > tr > td > div > fieldset > div {
-    padding: 0px !important;
+  padding: 0px !important;
 }
 
 #otherRadioHbox {
-    width: 100%;
+  width: 100%;
 }
 
 #sourcestep,
@@ -218,52 +223,55 @@ aggregation-dialog-checkbox-label {
 #errorDetailsDialogContainer,
 #errorDialogContainer,
 #mainBox {
-    border-collapse: separate;
+  border-collapse: separate;
 }
 
 #stageDataDescription,
 #waitingDialogLabel,
 #summaryDialogDescription,
 #errorLabel {
-    white-space: normal;
+  white-space: normal;
 }
 
 #summaryDialogDescription {
-    padding-left: 3px;
+  padding-left: 3px;
 }
 
-    /* this makes sure the fieldsets aren't any bigger than their defined sizes */
+/* this makes sure the fieldsets aren't any bigger than their defined sizes */
 #csvDeckPanel .xul-fieldset {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 #showModelerCheckboxHider .xul-fieldset {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 #csvTextPreviewLabel > .xul-pre {
-    width: 630px;
+  width: 630px;
 }
 
 #database-options-box {
-    height: 350px !important;
+  height: 350px !important;
 }
+
 #database-options-box input {
-    width: 260px !important;
+  width: 260px !important;
 }
+
 #database-options-box .vbox {
-    height: 325px !important;
+  height: 325px !important;
 }
 
 #generic_message_label {
-    white-space: normal;
+  white-space: normal;
 }
 
 #csvTextPreview > pre {
-    font-size: 14px;
+  font-size: 14px;
 }
+
 #csvTextPreviewLabel > pre {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 /* This CSS file is mixed with Analyzer CSS so make sure*/
@@ -274,102 +282,109 @@ aggregation-dialog-checkbox-label {
 }
 
 .drop-popup > .popupContent {
-    font-size: 16px;
+  font-size: 16px;
 }
 
-#csvDeckPanel .custom-list-textbox ,
-#datasourceName ,
+#csvDeckPanel .custom-list-textbox,
+#datasourceName,
 #uploadedFile,
-.dataTable .gwt-HTML{
+.dataTable .gwt-HTML {
   font-family: Tahoma, Helvetica, Arial, sans-serif;
   font-size: 13px;
 }
 
 #hierarchy_message_label,
 #dimension_message_label {
-    white-space: normal;
+  white-space: normal;
 }
 
-
 #metadatastep {
-    border-collapse: separate;
+  border-collapse: separate;
 }
 
 #metadatastep .scroll-panel {
-    overflow-x: hidden !important;
+  overflow-x: hidden !important;
 }
+
 #metadatastep .gwt-Tree {
-    width: auto !important;
+  width: auto !important;
 }
+
 #metadatastep .gwt-Tree div {
-    width: auto !important;
-    padding: 0px;
+  width: auto !important;
+  padding: 0px;
 }
+
 #metadatastep #fieldList {
   font-size: 14px;
 }
 
 #schema-toolbar-groupbox > .vbox {
-    height: 443px !important;
+  height: 443px !important;
 }
-#schema-toolbar-groupbox  {
-    height: 463px !important;
+
+#schema-toolbar-groupbox {
+  height: 463px !important;
 }
+
 #propertiesPanel .xul-textbox {
-    width: 202px !important;
+  width: 202px !important;
 }
 
 #messages2label {
-    height:50px;
-    width: 188px;
-    white-space: normal !important;
+  height: 50px;
+  width: 188px;
+  white-space: normal !important;
 }
+
 #joinDefinitionWindow,
 #joinSelectionWindow {
-    border-collapse: separate;
+  border-collapse: separate;
 }
 
 .rowHeaderFormat .xul-label {
 
 }
 
-#addFileButton{
-    font-size:.65em;
-    padding: 3px 10px;
+#addFileButton {
+  font-size: .65em;
+  padding: 3px 10px;
 }
-.IE #addFileButton{
-    background-color: #000000;
-    height: 24px;
+
+.IE #addFileButton {
+  background-color: #000000;
+  height: 24px;
 }
 
 #otherRadio .gwt-TextBox {
-    width: 150px;
+  width: 150px;
 }
+
 #field_column_name {
-	width: 230px;
-	overflow: hidden;
+  width: 230px;
+  overflow: hidden;
 }
 
 #sql-text {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .IE #sql-text {
-    height: 285px !important;
+  height: 285px !important;
 }
 
 #pooling-description {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .IE #pooling-description {
-    height: 40px !important;
+  height: 40px !important;
 }
 
 #options-parameter-tree .gwt-ScrollTable {
-    height: 220px !important;
+  height: 220px !important;
 }
 
 #options-parameter-tree .gwt-ScrollTable .dataWrapper {
-    height: 100% !important;
+  height: 100% !important;
 }

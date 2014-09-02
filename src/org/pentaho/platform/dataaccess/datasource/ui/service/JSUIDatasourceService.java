@@ -31,53 +31,58 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
   private JavaScriptObject datasourceServiceObject;
 
   // Overlay types always have protected, zero argument constructors.
-  public JSUIDatasourceService(JavaScriptObject datasourceServiceObject) {
+  public JSUIDatasourceService( JavaScriptObject datasourceServiceObject ) {
     this.datasourceServiceObject = datasourceServiceObject;
-  }
-  
-  @Override
-  public final String getType() {
-    return getDelegateType(this.datasourceServiceObject);
   }
 
   @Override
-  public final void getIds(XulServiceCallback<List<IDatasourceInfo>> callback) {
+  public final String getType() {
+    return getDelegateType( this.datasourceServiceObject );
+  }
+
+  @Override
+  public final void getIds( XulServiceCallback<List<IDatasourceInfo>> callback ) {
     List<IDatasourceInfo> datasourceInfoList = new ArrayList<IDatasourceInfo>();
-    JsArray<JavaScriptObject> infos = getDelegateIds(this.datasourceServiceObject);
-    for(int i=0;i<infos.length();i++) {
-      JSDatasourceInfo info = new JSDatasourceInfo(infos.get(i));
-      datasourceInfoList.add(new DatasourceInfo(info.getName(), info.getName(), info.getType(), info.isEditable(), info.isRemovable(), info.isImportable(), info.isExportable()));
+    JsArray<JavaScriptObject> infos = getDelegateIds( this.datasourceServiceObject );
+    for ( int i = 0; i < infos.length(); i++ ) {
+      JSDatasourceInfo info = new JSDatasourceInfo( infos.get( i ) );
+      datasourceInfoList.add(
+        new DatasourceInfo( info.getName(), info.getName(), info.getType(), info.isEditable(), info.isRemovable(),
+          info.isImportable(), info.isExportable() ) );
     }
-    callback.success(datasourceInfoList);
+    callback.success( datasourceInfoList );
   }
 
   @Override
   public final String getNewUI() {
-    return getDelegateNewUI(this.datasourceServiceObject);
+    return getDelegateNewUI( this.datasourceServiceObject );
   }
 
   @Override
-  public final String getEditUI(IDatasourceInfo dsInfo) {
-    return getDelegateEditUI(this.datasourceServiceObject, dsInfo.getId());
+  public final String getEditUI( IDatasourceInfo dsInfo ) {
+    return getDelegateEditUI( this.datasourceServiceObject, dsInfo.getId() );
   }
-  
+
   @Override
-  public final void export(IDatasourceInfo dsInfo) {
-    getDelegateExport(this.datasourceServiceObject, dsInfo.getId());
-    
+  public final void export( IDatasourceInfo dsInfo ) {
+    getDelegateExport( this.datasourceServiceObject, dsInfo.getId() );
+
   }
 
   /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo, java.lang.Object)
+   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform
+   * .dataaccess.datasource.IDatasourceInfo, java.lang.Object)
    */
   @Override
-  public void remove(IDatasourceInfo dsInfo, Object callback) {
-    XulServiceCallbackJavascriptObject xulServiceCallbackJsObject = new XulServiceCallbackJavascriptObject((XulServiceCallback<Boolean>) callback);
-    getDelegateRemove(this.datasourceServiceObject, dsInfo.getId(), xulServiceCallbackJsObject.getJavascriptObject());
+  public void remove( IDatasourceInfo dsInfo, Object callback ) {
+    XulServiceCallbackJavascriptObject xulServiceCallbackJsObject =
+      new XulServiceCallbackJavascriptObject( (XulServiceCallback<Boolean>) callback );
+    getDelegateRemove( this.datasourceServiceObject, dsInfo.getId(), xulServiceCallbackJsObject.getJavascriptObject() );
   }
 
   /**
    * Return editable flag
+   *
    * @return
    */
   @Override public boolean isEditable() {
@@ -86,6 +91,7 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
 
   /**
    * Return removable flag
+   *
    * @return
    */
   @Override public boolean isRemovable() {
@@ -94,6 +100,7 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
 
   /**
    * Return importable flag
+   *
    * @return
    */
   @Override public boolean isImportable() {
@@ -102,6 +109,7 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
 
   /**
    * Return exportable flag
+   *
    * @return
    */
   @Override public boolean isExportable() {
@@ -110,53 +118,55 @@ public class JSUIDatasourceService implements IUIDatasourceAdminService {
 
   /**
    * Return creatable flag
+   *
    * @return
    */
   @Override public boolean isCreatable() {
     return getDelegateIsCreatable( this.datasourceServiceObject );
   }
 
-  private final native JsArray<JavaScriptObject> getDelegateIds(JavaScriptObject datasourceServiceObject) /*-{
+  private final native JsArray<JavaScriptObject> getDelegateIds( JavaScriptObject datasourceServiceObject ) /*-{
     return datasourceServiceObject.getIds();
   }-*/;
 
-  private final native String getDelegateNewUI(JavaScriptObject datasourceServiceObject) /*-{
+  private final native String getDelegateNewUI( JavaScriptObject datasourceServiceObject ) /*-{
     return datasourceServiceObject.getNewUI();
   }-*/;
 
-  private final native String getDelegateEditUI(JavaScriptObject datasourceServiceObject, String id) /*-{
+  private final native String getDelegateEditUI( JavaScriptObject datasourceServiceObject, String id ) /*-{
     return datasourceServiceObject.getEditUI(id);
   }-*/;
-  
-  private final native String getDelegateType(JavaScriptObject datasourceServiceObject) /*-{
+
+  private final native String getDelegateType( JavaScriptObject datasourceServiceObject ) /*-{
     return datasourceServiceObject.getType();
   }-*/;
-  
-  private final native String getDelegateExport(JavaScriptObject datasourceServiceObject, String id) /*-{
+
+  private final native String getDelegateExport( JavaScriptObject datasourceServiceObject, String id ) /*-{
     return datasourceServiceObject.doExport(id);
   }-*/;
 
-  private final native String getDelegateRemove(JavaScriptObject datasourceServiceObject, String id, JavaScriptObject callback) /*-{
+  private final native String getDelegateRemove( JavaScriptObject datasourceServiceObject, String id,
+                                                 JavaScriptObject callback ) /*-{
     return datasourceServiceObject.doRemove(id, callback);
   }-*/;
 
-  private final native boolean getDelegateIsEditable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsEditable( JavaScriptObject datasourceServiceObject )/*-{
     return datasourceServiceObject.isEditable();
   }-*/;
 
-  private final native boolean getDelegateIsRemovable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsRemovable( JavaScriptObject datasourceServiceObject )/*-{
     return datasourceServiceObject.isRemovable();
   }-*/;
 
-  private final native boolean getDelegateIsImportable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsImportable( JavaScriptObject datasourceServiceObject )/*-{
     return datasourceServiceObject.isImportable();
   }-*/;
 
-  private final native boolean getDelegateIsExportable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsExportable( JavaScriptObject datasourceServiceObject )/*-{
     return datasourceServiceObject.isExportable();
   }-*/;
 
-  private final native boolean getDelegateIsCreatable(JavaScriptObject datasourceServiceObject)/*-{
+  private final native boolean getDelegateIsCreatable( JavaScriptObject datasourceServiceObject )/*-{
     return datasourceServiceObject.isCreatable();
   }-*/;
 }

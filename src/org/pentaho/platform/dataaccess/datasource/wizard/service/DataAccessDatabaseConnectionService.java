@@ -24,13 +24,14 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.Conn
 public class DataAccessDatabaseConnectionService extends DatabaseConnectionService {
 
   @Override
-  public String testConnection(IDatabaseConnection connection) {
+  public String testConnection( IDatabaseConnection connection ) {
     try {
-      
-      connection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
-      return super.testConnection(connection);
-    } catch (ConnectionServiceException e) {
-      return super.testConnection(connection);
+
+      connection
+        .setPassword( ConnectionServiceHelper.getConnectionPassword( connection.getName(), connection.getPassword() ) );
+      return super.testConnection( connection );
+    } catch ( ConnectionServiceException e ) {
+      return super.testConnection( connection );
     }
   }
 }

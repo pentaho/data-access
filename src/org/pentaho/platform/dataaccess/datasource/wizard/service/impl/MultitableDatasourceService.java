@@ -53,167 +53,173 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import com.thoughtworks.xstream.XStream;
 
 public class MultitableDatasourceService extends PentahoBase implements IGwtJoinSelectionService {
-	
-	private DatabaseMeta databaseMeta;
-	private ConnectionServiceImpl connectionServiceImpl;
-  private Log logger = LogFactory.getLog(MultitableDatasourceService.class);
 
-	public MultitableDatasourceService() {
-		this.connectionServiceImpl = new ConnectionServiceImpl();
-    init();
-	}
+  private DatabaseMeta databaseMeta;
+  private ConnectionServiceImpl connectionServiceImpl;
+  private Log logger = LogFactory.getLog( MultitableDatasourceService.class );
 
-	public MultitableDatasourceService(DatabaseMeta databaseMeta) {
-		this.databaseMeta = databaseMeta;
+  public MultitableDatasourceService() {
+    this.connectionServiceImpl = new ConnectionServiceImpl();
     init();
-	}
+  }
+
+  public MultitableDatasourceService( DatabaseMeta databaseMeta ) {
+    this.databaseMeta = databaseMeta;
+    init();
+  }
 
   protected void init() {
   }
 
-	private DatabaseMeta getDatabaseMeta(IDatabaseConnection connection) throws ConnectionServiceException {
-		if(this.connectionServiceImpl == null) {
-			return this.databaseMeta;
-		}
+  private DatabaseMeta getDatabaseMeta( IDatabaseConnection connection ) throws ConnectionServiceException {
+    if ( this.connectionServiceImpl == null ) {
+      return this.databaseMeta;
+    }
 
-		// DatabaseConnection objects may be de-serialized from the client and missing extra parameters and attributes.
-		// Resolve the connection by name through ConnectionService before use.
-		// All public methods should use getDatabaseMeta to guarantee accurate connection info.
-		connection = connectionServiceImpl.getConnectionByName( connection.getName() );
-		connection.setPassword(ConnectionServiceHelper.getConnectionPassword(connection.getName(), connection.getPassword()));
-		DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta(connection);
-    dbmeta.getDatabaseInterface().setQuoteAllFields( true ); //This line probably shouldn't be here.  It overrides the "Quote all in Database" checkbox
-	    return dbmeta;
-  	}
+    // DatabaseConnection objects may be de-serialized from the client and missing extra parameters and attributes.
+    // Resolve the connection by name through ConnectionService before use.
+    // All public methods should use getDatabaseMeta to guarantee accurate connection info.
+    connection = connectionServiceImpl.getConnectionByName( connection.getName() );
+    connection
+      .setPassword( ConnectionServiceHelper.getConnectionPassword( connection.getName(), connection.getPassword() ) );
+    DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta( connection );
+    dbmeta.getDatabaseInterface().setQuoteAllFields(
+      true ); //This line probably shouldn't be here.  It overrides the "Quote all in Database" checkbox
+    return dbmeta;
+  }
 
-	public List<String> retrieveSchemas(IDatabaseConnection connection) throws DatasourceServiceException {
-		List<String> schemas = new ArrayList<String>();
-		try {
-			DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-			Database database = new Database(null, databaseMeta);
-		    database.connect();
-		    Map<String, Collection<String>> tableMap = database.getTableMap(null);
-
-        //database.getSchemas()
-
-		      Set<String> schemaNames = tableMap.keySet();
-		    schemas.addAll(schemaNames);
-		    database.disconnect();
-		} catch (KettleDatabaseException e) {
-	      logger.error("Error creating database object", e);
-	      throw new DatasourceServiceException(e);
-	    } catch (ConnectionServiceException e) {
-	      logger.error("Error getting database meta", e);
-	      throw new DatasourceServiceException(e);
-	    }
-		return schemas;
-	}
-
-	public List<String> getDatabaseTables(IDatabaseConnection connection, String schema) throws DatasourceServiceException {
-    try{
-      DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-      Database database = new Database(null, databaseMeta);
+  public List<String> retrieveSchemas( IDatabaseConnection connection ) throws DatasourceServiceException {
+    List<String> schemas = new ArrayList<String>();
+    try {
+      DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
+      Database database = new Database( null, databaseMeta );
       database.connect();
-      String[] tableNames = database.getTablenames(schema, true);
+      Map<String, Collection<String>> tableMap = database.getTableMap( null );
+
+      //database.getSchemas()
+
+      Set<String> schemaNames = tableMap.keySet();
+      schemas.addAll( schemaNames );
+      database.disconnect();
+    } catch ( KettleDatabaseException e ) {
+      logger.error( "Error creating database object", e );
+      throw new DatasourceServiceException( e );
+    } catch ( ConnectionServiceException e ) {
+      logger.error( "Error getting database meta", e );
+      throw new DatasourceServiceException( e );
+    }
+    return schemas;
+  }
+
+  public List<String> getDatabaseTables( IDatabaseConnection connection, String schema )
+    throws DatasourceServiceException {
+    try {
+      DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
+      Database database = new Database( null, databaseMeta );
+      database.connect();
+      String[] tableNames = database.getTablenames( schema, true );
       List<String> tables = new ArrayList<String>();
-      tables.addAll(Arrays.asList(tableNames));
-      tables.addAll(Arrays.asList(database.getViews(schema, true)));
+      tables.addAll( Arrays.asList( tableNames ) );
+      tables.addAll( Arrays.asList( database.getViews( schema, true ) ) );
       database.disconnect();
       return tables;
-    } catch (KettleDatabaseException e) {
-      logger.error("Error creating database object", e);
-      throw new DatasourceServiceException(e);
-    } catch (ConnectionServiceException e) {
-      logger.error("Error getting database meta", e);
-      throw new DatasourceServiceException(e);
+    } catch ( KettleDatabaseException e ) {
+      logger.error( "Error creating database object", e );
+      throw new DatasourceServiceException( e );
+    } catch ( ConnectionServiceException e ) {
+      logger.error( "Error getting database meta", e );
+      throw new DatasourceServiceException( e );
     }
   }
 
-	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IDatabaseConnection connection) throws DatasourceServiceException {
-    try{
+  public IDatasourceSummary serializeJoins( MultiTableDatasourceDTO dto, IDatabaseConnection connection )
+    throws DatasourceServiceException {
+    try {
       ModelerService modelerService = new ModelerService();
       modelerService.initKettle();
 
       DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();
       GeoContext geoContext = datasourceService.getGeoContext();
 
-      DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-      MultiTableModelerSource multiTable = new MultiTableModelerSource(databaseMeta, dto.getSchemaModel(), dto.getDatasourceName(), dto.getSelectedTables(), geoContext);
-      Domain domain = multiTable.generateDomain(dto.isDoOlap());
-      
-      String modelState = serializeModelState(dto);
-      for(LogicalModel lm : domain.getLogicalModels()) {
-        lm.setProperty("datasourceModel", modelState);
-        lm.setProperty("DatasourceType", "MULTI-TABLE-DS");
+      DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
+      MultiTableModelerSource multiTable =
+        new MultiTableModelerSource( databaseMeta, dto.getSchemaModel(), dto.getDatasourceName(),
+          dto.getSelectedTables(), geoContext );
+      Domain domain = multiTable.generateDomain( dto.isDoOlap() );
+
+      String modelState = serializeModelState( dto );
+      for ( LogicalModel lm : domain.getLogicalModels() ) {
+        lm.setProperty( "datasourceModel", modelState );
+        lm.setProperty( "DatasourceType", "MULTI-TABLE-DS" );
 
         // BISERVER-6450 - add security settings to the logical model
-        applySecurity(lm);
+        applySecurity( lm );
       }
-      modelerService.serializeModels(domain, dto.getDatasourceName(), dto.isDoOlap());
+      modelerService.serializeModels( domain, dto.getDatasourceName(), dto.isDoOlap() );
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
-      summary.setDomain(domain);
+      summary.setDomain( domain );
       return summary;
-    } catch (Exception e) {
-      logger.error("Error serializing joins", e);
-      throw new DatasourceServiceException(e);
+    } catch ( Exception e ) {
+      logger.error( "Error serializing joins", e );
+      throw new DatasourceServiceException( e );
     }
   }
 
-	private String serializeModelState(MultiTableDatasourceDTO dto) throws DatasourceServiceException {
-		XStream xs = new XStream();
-		return xs.toXML(dto);
-	}
+  private String serializeModelState( MultiTableDatasourceDTO dto ) throws DatasourceServiceException {
+    XStream xs = new XStream();
+    return xs.toXML( dto );
+  }
 
-	public MultiTableDatasourceDTO deSerializeModelState(String dtoStr) throws DatasourceServiceException {
-		try {
-			XStream xs = new XStream();
-      xs.registerConverter(new LegacyDatasourceConverter());
-			return (MultiTableDatasourceDTO) xs.fromXML(dtoStr);
-		} catch (Exception e) {
-      logger.error(e);
-			throw new DatasourceServiceException(e);
-		}
-	}
+  public MultiTableDatasourceDTO deSerializeModelState( String dtoStr ) throws DatasourceServiceException {
+    try {
+      XStream xs = new XStream();
+      xs.registerConverter( new LegacyDatasourceConverter() );
+      return (MultiTableDatasourceDTO) xs.fromXML( dtoStr );
+    } catch ( Exception e ) {
+      logger.error( e );
+      throw new DatasourceServiceException( e );
+    }
+  }
 
-	public List<String> getTableFields(String table, IDatabaseConnection connection) throws DatasourceServiceException {
-    try{
-      DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-      Database database = new Database(null, databaseMeta);
+  public List<String> getTableFields( String table, IDatabaseConnection connection ) throws DatasourceServiceException {
+    try {
+      DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
+      Database database = new Database( null, databaseMeta );
       database.connect();
 
-      String query = databaseMeta.getSQLQueryFields(table);
+      String query = databaseMeta.getSQLQueryFields( table );
       // Setting the query limit to 1 before executing the query
-      database.setQueryLimit(1);
-      database.getRows(query, 1);
+      database.setQueryLimit( 1 );
+      database.getRows( query, 1 );
       String[] tableFields = database.getReturnRowMeta().getFieldNames();
 
-      List<String> fields = Arrays.asList(tableFields);
+      List<String> fields = Arrays.asList( tableFields );
       database.disconnect();
       return fields;
-    } catch (KettleDatabaseException e) {
-      logger.error(e);
-      throw new DatasourceServiceException(e);
-    } catch (ConnectionServiceException e) {
-      logger.error(e);
-      throw new DatasourceServiceException(e);
+    } catch ( KettleDatabaseException e ) {
+      logger.error( e );
+      throw new DatasourceServiceException( e );
+    } catch ( ConnectionServiceException e ) {
+      logger.error( e );
+      throw new DatasourceServiceException( e );
     }
   }
 
-	public BogoPojo gwtWorkaround(BogoPojo pojo) {
-		return pojo;
-	}
+  public BogoPojo gwtWorkaround( BogoPojo pojo ) {
+    return pojo;
+  }
 
-	@Override
-	public Log getLogger() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+  @Override
+  public Log getLogger() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
   protected boolean hasDataAccessViewPermission() {
     return DataAccessPermissionUtil.hasViewAccess();
   }
-  
+
   protected List<String> getPermittedRoleList() {
     return DataAccessPermissionUtil.getPermittedViewRoleList();
   }
@@ -224,34 +230,34 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 
   protected int getDefaultAcls() {
     return DataAccessPermissionUtil.getDataAccessViewPermissionHandler().getDefaultAcls(
-        PentahoSessionHolder.getSession() );
+      PentahoSessionHolder.getSession() );
   }
 
   protected boolean isSecurityEnabled() {
-    Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
-        || ((getPermittedUserList() != null && getPermittedUserList().size() > 0));
+    Boolean securityEnabled = ( getPermittedRoleList() != null && getPermittedRoleList().size() > 0 )
+      || ( ( getPermittedUserList() != null && getPermittedUserList().size() > 0 ) );
     return securityEnabled;
   }
 
-  protected void applySecurity(LogicalModel logicalModel) {
-    if (isSecurityEnabled()) {
+  protected void applySecurity( LogicalModel logicalModel ) {
+    if ( isSecurityEnabled() ) {
       Security security = new Security();
       for ( String user : getEffectivePermittedUserList( isSecurityEnabled() ) ) {
         SecurityOwner owner = new SecurityOwner( SecurityOwner.OwnerType.USER, user );
         security.putOwnerRights( owner, getDefaultAcls() );
       }
-      for (String role : getPermittedRoleList()) {
-        SecurityOwner owner = new SecurityOwner(SecurityOwner.OwnerType.ROLE, role);
-        security.putOwnerRights(owner, getDefaultAcls());
+      for ( String role : getPermittedRoleList() ) {
+        SecurityOwner owner = new SecurityOwner( SecurityOwner.OwnerType.ROLE, role );
+        security.putOwnerRights( owner, getDefaultAcls() );
       }
-      logicalModel.setProperty(Concept.SECURITY_PROPERTY, security);
+      logicalModel.setProperty( Concept.SECURITY_PROPERTY, security );
     }
   }
-  
+
   // Add user to list if not already present
   private List<String> getEffectivePermittedUserList( boolean securityEnabled ) {
     ArrayList<String> permittedUserList =
-        getPermittedUserList() == null ? new ArrayList<String>() : new ArrayList<String>( getPermittedUserList() );
+      getPermittedUserList() == null ? new ArrayList<String>() : new ArrayList<String>( getPermittedUserList() );
     if ( securityEnabled ) {
       if ( !permittedUserList.contains( PentahoSessionHolder.getSession().getName() ) ) {
         permittedUserList.add( PentahoSessionHolder.getSession().getName() );

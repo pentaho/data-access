@@ -39,9 +39,7 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.gwt.binding.GwtBindingFactory;
@@ -102,17 +100,17 @@ public class TablesSelectionStep extends AbstractWizardStep {
         closeWaitingDialog();
       }
 
-      public void success(List tables) {
-        if(tables.size() == 0 ) {
+      public void success( List tables ) {
+        if ( tables.size() == 0 ) {
           return;
         }
-        if (domain != null && datasourceDTO != null) {
-          joinGuiModel.populateJoinGuiModel(domain, datasourceDTO, tables);
-          if(joinGuiModel.getFactTable() != null) {
-            setFactTable(joinGuiModel.getFactTable());
+        if ( domain != null && datasourceDTO != null ) {
+          joinGuiModel.populateJoinGuiModel( domain, datasourceDTO, tables );
+          if ( joinGuiModel.getFactTable() != null ) {
+            setFactTable( joinGuiModel.getFactTable() );
           }
         }
-        joinGuiModel.processAvailableTables(tables);
+        joinGuiModel.processAvailableTables( tables );
         closeWaitingDialog();
       }
     } );
@@ -271,7 +269,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
   private void checkValidState() {
     boolean valid = true;
     boolean finishable = true;
-    if(joinGuiModel.isDoOlap()) {
+    if ( joinGuiModel.isDoOlap() ) {
       valid &= this.factTables.getSelectedIndex() > 0;
       finishable &= this.factTables.getSelectedIndex() > 0;
     }

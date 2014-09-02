@@ -34,58 +34,59 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.Pent
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class JoinSelectionDebugGwtServlet extends RemoteServiceServlet implements IGwtJoinSelectionService {
-	private static final long serialVersionUID = -6800729673421568704L;
+  private static final long serialVersionUID = -6800729673421568704L;
 
-	static {
-		PentahoSystemHelper.init();
-		try {
-			KettleEnvironment.init();
-			Props.init(Props.TYPE_PROPERTIES_EMPTY);
-		} catch (KettleException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private DatabaseMeta getDatabaseMeta(IDatabaseConnection connection) throws Exception {
-			DatabaseMeta databaseMeta = DatabaseUtil.convertToDatabaseMeta(connection);
-		
-		if(connection.getName().equals("SampleData")) {
-			databaseMeta.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-			databaseMeta.setDBName("SampleData");
-		}
-		return databaseMeta;
-	}
+  static {
+    PentahoSystemHelper.init();
+    try {
+      KettleEnvironment.init();
+      Props.init( Props.TYPE_PROPERTIES_EMPTY );
+    } catch ( KettleException e ) {
+      e.printStackTrace();
+    }
+  }
 
-	public List<String> getDatabaseTables(IDatabaseConnection connection, String schema) throws Exception {
-		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
-		return service.getDatabaseTables(connection, schema);
-	}
-	
-	public List<String> retrieveSchemas(IDatabaseConnection connection) throws Exception {
-		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
-		return service.retrieveSchemas(connection);
-	}
-	
-	public IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IDatabaseConnection connection) throws Exception {
-		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
-		return service.serializeJoins(dto, connection);
-	}
+  private DatabaseMeta getDatabaseMeta( IDatabaseConnection connection ) throws Exception {
+    DatabaseMeta databaseMeta = DatabaseUtil.convertToDatabaseMeta( connection );
 
-	public List<String> getTableFields(String table, IDatabaseConnection connection) throws Exception {
-		DatabaseMeta databaseMeta = this.getDatabaseMeta(connection);
-		MultitableDatasourceService service = new MultitableDatasourceService(databaseMeta);
-		return service.getTableFields(table, connection);
-	}
-	
-	public MultiTableDatasourceDTO deSerializeModelState(String source) throws Exception {
-		MultitableDatasourceService service = new MultitableDatasourceService();
-		return service.deSerializeModelState(source);
-	}
+    if ( connection.getName().equals( "SampleData" ) ) {
+      databaseMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
+      databaseMeta.setDBName( "SampleData" );
+    }
+    return databaseMeta;
+  }
 
-	public BogoPojo gwtWorkaround(BogoPojo pojo) {
-		return pojo;
-	}
+  public List<String> getDatabaseTables( IDatabaseConnection connection, String schema ) throws Exception {
+    DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
+    MultitableDatasourceService service = new MultitableDatasourceService( databaseMeta );
+    return service.getDatabaseTables( connection, schema );
+  }
+
+  public List<String> retrieveSchemas( IDatabaseConnection connection ) throws Exception {
+    DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
+    MultitableDatasourceService service = new MultitableDatasourceService( databaseMeta );
+    return service.retrieveSchemas( connection );
+  }
+
+  public IDatasourceSummary serializeJoins( MultiTableDatasourceDTO dto, IDatabaseConnection connection )
+    throws Exception {
+    DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
+    MultitableDatasourceService service = new MultitableDatasourceService( databaseMeta );
+    return service.serializeJoins( dto, connection );
+  }
+
+  public List<String> getTableFields( String table, IDatabaseConnection connection ) throws Exception {
+    DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
+    MultitableDatasourceService service = new MultitableDatasourceService( databaseMeta );
+    return service.getTableFields( table, connection );
+  }
+
+  public MultiTableDatasourceDTO deSerializeModelState( String source ) throws Exception {
+    MultitableDatasourceService service = new MultitableDatasourceService();
+    return service.deSerializeModelState( source );
+  }
+
+  public BogoPojo gwtWorkaround( BogoPojo pojo ) {
+    return pojo;
+  }
 }

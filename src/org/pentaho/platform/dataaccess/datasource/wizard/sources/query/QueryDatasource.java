@@ -39,8 +39,7 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
- * User: nbaker
- * Date: 3/26/11
+ * User: nbaker Date: 3/26/11
  */
 public class QueryDatasource extends AbstractXulEventHandler implements IWizardDatasource {
   private boolean finishable;
@@ -49,10 +48,11 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
   private IXulAsyncDSWDatasourceService datasourceService;
   private IWizardModel wizardModel;
 
-  public QueryDatasource(IXulAsyncDSWDatasourceService datasourceService, DatasourceModel datasourceModel){
+  public QueryDatasource( IXulAsyncDSWDatasourceService datasourceService, DatasourceModel datasourceModel ) {
     this.datasourceModel = datasourceModel;
     this.datasourceService = datasourceService;
   }
+
   @Override
   public void activating() throws XulException {
     queryStep.activating();
@@ -66,30 +66,32 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
   @Override
   @Bindable
   public String getName() {
-    return MessageHandler.getString("sql.datasource.name");
+    return MessageHandler.getString( "sql.datasource.name" );
   }
 
   @Override
   public List<IWizardStep> getSteps() {
-    return Collections.singletonList((IWizardStep) queryStep);
+    return Collections.singletonList( (IWizardStep) queryStep );
   }
 
   @Override
-  public void onFinish(XulServiceCallback<IDatasourceSummary> callback) {
+  public void onFinish( XulServiceCallback<IDatasourceSummary> callback ) {
 
-    String name = datasourceModel.getDatasourceName().replace(".", "_").replace(" ", "_");
+    String name = datasourceModel.getDatasourceName().replace( ".", "_" ).replace( " ", "_" );
     String query = datasourceModel.getQuery();
 
-    DatabaseConnection conn = (DatabaseConnection)AutobeanUtilities.connectionBeanToImpl(datasourceModel.getSelectedRelationalConnection());
-    datasourceService.generateQueryDomain(name, query, conn , DatasourceDTOUtil.generateDTO(datasourceModel), callback);
+    DatabaseConnection conn =
+      (DatabaseConnection) AutobeanUtilities.connectionBeanToImpl( datasourceModel.getSelectedRelationalConnection() );
+    datasourceService
+      .generateQueryDomain( name, query, conn, DatasourceDTOUtil.generateDTO( datasourceModel ), callback );
   }
 
   @Override
-  public void init(XulDomContainer container, IWizardModel wizardModel) throws XulException {
+  public void init( XulDomContainer container, IWizardModel wizardModel ) throws XulException {
     this.wizardModel = wizardModel;
-    queryStep = new QueryPhysicalStep(datasourceModel, this);
-    container.addEventHandler(queryStep);
-    queryStep.init(wizardModel);
+    queryStep = new QueryPhysicalStep( datasourceModel, this );
+    container.addEventHandler( queryStep );
+    queryStep.init( wizardModel );
   }
 
 
@@ -104,37 +106,37 @@ public class QueryDatasource extends AbstractXulEventHandler implements IWizardD
     return finishable;
   }
 
-  public void setFinishable(boolean finishable){
+  public void setFinishable( boolean finishable ) {
     boolean prevFinishable = this.finishable;
     this.finishable = finishable;
-    firePropertyChange("finishable", prevFinishable, finishable);
+    firePropertyChange( "finishable", prevFinishable, finishable );
   }
 
   @Override
-  public void restoreSavedDatasource(Domain previousDomain, final XulServiceCallback<Void> callback) {
+  public void restoreSavedDatasource( Domain previousDomain, final XulServiceCallback<Void> callback ) {
 
-    String serializedDatasource = (String) previousDomain.getLogicalModels().get(0).getProperty("datasourceModel");
+    String serializedDatasource = (String) previousDomain.getLogicalModels().get( 0 ).getProperty( "datasourceModel" );
 
-    datasourceService.deSerializeModelState(serializedDatasource, new XulServiceCallback<DatasourceDTO>() {
-      public void success(DatasourceDTO datasourceDTO) {
-        DatasourceDTO.populateModel(datasourceDTO, datasourceModel);
-        datasourceModel.getGuiStateModel().setDirty(false);
+    datasourceService.deSerializeModelState( serializedDatasource, new XulServiceCallback<DatasourceDTO>() {
+      public void success( DatasourceDTO datasourceDTO ) {
+        DatasourceDTO.populateModel( datasourceDTO, datasourceModel );
+        datasourceModel.getGuiStateModel().setDirty( false );
         // initialize connections
-        if (datasourceModel.getGuiStateModel().getConnections() == null
-            || datasourceModel.getGuiStateModel().getConnections().size() <= 0) {
+        if ( datasourceModel.getGuiStateModel().getConnections() == null
+          || datasourceModel.getGuiStateModel().getConnections().size() <= 0 ) {
           queryStep.reloadConnections();
         }
-        wizardModel.setEditing(true);
-        callback.success(null);
+        wizardModel.setEditing( true );
+        callback.success( null );
       }
 
-      public void error(String s, Throwable throwable) {
-        MessageHandler.getInstance().showErrorDialog(MessageHandler.getString("ERROR"), MessageHandler.getString(
-            "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage()));
-        
-        callback.error(s, throwable);
+      public void error( String s, Throwable throwable ) {
+        MessageHandler.getInstance().showErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler.getString(
+          "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", throwable.getLocalizedMessage() ) );
+
+        callback.error( s, throwable );
       }
-    });
+    } );
   }
 
   @Override

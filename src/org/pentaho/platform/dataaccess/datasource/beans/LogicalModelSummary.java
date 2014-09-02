@@ -25,10 +25,11 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 /**
  * A summary of a logical model consisting of domain id, model id, and localized model name. This thin object is for UI
  * purposes only.
- * 
+ *
  * @author mlowery
  */
-public class LogicalModelSummary extends XulEventSourceAdapter implements Comparable<LogicalModelSummary>, Serializable {
+public class LogicalModelSummary extends XulEventSourceAdapter
+  implements Comparable<LogicalModelSummary>, Serializable {
 
   private static final long serialVersionUID = -2876155341724009295L;
 
@@ -53,18 +54,15 @@ public class LogicalModelSummary extends XulEventSourceAdapter implements Compar
   public LogicalModelSummary() {
     super();
   }
-  
+
   /**
    * Constructor.
-   * 
-   * @param domainId
-   *          domain id
-   * @param modelId
-   *          model id
-   * @param modelName
-   *          localized model name
+   *
+   * @param domainId  domain id
+   * @param modelId   model id
+   * @param modelName localized model name
    */
-  public LogicalModelSummary(final String domainId, final String modelId, final String modelName) {
+  public LogicalModelSummary( final String domainId, final String modelId, final String modelName ) {
     super();
     this.domainId = domainId;
     this.modelId = modelId;
@@ -87,16 +85,18 @@ public class LogicalModelSummary extends XulEventSourceAdapter implements Compar
   @Override
   public String toString() {
     StringBuilder buf = new StringBuilder();
-    buf.append("LogicalModelSummary[").append("domainId=").append(domainId).append(", ").append("modelId=").append( //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        modelId).append(", ").append("modelName=").append(modelName).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    buf.append( "LogicalModelSummary[" ).append( "domainId=" ).append( domainId ).append( ", " ).append( "modelId=" )
+      .append( //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        modelId ).append( ", " ).append( "modelName=" ).append( modelName )
+      .append( "]" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     return buf.toString();
   }
 
-  public int compareTo(final LogicalModelSummary other) {
-    if (other == null) {
+  public int compareTo( final LogicalModelSummary other ) {
+    if ( other == null ) {
       return 1;
     } else {
-      return modelName.compareToIgnoreCase(other.modelName);
+      return modelName.compareToIgnoreCase( other.modelName );
     }
   }
 

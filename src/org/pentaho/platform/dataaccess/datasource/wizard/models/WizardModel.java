@@ -22,22 +22,25 @@ import org.pentaho.platform.dataaccess.datasource.wizard.sources.dummy.DummyData
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * User: nbaker
- * Date: 3/30/11
+ * User: nbaker Date: 3/30/11
  */
 public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
   private LinkedHashSet<IWizardDatasource> datasources = new LinkedHashSet<IWizardDatasource>();
   private String datasourceName;
   private boolean editing;
-  private List<Class<? extends IWizardDatasource>> ignoredDatasources = new ArrayList<Class<? extends IWizardDatasource>>();
+  private List<Class<? extends IWizardDatasource>> ignoredDatasources =
+    new ArrayList<Class<? extends IWizardDatasource>>();
   private IWizardDatasource selectedDatasource;
   private boolean reportingOnlyValid = true;
 
-  public WizardModel(){
-    addDatasource(new DummyDatasource());
+  public WizardModel() {
+    addDatasource( new DummyDatasource() );
   }
 
   @Override
@@ -48,10 +51,10 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
 
   @Override
   @Bindable
-  public void setDatasourceName(String datasourceName) {
+  public void setDatasourceName( String datasourceName ) {
     String prevVal = this.datasourceName;
     this.datasourceName = datasourceName;
-    firePropertyChange("datasourceName", prevVal, datasourceName);
+    firePropertyChange( "datasourceName", prevVal, datasourceName );
   }
 
   @Override
@@ -61,43 +64,45 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
   }
 
   @Override
-  public void addDatasource(IWizardDatasource datasource){
-    // due to initialization order, datasources may be added after a call to remove them by type (cleaning out built-ins)
-    if(ignoredDatasources.contains(datasource.getClass())){
+  public void addDatasource( IWizardDatasource datasource ) {
+    // due to initialization order, datasources may be added after a call to remove them by type (cleaning out
+    // built-ins)
+    if ( ignoredDatasources.contains( datasource.getClass() ) ) {
       return;
     }
-    boolean reallyAdded = this.datasources.add(datasource);
-    if(reallyAdded)
-      firePropertyChange("datasources", null, datasources);
-    if(selectedDatasource == null){
-      setSelectedDatasource(datasources.iterator().next());
+    boolean reallyAdded = this.datasources.add( datasource );
+    if ( reallyAdded ) {
+      firePropertyChange( "datasources", null, datasources );
+    }
+    if ( selectedDatasource == null ) {
+      setSelectedDatasource( datasources.iterator().next() );
     }
   }
 
   @Bindable
-  public void setSelectedDatasource(IWizardDatasource datasource) {
+  public void setSelectedDatasource( IWizardDatasource datasource ) {
     IWizardDatasource prevSelection = selectedDatasource;
     selectedDatasource = datasource;
-    firePropertyChange("selectedDatasource", prevSelection, selectedDatasource);
+    firePropertyChange( "selectedDatasource", prevSelection, selectedDatasource );
   }
 
   @Bindable
-  public IWizardDatasource getSelectedDatasource(){
+  public IWizardDatasource getSelectedDatasource() {
     return selectedDatasource;
   }
 
   @Override
-  public void removeDatasourceByType(Class<? extends IWizardDatasource> datasource){
-    ignoredDatasources.add(datasource);
+  public void removeDatasourceByType( Class<? extends IWizardDatasource> datasource ) {
+    ignoredDatasources.add( datasource );
     IWizardDatasource matchedSource = null;
-    for(IWizardDatasource source : datasources){
-      if(source.getClass().equals(datasource)){
+    for ( IWizardDatasource source : datasources ) {
+      if ( source.getClass().equals( datasource ) ) {
         matchedSource = source;
         break;
       }
     }
-    if(matchedSource != null){
-      datasources.remove(matchedSource);
+    if ( matchedSource != null ) {
+      datasources.remove( matchedSource );
     }
   }
 
@@ -105,10 +110,11 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
   public boolean isEditing() {
     return editing;
   }
+
   @Override
-  public void setEditing(boolean editing){
+  public void setEditing( boolean editing ) {
     this.editing = editing;
-    firePropertyChange("editing", !this.editing, this.editing);
+    firePropertyChange( "editing", !this.editing, this.editing );
   }
 
   @Override
@@ -118,17 +124,17 @@ public class WizardModel extends XulEventSourceAdapter implements IWizardModel {
   }
 
   @Bindable
-  public void setReportingOnlyValid(boolean reportingOnlyValid) {
+  public void setReportingOnlyValid( boolean reportingOnlyValid ) {
     this.reportingOnlyValid = reportingOnlyValid;
-    firePropertyChange("reportingOnlyValid", !this.reportingOnlyValid, this.reportingOnlyValid);
+    firePropertyChange( "reportingOnlyValid", !this.reportingOnlyValid, this.reportingOnlyValid );
   }
 
   @Override
   public void reset() {
-    this.setDatasourceName("");
-    this.setSelectedDatasource(datasources.iterator().next());
-    this.setReportingOnlyValid(true);
-    for(IWizardDatasource source : datasources){
+    this.setDatasourceName( "" );
+    this.setSelectedDatasource( datasources.iterator().next() );
+    this.setReportingOnlyValid( true );
+    for ( IWizardDatasource source : datasources ) {
       source.reset();
     }
   }

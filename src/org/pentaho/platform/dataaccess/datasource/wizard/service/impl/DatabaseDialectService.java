@@ -27,8 +27,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.enunciate.Facet;
 import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.model.IDatabaseConnection;
@@ -46,7 +44,7 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
   }
 
   public DatabaseDialectService( boolean validateClasses ) {
-    super(validateClasses);
+    super( validateClasses );
   }
 
   /**
@@ -100,7 +98,7 @@ public class DatabaseDialectService extends org.pentaho.database.service.Databas
   @Produces( { APPLICATION_JSON } )
   @Facet ( name = "Unsupported" )
   public Boolean validateJdbcDriverClassExistsWS( String classname ) {
-    return super.validateJdbcDriverClassExists(  classname );
+    return super.validateJdbcDriverClassExists( classname );
   }
 
   /**

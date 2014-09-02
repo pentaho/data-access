@@ -81,8 +81,8 @@ import org.pentaho.platform.util.web.SimpleUrlFactory;
 import com.thoughtworks.xstream.XStream;
 
 public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
-  
-  private static final Log logger = LogFactory.getLog(DSWDatasourceServiceImpl.class);
+
+  private static final Log logger = LogFactory.getLog( DSWDatasourceServiceImpl.class );
 
   private IMetadataDomainRepository metadataDomainRepository;
 
@@ -93,10 +93,11 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   private GeoContext geoContext;
 
   public DSWDatasourceServiceImpl() {
-    this(new ConnectionServiceImpl());
+    this( new ConnectionServiceImpl() );
   }
-  public DSWDatasourceServiceImpl(ConnectionServiceImpl connectionService) {
-    metadataDomainRepository = PentahoSystem.get(IMetadataDomainRepository.class, null);
+
+  public DSWDatasourceServiceImpl( ConnectionServiceImpl connectionService ) {
+    metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, null );
   }
 
   protected boolean hasDataAccessPermission() {
@@ -117,164 +118,177 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   protected int getDefaultAcls() {
     return DataAccessPermissionUtil.getDataAccessViewPermissionHandler().getDefaultAcls(
-        PentahoSessionHolder.getSession() );
+      PentahoSessionHolder.getSession() );
   }
 
-  public boolean deleteLogicalModel(String domainId, String modelName) throws DatasourceServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
+  public boolean deleteLogicalModel( String domainId, String modelName ) throws DatasourceServiceException {
+    if ( !hasDataAccessPermission() ) {
+      logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
       return false;
     }
     String catalogRef = null;
     String targetTable = null;
     try {
       // first load the model
-      Domain domain = metadataDomainRepository.getDomain(domainId);
-      ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
-      model.setDomain(domain);
-      LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
-      if (logicalModel == null) {
-        logicalModel = model.getLogicalModel(ModelerPerspective.REPORTING);
+      Domain domain = metadataDomainRepository.getDomain( domainId );
+      ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+      model.setDomain( domain );
+      LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+      if ( logicalModel == null ) {
+        logicalModel = model.getLogicalModel( ModelerPerspective.REPORTING );
       }
-      LogicalModel logicalModelRep = model.getLogicalModel(ModelerPerspective.REPORTING);
+      LogicalModel logicalModelRep = model.getLogicalModel( ModelerPerspective.REPORTING );
       //CSV related data is bounded to reporting model so need to perform some additional clean up here
-      if (logicalModelRep != null) {
-        String modelState = (String) logicalModelRep.getProperty("datasourceModel");
-   	
+      if ( logicalModelRep != null ) {
+        String modelState = (String) logicalModelRep.getProperty( "datasourceModel" );
+
         // if CSV, drop the staged table
         // TODO: use the edit story's stored info to do this
-        if ("CSV".equals(logicalModelRep.getProperty("DatasourceType")) ||
-            "true".equalsIgnoreCase((String)logicalModelRep.getProperty( LogicalModel.PROPERTY_TARGET_TABLE_STAGED ))) {
-          targetTable = ((SqlPhysicalTable)domain.getPhysicalModels().get(0).getPhysicalTables().get(0)).getTargetTable();
+        if ( "CSV".equals( logicalModelRep.getProperty( "DatasourceType" ) )
+          || "true"
+            .equalsIgnoreCase( (String) logicalModelRep.getProperty( LogicalModel.PROPERTY_TARGET_TABLE_STAGED ) ) ) {
+          targetTable =
+            ( (SqlPhysicalTable) domain.getPhysicalModels().get( 0 ).getPhysicalTables().get( 0 ) ).getTargetTable();
           DatasourceDTO datasource = null;
-  
-          if(modelState != null){
-            datasource = deSerializeModelState(modelState);
+
+          if ( modelState != null ) {
+            datasource = deSerializeModelState( modelState );
           }
-          if(datasource != null){
-            CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta());
+          if ( datasource != null ) {
+            CsvTransformGenerator csvTransformGenerator =
+              new CsvTransformGenerator( datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta() );
             try {
-              csvTransformGenerator.dropTable(targetTable);
-            } catch (CsvTransformGeneratorException e) {
-                // table might not be there, it's OK that is what we were trying to do anyway
-                logger.warn(Messages.getErrorString(
-                  "DatasourceServiceImpl.ERROR_0019_UNABLE_TO_DROP_TABLE", targetTable, domainId, e.getLocalizedMessage()), e);//$NON-NLS-1$
+              csvTransformGenerator.dropTable( targetTable );
+            } catch ( CsvTransformGeneratorException e ) {
+              // table might not be there, it's OK that is what we were trying to do anyway
+              logger.warn( Messages.getErrorString(
+                "DatasourceServiceImpl.ERROR_0019_UNABLE_TO_DROP_TABLE", targetTable, domainId,
+                e.getLocalizedMessage() ), e ); //$NON-NLS-1$
             }
-              String fileName = datasource.getCsvModelInfo().getFileInfo().getFilename();
-              FileUtils fileService = new FileUtils();
-              if(fileName != null) {
-                fileService.deleteFile(fileName);
-              }
+            String fileName = datasource.getCsvModelInfo().getFileInfo().getFilename();
+            FileUtils fileService = new FileUtils();
+            if ( fileName != null ) {
+              fileService.deleteFile( fileName );
+            }
           }
         }
       }
 
       // if associated mondrian file, delete
-      if (logicalModel.getProperty("MondrianCatalogRef") != null) {
+      if ( logicalModel.getProperty( "MondrianCatalogRef" ) != null ) {
         // remove Mondrian schema
-        IMondrianCatalogService service = PentahoSystem.get(IMondrianCatalogService.class, null);
-        catalogRef = (String)logicalModel.getProperty("MondrianCatalogRef");
+        IMondrianCatalogService service = PentahoSystem.get( IMondrianCatalogService.class, null );
+        catalogRef = (String) logicalModel.getProperty( "MondrianCatalogRef" );
         // check if the model is not already removed
         if ( service.getCatalog( catalogRef, PentahoSessionHolder.getSession() ) != null ) {
-          service.removeCatalog(catalogRef, PentahoSessionHolder.getSession());
+          service.removeCatalog( catalogRef, PentahoSessionHolder.getSession() );
         }
       }
 
-      metadataDomainRepository.removeModel(domainId, logicalModel.getId());
-    } catch (MondrianCatalogServiceException me) {
-      logger.error(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage()), me);//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage()), me); //$NON-NLS-1$      
+      metadataDomainRepository.removeModel( domainId, logicalModel.getId() );
+    } catch ( MondrianCatalogServiceException me ) {
+      logger.error( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage() ),
+        me ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage() ),
+        me ); //$NON-NLS-1$
 
-    } catch (DomainStorageException dse) {
-      logger.error(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0017_UNABLE_TO_STORE_DOMAIN", domainId, dse.getLocalizedMessage()), dse);//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0016_UNABLE_TO_STORE_DOMAIN", domainId, dse.getLocalizedMessage()), dse); //$NON-NLS-1$      
-    } catch (DomainIdNullException dne) {
-      logger.error(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0019_DOMAIN_IS_NULL", dne.getLocalizedMessage()), dne);//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0019_DOMAIN_IS_NULL", dne.getLocalizedMessage()), dne); //$NON-NLS-1$      
+    } catch ( DomainStorageException dse ) {
+      logger.error( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0017_UNABLE_TO_STORE_DOMAIN", domainId, dse.getLocalizedMessage() ),
+        dse ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0016_UNABLE_TO_STORE_DOMAIN", domainId, dse.getLocalizedMessage() ),
+        dse ); //$NON-NLS-1$
+    } catch ( DomainIdNullException dne ) {
+      logger.error( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0019_DOMAIN_IS_NULL", dne.getLocalizedMessage() ),
+        dne ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0019_DOMAIN_IS_NULL", dne.getLocalizedMessage() ), dne ); //$NON-NLS-1$
     }
     return true;
   }
 
-  private IPentahoResultSet executeQuery(String connectionName, String query, String previewLimit) throws QueryValidationException {
+  private IPentahoResultSet executeQuery( String connectionName, String query, String previewLimit )
+    throws QueryValidationException {
     SQLConnection sqlConnection = null;
     try {
-      int limit = (previewLimit != null && previewLimit.length() > 0) ? Integer.parseInt(previewLimit) : -1;
-      sqlConnection = (SQLConnection) PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE,
-          connectionName, PentahoSessionHolder.getSession(), new SimpleLogger(DatasourceServiceHelper.class.getName()));
-      sqlConnection.setMaxRows(limit);
-      sqlConnection.setReadOnly(true);
-      return sqlConnection.executeQuery(BEFORE_QUERY + query + AFTER_QUERY);
-    } catch (SQLException e) { 
+      int limit = ( previewLimit != null && previewLimit.length() > 0 ) ? Integer.parseInt( previewLimit ) : -1;
+      sqlConnection = (SQLConnection) PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE,
+        connectionName, PentahoSessionHolder.getSession(),
+        new SimpleLogger( DatasourceServiceHelper.class.getName() ) );
+      sqlConnection.setMaxRows( limit );
+      sqlConnection.setReadOnly( true );
+      return sqlConnection.executeQuery( BEFORE_QUERY + query + AFTER_QUERY );
+    } catch ( SQLException e ) {
       String error = "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED";
-      if(e.getSQLState().equals("S0021")) { // Column already exists
+      if ( e.getSQLState().equals( "S0021" ) ) { // Column already exists
         error = "DatasourceServiceImpl.ERROR_0021_DUPLICATE_COLUMN_NAMES";
       }
-      logger.error(Messages.getErrorString(error));
-      throw new QueryValidationException(Messages.getString(error));      
-    } catch (Exception e) {
-      logger.error(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
-      throw new QueryValidationException(e.getLocalizedMessage(), e);
+      logger.error( Messages.getErrorString( error ) );
+      throw new QueryValidationException( Messages.getString( error ) );
+    } catch ( Exception e ) {
+      logger.error( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
+      throw new QueryValidationException( e.getLocalizedMessage(), e );
     } finally {
-      if (sqlConnection != null) {
+      if ( sqlConnection != null ) {
         sqlConnection.close();
       }
     }
   }
 
-  public SerializedResultSet doPreview(String connectionName, String query, String previewLimit)
-      throws DatasourceServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
+  public SerializedResultSet doPreview( String connectionName, String query, String previewLimit )
+    throws DatasourceServiceException {
+    if ( !hasDataAccessPermission() ) {
+      logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
     }
     SerializedResultSet returnResultSet;
     try {
-      executeQuery(connectionName, query, previewLimit);
-      returnResultSet = DatasourceServiceHelper.getSerializeableResultSet(connectionName, query,
-          Integer.parseInt(previewLimit), PentahoSessionHolder.getSession());
-    } catch (QueryValidationException e) {
-      logger.error(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e); //$NON-NLS-1$      
+      executeQuery( connectionName, query, previewLimit );
+      returnResultSet = DatasourceServiceHelper.getSerializeableResultSet( connectionName, query,
+        Integer.parseInt( previewLimit ), PentahoSessionHolder.getSession() );
+    } catch ( QueryValidationException e ) {
+      logger.error( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
     }
     return returnResultSet;
 
   }
 
-  public boolean testDataSourceConnection(String connectionName) throws DatasourceServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
+  public boolean testDataSourceConnection( String connectionName ) throws DatasourceServiceException {
+    if ( !hasDataAccessPermission() ) {
+      logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
     }
     java.sql.Connection conn = null;
     try {
-      conn = DatasourceServiceHelper.getDataSourceConnection(connectionName, PentahoSessionHolder.getSession());
-      if (conn == null) {
-        logger.error(Messages.getErrorString(
-            "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName));//$NON-NLS-1$
-        throw new DatasourceServiceException(Messages.getErrorString(
-            "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName)); //$NON-NLS-1$
+      conn = DatasourceServiceHelper.getDataSourceConnection( connectionName, PentahoSessionHolder.getSession() );
+      if ( conn == null ) {
+        logger.error( Messages.getErrorString(
+          "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName ) ); //$NON-NLS-1$
+        throw new DatasourceServiceException( Messages.getErrorString(
+          "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName ) ); //$NON-NLS-1$
       }
     } finally {
       try {
-        if (conn != null) {
+        if ( conn != null ) {
           conn.close();
         }
-      } catch (SQLException e) {
-        logger.error(Messages.getErrorString(
-            "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName, e.getLocalizedMessage()), e);//$NON-NLS-1$
-        throw new DatasourceServiceException(Messages.getErrorString(
-            "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName, e.getLocalizedMessage()), e); //$NON-NLS-1$
+      } catch ( SQLException e ) {
+        logger.error( Messages.getErrorString(
+          "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName, e.getLocalizedMessage() ),
+          e ); //$NON-NLS-1$
+        throw new DatasourceServiceException( Messages.getErrorString(
+          "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName, e.getLocalizedMessage() ),
+          e ); //$NON-NLS-1$
       }
     }
     return true;
@@ -282,51 +296,51 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   /**
    * This method gets the business data which are the business columns, columns types and sample preview data
-   * 
+   *
    * @param modelName, connection, query, previewLimit
    * @return BusinessData
    * @throws DatasourceServiceException
    */
 
-  public BusinessData generateLogicalModel(String modelName, String connectionName, String dbType, String query, String previewLimit)
-      throws DatasourceServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
+  public BusinessData generateLogicalModel( String modelName, String connectionName, String dbType, String query,
+                                            String previewLimit )
+    throws DatasourceServiceException {
+    if ( !hasDataAccessPermission() ) {
+      logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
     }
     try {
       // Testing whether the query is correct or not
-      executeQuery(connectionName, query, previewLimit);
-      Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
-          || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
-      SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connectionName, query,
-          Integer.parseInt(previewLimit), PentahoSessionHolder.getSession());
-      
+      executeQuery( connectionName, query, previewLimit );
+      Boolean securityEnabled = ( getPermittedRoleList() != null && getPermittedRoleList().size() > 0 )
+        || ( getPermittedUserList() != null && getPermittedUserList().size() > 0 );
+      SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet( connectionName, query,
+        Integer.parseInt( previewLimit ), PentahoSessionHolder.getSession() );
+
       SQLModelGenerator sqlModelGenerator =
-          new SQLModelGenerator( modelName, connectionName, dbType, resultSet.getColumnTypes(), resultSet.getColumns(),
-              query, securityEnabled, getEffectivePermittedUserList( securityEnabled ), getPermittedRoleList(),
-              getDefaultAcls(), ( PentahoSessionHolder.getSession() != null ) ? PentahoSessionHolder.getSession()
-                  .getName() : null );
+        new SQLModelGenerator( modelName, connectionName, dbType, resultSet.getColumnTypes(), resultSet.getColumns(),
+          query, securityEnabled, getEffectivePermittedUserList( securityEnabled ), getPermittedRoleList(),
+          getDefaultAcls(), ( PentahoSessionHolder.getSession() != null ) ? PentahoSessionHolder.getSession().getName() : null );
       Domain domain = sqlModelGenerator.generate();
-      return new BusinessData(domain, resultSet.getData());
-    } catch (SQLModelGeneratorException smge) {
-      logger.error(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", smge.getLocalizedMessage()), smge);//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", smge.getLocalizedMessage()), smge); //$NON-NLS-1$
-    } catch (QueryValidationException e) {
-      logger.error(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e); //$NON-NLS-1$
+      return new BusinessData( domain, resultSet.getData() );
+    } catch ( SQLModelGeneratorException smge ) {
+      logger.error( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", smge.getLocalizedMessage() ), smge ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", smge.getLocalizedMessage() ), smge ); //$NON-NLS-1$
+    } catch ( QueryValidationException e ) {
+      logger.error( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
     }
-   }
-  
+  }
+
   // Add user to list if not already present
   private List<String> getEffectivePermittedUserList( boolean securityEnabled ) {
     ArrayList<String> permittedUserList =
-        getPermittedUserList() == null ? new ArrayList<String>() : new ArrayList<String>( getPermittedUserList() );
+      getPermittedUserList() == null ? new ArrayList<String>() : new ArrayList<String>( getPermittedUserList() );
     if ( securityEnabled ) {
       if ( !permittedUserList.contains( PentahoSessionHolder.getSession().getName() ) ) {
         permittedUserList.add( PentahoSessionHolder.getSession().getName() );
@@ -339,266 +353,282 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     return metadataDomainRepository;
   }
 
-  public void setMetadataDomainRepository(IMetadataDomainRepository metadataDomainRepository) {
+  public void setMetadataDomainRepository( IMetadataDomainRepository metadataDomainRepository ) {
     this.metadataDomainRepository = metadataDomainRepository;
   }
 
-  public boolean saveLogicalModel(Domain domain, boolean overwrite) throws DatasourceServiceException {
-    if (!hasDataAccessPermission()) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED"));//$NON-NLS-1$
+  public boolean saveLogicalModel( Domain domain, boolean overwrite ) throws DatasourceServiceException {
+    if ( !hasDataAccessPermission() ) {
+      logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
     }
 
     String domainName = domain.getId();
     try {
-      getMetadataDomainRepository().storeDomain(domain, overwrite);
+      getMetadataDomainRepository().storeDomain( domain, overwrite );
       return true;
-    } catch (DomainStorageException dse) {
-      logger.error(Messages.getErrorString(
-            "DatasourceServiceImpl.ERROR_0012_UNABLE_TO_STORE_DOMAIN", domainName, dse.getLocalizedMessage()));//$NON-NLS-1$
-      logger.error("error", dse); //$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0012_UNABLE_TO_STORE_DOMAIN", domainName, dse.getLocalizedMessage()), dse); //$NON-NLS-1$      
-    } catch (DomainAlreadyExistsException dae) {
-      logger.error(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0013_DOMAIN_ALREADY_EXIST", domainName, dae.getLocalizedMessage()));//$NON-NLS-1$
-      logger.error("error", dae); //$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0013_DOMAIN_ALREADY_EXIST", domainName, dae.getLocalizedMessage()), dae); //$NON-NLS-1$      
-    } catch (DomainIdNullException dne) {
-      logger.error(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0014_DOMAIN_IS_NULL", dne.getLocalizedMessage()));//$NON-NLS-1$
-      logger.error("error", dne); //$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0014_DOMAIN_IS_NULL", dne.getLocalizedMessage()), dne); //$NON-NLS-1$      
+    } catch ( DomainStorageException dse ) {
+      logger.error( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0012_UNABLE_TO_STORE_DOMAIN", domainName,
+        dse.getLocalizedMessage() ) ); //$NON-NLS-1$
+      logger.error( "error", dse ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0012_UNABLE_TO_STORE_DOMAIN", domainName, dse.getLocalizedMessage() ),
+        dse ); //$NON-NLS-1$
+    } catch ( DomainAlreadyExistsException dae ) {
+      logger.error( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0013_DOMAIN_ALREADY_EXIST", domainName, dae.getLocalizedMessage() ) ); //$NON-NLS-1$
+      logger.error( "error", dae ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0013_DOMAIN_ALREADY_EXIST", domainName, dae.getLocalizedMessage() ),
+        dae ); //$NON-NLS-1$
+    } catch ( DomainIdNullException dne ) {
+      logger.error( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0014_DOMAIN_IS_NULL", dne.getLocalizedMessage() ) ); //$NON-NLS-1$
+      logger.error( "error", dne ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0014_DOMAIN_IS_NULL", dne.getLocalizedMessage() ), dne ); //$NON-NLS-1$
     }
   }
 
   public boolean hasPermission() {
-    if (PentahoSessionHolder.getSession() != null) {
-      return (SecurityHelper.getInstance().isPentahoAdministrator(PentahoSessionHolder.getSession()) || hasDataAccessPermission());
+    if ( PentahoSessionHolder.getSession() != null ) {
+      return ( SecurityHelper.getInstance().isPentahoAdministrator( PentahoSessionHolder.getSession() )
+        || hasDataAccessPermission() );
     } else {
       return false;
     }
   }
- 
-  public List<LogicalModelSummary> getLogicalModels(String context) throws DatasourceServiceException {
-    if (!hasDataAccessViewPermission()) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
-      throw new DatasourceServiceException(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED")); //$NON-NLS-1$
+
+  public List<LogicalModelSummary> getLogicalModels( String context ) throws DatasourceServiceException {
+    if ( !hasDataAccessViewPermission() ) {
+      logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
     }
     List<LogicalModelSummary> logicalModelSummaries = new ArrayList<LogicalModelSummary>();
-    for (String domainId : getMetadataDomainRepository().getDomainIds()) {
+    for ( String domainId : getMetadataDomainRepository().getDomainIds() ) {
       Domain domain;
       try {
-        domain = getMetadataDomainRepository().getDomain(domainId);
-      } catch (Exception e) {
-        logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0022_UNABLE_TO_PROCESS_LOGICAL_MODEL", domainId), e);
+        domain = getMetadataDomainRepository().getDomain( domainId );
+      } catch ( Exception e ) {
+        logger.error(
+          Messages.getErrorString( "DatasourceServiceImpl.ERROR_0022_UNABLE_TO_PROCESS_LOGICAL_MODEL", domainId ), e );
         continue;
       }
 
       String locale = LocaleHelper.getLocale().toString();
-      String locales[] = new String[domain.getLocales().size()];
-      for (int i = 0; i < domain.getLocales().size(); i++) {
-        locales[i] = domain.getLocales().get(i).getCode();
+      String[] locales = new String[ domain.getLocales().size() ];
+      for ( int i = 0; i < domain.getLocales().size(); i++ ) {
+        locales[ i ] = domain.getLocales().get( i ).getCode();
       }
-      locale = LocaleHelper.getClosestLocale(locale, locales);
+      locale = LocaleHelper.getClosestLocale( locale, locales );
 
-      for (LogicalModel model : domain.getLogicalModels()) {
-        String vis = (String) model.getProperty("visible");
-        if(vis != null){
-          String[] visibleContexts = vis.split(",");
+      for ( LogicalModel model : domain.getLogicalModels() ) {
+        String vis = (String) model.getProperty( "visible" );
+        if ( vis != null ) {
+          String[] visibleContexts = vis.split( "," );
           boolean visibleToContext = false;
-          for(String c : visibleContexts){
-            if(StringUtils.isNotEmpty(c.trim()) && c.trim().equals(context)){
+          for ( String c : visibleContexts ) {
+            if ( StringUtils.isNotEmpty( c.trim() ) && c.trim().equals( context ) ) {
               visibleToContext = true;
               break;
             }
           }
-          if(!visibleToContext){
+          if ( !visibleToContext ) {
             continue;
           }
         }
-        logicalModelSummaries.add(new LogicalModelSummary(domainId, model.getId(), model.getName(locale)));
+        logicalModelSummaries.add( new LogicalModelSummary( domainId, model.getId(), model.getName( locale ) ) );
       }
     }
     return logicalModelSummaries;
   }
 
-  public BusinessData loadBusinessData(String domainId, String modelId) throws DatasourceServiceException {
-    Domain domain = getMetadataDomainRepository().getDomain(domainId);
+  public BusinessData loadBusinessData( String domainId, String modelId ) throws DatasourceServiceException {
+    Domain domain = getMetadataDomainRepository().getDomain( domainId );
     List<List<String>> data = null;
-    if (domain.getPhysicalModels().get(0) instanceof InlineEtlPhysicalModel) {
-      InlineEtlPhysicalModel model = (InlineEtlPhysicalModel) domain.getPhysicalModels().get(0);
+    if ( domain.getPhysicalModels().get( 0 ) instanceof InlineEtlPhysicalModel ) {
+      InlineEtlPhysicalModel model = (InlineEtlPhysicalModel) domain.getPhysicalModels().get( 0 );
 
       String relativePath = PentahoSystem.getSystemSetting(
-          "file-upload-defaults/relative-path", String.valueOf(CsvTransformGenerator.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$
-      String csvFileLoc = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
+        "file-upload-defaults/relative-path",
+        String.valueOf( CsvTransformGenerator.DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) ); //$NON-NLS-1$
+      String csvFileLoc = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
 
-      data = DatasourceServiceHelper.getCsvDataSample(csvFileLoc + model.getFileLocation(), model.getHeaderPresent(),
-          model.getDelimiter(), model.getEnclosure(), 5);
+      data = DatasourceServiceHelper.getCsvDataSample( csvFileLoc + model.getFileLocation(), model.getHeaderPresent(),
+        model.getDelimiter(), model.getEnclosure(), 5 );
     } else {
-      SqlPhysicalModel model = (SqlPhysicalModel) domain.getPhysicalModels().get(0);
-      String query = model.getPhysicalTables().get(0).getTargetTable();
-      SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(model.getDatasource().getDatabaseName(), query, 5,
-          PentahoSessionHolder.getSession());
+      SqlPhysicalModel model = (SqlPhysicalModel) domain.getPhysicalModels().get( 0 );
+      String query = model.getPhysicalTables().get( 0 ).getTargetTable();
+      SerializedResultSet resultSet =
+        DatasourceServiceHelper.getSerializeableResultSet( model.getDatasource().getDatabaseName(), query, 5,
+          PentahoSessionHolder.getSession() );
       data = resultSet.getData();
     }
-    return new BusinessData(domain, data);
+    return new BusinessData( domain, data );
   }
 
-  public BogoPojo gwtWorkaround(BogoPojo pojo) {
+  public BogoPojo gwtWorkaround( BogoPojo pojo ) {
     return pojo;
   }
 
-  public String serializeModelState(DatasourceDTO dto) throws DatasourceServiceException {
+  public String serializeModelState( DatasourceDTO dto ) throws DatasourceServiceException {
     XStream xstream = new XStream();
-    return xstream.toXML(dto);
+    return xstream.toXML( dto );
   }
 
-  public DatasourceDTO deSerializeModelState(String dtoStr) throws DatasourceServiceException {
+  public DatasourceDTO deSerializeModelState( String dtoStr ) throws DatasourceServiceException {
     XStream xs = new XStream();
     xs.setClassLoader( DatasourceDTO.class.getClassLoader() );
-    return (DatasourceDTO) xs.fromXML(dtoStr);
+    return (DatasourceDTO) xs.fromXML( dtoStr );
   }
-  
+
   public List<String> listDatasourceNames() throws IOException {
-    synchronized(CsvDatasourceServiceImpl.lock) {
-  	  IPentahoUrlFactory urlFactory = new SimpleUrlFactory(""); //$NON-NLS-1$
-  	  PMDUIComponent component = new PMDUIComponent(urlFactory, new ArrayList());
-  	  component.validate(PentahoSessionHolder.getSession(), null);
-  	  component.setAction(PMDUIComponent.ACTION_LIST_MODELS);
-  	  Document document = component.getXmlContent();
-  	  List<DefaultElement> modelElements = document.selectNodes("//model_name"); //$NON-NLS-1$
-  
-  	  ArrayList<String> datasourceNames = new ArrayList<String>();
-  	  for(DefaultElement element : modelElements) {
-  		  datasourceNames.add(element.getText());
-  	  }
-  	  return datasourceNames;
+    synchronized ( CsvDatasourceServiceImpl.lock ) {
+      IPentahoUrlFactory urlFactory = new SimpleUrlFactory( "" ); //$NON-NLS-1$
+      PMDUIComponent component = new PMDUIComponent( urlFactory, new ArrayList() );
+      component.validate( PentahoSessionHolder.getSession(), null );
+      component.setAction( PMDUIComponent.ACTION_LIST_MODELS );
+      Document document = component.getXmlContent();
+      List<DefaultElement> modelElements = document.selectNodes( "//model_name" ); //$NON-NLS-1$
+
+      ArrayList<String> datasourceNames = new ArrayList<String>();
+      for ( DefaultElement element : modelElements ) {
+        datasourceNames.add( element.getText() );
+      }
+      return datasourceNames;
     }
   }
 
   @Override
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, DatabaseConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain( String name, String query, DatabaseConnection connection,
+                                                     DatasourceDTO datasourceDTO ) throws DatasourceServiceException {
 
-    ModelerWorkspace modelerWorkspace = new ModelerWorkspace(new GwtModelerWorkspaceHelper(), getGeoContext());
+    ModelerWorkspace modelerWorkspace = new ModelerWorkspace( new GwtModelerWorkspaceHelper(), getGeoContext() );
     ModelerService modelerService = new ModelerService();
-    modelerWorkspace.setModelName(name);
+    modelerWorkspace.setModelName( name );
 
     try {
-      executeQuery(datasourceDTO.getConnectionName(), query, "1");	
-      Boolean securityEnabled = (getPermittedRoleList() != null && getPermittedRoleList().size() > 0)
-          || (getPermittedUserList() != null && getPermittedUserList().size() > 0);
-      SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet(connection.getName(), query,
-          10, PentahoSessionHolder.getSession());
-      SQLModelGenerator sqlModelGenerator = new SQLModelGenerator(name, connection.getName(), connection.getDatabaseType().getShortName(), resultSet.getColumnTypes(), resultSet.getColumns(), query,
-          securityEnabled, getEffectivePermittedUserList( securityEnabled ), getPermittedRoleList(), getDefaultAcls(), (PentahoSessionHolder
-              .getSession() != null) ? PentahoSessionHolder.getSession().getName() : null);
+      executeQuery( datasourceDTO.getConnectionName(), query, "1" );
+      Boolean securityEnabled = ( getPermittedRoleList() != null && getPermittedRoleList().size() > 0 )
+        || ( getPermittedUserList() != null && getPermittedUserList().size() > 0 );
+      SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet( connection.getName(), query,
+        10, PentahoSessionHolder.getSession() );
+      SQLModelGenerator sqlModelGenerator =
+        new SQLModelGenerator( name, connection.getName(), connection.getDatabaseType().getShortName(),
+          resultSet.getColumnTypes(), resultSet.getColumns(), query,
+          securityEnabled, getEffectivePermittedUserList( securityEnabled ), getPermittedRoleList(), getDefaultAcls(),
+          ( PentahoSessionHolder
+            .getSession() != null ) ? PentahoSessionHolder.getSession().getName() : null );
       Domain domain = sqlModelGenerator.generate();
-      domain.getPhysicalModels().get(0).setId(connection.getName());
+      domain.getPhysicalModels().get( 0 ).setId( connection.getName() );
 
-      modelerWorkspace.setDomain(domain);
+      modelerWorkspace.setDomain( domain );
 
 
-      modelerWorkspace.getWorkspaceHelper().autoModelFlat(modelerWorkspace);
-      modelerWorkspace.getWorkspaceHelper().autoModelRelationalFlat(modelerWorkspace);
-      modelerWorkspace.setModelName(datasourceDTO.getDatasourceName());
-      modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
-      domain.getLogicalModels().get(0).setProperty("datasourceModel", serializeModelState(datasourceDTO));
-      domain.getLogicalModels().get(0).setProperty("DatasourceType", "SQL-DS");
+      modelerWorkspace.getWorkspaceHelper().autoModelFlat( modelerWorkspace );
+      modelerWorkspace.getWorkspaceHelper().autoModelRelationalFlat( modelerWorkspace );
+      modelerWorkspace.setModelName( datasourceDTO.getDatasourceName() );
+      modelerWorkspace.getWorkspaceHelper().populateDomain( modelerWorkspace );
+      domain.getLogicalModels().get( 0 ).setProperty( "datasourceModel", serializeModelState( datasourceDTO ) );
+      domain.getLogicalModels().get( 0 ).setProperty( "DatasourceType", "SQL-DS" );
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
-      prepareForSerializaton(domain);
-      modelerService.serializeModels(domain, modelerWorkspace.getModelName());
-      summary.setDomain(domain);
+      prepareForSerializaton( domain );
+      modelerService.serializeModels( domain, modelerWorkspace.getModelName() );
+      summary.setDomain( domain );
 
       return summary;
-    } catch (SQLModelGeneratorException smge) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL",//$NON-NLS-1$
-          smge.getLocalizedMessage()), smge);
-      throw new DatasourceServiceException(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL",smge.getLocalizedMessage()), smge); //$NON-NLS-1$
-    } catch (QueryValidationException e) {
-      logger.error(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e);//$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()), e); //$NON-NLS-1$
-    } catch (ModelerException e) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL",//$NON-NLS-1$
-          e.getLocalizedMessage()), e);
-      throw new DatasourceServiceException(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", e.getLocalizedMessage()), e); //$NON-NLS-1$
-    } catch (Exception e) {
-      logger.error(Messages.getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", //$NON-NLS-1$
-          e.getLocalizedMessage()), e);
-      throw new DatasourceServiceException(Messages
-          .getErrorString("DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", e.getLocalizedMessage()), e); //$NON-NLS-1$
+    } catch ( SQLModelGeneratorException smge ) {
+      logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", //$NON-NLS-1$
+        smge.getLocalizedMessage() ), smge );
+      throw new DatasourceServiceException( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", smge.getLocalizedMessage() ),
+        smge ); //$NON-NLS-1$
+    } catch ( QueryValidationException e ) {
+      logger.error( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages.getErrorString(
+        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
+    } catch ( ModelerException e ) {
+      logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", //$NON-NLS-1$
+        e.getLocalizedMessage() ), e );
+      throw new DatasourceServiceException( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", e.getLocalizedMessage() ),
+        e ); //$NON-NLS-1$
+    } catch ( Exception e ) {
+      logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", //$NON-NLS-1$
+        e.getLocalizedMessage() ), e );
+      throw new DatasourceServiceException( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", e.getLocalizedMessage() ),
+        e ); //$NON-NLS-1$
     }
 
   }
-  
-  public void prepareForSerializaton(Domain domain) {
-		/*
+
+  public void prepareForSerializaton( Domain domain ) {
+    /*
 		 * This method is responsible for cleaning up legacy information when
 		 * changing datasource types and also manages CSV files for CSV based
 		 * datasources.
 		 */
 
-		String relativePath = PentahoSystem.getSystemSetting("file-upload-defaults/relative-path", String.valueOf(FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH)); //$NON-NLS-1$
-		String path = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
-		LogicalModel logicalModel = domain.getLogicalModels().get(0);
-		String modelState = (String) logicalModel.getProperty("datasourceModel"); 
+    String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
+      String.valueOf( FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) ); //$NON-NLS-1$
+    String path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
+    LogicalModel logicalModel = domain.getLogicalModels().get( 0 );
+    String modelState = (String) logicalModel.getProperty( "datasourceModel" );
 
-		if (modelState != null) {
-			XStream xs = new XStream();
-			DatasourceDTO datasource = (DatasourceDTO) xs.fromXML(modelState);
-			CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
-			String csvFileName = csvFileInfo.getFilename();
+    if ( modelState != null ) {
+      XStream xs = new XStream();
+      DatasourceDTO datasource = (DatasourceDTO) xs.fromXML( modelState );
+      CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
+      String csvFileName = csvFileInfo.getFilename();
 
-			if (csvFileName != null) {
+      if ( csvFileName != null ) {
 
-				// Cleanup logic when updating from CSV datasource to SQL
-				// datasource.
-				csvFileInfo.setFilename(null);
-				csvFileInfo.setTmpFilename(null);
-				csvFileInfo.setFriendlyFilename(null);
-				csvFileInfo.setContents(null);
-				csvFileInfo.setEncoding(null);
+        // Cleanup logic when updating from CSV datasource to SQL
+        // datasource.
+        csvFileInfo.setFilename( null );
+        csvFileInfo.setTmpFilename( null );
+        csvFileInfo.setFriendlyFilename( null );
+        csvFileInfo.setContents( null );
+        csvFileInfo.setEncoding( null );
 
-				// Delete CSV file.
-				File csvFile = new File(path + File.separatorChar + csvFileName);
-				if (csvFile.exists()) {
-					csvFile.delete();
-				}
+        // Delete CSV file.
+        File csvFile = new File( path + File.separatorChar + csvFileName );
+        if ( csvFile.exists() ) {
+          csvFile.delete();
+        }
 
-				// Delete STAGING database table.
-				CsvTransformGenerator csvTransformGenerator = new CsvTransformGenerator(datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta());
-				try {
-					csvTransformGenerator.dropTable(datasource.getCsvModelInfo().getStageTableName());
-				} catch (CsvTransformGeneratorException e) {
-					logger.error(e);
-				}
-			}
-			// Update datasourceModel with the new modelState
-			modelState = xs.toXML(datasource);
-		    logicalModel.setProperty("datasourceModel", modelState);
-		}
-	}
-  
+        // Delete STAGING database table.
+        CsvTransformGenerator csvTransformGenerator =
+          new CsvTransformGenerator( datasource.getCsvModelInfo(), AgileHelper.getDatabaseMeta() );
+        try {
+          csvTransformGenerator.dropTable( datasource.getCsvModelInfo().getStageTableName() );
+        } catch ( CsvTransformGeneratorException e ) {
+          logger.error( e );
+        }
+      }
+      // Update datasourceModel with the new modelState
+      modelState = xs.toXML( datasource );
+      logicalModel.setProperty( "datasourceModel", modelState );
+    }
+  }
+
   public String getDatasourceIllegalCharacters() throws DatasourceServiceException {
-    IPluginResourceLoader resLoader = PentahoSystem.get(IPluginResourceLoader.class, null);
-    return resLoader.getPluginSetting(getClass(), "settings/data-access-datasource-illegal-characters"); //$NON-NLS-1$
+    IPluginResourceLoader resLoader = PentahoSystem.get( IPluginResourceLoader.class, null );
+    return resLoader.getPluginSetting( getClass(), "settings/data-access-datasource-illegal-characters" ); //$NON-NLS-1$
   }
 
   @Override
   public GeoContext getGeoContext() throws DatasourceServiceException {
-    if (this.geoContext == null) {
+    if ( this.geoContext == null ) {
       this.geoContext = DatasourceServiceHelper.getGeoContext();
     }
     return this.geoContext;
   }
-  
+
 }

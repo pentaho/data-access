@@ -65,8 +65,10 @@ public class MetadataService extends DatasourceService {
   }
 
   public void importMetadataDatasource( String domainId, InputStream metadataFile,
-      FormDataContentDisposition metadataFileInfo, String overwrite, List<FormDataBodyPart> localeFiles,
-      List<FormDataContentDisposition> localeFilesInfo ) throws PentahoAccessControlException, PlatformImportException,
+                                        FormDataContentDisposition metadataFileInfo, String overwrite,
+                                        List<FormDataBodyPart> localeFiles,
+                                        List<FormDataContentDisposition> localeFilesInfo )
+    throws PentahoAccessControlException, PlatformImportException,
     Exception {
 
     validateAccess();
@@ -74,27 +76,27 @@ public class MetadataService extends DatasourceService {
     FileResource fr = new FileResource();
     String reservedChars = (String) fr.doGetReservedChars().getEntity();
     if ( reservedChars != null
-    // \ need to be replaced with \\ for Regex
-        && domainId.matches( ".*[" + reservedChars.replaceAll( "\\\\", "\\\\\\\\" ) + "]+.*" ) ) {
+      // \ need to be replaced with \\ for Regex
+      && domainId.matches( ".*[" + reservedChars.replaceAll( "\\\\", "\\\\\\\\" ) + "]+.*" ) ) {
       String msg =
-          Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
-              .doGetReservedCharactersDisplay().getEntity() );
+        Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
+          .doGetReservedCharactersDisplay().getEntity() );
       throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
     }
 
     boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
     RepositoryFileImportBundle.Builder bundleBuilder =
-        new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
-            .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
+      new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
+        .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
 
     if ( localeFiles != null ) {
       for ( int i = 0; i < localeFiles.size(); i++ ) {
         logger.info( "create language file" );
         IPlatformImportBundle localizationBundle =
-            new RepositoryFileImportBundle.Builder().input(
-                new ByteArrayInputStream( localeFiles.get( i ).getValueAs( byte[].class ) ) ).charSet( "UTF-8" )
-                .hidden( false ).name( localeFilesInfo.get( i ).getFileName() ).withParam( "domain-id", domainId )
-                .build();
+          new RepositoryFileImportBundle.Builder().input(
+            new ByteArrayInputStream( localeFiles.get( i ).getValueAs( byte[].class ) ) ).charSet( "UTF-8" )
+            .hidden( false ).name( localeFilesInfo.get( i ).getFileName() ).withParam( "domain-id", domainId )
+            .build();
 
         bundleBuilder.addChildBundle( localizationBundle );
       }
@@ -105,6 +107,6 @@ public class MetadataService extends DatasourceService {
     importer.importFile( bundle );
     IPentahoSession pentahoSession = PentahoSessionHolder.getSession();
     PentahoSystem.publish( pentahoSession, org.pentaho.platform.engine.services.metadata.MetadataPublisher.class
-        .getName() );
+      .getName() );
   }
 }

@@ -28,24 +28,24 @@ public class ColumnInfoCollection extends AbstractModelList<ColumnInfo> {
 
   private int selectedCount = 0;
 
-  private PropertyChangeListener selectedListener = new PropertyChangeListener(){
-    public void propertyChange(PropertyChangeEvent evt) {
-      if(evt.getPropertyName().equals("include") || evt.getPropertyName().equals("children")){
+  private PropertyChangeListener selectedListener = new PropertyChangeListener() {
+    public void propertyChange( PropertyChangeEvent evt ) {
+      if ( evt.getPropertyName().equals( "include" ) || evt.getPropertyName().equals( "children" ) ) {
         int count = 0;
-        for(ColumnInfo ci : getChildren()) {
-          if (ci.isInclude()) {
+        for ( ColumnInfo ci : getChildren() ) {
+          if ( ci.isInclude() ) {
             count++;
           }
         }
-        setSelectedCount(count);
+        setSelectedCount( count );
       }
     }
   };
 
-  private void setSelectedCount(int count) {
+  private void setSelectedCount( int count ) {
     int prev = selectedCount;
     selectedCount = count;
-    firePropertyChange("selectedCount", prev, count);
+    firePropertyChange( "selectedCount", prev, count );
   }
 
   @Bindable
@@ -53,15 +53,15 @@ public class ColumnInfoCollection extends AbstractModelList<ColumnInfo> {
     return selectedCount;
   }
 
-  public ColumnInfoCollection(){
+  public ColumnInfoCollection() {
 
   }
 
-  public void onAdd(ColumnInfo child) {
-    child.addPropertyChangeListener(selectedListener);
+  public void onAdd( ColumnInfo child ) {
+    child.addPropertyChangeListener( selectedListener );
   }
 
-  public void onRemove(ColumnInfo child) {
-    child.removePropertyChangeListener(selectedListener);
+  public void onRemove( ColumnInfo child ) {
+    child.removePropertyChangeListener( selectedListener );
   }
 }

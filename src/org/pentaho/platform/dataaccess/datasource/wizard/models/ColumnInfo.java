@@ -27,68 +27,69 @@ import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
-  
-  public static final List<String> DATE_FORMATS = Arrays.asList("MM-dd-yyyy",
-      "MM/dd/yyyy HH:mm:ss",
-      "MM/dd/yyyy",
-      "dd-MM-yyyy",
-      "dd/MM/yyyy",
-      "yyyy-MM-dd HH:mm:ss",
-      "yyyy-MM-dd",
-      "yyyy/MM/dd",
-      "MM-dd-yy",
-      "MM/dd/yy",
-      "dd-MM-yy",
-      "dd/MM/yy"
+
+  public static final List<String> DATE_FORMATS = Arrays.asList( "MM-dd-yyyy",
+    "MM/dd/yyyy HH:mm:ss",
+    "MM/dd/yyyy",
+    "dd-MM-yyyy",
+    "dd/MM/yyyy",
+    "yyyy-MM-dd HH:mm:ss",
+    "yyyy-MM-dd",
+    "yyyy/MM/dd",
+    "MM-dd-yy",
+    "MM/dd/yy",
+    "dd-MM-yy",
+    "dd/MM/yy"
   );
 
   private static final long serialVersionUID = 2498345633158485182L;
 
   public static final String FIELD_TYPE_BOTH = "both"; //$NON-NLS-1$
-  
+
   public static final String FIELD_TYPE_MEASURE = "measure"; //$NON-NLS-1$
-  
+
   public static final String FIELD_TYPE_ATTRIBUTE = "attribute"; //$NON-NLS-1$
-  
+
   public static final String FIELD_TYPE_DIMENSION = "dimension"; //$NON-NLS-1$
-  
+
   public static final int DATE_LEVEL_YEAR = 0x01;
-  
+
   public static final int DATE_LEVEL_MONTH = 0x02;
-  
+
   public static final int DATE_LEVEL_QUARTER = 0x04;
-  
+
   public static final int DATE_LEVEL_WEEK = 0x08;
-  
+
   public static final int DATE_LEVEL_DAY = 0x10;
-  
+
   public static final int DATE_LEVEL_DAYOFWEEK = 0x20;
-  
+
   private String id;
-  
+
   private String title;
-  
+
   private DataType dataType;
 
   private static List<DataType> availableDataTypes;
-  
+
   private String aggregateType;
-  
+
   private String[] samples;
 
   private boolean index;
-  
+
   private boolean ignore;
-  
+
   private String fieldType;
-  
+
   private String format;
-  
+
   private int length;
-  
+
   private int precision;
-  
-  private int dateFieldBreakout = DATE_LEVEL_YEAR | DATE_LEVEL_MONTH | DATE_LEVEL_QUARTER | DATE_LEVEL_WEEK | DATE_LEVEL_DAY | DATE_LEVEL_DAYOFWEEK;
+
+  private int dateFieldBreakout =
+    DATE_LEVEL_YEAR | DATE_LEVEL_MONTH | DATE_LEVEL_QUARTER | DATE_LEVEL_WEEK | DATE_LEVEL_DAY | DATE_LEVEL_DAYOFWEEK;
 
   @Bindable
   public int getLength() {
@@ -96,7 +97,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setLength(int length) {
+  public void setLength( int length ) {
     this.length = length;
   }
 
@@ -106,7 +107,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setPrecision(int precision) {
+  public void setPrecision( int precision ) {
     this.precision = precision;
   }
 
@@ -116,7 +117,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setFormat(String format) {
+  public void setFormat( String format ) {
     this.format = format;
   }
 
@@ -126,7 +127,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setIndex(boolean index) {
+  public void setIndex( boolean index ) {
     this.index = index;
   }
 
@@ -136,7 +137,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setIgnore(boolean ignore) {
+  public void setIgnore( boolean ignore ) {
     this.ignore = ignore;
   }
 
@@ -144,20 +145,20 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   public boolean isInclude() {
     return !ignore;
   }
-  
+
   @Bindable
-  public void setInclude(boolean include) {
+  public void setInclude( boolean include ) {
     ignore = !include;
-    firePropertyChange("include", null, include);    
+    firePropertyChange( "include", null, include );
   }
-  
+
   @Bindable
   public String getFieldType() {
     return fieldType;
   }
 
   @Bindable
-  public void setFieldType(String fieldType) {
+  public void setFieldType( String fieldType ) {
     this.fieldType = fieldType;
   }
 
@@ -167,7 +168,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setId(String id) {
+  public void setId( String id ) {
     this.id = id;
   }
 
@@ -177,7 +178,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setTitle(String title) {
+  public void setTitle( String title ) {
     this.title = title.trim();
   }
 
@@ -187,13 +188,13 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setDataType(DataType dataType) {
-    List<String> prev = getFormatStrings(); 
+  public void setDataType( DataType dataType ) {
+    List<String> prev = getFormatStrings();
     boolean prevDisabled = getFormatStringsDisabled();
     this.dataType = dataType;
     // trigger a change to format string, and format disabled binding
-    this.firePropertyChange("formatStrings", prev, getFormatStrings());
-    this.firePropertyChange("formatStringsDisabled", prevDisabled, getFormatStringsDisabled());
+    this.firePropertyChange( "formatStrings", prev, getFormatStrings() );
+    this.firePropertyChange( "formatStringsDisabled", prevDisabled, getFormatStringsDisabled() );
   }
 
   @Bindable
@@ -202,7 +203,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setAggregateType(String aggregateType) {
+  public void setAggregateType( String aggregateType ) {
     this.aggregateType = aggregateType;
   }
 
@@ -212,126 +213,144 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setSamples(String[] samples) {
+  public void setSamples( String[] samples ) {
     this.samples = samples;
   }
 
   @Bindable
   public static List<DataType> getAvailableDataTypes() {
-    if (availableDataTypes == null || availableDataTypes.size() == 0) {
+    if ( availableDataTypes == null || availableDataTypes.size() == 0 ) {
       ArrayList<DataType> types = new ArrayList<DataType>();
       DataType[] dt = DataType.values();
-      for (DataType dataType : dt) {
+      for ( DataType dataType : dt ) {
         // don't support url, binary, unknown, or image in csv 
-        switch(dataType) {
+        switch( dataType ) {
           case URL:
           case BINARY:
           case IMAGE:
           case UNKNOWN:
             break;
-          default: 
-//            types.add(dataType.getDescription());
-            types.add(dataType);
+          default:
+            //            types.add(dataType.getDescription());
+            types.add( dataType );
             break;
         }
       }
       availableDataTypes = types;
     }
-    return availableDataTypes;    
+    return availableDataTypes;
   }
 
-  @Bindable 
+  @Bindable
   public boolean getFormatStringsDisabled() {
-    return (dataType != DataType.NUMERIC && dataType != DataType.DATE);
+    return ( dataType != DataType.NUMERIC && dataType != DataType.DATE );
   }
-  
-  @Bindable 
+
+  @Bindable
   public List<String> getFormatStrings() {
     ArrayList<String> formatStrings = new ArrayList<String>();
-    if (dataType == DataType.NUMERIC) {
-      formatStrings.add("0.00");
-      formatStrings.add("#.#");
-      formatStrings.add("#");
-      formatStrings.add("#,##0.###");
-      formatStrings.add("###,###,###.#");
-      formatStrings.add("$#,###");
-      formatStrings.add("$#,###.00;($#,###.00)");
+    if ( dataType == DataType.NUMERIC ) {
+      formatStrings.add( "0.00" );
+      formatStrings.add( "#.#" );
+      formatStrings.add( "#" );
+      formatStrings.add( "#,##0.###" );
+      formatStrings.add( "###,###,###.#" );
+      formatStrings.add( "$#,###" );
+      formatStrings.add( "$#,###.00;($#,###.00)" );
 
-    } else if (dataType == DataType.DATE) {
-      formatStrings.addAll(DATE_FORMATS);
-    } else {
-      // No Format Strings, field should be disabled
+    } else if ( dataType == DataType.DATE ) {
+      formatStrings.addAll( DATE_FORMATS );
     }
     return formatStrings;
   }
-  
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((aggregateType == null) ? 0 : aggregateType.hashCode());
-    result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
-    result = prime * result + ((fieldType == null) ? 0 : fieldType.hashCode());
-    result = prime * result + ((format == null) ? 0 : format.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + (ignore ? 1231 : 1237);
-    result = prime * result + (index ? 1231 : 1237);
+    result = prime * result + ( ( aggregateType == null ) ? 0 : aggregateType.hashCode() );
+    result = prime * result + ( ( dataType == null ) ? 0 : dataType.hashCode() );
+    result = prime * result + ( ( fieldType == null ) ? 0 : fieldType.hashCode() );
+    result = prime * result + ( ( format == null ) ? 0 : format.hashCode() );
+    result = prime * result + ( ( id == null ) ? 0 : id.hashCode() );
+    result = prime * result + ( ignore ? 1231 : 1237 );
+    result = prime * result + ( index ? 1231 : 1237 );
     result = prime * result + length;
     result = prime * result + precision;
-    result = prime * result + Arrays.hashCode(samples);
-    result = prime * result + ((title == null) ? 0 : title.hashCode());
+    result = prime * result + Arrays.hashCode( samples );
+    result = prime * result + ( ( title == null ) ? 0 : title.hashCode() );
     return result;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
+  public boolean equals( Object obj ) {
+    if ( this == obj ) {
       return true;
-    if (obj == null)
+    }
+    if ( obj == null ) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if ( getClass() != obj.getClass() ) {
       return false;
+    }
     ColumnInfo other = (ColumnInfo) obj;
-    if (aggregateType == null) {
-      if (other.aggregateType != null)
+    if ( aggregateType == null ) {
+      if ( other.aggregateType != null ) {
         return false;
-    } else if (!aggregateType.equals(other.aggregateType))
+      }
+    } else if ( !aggregateType.equals( other.aggregateType ) ) {
       return false;
-    if (dataType == null) {
-      if (other.dataType != null)
+    }
+    if ( dataType == null ) {
+      if ( other.dataType != null ) {
         return false;
-    } else if (!dataType.equals(other.dataType))
+      }
+    } else if ( !dataType.equals( other.dataType ) ) {
       return false;
-    if (fieldType == null) {
-      if (other.fieldType != null)
+    }
+    if ( fieldType == null ) {
+      if ( other.fieldType != null ) {
         return false;
-    } else if (!fieldType.equals(other.fieldType))
+      }
+    } else if ( !fieldType.equals( other.fieldType ) ) {
       return false;
-    if (format == null) {
-      if (other.format != null)
+    }
+    if ( format == null ) {
+      if ( other.format != null ) {
         return false;
-    } else if (!format.equals(other.format))
+      }
+    } else if ( !format.equals( other.format ) ) {
       return false;
-    if (id == null) {
-      if (other.id != null)
+    }
+    if ( id == null ) {
+      if ( other.id != null ) {
         return false;
-    } else if (!id.equals(other.id))
+      }
+    } else if ( !id.equals( other.id ) ) {
       return false;
-    if (ignore != other.ignore)
+    }
+    if ( ignore != other.ignore ) {
       return false;
-    if (index != other.index)
+    }
+    if ( index != other.index ) {
       return false;
-    if (length != other.length)
+    }
+    if ( length != other.length ) {
       return false;
-    if (precision != other.precision)
+    }
+    if ( precision != other.precision ) {
       return false;
-    if (!Arrays.equals(samples, other.samples))
+    }
+    if ( !Arrays.equals( samples, other.samples ) ) {
       return false;
-    if (title == null) {
-      if (other.title != null)
+    }
+    if ( title == null ) {
+      if ( other.title != null ) {
         return false;
-    } else if (!title.equals(other.title))
+      }
+    } else if ( !title.equals( other.title ) ) {
       return false;
+    }
     return true;
   }
 
@@ -339,10 +358,9 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
     return dateFieldBreakout;
   }
 
-  public void setDateFieldBreakout(int dateFieldBreakout) {
+  public void setDateFieldBreakout( int dateFieldBreakout ) {
     this.dateFieldBreakout = dateFieldBreakout;
   }
-  
-  
-  
+
+
 }

@@ -28,15 +28,15 @@ import com.google.gwt.user.client.rpc.RemoteService;
 
 public interface IGwtJoinSelectionService extends RemoteService {
 
-	List<String> getDatabaseTables(IDatabaseConnection connection, String schema) throws Exception;
-	
-	List<String> retrieveSchemas(IDatabaseConnection connection) throws Exception;
+  List<String> getDatabaseTables( IDatabaseConnection connection, String schema ) throws Exception;
 
-	List<String> getTableFields(String table, IDatabaseConnection connection) throws Exception;
+  List<String> retrieveSchemas( IDatabaseConnection connection ) throws Exception;
 
-	IDatasourceSummary serializeJoins(MultiTableDatasourceDTO dto, IDatabaseConnection connection) throws Exception;
+  List<String> getTableFields( String table, IDatabaseConnection connection ) throws Exception;
 
-	MultiTableDatasourceDTO deSerializeModelState(String source) throws Exception;
+  IDatasourceSummary serializeJoins( MultiTableDatasourceDTO dto, IDatabaseConnection connection ) throws Exception;
 
-	BogoPojo gwtWorkaround(BogoPojo pojo);
+  MultiTableDatasourceDTO deSerializeModelState( String source ) throws Exception;
+
+  BogoPojo gwtWorkaround( BogoPojo pojo );
 }

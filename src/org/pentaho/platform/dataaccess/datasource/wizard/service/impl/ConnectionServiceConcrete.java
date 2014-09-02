@@ -25,10 +25,10 @@ import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 
 /**
- * A wrapper around ConnectionServiceImpl that provides an API that uses only concrete classes
- * not interfaces. This is needed by Apache Axis in order to expose this as a SOAP service.
- * @author jamesdixon
+ * A wrapper around ConnectionServiceImpl that provides an API that uses only concrete classes not interfaces. This is
+ * needed by Apache Axis in order to expose this as a SOAP service.
  *
+ * @author jamesdixon
  */
 public class ConnectionServiceConcrete {
 
@@ -40,38 +40,38 @@ public class ConnectionServiceConcrete {
   public List<DatabaseConnection> getConnections() throws ConnectionServiceException {
     List<IDatabaseConnection> iConnections = service.getConnections();
     List<DatabaseConnection> connections = new ArrayList<DatabaseConnection>();
-    for( IDatabaseConnection iConnection : iConnections ) {
-      connections.add((DatabaseConnection) iConnection );
+    for ( IDatabaseConnection iConnection : iConnections ) {
+      connections.add( (DatabaseConnection) iConnection );
     }
     return connections;
   }
 
-  public DatabaseConnection getConnectionByName(String name) throws ConnectionServiceException {
-    return (DatabaseConnection) service.getConnectionByName(name);
+  public DatabaseConnection getConnectionByName( String name ) throws ConnectionServiceException {
+    return (DatabaseConnection) service.getConnectionByName( name );
   }
 
-  public boolean addConnection(DatabaseConnection connection) throws ConnectionServiceException {
-    return service.addConnection(connection);
+  public boolean addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
+    return service.addConnection( connection );
   }
 
-  public boolean updateConnection(DatabaseConnection connection) throws ConnectionServiceException {
-    return service.updateConnection(connection);
+  public boolean updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
+    return service.updateConnection( connection );
   }
 
-  public boolean deleteConnection(DatabaseConnection connection) throws ConnectionServiceException {
-    return service.deleteConnection(connection);
+  public boolean deleteConnection( DatabaseConnection connection ) throws ConnectionServiceException {
+    return service.deleteConnection( connection );
   }
 
-  public boolean deleteConnectionByName(String name) throws ConnectionServiceException {
-    return service.deleteConnection(name);
+  public boolean deleteConnectionByName( String name ) throws ConnectionServiceException {
+    return service.deleteConnection( name );
   }
 
-  public boolean testConnection(DatabaseConnection connection) throws ConnectionServiceException {
-    return service.testConnection(connection);
+  public boolean testConnection( DatabaseConnection connection ) throws ConnectionServiceException {
+    return service.testConnection( connection );
   }
-  
-  public boolean isConnectionExist(String connectionName) throws ConnectionServiceException {
-    return service.isConnectionExist(connectionName);
+
+  public boolean isConnectionExist( String connectionName ) throws ConnectionServiceException {
+    return service.isConnectionExist( connectionName );
   }
-  
+
 }

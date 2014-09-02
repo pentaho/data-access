@@ -32,10 +32,11 @@ public class CsvDatasourceServiceServlet extends RemoteServiceServlet implements
 
   private static final long serialVersionUID = 2498165533158485182L;
 
-  public ModelInfo stageFile(String fileName, String delimiter, String enclosure, boolean isFirstRowHeader, String encoding)
-      throws Exception {
+  public ModelInfo stageFile( String fileName, String delimiter, String enclosure, boolean isFirstRowHeader,
+                              String encoding )
+    throws Exception {
     CsvDatasourceServiceImpl serviceImpl = new CsvDatasourceServiceImpl();
-    return serviceImpl.stageFile(fileName, delimiter, enclosure, isFirstRowHeader, encoding);
+    return serviceImpl.stageFile( fileName, delimiter, enclosure, isFirstRowHeader, encoding );
   }
 
   public FileInfo[] getStagedFiles() throws Exception {
@@ -43,23 +44,24 @@ public class CsvDatasourceServiceServlet extends RemoteServiceServlet implements
     return serviceImpl.getStagedFiles();
   }
 
-  public List<String> getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding) throws Exception {
+  public List<String> getPreviewRows( String filename, boolean isFirstRowHeader, int rows, String encoding )
+    throws Exception {
     CsvDatasourceServiceImpl serviceImpl = new CsvDatasourceServiceImpl();
-    return serviceImpl.getPreviewRows(filename, isFirstRowHeader, rows, encoding);
+    return serviceImpl.getPreviewRows( filename, isFirstRowHeader, rows, encoding );
   }
-  
-  public String getEncoding(String fileName) {
-	  CsvDatasourceServiceImpl serviceImpl = new CsvDatasourceServiceImpl();
-	  return serviceImpl.getEncoding(fileName);
+
+  public String getEncoding( String fileName ) {
+    CsvDatasourceServiceImpl serviceImpl = new CsvDatasourceServiceImpl();
+    return serviceImpl.getEncoding( fileName );
   }
 
   @Override
-  public FileTransformStats generateDomain(DatasourceDTO datasourceDto) throws Exception {
-	  CsvDatasourceServiceImpl serviceImpl = new CsvDatasourceServiceImpl();
-	  return serviceImpl.generateDomain(datasourceDto);
+  public FileTransformStats generateDomain( DatasourceDTO datasourceDto ) throws Exception {
+    CsvDatasourceServiceImpl serviceImpl = new CsvDatasourceServiceImpl();
+    return serviceImpl.generateDomain( datasourceDto );
   }
 
-  public BogoPojo gwtWorkaround(BogoPojo pojo) {
+  public BogoPojo gwtWorkaround( BogoPojo pojo ) {
     return pojo;
   }
 

@@ -23,22 +23,20 @@ public class RelationalModelValidationListenerCollection extends ArrayList<IRela
   private static final long serialVersionUID = 1L;
 
   /**
-  * Fires a relational model valid event to all listeners.
-  * 
-  */
+   * Fires a relational model valid event to all listeners.
+   */
   public void fireRelationalModelValid() {
-    for (IRelationalModelValidationListener listener : this) {
+    for ( IRelationalModelValidationListener listener : this ) {
       listener.onRelationalModelValid();
     }
   }
-  
+
   /**
    * Fires a relational model valid event to all listeners.
-   * 
    */
-   public void fireRelationalModelInValid() {
-     for (IRelationalModelValidationListener listener : this) {
-       listener.onRelationalModelInValid();
-     }
-   }
+  public void fireRelationalModelInValid() {
+    for ( IRelationalModelValidationListener listener : this ) {
+      listener.onRelationalModelInValid();
+    }
+  }
 }

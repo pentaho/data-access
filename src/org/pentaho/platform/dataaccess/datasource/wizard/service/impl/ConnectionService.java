@@ -23,7 +23,7 @@ import org.pentaho.platform.dataaccess.datasource.api.resources.JDBCDatasourceRe
 
 @Path( "/data-access/api/datasource/jdbc" )
 public class ConnectionService extends JDBCDatasourceResource {
-  
+
   public ConnectionService() {
   }
 

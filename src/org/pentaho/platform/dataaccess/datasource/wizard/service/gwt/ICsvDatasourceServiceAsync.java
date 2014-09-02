@@ -29,17 +29,18 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ICsvDatasourceServiceAsync {
 
-  public void stageFile(String name, String delimiter, String enclosure, boolean isFirstRowHeader, String encoding,
-      AsyncCallback<ModelInfo> aCallback);
+  public void stageFile( String name, String delimiter, String enclosure, boolean isFirstRowHeader, String encoding,
+                         AsyncCallback<ModelInfo> aCallback );
 
-  public void getStagedFiles(AsyncCallback<FileInfo[]> aCallback);
+  public void getStagedFiles( AsyncCallback<FileInfo[]> aCallback );
 
-  public void generateDomain(DatasourceDTO datasourceDto, AsyncCallback<IDatasourceSummary> callback);
+  public void generateDomain( DatasourceDTO datasourceDto, AsyncCallback<IDatasourceSummary> callback );
 
-  public void getPreviewRows(String filename, boolean isFirstRowHeader, int rows, String encoding, AsyncCallback<List<String>> callback) throws Exception;
-  
-  public void getEncoding(String fileName, AsyncCallback<String> callback);
+  public void getPreviewRows( String filename, boolean isFirstRowHeader, int rows, String encoding,
+                              AsyncCallback<List<String>> callback ) throws Exception;
 
-  public void gwtWorkaround(BogoPojo pojo, AsyncCallback<BogoPojo> callback);
+  public void getEncoding( String fileName, AsyncCallback<String> callback );
+
+  public void gwtWorkaround( BogoPojo pojo, AsyncCallback<BogoPojo> callback );
 
 }

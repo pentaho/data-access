@@ -28,7 +28,6 @@ import java.util.Collections;
 
 /**
  * @author wseyler
- *
  */
 //TODO: move this to the Relational Datasource
 public class GuiStateModel extends XulEventSourceAdapter {
@@ -61,8 +60,9 @@ public class GuiStateModel extends XulEventSourceAdapter {
   public void updateConnection( String oldName, IDatabaseConnection connection ) {
     List<IDatabaseConnection> previousValue = getPreviousValue();
     IDatabaseConnection conn = getConnectionByName( oldName );
-    if ( conn == null )
+    if ( conn == null ) {
       return;
+    }
     String newName = connection.getName();
     conn.setName( newName );
     conn.setAccessType( connection.getAccessType() );

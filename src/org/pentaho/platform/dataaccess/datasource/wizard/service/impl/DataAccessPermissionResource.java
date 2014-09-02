@@ -31,14 +31,13 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 /**
  * @author Rowell Belen
  */
-@Path("/data-access/api/permissions")
+@Path( "/data-access/api/permissions" )
 @Facet ( name = "Unsupported" )
-public class DataAccessPermissionResource
-{
+public class DataAccessPermissionResource {
   private SimpleDataAccessPermissionHandler dataAccessPermHandler;
   private SimpleDataAccessViewPermissionHandler dataAccessViewPermHandler;
 
-  public DataAccessPermissionResource(){
+  public DataAccessPermissionResource() {
     dataAccessPermHandler = new SimpleDataAccessPermissionHandler();
     dataAccessViewPermHandler = new SimpleDataAccessViewPermissionHandler();
   }
@@ -49,12 +48,12 @@ public class DataAccessPermissionResource
    * @return Response based on the boolean value of hasDataAccess
    */
   @GET
-  @Path("/hasDataAccess")
+  @Path( "/hasDataAccess" )
   @Facet ( name = "Unsupported" )
-  @Produces( {APPLICATION_JSON })
+  @Produces( { APPLICATION_JSON } )
   public Response hasDataAccessPermission() {
-    return Response.ok("" + (dataAccessPermHandler != null
-       && dataAccessPermHandler.hasDataAccessPermission(PentahoSessionHolder.getSession()))).build();
+    return Response.ok( "" + ( dataAccessPermHandler != null
+      && dataAccessPermHandler.hasDataAccessPermission( PentahoSessionHolder.getSession() ) ) ).build();
   }
 
   /**
@@ -63,12 +62,12 @@ public class DataAccessPermissionResource
    * @return Response based on the boolean value of the data access view permission
    */
   @GET
-  @Path("/hasDataAccessView")
-  @Produces( {APPLICATION_JSON })
+  @Path( "/hasDataAccessView" )
+  @Produces( { APPLICATION_JSON } )
   @Facet ( name = "Unsupported" )
   public Response hasDataAccessViewPermission() {
-    return Response.ok("" + (dataAccessViewPermHandler != null
-       && dataAccessViewPermHandler.hasDataAccessViewPermission(PentahoSessionHolder.getSession()))).build();
+    return Response.ok( "" + ( dataAccessViewPermHandler != null
+      && dataAccessViewPermHandler.hasDataAccessViewPermission( PentahoSessionHolder.getSession() ) ) ).build();
   }
 
   /**
@@ -77,14 +76,14 @@ public class DataAccessPermissionResource
    * @return StringListWrapper containing the permitted roles
    */
   @GET
-  @Path("/permittedRoles")
-  @Produces( {APPLICATION_JSON })
+  @Path( "/permittedRoles" )
+  @Produces( { APPLICATION_JSON } )
   @Facet ( name = "Unsupported" )
   public StringListWrapper getPermittedRoleList() {
-    if (dataAccessViewPermHandler == null) {
+    if ( dataAccessViewPermHandler == null ) {
       return new StringListWrapper();
     }
-    return new StringListWrapper(dataAccessViewPermHandler.getPermittedRoleList(PentahoSessionHolder.getSession()));
+    return new StringListWrapper( dataAccessViewPermHandler.getPermittedRoleList( PentahoSessionHolder.getSession() ) );
   }
 
   /**
@@ -93,13 +92,13 @@ public class DataAccessPermissionResource
    * @return StringListWrapper containing the permitted users
    */
   @GET
-  @Path("/permittedUsers")
-  @Produces( {APPLICATION_JSON })
+  @Path( "/permittedUsers" )
+  @Produces( { APPLICATION_JSON } )
   @Facet ( name = "Unsupported" )
   public StringListWrapper getPermittedUserList() {
-    if (dataAccessViewPermHandler == null) {
+    if ( dataAccessViewPermHandler == null ) {
       return new StringListWrapper();
     }
-    return new StringListWrapper(dataAccessViewPermHandler.getPermittedUserList(PentahoSessionHolder.getSession()));
+    return new StringListWrapper( dataAccessViewPermHandler.getPermittedUserList( PentahoSessionHolder.getSession() ) );
   }
 }

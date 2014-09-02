@@ -25,29 +25,29 @@ public class Query implements IQuery {
 
   private static final long serialVersionUID = 8616769258583080677L;
 
-  private Column[] columns = new Column[0];
+  private Column[] columns = new Column[ 0 ];
 
-  private Condition[] conditions = new Condition[0];
+  private Condition[] conditions = new Condition[ 0 ];
 
-  private Order[] orders = new Order[0];
-  
-  private Parameter[] parameters = new Parameter[0];
+  private Order[] orders = new Order[ 0 ];
+
+  private Parameter[] parameters = new Parameter[ 0 ];
 
   private String domainName;
 
   private String modelId;
 
   private Boolean disableDistinct;
-  
+
   /**
    * Keys are parameter names; values are defaults for those parameters.
    */
   private Map<String, String> defaultParameterMap;
-  
+
   public Query() {
     super();
   }
-  
+
   public Column[] getColumns() {
     return columns;
   }
@@ -68,36 +68,36 @@ public class Query implements IQuery {
     return orders;
   }
 
-  public void setColumns(Column[] columns) {
+  public void setColumns( Column[] columns ) {
 
     this.columns = columns;
   }
 
-  public void setConditions(Condition[] conditions) {
+  public void setConditions( Condition[] conditions ) {
 
     this.conditions = conditions;
   }
 
-  public void setOrders(Order[] orders) {
+  public void setOrders( Order[] orders ) {
 
     this.orders = orders;
   }
 
-  public void setDomainName(String domainName) {
+  public void setDomainName( String domainName ) {
 
     this.domainName = domainName;
   }
 
-  public void setModelId(String modelId) {
+  public void setModelId( String modelId ) {
 
     this.modelId = modelId;
   }
 
-  public Map<String, String> getDefaultParameterMap() {  
+  public Map<String, String> getDefaultParameterMap() {
     return defaultParameterMap;
   }
 
-  public void setDefaultParameterMap(Map<String, String> defaultParameterMap) {
+  public void setDefaultParameterMap( Map<String, String> defaultParameterMap ) {
     this.defaultParameterMap = defaultParameterMap;
   }
 
@@ -105,7 +105,7 @@ public class Query implements IQuery {
     return disableDistinct;
   }
 
-  public void setDisableDistinct(Boolean disableDistinct) {
+  public void setDisableDistinct( Boolean disableDistinct ) {
     this.disableDistinct = disableDistinct;
   }
 
@@ -113,8 +113,8 @@ public class Query implements IQuery {
     return parameters;
   }
 
-  public void setParameters(Parameter[] parameters) {
+  public void setParameters( Parameter[] parameters ) {
     this.parameters = parameters;
   }
-  
+
 }

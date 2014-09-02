@@ -25,54 +25,54 @@ import org.pentaho.database.model.IDatabaseConnection;
 
 public class MultiTableDatasourceDTO implements Serializable {
 
-	private static final long serialVersionUID = 1368165523678535182L;
+  private static final long serialVersionUID = 1368165523678535182L;
 
-	private String datasourceName;
-	private IDatabaseConnection selectedConnection;
-	private SchemaModel schemaModel;
-	private List<String> selectedTables;
-	private boolean doOlap;
+  private String datasourceName;
+  private IDatabaseConnection selectedConnection;
+  private SchemaModel schemaModel;
+  private List<String> selectedTables;
+  private boolean doOlap;
 
-	public MultiTableDatasourceDTO() {
-	}
+  public MultiTableDatasourceDTO() {
+  }
 
-	public String getDatasourceName() {
-		return datasourceName;
-	}
+  public String getDatasourceName() {
+    return datasourceName;
+  }
 
-	public void setDatasourceName(String datasourceName) {
-		this.datasourceName = datasourceName;
-	}
+  public void setDatasourceName( String datasourceName ) {
+    this.datasourceName = datasourceName;
+  }
 
-	public SchemaModel getSchemaModel() {
-		return schemaModel;
-	}
+  public SchemaModel getSchemaModel() {
+    return schemaModel;
+  }
 
-	public void setSchemaModel(SchemaModel schemaModel) {
-		this.schemaModel = schemaModel;
-	}
+  public void setSchemaModel( SchemaModel schemaModel ) {
+    this.schemaModel = schemaModel;
+  }
 
-	public IDatabaseConnection getSelectedConnection() {
-		return selectedConnection;
-	}
+  public IDatabaseConnection getSelectedConnection() {
+    return selectedConnection;
+  }
 
-	public void setSelectedConnection(IDatabaseConnection selectedConnection) {
-		this.selectedConnection = selectedConnection;
-	}
+  public void setSelectedConnection( IDatabaseConnection selectedConnection ) {
+    this.selectedConnection = selectedConnection;
+  }
 
-	public List<String> getSelectedTables() {
-		return selectedTables;
-	}
+  public List<String> getSelectedTables() {
+    return selectedTables;
+  }
 
-	public void setSelectedTables(List<String> selectedTables) {
-		this.selectedTables = selectedTables;
-	}
+  public void setSelectedTables( List<String> selectedTables ) {
+    this.selectedTables = selectedTables;
+  }
 
-	public boolean isDoOlap() {
-		return doOlap;
-	}
+  public boolean isDoOlap() {
+    return doOlap;
+  }
 
-	public void setDoOlap(boolean doOlap) {
-		this.doOlap = doOlap;
-	}
+  public void setDoOlap( boolean doOlap ) {
+    this.doOlap = doOlap;
+  }
 }

@@ -24,17 +24,12 @@ import com.google.gwt.core.client.JavaScriptObject;
 public class XulServiceCallbackJavascriptObject {
 
   XulServiceCallback<Boolean> xulCallback;
-  public XulServiceCallbackJavascriptObject (XulServiceCallback<Boolean> callback){
-    xulCallback = callback;
-  }
-  
-  private void onSuccess(boolean flag){
-    xulCallback.success(new Boolean(flag));
-  }
-  
-  private void onError(String errorMsg) {
-    xulCallback.error(errorMsg, null);
-  }
+  public XulServiceCallbackJavascriptObject( XulServiceCallback<Boolean> callback ) { xulCallback = callback; }
+
+  private void onSuccess( boolean flag  ) { xulCallback.success( new Boolean( flag ) ); }
+
+  private void onError( String errorMsg ) { xulCallback.error( errorMsg, null ); }
+
   public native JavaScriptObject getJavascriptObject()/*-{
     var thisInstance = this;
     return {

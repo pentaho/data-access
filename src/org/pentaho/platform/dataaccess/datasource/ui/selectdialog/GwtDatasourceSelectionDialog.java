@@ -50,16 +50,19 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
 
   // ~ Constructors ====================================================================================================
 
-  public GwtDatasourceSelectionDialog(String context, final IXulAsyncDSWDatasourceService datasourceService,
-      final EmbeddedWizard gwtDatasourceEditor, final AsyncConstructorListener<GwtDatasourceSelectionDialog> constructorListener) {
+  public GwtDatasourceSelectionDialog( String context, final IXulAsyncDSWDatasourceService datasourceService,
+                                       final EmbeddedWizard gwtDatasourceEditor,
+                                       final AsyncConstructorListener<GwtDatasourceSelectionDialog>
+                                         constructorListener ) {
     this.context = context;
 
     this.gwtDatasourceEditor = gwtDatasourceEditor;
     this.datasourceService = datasourceService;
     this.constructorListener = constructorListener;
     try {
-      AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "datasourceSelectionDialog.xul", GWT.getModuleBaseURL() +  "datasourceSelectionDialog", this); //$NON-NLS-1$//$NON-NLS-2$
-    } catch (Exception e) {
+      AsyncXulLoader.loadXulFromUrl( GWT.getModuleBaseURL() + "datasourceSelectionDialog.xul",
+        GWT.getModuleBaseURL() + "datasourceSelectionDialog", this ); //$NON-NLS-1$//$NON-NLS-2$
+    } catch ( Exception e ) {
       e.printStackTrace();
     }
   }
@@ -73,11 +76,11 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
    */
   public void overlayLoaded() {
   }
-  
+
   public void reset() {
-	  if(datasourceSelectionDialogController != null) {
-		  datasourceSelectionDialogController.reset();
-	  }
+    if ( datasourceSelectionDialogController != null ) {
+      datasourceSelectionDialogController.reset();
+    }
   }
 
   /**
@@ -86,20 +89,20 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
   public void overlayRemoved() {
   }
 
-  public void xulLoaded(final GwtXulRunner runner) {
+  public void xulLoaded( final GwtXulRunner runner ) {
     try {
-      GwtXulDomContainer container = (GwtXulDomContainer) runner.getXulDomContainers().get(0);
+      GwtXulDomContainer container = (GwtXulDomContainer) runner.getXulDomContainers().get( 0 );
 
-      BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
+      BindingFactory bf = new GwtBindingFactory( container.getDocumentRoot() );
 
       // begin DatasourceSelectionDialogController setup
-      datasourceSelectionDialogController = new DatasourceSelectionDialogController(context);
-      datasourceSelectionDialogController.setBindingFactory(bf);
-      datasourceSelectionDialogController.setDatasourceService(datasourceService);
-      container.addEventHandler(datasourceSelectionDialogController);
+      datasourceSelectionDialogController = new DatasourceSelectionDialogController( context );
+      datasourceSelectionDialogController.setBindingFactory( bf );
+      datasourceSelectionDialogController.setDatasourceService( datasourceService );
+      container.addEventHandler( datasourceSelectionDialogController );
       // end DatasourceSelectionDialogController setup
 
-      datasourceSelectionDialogController.setDatasourceDialogController(gwtDatasourceEditor);
+      datasourceSelectionDialogController.setDatasourceDialogController( gwtDatasourceEditor );
 
       runner.initialize();
 
@@ -107,28 +110,29 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
 
       initialized = true;
 
-      if (constructorListener != null) {
-        constructorListener.asyncConstructorDone(this);
+      if ( constructorListener != null ) {
+        constructorListener.asyncConstructorDone( this );
       }
-      
+
       datasourceSelectionDialogController.onDialogReady();
-    } catch (Exception e) {
+    } catch ( Exception e ) {
       e.printStackTrace();
     }
   }
 
   protected void checkInitialized() {
-    if (!initialized) {
-      throw new IllegalStateException("You must wait until the constructor listener is notified."); //$NON-NLS-1$
+    if ( !initialized ) {
+      throw new IllegalStateException( "You must wait until the constructor listener is notified." ); //$NON-NLS-1$
     }
   }
 
   /**
    * Specified by <code>DialogController</code>.
    */
-  public void addDialogListener(org.pentaho.ui.xul.util.DialogController.DialogListener<LogicalModelSummary> listener) {
+  public void addDialogListener(
+    org.pentaho.ui.xul.util.DialogController.DialogListener<LogicalModelSummary> listener ) {
     checkInitialized();
-    datasourceSelectionDialogController.addDialogListener(listener);
+    datasourceSelectionDialogController.addDialogListener( listener );
     datasourceSelectionDialogController.onDialogReady();
   }
 
@@ -143,9 +147,10 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
   /**
    * Specified by <code>DialogController</code>.
    */
-  public void removeDialogListener(org.pentaho.ui.xul.util.DialogController.DialogListener<LogicalModelSummary> listener) {
+  public void removeDialogListener(
+    org.pentaho.ui.xul.util.DialogController.DialogListener<LogicalModelSummary> listener ) {
     checkInitialized();
-    datasourceSelectionDialogController.removeDialogListener(listener);
+    datasourceSelectionDialogController.removeDialogListener( listener );
   }
 
   /**
@@ -156,7 +161,7 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
     datasourceSelectionDialogController.showDialog();
   }
 
-  public void setContext(String context) {
-    datasourceSelectionDialogController.setContext(context);
+  public void setContext( String context ) {
+    datasourceSelectionDialogController.setContext( context );
   }
 }

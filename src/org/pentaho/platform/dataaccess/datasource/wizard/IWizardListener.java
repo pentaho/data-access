@@ -18,11 +18,11 @@
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
 /**
- * User: nbaker
- * Date: 3/21/11
+ * User: nbaker Date: 3/21/11
  */
 public interface IWizardListener {
 
-  void onFinish(IDatasourceSummary summary);
+  void onFinish( IDatasourceSummary summary );
+
   void onCancel();
 }

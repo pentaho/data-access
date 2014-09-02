@@ -27,32 +27,32 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * This class makes available the created business model to the calling javascript.
- * 
- * @author Will Gorman (wgorman@pentaho.com)
  *
+ * @author Will Gorman (wgorman@pentaho.com)
  */
 public class WAQRTransport extends JavaScriptObject {
-  
-  public static WAQRTransport createFromMetadata(Domain domain) {
-    
+
+  public static WAQRTransport createFromMetadata( Domain domain ) {
+
     // this assumes a single logical model with a single logical category
-    
-    LogicalModel model = domain.getLogicalModels().get(0);
+
+    LogicalModel model = domain.getLogicalModels().get( 0 );
     Iterator<String> iter = model.getName().getLocales().iterator();
     String locale = iter.next();
-    Category category = model.getCategories().get(0);
-    
-    String domainId = domain.getId(); 
-    String modelId = model.getId(); 
-    String modelName = model.getName() != null ? model.getName().getString(locale) : null; 
-    String categoryId = category.getId(); 
-    String categoryName = category.getName() != null ? category.getName().getString(locale) : null;
-    String schemaName = model.getName(locale);
-    
-    return createDomain(domainId, modelId, modelName, categoryId, categoryName, schemaName);
+    Category category = model.getCategories().get( 0 );
+
+    String domainId = domain.getId();
+    String modelId = model.getId();
+    String modelName = model.getName() != null ? model.getName().getString( locale ) : null;
+    String categoryId = category.getId();
+    String categoryName = category.getName() != null ? category.getName().getString( locale ) : null;
+    String schemaName = model.getName( locale );
+
+    return createDomain( domainId, modelId, modelName, categoryId, categoryName, schemaName );
   }
-  
-  private native static WAQRTransport createDomain(String domainId, String modelId, String modelName, String categoryId, String categoryName, String schemaName) /*-{
+
+  private static native WAQRTransport createDomain( String domainId, String modelId, String modelName,
+                                                    String categoryId, String categoryName, String schemaName ) /*-{
     var waqrTransport = {};
     waqrTransport.domainId = domainId;
     waqrTransport.modelId = modelId;
@@ -62,8 +62,8 @@ public class WAQRTransport extends JavaScriptObject {
     waqrTransport.schemaName = schemaName;
     return waqrTransport;
   }-*/;
-  
+
   protected WAQRTransport() {
-    
+
   }
 }

@@ -24,7 +24,7 @@ public class Order implements IOrder {
   private static final long serialVersionUID = 4824503466813354111L;
 
   private String column;
-  
+
   private String category;
 
   private String orderType;
@@ -37,11 +37,11 @@ public class Order implements IOrder {
     return orderType;
   }
 
-  public void setOrderType(String orderType) {
+  public void setOrderType( String orderType ) {
     this.orderType = orderType;
   }
 
-  public void setColumn(String column) {
+  public void setColumn( String column ) {
     this.column = column;
   }
 
@@ -49,7 +49,7 @@ public class Order implements IOrder {
     return category;
   }
 
-  public void setCategory(String category) {
+  public void setCategory( String category ) {
     this.category = category;
   }
 }

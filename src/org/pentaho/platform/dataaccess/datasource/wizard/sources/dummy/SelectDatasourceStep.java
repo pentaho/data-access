@@ -32,8 +32,7 @@ import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
- * User: nbaker
- * Date: 3/23/11
+ * User: nbaker Date: 3/23/11
  */
 public class SelectDatasourceStep extends AbstractWizardStep {
   private IWizardDatasource datasource;
@@ -41,36 +40,36 @@ public class SelectDatasourceStep extends AbstractWizardStep {
   private XulDeck datasourceDeck;
   private IWizardStep wrappedStep;
 
-  private PropertyChangeListener validListener = new PropertyChangeListener(){
+  private PropertyChangeListener validListener = new PropertyChangeListener() {
     @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-      SelectDatasourceStep.this.firePropertyChange("valid", !isValid(), isValid());
+    public void propertyChange( PropertyChangeEvent propertyChangeEvent ) {
+      SelectDatasourceStep.this.firePropertyChange( "valid", !isValid(), isValid() );
     }
   };
 
-  private PropertyChangeListener finishableListener = new PropertyChangeListener(){
+  private PropertyChangeListener finishableListener = new PropertyChangeListener() {
     @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-      if(datasource == null){
+    public void propertyChange( PropertyChangeEvent propertyChangeEvent ) {
+      if ( datasource == null ) {
         return;
       }
-      parentDatasource.setFinishable(datasource.isFinishable());
+      parentDatasource.setFinishable( datasource.isFinishable() );
     }
   };
   private IWizardModel wizardModel;
 
-  public SelectDatasourceStep( DummyDatasource parentDatasource){
-    super(parentDatasource);
+  public SelectDatasourceStep( DummyDatasource parentDatasource ) {
+    super( parentDatasource );
   }
 
   @Override
-  public void init(IWizardModel wizardModel) throws XulException {
+  public void init( IWizardModel wizardModel ) throws XulException {
     this.wizardModel = wizardModel;
 
-    datasourceDeck = (XulDeck) document.getElementById("datasourceDialogDeck");
-    super.init(wizardModel);
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(wizardModel, "selectedDatasource", this, "selectedDatasource");
+    datasourceDeck = (XulDeck) document.getElementById( "datasourceDialogDeck" );
+    super.init( wizardModel );
+    bf.setBindingType( Binding.Type.ONE_WAY );
+    bf.createBinding( wizardModel, "selectedDatasource", this, "selectedDatasource" );
   }
 
   @Override
@@ -80,44 +79,45 @@ public class SelectDatasourceStep extends AbstractWizardStep {
 
   @Override
   public XulComponent getUIComponent() {
-    return document.getElementById("sourcestep");
+    return document.getElementById( "sourcestep" );
   }
-  
+
   @Override
   @Bindable
   public String getStepName() {
-    return MessageHandler.getString("datasourceDialog.SelectDatabaseType");
+    return MessageHandler.getString( "datasourceDialog.SelectDatabaseType" );
   }
 
   @Bindable
-  public void setSelectedDatasource(IWizardDatasource datasource){
-    if(datasource instanceof DummyDatasource){
-      this.datasourceDeck.setSelectedIndex(0);
+  public void setSelectedDatasource( IWizardDatasource datasource ) {
+    if ( datasource instanceof DummyDatasource ) {
+      this.datasourceDeck.setSelectedIndex( 0 );
       this.datasource = null;
       this.wrappedStep = null;
       return;
     }
-    if(datasource == null){
+    if ( datasource == null ) {
       return;
     }
-    if(this.datasource != null){
-      this.wrappedStep.removePropertyChangeListener(validListener);
-      this.datasource.removePropertyChangeListener(finishableListener);
+    if ( this.datasource != null ) {
+      this.wrappedStep.removePropertyChangeListener( validListener );
+      this.datasource.removePropertyChangeListener( finishableListener );
     }
-    this.wrappedStep = datasource.getSteps().get(0);
+    this.wrappedStep = datasource.getSteps().get( 0 );
     this.datasource = datasource;
-    this.wrappedStep.addPropertyChangeListener(validListener);
-    this.datasource.addPropertyChangeListener(finishableListener);
+    this.wrappedStep.addPropertyChangeListener( validListener );
+    this.datasource.addPropertyChangeListener( finishableListener );
 
-    this.datasourceDeck.setSelectedIndex(datasourceDeck.getChildNodes().indexOf(datasource.getSteps().get(0).getUIComponent()));
-    datasource.getSteps().get(0).refresh();
-    firePropertyChange("valid", !isValid(), isValid());
+    this.datasourceDeck
+      .setSelectedIndex( datasourceDeck.getChildNodes().indexOf( datasource.getSteps().get( 0 ).getUIComponent() ) );
+    datasource.getSteps().get( 0 ).refresh();
+    firePropertyChange( "valid", !isValid(), isValid() );
   }
 
   @Override
   public void activating() throws XulException {
     super.activating();
-    if(wrappedStep != null){
+    if ( wrappedStep != null ) {
       wrappedStep.activating();
     }
   }
@@ -125,15 +125,16 @@ public class SelectDatasourceStep extends AbstractWizardStep {
   @Override
   public void deactivate() {
     super.deactivate();
-    if(wrappedStep != null){
+    if ( wrappedStep != null ) {
       wrappedStep.deactivate();
     }
   }
 
   @Override
   public boolean isValid() {
-    if(wrappedStep != null){
-      return wrappedStep.isValid() && wizardModel.getDatasourceName() != null && !wizardModel.getDatasourceName().isEmpty();
+    if ( wrappedStep != null ) {
+      return wrappedStep.isValid() && wizardModel.getDatasourceName() != null && !wizardModel.getDatasourceName()
+        .isEmpty();
     } else {
       return false;
     }
@@ -142,7 +143,7 @@ public class SelectDatasourceStep extends AbstractWizardStep {
   @Override
   public void stepActivatingForward() {
     super.stepActivatingForward();
-    if(wrappedStep != null){
+    if ( wrappedStep != null ) {
       wrappedStep.stepActivatingForward();
     }
   }
@@ -150,7 +151,7 @@ public class SelectDatasourceStep extends AbstractWizardStep {
   @Override
   public void stepActivatingReverse() {
     super.stepActivatingReverse();
-    if(wrappedStep != null){
+    if ( wrappedStep != null ) {
       wrappedStep.stepActivatingReverse();
     }
   }
@@ -158,8 +159,8 @@ public class SelectDatasourceStep extends AbstractWizardStep {
   @Override
   public boolean stepDeactivatingForward() {
     boolean superReturn = super.stepDeactivatingForward();
-    if(wrappedStep != null){
-        return wrappedStep.stepDeactivatingReverse();
+    if ( wrappedStep != null ) {
+      return wrappedStep.stepDeactivatingReverse();
     } else {
       return superReturn;
     }
@@ -168,7 +169,7 @@ public class SelectDatasourceStep extends AbstractWizardStep {
   @Override
   public boolean stepDeactivatingReverse() {
     boolean superReturn = super.stepDeactivatingReverse();
-    if(wrappedStep != null){
+    if ( wrappedStep != null ) {
       return wrappedStep.stepDeactivatingReverse();
     } else {
       return superReturn;

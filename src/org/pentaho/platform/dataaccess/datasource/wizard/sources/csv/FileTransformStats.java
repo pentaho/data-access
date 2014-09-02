@@ -44,80 +44,98 @@ public class FileTransformStats implements Serializable, IDatasourceSummary {
 
   public FileTransformStats() {
   }
-  
+
   public boolean isRowsFinished() {
     return rowsFinished;
   }
-  public void setRowsFinished(boolean rowsFinished) {
+
+  public void setRowsFinished( boolean rowsFinished ) {
     this.rowsFinished = rowsFinished;
   }
+
   public boolean isRowsStarted() {
     return rowsStarted;
   }
-  public void setRowsStarted(boolean rowsStarted) {
+
+  public void setRowsStarted( boolean rowsStarted ) {
     this.rowsStarted = rowsStarted;
   }
+
   public long getTotalRecords() {
     return totalRecords;
   }
-  public void setTotalRecords(long totalRecords) {
+
+  public void setTotalRecords( long totalRecords ) {
     this.totalRecords = totalRecords;
   }
+
   public long getRowsRejected() {
     return rowsRejected;
   }
-  public void setRowsRejected(long rowsRejected) {
+
+  public void setRowsRejected( long rowsRejected ) {
     this.rowsRejected = rowsRejected;
-  }  
+  }
+
   public int getIndexCount() {
     return indexCount;
   }
-  public void setIndexCount(int indexCount) {
+
+  public void setIndexCount( int indexCount ) {
     this.indexCount = indexCount;
   }
+
   public boolean isIndexStarted() {
     return indexStarted;
   }
-  public void setIndexStarted(boolean indexStarted) {
+
+  public void setIndexStarted( boolean indexStarted ) {
     this.indexStarted = indexStarted;
   }
+
   public boolean isIndexFinished() {
     return indexFinished;
   }
-  public void setIndexFinished(boolean indexFinished) {
+
+  public void setIndexFinished( boolean indexFinished ) {
     this.indexFinished = indexFinished;
   }
+
   public int getIndexDone() {
     return indexDone;
   }
-  public void setIndexDone(int indexDone) {
+
+  public void setIndexDone( int indexDone ) {
     this.indexDone = indexDone;
   }
 
-  public void setErrors(ArrayList<String> errors) {
+  public void setErrors( ArrayList<String> errors ) {
     this.errors = errors;
   }
+
   public ArrayList<String> getErrors() {
     return errors;
   }
 
   public long getErrorCount() {
-    if (errorCount > 0) return errorCount;
-    if (errors != null) {
+    if ( errorCount > 0 ) {
+      return errorCount;
+    }
+    if ( errors != null ) {
       return errors.size();
     } else {
       return 0;
     }
   }
 
-  public void setErrorCount(long errorCount) {
+  public void setErrorCount( long errorCount ) {
     this.errorCount = errorCount;
   }
 
   public DataRow[] getDataRows() {
     return rows;
   }
-  
+
   public void setDataRows( DataRow[] rows ) {
     this.rows = rows;
   }
@@ -127,12 +145,12 @@ public class FileTransformStats implements Serializable, IDatasourceSummary {
     return domain;
   }
 
-  public void setDomain(Domain domain){
+  public void setDomain( Domain domain ) {
     this.domain = domain;
   }
 
   @Override
-  public void setShowModeler(boolean b) {
+  public void setShowModeler( boolean b ) {
     this.showModeler = b;
   }
 

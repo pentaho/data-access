@@ -22,34 +22,34 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class ParameterDialogModel extends XulEventSourceAdapter {
 
-	private String name;
-	private String value;
+  private String name;
+  private String value;
 
-	public ParameterDialogModel() {
-	}
+  public ParameterDialogModel() {
+  }
 
-	public ParameterDialogModel(String name, String value) {
-		this.name = name;
-		this.value = value;
-	}
+  public ParameterDialogModel( String name, String value ) {
+    this.name = name;
+    this.value = value;
+  }
 
-	@Bindable
-	public String getName() {
-		return name;
-	}
+  @Bindable
+  public String getName() {
+    return name;
+  }
 
-	@Bindable
-	public void setName(String name) {
-		this.name = name;
-	}
+  @Bindable
+  public void setName( String name ) {
+    this.name = name;
+  }
 
-	@Bindable
-	public String getValue() {
-		return value;
-	}
+  @Bindable
+  public String getValue() {
+    return value;
+  }
 
-	@Bindable
-	public void setValue(String value) {
-		this.value = value;
-	}
+  @Bindable
+  public void setValue( String value ) {
+    this.value = value;
+  }
 }

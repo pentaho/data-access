@@ -24,23 +24,23 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 
 public class DebugDataAccessViewPermissionHandler implements IDataAccessViewPermissionHandler {
 
-  public List<String> getPermittedRoleList(IPentahoSession session) {
+  public List<String> getPermittedRoleList( IPentahoSession session ) {
     List<String> roleList = new ArrayList<String>();
-    roleList.add("Admin");
+    roleList.add( "Admin" );
     return roleList;
   }
 
-  public List<String> getPermittedUserList(IPentahoSession session) {
+  public List<String> getPermittedUserList( IPentahoSession session ) {
     List<String> userList = new ArrayList<String>();
-    userList.add("joe");
+    userList.add( "joe" );
     return userList;
   }
 
-  public int getDefaultAcls(IPentahoSession session) {
+  public int getDefaultAcls( IPentahoSession session ) {
     return 31;
   }
 
-  public boolean hasDataAccessViewPermission(IPentahoSession session) {
+  public boolean hasDataAccessViewPermission( IPentahoSession session ) {
     return true;
   }
 }

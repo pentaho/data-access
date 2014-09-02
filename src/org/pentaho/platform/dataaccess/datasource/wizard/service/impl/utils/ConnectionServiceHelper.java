@@ -27,52 +27,55 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messag
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
-public  class ConnectionServiceHelper {
-  private static final Log logger = LogFactory.getLog(ConnectionServiceHelper.class);
+public class ConnectionServiceHelper {
+  private static final Log logger = LogFactory.getLog( ConnectionServiceHelper.class );
   private static IDatasourceMgmtService datasourceMgmtSvc;
   private static char PASSWORD_REPLACE_CHAR = '*';
 
   static {
     IPentahoSession session = PentahoSessionHolder.getSession();
-    datasourceMgmtSvc = PentahoSystem.get(IDatasourceMgmtService.class, session);    
+    datasourceMgmtSvc = PentahoSystem.get( IDatasourceMgmtService.class, session );
   }
 
-  public static String getConnectionPassword(String connectionName, String password) throws ConnectionServiceException {
+  public static String getConnectionPassword( String connectionName, String password )
+    throws ConnectionServiceException {
     try {
-      IDatabaseConnection datasource = datasourceMgmtSvc.getDatasourceByName(connectionName);
-      if (datasource != null && !hasPasswordChanged(password)) {
+      IDatabaseConnection datasource = datasourceMgmtSvc.getDatasourceByName( connectionName );
+      if ( datasource != null && !hasPasswordChanged( password ) ) {
         return datasource.getPassword();
       } else {
         return password;
       }
-    } catch (Exception e) {
-      logger.error(Messages.getErrorString("ConnectionServiceHelper.ERROR_0001_UNABLE_TO_GET_CONNECTION_PASSWORD", //$NON-NLS-1$
-          connectionName, e.getLocalizedMessage()));
-      throw new ConnectionServiceException(Messages.getErrorString(
-          "ConnectionServiceHelper.ERROR_0001_UNABLE_TO_GET_CONNECTION_PASSWORD", connectionName, e.getLocalizedMessage()), e); //$NON-NLS-1$
+    } catch ( Exception e ) {
+      logger.error(
+        Messages.getErrorString( "ConnectionServiceHelper.ERROR_0001_UNABLE_TO_GET_CONNECTION_PASSWORD", //$NON-NLS-1$
+          connectionName, e.getLocalizedMessage() ) );
+      throw new ConnectionServiceException( Messages.getErrorString(
+        "ConnectionServiceHelper.ERROR_0001_UNABLE_TO_GET_CONNECTION_PASSWORD", connectionName,
+        e.getLocalizedMessage() ), e ); //$NON-NLS-1$
     }
   }
-  
-  private static boolean hasPasswordChanged(String password) {
-    if (password != null) {
-      if (password.length() < 1) { // empty password change
+
+  private static boolean hasPasswordChanged( String password ) {
+    if ( password != null ) {
+      if ( password.length() < 1 ) { // empty password change
         return true;
       }
-      for (char character : password.toCharArray()) {
-        if (character != PASSWORD_REPLACE_CHAR) {
+      for ( char character : password.toCharArray() ) {
+        if ( character != PASSWORD_REPLACE_CHAR ) {
           return true;
         }
       }
     }
     return false;
   }
-  
-  public static String encodePassword(String password) {
+
+  public static String encodePassword( String password ) {
     StringBuffer buffer;
-    if (password != null && password.length() > 0) {
-      buffer = new StringBuffer(password.length());
-      for (int i = 0; i < password.length(); i++) {
-        buffer.append(PASSWORD_REPLACE_CHAR);
+    if ( password != null && password.length() > 0 ) {
+      buffer = new StringBuffer( password.length() );
+      for ( int i = 0; i < password.length(); i++ ) {
+        buffer.append( PASSWORD_REPLACE_CHAR );
       }
     } else {
       buffer = new StringBuffer();

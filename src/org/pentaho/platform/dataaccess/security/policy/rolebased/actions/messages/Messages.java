@@ -32,7 +32,7 @@ public class Messages {
   private static final String BUNDLE_NAME = Messages.class.getPackage().getName() + ".messages"; //$NON-NLS-1$
 
   private static final Map<Locale, ResourceBundle> locales = Collections
-      .synchronizedMap( new HashMap<Locale, ResourceBundle>() );
+    .synchronizedMap( new HashMap<Locale, ResourceBundle>() );
   private static Messages instance = new Messages();
 
   protected static Map<Locale, ResourceBundle> getLocales() {

@@ -34,45 +34,45 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   public static final String TMP_FILENAME_ATTRIBUTE = "tmpFilename"; //$NON-NLS-1$
   public static final String ENCODING = "encoding"; //$NON-NLS-1$
   public static final String DEFAULT_COLUMN_NAME_PREFIX = "Field_"; //$NON-NLS-1$
-  
+
   private static final long serialVersionUID = 2498165533158482382L;
-  
+
   private List<String> contents;
-  
+
   private String delimiter = ","; //$NON-NLS-1$
-  
+
   private String enclosure = "\""; //$NON-NLS-1$
-  
+
   private String encoding; //$NON-NLS-1$
 
   private int headerRows = 1;
-  
+
   private String project;
-  
+
   private String tmpFilename;
-  
+
   private String filename;
- 
+
   private String currencySymbol = ""; //$NON-NLS-1$
-  
+
   private String decimalSymbol = "."; //$NON-NLS-1$
-  
+
   private String groupSymbol = ","; //$NON-NLS-1$
-  
+
   private String ifNull = "---"; //$NON-NLS-1$
-  
+
   private String nullStr = ""; //$NON-NLS-1$
   public static final String FRIENDLY_FILENAME_ATTRIBUTE = "friendlyFilename"; //$NON-NLS-1$
   private String friendlyFilename;
   private String savedEncoding;
-  
+
   @Bindable
   public String getIfNull() {
     return ifNull;
   }
 
   @Bindable
-  public void setIfNull(String ifNull) {
+  public void setIfNull( String ifNull ) {
     this.ifNull = ifNull;
   }
 
@@ -82,7 +82,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setNullStr(String nullStr) {
+  public void setNullStr( String nullStr ) {
     this.nullStr = nullStr;
   }
 
@@ -92,7 +92,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setContents(List<String> contents) {
+  public void setContents( List<String> contents ) {
     this.contents = contents;
   }
 
@@ -102,10 +102,10 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setDelimiter(String delimiter) {
+  public void setDelimiter( String delimiter ) {
     String previousVal = this.delimiter;
     this.delimiter = delimiter;
-    firePropertyChange(DELIMITER_ATTRIBUTE, previousVal, delimiter);
+    firePropertyChange( DELIMITER_ATTRIBUTE, previousVal, delimiter );
   }
 
   @Bindable
@@ -114,10 +114,10 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setEnclosure(String enclosure) {
+  public void setEnclosure( String enclosure ) {
     String previousVal = this.enclosure;
     this.enclosure = enclosure;
-    firePropertyChange(ENCLOSURE_ATTRIBUTE, previousVal, enclosure);
+    firePropertyChange( ENCLOSURE_ATTRIBUTE, previousVal, enclosure );
   }
 
   @Bindable
@@ -126,10 +126,10 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setHeaderRows(int headerRows) {
+  public void setHeaderRows( int headerRows ) {
     int previousVal = this.headerRows;
     this.headerRows = headerRows;
-    firePropertyChange(HEADER_ROWS_ATTRIBUTE, previousVal, this.headerRows);
+    firePropertyChange( HEADER_ROWS_ATTRIBUTE, previousVal, this.headerRows );
   }
 
   @Bindable
@@ -138,7 +138,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setProject(String project) {
+  public void setProject( String project ) {
     this.project = project;
   }
 
@@ -148,18 +148,18 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setTmpFilename(String filename) {
+  public void setTmpFilename( String filename ) {
     String previousVal = this.tmpFilename;
     this.tmpFilename = filename;
-    firePropertyChange(TMP_FILENAME_ATTRIBUTE, previousVal, filename);
+    firePropertyChange( TMP_FILENAME_ATTRIBUTE, previousVal, filename );
   }
-  
+
   public String getFilename() {
-	  return this.filename;
+    return this.filename;
   }
-  
-  public void setFilename(String file) {
-	  this.filename = file;
+
+  public void setFilename( String file ) {
+    this.filename = file;
   }
 
   @Bindable
@@ -168,7 +168,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setCurrencySymbol(String currencySymbol) {
+  public void setCurrencySymbol( String currencySymbol ) {
     this.currencySymbol = currencySymbol;
   }
 
@@ -178,7 +178,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setDecimalSymbol(String decimalSymbol) {
+  public void setDecimalSymbol( String decimalSymbol ) {
     this.decimalSymbol = decimalSymbol;
   }
 
@@ -188,7 +188,7 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setGroupSymbol(String groupSymbol) {
+  public void setGroupSymbol( String groupSymbol ) {
     this.groupSymbol = groupSymbol;
   }
 
@@ -198,132 +198,156 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setEncoding(String encoding) {
+  public void setEncoding( String encoding ) {
     String previousVal = this.encoding;
     this.encoding = encoding;
-    firePropertyChange(ENCODING, previousVal, encoding);
+    firePropertyChange( ENCODING, previousVal, encoding );
   }
-  
-  public void setEncodingFromServer(String encoding){
-	  if(this.savedEncoding != null && !this.savedEncoding.trim().equals("")){
-		  setEncoding(this.savedEncoding);
-		  this.savedEncoding = null;
-	  } else {
-		  setEncoding(encoding);
-	  }
+
+  public void setEncodingFromServer( String encoding ) {
+    if ( this.savedEncoding != null && !this.savedEncoding.trim().equals( "" ) ) {
+      setEncoding( this.savedEncoding );
+      this.savedEncoding = null;
+    } else {
+      setEncoding( encoding );
+    }
   }
-  
-  public void setSavedEncoding(String encoding) {
-	  this.savedEncoding = encoding;
+
+  public void setSavedEncoding( String encoding ) {
+    this.savedEncoding = encoding;
   }
-  
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((currencySymbol == null) ? 0 : currencySymbol.hashCode());
-    result = prime * result + ((decimalSymbol == null) ? 0 : decimalSymbol.hashCode());
-    result = prime * result + ((delimiter == null) ? 0 : delimiter.hashCode());
-    result = prime * result + ((enclosure == null) ? 0 : enclosure.hashCode());
-    result = prime * result + ((encoding == null) ? 0 : encoding.hashCode());
-    result = prime * result + ((tmpFilename == null) ? 0 : tmpFilename.hashCode());
-    result = prime * result + ((groupSymbol == null) ? 0 : groupSymbol.hashCode());
+    result = prime * result + ( ( currencySymbol == null ) ? 0 : currencySymbol.hashCode() );
+    result = prime * result + ( ( decimalSymbol == null ) ? 0 : decimalSymbol.hashCode() );
+    result = prime * result + ( ( delimiter == null ) ? 0 : delimiter.hashCode() );
+    result = prime * result + ( ( enclosure == null ) ? 0 : enclosure.hashCode() );
+    result = prime * result + ( ( encoding == null ) ? 0 : encoding.hashCode() );
+    result = prime * result + ( ( tmpFilename == null ) ? 0 : tmpFilename.hashCode() );
+    result = prime * result + ( ( groupSymbol == null ) ? 0 : groupSymbol.hashCode() );
     result = prime * result + headerRows;
-    result = prime * result + ((ifNull == null) ? 0 : ifNull.hashCode());
-    result = prime * result + ((nullStr == null) ? 0 : nullStr.hashCode());
-    result = prime * result + ((project == null) ? 0 : project.hashCode());
+    result = prime * result + ( ( ifNull == null ) ? 0 : ifNull.hashCode() );
+    result = prime * result + ( ( nullStr == null ) ? 0 : nullStr.hashCode() );
+    result = prime * result + ( ( project == null ) ? 0 : project.hashCode() );
     return result;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
+  public boolean equals( Object obj ) {
+    if ( this == obj ) {
       return true;
-    if (obj == null)
+    }
+    if ( obj == null ) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if ( getClass() != obj.getClass() ) {
       return false;
+    }
     CsvFileInfo other = (CsvFileInfo) obj;
-    if (currencySymbol == null) {
-      if (other.currencySymbol != null)
+    if ( currencySymbol == null ) {
+      if ( other.currencySymbol != null ) {
         return false;
-    } else if (!currencySymbol.equals(other.currencySymbol))
+      }
+    } else if ( !currencySymbol.equals( other.currencySymbol ) ) {
       return false;
-    if (decimalSymbol == null) {
-      if (other.decimalSymbol != null)
+    }
+    if ( decimalSymbol == null ) {
+      if ( other.decimalSymbol != null ) {
         return false;
-    } else if (!decimalSymbol.equals(other.decimalSymbol))
+      }
+    } else if ( !decimalSymbol.equals( other.decimalSymbol ) ) {
       return false;
-    if (delimiter == null) {
-      if (other.delimiter != null)
+    }
+    if ( delimiter == null ) {
+      if ( other.delimiter != null ) {
         return false;
-    } else if (!delimiter.equals(other.delimiter))
+      }
+    } else if ( !delimiter.equals( other.delimiter ) ) {
       return false;
-    if (enclosure == null) {
-      if (other.enclosure != null)
+    }
+    if ( enclosure == null ) {
+      if ( other.enclosure != null ) {
         return false;
-    } else if (!enclosure.equals(other.enclosure))
+      }
+    } else if ( !enclosure.equals( other.enclosure ) ) {
       return false;
-    if (encoding == null) {
-      if (other.encoding != null)
+    }
+    if ( encoding == null ) {
+      if ( other.encoding != null ) {
         return false;
-    } else if (!encoding.equals(other.encoding))
+      }
+    } else if ( !encoding.equals( other.encoding ) ) {
       return false;
-    if (tmpFilename == null) {
-      if (other.tmpFilename != null)
+    }
+    if ( tmpFilename == null ) {
+      if ( other.tmpFilename != null ) {
         return false;
-    } else if (!tmpFilename.equals(other.tmpFilename))
+      }
+    } else if ( !tmpFilename.equals( other.tmpFilename ) ) {
       return false;
-    if (groupSymbol == null) {
-      if (other.groupSymbol != null)
+    }
+    if ( groupSymbol == null ) {
+      if ( other.groupSymbol != null ) {
         return false;
-    } else if (!groupSymbol.equals(other.groupSymbol))
+      }
+    } else if ( !groupSymbol.equals( other.groupSymbol ) ) {
       return false;
-    if (headerRows != other.headerRows)
+    }
+    if ( headerRows != other.headerRows ) {
       return false;
-    if (ifNull == null) {
-      if (other.ifNull != null)
+    }
+    if ( ifNull == null ) {
+      if ( other.ifNull != null ) {
         return false;
-    } else if (!ifNull.equals(other.ifNull))
+      }
+    } else if ( !ifNull.equals( other.ifNull ) ) {
       return false;
-    if (nullStr == null) {
-      if (other.nullStr != null)
+    }
+    if ( nullStr == null ) {
+      if ( other.nullStr != null ) {
         return false;
-    } else if (!nullStr.equals(other.nullStr))
+      }
+    } else if ( !nullStr.equals( other.nullStr ) ) {
       return false;
-    if (project == null) {
-      if (other.project != null)
+    }
+    if ( project == null ) {
+      if ( other.project != null ) {
         return false;
-    } else if (!project.equals(other.project))
+      }
+    } else if ( !project.equals( other.project ) ) {
       return false;
+    }
     return true;
   }
 
   public List<List<String>> parseSampleContents() {
     String delim = getDelimiter();
-    if (contents == null) {
-      throw new IllegalStateException("Sample Contents is null, nothing to parse"); //$NON-NLS-1$
-    } else if (delim == null || "".equals(delim)) { //$NON-NLS-1$
+    if ( contents == null ) {
+      throw new IllegalStateException( "Sample Contents is null, nothing to parse" ); //$NON-NLS-1$
+    } else if ( delim == null || "".equals( delim ) ) { //$NON-NLS-1$
       // use a random delimiter that will result in an un-parsed list 
       delim = "~!@#$%";
     }
     List<List<String>> sample = new ArrayList<List<String>>();
     CSVTokenizer csvTokenizer;
     String enclosure = null;
-    if (!"".equals(getEnclosure())) {
+    if ( !"".equals( getEnclosure() ) ) {
       enclosure = getEnclosure();
     }
     for ( String line : contents ) {
-      csvTokenizer = new CSVTokenizer(line, delim, enclosure);
+      csvTokenizer = new CSVTokenizer( line, delim, enclosure );
 
       List<String> rowData = new ArrayList<String>();
-      while (csvTokenizer.hasMoreTokens()) {
+      while ( csvTokenizer.hasMoreTokens() ) {
         // get next token and store it in the list
-        rowData.add(csvTokenizer.nextToken());
+        rowData.add( csvTokenizer.nextToken() );
       }
-      
-      sample.add(rowData);  
-    
+
+      sample.add( rowData );
+
     }
     return sample;
   }
@@ -335,86 +359,87 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
     List<List<String>> parsed;
     try {
       parsed = parseSampleContents();
-    } catch (IllegalStateException e) {
+    } catch ( IllegalStateException e ) {
       // nothing to parse, formatted value is "nothing"
       return "";
     }
 
-    int maxColumns = getMaxColumnCount(parsed);
+    int maxColumns = getMaxColumnCount( parsed );
 
     // create a dummy row for the header
-    if (getHeaderRows() == 0) {
-      List<String> dummy = getDummyHeader(maxColumns);
-      parsed.add(0, dummy);
+    if ( getHeaderRows() == 0 ) {
+      List<String> dummy = getDummyHeader( maxColumns );
+      parsed.add( 0, dummy );
     }
 
-    int[] widths = getMaxWidths(parsed, maxColumns);
+    int[] widths = getMaxWidths( parsed, maxColumns );
 
     int lineNumber = 0;
     StringBuilder headerMarker = new StringBuilder();
     int lineWidth = 0;
 
     // find out how big the entire line will be, including the padding between fields
-    for (int w = 0; w < widths.length; w++) {
-      lineWidth += widths[w] + padding.length();
+    for ( int w = 0; w < widths.length; w++ ) {
+      lineWidth += widths[ w ] + padding.length();
     }
 
     // create a string that will separate the header from the body of text
-    for (int x = 0; x < lineWidth; x++) {
-      headerMarker.append("-");
+    for ( int x = 0; x < lineWidth; x++ ) {
+      headerMarker.append( "-" );
     }
 
     // format each field, padding as required 
-    for (List<String> line : parsed) {
-      for (int i = 0; i < line.size(); i++) {
-        String field = line.get(i);
-        sb.append(padField(field, widths[i]));
-        sb.append(padding);
+    for ( List<String> line : parsed ) {
+      for ( int i = 0; i < line.size(); i++ ) {
+        String field = line.get( i );
+        sb.append( padField( field, widths[ i ] ) );
+        sb.append( padding );
       }
-      sb.append("\n");
-      if (lineNumber == 0) {
-        sb.append(headerMarker.toString());
-        sb.append("\n");
+      sb.append( "\n" );
+      if ( lineNumber == 0 ) {
+        sb.append( headerMarker.toString() );
+        sb.append( "\n" );
       }
       lineNumber++;
     }
     return sb.toString();
   }
 
-  private List<String> getDummyHeader(int maxColumns) {
-    List<String> dummy = new ArrayList<String>(maxColumns);
-    DecimalFormat df = new DecimalFormat("000");
-    for(int i = 0; i < maxColumns; i++) {
-      dummy.add(DEFAULT_COLUMN_NAME_PREFIX + df.format(i + 1));
+  private List<String> getDummyHeader( int maxColumns ) {
+    List<String> dummy = new ArrayList<String>( maxColumns );
+    DecimalFormat df = new DecimalFormat( "000" );
+    for ( int i = 0; i < maxColumns; i++ ) {
+      dummy.add( DEFAULT_COLUMN_NAME_PREFIX + df.format( i + 1 ) );
     }
     return dummy;
   }
 
   /**
    * It would be nice just to use String.format here, but it is not available in GWT.
+   *
    * @param field
    * @param totalWidth
    * @return
    */
-  private String padField(String field, int totalWidth) {
-    StringBuilder sb = new StringBuilder(field);
+  private String padField( String field, int totalWidth ) {
+    StringBuilder sb = new StringBuilder( field );
 
-    if (field.length() < totalWidth) {
-      for (int i = field.length(); i < totalWidth; i++) {
-        sb.append(" ");
+    if ( field.length() < totalWidth ) {
+      for ( int i = field.length(); i < totalWidth; i++ ) {
+        sb.append( " " );
       }
     }
 
     return sb.toString();
   }
 
-  private int[] getMaxWidths(List<List<String>> parsedContents, int columns) {
-    if (parsedContents != null && parsedContents.size() > 0) {
-      int[] widths = new int[columns];
-      for (List<String> lines: parsedContents) {
-        for (int i = 0; i < lines.size(); i++) {
-          String field = lines.get(i);
-          widths[i] = field.length() > widths[i] ? field.length() : widths[i];
+  private int[] getMaxWidths( List<List<String>> parsedContents, int columns ) {
+    if ( parsedContents != null && parsedContents.size() > 0 ) {
+      int[] widths = new int[ columns ];
+      for ( List<String> lines : parsedContents ) {
+        for ( int i = 0; i < lines.size(); i++ ) {
+          String field = lines.get( i );
+          widths[ i ] = field.length() > widths[ i ] ? field.length() : widths[ i ];
         }
       }
       return widths;
@@ -422,9 +447,9 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
     return null;
   }
 
-  private int getMaxColumnCount(List<List<String>> parsedContents) {
+  private int getMaxColumnCount( List<List<String>> parsedContents ) {
     int max = 0;
-    for (List<String> line : parsedContents) {
+    for ( List<String> line : parsedContents ) {
       max = line.size() > max ? line.size() : max;
     }
     return max;
@@ -436,28 +461,28 @@ public class CsvFileInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setFriendlyFilename(String friendlyFilename) {
+  public void setFriendlyFilename( String friendlyFilename ) {
     String previousVal = this.friendlyFilename;
     this.friendlyFilename = friendlyFilename;
-    firePropertyChange(FRIENDLY_FILENAME_ATTRIBUTE, previousVal, friendlyFilename);
+    firePropertyChange( FRIENDLY_FILENAME_ATTRIBUTE, previousVal, friendlyFilename );
   }
-  
+
   public void clear() {
-    setDelimiter(",");
-    setContents(null);
-    setCurrencySymbol("");
-    setEnclosure("\"");
-    setEncoding("");
-    setTmpFilename(null);
-    setFilename(null);
-    setFriendlyFilename(null);
-    setGroupSymbol(",");
-    setCurrencySymbol("");
-    setDecimalSymbol(".");
-    setHeaderRows(1);
-    setIfNull("---");
-    setNullStr("");
-    setProject(null);
+    setDelimiter( "," );
+    setContents( null );
+    setCurrencySymbol( "" );
+    setEnclosure( "\"" );
+    setEncoding( "" );
+    setTmpFilename( null );
+    setFilename( null );
+    setFriendlyFilename( null );
+    setGroupSymbol( "," );
+    setCurrencySymbol( "" );
+    setDecimalSymbol( "." );
+    setHeaderRows( 1 );
+    setIfNull( "---" );
+    setNullStr( "" );
+    setProject( null );
     formatSampleContents();
-  }  
+  }
 }

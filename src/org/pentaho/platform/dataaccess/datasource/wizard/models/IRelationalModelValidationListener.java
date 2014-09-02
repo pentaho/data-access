@@ -24,16 +24,14 @@ package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 public interface IRelationalModelValidationListener {
 
-   /**
-     * Fired when the the model is valid
-     * 
-     */
-    void onRelationalModelValid();
-    
-    /**
-     * Fired when the the model is valid
-     * 
-     */
-    void onRelationalModelInValid();
-  }
+  /**
+   * Fired when the the model is valid
+   */
+  void onRelationalModelValid();
+
+  /**
+   * Fired when the the model is valid
+   */
+  void onRelationalModelInValid();
+}
 

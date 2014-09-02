@@ -25,5 +25,6 @@ public interface IStagingDatabase {
   String getName();
 
   Connection getConnection() throws Exception;
+
   IDatabaseConnection getDatbaseMetadata();
 }

@@ -94,7 +94,7 @@ import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
   private static final String OVERWRITE_8 = "8";
-  
+
   private static final String OVERWRITE__CATALOG_7 = "7";
 
   private static final String SUCCESS_3 = "3";
@@ -248,7 +248,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
                                                                                     $wnd.addDataAccessGlassPaneListener = function(callback) {
                                                                                     wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::addGlassPaneListener(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
                                                                                     }
-                                                                                    
+
                                                                                     $wnd.pho.showDatasourceSelectionDialog = function(context, callback) {
                                                                                     wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showSelectionDialog(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/core/client/JavaScriptObject;)(context,"true", callback);
                                                                                     }
@@ -295,7 +295,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
                                                                                       $wnd.pho.showAnalysisImportDialog = function(callback) {
                                                                                       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::showAnalysisImportDialog(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
                                                                                       }
-                                                                                      
+
                                                                                       $wnd.pho.registerUIDatasourceService = function(jsDatasourceService) {
                                                                                       wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::registerDatasourceService(Lcom/google/gwt/core/client/JavaScriptObject;)(jsDatasourceService);
                                                                                       }
@@ -804,29 +804,29 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 	          });
 	          analysisDataFormPanel.submit();
 	      }
-	      
+
 	      public void onDialogReady() {
 	      }
-	      
+
 	      public void onDialogError(String errorMessage) {
 	    	  listener.onDialogError(errorMessage);
 	      }
 	  };
-	  
+
 	  final AsyncConstructorListener<GwtImportDialog> constructorListener = new AsyncConstructorListener<GwtImportDialog>() {
 
 	      public void asyncConstructorDone(GwtImportDialog dialog) {
 	          dialog.showAnalysisImportDialog(importDialoglistener, datasourceInfo);
 	      }
 	  };
-	  
+
 	  if (importDialog == null) {
 	     importDialog = new GwtImportDialog(constructorListener);
 	  } else {
 	     importDialog.showAnalysisImportDialog(importDialoglistener, datasourceInfo);
 	  }
   }
-  
+
   public void showAnalysisImportDialog(final DialogListener listener) {
     final DialogListener<AnalysisImportDialogModel> importDialoglistener = new DialogListener<AnalysisImportDialogModel>() {
 
