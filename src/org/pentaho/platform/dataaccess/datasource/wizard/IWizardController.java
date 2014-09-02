@@ -17,7 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.IWizardStep;
 import org.pentaho.ui.xul.binding.BindingFactory;
 
 /**
@@ -29,16 +28,16 @@ public interface IWizardController {
   public static final String ACTIVE_STEP_PROPERTY_NAME = "activeStep"; //$NON-NLS-1$
 
   public static final String STEP_COUNT_PROPERTY_NAME = "stepCount"; //$NON-NLS-1$
-  
+
   public static final String FINISHABLE_PROPERTY_NAME = "finishable"; //$NON-NLS-1$
-  
+
   public static final String PREVIEWABLE_PROPERTY_NAME = "previewable"; //$NON-NLS-1$
 
-  public IWizardStep getStep(int step);
+  public IWizardStep getStep( int step );
 
   public int getStepCount();
 
-  public void setActiveStep(int step);
+  public void setActiveStep( int step );
 
   public int getActiveStep();
 
@@ -48,7 +47,7 @@ public interface IWizardController {
 
   public void finish();
 
-  public void setBindingFactory(BindingFactory factory);
+  public void setBindingFactory( BindingFactory factory );
 
   public BindingFactory getBindingFactory();
 }

@@ -19,15 +19,15 @@ package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 public interface IImportPerspective {
 
-	public void onDialogAccept();
-	
-	public void onDialogCancel();
+  public void onDialogAccept();
 
-	public void showDialog();
+  public void onDialogCancel();
 
-	public void genericUploadCallback(String uploadedFile);
+  public void showDialog();
 
-	public void concreteUploadCallback(String fileName, String uploadedFile);
-	
-	public boolean isValid();
+  public void genericUploadCallback( String uploadedFile );
+
+  public void concreteUploadCallback( String fileName, String uploadedFile );
+
+  public boolean isValid();
 }

@@ -41,7 +41,7 @@ import org.pentaho.platform.web.http.api.resources.JaxbList;
 public class DataSourceWizardResource {
 
   private DataSourceWizardService service;
-  
+
   public DataSourceWizardResource() {
     service = new DataSourceWizardService();
   }
@@ -52,8 +52,8 @@ public class DataSourceWizardResource {
    *
    * @return Response containing the file data
    */
-  
-  
+
+
   /**
    * Export the DSW data source for the given DSW ID.  The response will be zipped if there are
    * more than one file.  The response will contain an XMI and/or a mondrian cube definition file.
@@ -69,15 +69,15 @@ public class DataSourceWizardResource {
    *               }
    *               </pre>
    * @return A Response object containing the DSW data source files.
-   */  
+   */
   @GET
   @Path( "/datasource/dsw/{dswId : .+}/download" )
-  @Produces(WILDCARD)
-  @StatusCodes({
+  @Produces( WILDCARD )
+  @StatusCodes( {
     @ResponseCode( code = 200, condition = "DSW datasource export succeeded." ),
     @ResponseCode( code = 401, condition = "User is not authorized to export DSW datasource." ),
     @ResponseCode( code = 500, condition = "Failure to export DSW datasource." )
-  })  
+  } )
   public Response download( @PathParam( "dswId" ) String dswId ) {
     try {
       Map<String, InputStream> fileData = service.doGetDSWFilesAsDownload( dswId );
@@ -85,8 +85,8 @@ public class DataSourceWizardResource {
     } catch ( PentahoAccessControlException e ) {
       return Response.status( UNAUTHORIZED ).build();
     }
-  }  
-  
+  }
+
   /**
    * Remove the DSW data source for a given DSW ID
    *
@@ -104,10 +104,10 @@ public class DataSourceWizardResource {
   @POST
   @Path( "/datasource/dsw/{dswId : .+}/remove" )
   @Produces( WILDCARD )
-  @StatusCodes({
+  @StatusCodes( {
     @ResponseCode( code = 200, condition = "DSW datasource removed successfully." ),
     @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." ),
-  })    
+  } )
   public Response remove( @PathParam( "dswId" ) String dswId ) {
     try {
       service.removeDSW( dswId );

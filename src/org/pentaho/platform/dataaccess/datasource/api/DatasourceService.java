@@ -47,14 +47,14 @@ public class DatasourceService {
   public static boolean canAdminister() {
     IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
     return policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
-        && ( policy.isAllowed( AdministerSecurityAction.NAME ) );
+      && ( policy.isAllowed( AdministerSecurityAction.NAME ) );
   }
 
   public static void validateAccess() throws PentahoAccessControlException {
     IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
     boolean isAdmin =
-        policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
-            && ( policy.isAllowed( AdministerSecurityAction.NAME ) || policy.isAllowed( PublishAction.NAME ) );
+      policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
+        && ( policy.isAllowed( AdministerSecurityAction.NAME ) || policy.isAllowed( PublishAction.NAME ) );
     if ( !isAdmin ) {
       throw new PentahoAccessControlException( "Access Denied" );
     }
@@ -64,8 +64,7 @@ public class DatasourceService {
    * Fix for "%5C" and "%2F" in datasource name ("/" and "\" are omitted and %5C, %2F are decoded in
    * PentahoPathDecodingFilter.EncodingAwareHttpServletRequestWrapper)
    *
-   * @param param
-   *          pathParam
+   * @param param pathParam
    * @return correct param
    */
   protected String fixEncodedSlashParam( String param ) {
@@ -76,8 +75,9 @@ public class DatasourceService {
     Domain domain;
     try {
       domain = metadataDomainRepository.getDomain( id );
-      if ( domain == null )
+      if ( domain == null ) {
         return false;
+      }
     } catch ( Exception e ) { // If we can't load the domain then we MUST return false
       return false;
     }
@@ -102,14 +102,14 @@ public class DatasourceService {
       return true;
     }
   }
-  
+
   public static void parseMondrianSchemaName( String dswId, Map<String, InputStream> fileData ) {
-    final String keySchema = "schema.xml";//$NON-NLS-1$
+    final String keySchema = "schema.xml"; //$NON-NLS-1$
     if ( fileData.containsKey( keySchema ) ) {
-      final int xmiIndex = dswId.lastIndexOf( ".xmi" );//$NON-NLS-1$
-      fileData.put( ( xmiIndex > 0 ? dswId.substring( 0, xmiIndex ) : dswId ) + ".mondrian.xml", fileData.get( keySchema ) );//$NON-NLS-1$
+      final int xmiIndex = dswId.lastIndexOf( ".xmi" ); //$NON-NLS-1$
+      fileData.put( ( xmiIndex > 0 ? dswId.substring( 0, xmiIndex ) : dswId ) + ".mondrian.xml",
+        fileData.get( keySchema ) ); //$NON-NLS-1$
       fileData.remove( keySchema );
     }
-  } 
-  
+  }
 }

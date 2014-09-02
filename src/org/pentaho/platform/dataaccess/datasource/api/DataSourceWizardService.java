@@ -53,13 +53,14 @@ public class DataSourceWizardService extends DatasourceService {
   }
 
 
-  public  Map<String, InputStream> doGetDSWFilesAsDownload( String dswId ) throws PentahoAccessControlException {
+  public Map<String, InputStream> doGetDSWFilesAsDownload( String dswId ) throws PentahoAccessControlException {
     if ( !canAdminister() ) {
       throw new PentahoAccessControlException();
     }
     // First get the metadata files;
-    Map<String, InputStream> fileData = ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( dswId ); 
-  
+    Map<String, InputStream> fileData =
+      ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( dswId );
+
     // Then get the corresponding mondrian files
     Domain domain = metadataDomainRepository.getDomain( dswId );
     ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
@@ -68,8 +69,9 @@ public class DataSourceWizardService extends DatasourceService {
     if ( logicalModel == null ) {
       logicalModel = model.getLogicalModel( ModelerPerspective.REPORTING );
     }
-    if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null) {
-      MondrianCatalogRepositoryHelper helper = new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
+    if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
+      MondrianCatalogRepositoryHelper helper =
+        new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
       String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
       fileData.putAll( helper.getModrianSchemaFiles( catalogRef ) );
       parseMondrianSchemaName( dswId, fileData );
@@ -77,7 +79,7 @@ public class DataSourceWizardService extends DatasourceService {
 
     return fileData;
   }
-  
+
   public void removeDSW( String dswId ) throws PentahoAccessControlException {
     if ( !canAdminister() ) {
       throw new PentahoAccessControlException();
@@ -97,6 +99,7 @@ public class DataSourceWizardService extends DatasourceService {
     try {
       dswService.deleteLogicalModel( domain.getId(), logicalModel.getId() );
     } catch ( DatasourceServiceException ex ) {
+      //do nothing
     }
     metadataDomainRepository.removeDomain( dswId );
   }
@@ -104,7 +107,8 @@ public class DataSourceWizardService extends DatasourceService {
   public List<String> getDSWDatasourceIds() {
     List<String> datasourceList = new ArrayList<String>();
     try {
-      nextModel: for ( LogicalModelSummary summary : dswService.getLogicalModels( null ) ) {
+    nextModel:
+      for ( LogicalModelSummary summary : dswService.getLogicalModels( null ) ) {
         Domain domain = modelerService.loadDomain( summary.getDomainId() );
         List<LogicalModel> logicalModelList = domain.getLogicalModels();
         if ( logicalModelList != null && logicalModelList.size() >= 1 ) {

@@ -27,5 +27,5 @@ public class MetadataDatasourceService extends MetadataResource {
   public MetadataDatasourceService() {
     super();
   }
-  
+
 }

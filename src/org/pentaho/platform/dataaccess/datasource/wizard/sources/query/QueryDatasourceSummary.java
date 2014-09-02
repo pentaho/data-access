@@ -24,17 +24,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * User: nbaker
- * Date: 3/28/11
+ * User: nbaker Date: 3/28/11
  */
 public class QueryDatasourceSummary implements IDatasourceSummary {
 
   private Domain domain;
   private boolean showModeler;
 
-  public QueryDatasourceSummary(){
-    
+  public QueryDatasourceSummary() {
+
   }
+
   @Override
   public Domain getDomain() {
     return domain;
@@ -56,12 +56,12 @@ public class QueryDatasourceSummary implements IDatasourceSummary {
   }
 
   @Override
-  public void setDomain(Domain domain) {
+  public void setDomain( Domain domain ) {
     this.domain = domain;
   }
 
   @Override
-  public void setShowModeler(boolean b) {
+  public void setShowModeler( boolean b ) {
     showModeler = b;
   }
 

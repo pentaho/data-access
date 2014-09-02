@@ -32,69 +32,70 @@ public class TableInputTransformGenerator extends StagingTransformGenerator {
 
   private static final String TABLE_INPUT = "tableinput"; //$NON-NLS-1$
 
-  private static final Log log = LogFactory.getLog(TableInputTransformGenerator.class);
+  private static final Log log = LogFactory.getLog( TableInputTransformGenerator.class );
 
   private DatabaseMeta sourceDatabaseMeta;
-  
+
   private String sql;
-  
+
   private int rowLimit = -1;
-  
+
   public TableInputTransformGenerator( DatabaseMeta sourceDatabaseMeta, DatabaseMeta targetDatabaseMeta ) {
-    super(targetDatabaseMeta);
+    super( targetDatabaseMeta );
     this.sourceDatabaseMeta = sourceDatabaseMeta;
   }
-  
+
   @Override
   protected String[] getIndexedColumnNames() {
 
-    return new String[0];
-    
+    return new String[ 0 ];
+
   }
-  
+
   @Override
   protected StepMeta[] getSteps( TransMeta transMeta ) {
-    
-    StepMeta steps[] = new StepMeta[1];
-    steps[0] = createInputStep(transMeta);
-    
+
+    StepMeta[] steps = new StepMeta[ 1 ];
+    steps[ 0 ] = createInputStep( transMeta );
+
     return steps;
   }
-  
-  protected StepMeta createInputStep(TransMeta transMeta) {
+
+  protected StepMeta createInputStep( TransMeta transMeta ) {
 
     TableInputMeta inputMeta = new TableInputMeta();
 
-    inputMeta.setDatabaseMeta(sourceDatabaseMeta);
-    inputMeta.setExecuteEachInputRow(false);
-    inputMeta.setRowLimit(Integer.toString(rowLimit));
-    inputMeta.setSQL(sql);
-    inputMeta.setVariableReplacementActive(false);
-    inputMeta.setLazyConversionActive(false);
+    inputMeta.setDatabaseMeta( sourceDatabaseMeta );
+    inputMeta.setExecuteEachInputRow( false );
+    inputMeta.setRowLimit( Integer.toString( rowLimit ) );
+    inputMeta.setSQL( sql );
+    inputMeta.setVariableReplacementActive( false );
+    inputMeta.setLazyConversionActive( false );
     // inputMeta.setTargetSteps(null);
 
-    StepMeta inputStepMeta = new StepMeta(TABLE_INPUT, TABLE_INPUT, inputMeta);
-    inputStepMeta.setStepErrorMeta(new StepErrorMeta(transMeta, inputStepMeta));
-    transMeta.addStep(inputStepMeta);
+    StepMeta inputStepMeta = new StepMeta( TABLE_INPUT, TABLE_INPUT, inputMeta );
+    inputStepMeta.setStepErrorMeta( new StepErrorMeta( transMeta, inputStepMeta ) );
+    transMeta.addStep( inputStepMeta );
 
     final FileTransformStats stats = getTransformStats();
-    StepErrorMeta inputErrorMeta = new StepErrorMeta(transMeta, inputStepMeta) {
-      public void addErrorRowData(Object[] row, int startIndex, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes) {
+    StepErrorMeta inputErrorMeta = new StepErrorMeta( transMeta, inputStepMeta ) {
+      public void addErrorRowData( Object[] row, int startIndex, long nrErrors, String errorDescriptions,
+                                   String fieldNames, String errorCodes ) {
         StringBuffer sb = new StringBuffer();
-        sb.append("Rejected Row: ");
-        for (Object rowData : row) {
-          sb.append(rowData);
-          sb.append(", ");
+        sb.append( "Rejected Row: " );
+        for ( Object rowData : row ) {
+          sb.append( rowData );
+          sb.append( ", " );
         }
-        sb.append("\r\n");
-        stats.getErrors().add(sb.toString() + errorDescriptions);
-        super.addErrorRowData(row, startIndex, nrErrors, errorDescriptions, fieldNames, errorCodes);
+        sb.append( "\r\n" );
+        stats.getErrors().add( sb.toString() + errorDescriptions );
+        super.addErrorRowData( row, startIndex, nrErrors, errorDescriptions, fieldNames, errorCodes );
       }
     };
-    StepMeta outputDummyStepMeta = addDummyStep(transMeta, "InputErrorDummy");
-    inputErrorMeta.setTargetStep(outputDummyStepMeta);
-    inputErrorMeta.setEnabled(true);
-    inputStepMeta.setStepErrorMeta(inputErrorMeta);
+    StepMeta outputDummyStepMeta = addDummyStep( transMeta, "InputErrorDummy" );
+    inputErrorMeta.setTargetStep( outputDummyStepMeta );
+    inputErrorMeta.setEnabled( true );
+    inputStepMeta.setStepErrorMeta( inputErrorMeta );
 
     return inputStepMeta;
   }
@@ -108,7 +109,7 @@ public class TableInputTransformGenerator extends StagingTransformGenerator {
     return sourceDatabaseMeta;
   }
 
-  public void setSourceDatabaseMeta(DatabaseMeta databaseMeta) {
+  public void setSourceDatabaseMeta( DatabaseMeta databaseMeta ) {
     this.sourceDatabaseMeta = databaseMeta;
   }
 
@@ -116,7 +117,7 @@ public class TableInputTransformGenerator extends StagingTransformGenerator {
     return sql;
   }
 
-  public void setSql(String sql) {
+  public void setSql( String sql ) {
     this.sql = sql;
   }
 
@@ -124,7 +125,7 @@ public class TableInputTransformGenerator extends StagingTransformGenerator {
     return rowLimit;
   }
 
-  public void setRowLimit(int rowLimit) {
+  public void setRowLimit( int rowLimit ) {
     this.rowLimit = rowLimit;
   }
 

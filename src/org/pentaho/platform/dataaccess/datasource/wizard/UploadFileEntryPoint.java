@@ -37,46 +37,46 @@ public class UploadFileEntryPoint implements EntryPoint {
   public void onModuleLoad() {
     // Create a FormPanel and point it at a service.
     final FormPanel uploadForm = new FormPanel();
-    uploadForm.setAction(GWT.getModuleBaseURL() + "/UploadService");
+    uploadForm.setAction( GWT.getModuleBaseURL() + "/UploadService" );
 
     // Because we're going to add a FileUpload widget, we'll need to set the
     // form to use the POST method, and multipart MIME encoding.
-    uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
-    uploadForm.setMethod(FormPanel.METHOD_POST);
+    uploadForm.setEncoding( FormPanel.ENCODING_MULTIPART );
+    uploadForm.setMethod( FormPanel.METHOD_POST );
 
     // Create a panel to hold all of the form widgets.
     VerticalPanel panel = new VerticalPanel();
-    uploadForm.setWidget(panel);
+    uploadForm.setWidget( panel );
 
     // Create a TextBox, giving it a name so that it will be submitted.
     final TextBox tb = new TextBox();
-    tb.setName("textBoxFormElement");
-    panel.add(tb);
+    tb.setName( "textBoxFormElement" );
+    panel.add( tb );
 
     // Create a FileUpload widget.
     FileUpload upload = new FileUpload();
-    upload.setName("uploadFormElement");
-    panel.add(upload);
+    upload.setName( "uploadFormElement" );
+    panel.add( upload );
 
     // Add a 'Upload' button.
-    Button uploadSubmitButton = new Button("Upload");
-    panel.add(uploadSubmitButton);
+    Button uploadSubmitButton = new Button( "Upload" );
+    panel.add( uploadSubmitButton );
 
-    uploadSubmitButton.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
+    uploadSubmitButton.addClickListener( new ClickListener() {
+      public void onClick( Widget sender ) {
         uploadForm.submit();
       }
-    });
+    } );
 
-    uploadForm.addFormHandler(new FormHandler() {
-      public void onSubmit(FormSubmitEvent event) {
+    uploadForm.addFormHandler( new FormHandler() {
+      public void onSubmit( FormSubmitEvent event ) {
       }
 
-      public void onSubmitComplete(FormSubmitCompleteEvent event) {
-        Window.alert(event.getResults());
+      public void onSubmitComplete( FormSubmitCompleteEvent event ) {
+        Window.alert( event.getResults() );
       }
-    });
+    } );
 
-    RootPanel.get().add(uploadForm);
+    RootPanel.get().add( uploadForm );
   }
 }

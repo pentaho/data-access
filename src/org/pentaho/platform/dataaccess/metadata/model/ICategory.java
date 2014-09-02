@@ -23,10 +23,8 @@ import org.pentaho.platform.dataaccess.metadata.model.impl.Column;
 
 
 /**
- * Represents a Metadata Category containing a collection of {@see IColumn}s
- * A category is a logical grouping of columns that makes it easier for the user
- * to understand the model. It does not have to mirror the underlying physical model.
- *
+ * Represents a Metadata Category containing a collection of {@see IColumn}s A category is a logical grouping of columns
+ * that makes it easier for the user to understand the model. It does not have to mirror the underlying physical model.
  */
 public interface ICategory extends Serializable {
 
@@ -44,5 +42,5 @@ public interface ICategory extends Serializable {
    * Returns the array of {@see IColumn}s for this category
    */
   public Column[] getColumns();
-  
+
 }

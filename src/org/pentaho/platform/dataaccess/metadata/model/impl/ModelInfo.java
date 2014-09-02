@@ -20,25 +20,25 @@ package org.pentaho.platform.dataaccess.metadata.model.impl;
 import java.io.Serializable;
 
 /**
- * Concrete, lightweight, serializable object that holds the envelope information
- * of an {@see IModel} object
- * @author jamesdixon
+ * Concrete, lightweight, serializable object that holds the envelope information of an {@see IModel} object
  *
+ * @author jamesdixon
  */
 public class ModelInfo implements Serializable {
 
   private static final long serialVersionUID = -8341925508348437605L;
 
   private String domainId;
-  
+
   private String modelId;
-  
+
   private String modelName;
-  
+
   private String modelDescription;
 
   /**
    * Returns the id of the domain of the model
+   *
    * @return
    */
   public String getDomainId() {
@@ -47,14 +47,16 @@ public class ModelInfo implements Serializable {
 
   /**
    * Sets the domain id of the model
+   *
    * @param domainId
    */
-  public void setDomainId(String domainId) {
+  public void setDomainId( String domainId ) {
     this.domainId = domainId;
   }
 
   /**
    * Returns the id of the model
+   *
    * @return
    */
   public String getModelId() {
@@ -63,14 +65,16 @@ public class ModelInfo implements Serializable {
 
   /**
    * Sets the id of the model
+   *
    * @param id
    */
-  public void setModelId(String modelId) {
+  public void setModelId( String modelId ) {
     this.modelId = modelId;
   }
 
   /**
    * Returns the name of the model for the current locale
+   *
    * @return
    */
   public String getModelName() {
@@ -79,14 +83,16 @@ public class ModelInfo implements Serializable {
 
   /**
    * Sets the name of the model for the current locale
+   *
    * @param name
    */
-  public void setModelName(String modelName) {
+  public void setModelName( String modelName ) {
     this.modelName = modelName;
   }
 
   /**
    * Returns the description of the model for the current locale
+   *
    * @return
    */
   public String getModelDescription() {
@@ -95,10 +101,11 @@ public class ModelInfo implements Serializable {
 
   /**
    * Sets the description of the model
+   *
    * @param description
    */
-  public void setModelDescription(String modelDescription) {
+  public void setModelDescription( String modelDescription ) {
     this.modelDescription = modelDescription;
   }
-  
+
 }

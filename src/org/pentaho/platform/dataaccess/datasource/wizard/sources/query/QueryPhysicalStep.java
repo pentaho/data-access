@@ -44,7 +44,7 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings( "unchecked" )
 public class QueryPhysicalStep extends AbstractWizardStep {
 
   public static final int DEFAULT_RELATIONAL_TABLE_ROW_COUNT = 5;
@@ -55,85 +55,86 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   XulButton cancelButton = null;
   private XulTree csvDataTable = null;
   private WizardConnectionController wizardConnectionController;
-//  private IXulAsyncConnectionService connectionService;
+  //  private IXulAsyncConnectionService connectionService;
   private boolean isFinishable = false;
   private IDatabaseConnection connection;
   private ConnectionController databaseConnectionController;
 
-  public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource, boolean isFinishable) {
-    super(parentDatasource);
+  public QueryPhysicalStep( DatasourceModel datasourceModel, IWizardDatasource parentDatasource,
+                            boolean isFinishable ) {
+    super( parentDatasource );
     this.datasourceModel = datasourceModel;
     this.datasourceService = new DSWDatasourceServiceGwtImpl();
-//    this.connectionService = new ConnectionServiceGwtImpl();
+    //    this.connectionService = new ConnectionServiceGwtImpl();
     this.isFinishable = isFinishable;
   }
-  
-  public QueryPhysicalStep(DatasourceModel datasourceModel, IWizardDatasource parentDatasource) {
-	  this(datasourceModel, parentDatasource, true);
+
+  public QueryPhysicalStep( DatasourceModel datasourceModel, IWizardDatasource parentDatasource ) {
+    this( datasourceModel, parentDatasource, true );
   }
-  
+
   @Override
   public void activating() {
 
-	XulVbox queryVbox = (XulVbox) document.getElementById("queryBox");
-	queryVbox.setVisible(true);
-	
-	XulVbox metadataVbox = (XulVbox) document.getElementById("metadata");
-	metadataVbox.setVisible(false);
-	
-	XulVbox connectionsVbox = (XulVbox) document.getElementById("connectionsLbl");
-	connectionsVbox.setVisible(false);
+    XulVbox queryVbox = (XulVbox) document.getElementById( "queryBox" );
+    queryVbox.setVisible( true );
 
-    XulListbox connections = (XulListbox) document.getElementById("connectionList");
-    connections.setWidth(180);
-    connections.setHeight(325);
+    XulVbox metadataVbox = (XulVbox) document.getElementById( "metadata" );
+    metadataVbox.setVisible( false );
+
+    XulVbox connectionsVbox = (XulVbox) document.getElementById( "connectionsLbl" );
+    connectionsVbox.setVisible( false );
+
+    XulListbox connections = (XulListbox) document.getElementById( "connectionList" );
+    connections.setWidth( 180 );
+    connections.setHeight( 325 );
   }
-  
+
   @Override
   public XulComponent getUIComponent() {
-    return document.getElementById("queryDeckPanel");
+    return document.getElementById( "queryDeckPanel" );
   }
 
   @Bindable
-  public void init(IWizardModel wizardModel) throws XulException {
+  public void init( IWizardModel wizardModel ) throws XulException {
 
-    datasourceNameTextBox = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
-    
-    wizardConnectionController = new WizardConnectionController(document);
-    wizardConnectionController.setDatasourceModel(datasourceModel);
+    datasourceNameTextBox = (XulTextbox) document.getElementById( "datasourceName" ); //$NON-NLS-1$
 
-//    wizardConnectionController.setConnectionService(connectionService);
-    getXulDomContainer().addEventHandler(wizardConnectionController);
+    wizardConnectionController = new WizardConnectionController( document );
+    wizardConnectionController.setDatasourceModel( datasourceModel );
+
+    //    wizardConnectionController.setConnectionService(connectionService);
+    getXulDomContainer().addEventHandler( wizardConnectionController );
     wizardConnectionController.init();
 
-    databaseConnectionController = new ConnectionController(document);
-    databaseConnectionController.setDatasourceModel(datasourceModel);
-//    databaseConnectionController.setService(connectionService);
+    databaseConnectionController = new ConnectionController( document );
+    databaseConnectionController.setDatasourceModel( datasourceModel );
+    //    databaseConnectionController.setService(connectionService);
     databaseConnectionController.reloadConnections();
 
     WizardRelationalDatasourceController relationalDatasourceController = new WizardRelationalDatasourceController();
 
-    relationalDatasourceController.setService(datasourceService);
-    getXulDomContainer().addEventHandler(relationalDatasourceController);
-    relationalDatasourceController.init(datasourceModel);
+    relationalDatasourceController.setService( datasourceService );
+    getXulDomContainer().addEventHandler( relationalDatasourceController );
+    relationalDatasourceController.init( datasourceModel );
 
 
     initialize();
 
     datasourceModel.clearModel();
-    super.init(wizardModel);
+    super.init( wizardModel );
   }
 
   public void initialize() {
   }
 
-//  public IXulAsyncConnectionService getConnectionService() {
-//    return connectionService;
-//  }
-//
-//  public void setConnectionService(IXulAsyncConnectionService connectionService) {
-//    this.connectionService = connectionService;
-//  }
+  //  public IXulAsyncConnectionService getConnectionService() {
+  //    return connectionService;
+  //  }
+  //
+  //  public void setConnectionService(IXulAsyncConnectionService connectionService) {
+  //    this.connectionService = connectionService;
+  //  }
 
   public String getName() {
     return "datasourceController"; //$NON-NLS-1$
@@ -142,20 +143,20 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   @Bindable
   public void selectCsv() {
     csvDataTable.update();
-    datasourceModel.setDatasourceType(DatasourceType.CSV);
+    datasourceModel.setDatasourceType( DatasourceType.CSV );
   }
 
-  
+
   @Bindable
   public void selectSql() {
-    datasourceModel.setDatasourceType(DatasourceType.SQL);
+    datasourceModel.setDatasourceType( DatasourceType.SQL );
   }
 
   public IXulAsyncDSWDatasourceService getDatasourceService() {
     return datasourceService;
   }
 
-  public void setDatasourceService(IXulAsyncDSWDatasourceService datasourceService) {
+  public void setDatasourceService( IXulAsyncDSWDatasourceService datasourceService ) {
     this.datasourceService = datasourceService;
   }
 
@@ -163,7 +164,7 @@ public class QueryPhysicalStep extends AbstractWizardStep {
    * @see org.pentaho.platform.dataaccess.datasource.wizard.steps.IWizardStep#getStepName()
    */
   public String getStepName() {
-    return MessageHandler.getString("wizardStepName.SOURCE"); //$NON-NLS-1$
+    return MessageHandler.getString( "wizardStepName.SOURCE" ); //$NON-NLS-1$
   }
 
   /* (non-Javadoc)
@@ -171,85 +172,88 @@ public class QueryPhysicalStep extends AbstractWizardStep {
    */
   public void setBindings() {
 
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(wizardModel, "selectedDatasource", datasourceModel, "datasourceType", new BindingConvertor<IWizardDatasource, DatasourceType>(){
-      @Override
-      public DatasourceType sourceToTarget(IWizardDatasource iWizardDatasource) {
-        if(iWizardDatasource instanceof QueryDatasource){
-          return DatasourceType.SQL;
-        } else if( iWizardDatasource instanceof CsvDatasource){
-          return DatasourceType.CSV;
+    bf.setBindingType( Binding.Type.ONE_WAY );
+    bf.createBinding( wizardModel, "selectedDatasource", datasourceModel, "datasourceType",
+      new BindingConvertor<IWizardDatasource, DatasourceType>() {
+        @Override
+        public DatasourceType sourceToTarget( IWizardDatasource iWizardDatasource ) {
+          if ( iWizardDatasource instanceof QueryDatasource ) {
+            return DatasourceType.SQL;
+          } else if ( iWizardDatasource instanceof CsvDatasource ) {
+            return DatasourceType.CSV;
+          }
+          return DatasourceType.NONE;
         }
-        return DatasourceType.NONE;
-      }
 
-      @Override
-      public IWizardDatasource targetToSource(DatasourceType datasourceType) {
-        return null;
-      }
-    });
-    
-    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    bf.createBinding(datasourceModel, "datasourceName", datasourceNameTextBox, "value"); //$NON-NLS-1$ //$NON-NLS-2$
+        @Override
+        public IWizardDatasource targetToSource( DatasourceType datasourceType ) {
+          return null;
+        }
+      } );
+
+    bf.setBindingType( Binding.Type.BI_DIRECTIONAL );
+    bf.createBinding( datasourceModel, "datasourceName", datasourceNameTextBox, "value" ); //$NON-NLS-1$ //$NON-NLS-2$
 
     // create a binding from the headerRows property of the CsvFileInfo to the first-row-is-header check box
 
-    
-    datasourceModel.addPropertyChangeListener("datasourceName", new QueryAndDatasourceNamePropertyChangeListener()); //$NON-NLS-1$
-    datasourceModel.addPropertyChangeListener("query", new QueryAndDatasourceNamePropertyChangeListener()); //$NON-NLS-1$
 
-    bf.setBindingType(Binding.Type.ONE_WAY);
+    datasourceModel
+      .addPropertyChangeListener( "datasourceName", new QueryAndDatasourceNamePropertyChangeListener() ); //$NON-NLS-1$
+    datasourceModel
+      .addPropertyChangeListener( "query", new QueryAndDatasourceNamePropertyChangeListener() ); //$NON-NLS-1$
 
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(datasourceModel, "datasourceName", datasourceModel.getModelInfo(), "stageTableName");
+    bf.setBindingType( Binding.Type.ONE_WAY );
 
-    bf.createBinding(wizardModel, "editing", datasourceNameTextBox, "disabled");
-    bf.createBinding(datasourceModel, "selectedRelationalConnection", this, "connection");
+    bf.setBindingType( Binding.Type.ONE_WAY );
+    bf.createBinding( datasourceModel, "datasourceName", datasourceModel.getModelInfo(), "stageTableName" );
+
+    bf.createBinding( wizardModel, "editing", datasourceNameTextBox, "disabled" );
+    bf.createBinding( datasourceModel, "selectedRelationalConnection", this, "connection" );
 
 
   }
 
   public void setFocus() {
     datasourceNameTextBox.setFocus();
-    setStepImageVisible(true);
+    setStepImageVisible( true );
   }
 
   public void reloadConnections() {
     databaseConnectionController.reloadConnections();
   }
 
-  public void selectConnectionByName(String name) {
-    connection = databaseConnectionController.getDatasourceModel().getGuiStateModel().getConnectionByName(name);
-    databaseConnectionController.getDatasourceModel().setSelectedRelationalConnection(connection);
+  public void selectConnectionByName( String name ) {
+    connection = databaseConnectionController.getDatasourceModel().getGuiStateModel().getConnectionByName( name );
+    databaseConnectionController.getDatasourceModel().setSelectedRelationalConnection( connection );
   }
 
   private class QueryAndDatasourceNamePropertyChangeListener implements PropertyChangeListener {
-    public void propertyChange(PropertyChangeEvent evt) {
+    public void propertyChange( PropertyChangeEvent evt ) {
       String newValue = (String) evt.getNewValue();
-      if(newValue == null || newValue.trim().length() == 0) {
-        parentDatasource.setFinishable(false);
+      if ( newValue == null || newValue.trim().length() == 0 ) {
+        parentDatasource.setFinishable( false );
       } else {
-    	if(isFinishable) {
-    		datasourceModel.validate();
-    		parentDatasource.setFinishable(datasourceModel.isValidated());
-    	} else {
-    		parentDatasource.setFinishable(false);
-    		setValid(true);
-    	}
+        if ( isFinishable ) {
+          datasourceModel.validate();
+          parentDatasource.setFinishable( datasourceModel.isValidated() );
+        } else {
+          parentDatasource.setFinishable( false );
+          setValid( true );
+        }
       }
     }
   }
-  
-  
-  public boolean stepDeactivatingForward(){
-	return super.stepDeactivatingForward();
+
+
+  public boolean stepDeactivatingForward() {
+    return super.stepDeactivatingForward();
   }
 
   public WizardConnectionController getWizardConnectionController() {
     return wizardConnectionController;
   }
 
-  public void setWizardConnectionController(WizardConnectionController wizardConnectionController) {
+  public void setWizardConnectionController( WizardConnectionController wizardConnectionController ) {
     this.wizardConnectionController = wizardConnectionController;
   }
 
@@ -259,10 +263,10 @@ public class QueryPhysicalStep extends AbstractWizardStep {
   }
 
   @Bindable
-  public void setConnection(IDatabaseConnection connection) {
+  public void setConnection( IDatabaseConnection connection ) {
     Object prevVal = this.connection == null ? new Object() : null;
     this.connection = connection;
-    firePropertyChange("connection", prevVal, connection);
+    firePropertyChange( "connection", prevVal, connection );
   }
 
   @Override

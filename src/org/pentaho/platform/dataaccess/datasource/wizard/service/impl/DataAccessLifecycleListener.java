@@ -32,7 +32,7 @@ public class DataAccessLifecycleListener implements IPluginLifecycleListener, IP
 
   private static final Log log = LogFactory.getLog( DataAccessLifecycleListener.class );
   private static final String ENABLE_AGILEMART_DATASOURCE = "enable-agile-mart-datasource";
-  
+
   @Override
   public void init() throws PluginLifecycleException {
   }
@@ -47,7 +47,8 @@ public class DataAccessLifecycleListener implements IPluginLifecycleListener, IP
     boolean enableAgilemartDatasource = false;
     try {
       IPluginResourceLoader resLoader = PentahoSystem.get( IPluginResourceLoader.class, null );
-      enableAgilemartDatasource = Boolean.parseBoolean( resLoader.getPluginSetting( DataAccessLifecycleListener.class, ENABLE_AGILEMART_DATASOURCE, "false" ) );
+      enableAgilemartDatasource = Boolean.parseBoolean(
+        resLoader.getPluginSetting( DataAccessLifecycleListener.class, ENABLE_AGILEMART_DATASOURCE, "false" ) );
     } catch ( Throwable t ) {
       log.warn( t.getMessage(), t );
     }
@@ -64,8 +65,8 @@ public class DataAccessLifecycleListener implements IPluginLifecycleListener, IP
       }
 
       DelegatingBackingRepositoryLifecycleManager manager =
-          PentahoSystem
-              .get( DelegatingBackingRepositoryLifecycleManager.class, "backingRepositoryLifecycleManager", null );
+        PentahoSystem
+          .get( DelegatingBackingRepositoryLifecycleManager.class, "backingRepositoryLifecycleManager", null );
       manager.addLifeCycleManager( AgileMartDatasourceLifecycleManager.getInstance() );
     }
   }

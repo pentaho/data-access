@@ -32,36 +32,36 @@ public class ModelInfo extends XulEventSourceAdapter implements Serializable {
   public static final String CSV_FILE_INFO_ATTRIBUTE = "fileInfo";  //$NON-NLS-1$
   public static final String CSV_COLUMN_INFO_ATTRIBUTE = "columns";  //$NON-NLS-1$
   public static final String STAGE_TABLE_NAME_ATTRIBUTE = "stageTableName";  //$NON-NLS-1$
-  
+
   private static final long serialVersionUID = 2498165533158485182L;
-  
+
   private CsvFileInfo fileInfo;
-  
+
   private String stageTableName;
-  
-  private ColumnInfo columns[];
+
+  private ColumnInfo[] columns;
 
   private transient ColumnInfoCollection columnCollection = new ColumnInfoCollection();
 
   private transient ModelInfoValidationListenerCollection listeners = new ModelInfoValidationListenerCollection();
-  
+
   private boolean validated;
 
   private ArrayList<String> csvInputErrors = new ArrayList<String>();
-  
+
   private ArrayList<String> tableOutputErrors = new ArrayList<String>();
 
   private transient FileTransformStats transformStats = new FileTransformStats();
 
 
   private String datasourceName;
-  
-  public ModelInfo () {
-    columnCollection.addPropertyChangeListener("selectedCount", new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent evt) {
+
+  public ModelInfo() {
+    columnCollection.addPropertyChangeListener( "selectedCount", new PropertyChangeListener() {
+      public void propertyChange( PropertyChangeEvent evt ) {
         validate();
       }
-    });
+    } );
   }
 
   @Bindable
@@ -70,10 +70,10 @@ public class ModelInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setFileInfo(CsvFileInfo fileInfo) {
+  public void setFileInfo( CsvFileInfo fileInfo ) {
     CsvFileInfo previousVal = this.fileInfo;
     this.fileInfo = fileInfo;
-    firePropertyChange(CSV_FILE_INFO_ATTRIBUTE, previousVal, fileInfo);
+    firePropertyChange( CSV_FILE_INFO_ATTRIBUTE, previousVal, fileInfo );
     validate();
   }
 
@@ -83,19 +83,19 @@ public class ModelInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setColumns(ColumnInfo[] columns) {
+  public void setColumns( ColumnInfo[] columns ) {
     ColumnInfo[] previousVal = this.columns;
     this.columns = columns;
-    firePropertyChange(CSV_COLUMN_INFO_ATTRIBUTE, previousVal, columns);
-    setColumnCollection(columns);
+    firePropertyChange( CSV_COLUMN_INFO_ATTRIBUTE, previousVal, columns );
+    setColumnCollection( columns );
     validate();
   }
 
-  private void setColumnCollection(ColumnInfo[] columns) {
+  private void setColumnCollection( ColumnInfo[] columns ) {
     columnCollection.clear();
-    if (columns != null) {
-      for (ColumnInfo column : columns) {
-        columnCollection.add(column);
+    if ( columns != null ) {
+      for ( ColumnInfo column : columns ) {
+        columnCollection.add( column );
       }
     }
   }
@@ -106,7 +106,7 @@ public class ModelInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setData(DataRow[] data) {
+  public void setData( DataRow[] data ) {
     transformStats.setDataRows( data );
   }
 
@@ -116,134 +116,159 @@ public class ModelInfo extends XulEventSourceAdapter implements Serializable {
   }
 
   @Bindable
-  public void setStageTableName(String tableName) {
+  public void setStageTableName( String tableName ) {
     String previousVal = this.stageTableName;
     this.stageTableName = tableName;
-    firePropertyChange(STAGE_TABLE_NAME_ATTRIBUTE, previousVal, tableName);
+    firePropertyChange( STAGE_TABLE_NAME_ATTRIBUTE, previousVal, tableName );
     validate();
   }
 
   @Bindable
   public ArrayList<String> getCsvInputErrors() {
-	  return csvInputErrors;
+    return csvInputErrors;
   }
-  
+
   @Bindable
-  public void setCsvInputErrors(ArrayList<String> csvInputErrors) {
-  	this.csvInputErrors = csvInputErrors;
+  public void setCsvInputErrors( ArrayList<String> csvInputErrors ) {
+    this.csvInputErrors = csvInputErrors;
   }
-  
+
   @Bindable
   public ArrayList<String> getTableOutputErrors() {
-	  return tableOutputErrors;
+    return tableOutputErrors;
   }
-  
+
   @Bindable
-  public void setTableOutputErrors(ArrayList<String> tableOutputErrors) {
-  	this.tableOutputErrors = tableOutputErrors;
-  }  
-  
+  public void setTableOutputErrors( ArrayList<String> tableOutputErrors ) {
+    this.tableOutputErrors = tableOutputErrors;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + Arrays.hashCode(columns);
-    result = prime * result + ((fileInfo == null) ? 0 : fileInfo.hashCode());
-    result = prime * result + ((stageTableName == null) ? 0 : stageTableName.hashCode());
+    result = prime * result + Arrays.hashCode( columns );
+    result = prime * result + ( ( fileInfo == null ) ? 0 : fileInfo.hashCode() );
+    result = prime * result + ( ( stageTableName == null ) ? 0 : stageTableName.hashCode() );
     return result;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
+  public boolean equals( Object obj ) {
+    if ( this == obj ) {
       return true;
-    if (obj == null)
+    }
+    if ( obj == null ) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if ( getClass() != obj.getClass() ) {
       return false;
+    }
     ModelInfo other = (ModelInfo) obj;
-    if (!Arrays.equals(columns, other.columns))
+    if ( !Arrays.equals( columns, other.columns ) ) {
       return false;
-    if (fileInfo == null) {
-      if (other.fileInfo != null)
+    }
+    if ( fileInfo == null ) {
+      if ( other.fileInfo != null ) {
         return false;
-    } else if (!fileInfo.equals(other.fileInfo))
+      }
+    } else if ( !fileInfo.equals( other.fileInfo ) ) {
       return false;
-    if (stageTableName == null) {
-      if (other.stageTableName != null)
+    }
+    if ( stageTableName == null ) {
+      if ( other.stageTableName != null ) {
         return false;
-    } else if (!stageTableName.equals(other.stageTableName))
+      }
+    } else if ( !stageTableName.equals( other.stageTableName ) ) {
       return false;
+    }
     return true;
   }
 
   public void validate() {
-    if (stageTableName != null && 
-        stageTableName.trim().length() > 0 &&
-        fileInfo != null && 
-        fileInfo.getTmpFilename() != null && 
-        fileInfo.getTmpFilename().length() > 0 && 
-        fileInfo.getDelimiter() != null && 
-        fileInfo.getDelimiter().length() > 0) {
+    if ( stageTableName != null
+      && stageTableName.trim().length() > 0
+      && fileInfo != null
+      && fileInfo.getTmpFilename() != null
+      && fileInfo.getTmpFilename().length() > 0
+      && fileInfo.getDelimiter() != null
+      && fileInfo.getDelimiter().length() > 0 ) {
 
       listeners.fireCsvInfoValid();
 
-      if (columnsAreValid()) {
+      if ( columnsAreValid() ) {
 
-        setValidated(true);
+        setValidated( true );
         listeners.fireModelInfoValid();
       } else {
-        setValidated(false);
-        listeners.fireModelInfoInvalid();      
+        setValidated( false );
+        listeners.fireModelInfoInvalid();
       }
     } else {
-      setValidated(false);
+      setValidated( false );
       listeners.fireCsvInfoInvalid();
-      listeners.fireModelInfoInvalid();      
+      listeners.fireModelInfoInvalid();
     }
   }
 
   private boolean columnsAreValid() {
-    if (columns != null) {
-      for (ColumnInfo col : columns) {
-        if (col == null) return false;
-        if (col.getDataType() == null) return false;
-        if (col.getTitle() == null) return false;
-        if (col.getId() == null) return false;
-        if (col.getDataType() == null) return false;
-        if (col.getTitle().trim().length() == 0) return false;
-        if (col.getId().trim().length() == 0) return false;
+    if ( columns != null ) {
+      for ( ColumnInfo col : columns ) {
+        if ( col == null ) {
+          return false;
+        }
+        if ( col.getDataType() == null ) {
+          return false;
+        }
+        if ( col.getTitle() == null ) {
+          return false;
+        }
+        if ( col.getId() == null ) {
+          return false;
+        }
+        if ( col.getDataType() == null ) {
+          return false;
+        }
+        if ( col.getTitle().trim().length() == 0 ) {
+          return false;
+        }
+        if ( col.getId().trim().length() == 0 ) {
+          return false;
+        }
       }
-      if (columnCollection.getSelectedCount() == 0) return false;
+      if ( columnCollection.getSelectedCount() == 0 ) {
+        return false;
+      }
     } else {
       return false;
     }
     return true;
   }
+
   @Bindable
   public boolean isValidated() {
     return validated;
   }
 
   @Bindable
-  private void setValidated(boolean value) {
-    if(value != this.validated) {
+  private void setValidated( boolean value ) {
+    if ( value != this.validated ) {
       this.validated = value;
-      this.firePropertyChange("validated", !value, value); //$NON-NLS-1$
+      this.firePropertyChange( "validated", !value, value ); //$NON-NLS-1$
     }
   }
 
   public void clearModel() {
-    setStageTableName(null);
+    setStageTableName( null );
     getFileInfo().clear();
-    setColumns(null);
-    setData(null);
+    setColumns( null );
+    setData( null );
     validate();
   }
 
-  public void addModelInfoValidationListener(IModelInfoValidationListener listener) {
-    if (listeners != null && listener != null) {
-      listeners.add(listener);
+  public void addModelInfoValidationListener( IModelInfoValidationListener listener ) {
+    if ( listeners != null && listener != null ) {
+      listeners.add( listener );
     }
   }
 
@@ -255,7 +280,7 @@ public class ModelInfo extends XulEventSourceAdapter implements Serializable {
     return datasourceName;
   }
 
-  public void setDatasourceName(String datasourceName) {
+  public void setDatasourceName( String datasourceName ) {
     this.datasourceName = datasourceName;
   }
 }

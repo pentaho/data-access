@@ -87,9 +87,9 @@ public class MetadataResource {
   @Path( "/{metadataId : .+}/download" )
   @Produces( WILDCARD )
   @StatusCodes( {
-      @ResponseCode( code = 200, condition = "Metadata datasource export succeeded." ),
-      @ResponseCode( code = 401, condition = "User is not authorized to export Metadata datasource." ),
-      @ResponseCode( code = 500, condition = "Failure to export Metadata datasource." )
+    @ResponseCode( code = 200, condition = "Metadata datasource export succeeded." ),
+    @ResponseCode( code = 401, condition = "User is not authorized to export Metadata datasource." ),
+    @ResponseCode( code = 500, condition = "Failure to export Metadata datasource." )
   } )
   public Response doGetMetadataFilesAsDownload( @PathParam( "metadataId" ) String metadataId ) {
     if ( !DatasourceService.canAdminister() ) {
@@ -155,7 +155,7 @@ public class MetadataResource {
 
   /**
    * Import a Metadata datasource
-   * 
+   *
    * @param domainId
    *          Unique identifier for the metadata datasource
    *          <pre function="syntax.xml">
@@ -192,17 +192,19 @@ public class MetadataResource {
   @Produces( "text/plain" )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Metadata datasource import succeeded." ),
-    @ResponseCode( code = 500, condition = "Metadata datasource import failed.  Error code or message included in response entity" )
+    @ResponseCode( code = 500,
+      condition = "Metadata datasource import failed.  Error code or message included in response entity" )
   } )
   public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
-      @FormDataParam( "metadataFile" ) InputStream metadataFile,
-      @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
-      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-      @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) {
+                                            @FormDataParam( "metadataFile" ) InputStream metadataFile,
+                                            @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+                                            @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+                                            @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+                                            @FormDataParam( "localeFiles" )
+                                            List<FormDataContentDisposition> localeFilesInfo ) {
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
-          localeFilesInfo );
+        localeFilesInfo );
       return Response.ok( String.valueOf( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return Response.serverError().entity( e.toString() ).build();
@@ -210,8 +212,8 @@ public class MetadataResource {
       if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
         FileResource fr = new FileResource();
         return Response.status( PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ).entity(
-            Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
-                .doGetReservedCharactersDisplay().getEntity() ) ).build();
+          Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
+            .doGetReservedCharactersDisplay().getEntity() ) ).build();
       } else {
         String msg = e.getMessage();
         logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
@@ -227,7 +229,7 @@ public class MetadataResource {
     } catch ( Exception e ) {
       logger.error( e );
       return Response.serverError().entity(
-          Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
+        Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
     }
   }
 }

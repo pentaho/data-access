@@ -46,29 +46,31 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
   protected IXulAsyncDatasourceServiceManager genericDatasourceServiceManager;
 
   protected IModelerServiceAsync modelerService;
-  
+
   private IXulAsyncDSWDatasourceService dswService;
 
   protected AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener;
-  
+
   private GwtDatasourceEditorEntryPoint entryPoint;
-  
+
   private boolean initialized;
   private GwtDatasourceMessages datasourceMessages;
 
   // ~ Constructors ====================================================================================================
 
-  public GwtDatasourceAdminDialog(final IXulAsyncDatasourceServiceManager genericDatasourceServiceManager,
-      IModelerServiceAsync modelerService, IXulAsyncDSWDatasourceService dswService, GwtDatasourceEditorEntryPoint entryPoint, 
-      final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener) {
+  public GwtDatasourceAdminDialog( final IXulAsyncDatasourceServiceManager genericDatasourceServiceManager,
+                                   IModelerServiceAsync modelerService, IXulAsyncDSWDatasourceService dswService,
+                                   GwtDatasourceEditorEntryPoint entryPoint,
+                                   final AsyncConstructorListener<GwtDatasourceAdminDialog> constructorListener ) {
     this.genericDatasourceServiceManager = genericDatasourceServiceManager;
     this.modelerService = modelerService;
     this.dswService = dswService;
     this.constructorListener = constructorListener;
     this.entryPoint = entryPoint;
     try {
-      AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "datasourceAdminDialog.xul", GWT.getModuleBaseURL() + "datasourceAdminDialog", this); //$NON-NLS-1$//$NON-NLS-2$
-    } catch (Exception e) {
+      AsyncXulLoader.loadXulFromUrl( GWT.getModuleBaseURL() + "datasourceAdminDialog.xul",
+        GWT.getModuleBaseURL() + "datasourceAdminDialog", this ); //$NON-NLS-1$//$NON-NLS-2$
+    } catch ( Exception e ) {
       e.printStackTrace();
     }
   }
@@ -82,60 +84,60 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
    */
   public void overlayLoaded() {
   }
-  
+
   /**
    * Specified by <code>IXulLoaderCallback</code>.
    */
   public void overlayRemoved() {
   }
 
-  public void xulLoaded(final GwtXulRunner runner) {
+  public void xulLoaded( final GwtXulRunner runner ) {
     try {
-      GwtXulDomContainer container = (GwtXulDomContainer) runner.getXulDomContainers().get(0);
+      GwtXulDomContainer container = (GwtXulDomContainer) runner.getXulDomContainers().get( 0 );
 
-      BindingFactory bf = new GwtBindingFactory(container.getDocumentRoot());
+      BindingFactory bf = new GwtBindingFactory( container.getDocumentRoot() );
 
-      ResourceBundle resBundle = (ResourceBundle) container.getResourceBundles().get(0);
+      ResourceBundle resBundle = (ResourceBundle) container.getResourceBundles().get( 0 );
       datasourceMessages = new GwtDatasourceMessages();
-      datasourceMessages.setMessageBundle(resBundle);
+      datasourceMessages.setMessageBundle( resBundle );
 
       datasourceAdminDialogController = new DatasourceAdminDialogController();
-      datasourceAdminDialogController.setBindingFactory(bf);
-      datasourceAdminDialogController.setDatasourceServiceManager(genericDatasourceServiceManager);
-      datasourceAdminDialogController.setModelerService(modelerService);
-      datasourceAdminDialogController.setDSWService(dswService);
-      datasourceAdminDialogController.setEntryPoint(entryPoint);
-      datasourceAdminDialogController.setMessageBundle(datasourceMessages);
-      container.addEventHandler(datasourceAdminDialogController);
-      
+      datasourceAdminDialogController.setBindingFactory( bf );
+      datasourceAdminDialogController.setDatasourceServiceManager( genericDatasourceServiceManager );
+      datasourceAdminDialogController.setModelerService( modelerService );
+      datasourceAdminDialogController.setDSWService( dswService );
+      datasourceAdminDialogController.setEntryPoint( entryPoint );
+      datasourceAdminDialogController.setMessageBundle( datasourceMessages );
+      container.addEventHandler( datasourceAdminDialogController );
+
       runner.initialize();
 
       runner.start();
 
       initialized = true;
 
-      if (constructorListener != null) {
-        constructorListener.asyncConstructorDone(this);
+      if ( constructorListener != null ) {
+        constructorListener.asyncConstructorDone( this );
       }
-      
+
       datasourceAdminDialogController.onDialogReady();
-    } catch (Exception e) {
+    } catch ( Exception e ) {
       e.printStackTrace();
     }
   }
 
   protected void checkInitialized() {
-    if (!initialized) {
-      throw new IllegalStateException("You must wait until the constructor listener is notified."); //$NON-NLS-1$
+    if ( !initialized ) {
+      throw new IllegalStateException( "You must wait until the constructor listener is notified." ); //$NON-NLS-1$
     }
   }
 
   /**
    * Specified by <code>DialogController</code>.
    */
-  public void addDialogListener(org.pentaho.ui.xul.util.DialogController.DialogListener<IDatasourceInfo> listener) {
+  public void addDialogListener( org.pentaho.ui.xul.util.DialogController.DialogListener<IDatasourceInfo> listener ) {
     checkInitialized();
-    datasourceAdminDialogController.addDialogListener(listener);
+    datasourceAdminDialogController.addDialogListener( listener );
     datasourceAdminDialogController.onDialogReady();
   }
 
@@ -150,9 +152,10 @@ public class GwtDatasourceAdminDialog implements IXulLoaderCallback, DialogContr
   /**
    * Specified by <code>DialogController</code>.
    */
-  public void removeDialogListener(org.pentaho.ui.xul.util.DialogController.DialogListener<IDatasourceInfo> listener) {
+  public void removeDialogListener(
+    org.pentaho.ui.xul.util.DialogController.DialogListener<IDatasourceInfo> listener ) {
     checkInitialized();
-    datasourceAdminDialogController.removeDialogListener(listener);
+    datasourceAdminDialogController.removeDialogListener( listener );
   }
 
   /**

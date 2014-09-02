@@ -27,15 +27,16 @@ import org.pentaho.ui.xul.XulServiceCallback;
 
 public interface IXulAsyncJoinSelectionService {
 
-	void getDatabaseTables(IDatabaseConnection connection, String schema, XulServiceCallback<List> callback);
-	
-	void retrieveSchemas(IDatabaseConnection connection, XulServiceCallback<List> callback);	
+  void getDatabaseTables( IDatabaseConnection connection, String schema, XulServiceCallback<List> callback );
 
-	void getTableFields(String table, IDatabaseConnection connection, XulServiceCallback<List> callback);
+  void retrieveSchemas( IDatabaseConnection connection, XulServiceCallback<List> callback );
 
-	void serializeJoins(MultiTableDatasourceDTO dto, IDatabaseConnection connection, XulServiceCallback<IDatasourceSummary> callback);
-	
-	void deSerializeModelState(String source, XulServiceCallback<MultiTableDatasourceDTO> callback);
+  void getTableFields( String table, IDatabaseConnection connection, XulServiceCallback<List> callback );
 
-	void gwtWorkaround(BogoPojo pojo, XulServiceCallback<BogoPojo> callback);
+  void serializeJoins( MultiTableDatasourceDTO dto, IDatabaseConnection connection,
+                       XulServiceCallback<IDatasourceSummary> callback );
+
+  void deSerializeModelState( String source, XulServiceCallback<MultiTableDatasourceDTO> callback );
+
+  void gwtWorkaround( BogoPojo pojo, XulServiceCallback<BogoPojo> callback );
 }

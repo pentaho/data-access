@@ -26,144 +26,145 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class AnalysisImportDialogModel extends XulEventSourceAdapter {
 
-	private List<IDatabaseConnection> connectionList;
-	private List<ParameterDialogModel> analysisParameters;
-	private String uploadedFile;
-	private IDatabaseConnection connection;
-	private boolean isParameterMode;
-	private ParameterDialogModel selectedAnalysisParameter;
+  private List<IDatabaseConnection> connectionList;
+  private List<ParameterDialogModel> analysisParameters;
+  private String uploadedFile;
+  private IDatabaseConnection connection;
+  private boolean isParameterMode;
+  private ParameterDialogModel selectedAnalysisParameter;
 
-	public AnalysisImportDialogModel() {
-		connectionList = new ArrayList<IDatabaseConnection>();
-		analysisParameters = new ArrayList<ParameterDialogModel>();
-	}
+  public AnalysisImportDialogModel() {
+    connectionList = new ArrayList<IDatabaseConnection>();
+    analysisParameters = new ArrayList<ParameterDialogModel>();
+  }
 
-	public void addParameter(String name, String value) {
+  public void addParameter( String name, String value ) {
 
-		if (selectedAnalysisParameter == null) {
-			if(!containsParameter(name)) {
-				analysisParameters.add(new ParameterDialogModel(name, value));
-			}
-		} else {
-			selectedAnalysisParameter.setName(name);
-			selectedAnalysisParameter.setValue(value);
-		}
-		this.firePropertyChange("analysisParameters", null, analysisParameters);
-	}
+    if ( selectedAnalysisParameter == null ) {
+      if ( !containsParameter( name ) ) {
+        analysisParameters.add( new ParameterDialogModel( name, value ) );
+      }
+    } else {
+      selectedAnalysisParameter.setName( name );
+      selectedAnalysisParameter.setValue( value );
+    }
+    this.firePropertyChange( "analysisParameters", null, analysisParameters );
+  }
 
-	public void removeParameter(int paramIndex) {
-		selectedAnalysisParameter = null;
-		analysisParameters.remove(paramIndex);
-		this.firePropertyChange("analysisParameters", null, analysisParameters);
-	}
+  public void removeParameter( int paramIndex ) {
+    selectedAnalysisParameter = null;
+    analysisParameters.remove( paramIndex );
+    this.firePropertyChange( "analysisParameters", null, analysisParameters );
+  }
 
-	public void removeAllParameters() {
-		analysisParameters.clear();
-		this.firePropertyChange("analysisParameters", null, analysisParameters);
-	}
+  public void removeAllParameters() {
+    analysisParameters.clear();
+    this.firePropertyChange( "analysisParameters", null, analysisParameters );
+  }
 
-	public String getUploadedFile() {
-		return uploadedFile;
-	}
+  public String getUploadedFile() {
+    return uploadedFile;
+  }
 
-	public void setUploadedFile(String uploadedFile) {
-		this.uploadedFile = uploadedFile;
-	}
+  public void setUploadedFile( String uploadedFile ) {
+    this.uploadedFile = uploadedFile;
+  }
 
-	@Bindable
-	public List<ParameterDialogModel> getAnalysisParameters() {
-		return analysisParameters;
-	}
+  @Bindable
+  public List<ParameterDialogModel> getAnalysisParameters() {
+    return analysisParameters;
+  }
 
-	@Bindable
-	public void setAnalysisParameters(List<ParameterDialogModel> value) {
-		List<ParameterDialogModel> previousValue = analysisParameters;
-		this.analysisParameters = value;
-		this.firePropertyChange("analysisParameters", previousValue, value);
-	}
+  @Bindable
+  public void setAnalysisParameters( List<ParameterDialogModel> value ) {
+    List<ParameterDialogModel> previousValue = analysisParameters;
+    this.analysisParameters = value;
+    this.firePropertyChange( "analysisParameters", previousValue, value );
+  }
 
-	@Bindable
-	public List<IDatabaseConnection> getConnectionList() {
-		return connectionList;
-	}
+  @Bindable
+  public List<IDatabaseConnection> getConnectionList() {
+    return connectionList;
+  }
 
-	@Bindable
-	public void setConnectionList(List<IDatabaseConnection> value) {
-		List<IDatabaseConnection> previousValue = connectionList;
-		this.connectionList = value;
-		this.firePropertyChange("connectionList", previousValue, value);
-	}
+  @Bindable
+  public void setConnectionList( List<IDatabaseConnection> value ) {
+    List<IDatabaseConnection> previousValue = connectionList;
+    this.connectionList = value;
+    this.firePropertyChange( "connectionList", previousValue, value );
+  }
 
-	@Bindable
-	public IDatabaseConnection getConnection() {
-		return connection;
-	}
+  @Bindable
+  public IDatabaseConnection getConnection() {
+    return connection;
+  }
 
-	@Bindable
-	public void setConnection(IDatabaseConnection value) {
-	  IDatabaseConnection previousValue = connection;
-		connection = value;
-		firePropertyChange("connection", previousValue, value);
-	}
+  @Bindable
+  public void setConnection( IDatabaseConnection value ) {
+    IDatabaseConnection previousValue = connection;
+    connection = value;
+    firePropertyChange( "connection", previousValue, value );
+  }
 
-	public String getParameters() {
-		String result = "";
-		if (isParameterMode) {
-	    String sep = ";";
-	    String eq = "=";
-	    String quot = "\"";
-	    String  value;
-			for (ParameterDialogModel currentParameter : analysisParameters) {
-			  //add separator if necessary
-        if (!result.isEmpty()) result += sep;
+  public String getParameters() {
+    String result = "";
+    if ( isParameterMode ) {
+      String sep = ";";
+      String eq = "=";
+      String quot = "\"";
+      String value;
+      for ( ParameterDialogModel currentParameter : analysisParameters ) {
+        //add separator if necessary
+        if ( !result.isEmpty() ) {
+          result += sep;
+        }
         //add name / value pair
-			  value = currentParameter.getValue();
-			  //TODO: check if the value contains a quote character. currently not supported.
-			  if (//if the value is not quoted
-			     (!(value.startsWith(quot) && value.endsWith(quot)))
-			      //and the value contains the separator
-			  &&   value.contains(sep)
-			  ) {  //then quote the value:
-			    value = quot + value + quot;
-			  }
-				result = result + currentParameter.getName() + eq + value;
-			}
-		}
-		return result;
-	}
-	
-	private boolean containsParameter(String name) {
-		boolean containsParameter = false;
-		for(ParameterDialogModel parameter : analysisParameters) {
-			if(parameter.getName().equalsIgnoreCase(name)) {
-				containsParameter = true;
-				break;
-			}
-		}
-		return containsParameter;
-	}
+        value = currentParameter.getValue();
+        //TODO: check if the value contains a quote character. currently not supported.
+        if ( //if the value is not quoted
+          ( !( value.startsWith( quot ) && value.endsWith( quot ) ) )
+            //and the value contains the separator
+            && value.contains( sep ) ) {  //then quote the value:
+          value = quot + value + quot;
+        }
+        result = result + currentParameter.getName() + eq + value;
+      }
+    }
+    return result;
+  }
 
-	public void setParameterMode(boolean value) {
-		isParameterMode = value;
-	}
+  private boolean containsParameter( String name ) {
+    boolean containsParameter = false;
+    for ( ParameterDialogModel parameter : analysisParameters ) {
+      if ( parameter.getName().equalsIgnoreCase( name ) ) {
+        containsParameter = true;
+        break;
+      }
+    }
+    return containsParameter;
+  }
 
-	public boolean isValid() {
-		boolean isValid = true;
-		if (isParameterMode) {
-			isValid = analysisParameters.size() > 0;
-		}
-		return isValid && uploadedFile != null && connection != null;
-	}
+  public void setParameterMode( boolean value ) {
+    isParameterMode = value;
+  }
 
-	public void setSelectedAnalysisParameter(int index) {
-		if (index > -1) {
-			selectedAnalysisParameter = analysisParameters.get(index);
-		} else {
-			selectedAnalysisParameter = null;
-		}
-	}
+  public boolean isValid() {
+    boolean isValid = true;
+    if ( isParameterMode ) {
+      isValid = analysisParameters.size() > 0;
+    }
+    return isValid && uploadedFile != null && connection != null;
+  }
 
-	public ParameterDialogModel getSelectedAnalysisParameter() {
-		return selectedAnalysisParameter;
-	}
+  public void setSelectedAnalysisParameter( int index ) {
+    if ( index > -1 ) {
+      selectedAnalysisParameter = analysisParameters.get( index );
+    } else {
+      selectedAnalysisParameter = null;
+    }
+  }
+
+  public ParameterDialogModel getSelectedAnalysisParameter() {
+    return selectedAnalysisParameter;
+  }
 }

@@ -24,48 +24,49 @@ public class CsvTransformGeneratorException extends Exception implements Seriali
   private static final long serialVersionUID = 1L;
   private String causeMessage;
   private String causeStackTrace;
-  
+
   public CsvTransformGeneratorException() {
     super();
   }
-  
-  public CsvTransformGeneratorException(String message) {
-    super(message);
-  }
-  
-  public CsvTransformGeneratorException(Throwable cause) {
-    super(cause);
-  }
-  
-  public CsvTransformGeneratorException(String message, Throwable cause) {
-    super(message, cause);
+
+  public CsvTransformGeneratorException( String message ) {
+    super( message );
   }
 
-  public CsvTransformGeneratorException(String message, Throwable cause, String causeStackTrace) {
-    super(message, cause);
+  public CsvTransformGeneratorException( Throwable cause ) {
+    super( cause );
+  }
+
+  public CsvTransformGeneratorException( String message, Throwable cause ) {
+    super( message, cause );
+  }
+
+  public CsvTransformGeneratorException( String message, Throwable cause, String causeStackTrace ) {
+    super( message, cause );
     this.causeMessage = cause.getMessage();
     this.causeStackTrace = causeStackTrace;
   }
 
-  public CsvTransformGeneratorException(String message, Throwable cause, String causeMessage, String causeStackTrace) {
-    super(message, cause);
+  public CsvTransformGeneratorException( String message, Throwable cause, String causeMessage,
+                                         String causeStackTrace ) {
+    super( message, cause );
     this.causeMessage = causeMessage;
     this.causeStackTrace = causeStackTrace;
   }
 
   public String getCauseMessage() {
-	return causeMessage;
+    return causeMessage;
   }
 
-  public void setCauseMessage(String causeMessage) {
-	this.causeMessage = causeMessage;
+  public void setCauseMessage( String causeMessage ) {
+    this.causeMessage = causeMessage;
   }
 
   public String getCauseStackTrace() {
-	return causeStackTrace;
+    return causeStackTrace;
   }
 
-  public void setCauseStackTrace(String causeStackTrace) {
-	this.causeStackTrace = causeStackTrace;
+  public void setCauseStackTrace( String causeStackTrace ) {
+    this.causeStackTrace = causeStackTrace;
   }
 }

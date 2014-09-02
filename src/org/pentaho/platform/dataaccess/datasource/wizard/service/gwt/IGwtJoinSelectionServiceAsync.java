@@ -28,15 +28,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IGwtJoinSelectionServiceAsync {
 
-	void getDatabaseTables(IDatabaseConnection connection, String schema, AsyncCallback<List> callback);
-	
-	void retrieveSchemas(IDatabaseConnection connection, AsyncCallback<List> callback);	
+  void getDatabaseTables( IDatabaseConnection connection, String schema, AsyncCallback<List> callback );
 
-	void getTableFields(String table, IDatabaseConnection connection, AsyncCallback<List> callback);
+  void retrieveSchemas( IDatabaseConnection connection, AsyncCallback<List> callback );
 
-	void serializeJoins(MultiTableDatasourceDTO dto, IDatabaseConnection connection, AsyncCallback<IDatasourceSummary> callback);
-	
-	void deSerializeModelState(String source, AsyncCallback<MultiTableDatasourceDTO> callback);
-	
-	void gwtWorkaround(BogoPojo pojo, AsyncCallback<BogoPojo> callback);
+  void getTableFields( String table, IDatabaseConnection connection, AsyncCallback<List> callback );
+
+  void serializeJoins( MultiTableDatasourceDTO dto, IDatabaseConnection connection,
+                       AsyncCallback<IDatasourceSummary> callback );
+
+  void deSerializeModelState( String source, AsyncCallback<MultiTableDatasourceDTO> callback );
+
+  void gwtWorkaround( BogoPojo pojo, AsyncCallback<BogoPojo> callback );
 }

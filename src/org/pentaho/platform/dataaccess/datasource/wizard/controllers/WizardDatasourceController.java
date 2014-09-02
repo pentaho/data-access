@@ -63,79 +63,82 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
    * The domain being edited.
    */
   private Domain domainToBeSaved;
-  
+
   private XulTree modelDataTable = null;
-  
+
   private XulTree csvDataTable = null;
   private XulDialog clearModelWarningDialog = null;
 
   private DatasourceType tabValueSelected = null;
   private boolean clearModelWarningShown = false;
   private XulTabbox datasourceTabbox = null;
-  
+
   public WizardDatasourceController() {
   }
 
   @Bindable
   public void init() {
-    clearModelWarningDialog = (XulDialog) document.getElementById("clearModelWarningDialog");//$NON-NLS-1$
-    csvDataTable = (XulTree) document.getElementById("csvDataTable");//$NON-NLS-1$
-    modelDataTable = (XulTree) document.getElementById("modelDataTable");//$NON-NLS-1$
-    errorDialog = (XulDialog) document.getElementById("errorDialog"); //$NON-NLS-1$
-    errorLabel = (XulLabel) document.getElementById("errorLabel");//$NON-NLS-1$    
-    successDialog = (XulDialog) document.getElementById("successDialog"); //$NON-NLS-1$
-    successLabel = (XulLabel) document.getElementById("successLabel");//$NON-NLS-1$    
-    csvDatasourceName = (XulTextbox) document.getElementById("datasourceName"); //$NON-NLS-1$
-    datasourceDialog = (XulDialog) document.getElementById("datasourceDialog");//$NON-NLS-1$
-    okButton = (XulButton) document.getElementById("datasourceDialog_accept"); //$NON-NLS-1$
-    cancelButton = (XulButton) document.getElementById("datasourceDialog_cancel"); //$NON-NLS-1$
-    datasourceTabbox = (XulTabbox) document.getElementById("datasourceDialogTabbox"); //$NON-NLS-1$
+    clearModelWarningDialog = (XulDialog) document.getElementById( "clearModelWarningDialog" ); //$NON-NLS-1$
+    csvDataTable = (XulTree) document.getElementById( "csvDataTable" ); //$NON-NLS-1$
+    modelDataTable = (XulTree) document.getElementById( "modelDataTable" ); //$NON-NLS-1$
+    errorDialog = (XulDialog) document.getElementById( "errorDialog" ); //$NON-NLS-1$
+    errorLabel = (XulLabel) document.getElementById( "errorLabel" ); //$NON-NLS-1$
+    successDialog = (XulDialog) document.getElementById( "successDialog" ); //$NON-NLS-1$
+    successLabel = (XulLabel) document.getElementById( "successLabel" ); //$NON-NLS-1$
+    csvDatasourceName = (XulTextbox) document.getElementById( "datasourceName" ); //$NON-NLS-1$
+    datasourceDialog = (XulDialog) document.getElementById( "datasourceDialog" ); //$NON-NLS-1$
+    okButton = (XulButton) document.getElementById( "datasourceDialog_accept" ); //$NON-NLS-1$
+    cancelButton = (XulButton) document.getElementById( "datasourceDialog_cancel" ); //$NON-NLS-1$
+    datasourceTabbox = (XulTabbox) document.getElementById( "datasourceDialogTabbox" ); //$NON-NLS-1$
 
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(datasourceModel, "validated", okButton, "!disabled");//$NON-NLS-1$ //$NON-NLS-2$
-    
-    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    final Binding domainBinding = bf.createBinding(datasourceModel.getGuiStateModel(), "datasourceName", csvDatasourceName, "value"); //$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding(datasourceModel, "datasourceName", csvDatasourceName, "value"); //$NON-NLS-1$ //$NON-NLS-2$    
+    bf.setBindingType( Binding.Type.ONE_WAY );
+    bf.createBinding( datasourceModel, "validated", okButton, "!disabled" ); //$NON-NLS-1$ //$NON-NLS-2$
+
+    bf.setBindingType( Binding.Type.BI_DIRECTIONAL );
+    final Binding domainBinding =
+      bf.createBinding( datasourceModel.getGuiStateModel(), "datasourceName", csvDatasourceName,
+        "value" ); //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding( datasourceModel, "datasourceName", csvDatasourceName, "value" ); //$NON-NLS-1$ //$NON-NLS-2$
     BindingConvertor<DatasourceType, Integer> tabIndexConvertor = new BindingConvertor<DatasourceType, Integer>() {
       @Override
-      public Integer sourceToTarget(DatasourceType value) {
+      public Integer sourceToTarget( DatasourceType value ) {
         Integer returnValue = null;
-        if (DatasourceType.SQL == value) {
+        if ( DatasourceType.SQL == value ) {
           returnValue = 0;
-        } else if (DatasourceType.CSV == value) {
+        } else if ( DatasourceType.CSV == value ) {
           returnValue = 1;
-        } else if (DatasourceType.OLAP == value) {
+        } else if ( DatasourceType.OLAP == value ) {
           return 2;
-        } else if (DatasourceType.NONE == value) {
+        } else if ( DatasourceType.NONE == value ) {
           return 0;
         }
         return returnValue;
       }
 
       @Override
-      public DatasourceType targetToSource(Integer value) {
+      public DatasourceType targetToSource( Integer value ) {
         DatasourceType type = null;
-        if (value == 0) {
+        if ( value == 0 ) {
           type = DatasourceType.SQL;
-         } else if (value == 1) {
+        } else if ( value == 1 ) {
           type = DatasourceType.CSV;
-        } else if (value == 2){
+        } else if ( value == 2 ) {
           type = DatasourceType.OLAP;
         }
         return type;
       }
     };
-    bf.createBinding(datasourceModel, "datasourceType", datasourceTabbox, "selectedIndex", tabIndexConvertor);//$NON-NLS-1$ //$NON-NLS-2$
-    okButton.setDisabled(true);
+    bf.createBinding( datasourceModel, "datasourceType", datasourceTabbox, "selectedIndex",
+      tabIndexConvertor ); //$NON-NLS-1$ //$NON-NLS-2$
+    okButton.setDisabled( true );
     initialize();
     try {
       // Fires the population of the model listbox. This cascades down to the categories and columns. In essence, this
       // call initializes the entire UI.
       domainBinding.fireSourceChanged();
 
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
+    } catch ( Exception e ) {
+      System.out.println( e.getMessage() );
       e.printStackTrace();
     }
   }
@@ -148,18 +151,18 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
   public void showDialog() {
     super.showDialog();
     setFocus();
-  };
-  
-  private void setFocus() {
-	  csvDatasourceName.setFocus();
   }
-  
-  public void setBindingFactory(BindingFactory bf) {
+
+  private void setFocus() {
+    csvDatasourceName.setFocus();
+  }
+
+  public void setBindingFactory( BindingFactory bf ) {
     this.bf = bf;
   }
 
   @Bindable
-  public void setDatasourceModel(DatasourceModel model) {
+  public void setDatasourceModel( DatasourceModel model ) {
     this.datasourceModel = model;
   }
 
@@ -171,45 +174,45 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
   public String getName() {
     return "datasourceController"; //$NON-NLS-1$
   }
-  
-  private void showClearModelWarningDialog(DatasourceType value) {
+
+  private void showClearModelWarningDialog( DatasourceType value ) {
     tabValueSelected = value;
     clearModelWarningDialog.show();
   }
-  
+
   @Bindable
   public void closeClearModelWarningDialog() {
     clearModelWarningDialog.hide();
     clearModelWarningShown = false;
   }
-  
+
   @Bindable
   public void switchTab() {
     closeClearModelWarningDialog();
-    if(tabValueSelected == DatasourceType.SQL) {
+    if ( tabValueSelected == DatasourceType.SQL ) {
       modelDataTable.update();
-      datasourceModel.setDatasourceType(DatasourceType.SQL);      
-    } else if(tabValueSelected == DatasourceType.CSV) {
+      datasourceModel.setDatasourceType( DatasourceType.SQL );
+    } else if ( tabValueSelected == DatasourceType.CSV ) {
       csvDataTable.update();
       datasourceModel.getGuiStateModel().clearModel();
-      datasourceModel.setDatasourceType(DatasourceType.CSV);
+      datasourceModel.setDatasourceType( DatasourceType.CSV );
     }
   }
-  
+
   @Bindable
-  public Boolean beforeTabSwitch(Integer tabIndex) {
-    if(RELATIONAL_TAB == tabIndex) {
-      if(!clearModelWarningShown  && datasourceModel.getModelInfo() != null) {
-        showClearModelWarningDialog(DatasourceType.SQL);
+  public Boolean beforeTabSwitch( Integer tabIndex ) {
+    if ( RELATIONAL_TAB == tabIndex ) {
+      if ( !clearModelWarningShown && datasourceModel.getModelInfo() != null ) {
+        showClearModelWarningDialog( DatasourceType.SQL );
         clearModelWarningShown = true;
         return false;
       } else {
         return true;
       }
-    } else if(CSV_TAB == tabIndex) {
-      if(!clearModelWarningShown  && datasourceModel.getQuery() != null
-          && datasourceModel.getQuery().length() > 0) {
-        showClearModelWarningDialog(DatasourceType.CSV);
+    } else if ( CSV_TAB == tabIndex ) {
+      if ( !clearModelWarningShown && datasourceModel.getQuery() != null
+        && datasourceModel.getQuery().length() > 0 ) {
+        showClearModelWarningDialog( DatasourceType.CSV );
         clearModelWarningShown = true;
         return false;
       } else {
@@ -223,46 +226,46 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
     return service;
   }
 
-  public void setService(IXulAsyncDSWDatasourceService service) {
+  public void setService( IXulAsyncDSWDatasourceService service ) {
     this.service = service;
   }
 
   @Bindable
-  public void openErrorDialog(String title, String message) {
-    errorDialog.setTitle(title);
-    errorLabel.setValue(message);
+  public void openErrorDialog( String title, String message ) {
+    errorDialog.setTitle( title );
+    errorLabel.setValue( message );
     errorDialog.show();
   }
 
   @Bindable
   public void closeErrorDialog() {
-    if (!errorDialog.isHidden()) {
+    if ( !errorDialog.isHidden() ) {
       errorDialog.hide();
     }
   }
 
   @Bindable
-  public void openSuccesDialog(String title, String message) {
-    successDialog.setTitle(title);
-    successLabel.setValue(message);
+  public void openSuccesDialog( String title, String message ) {
+    successDialog.setTitle( title );
+    successLabel.setValue( message );
     successDialog.show();
   }
 
   @Bindable
   public void closeSuccessDialog() {
-    if (!successDialog.isHidden()) {
+    if ( !successDialog.isHidden() ) {
       successDialog.hide();
     }
   }
 
   @Override
   protected XulDialog getDialog() {
-    return datasourceDialog;  
+    return datasourceDialog;
   }
 
   @Override
   protected Domain getDialogResult() {
-    return domainToBeSaved;  
+    return domainToBeSaved;
   }
 
 
@@ -270,17 +273,19 @@ public class WizardDatasourceController extends AbstractXulDialogController<Doma
   private void saveModelDone() {
     super.onDialogAccept();
   }
-  
-  public void displayErrorMessage(Throwable th) {
-    errorDialog.setTitle(ExceptionParser.getErrorHeader(th, getDatasourceMessages().getString("DatasourceEditor.USER_ERROR_TITLE"))); //$NON-NLS-1$
-    errorLabel.setValue(ExceptionParser.getErrorMessage(th, getDatasourceMessages().getString("DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED"))); //$NON-NLS-1$
+
+  public void displayErrorMessage( Throwable th ) {
+    errorDialog.setTitle( ExceptionParser
+      .getErrorHeader( th, getDatasourceMessages().getString( "DatasourceEditor.USER_ERROR_TITLE" ) ) ); //$NON-NLS-1$
+    errorLabel.setValue( ExceptionParser.getErrorMessage( th,
+      getDatasourceMessages().getString( "DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED" ) ) ); //$NON-NLS-1$
     errorDialog.show();
   }
 
   /**
    * @param datasourceMessages the datasourceMessages to set
    */
-  public void setDatasourceMessages(DatasourceMessages datasourceMessages) {
+  public void setDatasourceMessages( DatasourceMessages datasourceMessages ) {
     this.datasourceMessages = datasourceMessages;
   }
 

@@ -24,30 +24,30 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import java.util.Set;
 
 /**
- * User: nbaker
- * Date: 3/30/11
+ * User: nbaker Date: 3/30/11
  */
 public interface IWizardModel extends XulEventSource {
-  @Bindable
-  String getDatasourceName();
+  @Bindable String getDatasourceName();
 
-  @Bindable
-  void setDatasourceName(String datasourceName);
+  @Bindable void setDatasourceName( String datasourceName );
 
   Set<IWizardDatasource> getDatasources();
 
-  void addDatasource(IWizardDatasource datasource);
+  void addDatasource( IWizardDatasource datasource );
 
-  void removeDatasourceByType(Class<? extends IWizardDatasource> datasource);
+  void removeDatasourceByType( Class<? extends IWizardDatasource> datasource );
 
   boolean isEditing();
 
-  void setEditing(boolean editing);
+  void setEditing( boolean editing );
 
-  void setSelectedDatasource(IWizardDatasource datasource);
+  void setSelectedDatasource( IWizardDatasource datasource );
+
   IWizardDatasource getSelectedDatasource();
+
   void reset();
 
   boolean isReportingOnlyValid();
-  void setReportingOnlyValid(boolean valid);
+
+  void setReportingOnlyValid( boolean valid );
 }

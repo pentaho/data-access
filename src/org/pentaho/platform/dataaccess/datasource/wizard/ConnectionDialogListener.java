@@ -21,7 +21,7 @@ import org.pentaho.database.model.IDatabaseConnection;
 
 public interface ConnectionDialogListener {
 
-  public void onDialogAccept(IDatabaseConnection connection);
+  public void onDialogAccept( IDatabaseConnection connection );
 
   public void onDialogCancel();
 }

@@ -24,10 +24,15 @@ import org.pentaho.ui.xul.XulServiceCallback;
 
 public interface IXulAsyncDatasourceServiceManager {
 
-  void isAdmin(XulServiceCallback<Boolean> callback);
-  void getAnalysisDatasourceIds(XulServiceCallback<List<String>> callback);
-  void getMetadataDatasourceIds(XulServiceCallback<List<String>> callback);
-  void getDSWDatasourceIds(XulServiceCallback<List<String>> callback);
-  void export(IDatasourceInfo dsInfo);
-  void remove(IDatasourceInfo dsInfo, Object callback);
+  void isAdmin( XulServiceCallback<Boolean> callback );
+
+  void getAnalysisDatasourceIds( XulServiceCallback<List<String>> callback );
+
+  void getMetadataDatasourceIds( XulServiceCallback<List<String>> callback );
+
+  void getDSWDatasourceIds( XulServiceCallback<List<String>> callback );
+
+  void export( IDatasourceInfo dsInfo );
+
+  void remove( IDatasourceInfo dsInfo, Object callback );
 }

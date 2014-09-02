@@ -27,26 +27,26 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class DatasourceInfo extends XulEventSourceAdapter implements IDatasourceInfo {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
   private static final String MSG_PREFIX = "DatasourceInfo.DisplayType.";
 
   String name;
-  
+
   String id;
 
   String type;
 
   String displayType;
-  
+
   boolean editable;
-  
+
   boolean removable;
-  
+
   boolean importable;
-  
+
   boolean exportable;
 
   boolean creatable;
@@ -58,15 +58,16 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     super();
     // TODO Auto-generated constructor stub
   }
-  
-  public DatasourceInfo(String name, String id, String type) {
+
+  public DatasourceInfo( String name, String id, String type ) {
     super();
     this.name = name;
     this.id = id;
     this.type = type;
   }
 
-  public DatasourceInfo(String name, String id, String type, boolean editable, boolean removable, boolean importable, boolean exportable) {
+  public DatasourceInfo( String name, String id, String type, boolean editable, boolean removable, boolean importable,
+                         boolean exportable ) {
     super();
     this.name = name;
     this.id = id;
@@ -78,8 +79,8 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     this.creatable = true;
   }
 
-  public DatasourceInfo(String name, String id, String type, boolean editable, boolean removable, boolean importable,
-                        boolean exportable, boolean creatable) {
+  public DatasourceInfo( String name, String id, String type, boolean editable, boolean removable, boolean importable,
+                         boolean exportable, boolean creatable ) {
     super();
     this.name = name;
     this.id = id;
@@ -90,7 +91,7 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     this.exportable = exportable;
     this.creatable = creatable;
   }
-  
+
   @Bindable
   @Override
   public String getName() {
@@ -100,39 +101,39 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   @Bindable
   @Override
   public String getDisplayType() {
-    if(displayType != null) {
+    if ( displayType != null ) {
       return displayType;
     } else {
-      return getDisplayType(getType());
+      return getDisplayType( getType() );
     }
   }
 
-  public static String getDisplayType(String type) {
-    if(type == null) {
-      throw new IllegalArgumentException(getString("DatasourceInfo.TYPE_NULL"));
+  public static String getDisplayType( String type ) {
+    if ( type == null ) {
+      throw new IllegalArgumentException( getString( "DatasourceInfo.TYPE_NULL" ) );
     }
 
     String displayName = null;
     try {
-      String key = MSG_PREFIX + type.replace(" ", "_");
-      displayName = getString(key);
-      return displayName == null || displayName.equals(key) ? type : displayName;
-    } catch (Exception e) {
+      String key = MSG_PREFIX + type.replace( " ", "_" );
+      displayName = getString( key );
+      return displayName == null || displayName.equals( key ) ? type : displayName;
+    } catch ( Exception e ) {
       // MessageHandler not initialized properly
       return type;
     }
   }
 
-  public static String getDisplayType(String type, GwtDatasourceMessages messages) {
-    if(type == null) {
-      throw new IllegalArgumentException(getString("DatasourceInfo.TYPE_NULL"));
+  public static String getDisplayType( String type, GwtDatasourceMessages messages ) {
+    if ( type == null ) {
+      throw new IllegalArgumentException( getString( "DatasourceInfo.TYPE_NULL" ) );
     }
     String displayName = null;
     try {
-      String key = MSG_PREFIX + type.replace(" ", "_");
-      displayName = getString(key);
-      return displayName == null || displayName.equals(key) ? type : displayName;
-    } catch (Exception e) {
+      String key = MSG_PREFIX + type.replace( " ", "_" );
+      displayName = getString( key );
+      return displayName == null || displayName.equals( key ) ? type : displayName;
+    } catch ( Exception e ) {
       // messages not initialized properly
       return type;
     }
@@ -144,14 +145,14 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
     return id;
   }
 
-  
+
   @Bindable
   @Override
   public String getType() {
     return type;
   }
 
-  @SuppressWarnings("nls")
+  @SuppressWarnings( "nls" )
   @Override
   public String toString() {
     return "DatasourceInfo [id=" + id + ", type=" + type + "]";
@@ -164,7 +165,7 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
 
   @Override
   public boolean isRemovable() {
-    return this.removable ;
+    return this.removable;
   }
 
   @Override
@@ -178,19 +179,19 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   }
 
   @Override
-  public boolean isCreatable(){
+  public boolean isCreatable() {
     return this.creatable;
   }
 
-  public static void setMessageBundle(DatasourceMessages bundle) {
+  public static void setMessageBundle( DatasourceMessages bundle ) {
     messageBundle = bundle;
   }
 
-  protected static String getString(String key) {
-    if(messageBundle != null) {
-      return messageBundle.getString(key);
+  protected static String getString( String key ) {
+    if ( messageBundle != null ) {
+      return messageBundle.getString( key );
     } else {
-      return MessageHandler.getString(key);
+      return MessageHandler.getString( key );
     }
   }
 

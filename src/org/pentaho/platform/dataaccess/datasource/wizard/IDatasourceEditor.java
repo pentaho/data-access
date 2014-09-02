@@ -21,5 +21,5 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.ui.xul.util.DialogController;
 
 public interface IDatasourceEditor extends DialogController<Domain> {
-  public void showEditDialog(final String domainId, final String modelId);
+  public void showEditDialog( final String domainId, final String modelId );
 }

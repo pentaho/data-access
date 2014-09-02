@@ -20,16 +20,14 @@ package org.pentaho.platform.dataaccess.metadata.model;
 import java.io.Serializable;
 
 /**
- * 
  * @author jamesdixon
- *
  */
-public interface IOrder extends Serializable{
+public interface IOrder extends Serializable {
 
   public String getColumn();
-  
+
   public String getCategory();
-  
+
   public String getOrderType();
-  
+
 }

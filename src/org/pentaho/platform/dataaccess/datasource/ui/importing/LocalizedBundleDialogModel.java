@@ -22,32 +22,32 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class LocalizedBundleDialogModel extends XulEventSourceAdapter {
 
-	private String fileName;
-	private String uploadedFile;
+  private String fileName;
+  private String uploadedFile;
 
-	public LocalizedBundleDialogModel() {
-	}
+  public LocalizedBundleDialogModel() {
+  }
 
-	public LocalizedBundleDialogModel(String fileName, String uploadedFile) {
-		this.fileName = fileName;
-		this.uploadedFile = uploadedFile;
-	}
+  public LocalizedBundleDialogModel( String fileName, String uploadedFile ) {
+    this.fileName = fileName;
+    this.uploadedFile = uploadedFile;
+  }
 
-	@Bindable
-	public String getFileName() {
-		return fileName;
-	}
+  @Bindable
+  public String getFileName() {
+    return fileName;
+  }
 
-	@Bindable
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+  @Bindable
+  public void setFileName( String fileName ) {
+    this.fileName = fileName;
+  }
 
-	public String getUploadedFile() {
-		return uploadedFile;
-	}
+  public String getUploadedFile() {
+    return uploadedFile;
+  }
 
-	public void setUploadedFile(String uploadedFile) {
-		this.uploadedFile = uploadedFile;
-	}
+  public void setUploadedFile( String uploadedFile ) {
+    this.uploadedFile = uploadedFile;
+  }
 }

@@ -34,7 +34,7 @@ public class PlatformStagingDatabase implements IStagingDatabase {
 
   public PlatformStagingDatabase() {
     IPluginResourceLoader resLoader =
-        PentahoSystem.get( IPluginResourceLoader.class, PentahoSessionHolder.getSession() );
+      PentahoSystem.get( IPluginResourceLoader.class, PentahoSessionHolder.getSession() );
     this.agileMartDatasourceHelper = new AgileMartDatasourceHelper( resLoader );
   }
 

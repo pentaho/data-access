@@ -44,45 +44,51 @@ import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 /**
- * Reads and writes Database Connection objects using flexjson so that they won't lose map values
- * when converting to/from autobeans
+ * Reads and writes Database Connection objects using flexjson so that they won't lose map values when converting
+ * to/from autobeans
  */
 @Provider
-@Produces(APPLICATION_JSON)
-public class DatabaseConnectionListReaderWriter implements MessageBodyReader<IDatabaseConnectionList>, MessageBodyWriter<IDatabaseConnectionList> {
+@Produces( APPLICATION_JSON )
+public class DatabaseConnectionListReaderWriter
+  implements MessageBodyReader<IDatabaseConnectionList>, MessageBodyWriter<IDatabaseConnectionList> {
 
   @Override
-  public long getSize(IDatabaseConnectionList t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+  public long getSize( IDatabaseConnectionList t, Class<?> type, Type genericType, Annotation[] annotations,
+                       MediaType mediaType ) {
     return -1;
   }
 
   @Override
-  public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return IDatabaseConnectionList.class.isAssignableFrom(type);
+  public boolean isWriteable( Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType ) {
+    return IDatabaseConnectionList.class.isAssignableFrom( type );
   }
 
   @Override
-  public void writeTo(IDatabaseConnectionList t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-      MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(entityStream);
+  public void writeTo( IDatabaseConnectionList t, Class<?> type, Type genericType, Annotation[] annotations,
+                       MediaType mediaType,
+                       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream )
+    throws IOException, WebApplicationException {
+    OutputStreamWriter outputStreamWriter = new OutputStreamWriter( entityStream );
     try {
-      new JSONSerializer().exclude("*.class").deepSerialize(t, outputStreamWriter);
+      new JSONSerializer().exclude( "*.class" ).deepSerialize( t, outputStreamWriter );
     } finally {
       outputStreamWriter.close();
     }
   }
 
   @Override
-  public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return IDatabaseConnection.class.isAssignableFrom(type);
+  public boolean isReadable( Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType ) {
+    return IDatabaseConnection.class.isAssignableFrom( type );
   }
 
   @Override
-  public IDatabaseConnectionList readFrom(Class<IDatabaseConnectionList> type, Type genericType, Annotation[] annotations,
-      MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
-      WebApplicationException {
+  public IDatabaseConnectionList readFrom( Class<IDatabaseConnectionList> type, Type genericType,
+                                           Annotation[] annotations,
+                                           MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
+                                           InputStream entityStream ) throws IOException,
+    WebApplicationException {
     JSONDeserializer<DefaultDatabaseConnectionList> jsonD = new JSONDeserializer<DefaultDatabaseConnectionList>();
-    jsonD.use("databaseType", DatabaseType.class);
-    return jsonD.deserialize(new InputStreamReader(entityStream), DefaultDatabaseConnectionList.class);
+    jsonD.use( "databaseType", DatabaseType.class );
+    return jsonD.deserialize( new InputStreamReader( entityStream ), DefaultDatabaseConnectionList.class );
   }
 }

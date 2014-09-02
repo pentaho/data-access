@@ -22,26 +22,22 @@ import java.io.Serializable;
 public class QueryValidationException extends Exception implements Serializable {
 
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public QueryValidationException()
-	{
-	  super();
-	}
+  public QueryValidationException() {
+    super();
+  }
 
-	public QueryValidationException(String message)
-	{
-		super(message);
-	}
+  public QueryValidationException( String message ) {
+    super( message );
+  }
 
-	public QueryValidationException(Throwable cause)
-	{
-		super(cause);
-	}
+  public QueryValidationException( Throwable cause ) {
+    super( cause );
+  }
 
-	public QueryValidationException(String message, Throwable cause)
-	{
-		super(message, cause);
-	}
+  public QueryValidationException( String message, Throwable cause ) {
+    super( message, cause );
+  }
 
 }

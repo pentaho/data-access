@@ -17,9 +17,8 @@ import javax.ws.rs.Path;
 
 /**
  * @author wseyler
- *
  */
-@Path("/data-access/api/dbconnection")
+@Path( "/data-access/api/dbconnection" )
 public class DatabaseConnectionService {
 
 }

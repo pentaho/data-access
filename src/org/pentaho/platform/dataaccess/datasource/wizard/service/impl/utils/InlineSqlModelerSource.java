@@ -32,8 +32,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasou
 import org.pentaho.reporting.libraries.base.util.StringUtils;
 
 /**
- * User: nbaker
- * Date: Jul 16, 2010
+ * User: nbaker Date: Jul 16, 2010
  */
 public class InlineSqlModelerSource implements ISpoonModelerSource {
 
@@ -43,13 +42,14 @@ public class InlineSqlModelerSource implements ISpoonModelerSource {
   private String connectionName;
   private String dbType;
 
-	public static final String SOURCE_TYPE = InlineSqlModelerSource.class.getSimpleName();
+  public static final String SOURCE_TYPE = InlineSqlModelerSource.class.getSimpleName();
 
-  public InlineSqlModelerSource( String connectionName, String dbType, String query, String datasourceName){
-    this(new DSWDatasourceServiceImpl(), connectionName, dbType, query, datasourceName);
+  public InlineSqlModelerSource( String connectionName, String dbType, String query, String datasourceName ) {
+    this( new DSWDatasourceServiceImpl(), connectionName, dbType, query, datasourceName );
   }
 
-  public InlineSqlModelerSource( IDSWDatasourceService datasourceService, String connectionName, String dbType, String query, String datasourceName){
+  public InlineSqlModelerSource( IDSWDatasourceService datasourceService, String connectionName, String dbType,
+                                 String query, String datasourceName ) {
     this.query = query;
     this.dbType = dbType;
     this.connectionName = connectionName;
@@ -63,43 +63,43 @@ public class InlineSqlModelerSource implements ISpoonModelerSource {
   }
 
   @Override
-  public Domain generateDomain(boolean dualModelingMode) throws ModelerException {
-    try{
-      BusinessData bd =  datasourceImpl.generateLogicalModel(datasourceName, connectionName, dbType, query, "10");
+  public Domain generateDomain( boolean dualModelingMode ) throws ModelerException {
+    try {
+      BusinessData bd = datasourceImpl.generateLogicalModel( datasourceName, connectionName, dbType, query, "10" );
       Domain domain = bd.getDomain();
       return domain;
-    } catch(DatasourceServiceException dce){
-      throw new ModelerException(dce);
+    } catch ( DatasourceServiceException dce ) {
+      throw new ModelerException( dce );
     }
   }
 
   public Domain generateDomain() throws ModelerException {
-    return generateDomain(true);
+    return generateDomain( true );
   }
 
-  public void initialize(Domain domain) throws ModelerException {
-    SqlPhysicalModel model = (SqlPhysicalModel) domain.getPhysicalModels().get(0);
-    SqlPhysicalTable table = model.getPhysicalTables().get(0);
+  public void initialize( Domain domain ) throws ModelerException {
+    SqlPhysicalModel model = (SqlPhysicalModel) domain.getPhysicalModels().get( 0 );
+    SqlPhysicalTable table = model.getPhysicalTables().get( 0 );
 
-    String targetTable = (String) table.getProperty("target_table"); //$NON-NLS-1$
-    if(!StringUtils.isEmpty(targetTable)) {
-      domain.setId(targetTable);
+    String targetTable = (String) table.getProperty( "target_table" ); //$NON-NLS-1$
+    if ( !StringUtils.isEmpty( targetTable ) ) {
+      domain.setId( targetTable );
     }
 
-    this.databaseMeta = ThinModelConverter.convertToLegacy(model.getId(), model.getDatasource());
+    this.databaseMeta = ThinModelConverter.convertToLegacy( model.getId(), model.getDatasource() );
 
   }
 
-  public void serializeIntoDomain(Domain d) {
-    LogicalModel lm = d.getLogicalModels().get(0);
-    lm.setProperty("source_type", SOURCE_TYPE); //$NON-NLS-1$
+  public void serializeIntoDomain( Domain d ) {
+    LogicalModel lm = d.getLogicalModels().get( 0 );
+    lm.setProperty( "source_type", SOURCE_TYPE ); //$NON-NLS-1$
   }
 
   public DatabaseMeta getDatabaseMeta() {
     return databaseMeta;
   }
 
-  public void setDatabaseMeta(DatabaseMeta databaseMeta) {
+  public void setDatabaseMeta( DatabaseMeta databaseMeta ) {
     this.databaseMeta = databaseMeta;
   }
 

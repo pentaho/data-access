@@ -29,9 +29,9 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 //TODO: this class is a mixture of CSV and Relational model code... break it up!
 @Deprecated
-public class DatasourceModel extends XulEventSourceAdapter 
-    implements IRelationalModelValidationListener, IModelInfoValidationListener {
-  
+public class DatasourceModel extends XulEventSourceAdapter
+  implements IRelationalModelValidationListener, IModelInfoValidationListener {
+
   private boolean validated;
   private DatasourceType datasourceType = DatasourceType.NONE;
   private transient GuiStateModel guiStateModel;
@@ -45,12 +45,12 @@ public class DatasourceModel extends XulEventSourceAdapter
 
   public DatasourceModel() {
     guiStateModel = new GuiStateModel();
-    guiStateModel.addRelationalModelValidationListener(this);
+    guiStateModel.addRelationalModelValidationListener( this );
 
     CsvFileInfo fileInfo = new CsvFileInfo();
     modelInfo = new ModelInfo();
-    modelInfo.setFileInfo(fileInfo);
-    modelInfo.addModelInfoValidationListener(this);
+    modelInfo.setFileInfo( fileInfo );
+    modelInfo.addModelInfoValidationListener( this );
   }
 
   @Bindable
@@ -59,7 +59,7 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   @Bindable
-  public void setGuiStateModel(GuiStateModel guiStateModel) {
+  public void setGuiStateModel( GuiStateModel guiStateModel ) {
     this.guiStateModel = guiStateModel;
   }
 
@@ -69,22 +69,22 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   @Bindable
-  public void setDatasourceName(String datasourceName) {
+  public void setDatasourceName( String datasourceName ) {
     String previousVal = this.datasourceName;
     this.datasourceName = datasourceName;
-    
+
     // if we're editing a generated or already defined domain,
     // we need to keep the datasource name in sync
-    if (domain != null) {
-      domain.setId(datasourceName);
-      LogicalModel model = domain.getLogicalModels().get(0);
-      String localeCode = domain.getLocales().get(0).getCode();
-      model.getName().setString(localeCode, datasourceName);
+    if ( domain != null ) {
+      domain.setId( datasourceName );
+      LogicalModel model = domain.getLogicalModels().get( 0 );
+      String localeCode = domain.getLocales().get( 0 ).getCode();
+      model.getName().setString( localeCode, datasourceName );
     }
 
-    this.getModelInfo().setStageTableName(generateTableName());
-   
-    this.firePropertyChange("datasourceName", previousVal, datasourceName); //$NON-NLS-1$
+    this.getModelInfo().setStageTableName( generateTableName() );
+
+    this.firePropertyChange( "datasourceName", previousVal, datasourceName ); //$NON-NLS-1$
     validate();
   }
 
@@ -94,14 +94,13 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   @Bindable
-  public void setSelectedRelationalConnection(IDatabaseConnection value) {
-    try{
+  public void setSelectedRelationalConnection( IDatabaseConnection value ) {
+    try {
       IDatabaseConnection previousValue = this.selectedRelationalConnection;
       this.selectedRelationalConnection = value;
-      this.firePropertyChange("selectedRelationalConnection", previousValue, value);
+      this.firePropertyChange( "selectedRelationalConnection", previousValue, value );
       validate();
-    }
-    catch(BindingException e){
+    } catch ( BindingException e ) {
       // ignore since any binding issues with datasource parameters will be more obviously caught elsewhere
     }
   }
@@ -112,25 +111,25 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   @Bindable
-  public void setQuery(String value) {
+  public void setQuery( String value ) {
     String previousVal = this.query;
     this.query = value;
-    this.firePropertyChange("query", previousVal, value); //$NON-NLS-1$
+    this.firePropertyChange( "query", previousVal, value ); //$NON-NLS-1$
     validate();
   }
-  
+
   public Domain getDomain() {
     return domain;
   }
 
-  public void setDomain(Domain domain) {
+  public void setDomain( Domain domain ) {
     this.domain = domain;
-    if (domain != null) {
-      guiStateModel.setLogicalModels(domain.getLogicalModels());
-      guiStateModel.setLocaleCode(domain.getLocales().get(0).getCode());
+    if ( domain != null ) {
+      guiStateModel.setLogicalModels( domain.getLogicalModels() );
+      guiStateModel.setLocaleCode( domain.getLocales().get( 0 ).getCode() );
     } else {
-      guiStateModel.setLogicalModels(null);
-      guiStateModel.setLocaleCode(null);
+      guiStateModel.setLogicalModels( null );
+      guiStateModel.setLocaleCode( null );
     }
   }
 
@@ -140,26 +139,26 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   @Bindable
-  public void setModelInfo(ModelInfo modelInfo) {
+  public void setModelInfo( ModelInfo modelInfo ) {
     // to avoid un-wiring bindings, don't just blow away the modelinfo object
 
-	this.modelInfo.getFileInfo().setSavedEncoding(modelInfo.getFileInfo().getEncoding());	  
-    this.modelInfo.setColumns(modelInfo.getColumns());
-    this.modelInfo.setData(modelInfo.getData());
-    this.modelInfo.setStageTableName(modelInfo.getStageTableName());    
-    this.modelInfo.getFileInfo().setDelimiter(modelInfo.getFileInfo().getDelimiter());
-    this.modelInfo.getFileInfo().setContents(modelInfo.getFileInfo().getContents());
-    this.modelInfo.getFileInfo().setCurrencySymbol(modelInfo.getFileInfo().getCurrencySymbol());
-    this.modelInfo.getFileInfo().setEnclosure(modelInfo.getFileInfo().getEnclosure());
-    this.modelInfo.getFileInfo().setEncoding(modelInfo.getFileInfo().getEncoding());
-    this.modelInfo.getFileInfo().setFilename(modelInfo.getFileInfo().getFilename());
-    this.modelInfo.getFileInfo().setTmpFilename(modelInfo.getFileInfo().getTmpFilename());
-    this.modelInfo.getFileInfo().setGroupSymbol(modelInfo.getFileInfo().getGroupSymbol());
-    this.modelInfo.getFileInfo().setHeaderRows(modelInfo.getFileInfo().getHeaderRows());
-    this.modelInfo.getFileInfo().setIfNull(modelInfo.getFileInfo().getIfNull());
-    this.modelInfo.getFileInfo().setNullStr(modelInfo.getFileInfo().getNullStr());
-    this.modelInfo.getFileInfo().setProject(modelInfo.getFileInfo().getProject());
-    this.modelInfo.getFileInfo().setFriendlyFilename(modelInfo.getFileInfo().getFriendlyFilename());
+    this.modelInfo.getFileInfo().setSavedEncoding( modelInfo.getFileInfo().getEncoding() );
+    this.modelInfo.setColumns( modelInfo.getColumns() );
+    this.modelInfo.setData( modelInfo.getData() );
+    this.modelInfo.setStageTableName( modelInfo.getStageTableName() );
+    this.modelInfo.getFileInfo().setDelimiter( modelInfo.getFileInfo().getDelimiter() );
+    this.modelInfo.getFileInfo().setContents( modelInfo.getFileInfo().getContents() );
+    this.modelInfo.getFileInfo().setCurrencySymbol( modelInfo.getFileInfo().getCurrencySymbol() );
+    this.modelInfo.getFileInfo().setEnclosure( modelInfo.getFileInfo().getEnclosure() );
+    this.modelInfo.getFileInfo().setEncoding( modelInfo.getFileInfo().getEncoding() );
+    this.modelInfo.getFileInfo().setFilename( modelInfo.getFileInfo().getFilename() );
+    this.modelInfo.getFileInfo().setTmpFilename( modelInfo.getFileInfo().getTmpFilename() );
+    this.modelInfo.getFileInfo().setGroupSymbol( modelInfo.getFileInfo().getGroupSymbol() );
+    this.modelInfo.getFileInfo().setHeaderRows( modelInfo.getFileInfo().getHeaderRows() );
+    this.modelInfo.getFileInfo().setIfNull( modelInfo.getFileInfo().getIfNull() );
+    this.modelInfo.getFileInfo().setNullStr( modelInfo.getFileInfo().getNullStr() );
+    this.modelInfo.getFileInfo().setProject( modelInfo.getFileInfo().getProject() );
+    this.modelInfo.getFileInfo().setFriendlyFilename( modelInfo.getFileInfo().getFriendlyFilename() );
 
     modelInfo.validate();
     validate();
@@ -171,39 +170,40 @@ public class DatasourceModel extends XulEventSourceAdapter
   }
 
   @Bindable
-  private void setValidated(boolean validated) {
+  private void setValidated( boolean validated ) {
     boolean prevVal = this.validated;
     this.validated = validated;
-    this.firePropertyChange("validated", prevVal, validated); //$NON-NLS-1$
+    this.firePropertyChange( "validated", prevVal, validated ); //$NON-NLS-1$
   }
-  
+
   @Bindable
   public DatasourceType getDatasourceType() {
     return this.datasourceType;
   }
 
   @Bindable
-  public void setDatasourceType(DatasourceType datasourceType) {
+  public void setDatasourceType( DatasourceType datasourceType ) {
     DatasourceType previousVal = this.datasourceType;
     this.datasourceType = datasourceType;
-    this.firePropertyChange("datasourceType", previousVal, datasourceType); //$NON-NLS-1$
+    this.firePropertyChange( "datasourceType", previousVal, datasourceType ); //$NON-NLS-1$
     validate();
   }
 
   public void validate() {
     boolean value = false;
-    if (datasourceName != null && datasourceName.length() > 0) {
-      if (DatasourceType.SQL == getDatasourceType() && getSelectedRelationalConnection() != null && query != null && query.length() > 0) {
+    if ( datasourceName != null && datasourceName.length() > 0 ) {
+      if ( DatasourceType.SQL == getDatasourceType() && getSelectedRelationalConnection() != null && query != null
+        && query.length() > 0 ) {
         guiStateModel.validateRelational();
         value = guiStateModel.isRelationalValidated();
-      } else if (DatasourceType.CSV == getDatasourceType()) {
+      } else if ( DatasourceType.CSV == getDatasourceType() ) {
         guiStateModel.invalidateRelational();
         value = modelInfo.isValidated();
       }
     } else {
       guiStateModel.invalidateRelational();
     }
-    setValidated(value);
+    setValidated( value );
   }
 
   /*
@@ -212,96 +212,100 @@ public class DatasourceModel extends XulEventSourceAdapter
   public void clearModel() {
     // clear the models before switching the datasource type, otherwise
     // an error is presented to the user.
-    setQuery("");
-    setDatasourceName("");
+    setQuery( "" );
+    setDatasourceName( "" );
     guiStateModel.clearModel();
-    
+
     // BISERVER-3664: Temporary solution for IE ListBoxs not accepting -1 selectedIndex.
     // Explicitly selecting the first connection object makes all browsers behave the same.
-    IDatabaseConnection firstConnection = guiStateModel.getConnections().size() > 0 ? guiStateModel.getConnections().get(0) : null;
-    setSelectedRelationalConnection(firstConnection);
+    IDatabaseConnection firstConnection =
+      guiStateModel.getConnections().size() > 0 ? guiStateModel.getConnections().get( 0 ) : null;
+    setSelectedRelationalConnection( firstConnection );
 
     modelInfo.clearModel();
-    guiStateModel.setDataStagingComplete(false);
-    setDatasourceType(DatasourceType.NONE);
+    guiStateModel.setDataStagingComplete( false );
+    setDatasourceType( DatasourceType.NONE );
     validate();
   }
-  
-//  @Bindable
-//  public IDatasource getDatasource() {
-//    IDatasource datasource = new Datasource();
-//    if(DatasourceType.SQL == getDatasourceType()) {
-//      datasource.setBusinessData(getRelationalModel().getBusinessData());
-//      datasource.setConnections(getRelationalModel().getConnections());
-//      datasource.setQuery(getRelationalModel().getQuery());
-//      datasource.setSelectedConnection(getRelationalModel().getSelectedConnection());
-//    } else {
-//      datasource.setBusinessData(null);
-//      datasource.setSelectedFile(getModelInfo().getFileInfo().getFilename());
-//      datasource.setHeadersPresent(getModelInfo().getFileInfo().getHeaderRows() > 0);
-//
-//    }
-//    return datasource;
-//  }
+
+  //  @Bindable
+  //  public IDatasource getDatasource() {
+  //    IDatasource datasource = new Datasource();
+  //    if(DatasourceType.SQL == getDatasourceType()) {
+  //      datasource.setBusinessData(getRelationalModel().getBusinessData());
+  //      datasource.setConnections(getRelationalModel().getConnections());
+  //      datasource.setQuery(getRelationalModel().getQuery());
+  //      datasource.setSelectedConnection(getRelationalModel().getSelectedConnection());
+  //    } else {
+  //      datasource.setBusinessData(null);
+  //      datasource.setSelectedFile(getModelInfo().getFileInfo().getFilename());
+  //      datasource.setHeadersPresent(getModelInfo().getFileInfo().getHeaderRows() > 0);
+  //
+  //    }
+  //    return datasource;
+  //  }
 
   public void onRelationalModelInValid() {
-    if(DatasourceType.SQL == getDatasourceType()) {
-      setValidated(false);
+    if ( DatasourceType.SQL == getDatasourceType() ) {
+      setValidated( false );
     }
   }
 
   public void onRelationalModelValid() {
-    if(DatasourceType.SQL == getDatasourceType()) {
-      setValidated(true);
+    if ( DatasourceType.SQL == getDatasourceType() ) {
+      setValidated( true );
     }
   }
-  
+
   /**
-   * This is a utility method that looks into an old domain for the same column ids, and then 
-   * copies over the old metadata into the new.
+   * This is a utility method that looks into an old domain for the same column ids, and then copies over the old
+   * metadata into the new.
+   *
    * @param oldDomain
    * @param newDomain
    */
-  public void copyOverMetadata(Domain oldDomain, Domain newDomain) {
-    Category category = newDomain.getLogicalModels().get(0).getCategories().get(0);
-    LogicalModel oldModel = oldDomain.getLogicalModels().get(0);
-    for (LogicalColumn column : category.getLogicalColumns()) {
-      LogicalColumn oldColumn = oldModel.findLogicalColumn(column.getId());
-      if (oldColumn != null) {
-        column.setDataType(oldColumn.getDataType());
-        column.setName(oldColumn.getName());
-        column.setAggregationList(oldColumn.getAggregationList());
-        column.setAggregationType(oldColumn.getAggregationType());
+  public void copyOverMetadata( Domain oldDomain, Domain newDomain ) {
+    Category category = newDomain.getLogicalModels().get( 0 ).getCategories().get( 0 );
+    LogicalModel oldModel = oldDomain.getLogicalModels().get( 0 );
+    for ( LogicalColumn column : category.getLogicalColumns() ) {
+      LogicalColumn oldColumn = oldModel.findLogicalColumn( column.getId() );
+      if ( oldColumn != null ) {
+        column.setDataType( oldColumn.getDataType() );
+        column.setName( oldColumn.getName() );
+        column.setAggregationList( oldColumn.getAggregationList() );
+        column.setAggregationType( oldColumn.getAggregationType() );
       }
     }
   }
 
   public void onModelInfoInvalid() {
-    if(DatasourceType.CSV == getDatasourceType()) {
-      setValidated(false);
+    if ( DatasourceType.CSV == getDatasourceType() ) {
+      setValidated( false );
     }
   }
 
   public void onModelInfoValid() {
-    if(DatasourceType.CSV == getDatasourceType()) {
-      setValidated(true);
+    if ( DatasourceType.CSV == getDatasourceType() ) {
+      setValidated( true );
     }
   }
 
 
   /**
-   * Strips all non-alphanumeric characters from the datasourceName, replaces
-   * spaces with underscores, and finally lowercases the string for return making it
-   * valid for use as a table name
+   * Strips all non-alphanumeric characters from the datasourceName, replaces spaces with underscores, and finally
+   * lowercases the string for return making it valid for use as a table name
+   *
    * @return
    */
   public String generateTableName() {
-    if (datasourceName == null) {
-      throw new IllegalStateException("DatasourceName must not be null, cannot generate a valid table name"); //$NON-NLS-1$
+    if ( datasourceName == null ) {
+      throw new IllegalStateException(
+        "DatasourceName must not be null, cannot generate a valid table name" ); //$NON-NLS-1$
     }
-    return datasourceName.trim().replace(" ", "_")  //$NON-NLS-1$ //$NON-NLS-2$
-            .replaceAll("[^A-Za-z0-9_-]", "")          //$NON-NLS-1$ //$NON-NLS-2$
-            .toLowerCase();       // change to lower to handle case sensitivity of quoted table names in postgresql (which defaults all tables to lowercase)... BISERVER-5231
+    return datasourceName.trim().replace( " ", "_" )  //$NON-NLS-1$ //$NON-NLS-2$
+      .replaceAll( "[^A-Za-z0-9_-]", "" )          //$NON-NLS-1$ //$NON-NLS-2$
+      .toLowerCase();       // change to lower to handle case sensitivity of quoted table names in postgresql (which
+      // defaults all tables to lowercase)... BISERVER-5231
   }
 
   public void onCsvInValid() {
@@ -313,7 +317,8 @@ public class DatasourceModel extends XulEventSourceAdapter
   public boolean isEditing() {
     return editMode;
   }
-  public void setEditing(boolean editing){
+
+  public void setEditing( boolean editing ) {
     this.editMode = editing;
   }
 }

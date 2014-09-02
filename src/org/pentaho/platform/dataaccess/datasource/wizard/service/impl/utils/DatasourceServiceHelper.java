@@ -47,117 +47,132 @@ import org.pentaho.platform.plugin.services.connections.sql.SQLMetaData;
 import org.pentaho.platform.util.logging.SimpleLogger;
 
 public class DatasourceServiceHelper {
-  private static final Log logger = LogFactory.getLog(DatasourceServiceHelper.class);
-  
+  private static final Log logger = LogFactory.getLog( DatasourceServiceHelper.class );
+
   private static final String PLUGIN_NAME = "data-access"; //$NON-NLS-1$
   private static final String SETTINGS_FILE = PLUGIN_NAME + "/settings.xml"; //$NON-NLS-1$
 
-  private static GeoContextConfigProvider configProvider = new GeoContextSettingsProvider(SETTINGS_FILE);
+  private static GeoContextConfigProvider configProvider = new GeoContextSettingsProvider( SETTINGS_FILE );
 
-  public static Connection getDataSourceConnection(String connectionName, IPentahoSession session) {
-    SQLConnection sqlConnection= (SQLConnection) PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, connectionName, session, new SimpleLogger(DatasourceServiceHelper.class.getName()));
-    return sqlConnection.getNativeConnection(); 
+  public static Connection getDataSourceConnection( String connectionName, IPentahoSession session ) {
+    SQLConnection sqlConnection = (SQLConnection) PentahoConnectionFactory
+      .getConnection( IPentahoConnection.SQL_DATASOURCE, connectionName, session,
+        new SimpleLogger( DatasourceServiceHelper.class.getName() ) );
+    return sqlConnection.getNativeConnection();
   }
 
-  public static SerializedResultSet getSerializeableResultSet(String connectionName, String query, int rowLimit, IPentahoSession session) throws DatasourceServiceException{
+  public static SerializedResultSet getSerializeableResultSet( String connectionName, String query, int rowLimit,
+                                                               IPentahoSession session )
+    throws DatasourceServiceException {
     SerializedResultSet serializedResultSet = null;
-    SQLConnection sqlConnection = null; 
+    SQLConnection sqlConnection = null;
     try {
-      sqlConnection = (SQLConnection) PentahoConnectionFactory.getConnection(IPentahoConnection.SQL_DATASOURCE, connectionName, PentahoSessionHolder.getSession(), null);
-      sqlConnection.setMaxRows(rowLimit);
-      sqlConnection.setReadOnly(true);
-      IPentahoResultSet resultSet =  sqlConnection.executeQuery(query);
-      logger.debug("ResultSet is not scrollable. Copying into memory");//$NON-NLS-1$
-      if ( !resultSet.isScrollable()) {
-        resultSet = convertToMemoryResultSet(resultSet);
-      } 
+      sqlConnection = (SQLConnection) PentahoConnectionFactory
+        .getConnection( IPentahoConnection.SQL_DATASOURCE, connectionName, PentahoSessionHolder.getSession(), null );
+      sqlConnection.setMaxRows( rowLimit );
+      sqlConnection.setReadOnly( true );
+      IPentahoResultSet resultSet = sqlConnection.executeQuery( query );
+      logger.debug( "ResultSet is not scrollable. Copying into memory" ); //$NON-NLS-1$
+      if ( !resultSet.isScrollable() ) {
+        resultSet = convertToMemoryResultSet( resultSet );
+      }
       MarshallableResultSet marshallableResultSet = new MarshallableResultSet();
-      marshallableResultSet.setResultSet(resultSet);
+      marshallableResultSet.setResultSet( resultSet );
       IPentahoMetaData ipmd = resultSet.getMetaData();
       int[] columnTypes = null;
-      if (ipmd instanceof SQLMetaData) {
-        SQLMetaData smd = (SQLMetaData)ipmd;
+      if ( ipmd instanceof SQLMetaData ) {
+        SQLMetaData smd = (SQLMetaData) ipmd;
         columnTypes = smd.getJDBCColumnTypes();
-      } else if(ipmd instanceof MemoryMetaData) {
-        MemoryMetaData mmd = (MemoryMetaData)ipmd;
+      } else if ( ipmd instanceof MemoryMetaData ) {
+        MemoryMetaData mmd = (MemoryMetaData) ipmd;
         String[] columnTypesAsString = mmd.getColumnTypes();
-        columnTypes = new int[columnTypesAsString.length];
-        for(int i=0;i<columnTypesAsString.length;i++) {
-          columnTypes[i] = Integer.parseInt(columnTypesAsString[i]);
+        columnTypes = new int[ columnTypesAsString.length ];
+        for ( int i = 0; i < columnTypesAsString.length; i++ ) {
+          columnTypes[ i ] = Integer.parseInt( columnTypesAsString[ i ] );
         }
       }
-      
+
       if ( columnTypes != null ) {
         // Hack warning - get JDBC column types
         // TODO: Need to generalize this amongst all IPentahoResultSets
         List<List<String>> data = new ArrayList<List<String>>();
-        for (MarshallableRow row : marshallableResultSet.getRows()) {
+        for ( MarshallableRow row : marshallableResultSet.getRows() ) {
           String[] rowData = row.getCell();
-          List<String> rowDataList = new ArrayList<String>(rowData.length);
-          for(int j=0;j<rowData.length;j++) {
-            rowDataList.add(rowData[j]);
+          List<String> rowDataList = new ArrayList<String>( rowData.length );
+          for ( int j = 0; j < rowData.length; j++ ) {
+            rowDataList.add( rowData[ j ] );
           }
-          data.add(rowDataList);
+          data.add( rowDataList );
         }
-        serializedResultSet = new SerializedResultSet(columnTypes, marshallableResultSet.getColumnNames().getColumnName(), data);
+        serializedResultSet =
+          new SerializedResultSet( columnTypes, marshallableResultSet.getColumnNames().getColumnName(), data );
       }
-    } catch (Exception e) {
-      logger.error(Messages.getErrorString("DatasourceServiceHelper.ERROR_0001_QUERY_VALIDATION_FAILED", e.getLocalizedMessage()),e); //$NON-NLS-1$
-      throw new DatasourceServiceException(Messages.getErrorString("DatasourceServiceHelper.ERROR_0001_QUERY_VALIDATION_FAILED",e.getLocalizedMessage()), e); //$NON-NLS-1$      
+    } catch ( Exception e ) {
+      logger.error( Messages
+        .getErrorString( "DatasourceServiceHelper.ERROR_0001_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ),
+        e ); //$NON-NLS-1$
+      throw new DatasourceServiceException( Messages
+        .getErrorString( "DatasourceServiceHelper.ERROR_0001_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ),
+        e ); //$NON-NLS-1$
     } finally {
-        if (sqlConnection != null) {
-          sqlConnection.close();
-        }
+      if ( sqlConnection != null ) {
+        sqlConnection.close();
+      }
     }
     return serializedResultSet;
 
   }
-  public static List<List<String>> getCsvDataSample(String fileLocation, boolean headerPresent, String delimiter, String enclosure, int rowLimit) {
-    CsvDataReader reader = new CsvDataReader(fileLocation, headerPresent, delimiter, enclosure, rowLimit);
+
+  public static List<List<String>> getCsvDataSample( String fileLocation, boolean headerPresent, String delimiter,
+                                                     String enclosure, int rowLimit ) {
+    CsvDataReader reader = new CsvDataReader( fileLocation, headerPresent, delimiter, enclosure, rowLimit );
     return reader.loadData();
   }
+
   /**
    * Convert the live result set to memory result set.
+   *
    * @param resultSet
    * @return
    */
-  private static IPentahoResultSet convertToMemoryResultSet(IPentahoResultSet resultSet) throws SQLException{
-    MemoryResultSet cachedResultSet =  null;
+  private static IPentahoResultSet convertToMemoryResultSet( IPentahoResultSet resultSet ) throws SQLException {
+    MemoryResultSet cachedResultSet = null;
     try {
       IPentahoMetaData meta = resultSet.getMetaData();
-      Object columnHeaders[][] = meta.getColumnHeaders();
-      MemoryMetaData cachedMetaData = new MemoryMetaData(columnHeaders, null);
+      Object[][] columnHeaders = meta.getColumnHeaders();
+      MemoryMetaData cachedMetaData = new MemoryMetaData( columnHeaders, null );
       String[] colTypesAsString;
       // If the IPentahoMetaData is an instanceof SQLMetaData then get the column types from the metadata
-      if(meta instanceof SQLMetaData) {
+      if ( meta instanceof SQLMetaData ) {
         SQLMetaData sqlMeta = (SQLMetaData) meta;
-        // Column Types in SQLMetaData are int. MemoryMetaData stores column types as string. So we will store them as string in MemoryMetaData
+        // Column Types in SQLMetaData are int. MemoryMetaData stores column types as string. So we will store them
+        // as string in MemoryMetaData
         int[] colTypes = sqlMeta.getJDBCColumnTypes();
-        colTypesAsString = new String[colTypes.length];
-        for(int i=0;i<colTypes.length;i++) {
-          colTypesAsString[i] = Integer.toString(colTypes[i]);
+        colTypesAsString = new String[ colTypes.length ];
+        for ( int i = 0; i < colTypes.length; i++ ) {
+          colTypesAsString[ i ] = Integer.toString( colTypes[ i ] );
         }
-        cachedMetaData.setColumnTypes(colTypesAsString);
+        cachedMetaData.setColumnTypes( colTypesAsString );
       }
-      cachedResultSet = new MemoryResultSet(cachedMetaData);
+      cachedResultSet = new MemoryResultSet( cachedMetaData );
       Object[] rowObjects = resultSet.next();
-      while (rowObjects != null) {
-        cachedResultSet.addRow(rowObjects);
+      while ( rowObjects != null ) {
+        cachedResultSet.addRow( rowObjects );
         rowObjects = resultSet.next();
       }
     } finally {
       resultSet.close();
     }
-    return cachedResultSet;        
-        
+    return cachedResultSet;
+
   }
 
   public static GeoContext getGeoContext() throws DatasourceServiceException {
     try {
-      GeoContext geo = GeoContextFactory.create(configProvider);
+      GeoContext geo = GeoContextFactory.create( configProvider );
       return geo;
-    } catch (ModelerException e) {
-      throw new DatasourceServiceException(e);
+    } catch ( ModelerException e ) {
+      throw new DatasourceServiceException( e );
     }
   }
 

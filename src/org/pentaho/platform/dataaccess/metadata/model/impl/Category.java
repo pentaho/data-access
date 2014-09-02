@@ -23,14 +23,14 @@ import org.pentaho.platform.dataaccess.metadata.model.ICategory;
 
 /**
  * Concrete, lightweight, serializable implementation of an {@see ICategory} object
- * @author jamesdixon
  *
+ * @author jamesdixon
  */
 public class Category implements ICategory, Serializable {
 
   private static final long serialVersionUID = -454688567483551796L;
   private String id, name;
-  private Column[] columns = new Column[0];
+  private Column[] columns = new Column[ 0 ];
 
   /**
    * Returns the id of the category
@@ -50,17 +50,19 @@ public class Category implements ICategory, Serializable {
 
   /**
    * Returns the id of the category
+   *
    * @param id
    */
-  public void setId(String id) {
+  public void setId( String id ) {
     this.id = id;
   }
 
   /**
    * Sets the name of the category
+   *
    * @param name
    */
-  public void setName(String name) {
+  public void setName( String name ) {
     this.name = name;
   }
 
@@ -74,12 +76,12 @@ public class Category implements ICategory, Serializable {
 
   /**
    * Sets the array of {@see IColumn}s for this category
- * @param columns
+   *
+   * @param columns
    */
-  public void setColumns(Column columns[]) {
+  public void setColumns( Column[] columns ) {
     this.columns = columns;
   }
-  
-  
+
 
 }

@@ -26,64 +26,67 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class MetadataDatasourceServiceGwtImpl {
 
-  String datasourceUrl = getWebAppRoot() + "plugin/data-access/api/metadata/import?domainId={domainId}&metadataFile={metadataFile}&overwrite=false";//$NON-NLS-1$
-  
-  public void importMetadataDatasource(final String domainId, final String metadataFile, final String localizeBundleEntries, final XulServiceCallback<String> xulCallback) {
-    AuthenticatedGwtServiceUtil.invokeCommand(new IAuthenticatedGwtCommand() {
-      public void execute(final AsyncCallback callback) {
-    	  
-        datasourceUrl = datasourceUrl.replaceAll("{domainId}", domainId);
-        datasourceUrl = datasourceUrl.replaceAll("{metadataFile}", metadataFile);
+  String datasourceUrl = getWebAppRoot()
+    + "plugin/data-access/api/metadata/import?domainId={domainId}&metadataFile={metadataFile}&overwrite=false";
+    //$NON-NLS-1$
 
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.PUT, datasourceUrl);
-        requestBuilder.setHeader("accept", "text/*");
-        requestBuilder.setHeader("Content-Type", "text/plain");
+  public void importMetadataDatasource( final String domainId, final String metadataFile,
+                                        final String localizeBundleEntries,
+                                        final XulServiceCallback<String> xulCallback ) {
+    AuthenticatedGwtServiceUtil.invokeCommand( new IAuthenticatedGwtCommand() {
+      public void execute( final AsyncCallback callback ) {
+
+        datasourceUrl = datasourceUrl.replaceAll( "{domainId}", domainId );
+        datasourceUrl = datasourceUrl.replaceAll( "{metadataFile}", metadataFile );
+
+        RequestBuilder requestBuilder = new RequestBuilder( RequestBuilder.PUT, datasourceUrl );
+        requestBuilder.setHeader( "accept", "text/*" );
+        requestBuilder.setHeader( "Content-Type", "text/plain" );
         try {
-          requestBuilder.sendRequest(localizeBundleEntries, new RequestCallback() {
+          requestBuilder.sendRequest( localizeBundleEntries, new RequestCallback() {
             @Override
-            public void onError(Request request, Throwable exception) {
-              xulCallback.error(exception.getLocalizedMessage(), exception);
+            public void onError( Request request, Throwable exception ) {
+              xulCallback.error( exception.getLocalizedMessage(), exception );
             }
 
             @Override
-            public void onResponseReceived(Request request, Response response) {
-              if (response.getStatusCode() == Response.SC_OK) {
-                callback.onSuccess(response.getText());
-              } 
-              if (response.getStatusCode() == Response.SC_INTERNAL_SERVER_ERROR) {
-            	xulCallback.error(response.getText(), new Exception(response.getText()));  
+            public void onResponseReceived( Request request, Response response ) {
+              if ( response.getStatusCode() == Response.SC_OK ) {
+                callback.onSuccess( response.getText() );
+              }
+              if ( response.getStatusCode() == Response.SC_INTERNAL_SERVER_ERROR ) {
+                xulCallback.error( response.getText(), new Exception( response.getText() ) );
               }
             }
 
-          });
-        } catch (RequestException e) {
-          xulCallback.error(e.getLocalizedMessage(), e);
-        }        
+          } );
+        } catch ( RequestException e ) {
+          xulCallback.error( e.getLocalizedMessage(), e );
+        }
       }
     }, new AsyncCallback<String>() {
 
-      public void onFailure(Throwable arg0) {
-        xulCallback.error(arg0.getLocalizedMessage(), arg0);
+      public void onFailure( Throwable arg0 ) {
+        xulCallback.error( arg0.getLocalizedMessage(), arg0 );
       }
 
-      public void onSuccess(String arg0) {
-        xulCallback.success(arg0);
+      public void onSuccess( String arg0 ) {
+        xulCallback.success( arg0 );
       }
 
-    });
+    } );
   }
-  
+
   public native String getWebAppRoot()/*-{
-  if($wnd.CONTEXT_PATH){
-    return $wnd.CONTEXT_PATH;
-  }
-  return "";
+    if ($wnd.CONTEXT_PATH) {
+      return $wnd.CONTEXT_PATH;
+    }
+    return "";
   }-*/;
- 
+
 }

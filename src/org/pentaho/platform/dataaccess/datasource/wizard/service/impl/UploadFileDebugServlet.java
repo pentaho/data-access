@@ -49,109 +49,117 @@ public class UploadFileDebugServlet extends HttpServlet implements Servlet {
   private static final long MAX_FILE_SIZE = 300000;
 
   private static final long MAX_FOLDER_SIZE = 900000;
-  
-  public static final String DEFAULT_RELATIVE_UPLOAD_FILE_PATH = File.separatorChar + "system" + File.separatorChar + "metadata" + File.separatorChar + "csvfiles" + File.separatorChar; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+  public static final String DEFAULT_RELATIVE_UPLOAD_FILE_PATH =
+    File.separatorChar + "system" + File.separatorChar + "metadata" + File.separatorChar + "csvfiles"
+      + File.separatorChar; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
   public UploadFileDebugServlet() {
     PentahoSystemHelper.init();
   }
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  protected void doPost( HttpServletRequest request, HttpServletResponse response )
+    throws ServletException, IOException {
     try {
-     
-      String relativePath = PentahoSystem.getSystemSetting("file-upload-defaults/relative-path", String.valueOf(DEFAULT_RELATIVE_UPLOAD_FILE_PATH));  //$NON-NLS-1$ 
-      String maxFileLimit = PentahoSystem.getSystemSetting("file-upload-defaults/max-file-limit", String.valueOf(MAX_FILE_SIZE));  //$NON-NLS-1$    
-      String maxFolderLimit = PentahoSystem.getSystemSetting("file-upload-defaults/max-folder-limit", String.valueOf(MAX_FOLDER_SIZE));  //$NON-NLS-1$
+
+      String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
+        String.valueOf( DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) );  //$NON-NLS-1$
+      String maxFileLimit = PentahoSystem
+        .getSystemSetting( "file-upload-defaults/max-file-limit", String.valueOf( MAX_FILE_SIZE ) );  //$NON-NLS-1$
+      String maxFolderLimit = PentahoSystem
+        .getSystemSetting( "file-upload-defaults/max-folder-limit", String.valueOf( MAX_FOLDER_SIZE ) );  //$NON-NLS-1$
       IPentahoSession session = PentahoSessionHolder.getSession();
-      
-      response.setContentType("text/plain"); //$NON-NLS-1$
-      
-      FileItem uploadItem = getFileItem(request);      
-      if (uploadItem == null) {
-        String error = Messages.getErrorString("UploadFileDebugServlet.ERROR_0001_NO_FILE_TO_UPLOAD"); //$NON-NLS-1$
-        response.getWriter().write(error);
+
+      response.setContentType( "text/plain" ); //$NON-NLS-1$
+
+      FileItem uploadItem = getFileItem( request );
+      if ( uploadItem == null ) {
+        String error = Messages.getErrorString( "UploadFileDebugServlet.ERROR_0001_NO_FILE_TO_UPLOAD" ); //$NON-NLS-1$
+        response.getWriter().write( error );
         return;
       }
-      if (Long.parseLong(maxFileLimit) < uploadItem.getSize()) {
-        String error = Messages.getErrorString("UploadFileDebugServlet.ERROR_0003_FILE_TOO_BIG"); //$NON-NLS-1$
-        response.getWriter().write(error);
+      if ( Long.parseLong( maxFileLimit ) < uploadItem.getSize() ) {
+        String error = Messages.getErrorString( "UploadFileDebugServlet.ERROR_0003_FILE_TOO_BIG" ); //$NON-NLS-1$
+        response.getWriter().write( error );
         return;
       }
 
-      String path = PentahoSystem.getApplicationContext().getSolutionPath(relativePath);
-      File pathDir = new File(path);
+      String path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
+      File pathDir = new File( path );
       // create the path if it doesn't exist yet
-      if (!pathDir.exists()) {
+      if ( !pathDir.exists() ) {
         pathDir.mkdirs();
       }
-      
-      if (uploadItem.getSize() + getFolderSize(new File(path)) > Long.parseLong(maxFolderLimit)) {
-        String error = Messages.getErrorString("UploadFileDebugServlet.ERROR_0004_FOLDER_SIZE_LIMIT_REACHED"); //$NON-NLS-1$ 
-        response.getWriter().write(error);
+
+      if ( uploadItem.getSize() + getFolderSize( new File( path ) ) > Long.parseLong( maxFolderLimit ) ) {
+        String error =
+          Messages.getErrorString( "UploadFileDebugServlet.ERROR_0004_FOLDER_SIZE_LIMIT_REACHED" ); //$NON-NLS-1$
+        response.getWriter().write( error );
         return;
       }
-      
-      String filename = request.getParameter("file_name"); //$NON-NLS-1$
-      if(StringUtils.isEmpty(filename)) {
+
+      String filename = request.getParameter( "file_name" ); //$NON-NLS-1$
+      if ( StringUtils.isEmpty( filename ) ) {
         filename = UUIDUtil.getUUID().toString();
       }
-      
-      String temporary = request.getParameter("mark_temporary"); //$NON-NLS-1$
+
+      String temporary = request.getParameter( "mark_temporary" ); //$NON-NLS-1$
       boolean isTemporary = false;
-      if(temporary != null) {
-        isTemporary = Boolean.valueOf(temporary);
+      if ( temporary != null ) {
+        isTemporary = Boolean.valueOf( temporary );
       }
 
       File file;
-      if(isTemporary) {
-        File tempDir = new File(PentahoSystem.getApplicationContext().getSolutionPath("system/tmp"));
-        if(tempDir.exists() == false){
+      if ( isTemporary ) {
+        File tempDir = new File( PentahoSystem.getApplicationContext().getSolutionPath( "system/tmp" ) );
+        if ( tempDir.exists() == false ) {
           tempDir.mkdir();
         }
-        file = PentahoSystem.getApplicationContext().createTempFile(session, filename,".tmp", true); //$NON-NLS-1$
+        file = PentahoSystem.getApplicationContext().createTempFile( session, filename, ".tmp", true ); //$NON-NLS-1$
       } else {
-        file = new File(path + File.separatorChar + filename);        
+        file = new File( path + File.separatorChar + filename );
       }
-      
-      FileOutputStream outputStream = new FileOutputStream(file);
+
+      FileOutputStream outputStream = new FileOutputStream( file );
       byte[] fileContents = uploadItem.get();
-      outputStream.write(fileContents);
+      outputStream.write( fileContents );
       outputStream.flush();
       outputStream.close();
-      
-      response.getWriter().write(file.getName());
-    } catch (Exception e) {
-      String error =  Messages.getErrorString("UploadFileDebugServlet.ERROR_0005_UNKNOWN_ERROR", e.getLocalizedMessage());  //$NON-NLS-1$
-      response.getWriter().write(error);
+
+      response.getWriter().write( file.getName() );
+    } catch ( Exception e ) {
+      String error = Messages
+        .getErrorString( "UploadFileDebugServlet.ERROR_0005_UNKNOWN_ERROR", e.getLocalizedMessage() );  //$NON-NLS-1$
+      response.getWriter().write( error );
     }
   }
-  
-  private FileItem getFileItem(HttpServletRequest request) {
+
+  private FileItem getFileItem( HttpServletRequest request ) {
     FileItemFactory factory = new DiskFileItemFactory();
-    ServletFileUpload upload = new ServletFileUpload(factory);
+    ServletFileUpload upload = new ServletFileUpload( factory );
     try {
-      List items = upload.parseRequest(request);
+      List items = upload.parseRequest( request );
       Iterator it = items.iterator();
-      while (it.hasNext()) {
+      while ( it.hasNext() ) {
         FileItem item = (FileItem) it.next();
-        if (!item.isFormField() && "uploadFormElement".equals(item.getFieldName())) {//$NON-NLS-1$
+        if ( !item.isFormField() && "uploadFormElement".equals( item.getFieldName() ) ) { //$NON-NLS-1$
           return item;
         }
       }
-    } catch (FileUploadException e) {
+    } catch ( FileUploadException e ) {
       return null;
     }
     return null;
   }
-  
-  private long getFolderSize(File folder) {
+
+  private long getFolderSize( File folder ) {
     long foldersize = 0;
     File[] filelist = folder.listFiles();
-    for (int i = 0; i < filelist.length; i++) {
-      if (filelist[i].isDirectory()) {
-        foldersize += getFolderSize(filelist[i]);
+    for ( int i = 0; i < filelist.length; i++ ) {
+      if ( filelist[ i ].isDirectory() ) {
+        foldersize += getFolderSize( filelist[ i ] );
       } else {
-        foldersize += filelist[i].length();
+        foldersize += filelist[ i ].length();
       }
     }
     return foldersize;

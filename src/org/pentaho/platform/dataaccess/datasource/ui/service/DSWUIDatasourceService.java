@@ -25,56 +25,56 @@ import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDatasourceServiceManager;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-public class DSWUIDatasourceService implements IUIDatasourceAdminService{
+public class DSWUIDatasourceService implements IUIDatasourceAdminService {
   private IXulAsyncDatasourceServiceManager datasourceService;
-  public final static String EXT = ".xmi";
-  public final static String TYPE = "Data Source Wizard";
+  public static final String EXT = ".xmi";
+  public static final String TYPE = "Data Source Wizard";
   private boolean editable = true;
   private boolean removable = true;
   private boolean importable = false;
   private boolean exportable = true;
   private boolean creatable = true;
   private String newUI = "builtin:";
-  private String editUI= "builtin:";
+  private String editUI = "builtin:";
+
   @Override
   public String getType() {
     return TYPE;
   }
 
 
-  public DSWUIDatasourceService(IXulAsyncDatasourceServiceManager datasourceService) {
+  public DSWUIDatasourceService( IXulAsyncDatasourceServiceManager datasourceService ) {
     this.datasourceService = datasourceService;
   }
 
 
-  
   @Override
-  public void getIds(final XulServiceCallback<List<IDatasourceInfo>> callback) {
-    datasourceService.getDSWDatasourceIds(new XulServiceCallback<List<String>>() {
+  public void getIds( final XulServiceCallback<List<IDatasourceInfo>> callback ) {
+    datasourceService.getDSWDatasourceIds( new XulServiceCallback<List<String>>() {
 
       @Override
-      public void success(List<String> ids) {
+      public void success( List<String> ids ) {
         List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
-        for(String id:ids) {
+        for ( String id : ids ) {
           String name = null;
-          if(id != null && id.length() > 0) {
-            int index = id.indexOf(EXT);
-            if( index >=0) {
-              name = id.substring(0, index);
+          if ( id != null && id.length() > 0 ) {
+            int index = id.indexOf( EXT );
+            if ( index >= 0 ) {
+              name = id.substring( 0, index );
             } else {
               name = id; // BISERVER-10557
             }
-            datasourceInfos.add(new DatasourceInfo(name, id, TYPE, editable, removable, importable, exportable));          
+            datasourceInfos.add( new DatasourceInfo( name, id, TYPE, editable, removable, importable, exportable ) );
           }
         }
-        callback.success(datasourceInfos);
+        callback.success( datasourceInfos );
       }
 
       @Override
-      public void error(String message, Throwable error) {
-        callback.error(message, error);
+      public void error( String message, Throwable error ) {
+        callback.error( message, error );
       }
-    });
+    } );
   }
 
   @Override
@@ -83,31 +83,34 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
   }
 
   @Override
-  public String getEditUI(IDatasourceInfo dsInfo) {
+  public String getEditUI( IDatasourceInfo dsInfo ) {
     return editUI;
   }
 
 
   /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#export(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
+   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#export(org.pentaho.platform
+   * .dataaccess.datasource.IDatasourceInfo)
    */
   @Override
-  public void export(IDatasourceInfo dsInfo) {
-    datasourceService.export(dsInfo);
-    
+  public void export( IDatasourceInfo dsInfo ) {
+    datasourceService.export( dsInfo );
+
   }
 
 
   /* (non-Javadoc)
-   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform.dataaccess.datasource.IDatasourceInfo)
+   * @see org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService#remove(org.pentaho.platform
+   * .dataaccess.datasource.IDatasourceInfo)
    */
   @Override
-  public void remove(IDatasourceInfo dsInfo, Object callback) {
-    datasourceService.remove(dsInfo, callback);
+  public void remove( IDatasourceInfo dsInfo, Object callback ) {
+    datasourceService.remove( dsInfo, callback );
   }
 
   /**
    * Return editable flag
+   *
    * @return
    */
   @Override public boolean isEditable() {
@@ -116,6 +119,7 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
 
   /**
    * Return removable flag
+   *
    * @return
    */
   @Override public boolean isRemovable() {
@@ -124,6 +128,7 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
 
   /**
    * Return importable flag
+   *
    * @return
    */
   @Override public boolean isImportable() {
@@ -132,6 +137,7 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
 
   /**
    * Return exportable flag
+   *
    * @return
    */
   @Override public boolean isExportable() {
@@ -140,6 +146,7 @@ public class DSWUIDatasourceService implements IUIDatasourceAdminService{
 
   /**
    * Return creatable flag
+   *
    * @return
    */
   @Override public boolean isCreatable() {

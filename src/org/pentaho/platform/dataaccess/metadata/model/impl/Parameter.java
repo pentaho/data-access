@@ -20,30 +20,30 @@ package org.pentaho.platform.dataaccess.metadata.model.impl;
 import java.io.Serializable;
 
 public class Parameter implements Serializable {
-  
+
   private static final long serialVersionUID = -3581457277760183764L;
   private String column;
   private String name;
   private String type;
-  private String defaultValue[];
-  private String value[];
-  
+  private String[] defaultValue;
+  private String[] value;
+
   public Parameter() {
   }
-  
+
   public String getType() {
     return type;
   }
-  
+
   public String[] getDefaultValue() {
     return defaultValue;
   }
 
-  public void setType(String type) {
+  public void setType( String type ) {
     this.type = type;
   }
 
-  public void setDefaultValue(String defaultValue[]) {
+  public void setDefaultValue( String[] defaultValue ) {
     this.defaultValue = defaultValue;
   }
 
@@ -51,7 +51,7 @@ public class Parameter implements Serializable {
     return column;
   }
 
-  public void setColumn(String column) {
+  public void setColumn( String column ) {
     this.column = column;
   }
 
@@ -59,19 +59,19 @@ public class Parameter implements Serializable {
     return name;
   }
 
-  public void setName(String name) {
+  public void setName( String name ) {
     this.name = name;
   }
 
   public String[] getValue() {
-    if( value != null ) {
+    if ( value != null ) {
       return value;
     } else {
       return defaultValue;
     }
   }
 
-  public void setValue(String value[]) {
+  public void setValue( String[] value ) {
     this.value = value;
   }
 

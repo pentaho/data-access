@@ -26,16 +26,30 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.security.RowLevelSecurity;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
-import org.pentaho.metadata.model.concept.types.*;
+import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metadata.model.concept.types.Alignment;
+import org.pentaho.metadata.model.concept.types.Color;
+import org.pentaho.metadata.model.concept.types.ColumnWidth;
+import org.pentaho.metadata.model.concept.types.DataType;
+import org.pentaho.metadata.model.concept.types.FieldType;
+import org.pentaho.metadata.model.concept.types.Font;
+import org.pentaho.metadata.model.concept.types.JoinType;
+import org.pentaho.metadata.model.concept.types.LocaleType;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.concept.types.RelationshipType;
+import org.pentaho.metadata.model.concept.types.TableType;
+import org.pentaho.metadata.model.concept.types.TargetColumnType;
+import org.pentaho.metadata.model.concept.types.TargetTableType;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvParseException;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 
 import java.io.Serializable;
+
 /*
  * This class is a workaround for GWT. GWT is not able to compile these classes are they have been used in a map
  * http://code.google.com/p/google-web-toolkit/issues/detail?id=3521
  */
-public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implements Serializable{
+public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implements Serializable {
 
   private static final long serialVersionUID = 7542132543385685472L;
   TargetTableType targetTableType;
@@ -70,7 +84,7 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
     return domain;
   }
 
-  public void setDomain(Domain domain) {
+  public void setDomain( Domain domain ) {
     this.domain = domain;
   }
 
@@ -78,7 +92,7 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
     return lColumn;
   }
 
-  public void setlColumn(LogicalColumn lColumn) {
+  public void setlColumn( LogicalColumn lColumn ) {
     this.lColumn = lColumn;
   }
 
@@ -86,7 +100,7 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
     return lModel;
   }
 
-  public void setlModel(LogicalModel lModel) {
+  public void setlModel( LogicalModel lModel ) {
     this.lModel = lModel;
   }
 
@@ -94,115 +108,150 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
     return lTable;
   }
 
-  public void setlTable(LogicalTable lTable) {
+  public void setlTable( LogicalTable lTable ) {
     this.lTable = lTable;
   }
 
   public Boolean getBooleanValue() {
     return booleanValue;
   }
-  public void setBooleanValue(Boolean booleanValue) {
+
+  public void setBooleanValue( Boolean booleanValue ) {
     this.booleanValue = booleanValue;
   }
+
   public Alignment getAlignment() {
     return alignment;
   }
-  public void setAlignment(Alignment alignment) {
+
+  public void setAlignment( Alignment alignment ) {
     this.alignment = alignment;
   }
+
   public Color getColor() {
     return color;
   }
-  public void setColor(Color color) {
+
+  public void setColor( Color color ) {
     this.color = color;
   }
+
   public ColumnWidth getColumnWidth() {
     return columnWidth;
   }
-  public void setColumnWidth(ColumnWidth columnWidth) {
+
+  public void setColumnWidth( ColumnWidth columnWidth ) {
     this.columnWidth = columnWidth;
   }
+
   public JoinType getJoinType() {
     return joinType;
   }
-  public void setJoinType(JoinType joinType) {
+
+  public void setJoinType( JoinType joinType ) {
     this.joinType = joinType;
   }
+
   public RelationshipType getRelationshipType() {
     return relationshipType;
   }
-  public void setRelationshipType(RelationshipType relationshipType) {
+
+  public void setRelationshipType( RelationshipType relationshipType ) {
     this.relationshipType = relationshipType;
   }
+
   public TableType getTableType() {
     return tableType;
   }
-  public void setTableType(TableType tableType) {
+
+  public void setTableType( TableType tableType ) {
     this.tableType = tableType;
   }
+
   public Font getFont() {
     return font;
   }
-  public void setFont(Font font) {
+
+  public void setFont( Font font ) {
     this.font = font;
   }
+
   public TargetTableType getTargetTableType() {
     return targetTableType;
   }
-  public void setTargetTableType(TargetTableType targetTableType) {
+
+  public void setTargetTableType( TargetTableType targetTableType ) {
     this.targetTableType = targetTableType;
   }
+
   public LocalizedString getLocalizedString() {
     return localizedString;
   }
-  public void setLocalizedString(LocalizedString localizedString) {
+
+  public void setLocalizedString( LocalizedString localizedString ) {
     this.localizedString = localizedString;
   }
+
   public DataType getDataType() {
     return dataType;
   }
-  public void setDataType(DataType dataType) {
+
+  public void setDataType( DataType dataType ) {
     this.dataType = dataType;
   }
+
   public AggregationType getAggType() {
     return aggType;
   }
-  public void setAggType(AggregationType aggType) {
+
+  public void setAggType( AggregationType aggType ) {
     this.aggType = aggType;
   }
+
   public TargetColumnType getTargetColumnType() {
     return targetColumnType;
   }
-  public void setTargetColumnType(TargetColumnType targetColumnType) {
+
+  public void setTargetColumnType( TargetColumnType targetColumnType ) {
     this.targetColumnType = targetColumnType;
   }
-  public void setLocaleType(LocaleType localeType) {
+
+  public void setLocaleType( LocaleType localeType ) {
     this.localeType = localeType;
   }
+
   public LocaleType getLocaleType() {
     return localeType;
   }
-  public void setRowLevelSecurity(RowLevelSecurity rowLevelSecurity) {
+
+  public void setRowLevelSecurity( RowLevelSecurity rowLevelSecurity ) {
     this.rowLevelSecurity = rowLevelSecurity;
   }
+
   public RowLevelSecurity getRowLevelSecurity() {
     return rowLevelSecurity;
   }
-  public void setSecurityOwner(SecurityOwner securityOwner) {
+
+  public void setSecurityOwner( SecurityOwner securityOwner ) {
     this.securityOwner = securityOwner;
   }
+
   public SecurityOwner getSecurityOwner() {
     return securityOwner;
   }
-  public void setSecurity(Security security) {
+
+  public void setSecurity( Security security ) {
     this.security = security;
   }
+
   public Security getSecurity() {
     return security;
   }
-  public void setFieldType(FieldType fieldType) {
+
+  public void setFieldType( FieldType fieldType ) {
     this.fieldType = fieldType;
   }
+
   public FieldType getFieldType() {
     return fieldType;
   }
@@ -211,7 +260,7 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
     return csvParseException;
   }
 
-  public void setCsvParseException(CsvParseException csvParseException) {
+  public void setCsvParseException( CsvParseException csvParseException ) {
     this.csvParseException = csvParseException;
   }
 
@@ -219,23 +268,23 @@ public class BogoPojo extends org.pentaho.agilebi.modeler.gwt.BogoPojo implement
     return modelerException;
   }
 
-  public void setModelerException(ModelerException modelerException) {
+  public void setModelerException( ModelerException modelerException ) {
     this.modelerException = modelerException;
   }
 
   public LogicalRelationship getlRelationship() {
-	return lRelationship;
+    return lRelationship;
   }
 
-  public void setlRelationship(LogicalRelationship lRelationship) {
-	this.lRelationship = lRelationship;
+  public void setlRelationship( LogicalRelationship lRelationship ) {
+    this.lRelationship = lRelationship;
   }
-  
+
   public QueryDatasourceSummary getQuerySummary() {
     return querySummary;
   }
 
-  public void setQuerySummary(QueryDatasourceSummary querySummary) {
+  public void setQuerySummary( QueryDatasourceSummary querySummary ) {
     this.querySummary = querySummary;
   }
 }

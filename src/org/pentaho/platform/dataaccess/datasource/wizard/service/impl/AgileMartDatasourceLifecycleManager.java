@@ -40,8 +40,10 @@ public class AgileMartDatasourceLifecycleManager extends AbstractBackingReposito
   private static final Log log = LogFactory.getLog( AgileMartDatasourceLifecycleManager.class );
 
   public AgileMartDatasourceLifecycleManager( final TransactionTemplate txnTemplate,
-      final JcrTemplate adminJcrTemplate, final IPathConversionHelper pathConversionHelper,
-      IDatasourceMgmtService datasourceMgmtService, IPluginResourceLoader resLoader ) {
+                                              final JcrTemplate adminJcrTemplate,
+                                              final IPathConversionHelper pathConversionHelper,
+                                              IDatasourceMgmtService datasourceMgmtService,
+                                              IPluginResourceLoader resLoader ) {
     super( txnTemplate, adminJcrTemplate, pathConversionHelper );
     this.datasourceMgmtService = datasourceMgmtService;
     this.agileMartDatasourceHelper = new AgileMartDatasourceHelper( resLoader );
@@ -51,18 +53,18 @@ public class AgileMartDatasourceLifecycleManager extends AbstractBackingReposito
     if ( instance == null ) {
 
       TransactionTemplate txnTemplate =
-          PentahoSystem.get( TransactionTemplate.class, "jcrTransactionTemplate", PentahoSessionHolder.getSession() );
+        PentahoSystem.get( TransactionTemplate.class, "jcrTransactionTemplate", PentahoSessionHolder.getSession() );
       JcrTemplate adminJcrTemplate =
-          PentahoSystem.get( JcrTemplate.class, "adminJcrTemplate", PentahoSessionHolder.getSession() );
+        PentahoSystem.get( JcrTemplate.class, "adminJcrTemplate", PentahoSessionHolder.getSession() );
       IPathConversionHelper pathConversionHelper =
-          PentahoSystem.get( IPathConversionHelper.class, "pathConversionHelper", PentahoSessionHolder.getSession() );
+        PentahoSystem.get( IPathConversionHelper.class, "pathConversionHelper", PentahoSessionHolder.getSession() );
       IPluginResourceLoader resLoader =
-          PentahoSystem.get( IPluginResourceLoader.class, PentahoSessionHolder.getSession() );
+        PentahoSystem.get( IPluginResourceLoader.class, PentahoSessionHolder.getSession() );
       IDatasourceMgmtService datasourceMgmtService =
-          PentahoSystem.get( IDatasourceMgmtService.class, PentahoSessionHolder.getSession() );
+        PentahoSystem.get( IDatasourceMgmtService.class, PentahoSessionHolder.getSession() );
       instance =
-          new AgileMartDatasourceLifecycleManager( txnTemplate, adminJcrTemplate, pathConversionHelper,
-              datasourceMgmtService, resLoader );
+        new AgileMartDatasourceLifecycleManager( txnTemplate, adminJcrTemplate, pathConversionHelper,
+          datasourceMgmtService, resLoader );
     }
 
     return instance;
@@ -74,7 +76,7 @@ public class AgileMartDatasourceLifecycleManager extends AbstractBackingReposito
   public void startup() {
     try {
       String agileMartDatasourceName =
-          PentahoSystem.getSystemSetting( SETTINGS_FILE, AGILE_MART_STAGING_DATASOURCE_NAME, null );
+        PentahoSystem.getSystemSetting( SETTINGS_FILE, AGILE_MART_STAGING_DATASOURCE_NAME, null );
       IDatabaseConnection agileMartDatasource = datasourceMgmtService.getDatasourceByName( agileMartDatasourceName );
       IDatabaseConnection newAgileMartDatasource = agileMartDatasourceHelper.getAgileMartDatasource();
 

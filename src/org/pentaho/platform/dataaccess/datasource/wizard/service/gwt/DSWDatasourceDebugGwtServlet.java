@@ -37,7 +37,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class DSWDatasourceDebugGwtServlet extends RemoteServiceServlet implements IGwtDSWDatasourceService {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -8247397306730500944L;
   InMemoryDSWDatasourceServiceImpl SERVICE;
@@ -46,43 +46,47 @@ public class DSWDatasourceDebugGwtServlet extends RemoteServiceServlet implement
     SERVICE = new InMemoryDSWDatasourceServiceImpl();
   }
 
-  public SerializedResultSet doPreview(String connectionName, String query, String previewLimit) throws DatasourceServiceException{
-    return SERVICE.doPreview(connectionName, query, previewLimit);
+  public SerializedResultSet doPreview( String connectionName, String query, String previewLimit )
+    throws DatasourceServiceException {
+    return SERVICE.doPreview( connectionName, query, previewLimit );
   }
 
-  public BusinessData generateLogicalModel(String modelName, String connectionName, String dbType, String query, String previewLimit) throws DatasourceServiceException {
-    return SERVICE.generateLogicalModel(modelName, connectionName, dbType, query, previewLimit);
-   }
-  public boolean saveLogicalModel(Domain modelName, boolean overwrite) throws DatasourceServiceException {
-    return SERVICE.saveLogicalModel(modelName, overwrite);
+  public BusinessData generateLogicalModel( String modelName, String connectionName, String dbType, String query,
+                                            String previewLimit ) throws DatasourceServiceException {
+    return SERVICE.generateLogicalModel( modelName, connectionName, dbType, query, previewLimit );
   }
-  public BogoPojo gwtWorkaround(BogoPojo pojo) {
+
+  public boolean saveLogicalModel( Domain modelName, boolean overwrite ) throws DatasourceServiceException {
+    return SERVICE.saveLogicalModel( modelName, overwrite );
+  }
+
+  public BogoPojo gwtWorkaround( BogoPojo pojo ) {
     return pojo;
   }
-  
+
   public boolean hasPermission() {
     return SERVICE.hasPermission();
   }
 
-  public boolean deleteLogicalModel(String domainId, String modelName)  throws DatasourceServiceException {
-    return SERVICE.deleteLogicalModel(domainId, modelName);
+  public boolean deleteLogicalModel( String domainId, String modelName ) throws DatasourceServiceException {
+    return SERVICE.deleteLogicalModel( domainId, modelName );
   }
 
-  public List<LogicalModelSummary> getLogicalModels(String context) throws DatasourceServiceException {
-    return SERVICE.getLogicalModels(context);
+  public List<LogicalModelSummary> getLogicalModels( String context ) throws DatasourceServiceException {
+    return SERVICE.getLogicalModels( context );
   }
 
-  public BusinessData loadBusinessData(String domainId, String modelId) throws DatasourceServiceException {
-    return SERVICE.loadBusinessData(domainId, modelId);
+  public BusinessData loadBusinessData( String domainId, String modelId ) throws DatasourceServiceException {
+    return SERVICE.loadBusinessData( domainId, modelId );
   }
 
 
-  public String serializeModelState(DatasourceDTO dto) throws DatasourceServiceException{
-    return SERVICE.serializeModelState(dto);
+  public String serializeModelState( DatasourceDTO dto ) throws DatasourceServiceException {
+    return SERVICE.serializeModelState( dto );
   }
 
-  public DatasourceDTO deSerializeModelState(String dtoStr) throws DatasourceServiceException{
-    return SERVICE.deSerializeModelState(dtoStr);
+  public DatasourceDTO deSerializeModelState( String dtoStr ) throws DatasourceServiceException {
+    return SERVICE.deSerializeModelState( dtoStr );
   }
 
   @Override
@@ -90,10 +94,11 @@ public class DSWDatasourceDebugGwtServlet extends RemoteServiceServlet implement
     return SERVICE.listDatasourceNames();
   }
 
-  public QueryDatasourceSummary generateQueryDomain(String name, String query, DatabaseConnection connection, DatasourceDTO datasourceDTO) throws DatasourceServiceException {
+  public QueryDatasourceSummary generateQueryDomain( String name, String query, DatabaseConnection connection,
+                                                     DatasourceDTO datasourceDTO ) throws DatasourceServiceException {
     try {
-      return SERVICE.generateQueryDomain(name, query, connection, datasourceDTO);
-    } catch (DatasourceServiceException e) {
+      return SERVICE.generateQueryDomain( name, query, connection, datasourceDTO );
+    } catch ( DatasourceServiceException e ) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       throw e;
     }
@@ -103,7 +108,7 @@ public class DSWDatasourceDebugGwtServlet extends RemoteServiceServlet implement
   public String getDatasourceIllegalCharacters() throws DatasourceServiceException {
     try {
       return SERVICE.getDatasourceIllegalCharacters();
-    } catch (DatasourceServiceException e) {
+    } catch ( DatasourceServiceException e ) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       throw e;
     }
@@ -111,9 +116,9 @@ public class DSWDatasourceDebugGwtServlet extends RemoteServiceServlet implement
 
   @Override
   public GeoContext getGeoContext() throws DatasourceServiceException {
-    try{
+    try {
       return SERVICE.getGeoContext();
-    } catch (DatasourceServiceException e) {
+    } catch ( DatasourceServiceException e ) {
       e.printStackTrace();
       throw e;
     }

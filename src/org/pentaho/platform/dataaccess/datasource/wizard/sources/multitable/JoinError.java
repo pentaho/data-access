@@ -19,27 +19,27 @@ package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
 
 public class JoinError {
 
-	private String error;
-	private String title;
+  private String error;
+  private String title;
 
-	public JoinError(String title, String error) {
-		this.title = title;
-		this.error = error;
-	}
+  public JoinError( String title, String error ) {
+    this.title = title;
+    this.error = error;
+  }
 
-	public String getError() {
-		return error;
-	}
+  public String getError() {
+    return error;
+  }
 
-	public void setError(String error) {
-		this.error = error;
-	}
+  public void setError( String error ) {
+    this.error = error;
+  }
 
-	public String getTitle() {
-		return title;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+  public void setTitle( String title ) {
+    this.title = title;
+  }
 }

@@ -22,26 +22,22 @@ import java.io.Serializable;
 public class DatasourceServiceException extends Exception implements Serializable {
 
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public DatasourceServiceException()
-	{
-	  super();
-	}
+  public DatasourceServiceException() {
+    super();
+  }
 
-	public DatasourceServiceException(String message)
-	{
-		super(message);
-	}
+  public DatasourceServiceException( String message ) {
+    super( message );
+  }
 
-	public DatasourceServiceException(Throwable cause)
-	{
-		super(cause);
-	}
+  public DatasourceServiceException( Throwable cause ) {
+    super( cause );
+  }
 
-	public DatasourceServiceException(String message, Throwable cause)
-	{
-		super(message, cause);
-	}
+  public DatasourceServiceException( String message, Throwable cause ) {
+    super( message, cause );
+  }
 
 }

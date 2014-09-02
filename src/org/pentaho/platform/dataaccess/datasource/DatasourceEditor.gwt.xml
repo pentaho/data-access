@@ -5,20 +5,20 @@ This module serves as the Debuging environment and default implementation for in
 
 <module rename-to="DatasourceEditor">
 
-<!-- ============================================================== 
+  <!-- ==============================================================
 
-   * Any inherits or excludes added here should also be added in: 
-       
-       DatasourceEditorModule.gwt.xml
-       DatasourceSelectionDialog.gwt.xml
+     * Any inherits or excludes added here should also be added in:
 
-============================================================== -->
+         DatasourceEditorModule.gwt.xml
+         DatasourceSelectionDialog.gwt.xml
+
+  ============================================================== -->
 
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.googlecode.gwtx.Java'/>
   <inherits name='com.google.gwt.xml.XML'/>
   <inherits name='com.google.gwt.http.HTTP'/>
-  <inherits name='com.google.gwt.json.JSON' />
+  <inherits name='com.google.gwt.json.JSON'/>
   <inherits name="org.pentaho.gwt.widgets.Widgets"/>
   <inherits name="org.pentaho.ui.xul.Gwt"/>
   <inherits name="org.pentaho.gwt.widgets.login.Login"/>
@@ -27,78 +27,78 @@ This module serves as the Debuging environment and default implementation for in
   <inherits name="org.pentaho.agilebi.AgileBi"/>
   <inherits name="org.pentaho.ui.database.DatabaseDialog"/>
   <inherits name="org.pentaho.database.Database"/>
-  <inherits name="org.pentaho.reporting.libraries.base.Util" />
-    <source path="">    
-        <exclude name="**/MQLEditorDebugGwtServlet*"/>
-        <exclude name="**/SwingMqlEditor*"/>
-        <exclude name="**/MQLEditorServiceDeligate*"/>
-        <exclude name="**/MQLEditorGwtServlet*"/>
-        <exclude name="**/MQLEditorServiceDebugImpl*"/>
-        <exclude name="**/ModelSerializer*"/>
-        <exclude name="**/CWMStartup*"/>
-        <exclude name="**/ConnectionDebugGwtServlet*"/>
-        <exclude name="**/DatasourceDebugGwtServlet*"/>
-        <exclude name="**/SwingDatasourceEditor*"/>
-        <exclude name="**/SwingDatasourceSelectionDialog*"/>
-        <exclude name="**/ConnectionServiceImpl*"/>
-		<exclude name="**/DatasourceServiceImpl*"/>        
-        <exclude name="**/InMemoryConnectionServiceImpl*"/>        
-        <exclude name="**/InMemoryDatasourceServiceImpl*"/>        
-        <exclude name="**/ConnectionServiceDebugImpl*"/>
-        <exclude name="**/DatasourceServiceDebugImpl*"/>
-        <exclude name="**/ArrayHeaderLocator*"/>
-        <exclude name="**/ResultSetConverter*"/>
-        <exclude name="**/ResultSetHelper*"/>   
-        <exclude name="**/BusinessModelGenerator*"/>
-        <exclude name="**/ExampleApp*"/>
-        <exclude name="**/CsvMqlGenerator*"/>     
-        <exclude name="**/UploadFileServlet*"/>
-        <exclude name="**/UploadFileDebugServlet*"/>
-        <exclude name="**/IDataAccessPermissionHandler*"/>
-        <exclude name="**/SimpleDataAccessPermissionHandler*"/>
-        <exclude name="**/IDataAccessViewPermissionHandler*"/>
-        <exclude name="**/SimpleDataAccessViewPermissionHandler*"/>
-        <exclude name="**/DebugDataAccessViewPermissionHandler*"/>
-        <exclude name="**/DatasourceInMemoryServiceHelper*"/>
-        <exclude name="**/ConnectionInMemoryServiceHelper*"/>
-        <exclude name="**/ConnectionServiceHelper*"/>        
-        <exclude name="**/DatasourceServiceHelper*"/>
-    	<exclude name="**/DataAccessDatabaseConnectionService*"/>   
-    	<exclude name="**/DataAccessDatabaseDialectService*"/>    	
-        <exclude name="**/Messages*"/>
-        <exclude name="**/service/agile/*"/>
-        <exclude name="**/service/impl/utils/*"/>
-        <exclude name="**/service/impl/ModelerService*"/>
-        <exclude name="**/service/impl/DebugModelerService*"/>
-        
-        <exclude name="**/CsvModelService*"/>
-        <exclude name="**/CsvDatasourceServiceImpl*"/>
-        <exclude name="**/ConnectionServiceConcrete*"/>
+  <inherits name="org.pentaho.reporting.libraries.base.Util"/>
+  <source path="">
+    <exclude name="**/MQLEditorDebugGwtServlet*"/>
+    <exclude name="**/SwingMqlEditor*"/>
+    <exclude name="**/MQLEditorServiceDeligate*"/>
+    <exclude name="**/MQLEditorGwtServlet*"/>
+    <exclude name="**/MQLEditorServiceDebugImpl*"/>
+    <exclude name="**/ModelSerializer*"/>
+    <exclude name="**/CWMStartup*"/>
+    <exclude name="**/ConnectionDebugGwtServlet*"/>
+    <exclude name="**/DatasourceDebugGwtServlet*"/>
+    <exclude name="**/SwingDatasourceEditor*"/>
+    <exclude name="**/SwingDatasourceSelectionDialog*"/>
+    <exclude name="**/ConnectionServiceImpl*"/>
+    <exclude name="**/DatasourceServiceImpl*"/>
+    <exclude name="**/InMemoryConnectionServiceImpl*"/>
+    <exclude name="**/InMemoryDatasourceServiceImpl*"/>
+    <exclude name="**/ConnectionServiceDebugImpl*"/>
+    <exclude name="**/DatasourceServiceDebugImpl*"/>
+    <exclude name="**/ArrayHeaderLocator*"/>
+    <exclude name="**/ResultSetConverter*"/>
+    <exclude name="**/ResultSetHelper*"/>
+    <exclude name="**/BusinessModelGenerator*"/>
+    <exclude name="**/ExampleApp*"/>
+    <exclude name="**/CsvMqlGenerator*"/>
+    <exclude name="**/UploadFileServlet*"/>
+    <exclude name="**/UploadFileDebugServlet*"/>
+    <exclude name="**/IDataAccessPermissionHandler*"/>
+    <exclude name="**/SimpleDataAccessPermissionHandler*"/>
+    <exclude name="**/IDataAccessViewPermissionHandler*"/>
+    <exclude name="**/SimpleDataAccessViewPermissionHandler*"/>
+    <exclude name="**/DebugDataAccessViewPermissionHandler*"/>
+    <exclude name="**/DatasourceInMemoryServiceHelper*"/>
+    <exclude name="**/ConnectionInMemoryServiceHelper*"/>
+    <exclude name="**/ConnectionServiceHelper*"/>
+    <exclude name="**/DatasourceServiceHelper*"/>
+    <exclude name="**/DataAccessDatabaseConnectionService*"/>
+    <exclude name="**/DataAccessDatabaseDialectService*"/>
+    <exclude name="**/Messages*"/>
+    <exclude name="**/service/agile/*"/>
+    <exclude name="**/service/impl/utils/*"/>
+    <exclude name="**/service/impl/ModelerService*"/>
+    <exclude name="**/service/impl/DebugModelerService*"/>
 
-        <exclude name="**/*Servlet*"/>
-        <exclude name="**/wizard/csv/*"/>                   
+    <exclude name="**/CsvModelService*"/>
+    <exclude name="**/CsvDatasourceServiceImpl*"/>
+    <exclude name="**/ConnectionServiceConcrete*"/>
 
-        <exclude name="**/ModelerServiceTest*"/>
-        <exclude name="**/DatasourceModelTest*"/>
-        <exclude name="**/GuiStateModelTest*"/>
-        <exclude name="**/AggregationTest*"/>
-        <exclude name="**/CsvModelTest*"/>
-        <exclude name="**/CsvFileInfoTest*"/>
-        <exclude name="**/MultitableDatasourceService*"/>
+    <exclude name="**/*Servlet*"/>
+    <exclude name="**/wizard/csv/*"/>
 
-    </source>
-   <public path="wizard/public"/>
+    <exclude name="**/ModelerServiceTest*"/>
+    <exclude name="**/DatasourceModelTest*"/>
+    <exclude name="**/GuiStateModelTest*"/>
+    <exclude name="**/AggregationTest*"/>
+    <exclude name="**/CsvModelTest*"/>
+    <exclude name="**/CsvFileInfoTest*"/>
+    <exclude name="**/MultitableDatasourceService*"/>
 
-<!-- **SuperDevMode** == Uncomment this and re-build to get a SuperDevMode compatible build
-  <add-linker name="xsiframe"/>
-  <set-configuration-property name="devModeRedirectEnabled" value="true"/>
-**SuperDevMode** -->
-   
-    <entry-point class="org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint"/>
-   <!--
-  <servlet path="/databaseConnectionService" class="org.pentaho.ui.database.gwt.GwtDatabaseConnectionServlet" />
-  <servlet path="/ConnectionService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet" />
-  <servlet path="/DatasourceService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.DatasourceDebugGwtServlet" />
-  <servlet path="/UploadService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.UploadFileDebugServlet" />
-  -->
- </module>
+  </source>
+  <public path="wizard/public"/>
+
+  <!-- **SuperDevMode** == Uncomment this and re-build to get a SuperDevMode compatible build
+    <add-linker name="xsiframe"/>
+    <set-configuration-property name="devModeRedirectEnabled" value="true"/>
+  **SuperDevMode** -->
+
+  <entry-point class="org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint"/>
+  <!--
+ <servlet path="/databaseConnectionService" class="org.pentaho.ui.database.gwt.GwtDatabaseConnectionServlet" />
+ <servlet path="/ConnectionService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ConnectionDebugGwtServlet" />
+ <servlet path="/DatasourceService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.DatasourceDebugGwtServlet" />
+ <servlet path="/UploadService" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.UploadFileDebugServlet" />
+ -->
+</module>

@@ -1,31 +1,31 @@
 <?xml version="1.0"?>
-<overlay 
-  xmlns="http://www.pentaho.org/there.is.only.xul">
-  <listbox id="deck-options-list" flex="0" width="100"  height="400"/>
-  
+<overlay
+    xmlns="http://www.pentaho.org/there.is.only.xul">
+  <listbox id="deck-options-list" flex="0" width="100" height="400"/>
+
   <listitem id="advanced-item" removeelement="false"/>
   <listitem id="pooling-item" removeelement="false"/>
-  
+
   <!-- Remove pooling parameters from the pooling tab -->
   <label id="pool-parameter-description-label" flex="0" height="20" width="535"/>
-  <tree id="pool-parameter-tree" removeelement="false" flex="0" height="125" />
+  <tree id="pool-parameter-tree" removeelement="false" flex="0" height="125"/>
   <button id="restore-defaults-button" removeelement="false"/>
   <!-- End remove pooling parameters -->
-  
+
   <listitem id="cluster-item" removeelement="true"/>
-  
+
   <groupbox id="advanced-group-box" removeelement="false"/>
   <groupbox id="pooling-group" removeelement="false"/>
   <groupbox id="place-holder-box-2" removeelement="false"/>
-  
-  <listbox id="connection-type-list" flex="0" width="250" height="175"/>
-  <listbox id="access-type-list" flex="0" width="250"  height="85"/>
 
-  <hbox id="all-box" height="400" flex="0" width="650" />
-  <hbox id="connection-access-list-box" height="350" flex="0" width="535" />
-  <vbox id="type-box" height="350" flex="0" width="258" />
-  <groupbox id="database-options-box" height="350" flex="0" width="268" />
-  <textbox id="connection-name-text" width="545" />
-  <vbox flex="0" id="main-container" height="400" />
-  
+  <listbox id="connection-type-list" flex="0" width="250" height="175"/>
+  <listbox id="access-type-list" flex="0" width="250" height="85"/>
+
+  <hbox id="all-box" height="400" flex="0" width="650"/>
+  <hbox id="connection-access-list-box" height="350" flex="0" width="535"/>
+  <vbox id="type-box" height="350" flex="0" width="258"/>
+  <groupbox id="database-options-box" height="350" flex="0" width="268"/>
+  <textbox id="connection-name-text" width="545"/>
+  <vbox flex="0" id="main-container" height="400"/>
+
 </overlay>

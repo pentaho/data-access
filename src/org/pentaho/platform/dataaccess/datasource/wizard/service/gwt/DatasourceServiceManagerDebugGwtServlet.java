@@ -21,7 +21,8 @@ import java.util.List;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-public class DatasourceServiceManagerDebugGwtServlet extends RemoteServiceServlet implements IGwtDatasourceServiceManager{
+public class DatasourceServiceManagerDebugGwtServlet extends RemoteServiceServlet
+  implements IGwtDatasourceServiceManager {
 
   @Override
   public Boolean isAdmin() {

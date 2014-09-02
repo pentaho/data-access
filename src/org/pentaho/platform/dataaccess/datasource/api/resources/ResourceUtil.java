@@ -32,14 +32,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
-import org.pentaho.platform.api.engine.IAuthorizationPolicy;
-import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.repository2.unified.fileio.RepositoryFileInputStream;
-import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
-import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
-import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
-import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 
 public class ResourceUtil {
 
@@ -56,7 +49,7 @@ public class ResourceUtil {
         ZipOutputStream zos = new ZipOutputStream( new FileOutputStream( zipFile ) );
         for ( String fileName : fileData.keySet() ) {
           InputStream zipEntryIs = null;
-          try { 
+          try {
             ZipEntry entry = new ZipEntry( fileName );
             zos.putNextEntry( entry );
             zipEntryIs = fileData.get( fileName );
@@ -80,25 +73,28 @@ public class ResourceUtil {
           IOUtils.copy( is, output );
         }
       };
-      final int xmiIndex = domainId.lastIndexOf( ".xmi" );//$NON-NLS-1$
-      quotedFileName = "\"" + ( xmiIndex > 0 ? domainId.substring( 0, xmiIndex ) : domainId ) + ".zip\""; //$NON-NLS-1$//$NON-NLS-2$
-      return Response.ok( streamingOutput, APPLICATION_ZIP ).header( "Content-Disposition", "attachment; filename=" + quotedFileName ).build(); //$NON-NLS-1$ //$NON-NLS-2$
+      final int xmiIndex = domainId.lastIndexOf( ".xmi" ); //$NON-NLS-1$
+      quotedFileName =
+        "\"" + ( xmiIndex > 0 ? domainId.substring( 0, xmiIndex ) : domainId ) + ".zip\""; //$NON-NLS-1$//$NON-NLS-2$
+      return Response.ok( streamingOutput, APPLICATION_ZIP )
+        .header( "Content-Disposition", "attachment; filename=" + quotedFileName ).build(); //$NON-NLS-1$ //$NON-NLS-2$
     } else if ( fileData.size() == 1 ) {  // we've got a single metadata file so we just return that.
-      String fileName = (String) fileData.keySet().toArray()[0];
+      String fileName = (String) fileData.keySet().toArray()[ 0 ];
       quotedFileName = "\"" + fileName + "\""; //$NON-NLS-1$ //$NON-NLS-2$
       is = fileData.get( fileName );
       String mimeType = MediaType.TEXT_PLAIN;
-      if (is instanceof RepositoryFileInputStream) {
-        mimeType = ( (RepositoryFileInputStream)is ).getMimeType();
+      if ( is instanceof RepositoryFileInputStream ) {
+        mimeType = ( (RepositoryFileInputStream) is ).getMimeType();
       }
       StreamingOutput streamingOutput = new StreamingOutput() {
         public void write( OutputStream output ) throws IOException {
           IOUtils.copy( is, output );
         }
       };
-      return Response.ok( streamingOutput, mimeType ).header( "Content-Disposition", "attachment; filename=" + quotedFileName ).build(); //$NON-NLS-1$ //$NON-NLS-2$
+      return Response.ok( streamingOutput, mimeType )
+        .header( "Content-Disposition", "attachment; filename=" + quotedFileName ).build(); //$NON-NLS-1$ //$NON-NLS-2$
     }
     return Response.serverError().build();
   }
-  
+
 }

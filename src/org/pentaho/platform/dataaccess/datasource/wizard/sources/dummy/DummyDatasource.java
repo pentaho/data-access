@@ -33,14 +33,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * User: nbaker
- * Date: 3/23/11
+ * User: nbaker Date: 3/23/11
  */
-public class DummyDatasource extends AbstractXulEventHandler implements IWizardDatasource{
+public class DummyDatasource extends AbstractXulEventHandler implements IWizardDatasource {
   SelectDatasourceStep datasourceStep;
 
-  public DummyDatasource(){
-    datasourceStep = new SelectDatasourceStep(this);
+  public DummyDatasource() {
+    datasourceStep = new SelectDatasourceStep( this );
 
   }
 
@@ -51,7 +50,7 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
   @Override
   @Bindable
   public String getName() {
-    return MessageHandler.getString("datasourceDialog.SelectDatabaseType");
+    return MessageHandler.getString( "datasourceDialog.SelectDatabaseType" );
   }
 
   @Override
@@ -60,13 +59,13 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
   }
 
   @Override
-  public void onFinish(XulServiceCallback<IDatasourceSummary> callback) {
+  public void onFinish( XulServiceCallback<IDatasourceSummary> callback ) {
   }
 
   @Override
-  public void init(XulDomContainer container, IWizardModel wizardModel) throws XulException {
-    container.addEventHandler(datasourceStep);
-    datasourceStep.init(wizardModel);
+  public void init( XulDomContainer container, IWizardModel wizardModel ) throws XulException {
+    container.addEventHandler( datasourceStep );
+    datasourceStep.init( wizardModel );
   }
 
   @Override
@@ -87,12 +86,12 @@ public class DummyDatasource extends AbstractXulEventHandler implements IWizardD
 
   @Override
   @Bindable
-  public void setFinishable(boolean isFinishable) {
+  public void setFinishable( boolean isFinishable ) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
-  public void restoreSavedDatasource(Domain previousDomain, XulServiceCallback<Void> callback) {
+  public void restoreSavedDatasource( Domain previousDomain, XulServiceCallback<Void> callback ) {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 

@@ -24,8 +24,8 @@ import org.pentaho.platform.dataaccess.metadata.model.IColumn;
 
 /**
  * Concrete, lightweight, serializable implementation of an {@see IColumn} object
- * @author jamesdixon
  *
+ * @author jamesdixon
  */
 public class Column implements IColumn {
 
@@ -39,13 +39,13 @@ public class Column implements IColumn {
   private String category;
   private String getHorizontalAlignment;
   private String formatMask;
-  
+
   @Override
   public String getHorizontalAlignment() {
     return getHorizontalAlignment;
   }
 
-  public void setHorizontalAlignment(String getHorizontalAlignment) {
+  public void setHorizontalAlignment( String getHorizontalAlignment ) {
     this.getHorizontalAlignment = getHorizontalAlignment;
   }
 
@@ -54,7 +54,7 @@ public class Column implements IColumn {
     return formatMask;
   }
 
-  public void setFormatMask(String formatMask) {
+  public void setFormatMask( String formatMask ) {
     this.formatMask = formatMask;
   }
 
@@ -63,7 +63,7 @@ public class Column implements IColumn {
     return category;
   }
 
-  public void setCategory(String category) {
+  public void setCategory( String category ) {
     this.category = category;
   }
 
@@ -72,10 +72,10 @@ public class Column implements IColumn {
     return fieldType;
   }
 
-  public void setFieldType(String fieldType) {
+  public void setFieldType( String fieldType ) {
     this.fieldType = fieldType;
   }
-  
+
   @Override
   public String getId() {
     return this.id;
@@ -83,7 +83,7 @@ public class Column implements IColumn {
 
   @Override
   public String getName() {
-    return this.name;   
+    return this.name;
   }
 
   @Override
@@ -91,15 +91,15 @@ public class Column implements IColumn {
     return this.type;
   }
 
-  public void setId(String id) {
+  public void setId( String id ) {
     this.id = id;
   }
 
-  public void setName(String name) {
+  public void setName( String name ) {
     this.name = name;
   }
 
-  public void setType(String type) {
+  public void setType( String type ) {
     this.type = type;
   }
 
@@ -110,25 +110,25 @@ public class Column implements IColumn {
 
   @Override
   public String[] getAggTypes() {
-    return aggTypes.toArray( new String[aggTypes.size()] );
+    return aggTypes.toArray( new String[ aggTypes.size() ] );
   }
 
-  public void setAggTypes(List<String> aggTypes) {
+  public void setAggTypes( List<String> aggTypes ) {
     this.aggTypes = aggTypes;
   }
 
-  public void setDefaultAggType(String defaultAggType) {
+  public void setDefaultAggType( String defaultAggType ) {
     this.defaultAggType = defaultAggType;
   }
 
-  public void setSelectedAggType(String aggType){
+  public void setSelectedAggType( String aggType ) {
     this.selectedAggType = aggType;
   }
-  
+
   @Override
-  public String getSelectedAggType(){
+  public String getSelectedAggType() {
     return this.selectedAggType;
   }
-  
-  
+
+
 }

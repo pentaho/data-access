@@ -64,7 +64,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
   // ~ Instance fields =================================================================================================
   private BindingFactory bf;
-  
+
   private IXulAsyncDatasourceServiceManager datasourceServiceManager;
   private IModelerServiceAsync modelerService;
   private IXulAsyncDSWDatasourceService dswService;
@@ -74,17 +74,17 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   private XulDialog datasourceAdminErrorDialog;
   private XulDialog removeDatasourceConfirmationDialog;
   private XulLabel datasourceAdminErrorLabel = null;
-  
+
   private XulButton datasourceAddButton;
   private XulMenupopup datasourceTypeMenuPopup;
   private XulMenuitem exportDatasourceMenuItem;
   private XulMenuitem editDatasourceMenuItem;
   private XulMenuitem removeDatasourceMenuItem;
 
-  private Binding editDatasourceButtonBinding; 
+  private Binding editDatasourceButtonBinding;
   private Binding removeDatasourceButtonBinding;
   private Binding exportDatasourceButtonBinding;
-  
+
   private GwtDatabaseDialog databaseDialog;
   private boolean administrator;
   XulTree datasourceTable = null;
@@ -114,7 +114,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     removeDatasourceMenuItem = (XulMenuitem) document.getElementById("removeDatasourceMenuItem"); //$NON-NLS-1$
     bf.setBindingType(Binding.Type.ONE_WAY);
     try {
-      
+
       BindingConvertor<IDatasourceInfo, Boolean> removeDatasourceButtonConvertor = new BindingConvertor<IDatasourceInfo, Boolean>() {
         @Override
         public Boolean sourceToTarget(final IDatasourceInfo datasourceInfo) {
@@ -126,7 +126,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           throw new UnsupportedOperationException();
         }
       };
-      
+
       //setup binding to disable edit datasource button until user selects a datasource
       BindingConvertor<IDatasourceInfo, Boolean> editDatasourceButtonConvertor = new BindingConvertor<IDatasourceInfo, Boolean>() {
         @Override
@@ -139,7 +139,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           throw new UnsupportedOperationException();
         }
       };
-      
+
       BindingConvertor<IDatasourceInfo, Boolean> exportDatasourceButtonConvertor = new BindingConvertor<IDatasourceInfo, Boolean>() {
         @Override
         public Boolean sourceToTarget(final IDatasourceInfo datasourceInfo) {
@@ -160,7 +160,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
       bf.createBinding(datasourceAdminDialogModel, "datasources", datasourceTable, "elements");
       bf.createBinding(datasourceTable, "selectedItems", datasourceAdminDialogModel, "selectedDatasource", //$NON-NLS-1$//$NON-NLS-2$
-      new BindingConvertor<List, IDatasourceInfo>() { 
+      new BindingConvertor<List, IDatasourceInfo>() {
 
         @Override
         public IDatasourceInfo sourceToTarget( List datasources) {
@@ -178,7 +178,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       }).fireSourceChanged();
 
       bf.createBinding(datasourceTable, "selectedItem", datasourceAdminDialogModel, "selectedDatasource").fireSourceChanged();
-      
+
       removeDatasourceButtonBinding.fireSourceChanged();
       editDatasourceButtonBinding.fireSourceChanged();
       exportDatasourceButtonBinding.fireSourceChanged();
@@ -200,7 +200,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         @Override
         public void onDialogReady() {
           // TODO Auto-generated method stub
-          
+
         }
 
         @Override
@@ -208,7 +208,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           openErrorDialog("Error", errorMessage);
         }
       };
-      
+
       manager = UIDatasourceServiceManager.getInstance();
 
     } catch (Exception e) {
@@ -223,9 +223,9 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     $wnd.pho.refreshDatasourceList = function() {
       controller.@org.pentaho.platform.dataaccess.datasource.ui.admindialog.DatasourceAdminDialogController::refreshDatasourceList()();
     }
-    
+
   }-*/;
-  
+
   /**
    * ID of this controller. This is how event handlers are referenced in <code>.xul</code> files.
    */
@@ -257,7 +257,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     }
     datasourceAdminDialogModel.setDatasourcesList(null);
       manager.getIds(new XulServiceCallback<List<IDatasourceInfo>>() {
-  
+
         @Override
         public void success(List<IDatasourceInfo> infoList) {
           DatasourceAdminDialogController.super.showDialog();
@@ -267,14 +267,14 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           editDatasourceMenuItem.setDisabled(true);
           removeDatasourceMenuItem.setDisabled(true);
         }
-  
+
         @Override
         public void error(String message, Throwable error) {
           openErrorDialog("Error", message + error.getMessage());
         }
       });
   }
-  
+
   private void getDatasourceTypes() {
         List<String> datasourceTypes = manager.getTypes();
         // Clear out the current component list
@@ -403,7 +403,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
           String script = newUI.substring(newUI.indexOf(":") + 1);
           executeJavaScript(script);
         }
-        		
+
       }
   }
 
@@ -416,7 +416,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       $wnd.pho.showDatasourceAdminErrorDialog("Error", e.message);
     }
   }-*/;
-  
+
   @Override
   public void showDialog() {
     refreshDatasourceList();
@@ -446,16 +446,16 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       refreshDatasourceList();
     }
   }
-  
+
   public void setEntryPoint(GwtDatasourceEditorEntryPoint entryPoint) {
     this.entryPoint = entryPoint;
   }
-  
+
   @Override
   public void handleException(BindingException t) {
     t.printStackTrace();
   }
-  
+
   @Bindable
   public void export() {
     IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
@@ -472,7 +472,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
     manager.exportDatasource(dsInfo);
   }
-  
+
   @Bindable
   public void remove() {
     IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
@@ -483,7 +483,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
     }
     removeDatasourceConfirmationDialog.show();
   }
-  
+
   @Bindable
   public void edit() {
     IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
@@ -511,50 +511,50 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
                   public void onDialogAccept(
                       Domain returnValue) {
                     // TODO Auto-generated method stub
-                    
+
                   }
 
                   @Override
                   public void onDialogCancel() {
                     // TODO Auto-generated method stub
-                    
+
                   }
 
                   @Override
                   public void onDialogReady() {
                     // TODO Auto-generated method stub
-                    
+
                   }
 
                   @Override
                   public void onDialogError(String errorMessage) {
                     // TODO Auto-generated method stub
-                    
+
                   }
-                  
+
                 }
-              );          
+              );
           }
         }
 
         @Override
         public void error(String message, Throwable error) {
           // TODO Auto-generated method stub
-          
+
         }
-        
+
       });
     }
-    else 
+    else
     if (JdbcDatasourceService.TYPE.equals(type)) {
       entryPoint.showEditDatabaseDialog(
-        adminDatasourceListener, 
+        adminDatasourceListener,
         dsId
       );
     }
     else
     if (MondrianUIDatasourceService.TYPE.equals(type)) {
-      IDatasourceInfo datasourceInfo = datasourceAdminDialogModel.getSelectedDatasource();	
+      IDatasourceInfo datasourceInfo = datasourceAdminDialogModel.getSelectedDatasource();
       entryPoint.showEditAnalysisDialog(adminDatasourceListener, datasourceInfo);
     }
     else
@@ -564,7 +564,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
       return;
     }
   }
-  
+
   @Bindable
   public void newConnection() {
       launchNewUI("JDBC");
@@ -573,7 +573,7 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
   public void newDataSource() {
       launchNewUI("Data Source Wizard");
   }
-  
+
   @Bindable
   public void removeDatasourceAccept() {
     final IDatasourceInfo dsInfo = datasourceAdminDialogModel.getSelectedDatasource();
@@ -595,13 +595,13 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
         public void error(String message, Throwable error) {
         	Window.alert(
               messageBundle.getString("datasourceAdminDialogController.ERROR_REMOVING")
-        			+  ": " + dsInfo.getId() + "." 
+        			+  ": " + dsInfo.getId() + "."
         					+ messageBundle.getString("ERROR") + "=" + error.getLocalizedMessage());
         }
     });
     removeDatasourceConfirmationDialog.hide();
   }
-  
+
   @Bindable
   public void removeDatasourceCancel() {
     removeDatasourceConfirmationDialog.hide();

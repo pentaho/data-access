@@ -29,8 +29,7 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
- * User: nbaker
- * Date: 3/22/11
+ * User: nbaker Date: 3/22/11
  */
 public class SummaryDialogController extends AbstractXulEventHandler {
 
@@ -52,59 +51,62 @@ public class SummaryDialogController extends AbstractXulEventHandler {
     return "summaryDialog";
   }
 
-  public void init(){
-    wizardDialog = (XulDialog) document.getElementById("main_wizard_window");
-    modelerDecision = (GwtRadioGroup) document.getElementById("modelerDecision");
-    errorLogExpander = (XulExpandPanel) document.getElementById("errorLogExpander");
-    showModelerCheckboxHider = (XulVbox) document.getElementById("showModelerCheckboxHider");
+  public void init() {
+    wizardDialog = (XulDialog) document.getElementById( "main_wizard_window" );
+    modelerDecision = (GwtRadioGroup) document.getElementById( "modelerDecision" );
+    errorLogExpander = (XulExpandPanel) document.getElementById( "errorLogExpander" );
+    showModelerCheckboxHider = (XulVbox) document.getElementById( "showModelerCheckboxHider" );
 
-    summaryDialog = (XulDialog) document.getElementById("summaryDialog");
-    summaryDialogRowsLoaded = (XulLabel) document.getElementById("summaryDialogRowsLoaded");
-    summaryDialogDetails = (XulLabel) document.getElementById("summaryDialogDetails");
+    summaryDialog = (XulDialog) document.getElementById( "summaryDialog" );
+    summaryDialogRowsLoaded = (XulLabel) document.getElementById( "summaryDialogRowsLoaded" );
+    summaryDialogDetails = (XulLabel) document.getElementById( "summaryDialogDetails" );
   }
 
-  public void showSummaryDialog(IDatasourceSummary stats, XulServiceCallback<IDatasourceSummary> callback){
-    showSummaryDialog(stats, true, callback);
+  public void showSummaryDialog( IDatasourceSummary stats, XulServiceCallback<IDatasourceSummary> callback ) {
+    showSummaryDialog( stats, true, callback );
   }
-  public void showSummaryDialog(IDatasourceSummary stats, boolean showModelerDecision, XulServiceCallback<IDatasourceSummary> callback){
+
+  public void showSummaryDialog( IDatasourceSummary stats, boolean showModelerDecision,
+                                 XulServiceCallback<IDatasourceSummary> callback ) {
     summary = stats;
     this.callback = callback;
 
     wizardDialog.hide();
 
-    errorLogExpander.setExpanded(false);
-    modelerDecision.setValue("DEFAULT");
+    errorLogExpander.setExpanded( false );
+    modelerDecision.setValue( "DEFAULT" );
 
     // only show csv related stuff if it is a csv data source (it will have stats)
-    if (stats != null && stats.getErrorCount() > 0) {
+    if ( stats != null && stats.getErrorCount() > 0 ) {
       long errors = stats.getErrorCount();
       long total = stats.getTotalRecords() > 0 ? stats.getTotalRecords() : errors;
 
       long successRows = total > errors ? total - errors : 0;
 
-      summaryDialogRowsLoaded.setValue(MessageHandler.getString("summaryDialog.rowsLoaded", String.valueOf(successRows), String.valueOf(total)));
+      summaryDialogRowsLoaded.setValue( MessageHandler
+        .getString( "summaryDialog.rowsLoaded", String.valueOf( successRows ), String.valueOf( total ) ) );
       String lf = "\n";
-      if (errors > 0) {
+      if ( errors > 0 ) {
         StringBuilder detailMsg = new StringBuilder();
-        for (String error : stats.getErrors()) {
-          detailMsg.append(error);
-          detailMsg.append(lf);
+        for ( String error : stats.getErrors() ) {
+          detailMsg.append( error );
+          detailMsg.append( lf );
         }
-        summaryDialogDetails.setValue(detailMsg.toString());
-        errorLogExpander.setVisible(true);
+        summaryDialogDetails.setValue( detailMsg.toString() );
+        errorLogExpander.setVisible( true );
       } else {
-        summaryDialogDetails.setValue("");
-        errorLogExpander.setVisible(false);
+        summaryDialogDetails.setValue( "" );
+        errorLogExpander.setVisible( false );
       }
 
     } else {
-      summaryDialogRowsLoaded.setValue(MessageHandler.getString("summaryDialog.generalSuccess"));
-      errorLogExpander.setVisible(false);
+      summaryDialogRowsLoaded.setValue( MessageHandler.getString( "summaryDialog.generalSuccess" ) );
+      errorLogExpander.setVisible( false );
     }
 
     //TODO: handle modeler checkbox visibility
     //showModelerCheckboxHider.setVisible(!datasourceModel.getGuiStateModel().isEditing());
-    showModelerCheckboxHider.setVisible(showModelerDecision);
+    showModelerCheckboxHider.setVisible( showModelerDecision );
     MessageHandler.getInstance().closeWaitingDialog();
     summaryDialog.show();
   }
@@ -112,19 +114,19 @@ public class SummaryDialogController extends AbstractXulEventHandler {
   @Bindable
   public void closeSummaryDialog() {
     summaryDialog.hide();
-    boolean editModeler = modelerDecision.getValue() != null && modelerDecision.getValue().equals("EDIT");
-    if (editModeler) {
-      MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString(MessageHandler.MSG_OPENING_MODELER));
-      summary.setShowModeler(true);
+    boolean editModeler = modelerDecision.getValue() != null && modelerDecision.getValue().equals( "EDIT" );
+    if ( editModeler ) {
+      MessageHandler.getInstance().showWaitingDialog( MessageHandler.getString( MessageHandler.MSG_OPENING_MODELER ) );
+      summary.setShowModeler( true );
     } else {
-      MessageHandler.getInstance().showWaitingDialog(MessageHandler.getString(MessageHandler.MSG_GENERAL_WAIT));
-      summary.setShowModeler(false);
+      MessageHandler.getInstance().showWaitingDialog( MessageHandler.getString( MessageHandler.MSG_GENERAL_WAIT ) );
+      summary.setShowModeler( false );
     }
 
-    errorLogExpander.setExpanded(false);
-    this.callback.success(summary);
+    errorLogExpander.setExpanded( false );
+    this.callback.success( summary );
   }
 
-  public void setBindingFactory(BindingFactory bindingFactory) {
+  public void setBindingFactory( BindingFactory bindingFactory ) {
   }
 }
