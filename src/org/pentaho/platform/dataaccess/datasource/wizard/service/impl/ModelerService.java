@@ -183,7 +183,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
               IPentahoSession session = PentahoSessionHolder.getSession();
               if (session != null) {
                 session.setAttribute("MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema);
-                String catConnectStr = "Provider=mondrian;DataSource=" + ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId(); //$NON-NLS-1$        
+                String catConnectStr = "Provider=mondrian;DataSource=" + getMondrianDatasource( domain ); //$NON-NLS-1$
                 addCatalog(catName, catConnectStr, session);
               }
             }
@@ -198,7 +198,11 @@ public class ModelerService extends PentahoBase implements IModelerService {
     }
     return domainId;
   }
-  
+
+  public static String getMondrianDatasource( Domain domain ) {
+    return ((SqlPhysicalModel) domain.getPhysicalModels().get(0)).getId();
+  }
+
   private void addCatalog(String catName, String catConnectStr, IPentahoSession session) {
     
     IMondrianCatalogService mondrianCatalogService = PentahoSystem.get(IMondrianCatalogService.class, "IMondrianCatalogService", session); //$NON-NLS-1$

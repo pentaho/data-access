@@ -25,11 +25,16 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.enunciate.jaxrs.ResponseCode;
@@ -37,6 +42,8 @@ import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
+
+import com.sun.jersey.multipart.FormDataParam;
 
 public class DataSourceWizardResource {
 
@@ -137,4 +144,50 @@ public class DataSourceWizardResource {
   public JaxbList<String> getDSWDatasourceIds() {
     return new JaxbList<String>( service.getDSWDatasourceIds() );
   }
+
+  /**
+   * Publish a DSW from a Metadata XMI file
+   *
+   * <p><b>Example Request:</b>
+   *  POST /data-access/api/datasource/dsw/publish
+   * </p>
+   *
+   * @param domainId The domain to publish to. Must end in '.xmi'.
+   * <pre function="syntax.xml">
+   *  ADomain.xmi
+   * </pre>
+   * @param metadataFile InputStream with the DSW XMI file
+   * @param overwrite Flag for overwriting existing version of the file
+   * @param checkConnection Only publish if the required connection exists
+   *
+   * @return Response containing the success of the method and the published domain id
+   *
+   * <p><b>Example Response:</b></p>
+   * <pre function="syntax.xml">
+   *   200 ADomain.xmi
+   * </pre>
+   **/
+  @PUT
+  @Path( "/datasource/dsw/import" )
+  @Consumes( MediaType.MULTIPART_FORM_DATA )
+  @Produces( MediaType.TEXT_PLAIN )
+  public Response publishDsw(
+      @FormDataParam( "domainId" ) final String domainId,
+      @FormDataParam( "metadataFile" ) InputStream metadataFile,
+      @FormDataParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
+      @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection ) {
+    try {
+      final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+      return Response.ok( dswId ).build();
+    } catch ( PentahoAccessControlException e ) {
+      return Response.status( UNAUTHORIZED ).build();
+    } catch ( IllegalArgumentException e ) {
+      return Response.status( Response.Status.BAD_REQUEST ).entity( e.getMessage() ).build();
+    } catch ( DataSourceWizardService.DswPublishValidationException e ) {
+      return Response.status( Response.Status.CONFLICT ).entity( e.getMessage() ).build();
+    } catch ( Exception e ) {
+      return Response.serverError().build();
+    }
+  }
+
 }
