@@ -189,7 +189,7 @@
 				      <hbox>
 					    <vbox id="schemaTableVbox">
 				          <label value="${multitable.SCHEMA}" tooltiptext=""/>
-					      <menulist id="schemas" width="395">
+					      <menulist id="schemas" width="350">
 					        <menupopup>
 					          <menuitem label=""/>
 					        </menupopup>
@@ -199,7 +199,7 @@
 				      <hbox>
 				        <vbox>
 				          <label value="${multitable.AVAILABLE_TABLES}" tooltiptext=""/>
-				          <listbox id="availableTables" pen:binding="name" disabled="false" height="410" width="395" seltype="multi"/>
+				          <listbox id="availableTables" pen:binding="name" disabled="false" height="410" width="350" seltype="multi"/>
 				        </vbox>
 				        <vbox>
 				          <spacer height="150"/>
@@ -211,14 +211,14 @@
 				        </vbox>
 				        <vbox>
 				          <label value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
-				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="410" width="395" seltype="multi"/>
+				          <listbox id="selectedTables" pen:binding="name" disabled="false" height="410" width="350" seltype="multi"/>
 				        </vbox>
 				      </hbox>
 				      <hbox>
 				        <spacer width="435"/>
 				      	<vbox id="factTableVbox">
 				          <label value="${multitable.FACT_TABLE}" tooltiptext=""/>
-   					      <menulist id="factTables" pen:binding="name" width="395">
+   					      <menulist id="factTables" pen:binding="name" width="350">
 					        <menupopup>
 					          <menuitem label=""/>
 					        </menupopup>
