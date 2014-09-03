@@ -89,8 +89,8 @@ public class JDBCDatasourceResource {
    *
    * @return A list of JDBC datasource IDs
    * <p/>
-   * <p><b>Example Response:</b></p> <pre function="syntax.xml"> {@code { "Item":[ { "@type":"xs:string",
-   * "$":"SampleData" }, { "@type":"xs:string", "$":"Conn123" }, { "@type":"xs:string", "$":"MyConnection" } ] } }
+   * <p><b>Example Response:</b></p> <pre function="syntax.xml">  { "Item":[ { "@type":"xs:string",
+   * "$":"SampleData" }, { "@type":"xs:string", "$":"Conn123" }, { "@type":"xs:string", "$":"MyConnection" } ] }
    * </pre>
    */
   @GET
@@ -122,7 +122,7 @@ public class JDBCDatasourceResource {
    * @param name The name of the JDBC datasource to retrieve
    * @return A Response object containing the JDBC connection in XML or JSON form
    * <p/>
-   * <p><b>Example Response:</b></p> <pre function="syntax.xml"> {@code { "SQLServerInstance":null,
+   * <p><b>Example Response:</b></p> <pre function="syntax.xml"> { "SQLServerInstance":null,
    * "accessType":"NATIVE", "accessTypeValue":"NATIVE", "attributes":{ "PORT_NUMBER":"9001" }, "changed":false,
    * "connectSql":"", "connectionPoolingProperties":{ }, "dataTablespace":"", "databaseName":"SampleData",
    * "databasePort":"9001", "databaseType":{ "defaultDatabasePort":9001, "extraOptionsHelpUrl":"http://hsqldb
@@ -132,7 +132,7 @@ public class JDBCDatasourceResource {
    * "hostname":"localhost", "id":"12e88903-9cfd-419a-9cd1-728093aaf2cf", "indexTablespace":"", "informixServername":"",
    * "initialPoolSize":0, "maximumPoolSize":0, "name":"SampleData", "partitioned":false, "password":"password",
    * "quoteAllFields":false, "streamingResults":false, "username":"pentaho_user", "usingConnectionPool":true,
-   * "usingDoubleDecimalAsSchemaTableSeparator":false } } </pre>
+   * "usingDoubleDecimalAsSchemaTableSeparator":false }  </pre>
    */
   @GET
   @Path( "/{name : .+}/download" )
@@ -155,14 +155,14 @@ public class JDBCDatasourceResource {
    * <p/>
    * <p><b>Example Request:</b><br/> POST /pentaho/plugin/data-access/api/datasource/jdbc/import </p>
    *
-   * @param connection A DatabaseConnection in JSON representation <pre function="syntax.xml"> {@code { "changed":true,
+   * @param connection A DatabaseConnection in JSON representation <pre function="syntax.xml"> { "changed":true,
    *                   "usingConnectionPool":true, "connectSql":"", "databaseName":"SampleData", "databasePort":"9001",
    *                   "hostname":"localhost", "name":"Test123", "password":"password", "username":"pentaho_user",
    *                   "attributes":{ }, "connectionPoolingProperties":{ }, "extraOptions":{ }, "accessType":"NATIVE",
    *                   "databaseType":{ "defaultDatabasePort":9001, "extraOptionsHelpUrl":"http://hsqldb.sourceforge
    *                   .net/doc/guide/ch04.html#N109DA",
    *                   "name":"Hypersonic", "shortName":"HYPERSONIC", "supportedAccessTypes":[ "NATIVE", "ODBC", "JNDI"
-   *                   ] } } } </pre>
+   *                   ] } } </pre>
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
@@ -193,14 +193,14 @@ public class JDBCDatasourceResource {
    * <p/>
    * <p><b>Example Request:</b><br/> POST /pentaho/plugin/data-access/api/datasource/jdbc/update </p>
    *
-   * @param connection A DatabaseConnection in JSON representation <pre function="syntax.xml"> {@code { "changed":true,
+   * @param connection A DatabaseConnection in JSON representation <pre function="syntax.xml"> { "changed":true,
    *                   "usingConnectionPool":true, "connectSql":"", "databaseName":"SampleData", "databasePort":"9001",
    *                   "hostname":"localhost", "name":"Test123", "password":"password", "username":"pentaho_user",
    *                   "attributes":{ }, "connectionPoolingProperties":{ }, "extraOptions":{ }, "accessType":"NATIVE",
    *                   "databaseType":{ "defaultDatabasePort":9001, "extraOptionsHelpUrl":"http://hsqldb.sourceforge
    *                   .net/doc/guide/ch04.html#N109DA",
    *                   "name":"Hypersonic", "shortName":"HYPERSONIC", "supportedAccessTypes":[ "NATIVE", "ODBC", "JNDI"
-   *                   ] } } } </pre>
+   *                   ] } } </pre>
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
