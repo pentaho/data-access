@@ -17,26 +17,44 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.services.IModelerService;
+import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.util.MondrianModelExporter;
+import org.pentaho.metadata.util.XmiParser;
+import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService.DswPublishValidationException.Type;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
+import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
+import org.pentaho.platform.plugin.action.mondrian.MondrianCachePublisher;
+import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
+import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
+import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 
@@ -44,12 +62,25 @@ public class DataSourceWizardService extends DatasourceService {
 
   private IDSWDatasourceService dswService;
   private IModelerService modelerService;
+  private IDatasourceMgmtService datasourceMgmtSvc;
+
+  private static final Log logger = LogFactory.getLog( DataSourceWizardService.class );
 
   private static final String MONDRIAN_CATALOG_REF = "MondrianCatalogRef"; //$NON-NLS-1$
+  private static final String METADATA_PUBLISHER = MetadataPublisher.class.getName();
+  private static final String MONDRIAN_PUBLISHER = MondrianCachePublisher.class.getName();
+  private static final String ENCODING = "UTF-8";
+  private static final String MONDRIAN_CONNECTION_PARAM = "parameters";
+  private static final String MONDRIAN_SCHEMA_NAME = "schema.xml";
+  private static final String MONDRIAN_MIME = "application/vnd.pentaho.mondrian+xml";
+  private static final String METADATA_MIME = "text/xmi+xml";
+  private static final String METADATA_EXT = ".xmi";
+  private static final String IMPORT_DOMAIN_ID = "domain-id";
 
   public DataSourceWizardService() {
     dswService = new DSWDatasourceServiceImpl();
     modelerService = new ModelerService();
+    datasourceMgmtSvc = PentahoSystem.get( IDatasourceMgmtService.class, PentahoSessionHolder.getSession() );
   }
 
 
@@ -125,5 +156,148 @@ public class DataSourceWizardService extends DatasourceService {
       return null;
     }
     return datasourceList;
+  }
+
+  public String publishDsw( String domainId, InputStream metadataFile, boolean overwrite, boolean checkConnection )
+    throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
+    if ( ! DataAccessPermissionUtil.hasManageAccess() ) {
+      throw new PentahoAccessControlException();
+    }
+    if ( !StringUtils.endsWith( domainId, METADATA_EXT ) ) {
+      // if doesn't end in case-sensitive '.xmi' there will be trouble later on
+      final String errorMsg = "domainId must end in " + METADATA_EXT;
+      throw new IllegalArgumentException( errorMsg );
+    }
+    if ( metadataFile == null ) {
+      throw new IllegalArgumentException( "metadataFile is null" );
+    }
+    if ( !overwrite ) {
+      final List<String> overwritten = getOverwrittenDomains( domainId );
+      if ( !overwritten.isEmpty() ) {
+        final String domainIds = StringUtils.join( overwritten, "," );
+        throw new DswPublishValidationException( DswPublishValidationException.Type.OVERWRITE_CONFLICT, domainIds );
+      }
+    }
+
+    XmiParser xmiParser = new XmiParser();
+    Domain domain = null;
+    try {
+      domain = xmiParser.parseXmi( metadataFile );
+    } catch ( Exception e ) {
+      throw new DswPublishValidationException( DswPublishValidationException.Type.INVALID_XMI, e.getMessage() );
+    }
+    domain.setId( domainId );
+    if ( checkConnection ) {
+      final String connectionId = ModelerService.getMondrianDatasource( domain );
+      if ( datasourceMgmtSvc.getDatasourceByName( connectionId ) == null ) {
+        final String msg = "connection not found: '" + connectionId + "'";
+        throw new DswPublishValidationException( Type.MISSING_CONNECTION, msg );
+      }
+    }
+    // build bundles
+    InputStream metadataIn = IOUtils.toInputStream( xmiParser.generateXmi( domain ), ENCODING );
+    IPlatformImportBundle metadataBundle = createMetadataDswBundle( domain, metadataIn, overwrite );
+    IPlatformImportBundle mondrianBundle = createMondrianDswBundle( domain );
+    // do import
+    IPlatformImporter importer = PentahoSystem.get( IPlatformImporter.class );
+    importer.importFile( metadataBundle );
+    logger.debug( "imported metadata xmi" );
+    importer.importFile( mondrianBundle );
+    logger.debug( "imported mondrian schema" );
+    // trigger refreshes
+    IPentahoSession session = PentahoSessionHolder.getSession();
+    PentahoSystem.publish( session, METADATA_PUBLISHER );
+    PentahoSystem.publish( session, MONDRIAN_PUBLISHER );
+    logger.info( "publishDsw: Published DSW with domainId='" + domainId + "'." );
+    return domainId;
+  }
+
+  public static class DswPublishValidationException extends Exception {
+    public enum Type {
+      OVERWRITE_CONFLICT,
+      MISSING_CONNECTION,
+      INVALID_XMI
+    }
+    private static final long serialVersionUID = 1L;
+    private Type type;
+
+    public DswPublishValidationException( Type type, String msg ) {
+      super( msg );
+    }
+    public Type getType() {
+      return type;
+    }
+  }
+
+  private List<String> getOverwrittenDomains( String dswId ) {
+    List<String> domainIds = new ArrayList<String>( 2 );
+    if ( metadataDomainRepository.getDomainIds().contains( dswId ) ) {
+      domainIds.add( "dsw/" + dswId );
+    }
+    final String catalogName = toAnalysisDomainId( dswId );
+    if ( mondrianCatalogService.getCatalog( catalogName, PentahoSessionHolder.getSession() ) != null ) {
+      domainIds.add( "mondrian/" + catalogName );
+    }
+    return domainIds;
+  }
+
+  private String toAnalysisDomainId( String dswId ) {
+    return dswId.substring( 0, dswId.lastIndexOf( '.' ) );
+  }
+
+  private IPlatformImportBundle createMetadataDswBundle( Domain domain, InputStream metadataIn, boolean overwrite ) {
+    return new RepositoryFileImportBundle.Builder()
+        .input( metadataIn )
+        .charSet( ENCODING )
+        .hidden( false )
+        .overwriteFile( overwrite )
+        .mime( METADATA_MIME )
+        .withParam( IMPORT_DOMAIN_ID, domain.getId() )
+        .preserveDsw( true )
+        .build();
+  }
+
+  /**
+   * Generate a mondrian schema from the model and create the appropriate import bundle
+   * @param domain domain with olap model
+   * @return import bundle
+   * @throws DatasourceServiceException 
+   * @throws Exception If schema generation fails
+   */
+  private IPlatformImportBundle createMondrianDswBundle( Domain domain ) throws DatasourceServiceException,
+    DswPublishValidationException, IOException {
+    final String analysisDomainId = toAnalysisDomainId( domain.getId() );
+    final String dataSource = ModelerService.getMondrianDatasource( domain );
+    // get olap logical model
+    final String locale = Locale.getDefault().toString();
+    ModelerWorkspace workspace =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( locale ), dswService.getGeoContext() );
+    workspace.setModelName( analysisDomainId );
+    workspace.setDomain( domain );
+    LogicalModel olapModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
+    if ( olapModel == null ) {
+      throw new IllegalArgumentException( "No analysis model in xmi." );
+    }
+    // reference schema in xmi
+    olapModel.setProperty( MONDRIAN_CATALOG_REF, analysisDomainId );
+    // generate schema
+    MondrianModelExporter exporter = new MondrianModelExporter( olapModel, locale );
+    String mondrianSchema = null;
+    try {
+      mondrianSchema = exporter.createMondrianModelXML();
+    } catch ( Exception e ) {
+      throw new DswPublishValidationException( Type.INVALID_XMI, e.getMessage() );
+    }
+    // create bundle
+    IPlatformImportBundle metadataBundle = new RepositoryFileImportBundle.Builder()
+      .input( IOUtils.toInputStream( mondrianSchema, ENCODING ) )
+      .name( MONDRIAN_SCHEMA_NAME )
+      .charSet( ENCODING )
+      .overwriteFile( true )
+      .mime( MONDRIAN_MIME )
+      .withParam( IMPORT_DOMAIN_ID, analysisDomainId )
+      .withParam( MONDRIAN_CONNECTION_PARAM, "DataSource=" + dataSource )
+      .build();
+    return metadataBundle;
   }
 }
