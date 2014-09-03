@@ -149,7 +149,7 @@ public class DataSourceWizardResource {
    * Publish a DSW from a Metadata XMI file
    *
    * <p><b>Example Request:</b>
-   *  POST /data-access/api/datasource/dsw/publish
+   *  PUT /data-access/api/datasource/dsw/import
    * </p>
    *
    * @param domainId The domain to publish to. Must end in '.xmi'.
