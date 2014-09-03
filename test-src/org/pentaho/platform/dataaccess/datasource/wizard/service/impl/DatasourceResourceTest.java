@@ -1,6 +1,7 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -101,6 +102,9 @@ public class DatasourceResourceTest {
 
     IUserRoleListService mockUserRoleListService = mock( IUserRoleListService.class );
 
+    IDataAccessPermissionHandler mockDataAccessPermHandler = mock( IDataAccessPermissionHandler.class );
+    when( mockDataAccessPermHandler.hasDataAccessPermission( any (IPentahoSession.class) ) ).thenReturn( true ); 
+
     mp.define( ISolutionEngine.class, SolutionEngine.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
     mp.define( IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
     mp.define( IMondrianCatalogService.class, MondrianCatalogHelper.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
@@ -122,6 +126,7 @@ public class DatasourceResourceTest {
       }
     } );
     mp.defineInstance( IUserRoleListService.class, mockUserRoleListService );
+    mp.defineInstance( IDataAccessPermissionHandler.class, mockDataAccessPermHandler );
 
     mp.setSettingsProvider( new SystemSettings() );
     mp.start();
