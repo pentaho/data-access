@@ -43,6 +43,7 @@ import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService.DswPublishValidationException.Type;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
+import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl;
@@ -154,7 +155,7 @@ public class DataSourceWizardService extends DatasourceService {
 
   public String publishDsw( String domainId, InputStream metadataFile, boolean overwrite, boolean checkConnection )
     throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
-    if ( !canAdminister() ) {
+    if ( ! DataAccessPermissionUtil.hasManageAccess() ) {
       throw new PentahoAccessControlException();
     }
     if ( !StringUtils.endsWith( domainId, METADATA_EXT ) ) {
