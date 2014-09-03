@@ -862,9 +862,13 @@ public class DatasourceResource extends DataSourceWizardResource {
    */
   private void applySavedPassword( IDatabaseConnection conn ) throws ConnectionServiceException {
     if ( StringUtils.isBlank( conn.getPassword() ) ) {
-      IDatabaseConnection savedConn = connectionService.getConnectionById( conn.getId() );
+      IDatabaseConnection savedConn;
+      if ( conn.getId() != null ) {
+        savedConn = connectionService.getConnectionById( conn.getId() );
+      } else {
+        savedConn = connectionService.getConnectionByName( conn.getName() );
+      }
       conn.setPassword( savedConn.getPassword() );
     }
   }
-
 }
