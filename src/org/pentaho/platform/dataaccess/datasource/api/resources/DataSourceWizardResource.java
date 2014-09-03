@@ -71,9 +71,7 @@ public class DataSourceWizardResource {
    *
    * @param dswId The id of the DSW datasource to export
    *               <pre function="syntax.xml">
-   *               {@code
    *               MyDSWDS
-   *               }
    *               </pre>
    * @return A Response object containing the DSW data source files.
    */
@@ -103,9 +101,7 @@ public class DataSourceWizardResource {
    *
    * @param dswId The id of the DSW datasource to remove
    *               <pre function="syntax.xml">
-   *               {@code
    *               MyDSWDS
-   *               }
    *               </pre>
    */
   @POST
@@ -133,9 +129,7 @@ public class DataSourceWizardResource {
    *
    * @return JaxbList<String> of DSW datasource IDs
    *               <pre function="syntax.xml">
-   *               {@code
    *               {"Item":{"@type":"xs:string","$":"MyDSWDS"}}
-   *               }
    *               </pre>
    */
   @GET
