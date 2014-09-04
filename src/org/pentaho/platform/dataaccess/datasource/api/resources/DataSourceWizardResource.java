@@ -23,6 +23,7 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -47,7 +48,7 @@ import com.sun.jersey.multipart.FormDataParam;
 
 public class DataSourceWizardResource {
 
-  private DataSourceWizardService service;
+  protected DataSourceWizardService service;
 
   public DataSourceWizardResource() {
     service = new DataSourceWizardService();
@@ -86,9 +87,9 @@ public class DataSourceWizardResource {
   public Response download( @PathParam( "dswId" ) String dswId ) {
     try {
       Map<String, InputStream> fileData = service.doGetDSWFilesAsDownload( dswId );
-      return ResourceUtil.createAttachment( fileData, dswId );
+      return createAttachment( fileData, dswId );
     } catch ( PentahoAccessControlException e ) {
-      return Response.status( UNAUTHORIZED ).build();
+      return buildUnauthorizedResponse();
     }
   }
 
@@ -114,9 +115,9 @@ public class DataSourceWizardResource {
   public Response remove( @PathParam( "dswId" ) String dswId ) {
     try {
       service.removeDSW( dswId );
-      return Response.ok().build();
+      return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
-      return Response.status( UNAUTHORIZED ).build();
+      return buildUnauthorizedResponse();
     }
   }
 
@@ -136,7 +137,23 @@ public class DataSourceWizardResource {
   @Path( "/datasource/dsw/ids" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )
   public JaxbList<String> getDSWDatasourceIds() {
-    return new JaxbList<String>( service.getDSWDatasourceIds() );
+    return createNewJaxbList( service.getDSWDatasourceIds() );
+  }
+
+  protected Response buildOkResponse() {
+    return Response.ok().build();
+  }
+
+  protected Response buildUnauthorizedResponse() {
+    return Response.status( UNAUTHORIZED ).build();
+  }
+
+  protected Response createAttachment( Map<String, InputStream> fileData, String dswId ) {
+    return ResourceUtil.createAttachment( fileData, dswId );
+  }
+
+  protected JaxbList<String> createNewJaxbList( List<String> DSWDatasources ) {
+    return new JaxbList<String>( DSWDatasources );
   }
 
   /**

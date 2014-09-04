@@ -208,8 +208,7 @@ public class JDBCDatasourceResource {
   @Consumes( { APPLICATION_JSON } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "JDBC datasource updated successfully." ),
-    @ResponseCode( code = 304,
-      condition = "User is not authorized to update the JDBC datasource or the connection does not exist." ),
+    @ResponseCode( code = 304, condition = "User is not authorized to update the JDBC datasource or the connection does not exist." ),
     @ResponseCode( code = 500, condition = "An unexected error occurred while updating the JDBC datasource." )
   } )
   public Response update( DatabaseConnection connection ) {

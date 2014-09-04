@@ -23,6 +23,7 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -59,7 +60,7 @@ public class AnalysisResource {
   private static final int SUCCESS = 3;
   private static final Log logger = LogFactory.getLog( AnalysisResource.class );
 
-  private AnalysisService service;
+  protected AnalysisService service;
 
   public AnalysisResource() {
     service = new AnalysisService();
@@ -90,9 +91,9 @@ public class AnalysisResource {
   public Response doGetAnalysisFilesAsDownload( @PathParam( "analysisId" ) String analysisId ) {
     try {
       Map<String, InputStream> fileData = service.doGetAnalysisFilesAsDownload( analysisId );
-      return ResourceUtil.createAttachment( fileData, analysisId );
+      return createAttachment( fileData, analysisId );
     } catch ( PentahoAccessControlException e ) {
-      return Response.status( UNAUTHORIZED ).build();
+      return buildUnauthorizedResponse();
     }
   }
 
@@ -121,9 +122,9 @@ public class AnalysisResource {
   public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
     try {
       service.removeAnalysis( analysisId );
-      return Response.ok().build();
+      return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
-      return Response.status( UNAUTHORIZED ).build();
+      return buildUnauthorizedResponse();
     }
   }
 
@@ -163,7 +164,7 @@ public class AnalysisResource {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of analysis IDs" )
   } )
   public JaxbList<String> getAnalysisDatasourceIds() {
-    return new JaxbList<String>( service.getAnalysisDatasourceIds() );
+    return createNewJaxbList( service.getAnalysisDatasourceIds() );
   }
 
   /**
@@ -236,8 +237,28 @@ public class AnalysisResource {
       statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
 
-    response = Response.ok( String.valueOf( statusCode ) ).type( MediaType.TEXT_PLAIN ).build();
+    response = buildOkResponse( String.valueOf( statusCode ) );
     logger.debug( "putMondrianSchema Response " + response );
     return response;
+  }
+
+  protected JaxbList<String> createNewJaxbList( List<String> DSWDatasources ) {
+    return new JaxbList<String>( DSWDatasources );
+  }
+
+  protected Response buildOkResponse( String statusCode ) {
+    return Response.ok( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+  }
+
+  protected Response createAttachment( Map<String, InputStream> fileData, String domainId  ) {
+    return ResourceUtil.createAttachment( fileData, domainId );
+  }
+
+  protected Response buildOkResponse() {
+    return Response.ok().build();
+  }
+
+  protected Response buildUnauthorizedResponse() {
+    return Response.status( UNAUTHORIZED ).build();
   }
 }
