@@ -62,8 +62,8 @@ public class MetadataResource {
   private static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final String SUCCESS = "3";
 
-  private MetadataService service;
-  private IMetadataDomainRepository metadataDomainRepository;
+  protected MetadataService service;
+  protected IMetadataDomainRepository metadataDomainRepository;
 
   public MetadataResource() {
     service = new MetadataService();
@@ -92,15 +92,14 @@ public class MetadataResource {
     @ResponseCode( code = 500, condition = "Failure to export Metadata datasource." )
   } )
   public Response doGetMetadataFilesAsDownload( @PathParam( "metadataId" ) String metadataId ) {
-    if ( !DatasourceService.canAdminister() ) {
-      return Response.status( UNAUTHORIZED ).build();
+    if ( !canAdminister() ) {
+      return buildUnauthorizedResponse();
     }
-    if ( !( metadataDomainRepository instanceof IPentahoMetadataDomainRepositoryExporter ) ) {
-      return Response.serverError().build();
+    if ( !isInstanceOfIPentahoMetadataDomainRepositoryExporter( metadataDomainRepository ) ) {
+      return buildServerErrorResponse();
     }
-    Map<String, InputStream> fileData =
-      ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( metadataId );
-    return ResourceUtil.createAttachment( fileData, metadataId );
+    Map<String, InputStream> fileData = getDomainFilesData( metadataId );
+    return createAttachment( fileData, metadataId );
   }
 
   /**
@@ -125,9 +124,9 @@ public class MetadataResource {
   public Response doRemoveMetadata( @PathParam( "metadataId" ) String metadataId ) {
     try {
       service.removeMetadata( metadataId );
-      return Response.ok().build();
+      return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
-      return Response.status( UNAUTHORIZED ).build();
+      return buildUnauthorizedResponse();
     }
   }
 
@@ -150,7 +149,7 @@ public class MetadataResource {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of metadata IDs" )
   } )
   public JaxbList<String> getMetadataDatasourceIds() {
-    return new JaxbList<String>( service.getMetadataDatasourceIds() );
+    return createNewJaxbList( service.getMetadataDatasourceIds() );
   }
 
   /**
@@ -205,15 +204,13 @@ public class MetadataResource {
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
         localeFilesInfo );
-      return Response.ok( String.valueOf( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
+      return buildOkResponse( String.valueOf( SUCCESS ) );
     } catch ( PentahoAccessControlException e ) {
-      return Response.serverError().entity( e.toString() ).build();
+      return buildServerErrorResponse( e );
     } catch ( PlatformImportException e ) {
       if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
-        FileResource fr = new FileResource();
-        return Response.status( PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ).entity(
-          Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
-            .doGetReservedCharactersDisplay().getEntity() ) ).build();
+        FileResource fr = createFileResource();
+        return buildServerError003Response( domainId, fr );
       } else {
         String msg = e.getMessage();
         logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
@@ -222,14 +219,66 @@ public class MetadataResource {
           msg = throwable.getMessage();
           logger.error( "Root cause: " + msg );
         }
-        int statusCode = e.getErrorStatus();
-        Response response = Response.ok( String.valueOf( statusCode ) ).type( MediaType.TEXT_PLAIN ).build();
-        return response;
+        return buildOkResponse( String.valueOf( e.getErrorStatus() ) );
       }
     } catch ( Exception e ) {
       logger.error( e );
-      return Response.serverError().entity(
-        Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
+      return buildServerError001Response();
     }
+  }
+
+  protected Response buildOkResponse( String statusCode ) {
+    return Response.ok( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+  }
+
+  protected Response buildOkResponse() {
+    return Response.ok().build();
+  }
+
+  protected Response buildUnauthorizedResponse() {
+    return Response.status( UNAUTHORIZED ).build();
+  }
+
+  protected Response buildServerErrorResponse( PentahoAccessControlException e ) {
+    return Response.serverError().entity( e.toString() ).build();
+  }
+
+  protected Response buildServerErrorResponse() {
+    return Response.serverError().build();
+  }
+
+  protected Response buildServerError001Response() {
+    return Response.serverError().entity(
+      Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
+  }
+
+  protected Response buildServerError003Response( String domainId, FileResource fr ) {
+    return Response.status( PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ).entity(
+      Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
+        .doGetReservedCharactersDisplay().getEntity() ) ).build();
+  }
+
+  protected boolean canAdminister() {
+    return DatasourceService.canAdminister();
+  }
+
+  protected Response createAttachment( Map<String, InputStream> fileData, String dswId ) {
+    return ResourceUtil.createAttachment( fileData, dswId );
+  }
+
+  protected JaxbList<String> createNewJaxbList( List<String> DSWDatasources ) {
+    return new JaxbList<String>( DSWDatasources );
+  }
+
+  protected Map<String, InputStream> getDomainFilesData( String metadataId ) {
+    return ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( metadataId );
+  }
+
+  protected boolean isInstanceOfIPentahoMetadataDomainRepositoryExporter( IMetadataDomainRepository obj ) {
+    return obj instanceof IPentahoMetadataDomainRepositoryExporter;
+  }
+
+  protected FileResource createFileResource() {
+    return new FileResource();
   }
 }
