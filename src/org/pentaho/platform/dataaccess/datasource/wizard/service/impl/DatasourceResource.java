@@ -868,7 +868,10 @@ public class DatasourceResource extends DataSourceWizardResource {
       } else {
         savedConn = connectionService.getConnectionByName( conn.getName() );
       }
-      conn.setPassword( savedConn.getPassword() );
+      if ( savedConn != null ) { // The connection might not be in the database because this may be a new
+                                 // hive connection that doesn't require a password
+        conn.setPassword( savedConn.getPassword() );
+      }
     }
   }
 }
