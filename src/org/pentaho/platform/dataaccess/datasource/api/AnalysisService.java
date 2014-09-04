@@ -32,6 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -72,28 +73,28 @@ public class AnalysisService extends DatasourceService {
 
   public Map<String, InputStream> doGetAnalysisFilesAsDownload( String analysisId )
     throws PentahoAccessControlException {
-    if ( !canAdminister() ) {
+    if ( !canAdministerCheck() ) {
       throw new PentahoAccessControlException();
     }
 
-    MondrianCatalogRepositoryHelper helper =
-      new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
+    MondrianCatalogRepositoryHelper helper = createNewMondrianCatalogRepositoryHelper();
+
     Map<String, InputStream> fileData = helper.getModrianSchemaFiles( analysisId );
 
     return fileData;
   }
 
   public void removeAnalysis( String analysisId ) throws PentahoAccessControlException {
-    if ( !canAdminister() ) {
+    if ( !canAdministerCheck() ) {
       throw new PentahoAccessControlException();
     }
-    mondrianCatalogService.removeCatalog( fixEncodedSlashParam( analysisId ), PentahoSessionHolder.getSession() );
+    mondrianCatalogService.removeCatalog( fixEncodedSlashParam( analysisId ), getSession() );
   }
 
   public List<String> getAnalysisDatasourceIds() {
     List<String> analysisIds = new ArrayList<String>();
-    for ( MondrianCatalog mondrianCatalog : mondrianCatalogService.listCatalogs( PentahoSessionHolder.getSession(),
-      false ) ) {
+    List<MondrianCatalog> mockMondrianCatalogList = mondrianCatalogService.listCatalogs( getSession(), false );
+    for ( MondrianCatalog mondrianCatalog : mockMondrianCatalogList ) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
       Set<String> ids = metadataDomainRepository.getDomainIds();
       if ( ids.contains( domainId ) == false ) {
@@ -112,7 +113,7 @@ public class AnalysisService extends DatasourceService {
     throws PentahoAccessControlException,
     PlatformImportException, Exception {
 
-    validateAccess();
+    accessValidation();
     String fileName = schemaFileInfo.getFileName();
     processMondrianImport( dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters,
       fileName );
@@ -129,7 +130,7 @@ public class AnalysisService extends DatasourceService {
    * @param fileName
    * @throws PlatformImportException
    */
-  private void processMondrianImport( InputStream dataInputStream, String catalogName, String origCatalogName,
+  protected void processMondrianImport( InputStream dataInputStream, String catalogName, String origCatalogName,
                                       String overwrite, String xmlaEnabledFlag, String parameters, String fileName )
     throws PlatformImportException {
     boolean overWriteInRepository = determineOverwriteFlag( parameters, overwrite );
@@ -277,5 +278,20 @@ public class AnalysisService extends DatasourceService {
       }
     }
     return domainId;
+  }
+
+  protected MondrianCatalogRepositoryHelper createNewMondrianCatalogRepositoryHelper() {
+    return new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
+  }
+
+  protected boolean canAdministerCheck() {
+    return super.canAdminister();
+  }
+  protected void accessValidation() throws PentahoAccessControlException {
+    super.validateAccess();
+  }
+
+  protected IPentahoSession getSession() {
+    return PentahoSessionHolder.getSession();
   }
 }
