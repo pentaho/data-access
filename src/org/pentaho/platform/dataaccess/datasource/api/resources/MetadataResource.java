@@ -64,6 +64,7 @@ public class MetadataResource {
 
   protected MetadataService service;
   protected IMetadataDomainRepository metadataDomainRepository;
+  protected ResourceUtil resourceUtil;
 
   public MetadataResource() {
     service = new MetadataService();
@@ -263,7 +264,7 @@ public class MetadataResource {
   }
 
   protected Response createAttachment( Map<String, InputStream> fileData, String dswId ) {
-    return ResourceUtil.createAttachment( fileData, dswId );
+    return resourceUtil.createAttachment( fileData, dswId );
   }
 
   protected JaxbList<String> createNewJaxbList( List<String> DSWDatasources ) {

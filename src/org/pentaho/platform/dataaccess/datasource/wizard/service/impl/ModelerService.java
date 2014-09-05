@@ -185,7 +185,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
               if ( session != null ) {
                 session.setAttribute( "MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema );
                 String catConnectStr = "Provider=mondrian;DataSource=" + getMondrianDatasource( domain ); //$NON-NLS-1$
-                addCatalog(catName, catConnectStr, session);
+                addCatalog( catName, catConnectStr, session );
               }
             }
 

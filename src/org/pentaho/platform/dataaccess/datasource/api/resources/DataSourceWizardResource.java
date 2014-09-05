@@ -28,7 +28,6 @@ import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -49,6 +48,7 @@ import com.sun.jersey.multipart.FormDataParam;
 public class DataSourceWizardResource {
 
   protected DataSourceWizardService service;
+  protected ResourceUtil resourceUtil;
 
   public DataSourceWizardResource() {
     service = new DataSourceWizardService();
@@ -149,7 +149,7 @@ public class DataSourceWizardResource {
   }
 
   protected Response createAttachment( Map<String, InputStream> fileData, String dswId ) {
-    return ResourceUtil.createAttachment( fileData, dswId );
+    return resourceUtil.createAttachment( fileData, dswId );
   }
 
   protected JaxbList<String> createNewJaxbList( List<String> DSWDatasources ) {

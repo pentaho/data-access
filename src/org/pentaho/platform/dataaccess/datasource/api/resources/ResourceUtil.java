@@ -19,6 +19,7 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,22 +39,22 @@ public class ResourceUtil {
 
   public static final String APPLICATION_ZIP = "application/zip"; //$NON-NLS-1$
 
-  public static Response createAttachment( Map<String, InputStream> fileData, String domainId ) {
+  public Response createAttachment( Map<String, InputStream> fileData, String domainId ) {
     String quotedFileName = null;
     final InputStream is;
     if ( fileData.size() > 1 ) { // we've got more than one file so we want to zip them up and send them
       File zipFile = null;
       try {
-        zipFile = File.createTempFile( "datasourceExport", ".zip" ); //$NON-NLS-1$ //$NON-NLS-2$
+        zipFile = createTempFile( "datasourceExport", ".zip" );
         zipFile.deleteOnExit();
-        ZipOutputStream zos = new ZipOutputStream( new FileOutputStream( zipFile ) );
+        ZipOutputStream zos = createZipOutputStream( zipFile );
         for ( String fileName : fileData.keySet() ) {
           InputStream zipEntryIs = null;
           try {
-            ZipEntry entry = new ZipEntry( fileName );
+            ZipEntry entry = createZipEntry( fileName );
             zos.putNextEntry( entry );
             zipEntryIs = fileData.get( fileName );
-            IOUtils.copy( zipEntryIs, zos );
+            copy( zipEntryIs, zos );
           } catch ( Exception e ) {
             continue;
           } finally {
@@ -64,37 +65,76 @@ public class ResourceUtil {
           }
         }
         zos.close();
-        is = new FileInputStream( zipFile );
+        is = createFileInputStream( zipFile );
       } catch ( IOException ioe ) {
-        return Response.serverError().entity( ioe.toString() ).build();
+        return buildServerErrorResponse( ioe );
       }
-      StreamingOutput streamingOutput = new StreamingOutput() {
-        public void write( OutputStream output ) throws IOException {
-          IOUtils.copy( is, output );
-        }
-      };
+      StreamingOutput streamingOutput = createStreamingOutput( is );
       final int xmiIndex = domainId.lastIndexOf( ".xmi" ); //$NON-NLS-1$
       quotedFileName =
         "\"" + ( xmiIndex > 0 ? domainId.substring( 0, xmiIndex ) : domainId ) + ".zip\""; //$NON-NLS-1$//$NON-NLS-2$
-      return Response.ok( streamingOutput, APPLICATION_ZIP )
-        .header( "Content-Disposition", "attachment; filename=" + quotedFileName ).build(); //$NON-NLS-1$ //$NON-NLS-2$
+      return buildOkResponse( streamingOutput, APPLICATION_ZIP, quotedFileName );
     } else if ( fileData.size() == 1 ) {  // we've got a single metadata file so we just return that.
       String fileName = (String) fileData.keySet().toArray()[ 0 ];
       quotedFileName = "\"" + fileName + "\""; //$NON-NLS-1$ //$NON-NLS-2$
       is = fileData.get( fileName );
-      String mimeType = MediaType.TEXT_PLAIN;
-      if ( is instanceof RepositoryFileInputStream ) {
-        mimeType = ( (RepositoryFileInputStream) is ).getMimeType();
-      }
-      StreamingOutput streamingOutput = new StreamingOutput() {
-        public void write( OutputStream output ) throws IOException {
-          IOUtils.copy( is, output );
-        }
-      };
-      return Response.ok( streamingOutput, mimeType )
-        .header( "Content-Disposition", "attachment; filename=" + quotedFileName ).build(); //$NON-NLS-1$ //$NON-NLS-2$
+      String mimeType = getMimeType( is );
+      StreamingOutput streamingOutput = getStreamingOutput( is );
+      return buildOkResponse( streamingOutput, mimeType, quotedFileName );
     }
+    return buildServerErrorResponse();
+  }
+
+  protected StreamingOutput createStreamingOutput( final InputStream is ) {
+    return new StreamingOutput() {
+      public void write( OutputStream output ) throws IOException {
+        IOUtils.copy( is, output );
+      }
+    };
+  }
+
+  protected FileInputStream createFileInputStream( File zipFile ) throws FileNotFoundException {
+    return new FileInputStream( zipFile );
+  }
+
+  protected void copy( InputStream zipEntryIs, ZipOutputStream zos ) throws IOException {
+    IOUtils.copy( zipEntryIs, zos );
+  }
+
+  protected File createTempFile( String fileName, String extension ) throws IOException {
+    return File.createTempFile( fileName, extension ); //$NON-NLS-1$ //$NON-NLS-2$;
+  }
+
+  protected ZipEntry createZipEntry( String fileName ) {
+    return new ZipEntry( fileName );
+  }
+
+  protected ZipOutputStream createZipOutputStream( File zipFile ) throws IOException {
+    return new ZipOutputStream( new FileOutputStream( zipFile ) );
+  }
+
+  protected Response buildOkResponse( StreamingOutput streamingOutput, String mimeType, String quotedFileName ) {
+    return Response.ok( streamingOutput, mimeType )
+      .header( "Content-Disposition", "attachment; filename=" + quotedFileName ).build(); //$NON-NLS-1$ //$NON-NLS-2$
+  }
+
+  protected Response buildServerErrorResponse() {
     return Response.serverError().build();
   }
 
+  protected Response buildServerErrorResponse( Exception ioe ) {
+    return Response.serverError().entity( ioe.toString() ).build();
+  }
+
+  protected String getMimeType( InputStream is ) {
+    return ( is instanceof RepositoryFileInputStream ) ? ( (RepositoryFileInputStream) is ).getMimeType() : MediaType.TEXT_PLAIN;
+  }
+
+  protected StreamingOutput getStreamingOutput( final InputStream is ) {
+    return new StreamingOutput() {
+      public void write( OutputStream output ) throws IOException {
+        IOUtils.copy( is, output );
+      }
+    };
+  }
 }

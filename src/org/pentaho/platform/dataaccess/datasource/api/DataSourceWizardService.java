@@ -160,7 +160,7 @@ public class DataSourceWizardService extends DatasourceService {
 
   public String publishDsw( String domainId, InputStream metadataFile, boolean overwrite, boolean checkConnection )
     throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
-    if ( ! DataAccessPermissionUtil.hasManageAccess() ) {
+    if ( !DataAccessPermissionUtil.hasManageAccess() ) {
       throw new PentahoAccessControlException();
     }
     if ( !StringUtils.endsWith( domainId, METADATA_EXT ) ) {
