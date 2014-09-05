@@ -65,6 +65,7 @@ public class AnalysisResource {
 
   public AnalysisResource() {
     service = new AnalysisService();
+    resourceUtil = new ResourceUtil();
   }
 
   /**

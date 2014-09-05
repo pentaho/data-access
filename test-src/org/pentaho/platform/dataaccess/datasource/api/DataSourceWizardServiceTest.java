@@ -26,6 +26,7 @@ import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
@@ -33,6 +34,8 @@ import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
+import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 
 import static org.junit.Assert.fail;
@@ -212,5 +215,102 @@ public class DataSourceWizardServiceTest {
     assertEquals( null, response );
 
     verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
+  }
+
+  @Test
+  public void testPublishDsw() throws Exception {
+    String domainId = "domainId";
+    InputStream metadataFile = mock( InputStream.class );
+    boolean overwrite = true;
+    boolean checkConnection = false;
+
+    XmiParser mockXmiParser = mock( XmiParser.class );
+    Domain mockDomain = mock( Domain.class );
+    InputStream mockInputStream = mock( InputStream.class );
+    IPlatformImportBundle mockMetadataBundle = mock( IPlatformImportBundle.class );
+    IPlatformImportBundle mockMondrianBundle = mock( IPlatformImportBundle.class );
+    IPlatformImporter mockIPlatformImporter = mock( IPlatformImporter.class );
+    IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
+    String mockObject = "not null";
+    String dswId = "dswId";
+
+    doReturn( true ).when( dataSourceWizardService ).hasManageAccessCheck();
+    doReturn( true ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
+    doReturn( mockXmiParser ).when( dataSourceWizardService ).createXmiParser();
+    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile );
+    doReturn( mockInputStream ).when( dataSourceWizardService ).toInputStreamWrapper( mockDomain, mockXmiParser );
+    doReturn( mockMetadataBundle ).when( dataSourceWizardService ).createMetadataDswBundle( mockDomain, mockInputStream,
+      overwrite );
+    doReturn( mockMondrianBundle ).when( dataSourceWizardService ).createMondrianDswBundle( mockDomain );
+    doReturn( mockIPlatformImporter ).when( dataSourceWizardService ).getIPlatformImporter();
+    doReturn( mockIPentahoSession ).when( dataSourceWizardService ).getSession();
+
+    String response = dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+
+    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    assertEquals( domainId, response );
+  }
+
+  @Test
+  public void testPublishDswError() throws Exception {
+    String domainId = "domainId";
+    InputStream metadataFile = mock( InputStream.class );
+    boolean overwrite = true;
+    boolean checkConnection = false;
+
+    XmiParser mockXmiParser = mock( XmiParser.class );
+    Domain mockDomain = mock( Domain.class );
+    InputStream mockInputStream = mock( InputStream.class );
+    IPlatformImportBundle mockMetadataBundle = mock( IPlatformImportBundle.class );
+    IPlatformImportBundle mockMondrianBundle = mock( IPlatformImportBundle.class );
+    IPlatformImporter mockIPlatformImporter = mock( IPlatformImporter.class );
+    IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
+    String mockObject = "not null";
+    String dswId = "dswId";
+
+    //Test 1
+    doReturn( false ).when( dataSourceWizardService ).hasManageAccessCheck();
+
+    try {
+      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+      fail();
+    } catch ( PentahoAccessControlException e ) {
+      //expected
+    }
+
+    //Test 2
+    doReturn( true ).when( dataSourceWizardService ).hasManageAccessCheck();
+    doReturn( false ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
+
+    try {
+      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+      fail();
+    } catch ( IllegalArgumentException e ) {
+      //expected
+    }
+
+    //Test 3
+    doReturn( true ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
+    try {
+      dataSourceWizardService.publishDsw( domainId, null, overwrite, checkConnection );
+      fail();
+    } catch ( IllegalArgumentException e ) {
+      //expected
+    }
+
+    //Test 4
+    List<String> mockList = new ArrayList<String>();
+    mockList.add( "string1" );
+    doReturn( mockList ).when( dataSourceWizardService ).getOverwrittenDomains( domainId );
+    try {
+      dataSourceWizardService.publishDsw( domainId, metadataFile, false, checkConnection );
+      fail();
+    } catch ( Exception e ) {
+      //expected
+    }
+
+    verify( dataSourceWizardService, times( 2 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, null, overwrite, checkConnection );
+    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, false, checkConnection );
   }
 }
