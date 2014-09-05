@@ -41,6 +41,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDat
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
+import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.binding.Binding;
@@ -80,6 +81,9 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
   private ICsvDatasourceServiceAsync csvService;
   private AsyncConstructorListener constructorListener;
   private static ModelerDialog instance;
+
+  // button to edit the datasource
+  private static String EDIT_TOOLBAR_BUTTON_ID = "edit-icon";
 
   private ModelerDialog( final AsyncConstructorListener<ModelerDialog> constructorListener ) {
     this( null, constructorListener );
@@ -289,8 +293,13 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
         } else {
           controller.setModelerPerspective( ModelerPerspective.REPORTING );
         }
-
         controller.resetPropertyForm();
+
+        // disable edit button if required model not present (imported dsw)
+        XulComponent editIcon = container.getDocumentRoot().getElementById( EDIT_TOOLBAR_BUTTON_ID );
+        boolean disabled = model.getDomain().getLogicalModels().get( 0 ).getProperty( "datasourceModel" ) == null;
+        editIcon.setDisabled( disabled );
+
         enableWaitCursor( false );
         showDialog();
       }
