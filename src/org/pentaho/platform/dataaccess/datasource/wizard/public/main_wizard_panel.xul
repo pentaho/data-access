@@ -248,7 +248,7 @@
             </vbox>
           </hbox>
           <hbox>
-            <spacer width="435"/>
+            <spacer width="382"/>
             <vbox id="factTableVbox">
               <label value="${multitable.FACT_TABLE}" tooltiptext=""/>
               <menulist id="factTables" pen:binding="name" width="350">
