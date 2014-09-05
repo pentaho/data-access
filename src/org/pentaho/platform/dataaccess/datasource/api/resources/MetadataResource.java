@@ -68,6 +68,7 @@ public class MetadataResource {
 
   public MetadataResource() {
     service = new MetadataService();
+    resourceUtil = new ResourceUtil();
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
   }
 

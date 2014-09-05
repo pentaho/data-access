@@ -53,6 +53,7 @@ public class DataSourceWizardResource {
 
   public DataSourceWizardResource() {
     service = new DataSourceWizardService();
+    resourceUtil = new ResourceUtil();
   }
 
   /**

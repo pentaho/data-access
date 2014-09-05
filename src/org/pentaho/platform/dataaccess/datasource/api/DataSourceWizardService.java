@@ -159,10 +159,10 @@ public class DataSourceWizardService extends DatasourceService {
 
   public String publishDsw( String domainId, InputStream metadataFile, boolean overwrite, boolean checkConnection )
     throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
-    if ( !DataAccessPermissionUtil.hasManageAccess() ) {
+    if ( !hasManageAccessCheck() ) {
       throw new PentahoAccessControlException();
     }
-    if ( !StringUtils.endsWith( domainId, METADATA_EXT ) ) {
+    if ( !endsWith( domainId, METADATA_EXT ) ) {
       // if doesn't end in case-sensitive '.xmi' there will be trouble later on
       final String errorMsg = "domainId must end in " + METADATA_EXT;
       throw new IllegalArgumentException( errorMsg );
@@ -178,7 +178,7 @@ public class DataSourceWizardService extends DatasourceService {
       }
     }
 
-    XmiParser xmiParser = new XmiParser();
+    XmiParser xmiParser = createXmiParser();
     Domain domain = null;
     try {
       domain = xmiParser.parseXmi( metadataFile );
@@ -194,17 +194,17 @@ public class DataSourceWizardService extends DatasourceService {
       }
     }
     // build bundles
-    InputStream metadataIn = IOUtils.toInputStream( xmiParser.generateXmi( domain ), ENCODING );
+    InputStream metadataIn = toInputStreamWrapper( domain, xmiParser);
     IPlatformImportBundle metadataBundle = createMetadataDswBundle( domain, metadataIn, overwrite );
     IPlatformImportBundle mondrianBundle = createMondrianDswBundle( domain );
     // do import
-    IPlatformImporter importer = PentahoSystem.get( IPlatformImporter.class );
+    IPlatformImporter importer = getIPlatformImporter();
     importer.importFile( metadataBundle );
     logger.debug( "imported metadata xmi" );
     importer.importFile( mondrianBundle );
     logger.debug( "imported mondrian schema" );
     // trigger refreshes
-    IPentahoSession session = PentahoSessionHolder.getSession();
+    IPentahoSession session = getSession();
     PentahoSystem.publish( session, METADATA_PUBLISHER );
     PentahoSystem.publish( session, MONDRIAN_PUBLISHER );
     logger.info( "publishDsw: Published DSW with domainId='" + domainId + "'." );
@@ -228,7 +228,7 @@ public class DataSourceWizardService extends DatasourceService {
     }
   }
 
-  private List<String> getOverwrittenDomains( String dswId ) {
+  protected List<String> getOverwrittenDomains( String dswId ) {
     List<String> domainIds = new ArrayList<String>( 2 );
     if ( metadataDomainRepository.getDomainIds().contains( dswId ) ) {
       domainIds.add( "dsw/" + dswId );
@@ -244,7 +244,7 @@ public class DataSourceWizardService extends DatasourceService {
     return dswId.substring( 0, dswId.lastIndexOf( '.' ) );
   }
 
-  private IPlatformImportBundle createMetadataDswBundle( Domain domain, InputStream metadataIn, boolean overwrite ) {
+  protected IPlatformImportBundle createMetadataDswBundle( Domain domain, InputStream metadataIn, boolean overwrite ) {
     return new RepositoryFileImportBundle.Builder()
         .input( metadataIn )
         .charSet( ENCODING )
@@ -263,7 +263,7 @@ public class DataSourceWizardService extends DatasourceService {
    * @throws DatasourceServiceException 
    * @throws Exception If schema generation fails
    */
-  private IPlatformImportBundle createMondrianDswBundle( Domain domain ) throws DatasourceServiceException,
+  protected IPlatformImportBundle createMondrianDswBundle( Domain domain ) throws DatasourceServiceException,
     DswPublishValidationException, IOException {
     final String analysisDomainId = toAnalysisDomainId( domain.getId() );
     final String dataSource = ModelerService.getMondrianDatasource( domain );
@@ -304,8 +304,24 @@ public class DataSourceWizardService extends DatasourceService {
     return super.canAdminister();
   }
 
+  protected boolean hasManageAccessCheck() {
+    return DataAccessPermissionUtil.hasManageAccess();
+  }
+
+  protected boolean endsWith( String str, String suffix ) {
+    return StringUtils.endsWith( str, suffix );
+  }
+
+  protected XmiParser createXmiParser() {
+    return new XmiParser();
+  }
+
   protected void parseMondrianSchemaNameWrapper( String dswId, Map<String, InputStream> fileData ) {
     super.parseMondrianSchemaName( dswId, fileData );
+  }
+
+  protected InputStream toInputStreamWrapper( Domain domain, XmiParser xmiParser ) throws IOException {
+    return IOUtils.toInputStream( xmiParser.generateXmi( domain ), ENCODING );
   }
 
   protected String parseMondrianSchemaNameWrapper( String dswId ) {
@@ -326,6 +342,10 @@ public class DataSourceWizardService extends DatasourceService {
 
   protected IPentahoSession getSession() {
     return PentahoSessionHolder.getSession();
+  }
+
+  protected IPlatformImporter getIPlatformImporter() {
+    return PentahoSystem.get( IPlatformImporter.class );
   }
 
 }

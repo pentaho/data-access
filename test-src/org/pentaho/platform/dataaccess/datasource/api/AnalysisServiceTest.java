@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 public class AnalysisServiceTest {
@@ -74,8 +75,9 @@ public class AnalysisServiceTest {
     doReturn( false ).when( analysisService ).canAdministerCheck();
     try {
       Map<String, InputStream> response = analysisService.doGetAnalysisFilesAsDownload( "analysisId" );
+      fail();
     } catch ( PentahoAccessControlException e ) {
-      //do nothing
+      //expected
     }
 
     verify( analysisService, times( 1 ) ).doGetAnalysisFilesAsDownload( "analysisId" );
@@ -100,8 +102,9 @@ public class AnalysisServiceTest {
     doReturn( false ).when( analysisService ).canAdministerCheck();
     try {
       analysisService.removeAnalysis( "analysisId" );
+      fail();
     } catch ( PentahoAccessControlException e ) {
-      //do nothing
+      //expected
     }
     verify( analysisService, times( 1 ) ).removeAnalysis(  "analysisId" );
   }
