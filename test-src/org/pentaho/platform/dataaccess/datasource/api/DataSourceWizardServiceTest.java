@@ -309,8 +309,30 @@ public class DataSourceWizardServiceTest {
       //expected
     }
 
-    verify( dataSourceWizardService, times( 2 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    //Test 5
+    doReturn( mockXmiParser ).when( dataSourceWizardService ).createXmiParser();
+    RuntimeException mockException = mock( RuntimeException.class );
+    doThrow( mockException ).when( mockXmiParser ).parseXmi( metadataFile );
+    try {
+      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+      fail();
+    } catch ( Exception e ) {
+      //expected
+    }
+
+    //Test 6
+    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile );
+    doReturn( null ).when( dataSourceWizardService ).getMondrianDatasourceWrapper( mockDomain );
+    try {
+      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, true );
+      fail();
+    } catch ( Exception e ) {
+      //expected
+    }
+
+    verify( dataSourceWizardService, times( 3 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
     verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, null, overwrite, checkConnection );
     verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, false, checkConnection );
+    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, true );
   }
 }
