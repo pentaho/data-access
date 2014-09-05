@@ -187,14 +187,14 @@ public class DataSourceWizardService extends DatasourceService {
     }
     domain.setId( domainId );
     if ( checkConnection ) {
-      final String connectionId = ModelerService.getMondrianDatasource( domain );
+      final String connectionId = getMondrianDatasourceWrapper( domain );
       if ( datasourceMgmtSvc.getDatasourceByName( connectionId ) == null ) {
         final String msg = "connection not found: '" + connectionId + "'";
         throw new DswPublishValidationException( Type.MISSING_CONNECTION, msg );
       }
     }
     // build bundles
-    InputStream metadataIn = toInputStreamWrapper( domain, xmiParser);
+    InputStream metadataIn = toInputStreamWrapper( domain, xmiParser );
     IPlatformImportBundle metadataBundle = createMetadataDswBundle( domain, metadataIn, overwrite );
     IPlatformImportBundle mondrianBundle = createMondrianDswBundle( domain );
     // do import
@@ -318,6 +318,10 @@ public class DataSourceWizardService extends DatasourceService {
 
   protected void parseMondrianSchemaNameWrapper( String dswId, Map<String, InputStream> fileData ) {
     super.parseMondrianSchemaName( dswId, fileData );
+  }
+
+  protected String getMondrianDatasourceWrapper( Domain domain ) {
+    return ModelerService.getMondrianDatasource( domain );
   }
 
   protected InputStream toInputStreamWrapper( Domain domain, XmiParser xmiParser ) throws IOException {
