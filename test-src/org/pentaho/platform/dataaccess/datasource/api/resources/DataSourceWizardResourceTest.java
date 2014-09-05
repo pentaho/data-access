@@ -16,6 +16,7 @@
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
+import com.sun.jersey.multipart.FormDataParam;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.Response;
 
 import java.io.InputStream;
@@ -116,5 +118,64 @@ public class DataSourceWizardResourceTest {
 
     verify( dataSourceWizardResource, times( 1 ) ).getDSWDatasourceIds();
     assertEquals( mockJaxbList, response );
+  }
+
+  @Test
+  public void testPublishDsw() throws Exception {
+    String domainId = "domainId";
+    InputStream metadataFile = mock( InputStream.class );
+    boolean overwrite = false;
+    boolean checkConnection = false;
+    Response mockResponse = mock( Response.class );
+    doReturn( "dswId" ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doReturn( mockResponse ).when( dataSourceWizardResource ).buildOkResponse( "dswId" );
+
+    Response response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+
+    verify( dataSourceWizardResource, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    assertEquals( mockResponse, response );
+  }
+
+  @Test
+  public void testPublishDswError() throws Exception {
+    String domainId = "domainId";
+    InputStream metadataFile = mock( InputStream.class );
+    boolean overwrite = false;
+    boolean checkConnection = false;
+    Response mockResponse = mock( Response.class );
+
+    //Test 1
+    PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
+    doThrow( mockPentahoAccessControlException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doReturn( mockResponse ).when( dataSourceWizardResource ).buildUnauthorizedResponse();
+
+    Response response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    assertEquals( mockResponse, response );
+
+    //Test 2
+    IllegalArgumentException mockIllegalArgumentException = mock( IllegalArgumentException.class );
+    doThrow( mockIllegalArgumentException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doReturn( mockResponse ).when( dataSourceWizardResource ).buildBadRequestResponse( anyString() );
+
+    response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    assertEquals( mockResponse, response );
+
+    //Test 3
+    DataSourceWizardService.DswPublishValidationException mockDataSourceWizardServiceDswPublishValidationException = mock( DataSourceWizardService.DswPublishValidationException.class );
+    doThrow( mockDataSourceWizardServiceDswPublishValidationException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doReturn( mockResponse ).when( dataSourceWizardResource ).buildConfilictResponse( anyString() );
+
+    response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    assertEquals( mockResponse, response );
+
+    //Test 4
+    RuntimeException mockException = mock( RuntimeException.class );
+    doThrow( mockException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doReturn( mockResponse ).when( dataSourceWizardResource ).buildServerErrorResponse();
+
+    response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    assertEquals( mockResponse, response );
+
+    verify( dataSourceWizardResource, times( 4 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
   }
 }

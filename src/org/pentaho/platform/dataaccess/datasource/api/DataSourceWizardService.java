@@ -60,9 +60,9 @@ import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepos
 
 public class DataSourceWizardService extends DatasourceService {
 
-  private IDSWDatasourceService dswService;
-  private IModelerService modelerService;
-  private IDatasourceMgmtService datasourceMgmtSvc;
+  protected IDSWDatasourceService dswService;
+  protected IModelerService modelerService;
+  protected IDatasourceMgmtService datasourceMgmtSvc;
 
   private static final Log logger = LogFactory.getLog( DataSourceWizardService.class );
 
@@ -85,39 +85,38 @@ public class DataSourceWizardService extends DatasourceService {
 
 
   public Map<String, InputStream> doGetDSWFilesAsDownload( String dswId ) throws PentahoAccessControlException {
-    if ( !canAdminister() ) {
+    if ( !canAdministerCheck() ) {
       throw new PentahoAccessControlException();
     }
     // First get the metadata files;
-    Map<String, InputStream> fileData =
-      ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( dswId );
+    Map<String, InputStream> fileData = getMetadataFiles( dswId );
+
 
     // Then get the corresponding mondrian files
     Domain domain = metadataDomainRepository.getDomain( dswId );
-    ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+    ModelerWorkspace model = createModelerWorkspace();
     model.setDomain( domain );
     LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     if ( logicalModel == null ) {
       logicalModel = model.getLogicalModel( ModelerPerspective.REPORTING );
     }
     if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
-      MondrianCatalogRepositoryHelper helper =
-        new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
+      MondrianCatalogRepositoryHelper helper = createMondrianCatalogRepositoryHelper();
       String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
       fileData.putAll( helper.getModrianSchemaFiles( catalogRef ) );
-      parseMondrianSchemaName( dswId, fileData );
+      parseMondrianSchemaNameWrapper( dswId, fileData );
     }
 
     return fileData;
   }
 
   public void removeDSW( String dswId ) throws PentahoAccessControlException {
-    if ( !canAdminister() ) {
+    if ( !canAdministerCheck() ) {
       throw new PentahoAccessControlException();
     }
-    dswId = fixEncodedSlashParam( dswId );
+    dswId = parseMondrianSchemaNameWrapper( dswId );
     Domain domain = metadataDomainRepository.getDomain( dswId );
-    ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+    ModelerWorkspace model = createModelerWorkspace();
     model.setDomain( domain );
     LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     if ( logicalModel == null ) {
@@ -125,7 +124,7 @@ public class DataSourceWizardService extends DatasourceService {
     }
     if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
       String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
-      mondrianCatalogService.removeCatalog( catalogRef, PentahoSessionHolder.getSession() );
+      mondrianCatalogService.removeCatalog( catalogRef, getSession() );
     }
     try {
       dswService.deleteLogicalModel( domain.getId(), logicalModel.getId() );
@@ -300,4 +299,33 @@ public class DataSourceWizardService extends DatasourceService {
       .build();
     return metadataBundle;
   }
+
+  protected boolean canAdministerCheck() {
+    return super.canAdminister();
+  }
+
+  protected void parseMondrianSchemaNameWrapper( String dswId, Map<String, InputStream> fileData ) {
+    super.parseMondrianSchemaName( dswId, fileData );
+  }
+
+  protected String parseMondrianSchemaNameWrapper( String dswId ) {
+    return super.fixEncodedSlashParam( dswId );
+  }
+
+  protected Map<String, InputStream> getMetadataFiles( String dswId ) {
+    return ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( dswId );
+  }
+
+  protected ModelerWorkspace createModelerWorkspace() {
+    return new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+  }
+
+  protected MondrianCatalogRepositoryHelper createMondrianCatalogRepositoryHelper() {
+    return new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
+  }
+
+  protected IPentahoSession getSession() {
+    return PentahoSessionHolder.getSession();
+  }
+
 }
