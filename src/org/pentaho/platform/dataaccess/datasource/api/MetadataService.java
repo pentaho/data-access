@@ -43,7 +43,7 @@ public class MetadataService extends DatasourceService {
   private static final Log logger = LogFactory.getLog( MetadataService.class );
 
   public void removeMetadata( String metadataId ) throws PentahoAccessControlException {
-    if ( !canAdminister() ) {
+    if ( !canAdministerCheck() ) {
       throw new PentahoAccessControlException();
     }
     metadataDomainRepository.removeDomain( fixEncodedSlashParam( metadataId ) );
@@ -52,7 +52,7 @@ public class MetadataService extends DatasourceService {
   public List<String> getMetadataDatasourceIds() {
     List<String> metadataIds = new ArrayList<String>();
     try {
-      Thread.sleep( 100 );
+      sleep( 100 );
       for ( String id : metadataDomainRepository.getDomainIds() ) {
         if ( isMetadataDatasource( id ) ) {
           metadataIds.add( id );
@@ -71,42 +71,87 @@ public class MetadataService extends DatasourceService {
     throws PentahoAccessControlException, PlatformImportException,
     Exception {
 
-    validateAccess();
+    accessValidation();
 
-    FileResource fr = new FileResource();
-    String reservedChars = (String) fr.doGetReservedChars().getEntity();
+    FileResource fr = createNewFileResource();
+    Object reservedCharsObject = fr.doGetReservedChars().getEntity();
+    String reservedChars = objectToString( reservedCharsObject );
     if ( reservedChars != null
       // \ need to be replaced with \\ for Regex
       && domainId.matches( ".*[" + reservedChars.replaceAll( "\\\\", "\\\\\\\\" ) + "]+.*" ) ) {
-      String msg =
-        Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
-          .doGetReservedCharactersDisplay().getEntity() );
+      String msg = prohibitedSymbolMessage( domainId, fr );
       throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
     }
 
     boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
-    RepositoryFileImportBundle.Builder bundleBuilder =
-      new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
-        .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
+    RepositoryFileImportBundle.Builder bundleBuilder = createNewRepositoryFileImportBundleBuilder( metadataFile, overWriteInRepository, domainId );
+
 
     if ( localeFiles != null ) {
       for ( int i = 0; i < localeFiles.size(); i++ ) {
         logger.info( "create language file" );
-        IPlatformImportBundle localizationBundle =
-          new RepositoryFileImportBundle.Builder().input(
-            new ByteArrayInputStream( localeFiles.get( i ).getValueAs( byte[].class ) ) ).charSet( "UTF-8" )
-            .hidden( false ).name( localeFilesInfo.get( i ).getFileName() ).withParam( "domain-id", domainId )
-            .build();
-
+        ByteArrayInputStream bais = createNewByteArrayInputStream( localeFiles.get( i ).getValueAs( byte[].class ) );
+        IPlatformImportBundle localizationBundle =  createNewRepositoryFileImportBundle( bais, localeFilesInfo.get( i ).getFileName(), domainId );
         bundleBuilder.addChildBundle( localizationBundle );
       }
     }
 
     IPlatformImportBundle bundle = bundleBuilder.build();
-    IPlatformImporter importer = PentahoSystem.get( IPlatformImporter.class );
+    IPlatformImporter importer = getImporter();
     importer.importFile( bundle );
-    IPentahoSession pentahoSession = PentahoSessionHolder.getSession();
-    PentahoSystem.publish( pentahoSession, org.pentaho.platform.engine.services.metadata.MetadataPublisher.class
-      .getName() );
+    IPentahoSession pentahoSession = getSession();
+    publish( pentahoSession );
+  }
+
+  protected void sleep( int i ) throws InterruptedException {
+    Thread.sleep( i );
+  }
+
+  protected String prohibitedSymbolMessage( String domainId, FileResource fr ) throws InterruptedException {
+    return Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
+      .doGetReservedCharactersDisplay().getEntity() );
+  }
+
+  protected String objectToString( Object o ) throws InterruptedException {
+    return (String) o;
+  }
+
+  protected void publish( IPentahoSession pentahoSession ) throws InterruptedException {
+    PentahoSystem.publish( pentahoSession, org.pentaho.platform.engine.services.metadata.MetadataPublisher.class.getName() );
+  }
+
+  protected IPentahoSession getSession() throws InterruptedException {
+    return PentahoSessionHolder.getSession();
+  }
+
+  protected IPlatformImporter getImporter() throws InterruptedException {
+    return PentahoSystem.get( IPlatformImporter.class );
+  }
+
+  protected void accessValidation() throws PentahoAccessControlException {
+    super.validateAccess();
+  }
+
+  protected boolean canAdministerCheck() {
+    return super.canAdminister();
+  }
+
+  protected FileResource createNewFileResource() {
+    return new FileResource();
+  }
+
+  protected RepositoryFileImportBundle.Builder createNewRepositoryFileImportBundleBuilder( InputStream metadataFile, boolean overWriteInRepository, String domainId ) {
+    return new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
+      .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
+  }
+
+  protected RepositoryFileImportBundle createNewRepositoryFileImportBundle( ByteArrayInputStream bais, String fileName, String domainId ) {
+    return new RepositoryFileImportBundle.Builder().input( bais ).charSet( "UTF-8" ).hidden( false )
+      .name( fileName ).withParam( "domain-id", domainId )
+      .build();
+  }
+
+  protected ByteArrayInputStream createNewByteArrayInputStream( byte[] buf ) {
+    return new ByteArrayInputStream( buf );
   }
 }

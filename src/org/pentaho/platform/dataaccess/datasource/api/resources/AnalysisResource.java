@@ -61,6 +61,7 @@ public class AnalysisResource {
   private static final Log logger = LogFactory.getLog( AnalysisResource.class );
 
   protected AnalysisService service;
+  protected ResourceUtil resourceUtil;
 
   public AnalysisResource() {
     service = new AnalysisService();
@@ -251,7 +252,7 @@ public class AnalysisResource {
   }
 
   protected Response createAttachment( Map<String, InputStream> fileData, String domainId  ) {
-    return ResourceUtil.createAttachment( fileData, domainId );
+    return resourceUtil.createAttachment( fileData, domainId );
   }
 
   protected Response buildOkResponse() {
