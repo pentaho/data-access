@@ -290,8 +290,7 @@ public class ConnectionController extends AbstractXulEventHandler {
       // either new connection, or editing involved a name change.
 
       RequestBuilder checkConnectionBuilder =
-          new RequestBuilder( RequestBuilder.GET, getServiceURL( "getid", new String[][] { { "name",
-            currentConnection.getName() } } ) );
+          new RequestBuilder( RequestBuilder.GET, getServiceURL( "getid", new String[][] { { "name", currentConnection.getName() } } ) );
       checkConnectionBuilder.setHeader( "Content-Type", "application/json" );
 
       try {
@@ -417,8 +416,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
     if ( previousConnectionName != null ) {
       RequestBuilder deleteConnectionBuilder =
-          new RequestBuilder( RequestBuilder.DELETE, getServiceURL( "deletebyname", new String[][] { { "name",
-            previousConnectionName } } ) );
+          new RequestBuilder( RequestBuilder.DELETE, getServiceURL( "deletebyname", new String[][] { { "name", previousConnectionName } } ) );
       try {
         deleteConnectionBuilder.sendRequest( null, new RequestCallback() {
 
@@ -432,7 +430,7 @@ public class ConnectionController extends AbstractXulEventHandler {
             try {
               if ( response.getStatusCode() != Response.SC_OK ) {
                 openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
-                    .getString( "ConnectionController.ERROR_0002_UNABLE_TO_DELETE_CONNECTION" ) );//$NON-NLS-1$
+                    .getString( "ConnectionController.ERROR_0002_UNABLE_TO_DELETE_CONNECTION" ) ); //$NON-NLS-1$
               }
             } catch ( Exception e ) {
               displayErrorMessage( e );
@@ -510,8 +508,7 @@ public class ConnectionController extends AbstractXulEventHandler {
   public void deleteConnection() {
     removeConfirmationDialog.hide();
     RequestBuilder deleteConnectionBuilder =
-        new RequestBuilder( RequestBuilder.DELETE, getServiceURL( "deletebyname", new String[][] { { "name",
-          datasourceModel.getSelectedRelationalConnection().getName() } } ) );
+        new RequestBuilder( RequestBuilder.DELETE, getServiceURL( "deletebyname", new String[][] { { "name", datasourceModel.getSelectedRelationalConnection().getName() } } ) );
     try {
       deleteConnectionBuilder.sendRequest( null, new RequestCallback() {
 

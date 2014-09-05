@@ -37,6 +37,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.codehaus.enunciate.Facet;
 import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
@@ -144,8 +145,24 @@ public class DataSourceWizardResource {
     return Response.ok().build();
   }
 
+  protected Response buildOkResponse( String dswId ) {
+    return Response.ok( dswId ).build();
+  }
+
+  protected Response buildServerErrorResponse() {
+    return Response.serverError().build();
+  }
+
   protected Response buildUnauthorizedResponse() {
     return Response.status( UNAUTHORIZED ).build();
+  }
+
+  protected Response buildBadRequestResponse( String message ) {
+    return Response.status( Response.Status.BAD_REQUEST ).entity( message ).build();
+  }
+
+  protected Response buildConfilictResponse( String message ) {
+    return Response.status( Response.Status.CONFLICT ).entity( message ).build();
   }
 
   protected Response createAttachment( Map<String, InputStream> fileData, String dswId ) {
@@ -182,6 +199,7 @@ public class DataSourceWizardResource {
   @Path( "/datasource/dsw/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( MediaType.TEXT_PLAIN )
+  @Facet( name = "Unsupported" )
   public Response publishDsw(
       @FormDataParam( "domainId" ) final String domainId,
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
@@ -189,15 +207,15 @@ public class DataSourceWizardResource {
       @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection ) {
     try {
       final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection );
-      return Response.ok( dswId ).build();
+      return buildOkResponse( dswId );
     } catch ( PentahoAccessControlException e ) {
-      return Response.status( UNAUTHORIZED ).build();
+      return buildUnauthorizedResponse();
     } catch ( IllegalArgumentException e ) {
-      return Response.status( Response.Status.BAD_REQUEST ).entity( e.getMessage() ).build();
+      return buildBadRequestResponse( e.getMessage() );
     } catch ( DataSourceWizardService.DswPublishValidationException e ) {
-      return Response.status( Response.Status.CONFLICT ).entity( e.getMessage() ).build();
+      return buildConfilictResponse( e.getMessage() );
     } catch ( Exception e ) {
-      return Response.serverError().build();
+      return buildServerErrorResponse();
     }
   }
 

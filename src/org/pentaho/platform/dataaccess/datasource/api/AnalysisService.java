@@ -287,6 +287,7 @@ public class AnalysisService extends DatasourceService {
   protected boolean canAdministerCheck() {
     return super.canAdminister();
   }
+
   protected void accessValidation() throws PentahoAccessControlException {
     super.validateAccess();
   }
