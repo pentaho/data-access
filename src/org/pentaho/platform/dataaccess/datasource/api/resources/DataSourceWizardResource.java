@@ -60,8 +60,8 @@ public class DataSourceWizardResource {
    * Export the DSW data source for the given DSW ID.  The response will be zipped if there is
    * more than one file.  The response will contain an XMI and/or a mondrian cube definition file.
    *
-   * <p><b>Example Request:</b><br/>
-   *   GET /pentaho/plugin/data-access/api/datasource/dsw/{dswId}/download
+   * <p><b>Example Request:</b><br />
+   *    GET /pentaho/plugin/data-access/api/datasource/dsw/{dswId}/download
    * </p>
    *
    * @param dswId The id of the DSW datasource to export
@@ -86,10 +86,10 @@ public class DataSourceWizardResource {
   }
 
   /**
-   * Remove the DSW data source for a given DSW ID
+   * Remove the DSW data source for a given DSW ID.
    *
-   * <p><b>Example Request:</b><br/>
-   *   POST /pentaho/plugin/data-access/api/datasource/dsw/{dswId}/remove
+   * <p><b>Example Request:</b><br />
+   *    POST /pentaho/plugin/data-access/api/datasource/dsw/{dswId}/remove
    * </p>
    *
    * @param dswId The id of the DSW datasource to remove
@@ -113,13 +113,15 @@ public class DataSourceWizardResource {
   }
 
   /**
-   * Get the DSW datasource IDs
+   * Get the DSW datasource IDs.
    *
-   * <p><b>Example Request:</b><br/>
-   *   GET /pentaho/plugin/data-access/api/datasource/dsw/ids
+   * <p><b>Example Request:</b><br />
+   *    GET /pentaho/plugin/data-access/api/datasource/dsw/ids
    * </p>
    *
    * @return JaxbList<String> of DSW datasource IDs
+   *
+   * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
    *      {
    *        "Item": [
@@ -171,10 +173,10 @@ public class DataSourceWizardResource {
   }
 
   /**
-   * Publish a DSW from a Metadata XMI file
+   * Publish a DSW from a Metadata XMI file.
    *
-   * <p><b>Example Request:</b>
-   *  PUT /data-access/api/datasource/dsw/import
+   * <p><b>Example Request:</b><br />
+   *    PUT /data-access/api/datasource/dsw/import
    * </p>
    *
    * @param domainId The domain to publish to. Must end in '.xmi'.

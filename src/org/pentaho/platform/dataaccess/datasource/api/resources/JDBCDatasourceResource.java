@@ -55,8 +55,10 @@ public class JDBCDatasourceResource {
 
   /**
    * Remove the JDBC data source for a given JDBC ID.
-   * <p/>
-   * <p><b>Example Request:</b><br/> GET /pentaho/plugin/data-access/api/datasource/jdbc/{name}/remove </p>
+   *
+   * <p><b>Example Request:</b><br />
+   *    GET /pentaho/plugin/data-access/api/datasource/jdbc/{name}/remove
+   * </p>
    *
    * @param name The name of the JDBC datasource to remove
    *
@@ -85,12 +87,14 @@ public class JDBCDatasourceResource {
   }
 
   /**
-   * Get a list of JDBC datasource IDs
-   * <p/>
-   * <p><b>Example Request:</b><br /> GET /data-access/api/datasource/jdbc/ids </p>
+   * Get a list of JDBC datasource IDs.
    *
-   * @return A list of JDBC datasource IDs
-   * <p/>
+   * <p><b>Example Request:</b><br />
+   *    GET /data-access/api/datasource/jdbc/ids
+   * </p>
+   *
+   * @return A list of JDBC datasource IDs.
+   *
    * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
    *      {
@@ -154,13 +158,15 @@ public class JDBCDatasourceResource {
 
   /**
    * Export a JDBC datasource connection.
-   * <p/>
-   * <p><b>Example Request:</b><br/> GET /pentaho/plugin/data-access/api/datasource/jdbc/{name}/download </p>
+   *
+   * <p><b>Example Request:</b><br />
+   *    GET /pentaho/plugin/data-access/api/datasource/jdbc/{name}/download
+   * </p>
    *
    * @param name The name of the JDBC datasource to retrieve
    *
-   * @return A Response object containing the JDBC connection in XML or JSON form
-   * <p/>
+   * @return A Response object containing the JDBC connection in XML or JSON form.
+   *
    * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
    *      {
@@ -220,8 +226,10 @@ public class JDBCDatasourceResource {
 
   /**
    * Add a JDBC datasource connection.
-   * <p/>
-   * <p><b>Example Request:</b><br/> POST /pentaho/plugin/data-access/api/datasource/jdbc/import </p>
+   *
+   * <p><b>Example Request:</b><br />
+   *    POST /pentaho/plugin/data-access/api/datasource/jdbc/import
+   * </p>
    *
    * @param connection A DatabaseConnection in JSON representation
    *
@@ -252,8 +260,10 @@ public class JDBCDatasourceResource {
 
   /**
    * Update an existing JDBC datasource connection.
-   * <p/>
-   * <p><b>Example Request:</b><br/> POST /pentaho/plugin/data-access/api/datasource/jdbc/update </p>
+   *
+   * <p><b>Example Request:</b><br />
+   *    POST /pentaho/plugin/data-access/api/datasource/jdbc/update
+   * </p>
    *
    * @param connection A DatabaseConnection in JSON representation
    *
