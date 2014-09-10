@@ -966,7 +966,7 @@ public class DatasourceResource extends DataSourceWizardResource {
       } else {
         try {
           savedConn = connectionService.getConnectionByName( conn.getName() );
-        } catch (ConnectionServiceException e) {
+        } catch ( ConnectionServiceException e ) {
           logger.warn( e.getMessage() );
           savedConn = null;
         }
