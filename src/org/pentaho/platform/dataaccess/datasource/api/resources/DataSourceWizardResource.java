@@ -66,7 +66,7 @@ public class DataSourceWizardResource {
    *
    * @param dswId The id of the DSW datasource to export
    *
-   * @return A Response object containing the DSW data source files.
+   * @return A Response object containing the encrypted DSW data source files.
    */
   @GET
   @Path( "/datasource/dsw/{dswId : .+}/download" )
@@ -93,6 +93,7 @@ public class DataSourceWizardResource {
    * </p>
    *
    * @param dswId The id of the DSW datasource to remove
+   *
    * @return A 200 response code representing the successful removal of the DSW datasource
    */
   @POST
@@ -119,7 +120,6 @@ public class DataSourceWizardResource {
    * </p>
    *
    * @return JaxbList<String> of DSW datasource IDs
-   *               <pre function="syntax.xml">
    *    <pre function="syntax.xml">
    *      {
    *        "Item": [
