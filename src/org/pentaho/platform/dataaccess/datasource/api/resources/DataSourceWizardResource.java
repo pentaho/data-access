@@ -57,25 +57,15 @@ public class DataSourceWizardResource {
   }
 
   /**
-   *
-   * @param dswId String Id of the data source wizard data to retrieve
-   *
-   * @return Response containing the file data
-   */
-
-
-  /**
-   * Export the DSW data source for the given DSW ID.  The response will be zipped if there are
+   * Export the DSW data source for the given DSW ID.  The response will be zipped if there is
    * more than one file.  The response will contain an XMI and/or a mondrian cube definition file.
    *
    * <p><b>Example Request:</b><br/>
-   *   GET /pentaho/plugin/data-access/api/datasource/dsw/MyDSWDS/download
+   *   GET /pentaho/plugin/data-access/api/datasource/dsw/{dswId}/download
    * </p>
    *
    * @param dswId The id of the DSW datasource to export
-   *               <pre function="syntax.xml">
-   *               MyDSWDS
-   *               </pre>
+   *
    * @return A Response object containing the DSW data source files.
    */
   @GET
@@ -99,13 +89,11 @@ public class DataSourceWizardResource {
    * Remove the DSW data source for a given DSW ID
    *
    * <p><b>Example Request:</b><br/>
-   *   POST /pentaho/plugin/data-access/api/datasource/dsw/MyDSWDS/remove
+   *   POST /pentaho/plugin/data-access/api/datasource/dsw/{dswId}/remove
    * </p>
    *
    * @param dswId The id of the DSW datasource to remove
-   *               <pre function="syntax.xml">
-   *               MyDSWDS
-   *               </pre>
+   * @return A 200 response code representing the successful removal of the DSW datasource
    */
   @POST
   @Path( "/datasource/dsw/{dswId : .+}/remove" )
@@ -132,8 +120,16 @@ public class DataSourceWizardResource {
    *
    * @return JaxbList<String> of DSW datasource IDs
    *               <pre function="syntax.xml">
-   *               {"Item":{"@type":"xs:string","$":"MyDSWDS"}}
-   *               </pre>
+   *    <pre function="syntax.xml">
+   *      {
+   *        "Item": [
+   *          {
+   *            "@type": "xs:string",
+   *            "$": "jmeter-dsw-pentaho-test.xmi"
+   *          }
+   *        ]
+   *      }
+   *    </pre>
    */
   @GET
   @Path( "/datasource/dsw/ids" )
@@ -182,19 +178,11 @@ public class DataSourceWizardResource {
    * </p>
    *
    * @param domainId The domain to publish to. Must end in '.xmi'.
-   * <pre function="syntax.xml">
-   *  ADomain.xmi
-   * </pre>
    * @param metadataFile InputStream with the DSW XMI file
    * @param overwrite Flag for overwriting existing version of the file
    * @param checkConnection Only publish if the required connection exists
    *
-   * @return Response containing the success of the method and the published domain id
-   *
-   * <p><b>Example Response:</b></p>
-   * <pre function="syntax.xml">
-   *   200 ADomain.xmi
-   * </pre>
+   * @return A jax-rs Response object with the appropriate status code, header, and body.
    **/
   @PUT
   @Path( "/datasource/dsw/import" )

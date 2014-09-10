@@ -56,9 +56,11 @@ public class JDBCDatasourceResource {
   /**
    * Remove the JDBC data source for a given JDBC ID.
    * <p/>
-   * <p><b>Example Request:</b><br/> GET /pentaho/plugin/data-access/api/datasource/jdbc/SampleData/remove </p>
+   * <p><b>Example Request:</b><br/> GET /pentaho/plugin/data-access/api/datasource/jdbc/{name}/remove </p>
    *
    * @param name The name of the JDBC datasource to remove
+   *
+   * @return A 200 response code representing the successful removal of the JDBC datasource
    */
   @GET
   @Path( "/{name : .+}/remove" )
@@ -89,9 +91,45 @@ public class JDBCDatasourceResource {
    *
    * @return A list of JDBC datasource IDs
    * <p/>
-   * <p><b>Example Response:</b></p> <pre function="syntax.xml">  { "Item":[ { "@type":"xs:string",
-   * "$":"SampleData" }, { "@type":"xs:string", "$":"Conn123" }, { "@type":"xs:string", "$":"MyConnection" } ] }
-   * </pre>
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *      {
+   *        "Item": [
+   *          {
+   *            "@type": "xs:string",
+   *            "$": "AgileBI"
+   *          },
+   *          {
+   *            "@type": "xs:string",
+   *            "$": "Audit"
+   *          },
+   *          {
+   *            "@type": "xs:string",
+   *            "$": "SampleData"
+   *          },
+   *          {
+   *            "@type": "xs:string",
+   *            "$": "TestDataSourceResource"
+   *          },
+   *          {
+   *            "@type": "xs:string",
+   *            "$": "baseball connection"
+   *          },
+   *          {
+   *            "@type": "xs:string",
+   *            "$": "baseball connection"
+   *          },
+   *          {
+   *            "@type": "xs:string",
+   *            "$": "live_logging_info"
+   *          },
+   *          {
+   *            "@type": "xs:string",
+   *            "$": "pentaho_operations_mart"
+   *          }
+   *        ]
+   *      }
+   *    </pre>
    */
   @GET
   @Path( "/ids" )
@@ -117,22 +155,52 @@ public class JDBCDatasourceResource {
   /**
    * Export a JDBC datasource connection.
    * <p/>
-   * <p><b>Example Request:</b><br/> GET /pentaho/plugin/data-access/api/datasource/jdbc/SampleData/download </p>
+   * <p><b>Example Request:</b><br/> GET /pentaho/plugin/data-access/api/datasource/jdbc/{name}/download </p>
    *
    * @param name The name of the JDBC datasource to retrieve
+   *
    * @return A Response object containing the JDBC connection in XML or JSON form
    * <p/>
-   * <p><b>Example Response:</b></p> <pre function="syntax.xml"> { "SQLServerInstance":null,
-   * "accessType":"NATIVE", "accessTypeValue":"NATIVE", "attributes":{ "PORT_NUMBER":"9001" }, "changed":false,
-   * "connectSql":"", "connectionPoolingProperties":{ }, "dataTablespace":"", "databaseName":"SampleData",
-   * "databasePort":"9001", "databaseType":{ "defaultDatabasePort":9001, "extraOptionsHelpUrl":"http://hsqldb
-   * .sourceforge.net/doc/guide/ch04.html#N109DA",
-   * "name":"Hypersonic", "shortName":"HYPERSONIC" }, "extraOptions":{ "HYPERSONIC.parameter3":"value3",
-   * "HYPERSONIC.parameter2":"value2" }, "forcingIdentifiersToLowerCase":false, "forcingIdentifiersToUpperCase":false,
-   * "hostname":"localhost", "id":"12e88903-9cfd-419a-9cd1-728093aaf2cf", "indexTablespace":"", "informixServername":"",
-   * "initialPoolSize":0, "maximumPoolSize":0, "name":"SampleData", "partitioned":false, "password":"password",
-   * "quoteAllFields":false, "streamingResults":false, "username":"pentaho_user", "usingConnectionPool":true,
-   * "usingDoubleDecimalAsSchemaTableSeparator":false }  </pre>
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *      {
+   *        "SQLServerInstance": null,
+   *        "accessType": "NATIVE",
+   *        "accessTypeValue": "NATIVE",
+   *        "attributes": {
+   *          "PORT_NUMBER": "9001"
+   *        },
+   *        "changed": false,
+   *        "connectSql": "",
+   *        "connectionPoolingProperties": {},
+   *        "dataTablespace": "",
+   *        "databaseName": "SampleData",
+   *        "databasePort": "9001",
+   *        "databaseType": {
+   *          "defaultDatabasePort": 9001,
+   *          "extraOptionsHelpUrl": "http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
+   *          "name": "Hypersonic",
+   *          "shortName": "HYPERSONIC"
+   *        },
+   *        "extraOptions": {},
+   *        "forcingIdentifiersToLowerCase": false,
+   *        "forcingIdentifiersToUpperCase": false,
+   *        "hostname": "localhost",
+   *        "id": "00ac4db3-7567-4019-8917-1b6f512ee162",
+   *        "indexTablespace": "",
+   *        "informixServername": "",
+   *        "initialPoolSize": 0,
+   *        "maximumPoolSize": 0,
+   *        "name": "TestDataSourceResource",
+   *        "partitioned": false,
+   *        "password": "password",
+   *        "quoteAllFields": false,
+   *        "streamingResults": false,
+   *        "username": "pentaho_user",
+   *        "usingConnectionPool": true,
+   *        "usingDoubleDecimalAsSchemaTableSeparator": false
+   *        }
+   *    </pre>
    */
   @GET
   @Path( "/{name : .+}/download" )
@@ -155,14 +223,8 @@ public class JDBCDatasourceResource {
    * <p/>
    * <p><b>Example Request:</b><br/> POST /pentaho/plugin/data-access/api/datasource/jdbc/import </p>
    *
-   * @param connection A DatabaseConnection in JSON representation <pre function="syntax.xml"> { "changed":true,
-   *                   "usingConnectionPool":true, "connectSql":"", "databaseName":"SampleData", "databasePort":"9001",
-   *                   "hostname":"localhost", "name":"Test123", "password":"password", "username":"pentaho_user",
-   *                   "attributes":{ }, "connectionPoolingProperties":{ }, "extraOptions":{ }, "accessType":"NATIVE",
-   *                   "databaseType":{ "defaultDatabasePort":9001, "extraOptionsHelpUrl":"http://hsqldb.sourceforge
-   *                   .net/doc/guide/ch04.html#N109DA",
-   *                   "name":"Hypersonic", "shortName":"HYPERSONIC", "supportedAccessTypes":[ "NATIVE", "ODBC", "JNDI"
-   *                   ] } } </pre>
+   * @param connection A DatabaseConnection in JSON representation
+   *
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
@@ -193,14 +255,8 @@ public class JDBCDatasourceResource {
    * <p/>
    * <p><b>Example Request:</b><br/> POST /pentaho/plugin/data-access/api/datasource/jdbc/update </p>
    *
-   * @param connection A DatabaseConnection in JSON representation <pre function="syntax.xml"> { "changed":true,
-   *                   "usingConnectionPool":true, "connectSql":"", "databaseName":"SampleData", "databasePort":"9001",
-   *                   "hostname":"localhost", "name":"Test123", "password":"password", "username":"pentaho_user",
-   *                   "attributes":{ }, "connectionPoolingProperties":{ }, "extraOptions":{ }, "accessType":"NATIVE",
-   *                   "databaseType":{ "defaultDatabasePort":9001, "extraOptionsHelpUrl":"http://hsqldb.sourceforge
-   *                   .net/doc/guide/ch04.html#N109DA",
-   *                   "name":"Hypersonic", "shortName":"HYPERSONIC", "supportedAccessTypes":[ "NATIVE", "ODBC", "JNDI"
-   *                   ] } } </pre>
+   * @param connection A DatabaseConnection in JSON representation
+   *
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
   @POST
