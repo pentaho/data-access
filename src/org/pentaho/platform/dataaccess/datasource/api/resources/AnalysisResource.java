@@ -69,17 +69,17 @@ public class AnalysisResource {
   }
 
   /**
-   * Download the analysis files for a given analysis id
+   * Download the analysis files for a given analysis id.
    *
    * <p><b>Example Request:</b><br />
-   *  GET plugin/data-access/api/datasource/analysis/{analysisId}/download
+   *    GET plugin/data-access/api/datasource/analysis/{analysisId}/download
    * </p>
    *
    * @param analysisId String Id of the analysis data to retrieve
    *
-   * @return Response containing the analysis file data XML
-   * <p/>
-    * <p><b>Example Response:</b></p>
+   * @return Response containing the analysis file data XML.
+   *
+   * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
    *      &lt;?xml version=&quot;1.0&quot;?&gt;
    *      &lt;Schema name=&quot;SampleData2&quot;&gt;
@@ -131,10 +131,10 @@ public class AnalysisResource {
   }
 
   /**
-   * Remove the analysis data for a given analysis ID
+   * Remove the analysis data for a given analysis ID.
    *
-   * <p><b>Example Request:</b>
-   *  POST plugin/data-access/api/datasource/analysis/{analysisId}/remove
+   * <p><b>Example Request:</b><br />
+   *    POST plugin/data-access/api/datasource/analysis/{analysisId}/remove
    * </p>
    *
    * @param analysisId ID of the analysis data to remove
@@ -159,13 +159,13 @@ public class AnalysisResource {
   }
 
   /**
-   * Get a list of analysis data source ids
+   * Get a list of analysis data source ids.
    *
    * <p><b>Example Request:</b><br />
-   *  GET /data-access/api/datasource/analysis/ids
+   *    GET /data-access/api/datasource/analysis/ids
    * </p>
    *
-   * @return A list of analysis IDs
+   * @return A list of analysis IDs.
    *
    * <p><b>Example Response:</b></p>
    * <pre function="syntax.xml">
@@ -198,10 +198,10 @@ public class AnalysisResource {
   }
 
   /**
-   * Import Mondrian Schema
+   * Import Mondrian Schema.
    *
-   * <p><b>Example Request:</b>
-   *  PUT /data-access/api/datasource/analysis/import
+   * <p><b>Example Request:</b><br />
+   *    PUT /data-access/api/datasource/analysis/import
    * </p>
    *
    * @param uploadAnalysis A Mondrian schema XML file
@@ -211,7 +211,8 @@ public class AnalysisResource {
    * @param xmlaEnabledFlag Is XMLA enabled or not
    * @param parameters Import parameters
    *
-   * @return Response containing the success of the method
+   * @return Response containing the success of the method.
+   *
    * <p><b>Example Response:</b></p>
    * <pre function="syntax.xml">
    *   3
