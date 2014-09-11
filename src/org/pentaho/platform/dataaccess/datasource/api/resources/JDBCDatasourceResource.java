@@ -265,7 +265,7 @@ public class JDBCDatasourceResource {
    *    POST /pentaho/plugin/data-access/api/datasource/jdbc/update
    * </p>
    *
-   * @param connection A DatabaseConnection in JSON representation
+   * @param connection A DatabaseConnection in JSON representation.
    *
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    */
