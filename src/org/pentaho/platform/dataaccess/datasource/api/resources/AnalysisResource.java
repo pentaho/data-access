@@ -75,7 +75,7 @@ public class AnalysisResource {
    *    GET plugin/data-access/api/datasource/analysis/{analysisId}/download
    * </p>
    *
-   * @param analysisId String Id of the analysis data to retrieve
+   * @param analysisId String Id of the analysis data to retrieve.
    *
    * @return Response containing the analysis file data XML.
    *
@@ -137,9 +137,9 @@ public class AnalysisResource {
    *    POST plugin/data-access/api/datasource/analysis/{analysisId}/remove
    * </p>
    *
-   * @param analysisId ID of the analysis data to remove
+   * @param analysisId ID of the analysis data to remove.
    *
-   * @return A 200 response code representing the successful removal of the analysis datasource
+   * @return A 200 response code representing the successful removal of the analysis datasource.
    */
   @POST
   @Path( "/{analysisId : .+}/remove" )
@@ -204,12 +204,14 @@ public class AnalysisResource {
    *    PUT /data-access/api/datasource/analysis/import
    * </p>
    *
-   * @param uploadAnalysis A Mondrian schema XML file
-   * @param schemaFileInfo User selected name for the file
-   * @param catalogName (optional) The catalog name
-   * @param overwrite Flag for overwriting existing version of the file
-   * @param xmlaEnabledFlag Is XMLA enabled or not
-   * @param parameters Import parameters
+   * @param uploadAnalysis A Mondrian schema XML file.
+   * @param schemaFileInfo User selected name for the file.
+   * @param catalogName (optional) The catalog name.
+   * @param origCatalogName (optional) The original catalog name.
+   * @param datasourceName (optional) The datasource  name.
+   * @param overwrite Flag for overwriting existing version of the file.
+   * @param xmlaEnabledFlag Is XMLA enabled or not.
+   * @param parameters Import parameters.
    *
    * @return Response containing the success of the method.
    *
