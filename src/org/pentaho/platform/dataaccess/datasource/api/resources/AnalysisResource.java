@@ -48,6 +48,10 @@ import org.pentaho.platform.web.http.api.resources.JaxbList;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
+/**
+ * This service allows for listing, download, upload, and removal of Analysis files or Mondrian schemas
+ * in the BA Platform.
+ */
 public class AnalysisResource {
 
   private static final String UPLOAD_ANALYSIS = "uploadAnalysis";
