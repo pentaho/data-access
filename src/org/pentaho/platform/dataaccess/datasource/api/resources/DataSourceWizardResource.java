@@ -43,9 +43,11 @@ import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
-
 import com.sun.jersey.multipart.FormDataParam;
 
+/**
+ * This service allows for listing, download, and removal of DSW data sources in the BA Platform.
+ */
 public class DataSourceWizardResource {
 
   protected DataSourceWizardService service;

@@ -44,6 +44,9 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
+/**
+ * This service provides methods for listing, creating, downloading, uploading, and removal of JDBC data sources.
+ */
 public class JDBCDatasourceResource {
 
   protected ConnectionServiceImpl service;
