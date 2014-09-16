@@ -239,7 +239,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    * @return Response containing the parameter list
    */
   @GET
-  @Path( "/{dswId : .+}/getAnalysisDatasourceInfo" )
+  @Path( "/datasource/{dswId : .+}/getAnalysisDatasourceInfo" )
   @Produces( WILDCARD )
   @Facet( name = "Unsupported" )
   public Response getAnalysisDatasourceInfo( @PathParam( "dswId" ) String dswId ) {
