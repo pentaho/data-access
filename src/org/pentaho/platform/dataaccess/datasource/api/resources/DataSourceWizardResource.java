@@ -63,12 +63,17 @@ public class DataSourceWizardResource {
    * more than one file.  The response will contain an XMI and/or a mondrian cube definition file.
    *
    * <p><b>Example Request:</b><br />
-   *    GET /pentaho/plugin/data-access/api/datasource/dsw/{dswId}/download
+   *    GET pentaho/plugin/data-access/api/datasource/dsw/jmeter-dsw-pentaho-test.xmi/download
    * </p>
    *
    * @param dswId The id of the DSW datasource to export
    *
    * @return A Response object containing the encrypted DSW data source files.
+   *
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *          An encrypted .XMI file or a .zip with encoded .XMI files
+   *    </pre>
    */
   @GET
   @Path( "/datasource/dsw/{dswId : .+}/download" )
@@ -91,12 +96,21 @@ public class DataSourceWizardResource {
    * Remove the DSW data source for a given DSW ID.
    *
    * <p><b>Example Request:</b><br />
-   *    POST /pentaho/plugin/data-access/api/datasource/dsw/{dswId}/remove
+   *    POST pentaho/plugin/data-access/api/datasource/dsw/jmeter-dsw-pentaho-test.xmi/remove
+   * <br /><b>POST data:</b>
+   *  <pre function="syntax.xml">
+   *
+   *  </pre>
    * </p>
    *
    * @param dswId The id of the DSW datasource to remove
    *
-   * @return A 200 response code representing the successful removal of the DSW datasource
+   * @return A 200 response code representing the successful removal of the DSW datasource.
+   *
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *
+   *    </pre>
    */
   @POST
   @Path( "/datasource/dsw/{dswId : .+}/remove" )
@@ -118,7 +132,7 @@ public class DataSourceWizardResource {
    * Get the DSW datasource IDs.
    *
    * <p><b>Example Request:</b><br />
-   *    GET /pentaho/plugin/data-access/api/datasource/dsw/ids
+   *    GET pentaho/plugin/data-access/api/datasource/dsw/ids
    * </p>
    *
    * @return JaxbList<String> of DSW datasource IDs
@@ -178,7 +192,11 @@ public class DataSourceWizardResource {
    * Publish a DSW from a Metadata XMI file.
    *
    * <p><b>Example Request:</b><br />
-   *    PUT /data-access/api/datasource/dsw/import
+   *    PUT pentaho/plugin/data-access/api/datasource/dsw/import
+   * <br /><b>PUT data:</b>
+   *  <pre function="syntax.xml">
+   *
+   *  </pre>
    * </p>
    *
    * @param domainId The domain to publish to. Must end in '.xmi'.
@@ -187,6 +205,11 @@ public class DataSourceWizardResource {
    * @param checkConnection Only publish if the required connection exists
    *
    * @return A jax-rs Response object with the appropriate status code, header, and body.
+   *
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *
+   *    </pre>
    **/
   @PUT
   @Path( "/datasource/dsw/import" )

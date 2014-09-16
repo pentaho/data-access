@@ -60,12 +60,17 @@ public class JDBCDatasourceResource {
    * Remove the JDBC data source for a given JDBC ID.
    *
    * <p><b>Example Request:</b><br />
-   *    GET /pentaho/plugin/data-access/api/datasource/jdbc/{name}/remove
+   *    GET pentaho/plugin/data-access/api/datasource/jdbc/TestDataSourceResource/remove
    * </p>
    *
    * @param name The name of the JDBC datasource to remove
    *
-   * @return A 200 response code representing the successful removal of the JDBC datasource
+   * @return A 200 response code representing the successful removal of the JDBC datasource.
+   *
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *
+   *    </pre>
    */
   @GET
   @Path( "/{name : .+}/remove" )
@@ -93,7 +98,7 @@ public class JDBCDatasourceResource {
    * Get a list of JDBC datasource IDs.
    *
    * <p><b>Example Request:</b><br />
-   *    GET /data-access/api/datasource/jdbc/ids
+   *    GET pentaho/plugin/data-access/api/datasource/jdbc/ids
    * </p>
    *
    * @return A list of JDBC datasource IDs.
@@ -163,7 +168,7 @@ public class JDBCDatasourceResource {
    * Export a JDBC datasource connection.
    *
    * <p><b>Example Request:</b><br />
-   *    GET /pentaho/plugin/data-access/api/datasource/jdbc/{name}/download
+   *    GET pentaho/plugin/data-access/api/datasource/jdbc/TestDataSourceResource/download
    * </p>
    *
    * @param name The name of the JDBC datasource to retrieve
@@ -231,12 +236,47 @@ public class JDBCDatasourceResource {
    * Add a JDBC datasource connection.
    *
    * <p><b>Example Request:</b><br />
-   *    POST /pentaho/plugin/data-access/api/datasource/jdbc/import
+   *    POST pentaho/plugin/data-access/api/datasource/jdbc/import
+   * </p>
+   * <br /><b>POST data:</b>
+   *  <pre function="syntax.xml">
+   *    {
+   *      "changed": true,
+   *      "usingConnectionPool": true,
+   *      "connectSql": "",
+   *      "databaseName": "SampleData",
+   *      "databasePort": "9001",
+   *      "hostname": "localhost",
+   *      "name": "TestDataSourceResource",
+   *      "password": "password",
+   *      "username": "pentaho_user",
+   *      "attributes": {},
+   *      "connectionPoolingProperties": {},
+   *      "extraOptions": {},
+   *      "accessType": "NATIVE",
+   *      "databaseType": {
+   *        "defaultDatabasePort": 9001,
+   *        "extraOptionsHelpUrl": "http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
+   *        "name": "Hypersonic",
+   *        "shortName": "HYPERSONIC",
+   *        "supportedAccessTypes": [
+   *          "NATIVE",
+   *          "ODBC",
+   *          "JNDI"
+   *        ]
+   *      }
+   *    }
+   *  </pre>
    * </p>
    *
    * @param connection A DatabaseConnection in JSON representation
    *
    * @return A jax-rs Response object with the appropriate status code, header, and body.
+   *
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *
+   *    </pre>
    */
   @POST
   @Path( "/import" )
@@ -267,10 +307,45 @@ public class JDBCDatasourceResource {
    * <p><b>Example Request:</b><br />
    *    POST /pentaho/plugin/data-access/api/datasource/jdbc/update
    * </p>
+   * <br /><b>POST data:</b>
+   *  <pre function="syntax.xml">
+   *    {
+   *      "changed": true,
+   *      "usingConnectionPool": true,
+   *      "connectSql": "",
+   *      "databaseName": "SampleData",
+   *      "databasePort": "9001",
+   *      "hostname": "localhost",
+   *      "name": "TestDataSourceResource",
+   *      "password": "password",
+   *      "username": "pentaho_user",
+   *      "attributes": {},
+   *      "connectionPoolingProperties": {},
+   *      "extraOptions": {},
+   *      "accessType": "NATIVE",
+   *      "databaseType": {
+   *        "defaultDatabasePort": 9001,
+   *        "extraOptionsHelpUrl": "http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
+   *        "name": "Hypersonic",
+   *        "shortName": "HYPERSONIC",
+   *        "supportedAccessTypes": [
+   *          "NATIVE",
+   *          "ODBC",
+   *          "JNDI"
+   *        ]
+   *      }
+   *    }
+   *  </pre>
+   * </p>
    *
    * @param connection A DatabaseConnection in JSON representation.
    *
    * @return A jax-rs Response object with the appropriate status code, header, and body.
+   *
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *
+   *    </pre>
    */
   @POST
   @Path( "/update" )
