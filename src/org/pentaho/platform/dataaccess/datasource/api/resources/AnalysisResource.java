@@ -49,8 +49,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
 /**
- * This service allows for listing, download, upload, and removal of Analysis files or Mondrian schemas
- * in the BA Platform.
+ * This service allows for listing, download, upload, and removal of Analysis files or Mondrian schemas in the BA Platform.
  */
 public class AnalysisResource {
 
@@ -76,7 +75,7 @@ public class AnalysisResource {
    * Download the analysis files for a given analysis id.
    *
    * <p><b>Example Request:</b><br />
-   *    GET plugin/data-access/api/datasource/analysis/{analysisId}/download
+   *    GET pentaho/plugin/data-access/api/datasource/metadata/SampleData2/download
    * </p>
    *
    * @param analysisId String Id of the analysis data to retrieve.
@@ -139,11 +138,20 @@ public class AnalysisResource {
    *
    * <p><b>Example Request:</b><br />
    *    POST plugin/data-access/api/datasource/analysis/{analysisId}/remove
+   * <br /><b>POST data:</b>
+   *  <pre function="syntax.xml">
+   *
+   *  </pre>
    * </p>
    *
    * @param analysisId ID of the analysis data to remove.
    *
    * @return A 200 response code representing the successful removal of the analysis datasource.
+   *
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *
+   *    </pre>
    */
   @POST
   @Path( "/{analysisId : .+}/remove" )
@@ -166,7 +174,7 @@ public class AnalysisResource {
    * Get a list of analysis data source ids.
    *
    * <p><b>Example Request:</b><br />
-   *    GET /data-access/api/datasource/analysis/ids
+   *    GET pentaho/plugin/data-access/api/datasource/metadata/ids
    * </p>
    *
    * @return A list of analysis IDs.
@@ -205,7 +213,68 @@ public class AnalysisResource {
    * Import Mondrian Schema.
    *
    * <p><b>Example Request:</b><br />
-   *    PUT /data-access/api/datasource/analysis/import
+   *    PUT pentaho/plugin/data-access/api/datasource/metadata/import
+   * <br /><b>PUT data:</b>
+   *  <pre function="syntax.xml">
+   *      ------WebKitFormBoundaryNLNb246RTFIn1elY
+   *      Content-Disposition: form-data; name=&quot;uploadAnalysis&quot;; filename=&quot;SampleData2.mondrian.xml&quot;
+   *      Content-Type: text/xml
+   *
+   *      &lt;?xml version=&quot;1.0&quot;?&gt;
+   *      &lt;Schema name=&quot;SampleData2&quot;&gt;
+   *      &lt;!-- Shared dimensions --&gt;
+   *
+   *      &lt;Dimension name=&quot;Region&quot;&gt;
+   *      &lt;Hierarchy hasAll=&quot;true&quot; allMemberName=&quot;All Regions&quot;&gt;
+   *      &lt;Table name=&quot;QUADRANT_ACTUALS&quot;/&gt;
+   *      &lt;Level name=&quot;Region&quot; column=&quot;REGION&quot; uniqueMembers=&quot;true&quot;/&gt;
+   *      &lt;/Hierarchy&gt;
+   *      &lt;/Dimension&gt;
+   *      &lt;Dimension name=&quot;Department&quot;&gt;
+   *      &lt;Hierarchy hasAll=&quot;true&quot; allMemberName=&quot;All Departments&quot;&gt;
+   *      &lt;Table name=&quot;QUADRANT_ACTUALS&quot;/&gt;
+   *      &lt;Level name=&quot;Department&quot; column=&quot;DEPARTMENT&quot; uniqueMembers=&quot;true&quot;/&gt;
+   *      &lt;/Hierarchy&gt;
+   *      &lt;/Dimension&gt;
+   *
+   *      &lt;Dimension name=&quot;Positions&quot;&gt;
+   *      &lt;Hierarchy hasAll=&quot;true&quot; allMemberName=&quot;All Positions&quot;&gt;
+   *      &lt;Table name=&quot;QUADRANT_ACTUALS&quot;/&gt;
+   *      &lt;Level name=&quot;Positions&quot; column=&quot;POSITIONTITLE&quot; uniqueMembers=&quot;true&quot;/&gt;
+   *      &lt;/Hierarchy&gt;
+   *      &lt;/Dimension&gt;
+   *
+   *      &lt;Cube name=&quot;Quadrant Analysis&quot;&gt;
+   *      &lt;Table name=&quot;QUADRANT_ACTUALS&quot;/&gt;
+   *      &lt;DimensionUsage name=&quot;Region&quot; source=&quot;Region&quot;/&gt;
+   *      &lt;DimensionUsage name=&quot;Department&quot; source=&quot;Department&quot; /&gt;
+   *      &lt;DimensionUsage name=&quot;Positions&quot; source=&quot;Positions&quot; /&gt;
+   *      &lt;Measure name=&quot;Actual&quot; column=&quot;ACTUAL&quot; aggregator=&quot;sum&quot; formatString=&quot;#,###.00&quot;/&gt;
+   *      &lt;Measure name=&quot;Budget&quot; column=&quot;BUDGET&quot; aggregator=&quot;sum&quot; formatString=&quot;#,###.00&quot;/&gt;
+   *      &lt;Measure name=&quot;Variance&quot; column=&quot;VARIANCE&quot; aggregator=&quot;sum&quot; formatString=&quot;#,###.00&quot;/&gt;
+   *      &lt;!--    &lt;CalculatedMember name=&quot;Variance Percent&quot; dimension=&quot;Measures&quot; formula=&quot;([Measures].[Variance]/[Measures].[Budget])*100&quot; /&gt; --&gt;
+   *      &lt;/Cube&gt;
+   *
+   *      &lt;/Schema&gt;
+   *
+   *      ------WebKitFormBoundaryNLNb246RTFIn1elY
+   *      Content-Disposition: form-data; name=&quot;parameters&quot;
+   *
+   *      DataSource=SampleData2;overwrite=true
+   *      ------WebKitFormBoundaryNLNb246RTFIn1elY
+   *      Content-Disposition: form-data; name=&quot;schemaFileInfo&quot;
+   *
+   *      test.xml
+   *      ------WebKitFormBoundaryNLNb246RTFIn1elY
+   *      Content-Disposition: form-data; name=&quot;catalogName&quot;
+   *
+   *      Catalog Name
+   *      ------WebKitFormBoundaryNLNb246RTFIn1elY
+   *      Content-Disposition: form-data; name=&quot;xmlaEnableFlag&quot;
+   *
+   *      true
+   *      ------WebKitFormBoundaryNLNb246RTFIn1elY--
+   *  </pre>
    * </p>
    *
    * @param uploadAnalysis A Mondrian schema XML file.
