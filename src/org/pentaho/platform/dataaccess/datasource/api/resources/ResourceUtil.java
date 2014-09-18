@@ -17,6 +17,12 @@
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
+import static javax.ws.rs.core.Response.Status.CONFLICT;
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,6 +34,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -136,5 +143,35 @@ public class ResourceUtil {
         IOUtils.copy( is, output );
       }
     };
+  }
+
+  static class ContentAlreadyExistsException extends WebApplicationException {
+    public ContentAlreadyExistsException( String error ) {
+      super( Response.status( CONFLICT ).entity( error ).type( "text/plain" ).build() );
+    }
+  }
+
+  static class UnspecifiedErrorException extends WebApplicationException {
+    public UnspecifiedErrorException( String error ) {
+      super( Response.status( INTERNAL_SERVER_ERROR ).entity( error ).type( "text/plain" ).build() );
+    }
+  }
+
+  static class PublishProhibitedException extends WebApplicationException {
+    public PublishProhibitedException( String error ) {
+      super( Response.status( UNAUTHORIZED ).entity( error ).type( "text/plain" ).build() );
+    }
+  }
+
+  static class AccessControlException extends WebApplicationException {
+    public AccessControlException( String error ) {
+      super( Response.status( FORBIDDEN ).entity( error ).type( "text/plain" ).build() );
+    }
+  }
+
+  static class ImportFailedException extends WebApplicationException {
+    public ImportFailedException( String error ) {
+      super( Response.status( PRECONDITION_FAILED ).entity( error ).type( "text/plain" ).build() );
+    }
   }
 }

@@ -175,7 +175,7 @@
             <boolProp name="TransactionController.parent">false</boolProp>
           </TransactionController>
           <hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PUT /plugin/data-access/api/datasource/metadata/import" enabled="true">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PUT /plugin/data-access/api/datasource/metadata/SampleData2" enabled="true">
               <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
                 <collectionProp name="Arguments.arguments">
@@ -206,7 +206,7 @@ true&#xd;
               <stringProp name="HTTPSampler.response_timeout"></stringProp>
               <stringProp name="HTTPSampler.protocol"></stringProp>
               <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-              <stringProp name="HTTPSampler.path">/pentaho/plugin/data-access/api/datasource/metadata/import</stringProp>
+              <stringProp name="HTTPSampler.path">/pentaho/plugin/data-access/api/datasource/metadata/SampleData2</stringProp>
               <stringProp name="HTTPSampler.method">PUT</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -228,9 +228,9 @@ true&#xd;
               <hashTree/>
               <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
                 <collectionProp name="Asserion.test_strings">
-                  <stringProp name="51">3</stringProp>
+                  <stringProp name="49587">201</stringProp>
                 </collectionProp>
-                <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
                 <boolProp name="Assertion.assume_success">false</boolProp>
                 <intProp name="Assertion.test_type">16</intProp>
               </ResponseAssertion>
