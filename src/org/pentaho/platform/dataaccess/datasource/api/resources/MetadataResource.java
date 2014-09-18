@@ -117,7 +117,7 @@ public class MetadataResource {
    *    POST pentaho/plugin/data-access/api/datasource/metadata/SampleData2/remove
    * <br /><b>POST data:</b>
    *  <pre function="syntax.xml">
-   *
+   *    This POST body does not contain data.
    *  </pre>
    * </p>
    *
@@ -127,7 +127,7 @@ public class MetadataResource {
    *
    * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
-   *
+   *      This response does not contain data.
    *    </pre>
    */
   @POST

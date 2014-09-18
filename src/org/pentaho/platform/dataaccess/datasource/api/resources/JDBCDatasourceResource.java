@@ -69,7 +69,7 @@ public class JDBCDatasourceResource {
    *
    * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
-   *
+   *      This response does not contain data.
    *    </pre>
    */
   @GET
@@ -275,7 +275,7 @@ public class JDBCDatasourceResource {
    *
    * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
-   *
+   *      This response does not contain data.
    *    </pre>
    */
   @POST
@@ -344,7 +344,7 @@ public class JDBCDatasourceResource {
    *
    * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
-   *
+   *      This response does not contain data.
    *    </pre>
    */
   @POST
