@@ -174,7 +174,7 @@ public class MetadataResource {
    * Import a Metadata datasource.
    *
    * <p><b>Example Request:</b><br />
-   *    PUT /pentaho/plugin/data-access/api/datasource/metadata/import
+   *    PUT pentaho/plugin/data-access/api/datasource/metadata/import
    * <br /><b>PUT data:</b>
    *  <pre function="syntax.xml">
    *      ------WebKitFormBoundaryNLNb246RTFIn1elY

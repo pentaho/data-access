@@ -75,7 +75,7 @@ public class AnalysisResource {
    * Download the analysis files for a given analysis id.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/metadata/SampleData2/download
+   *    GET pentaho/plugin/data-access/api/datasource/analysis/SampleData2/download
    * </p>
    *
    * @param analysisId String Id of the analysis data to retrieve.
@@ -174,7 +174,7 @@ public class AnalysisResource {
    * Get a list of analysis data source ids.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/metadata/ids
+   *    GET pentaho/plugin/data-access/api/datasource/analysis/ids
    * </p>
    *
    * @return A list of analysis IDs.
@@ -213,7 +213,7 @@ public class AnalysisResource {
    * Import Mondrian Schema.
    *
    * <p><b>Example Request:</b><br />
-   *    PUT pentaho/plugin/data-access/api/datasource/metadata/import
+   *    PUT pentaho/plugin/data-access/api/datasource/analysis/import
    * <br /><b>PUT data:</b>
    *  <pre function="syntax.xml">
    *      ------WebKitFormBoundaryNLNb246RTFIn1elY
