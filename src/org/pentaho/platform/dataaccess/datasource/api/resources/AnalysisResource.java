@@ -140,7 +140,7 @@ public class AnalysisResource {
    *    POST plugin/data-access/api/datasource/analysis/{analysisId}/remove
    * <br /><b>POST data:</b>
    *  <pre function="syntax.xml">
-   *
+   *    This POST body does not contain data.
    *  </pre>
    * </p>
    *
@@ -150,7 +150,7 @@ public class AnalysisResource {
    *
    * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
-   *
+   *      This response does not contain data.
    *    </pre>
    */
   @POST

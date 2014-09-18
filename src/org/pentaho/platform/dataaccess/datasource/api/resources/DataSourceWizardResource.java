@@ -99,7 +99,7 @@ public class DataSourceWizardResource {
    *    POST pentaho/plugin/data-access/api/datasource/dsw/jmeter-dsw-pentaho-test.xmi/remove
    * <br /><b>POST data:</b>
    *  <pre function="syntax.xml">
-   *
+   *    This POST body does not contain data.
    *  </pre>
    * </p>
    *
@@ -109,7 +109,7 @@ public class DataSourceWizardResource {
    *
    * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
-   *
+   *      This response does not contain data.
    *    </pre>
    */
   @POST
