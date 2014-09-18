@@ -171,7 +171,7 @@ public class MetadataResourceTest {
 
     //Test 1
     PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
-    doThrow( mockPentahoAccessControlException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
+    doThrow( mockPentahoAccessControlException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, false, localeFiles,
       localeFilesInfo );
     doReturn( mockResponse ).when( metadataResource ).buildServerErrorResponse( mockPentahoAccessControlException );
 
