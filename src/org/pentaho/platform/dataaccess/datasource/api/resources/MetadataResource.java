@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
+import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import java.io.InputStream;
@@ -170,11 +171,58 @@ public class MetadataResource {
     return createNewJaxbList( service.getMetadataDatasourceIds() );
   }
 
+  @PUT
+  @Path( "/import" )
+  @Consumes( MediaType.MULTIPART_FORM_DATA )
+  @Produces( "text/plain" )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Metadata datasource import succeeded. A response of:\n"
+      + "   *  2: Unspecified general error has occurred\n"
+      + "   *  3: Indicates successful import\n"
+      + "   *  9: Content already exists (use overwrite flag to force)\n"
+      + "   * 10: Import failed because publish is prohibited" ),
+    @ResponseCode( code = 500,
+      condition = "Metadata datasource import failed.  Error code or message included in response entity" )
+  } )
+  public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
+                                            @FormDataParam( "metadataFile" ) InputStream metadataFile,
+                                            @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+                                            @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+                                            @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+                                            @FormDataParam( "localeFiles" )
+                                            List<FormDataContentDisposition> localeFilesInfo ) {
+    try {
+      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;      
+      service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
+        localeFilesInfo );
+      return buildOkResponse( String.valueOf( SUCCESS ) );
+    } catch ( PentahoAccessControlException e ) {
+      return buildServerErrorResponse( e );
+    } catch ( PlatformImportException e ) {
+      if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
+        FileResource fr = createFileResource();
+        return buildServerError003Response( domainId, fr );
+      } else {
+        String msg = e.getMessage();
+        logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
+        Throwable throwable = e.getCause();
+        if ( throwable != null ) {
+          msg = throwable.getMessage();
+          logger.error( "Root cause: " + msg );
+        }
+        return buildOkResponse( String.valueOf( e.getErrorStatus() ) );
+      }
+    } catch ( Exception e ) {
+      logger.error( e );
+      return buildServerError001Response();
+    }
+  }
+  
   /**
    * Import a Metadata datasource.
    *
    * <p><b>Example Request:</b><br />
-   *    PUT pentaho/plugin/data-access/api/datasource/metadata/import
+   *    PUT /pentaho/plugin/data-access/api/datasource/metadata/SampleData
    * <br /><b>PUT data:</b>
    *  <pre function="syntax.xml">
    *      ------WebKitFormBoundaryNLNb246RTFIn1elY
@@ -206,39 +254,37 @@ public class MetadataResource {
    *
    * <p><b>Example Response:</b></p>
    *  <pre function="syntax.xml">
-   *   3
+   *   200
    *  </pre>
    */
   @PUT
-  @Path( "/import" )
+  @Path( "/{domainId : .+}" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
   @StatusCodes( {
-    @ResponseCode( code = 200, condition = "Metadata datasource import succeeded. A response of:\n"
-      + "   *  2: Unspecified general error has occurred\n"
-      + "   *  3: Indicates successful import\n"
-      + "   *  9: Content already exists (use overwrite flag to force)\n"
-      + "   * 10: Import failed because publish is prohibited" ),
-    @ResponseCode( code = 500,
-      condition = "Metadata datasource import failed.  Error code or message included in response entity" )
+    @ResponseCode( code = 409, condition = "Content already exists (use overwrite flag to force)" ),
+    @ResponseCode( code = 401, condition = "Import failed because publish is prohibited" ),
+    @ResponseCode( code = 500, condition = "Unspecified general error has occurred" ),
+    @ResponseCode( code = 412,
+        condition = "Metadata datasource import failed.  Error code or message included in response entity" ),
+    @ResponseCode( code = 403, condition = "Access Control Forbidden" ),
+    @ResponseCode( code = 201, condition = "Indicates successful import" )
   } )
-  public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
-                                            @FormDataParam( "metadataFile" ) InputStream metadataFile,
-                                            @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
-                                            @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-                                            @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam( "localeFiles" )
-                                            List<FormDataContentDisposition> localeFilesInfo ) {
+  public Response importMetadata( @PathParam( "domainId" ) String domainId,
+      @FormDataParam( "metadataFile" ) InputStream metadataFile,
+      @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+      @FormDataParam( OVERWRITE_IN_REPOS ) Boolean overwrite,
+      @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) {
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
-        localeFilesInfo );
-      return buildOkResponse( String.valueOf( SUCCESS ) );
+          localeFilesInfo );
+      return Response.status( CREATED ).build();
     } catch ( PentahoAccessControlException e ) {
-      return buildServerErrorResponse( e );
+      throw new ResourceUtil.AccessControlException( e.getMessage() );
     } catch ( PlatformImportException e ) {
       if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
-        FileResource fr = createFileResource();
-        return buildServerError003Response( domainId, fr );
+        throw new ResourceUtil.PublishProhibitedException( e.getMessage() );
       } else {
         String msg = e.getMessage();
         logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
@@ -247,13 +293,18 @@ public class MetadataResource {
           msg = throwable.getMessage();
           logger.error( "Root cause: " + msg );
         }
-        return buildOkResponse( String.valueOf( e.getErrorStatus() ) );
+        int status = e.getErrorStatus();
+        if ( status == 8 ) {
+          throw new ResourceUtil.ContentAlreadyExistsException( msg );
+        } else {
+          throw new ResourceUtil.ImportFailedException( msg );
+        }
       }
     } catch ( Exception e ) {
       logger.error( e );
-      return buildServerError001Response();
+      throw new ResourceUtil.UnspecifiedErrorException( e.getMessage() );
     }
-  }
+  }  
 
   protected Response buildOkResponse( String statusCode ) {
     return Response.ok( statusCode ).type( MediaType.TEXT_PLAIN ).build();
