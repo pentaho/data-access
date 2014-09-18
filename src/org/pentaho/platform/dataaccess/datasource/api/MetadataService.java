@@ -65,7 +65,7 @@ public class MetadataService extends DatasourceService {
   }
 
   public void importMetadataDatasource( String domainId, InputStream metadataFile,
-                                        FormDataContentDisposition metadataFileInfo, String overwrite,
+                                        FormDataContentDisposition metadataFileInfo, boolean overwrite,
                                         List<FormDataBodyPart> localeFiles,
                                         List<FormDataContentDisposition> localeFilesInfo )
     throws PentahoAccessControlException, PlatformImportException,
@@ -83,8 +83,7 @@ public class MetadataService extends DatasourceService {
       throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
     }
 
-    boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
-    RepositoryFileImportBundle.Builder bundleBuilder = createNewRepositoryFileImportBundleBuilder( metadataFile, overWriteInRepository, domainId );
+    RepositoryFileImportBundle.Builder bundleBuilder = createNewRepositoryFileImportBundleBuilder( metadataFile, overwrite, domainId );
 
 
     if ( localeFiles != null ) {
