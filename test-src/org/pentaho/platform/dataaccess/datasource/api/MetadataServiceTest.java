@@ -17,8 +17,26 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,17 +49,8 @@ import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 
-import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 public class MetadataServiceTest {
 
@@ -114,7 +123,7 @@ public class MetadataServiceTest {
     String domainId = "domainId";
     InputStream metadataFile = mock( InputStream.class );
     FormDataContentDisposition metadataFileInfo = mock( FormDataContentDisposition.class );
-    String overwrite = "overwrite";
+    boolean overwrite = true;
     FormDataBodyPart mockFormDataBodyPart = mock( FormDataBodyPart.class );
     List<FormDataBodyPart> localeFiles = new ArrayList<FormDataBodyPart>();
     localeFiles.add( mockFormDataBodyPart );
@@ -157,7 +166,7 @@ public class MetadataServiceTest {
     String domainId = "domainId";
     InputStream metadataFile = mock( InputStream.class );
     FormDataContentDisposition metadataFileInfo = mock( FormDataContentDisposition.class );
-    String overwrite = "overwrite";
+    boolean overwrite = true;
     FormDataBodyPart mockFormDataBodyPart = mock( FormDataBodyPart.class );
     List<FormDataBodyPart> localeFiles = new ArrayList<FormDataBodyPart>();
     localeFiles.add( mockFormDataBodyPart );

@@ -17,31 +17,32 @@
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.pentaho.database.model.DatabaseConnection;
-import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.metadata.repository.IMetadataDomainRepository;
-import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.dataaccess.datasource.api.MetadataService;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
-import org.pentaho.platform.plugin.services.importer.PlatformImportException;
-import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
-import org.pentaho.platform.web.http.api.resources.FileResource;
-import org.pentaho.platform.web.http.api.resources.JaxbList;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import javax.ws.rs.core.Response;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.dataaccess.datasource.api.MetadataService;
+import org.pentaho.platform.plugin.services.importer.PlatformImportException;
+import org.pentaho.platform.web.http.api.resources.FileResource;
+import org.pentaho.platform.web.http.api.resources.JaxbList;
+
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 public class MetadataResourceTest {
 
@@ -144,7 +145,7 @@ public class MetadataResourceTest {
     List<FormDataContentDisposition> localeFilesInfo = mock( List.class );
 
 
-    doNothing().when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
+    doNothing().when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
       localeFilesInfo );
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "3" );
 
@@ -170,7 +171,7 @@ public class MetadataResourceTest {
 
     //Test 1
     PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
-    doThrow( mockPentahoAccessControlException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
+    doThrow( mockPentahoAccessControlException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
       localeFilesInfo );
     doReturn( mockResponse ).when( metadataResource ).buildServerErrorResponse( mockPentahoAccessControlException );
 
@@ -180,7 +181,7 @@ public class MetadataResourceTest {
 
     //Test 2
     PlatformImportException mockPlatformImportException = mock( PlatformImportException.class );
-    doThrow( mockPlatformImportException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
+    doThrow( mockPlatformImportException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
       localeFilesInfo );
     doReturn( 10 ).when( mockPlatformImportException ).getErrorStatus();
     doReturn( mockFileResource ).when( metadataResource ).createFileResource();
@@ -192,7 +193,7 @@ public class MetadataResourceTest {
 
     //Test 3
     RuntimeException mockException = mock( RuntimeException.class );
-    doThrow( mockPlatformImportException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
+    doThrow( mockPlatformImportException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
       localeFilesInfo );
     doReturn( 1 ).when( mockPlatformImportException ).getErrorStatus();
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "1" );
@@ -203,7 +204,7 @@ public class MetadataResourceTest {
     assertEquals( mockResponse, response );
 
     //Test
-    doThrow( mockException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
+    doThrow( mockException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
       localeFilesInfo );
     doReturn( mockResponse ).when( metadataResource ).buildServerError001Response();
 
