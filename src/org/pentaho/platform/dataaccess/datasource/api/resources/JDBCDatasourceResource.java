@@ -305,7 +305,7 @@ public class JDBCDatasourceResource {
    * Update an existing JDBC datasource connection.
    *
    * <p><b>Example Request:</b><br />
-   *    POST /pentaho/plugin/data-access/api/datasource/jdbc/update
+   *    POST pentaho/plugin/data-access/api/datasource/jdbc/update
    * </p>
    * <br /><b>POST data:</b>
    *  <pre function="syntax.xml">

@@ -137,7 +137,7 @@ public class AnalysisResource {
    * Remove the analysis data for a given analysis ID.
    *
    * <p><b>Example Request:</b><br />
-   *    POST plugin/data-access/api/datasource/analysis/{analysisId}/remove
+   *    POST pentaho/plugin/data-access/api/datasource/analysis/{analysisId}/remove
    * <br /><b>POST data:</b>
    *  <pre function="syntax.xml">
    *    This POST body does not contain data.
