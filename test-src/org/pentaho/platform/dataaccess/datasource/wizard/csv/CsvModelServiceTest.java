@@ -27,7 +27,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorTest;
-import org.pentaho.test.platform.engine.core.BaseTest;
+import org.pentaho.platform.engine.core.BaseTest;
 
 
 public class CsvModelServiceTest extends BaseTest {

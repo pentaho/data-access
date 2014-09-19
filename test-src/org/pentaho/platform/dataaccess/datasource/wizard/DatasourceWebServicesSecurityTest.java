@@ -53,9 +53,9 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper
 import org.pentaho.platform.plugin.services.cache.CacheManager;
 import org.pentaho.platform.repository2.unified.DefaultUnifiedRepository;
 import org.pentaho.platform.util.Base64PasswordService;
-import org.pentaho.test.platform.MethodTrackingData;
-import org.pentaho.test.platform.engine.core.MicroPlatform;
-import org.pentaho.test.platform.engine.security.MockSecurityHelper;
+import org.pentaho.platform.MethodTrackingData;
+import org.pentaho.platform.engine.core.MicroPlatform;
+import org.pentaho.platform.engine.security.MockSecurityHelper;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
