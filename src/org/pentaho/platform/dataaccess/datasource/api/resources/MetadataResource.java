@@ -135,7 +135,7 @@ public class MetadataResource {
    * Remove the metadata for a given metadata ID.
    *
    * <p><b>Example Request:</b><br />
-   *    DELETE pentaho/plugin/data-access/api/datasource/metadata/SampleData2/remove
+   *    DELETE pentaho/plugin/data-access/api/datasource/metadata/SampleData2
    * <br /><b>DELETE data:</b>
    *  <pre function="syntax.xml">
    *    This DELETE body does not contain data.
