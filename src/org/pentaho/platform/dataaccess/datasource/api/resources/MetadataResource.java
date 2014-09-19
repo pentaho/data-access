@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -115,10 +116,10 @@ public class MetadataResource {
    * Remove the metadata for a given metadata ID.
    *
    * <p><b>Example Request:</b><br />
-   *    POST pentaho/plugin/data-access/api/datasource/metadata/SampleData2/remove
-   * <br /><b>POST data:</b>
+   *    DELETE pentaho/plugin/data-access/api/datasource/metadata/SampleData2/remove
+   * <br /><b>DELETE data:</b>
    *  <pre function="syntax.xml">
-   *    This POST body does not contain data.
+   *    This DELETE body does not contain data.
    *  </pre>
    * </p>
    *
@@ -131,6 +132,22 @@ public class MetadataResource {
    *      This response does not contain data.
    *    </pre>
    */
+  @DELETE
+  @Path( "/{metadataId : .+}/delete" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
+    @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." )
+  } )
+  public Response doDeleteMetadata( @PathParam( "metadataId" ) String metadataId ) {
+    try {
+      service.removeMetadata( metadataId );
+      return buildOkResponse();
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    }
+  }
+  
   @POST
   @Path( "/{metadataId : .+}/remove" )
   @Produces( WILDCARD )
