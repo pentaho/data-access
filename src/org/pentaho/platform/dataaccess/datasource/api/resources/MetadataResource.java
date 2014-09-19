@@ -81,10 +81,10 @@ public class MetadataResource {
    * Export a metadata datasource.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/metadata/SampleData2/download
+   *    GET pentaho/plugin/data-access/api/datasource/metadata/SampleData2
    * </p>
    *
-   * @param metadataId The id of the Metadata datasource to export
+   * @param domainId The id of the Metadata datasource to export
    *
    * @return A Response object containing the metadata xmi file.
    *
@@ -94,22 +94,41 @@ public class MetadataResource {
    *    </pre>
    */
   @GET
-  @Path( "/{metadataId : .+}/download" )
+  @Path( "/{domainId : .+}" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Metadata datasource export succeeded." ),
     @ResponseCode( code = 401, condition = "User is not authorized to export Metadata datasource." ),
     @ResponseCode( code = 500, condition = "Failure to export Metadata datasource." )
   } )
-  public Response doGetMetadataFilesAsDownload( @PathParam( "metadataId" ) String metadataId ) {
+  public Response downloadMetadata( @PathParam( "domainId" ) String domainId ) {
     if ( !canAdminister() ) {
       return buildUnauthorizedResponse();
     }
     if ( !isInstanceOfIPentahoMetadataDomainRepositoryExporter( metadataDomainRepository ) ) {
       return buildServerErrorResponse();
     }
-    Map<String, InputStream> fileData = getDomainFilesData( metadataId );
-    return createAttachment( fileData, metadataId );
+    Map<String, InputStream> fileData = getDomainFilesData( domainId );
+    return createAttachment( fileData, domainId );
+  }
+  
+  @GET
+  @Path( "/{domainId : .+}/download" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Metadata datasource export succeeded." ),
+    @ResponseCode( code = 401, condition = "User is not authorized to export Metadata datasource." ),
+    @ResponseCode( code = 500, condition = "Failure to export Metadata datasource." )
+  } )
+  public Response doGetMetadataFilesAsDownload( @PathParam( "domainId" ) String domainId ) {
+    if ( !canAdminister() ) {
+      return buildUnauthorizedResponse();
+    }
+    if ( !isInstanceOfIPentahoMetadataDomainRepositoryExporter( metadataDomainRepository ) ) {
+      return buildServerErrorResponse();
+    }
+    Map<String, InputStream> fileData = getDomainFilesData( domainId );
+    return createAttachment( fileData, domainId );
   }
 
   /**
@@ -123,7 +142,7 @@ public class MetadataResource {
    *  </pre>
    * </p>
    *
-   * @param metadataId The id of the Metadata datasource to remove
+   * @param domainId The id of the Metadata datasource to remove
    *
    * @return A 200 response code representing the successful removal of the Metadata datasource.
    *
@@ -133,15 +152,15 @@ public class MetadataResource {
    *    </pre>
    */
   @DELETE
-  @Path( "/{metadataId : .+}/delete" )
+  @Path( "/{domainId : .+}" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
     @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." )
   } )
-  public Response doDeleteMetadata( @PathParam( "metadataId" ) String metadataId ) {
+  public Response doDeleteMetadata( @PathParam( "domainId" ) String domainId ) {
     try {
-      service.removeMetadata( metadataId );
+      service.removeMetadata( domainId );
       return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
@@ -149,15 +168,15 @@ public class MetadataResource {
   }
   
   @POST
-  @Path( "/{metadataId : .+}/remove" )
+  @Path( "/{domainId : .+}/remove" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
     @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." )
   } )
-  public Response doRemoveMetadata( @PathParam( "metadataId" ) String metadataId ) {
+  public Response doRemoveMetadata( @PathParam( "domainId" ) String domainId ) {
     try {
-      service.removeMetadata( metadataId );
+      service.removeMetadata( domainId );
       return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
@@ -366,8 +385,8 @@ public class MetadataResource {
     return new JaxbList<String>( DSWDatasources );
   }
 
-  protected Map<String, InputStream> getDomainFilesData( String metadataId ) {
-    return ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( metadataId );
+  protected Map<String, InputStream> getDomainFilesData( String domainId ) {
+    return ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
   }
 
   protected boolean isInstanceOfIPentahoMetadataDomainRepositoryExporter( IMetadataDomainRepository obj ) {
