@@ -374,7 +374,7 @@ public class DatasourceResource extends DataSourceWizardResource {
         importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
     ResponseBuilder responseBuilder;
     responseBuilder = Response.ok();
-    responseBuilder.entity( String.valueOf( response.getEntity() ) );
+    responseBuilder.entity( String.valueOf( response.getStatus() ) );
     responseBuilder.status( 200 );
     return responseBuilder.build();
   }

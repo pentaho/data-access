@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.After;
@@ -135,7 +136,7 @@ public class MetadataResourceTest {
 
   @Test
   public void testImportMetadataDatasource() throws Exception {
-    Response mockResponse = mock( Response.class );
+    Response mockResponse = Response.ok().status( new Integer( 3 ) ).type( MediaType.TEXT_PLAIN ).build();
 
     String domainId = "domainId";
     InputStream metadataFile = mock( InputStream.class );
@@ -148,13 +149,13 @@ public class MetadataResourceTest {
     doNothing().when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
       localeFilesInfo );
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "3" );
-
+    
     Response response = metadataResource.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
       localeFilesInfo );
 
     verify( metadataResource, times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
       localeFilesInfo );
-    assertEquals( mockResponse, response );
+    assertEquals( mockResponse.getStatus(), response.getStatus() );
   }
 
   @Test
