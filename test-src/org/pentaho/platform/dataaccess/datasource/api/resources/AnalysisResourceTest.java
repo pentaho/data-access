@@ -17,8 +17,21 @@
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,15 +40,7 @@ import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
-import javax.ws.rs.core.Response;
-
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import com.sun.jersey.core.header.FormDataContentDisposition;
 
 public class AnalysisResourceTest {
 
@@ -137,7 +142,7 @@ public class AnalysisResourceTest {
 
     doNothing().when( analysisResource.service ).putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName,
       origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters );
+      true, true, parameters );
     doReturn( mockResponse ).when( analysisResource ).buildOkResponse( "3" );
 
     Response response = analysisResource.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName,
@@ -166,7 +171,7 @@ public class AnalysisResourceTest {
     //Test 1
     PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
     doThrow( mockPentahoAccessControlException ).when( analysisResource.service ).putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters );
+      false, false, parameters );
     doReturn( mockResponse ).when( analysisResource ).buildOkResponse( "5" );
 
     Response response = analysisResource.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
@@ -176,7 +181,7 @@ public class AnalysisResourceTest {
     //Test 2
     PlatformImportException mockPlatformImportException = mock( PlatformImportException.class );
     doThrow( mockPlatformImportException ).when( analysisResource.service ).putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters );
+        true, true, parameters );
     doReturn( mockResponse ).when( analysisResource ).buildOkResponse( "0" );
 
     response = analysisResource.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
@@ -186,7 +191,7 @@ public class AnalysisResourceTest {
     //Test 3
     RuntimeException mockException = mock( RuntimeException.class );
     doThrow( mockException ).when( analysisResource.service ).putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters );
+        true, true, parameters );
     doReturn( mockResponse ).when( analysisResource ).buildOkResponse( "2" );
 
     response = analysisResource.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,

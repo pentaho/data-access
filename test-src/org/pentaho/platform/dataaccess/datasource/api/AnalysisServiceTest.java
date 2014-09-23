@@ -17,7 +17,21 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,18 +40,9 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
-import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import com.sun.jersey.core.header.FormDataContentDisposition;
 
 public class AnalysisServiceTest {
   
@@ -74,7 +79,7 @@ public class AnalysisServiceTest {
   public void testDoGetAnalysisFilesAsDownloadError() throws Exception {
     doReturn( false ).when( analysisService ).canAdministerCheck();
     try {
-      Map<String, InputStream> response = analysisService.doGetAnalysisFilesAsDownload( "analysisId" );
+      analysisService.doGetAnalysisFilesAsDownload( "analysisId" );
       fail();
     } catch ( PentahoAccessControlException e ) {
       //expected
@@ -136,15 +141,14 @@ public class AnalysisServiceTest {
     String catalogName = "catalogName";
     String origCatalogName = "origCatalogName";
     String dataSourceName = "dataSourceName";
-    String overwrite = "overwrite";
-    String xmlaEnabledFlag = "xmlaEnabledFlag";
+    boolean xmlaEnabledFlag = true;
     String parameters = "parameters";
 
     doNothing().when( analysisService ).accessValidation();
-    doNothing().when( analysisService ).processMondrianImport( dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters, null);
+    doNothing().when( analysisService ).processMondrianImport( dataInputStream, catalogName, origCatalogName, true, xmlaEnabledFlag, parameters, null);
 
-    analysisService.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, overwrite, xmlaEnabledFlag, parameters);
+    analysisService.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, true, xmlaEnabledFlag, parameters);
 
-    verify( analysisService, times( 1 ) ).putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, overwrite, xmlaEnabledFlag, parameters);
+    verify( analysisService, times( 1 ) ).putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, true, xmlaEnabledFlag, parameters);
   }
 }
