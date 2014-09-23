@@ -231,7 +231,7 @@ public class MetadataResource {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;      
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
         localeFilesInfo );
-      return buildOkResponse( String.valueOf( SUCCESS ) );
+      return Response.ok().status(new Integer(SUCCESS)).type(MediaType.TEXT_PLAIN).build();
     } catch ( PentahoAccessControlException e ) {
       return buildServerErrorResponse( e );
     } catch ( PlatformImportException e ) {
