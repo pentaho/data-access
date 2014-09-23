@@ -136,17 +136,17 @@ public class AnalysisResource {
   }
   
   @GET
-  @Path( "/{analysisId : .+}/download" )
+  @Path( "/{catalog : .+}/download" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully downloaded the analysis file" ),
     @ResponseCode( code = 401, condition = "Unauthorized" ),
     @ResponseCode( code = 500, condition = "Unabled to download analysis file" )
   } )
-  public Response doGetAnalysisFilesAsDownload( @PathParam( "analysisId" ) String analysisId ) {
+  public Response doGetAnalysisFilesAsDownload( @PathParam( "catalog" ) String catalog ) {
     try {
-      Map<String, InputStream> fileData = service.doGetAnalysisFilesAsDownload( analysisId );
-      return createAttachment( fileData, analysisId );
+      Map<String, InputStream> fileData = service.doGetAnalysisFilesAsDownload( catalog );
+      return createAttachment( fileData, catalog );
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
     }
@@ -156,7 +156,7 @@ public class AnalysisResource {
    * Remove the analysis data for a given analysis ID.
    *
    * <p><b>Example Request:</b><br />
-   *    POST pentaho/plugin/data-access/api/datasource/analysis/{analysisId}
+   *    POST pentaho/plugin/data-access/api/datasource/analysis/{catalog}
    * <br /><b>POST data:</b>
    *  <pre function="syntax.xml">
    *    This POST body does not contain data.
@@ -190,16 +190,16 @@ public class AnalysisResource {
   }
   
   @POST
-  @Path( "/{analysisId : .+}/remove" )
+  @Path( "/{catalog : .+}/remove" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully removed the analysis data" ),
     @ResponseCode( code = 401, condition = "User is not authorized to delete the analysis datasource" ),
     @ResponseCode( code = 500, condition = "Unable to remove the analysis data." )
   } )
-  public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
+  public Response doRemoveAnalysis( @PathParam( "catalog" ) String catalog ) {
     try {
-      service.removeAnalysis( analysisId );
+      service.removeAnalysis( catalog );
       return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
@@ -213,7 +213,7 @@ public class AnalysisResource {
    *    GET pentaho/plugin/data-access/api/datasource/analysis/ids
    * </p>
    *
-   * @return A list of analysis IDs.
+   * @return A list of catalog IDs.
    *
    * <p><b>Example Response:</b></p>
    * <pre function="syntax.xml">
@@ -306,7 +306,7 @@ public class AnalysisResource {
    *
    *      Catalog Name
    *      ------WebKitFormBoundaryNLNb246RTFIn1elY
-   *      Content-Disposition: form-data; name=&quot;xmlaEnableFlag&quot;
+   *      Content-Disposition: form-data; name=&quot;xmlaEnabledFlag&quot;
    *
    *      true
    *      ------WebKitFormBoundaryNLNb246RTFIn1elY--
