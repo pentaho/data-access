@@ -496,7 +496,7 @@ true&#xd;
             <boolProp name="TransactionController.parent">false</boolProp>
           </TransactionController>
           <hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PUT /plugin/data-access/api/datasource/analysis/{domainId}" enabled="true">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PUT /plugin/data-access/api/datasource/analysis/{catalog}" enabled="true">
               <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
                 <collectionProp name="Arguments.arguments">
@@ -552,7 +552,7 @@ Content-Disposition: form-data; name=&quot;schemaFileInfo&quot;&#xd;
 &#xd;
 test.xml&#xd;
 ------WebKitFormBoundaryNLNb246RTFIn1elY&#xd;
-Content-Disposition: form-data; name=&quot;domainId&quot;&#xd;
+Content-Disposition: form-data; name=&quot;catalogName&quot;&#xd;
 &#xd;
 Catalog Name&#xd;
 ------WebKitFormBoundaryNLNb246RTFIn1elY&#xd;
@@ -643,7 +643,7 @@ true&#xd;
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /plugin/data-access/api/datasource/analysis/{domainId}" enabled="true">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /plugin/data-access/api/datasource/analysis/{catalog}" enabled="true">
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
               </elementProp>
@@ -675,7 +675,7 @@ true&#xd;
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="DELETE /plugin/data-access/api/datasource/analysis/{domainId}" enabled="true">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="DELETE /plugin/data-access/api/datasource/analysis/{catalog}" enabled="true">
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
               </elementProp>
