@@ -47,10 +47,10 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepositoryInfo;
 import org.pentaho.platform.repository2.unified.ServerRepositoryPaths;
 import org.pentaho.platform.repository2.unified.jcr.SimpleJcrTestUtils;
-import org.pentaho.platform.MethodTrackingData;
-import org.pentaho.platform.engine.core.MicroPlatform;
-import org.pentaho.platform.engine.security.MockSecurityHelper;
-import org.pentaho.platform.repository2.unified.MockUnifiedRepository;
+import org.pentaho.test.platform.MethodTrackingData;
+import org.pentaho.test.platform.engine.core.MicroPlatform;
+import org.pentaho.test.platform.engine.security.MockSecurityHelper;
+import org.pentaho.test.platform.repository2.unified.MockUnifiedRepository;
 import org.springframework.extensions.jcr.JcrTemplate;
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
