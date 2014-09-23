@@ -496,7 +496,7 @@ true&#xd;
             <boolProp name="TransactionController.parent">false</boolProp>
           </TransactionController>
           <hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PUT /plugin/data-access/api/datasource/analysis/import" enabled="true">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PUT /plugin/data-access/api/datasource/analysis/{domainId}" enabled="true">
               <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
                 <collectionProp name="Arguments.arguments">
@@ -552,11 +552,15 @@ Content-Disposition: form-data; name=&quot;schemaFileInfo&quot;&#xd;
 &#xd;
 test.xml&#xd;
 ------WebKitFormBoundaryNLNb246RTFIn1elY&#xd;
-Content-Disposition: form-data; name=&quot;catalogName&quot;&#xd;
+Content-Disposition: form-data; name=&quot;domainId&quot;&#xd;
 &#xd;
 Catalog Name&#xd;
 ------WebKitFormBoundaryNLNb246RTFIn1elY&#xd;
-Content-Disposition: form-data; name=&quot;xmlaEnableFlag&quot;&#xd;
+Content-Disposition: form-data; name=&quot;xmlaEnabledFlag&quot;&#xd;
+&#xd;
+true&#xd;
+------WebKitFormBoundaryNLNb246RTFIn1elY&#xd;
+Content-Disposition: form-data; name=&quot;overwrite&quot;&#xd;
 &#xd;
 true&#xd;
 ------WebKitFormBoundaryNLNb246RTFIn1elY--</stringProp>
@@ -570,7 +574,7 @@ true&#xd;
               <stringProp name="HTTPSampler.response_timeout"></stringProp>
               <stringProp name="HTTPSampler.protocol"></stringProp>
               <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-              <stringProp name="HTTPSampler.path">/pentaho/plugin/data-access/api/datasource/analysis/import</stringProp>
+              <stringProp name="HTTPSampler.path">/pentaho/plugin/data-access/api/datasource/analysis/SampleData2</stringProp>
               <stringProp name="HTTPSampler.method">PUT</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -592,11 +596,11 @@ true&#xd;
               <hashTree/>
               <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
                 <collectionProp name="Asserion.test_strings">
-                  <stringProp name="51">3</stringProp>
+                  <stringProp name="49587">201</stringProp>
                 </collectionProp>
-                <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
                 <boolProp name="Assertion.assume_success">false</boolProp>
-                <intProp name="Assertion.test_type">8</intProp>
+                <intProp name="Assertion.test_type">16</intProp>
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
@@ -639,7 +643,7 @@ true&#xd;
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /plugin/data-access/api/datasource/analysis/{analysisId}/download" enabled="true">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /plugin/data-access/api/datasource/analysis/{domainId}" enabled="true">
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
               </elementProp>
@@ -649,7 +653,7 @@ true&#xd;
               <stringProp name="HTTPSampler.response_timeout"></stringProp>
               <stringProp name="HTTPSampler.protocol"></stringProp>
               <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-              <stringProp name="HTTPSampler.path">/pentaho/plugin/data-access/api/datasource/analysis/SampleData2/download</stringProp>
+              <stringProp name="HTTPSampler.path">/pentaho/plugin/data-access/api/datasource/analysis/SampleData2</stringProp>
               <stringProp name="HTTPSampler.method">GET</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -671,7 +675,7 @@ true&#xd;
               </ResponseAssertion>
               <hashTree/>
             </hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /plugin/data-access/api/datasource/analysis/{analysisId}/remove" enabled="true">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="DELETE /plugin/data-access/api/datasource/analysis/{domainId}" enabled="true">
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
                 <collectionProp name="Arguments.arguments"/>
               </elementProp>
@@ -681,8 +685,8 @@ true&#xd;
               <stringProp name="HTTPSampler.response_timeout"></stringProp>
               <stringProp name="HTTPSampler.protocol"></stringProp>
               <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-              <stringProp name="HTTPSampler.path">/pentaho/plugin/data-access/api/datasource/analysis/SampleData2/remove</stringProp>
-              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <stringProp name="HTTPSampler.path">/pentaho/plugin/data-access/api/datasource/analysis/SampleData2</stringProp>
+              <stringProp name="HTTPSampler.method">DELETE</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
               <boolProp name="HTTPSampler.use_keepalive">true</boolProp>

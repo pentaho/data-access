@@ -281,8 +281,10 @@ public class DatasourceResource extends DataSourceWizardResource {
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
       AnalysisService service = new AnalysisService();
+      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;      
+      boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;
       service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-          overwrite, xmlaEnabledFlag, parameters );
+          overWriteInRepository, xmlaEnabled, parameters );
       statusCode = SUCCESS;
     } catch ( PentahoAccessControlException pac ) {
       logger.error( pac.getMessage() );
