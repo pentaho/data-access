@@ -41,7 +41,7 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
-import org.pentaho.platform.engine.core.BaseTest;
+import org.pentaho.test.platform.engine.core.BaseTest;
 
 @SuppressWarnings( { "all" })
 public class CsvTransformGeneratorTest extends BaseTest {

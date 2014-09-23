@@ -33,7 +33,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
-import org.pentaho.platform.engine.core.BaseTest;
+import org.pentaho.test.platform.engine.core.BaseTest;
 
 public class JoinMetadataTest extends BaseTest {
 
