@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
+import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import java.io.InputStream;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -55,6 +57,7 @@ public class AnalysisResource {
 
   private static final String UPLOAD_ANALYSIS = "uploadAnalysis";
   private static final String CATALOG_NAME = "catalogName";
+  private static final String DOMAIN_ID = "domainId";
   private static final String ORIG_CATALOG_NAME = "origCatalogName";
   private static final String DATASOURCE_NAME = "datasourceName";
   private static final String OVERWRITE_IN_REPOS = "overwrite";
@@ -75,10 +78,10 @@ public class AnalysisResource {
    * Download the analysis files for a given analysis id.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/analysis/SampleData2/download
+   *    GET pentaho/plugin/data-access/api/datasource/analysis/SampleSchema
    * </p>
    *
-   * @param analysisId String Id of the analysis data to retrieve.
+   * @param domainId String Id of the analysis data to retrieve.
    *
    * @return Response containing the analysis file data XML.
    *
@@ -117,6 +120,23 @@ public class AnalysisResource {
    *    </pre>
    */
   @GET
+  @Path( "/{domainId : .+}" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Successfully downloaded the analysis file" ),
+    @ResponseCode( code = 401, condition = "Unauthorized" ),
+    @ResponseCode( code = 500, condition = "Unabled to download analysis file" )
+  } )
+  public Response downloadAnalysisSchema( @PathParam( "domainId" ) String domainId ) {
+    try {
+      Map<String, InputStream> fileData = service.doGetAnalysisFilesAsDownload( domainId );
+      return createAttachment( fileData, domainId );
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    }
+  }
+  
+  @GET
   @Path( "/{analysisId : .+}/download" )
   @Produces( WILDCARD )
   @StatusCodes( {
@@ -137,14 +157,14 @@ public class AnalysisResource {
    * Remove the analysis data for a given analysis ID.
    *
    * <p><b>Example Request:</b><br />
-   *    POST plugin/data-access/api/datasource/analysis/{analysisId}/remove
+   *    POST pentaho/plugin/data-access/api/datasource/analysis/{analysisId}
    * <br /><b>POST data:</b>
    *  <pre function="syntax.xml">
    *    This POST body does not contain data.
    *  </pre>
    * </p>
    *
-   * @param analysisId ID of the analysis data to remove.
+   * @param domainId ID of the analysis data to remove.
    *
    * @return A 200 response code representing the successful removal of the analysis datasource.
    *
@@ -153,6 +173,23 @@ public class AnalysisResource {
    *      This response does not contain data.
    *    </pre>
    */
+  @DELETE
+  @Path( "/{domainId : .+}" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+    @ResponseCode( code = 200, condition = "Successfully removed the analysis data" ),
+    @ResponseCode( code = 401, condition = "User is not authorized to delete the analysis datasource" ),
+    @ResponseCode( code = 500, condition = "Unable to remove the analysis data." )
+  } )
+  public Response doDeleteAnalysisSchema( @PathParam( "domainId" ) String domainId ) {
+    try {
+      service.removeAnalysis( domainId );
+      return buildOkResponse();
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    }
+  }
+  
   @POST
   @Path( "/{analysisId : .+}/remove" )
   @Produces( WILDCARD )
@@ -210,10 +247,10 @@ public class AnalysisResource {
   }
 
   /**
-   * Import Mondrian Schema.
+   * Import Analysis Schema.
    *
    * <p><b>Example Request:</b><br />
-   *    PUT pentaho/plugin/data-access/api/datasource/analysis/import
+   *    PUT pentaho/plugin/data-access/api/datasource/analysis/SampleSchema
    * <br /><b>PUT data:</b>
    *  <pre function="syntax.xml">
    *      ------WebKitFormBoundaryNLNb246RTFIn1elY
@@ -277,9 +314,9 @@ public class AnalysisResource {
    *  </pre>
    * </p>
    *
+   * @param domainId (optional) The catalog name.
    * @param uploadAnalysis A Mondrian schema XML file.
    * @param schemaFileInfo User selected name for the file.
-   * @param catalogName (optional) The catalog name.
    * @param origCatalogName (optional) The original catalog name.
    * @param datasourceName (optional) The datasource  name.
    * @param overwrite Flag for overwriting existing version of the file.
@@ -290,9 +327,67 @@ public class AnalysisResource {
    *
    * <p><b>Example Response:</b></p>
    * <pre function="syntax.xml">
-   *   3
+   *   200
    * </pre>
    */
+  @PUT
+  @Path( "/{domainId : .+}" )
+  @Consumes( MediaType.MULTIPART_FORM_DATA )
+  @Produces( "text/plain" )
+  @StatusCodes( {
+    @ResponseCode( code = 409, condition = "Content already exists (use overwrite flag to force)" ),
+    @ResponseCode( code = 401, condition = "Import failed because publish is prohibited" ),
+    @ResponseCode( code = 500, condition = "Unspecified general error has occurred" ),
+    @ResponseCode( code = 412,
+        condition = "Analysis datasource import failed.  Error code or message included in response entity" ),
+    @ResponseCode( code = 403, condition = "Access Control Forbidden" ),
+    @ResponseCode( code = 201, condition = "Indicates successful import" ) } )
+  public Response importAnalysisSchema(
+      @PathParam( DOMAIN_ID ) String domainId, // Optional
+      @FormDataParam( UPLOAD_ANALYSIS ) InputStream uploadAnalysis,
+      @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
+      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
+      @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
+      @FormDataParam( OVERWRITE_IN_REPOS ) Boolean overwrite,
+      @FormDataParam( XMLA_ENABLED_FLAG ) Boolean xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
+    throws PentahoAccessControlException {
+    try {
+      service.putMondrianSchema( uploadAnalysis, schemaFileInfo, domainId, origCatalogName, datasourceName, overwrite,
+          xmlaEnabledFlag, parameters );
+      Response response = Response.status( CREATED ).build();
+      logger.debug( "putMondrianSchema Response " + response );
+      return response;
+    } catch ( PentahoAccessControlException pac ) {
+      int statusCode = PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL;
+      logger.error( "Error putMondrianSchema " + pac.getMessage() + " status = " + statusCode );
+      throw new ResourceUtil.AccessControlException( pac.getMessage() );
+    } catch ( PlatformImportException pe ) {
+      
+      
+      if ( pe.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
+        throw new ResourceUtil.PublishProhibitedException( pe.getMessage() );
+      } else {
+        String msg = pe.getMessage();
+        logger.error( "Error import analysis: " + msg + " status = " + pe.getErrorStatus() );
+        Throwable throwable = pe.getCause();
+        if ( throwable != null ) {
+          msg = throwable.getMessage();
+          logger.error( "Root cause: " + msg );
+        }
+        int status = pe.getErrorStatus();
+        if ( status == 8 ) {
+          throw new ResourceUtil.ContentAlreadyExistsException( msg );
+        } else {
+          throw new ResourceUtil.ImportFailedException( msg );
+        }
+      }
+    } catch ( Exception e ) {
+      int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
+      logger.error( "Error putMondrianSchema " + e.getMessage() + " status = " + statusCode );
+      throw new ResourceUtil.UnspecifiedErrorException( e.getMessage() );
+    }
+  }
+  
   @PUT
   @Path( "/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
@@ -316,8 +411,10 @@ public class AnalysisResource {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
+      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;  
+      boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;      
       service.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-        overwrite, xmlaEnabledFlag, parameters );
+          overWriteInRepository, xmlaEnabled, parameters );
       statusCode = SUCCESS;
     } catch ( PentahoAccessControlException pac ) {
       logger.error( pac.getMessage() );

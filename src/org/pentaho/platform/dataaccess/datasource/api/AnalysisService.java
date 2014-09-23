@@ -109,7 +109,7 @@ public class AnalysisService extends DatasourceService {
                                  String catalogName, // Optional
                                  String origCatalogName, // Optional
                                  String datasourceName, // Optional
-                                 String overwrite, String xmlaEnabledFlag, String parameters )
+                                 boolean overwrite, boolean xmlaEnabledFlag, String parameters )
     throws PentahoAccessControlException,
     PlatformImportException, Exception {
 
@@ -131,7 +131,7 @@ public class AnalysisService extends DatasourceService {
    * @throws PlatformImportException
    */
   protected void processMondrianImport( InputStream dataInputStream, String catalogName, String origCatalogName,
-                                      String overwrite, String xmlaEnabledFlag, String parameters, String fileName )
+                                      boolean overwrite, boolean xmlaEnabledFlag, String parameters, String fileName )
     throws PlatformImportException {
     boolean overWriteInRepository = determineOverwriteFlag( parameters, overwrite );
     IPlatformImportBundle bundle =
@@ -157,9 +157,8 @@ public class AnalysisService extends DatasourceService {
    * @param overwrite
    * @return boolean if overwrite is allowed
    */
-  private boolean determineOverwriteFlag( String parameters, String overwrite ) {
+  private boolean determineOverwriteFlag( String parameters, boolean overWriteInRepository ) {
     String overwriteStr = getValue( parameters, OVERWRITE_IN_REPOS );
-    boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
     if ( overwriteStr != null ) {
       overWriteInRepository = "True".equalsIgnoreCase( overwriteStr ) ? true : false;
     } // if there is a conflict - parameters win?
@@ -179,7 +178,7 @@ public class AnalysisService extends DatasourceService {
    */
   private IPlatformImportBundle createPlatformBundle( String parameters, InputStream dataInputStream,
                                                       String catalogName, boolean overWriteInRepository,
-                                                      String fileName, String xmlaEnabled ) {
+                                                      String fileName, boolean xmlaEnabled ) {
 
     byte[] bytes = null;
     try {
@@ -202,19 +201,14 @@ public class AnalysisService extends DatasourceService {
     if ( StringUtils.isEmpty( parameters ) ) {
       parameters = "Provider=mondrian";
       parameters += sep + DATASOURCE_NAME + "=" + datasource;
-      if ( !StringUtils.isEmpty( xmlaEnabled ) ) {
-        parameters += sep + ENABLE_XMLA + "=" + xmlaEnabled;
-      }
+      parameters += sep + ENABLE_XMLA + "=" + xmlaEnabled;
     }
 
     RepositoryFileImportBundle.Builder bundleBuilder =
       new RepositoryFileImportBundle.Builder().input( new ByteArrayInputStream( bytes ) ).charSet( UTF_8 ).hidden(
         false ).name( domainId ).overwriteFile( overWriteInRepository ).mime( MONDRIAN_MIME_TYPE ).withParam(
         PARAMETERS, parameters ).withParam( DOMAIN_ID, domainId );
-    // pass as param if not in parameters string
-    if ( !StringUtils.isEmpty( xmlaEnabled ) ) {
-      bundleBuilder.withParam( ENABLE_XMLA, xmlaEnabled );
-    }
+    bundleBuilder.withParam( ENABLE_XMLA, Boolean.toString( xmlaEnabled ) );
 
     IPlatformImportBundle bundle = bundleBuilder.build();
     return bundle;
