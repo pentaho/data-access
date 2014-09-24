@@ -98,8 +98,10 @@ public class DatasourceModel extends XulEventSourceAdapter
     try {
       IDatabaseConnection previousValue = this.selectedRelationalConnection;
       this.selectedRelationalConnection = value;
-      this.firePropertyChange( "selectedRelationalConnection", previousValue, value );
-      validate();
+      if ( value != null ) {
+        this.firePropertyChange( "selectedRelationalConnection", previousValue, value );
+        validate();
+      }
     } catch ( BindingException e ) {
       // ignore since any binding issues with datasource parameters will be more obviously caught elsewhere
     }
