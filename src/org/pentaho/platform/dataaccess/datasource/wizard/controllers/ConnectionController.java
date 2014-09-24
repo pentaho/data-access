@@ -620,10 +620,15 @@ public class ConnectionController extends AbstractXulEventHandler {
     datasourceModel.setEditing( true );
     if ( databaseDialog != null ) {
       IDatabaseConnection connection = datasourceModel.getSelectedRelationalConnection();
-      databaseDialog.setDatabaseConnection( connection );
-      previousConnectionName = connection.getName();
-      existingConnectionName = previousConnectionName;
-      databaseDialog.show();
+      if (connection != null) {
+        databaseDialog.setDatabaseConnection( connection );
+        previousConnectionName = connection.getName();
+        existingConnectionName = previousConnectionName;
+        databaseDialog.show();
+      } else {
+        openErrorDialog( MessageHandler.getString( "DatasourceEditor.USER_ERROR_TITLE" ), MessageHandler
+            .getString( "DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED" ) );
+      }
     } else {
       createNewDatabaseDialog();
     }
