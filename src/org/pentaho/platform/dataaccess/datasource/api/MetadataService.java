@@ -77,8 +77,7 @@ public class MetadataService extends DatasourceService {
     Object reservedCharsObject = fr.doGetReservedChars().getEntity();
     String reservedChars = objectToString( reservedCharsObject );
     if ( reservedChars != null
-      // \ need to be replaced with \\ for Regex
-      && domainId.matches( ".*[" + reservedChars.replaceAll( "\\\\", "\\\\\\\\" ) + "]+.*" ) ) {
+      && domainId.matches( ".*[" + reservedChars.replaceAll( "/", "" ) + "]+.*" ) ) {
       String msg = prohibitedSymbolMessage( domainId, fr );
       throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
     }
@@ -108,8 +107,10 @@ public class MetadataService extends DatasourceService {
   }
 
   protected String prohibitedSymbolMessage( String domainId, FileResource fr ) throws InterruptedException {
-    return Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, (String) fr
-      .doGetReservedCharactersDisplay().getEntity() );
+    String illegalCharacterList = (String) fr.doGetReservedCharactersDisplay().getEntity();
+    //For metadata \ is a legal character and must be removed from the message list before returning the message list to the user
+    illegalCharacterList = illegalCharacterList.replaceAll( "\\,", "" );
+    return Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, illegalCharacterList );
   }
 
   protected String objectToString( Object o ) throws InterruptedException {
