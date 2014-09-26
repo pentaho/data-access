@@ -111,7 +111,7 @@ public class MetadataServiceTest {
 
   @Test
   public void testImportMetadataDatasource() throws Exception {
-    String domainId = "domainId";
+    String domainId = "home\\admin/resource/";
     InputStream metadataFile = mock( InputStream.class );
     FormDataContentDisposition metadataFileInfo = mock( FormDataContentDisposition.class );
     String overwrite = "overwrite";
@@ -134,6 +134,7 @@ public class MetadataServiceTest {
     doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
     doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
     doReturn( null ).when( mockResponse ).getEntity();
+    doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
     doReturn( mockRepositoryFileImportBundleBuilder ).when( metadataService ).createNewRepositoryFileImportBundleBuilder(
       metadataFile, false, domainId );
     doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
@@ -154,7 +155,7 @@ public class MetadataServiceTest {
 
   @Test
   public void testImportMetadataDatasourceError() throws Exception {
-    String domainId = "domainId";
+    String domainId = "home\\admin\tresource/";
     InputStream metadataFile = mock( InputStream.class );
     FormDataContentDisposition metadataFileInfo = mock( FormDataContentDisposition.class );
     String overwrite = "overwrite";
@@ -171,7 +172,7 @@ public class MetadataServiceTest {
     doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
     doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
     doReturn( null ).when( mockResponse ).getEntity();
-    doReturn( "home\\admin" ).when( metadataService ).objectToString( null );
+    doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
     doReturn( "" ).when( metadataService ).prohibitedSymbolMessage( domainId, mockFileResource );
 
     try {
