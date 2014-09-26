@@ -56,6 +56,7 @@ public class AgileHelper {
       if ( dialect.indexOf( "HSQL" ) >= 0 ) {
         dialect = "Hypersonic";
       } else if ( dialect.indexOf( "Microsoft SQL" ) >= 0) {
+        // Hack-around for BACKLOG-845
         dialect = "MSSQLNATIVE";
       }
       conn.close();
