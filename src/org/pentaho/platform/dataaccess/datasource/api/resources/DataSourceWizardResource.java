@@ -27,13 +27,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -63,7 +64,7 @@ public class DataSourceWizardResource {
    * more than one file.  The response will contain an XMI and/or a mondrian cube definition file.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/dsw/jmeter-dsw-pentaho-test.xmi/download
+   *    GET pentaho/plugin/data-access/api/datasource/dsw/domain/jmeter-dsw-pentaho-test.xmi
    * </p>
    *
    * @param dswId The id of the DSW datasource to export
@@ -76,14 +77,14 @@ public class DataSourceWizardResource {
    *    </pre>
    */
   @GET
-  @Path( "/datasource/dsw/{dswId : .+}/download" )
+  @Path( "/datasource/dsw/domain/{dswId : .+}" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "DSW datasource export succeeded." ),
     @ResponseCode( code = 401, condition = "User is not authorized to export DSW datasource." ),
     @ResponseCode( code = 500, condition = "Failure to export DSW datasource." )
   } )
-  public Response download( @PathParam( "dswId" ) String dswId ) {
+  public Response downloadDsw( @PathParam("dswId") String dswId ) {
     try {
       Map<String, InputStream> fileData = service.doGetDSWFilesAsDownload( dswId );
       return createAttachment( fileData, dswId );
@@ -96,12 +97,7 @@ public class DataSourceWizardResource {
    * Remove the DSW data source for a given DSW ID.
    *
    * <p><b>Example Request:</b><br />
-   *    POST pentaho/plugin/data-access/api/datasource/dsw/jmeter-dsw-pentaho-test.xmi/remove
-   * <br /><b>POST data:</b>
-   *  <pre function="syntax.xml">
-   *    This POST body does not contain data.
-   *  </pre>
-   * </p>
+   *    DELETE pentaho/plugin/data-access/api/datasource/dsw/domain/jmeter-dsw-pentaho-test.xmi/remove
    *
    * @param dswId The id of the DSW datasource to remove
    *
@@ -112,19 +108,19 @@ public class DataSourceWizardResource {
    *      This response does not contain data.
    *    </pre>
    */
-  @POST
-  @Path( "/datasource/dsw/{dswId : .+}/remove" )
+  @DELETE
+  @Path( "/datasource/dsw/domain/{dswId : .+}" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "DSW datasource removed successfully." ),
-    @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." ),
+    @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." )
   } )
   public Response remove( @PathParam( "dswId" ) String dswId ) {
     try {
       service.removeDSW( dswId );
       return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
-      return buildUnauthorizedResponse();
+      throw new WebApplicationException( Response.Status.UNAUTHORIZED );
     }
   }
 
@@ -132,7 +128,7 @@ public class DataSourceWizardResource {
    * Get the DSW datasource IDs.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/dsw/ids
+   *    GET pentaho/plugin/data-access/api/datasource/dsw/domain
    * </p>
    *
    * @return JaxbList<String> of DSW datasource IDs
@@ -150,9 +146,9 @@ public class DataSourceWizardResource {
    *    </pre>
    */
   @GET
-  @Path( "/datasource/dsw/ids" )
+  @Path( "/datasource/dsw/domain" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )
-  public JaxbList<String> getDSWDatasourceIds() {
+  public JaxbList<String> getDSWDIds() {
     return createNewJaxbList( service.getDSWDatasourceIds() );
   }
 
@@ -210,6 +206,7 @@ public class DataSourceWizardResource {
    *    <pre function="syntax.xml">
    *
    *    </pre>
+   * TODO:  Change path to /datasource/dsw/{dswId:.+} replace Error Responses with WebApplicationException
    **/
   @PUT
   @Path( "/datasource/dsw/import" )

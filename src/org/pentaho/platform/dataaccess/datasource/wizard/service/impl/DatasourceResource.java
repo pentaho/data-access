@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.MediaType.WILDCARD;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,6 +49,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.enunciate.Facet;
+import org.codehaus.enunciate.jaxrs.ResponseCode;
+import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.model.DatabaseConnection;
@@ -128,11 +131,11 @@ public class DatasourceResource extends DataSourceWizardResource {
 
   /**
    * Get list of IDs of analysis datasource
-   * 
+   *
    * @return JaxbList<String> of analysis IDs
    */
   public JaxbList<String> getAnalysisDatasourceIds() {
-    return new AnalysisResource().getAnalysisDatasourceIds();
+    return new AnalysisResource().getSchemaIds();
   }
 
   /**
@@ -141,16 +144,20 @@ public class DatasourceResource extends DataSourceWizardResource {
    * @return JaxbList<String> of metadata IDs
    */
   public JaxbList<String> getMetadataDatasourceIds() {
-    return new MetadataResource().getMetadataDatasourceIds();
+    return new MetadataResource().listDomains();
   }
 
   /**
    * Returns a list of datasource IDs from datasource wizard
-   * 
+   *
    * @return JaxbList<String> list of datasource IDs
    */
+  @GET
+  @Path( "/datasource/dsw/ids" )
+  @Produces( { APPLICATION_XML, APPLICATION_JSON } )
+  @Facet( name = "Unsupported" )
   public JaxbList<String> getDSWDatasourceIds() {
-    return new DataSourceWizardResource().getDSWDatasourceIds();
+    return new DataSourceWizardResource().getDSWDIds();
   }
 
   /**
@@ -163,7 +170,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    */
   @Facet( name = "Unsupported" )
   public Response doGetMetadataFilesAsDownload( @PathParam( "metadataId" ) String metadataId ) {
-    return new MetadataResource().doGetMetadataFilesAsDownload( metadataId );
+    return new MetadataResource().downloadMetadata( metadataId );
   }
 
   /**
@@ -176,7 +183,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    */
   @Facet( name = "Unsupported" )
   public Response doGetAnalysisFilesAsDownload( @PathParam( "analysisId" ) String analysisId ) {
-    return new AnalysisResource().doGetAnalysisFilesAsDownload( analysisId );
+    return new AnalysisResource().downloadSchema( analysisId );
   }
 
   /**
@@ -188,7 +195,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    * @return Response containing the file data
    */
   public Response doGetDSWFilesAsDownload( @PathParam( "dswId" ) String dswId ) {
-    return new DataSourceWizardResource().download( dswId );
+    return new DataSourceWizardResource().downloadDsw( dswId );
   }
 
   /**
@@ -199,9 +206,16 @@ public class DatasourceResource extends DataSourceWizardResource {
    * 
    * @return Response ok if successful
    */
+  @POST
+  @Path( "/datasource/dsw/{dswId : .+}/remove" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "DSW datasource removed successfully." ),
+      @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." ),
+  } )
   @Facet( name = "Unsupported" )
-  public Response doRemoveMetadata( @PathParam( "metadataId" ) String metadataId ) {
-    return new MetadataResource().doRemoveMetadata( metadataId );
+  public Response doRemoveMetadata( @PathParam( "dswId" ) String metadataId ) {
+    return new DataSourceWizardResource().remove( metadataId );
   }
 
   /**
@@ -214,7 +228,7 @@ public class DatasourceResource extends DataSourceWizardResource {
    */
   @Facet( name = "Unsupported" )
   public Response doRemoveAnalysis( @PathParam( "analysisId" ) String analysisId ) {
-    return new AnalysisResource().doRemoveAnalysis( analysisId );
+    return new AnalysisResource().downloadSchema( analysisId );
   }
 
   /**
@@ -281,7 +295,7 @@ public class DatasourceResource extends DataSourceWizardResource {
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
       AnalysisService service = new AnalysisService();
-      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;      
+      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
       boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;
       service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
           overWriteInRepository, xmlaEnabled, parameters );
@@ -410,7 +424,7 @@ public class DatasourceResource extends DataSourceWizardResource {
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
       @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) {
-    return new MetadataResource().importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
+    return new MetadataResource().importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo, overwrite,
         localeFiles, localeFilesInfo );
   }
 
