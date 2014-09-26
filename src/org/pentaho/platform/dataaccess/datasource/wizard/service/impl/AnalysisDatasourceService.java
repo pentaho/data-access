@@ -19,6 +19,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -97,4 +98,25 @@ public class AnalysisDatasourceService extends AnalysisResource {
       throws PentahoAccessControlException {
     return super.importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters );
   }
+
+
+
+
+  @POST
+  @Path( "/{catalog : .+}/remove" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully removed the analysis data" ),
+      @ResponseCode( code = 401, condition = "User is not authorized to delete the analysis datasource" ),
+      @ResponseCode( code = 500, condition = "Unable to remove the analysis data." )
+  } )
+  public Response doRemoveAnalysis( @PathParam( "catalog" ) String catalog ) {
+    try {
+      service.removeAnalysis( catalog );
+      return buildOkResponse();
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    }
+  }
+
 }
