@@ -17,6 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
+import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -30,9 +31,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +64,7 @@ public class MetadataResourceTest {
   }
 
   @Test
-  public void testDoGetMetadataFilesAsDownload() throws Exception {
+  public void testdownloadMetadata() throws Exception {
     Response mockResponse = mock( Response.class );
     Map<String, InputStream> mockFileData = mock( Map.class );
 
@@ -70,31 +73,39 @@ public class MetadataResourceTest {
     doReturn( mockFileData ).when( metadataResource ).getDomainFilesData( "metadataId" );
     doReturn( mockResponse ).when( metadataResource ).createAttachment( mockFileData, "metadataId" );
 
-    Response response = metadataResource.doGetMetadataFilesAsDownload( "metadataId" );
+    Response response = metadataResource.downloadMetadata( "metadataId" );
 
-    verify( metadataResource, times( 1 ) ).doGetMetadataFilesAsDownload(  "metadataId" );
+    verify( metadataResource, times( 1 ) ).downloadMetadata(  "metadataId" );
     assertEquals( mockResponse, response );
   }
 
   @Test
-  public void testDoGetMetadataFilesAsDownloadError() throws Exception {
+  public void testdownloadMetadataError() throws Exception {
     Response mockResponse = mock( Response.class );
 
     //Test 1
     doReturn( false ).when( metadataResource ).canAdminister();
     doReturn( mockResponse ).when( metadataResource ).buildUnauthorizedResponse();
 
-    Response response = metadataResource.doGetMetadataFilesAsDownload( "metadataId" );
-    assertEquals( mockResponse, response );
+    try {
+      Response response = metadataResource.downloadMetadata( "metadataId" );
+      fail( "Should have gotten a WebApplicationException" );
+    } catch ( WebApplicationException e ){
+      Assert.assertEquals( 401, e.getResponse().getStatus() );
+    }
 
     //Test 2
     doReturn( true ).when( metadataResource ).canAdminister();
     doReturn( mockResponse ).when( metadataResource ).buildServerErrorResponse();
 
-    response = metadataResource.doGetMetadataFilesAsDownload( "metadataId" );
-    assertEquals( mockResponse, response );
+    try {
+      Response response = metadataResource.downloadMetadata( "metadataId" );
+      fail( "Should have gotten a WebApplicationException" );
+    } catch ( WebApplicationException e ){
+      Assert.assertEquals( 500, e.getResponse().getStatus() );
+    }
 
-    verify( metadataResource, times( 2 ) ).doGetMetadataFilesAsDownload( "metadataId" );
+    verify( metadataResource, times( 2 ) ).downloadMetadata( "metadataId" );
   }
 
   @Test
@@ -102,9 +113,9 @@ public class MetadataResourceTest {
     Response mockResponse = mock( Response.class );
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse();
 
-    Response response = metadataResource.doRemoveMetadata( "metadataId" );
+    Response response = metadataResource.deleteMetadata( "metadataId" );
 
-    verify( metadataResource, times( 1 ) ).doRemoveMetadata( "metadataId" );
+    verify( metadataResource, times( 1 ) ).deleteMetadata( "metadataId" );
     assertEquals( mockResponse, response );
   }
 
@@ -115,10 +126,16 @@ public class MetadataResourceTest {
     doThrow( mockPentahoAccessControlException ).when( metadataResource.service ).removeMetadata( "metadataId" );
     doReturn( mockResponse ).when( metadataResource ).buildUnauthorizedResponse();
 
-    Response response = metadataResource.doRemoveMetadata( "metadataId" );
+    try{
+      Response response = metadataResource.deleteMetadata( "metadataId" );
+      fail( "Should have had a WebApplicationException" );
+    } catch( WebApplicationException e ){
+      // Good
+      assertEquals(401, e.getResponse().getStatus());
+    }
 
-    verify( metadataResource, times( 1 ) ).doRemoveMetadata( "metadataId" );
-    assertEquals( mockResponse, response );
+    verify( metadataResource, times( 1 ) ).deleteMetadata( "metadataId" );
+
   }
 
   @Test
@@ -128,9 +145,9 @@ public class MetadataResourceTest {
     doReturn( mockDSWDatasourceIds ).when( metadataResource.service ).getMetadataDatasourceIds();
     doReturn( mockJaxbList ).when( metadataResource ).createNewJaxbList( mockDSWDatasourceIds );
 
-    JaxbList<String> response = metadataResource.getMetadataDatasourceIds();
+    JaxbList<String> response = metadataResource.listDomains();
 
-    verify( metadataResource, times( 1 ) ).getMetadataDatasourceIds();
+    verify( metadataResource, times( 1 ) ).listDomains();
     assertEquals( mockJaxbList, response );
   }
 

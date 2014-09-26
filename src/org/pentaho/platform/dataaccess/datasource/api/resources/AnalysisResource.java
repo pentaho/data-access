@@ -44,6 +44,7 @@ import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.*;
 import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 /**
  * This service allows for listing, download, upload, and removal of Analysis files or Mondrian schemas in the BA
@@ -306,7 +307,7 @@ public class AnalysisResource {
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) Boolean overwrite,
       @FormDataParam( XMLA_ENABLED_FLAG ) Boolean xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
-    throws PentahoAccessControlException {
+      throws PentahoAccessControlException {
     try {
       service.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalog, origCatalogName, datasourceName, overwrite,
           xmlaEnabledFlag, parameters );
@@ -353,7 +354,7 @@ public class AnalysisResource {
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
-        throws PentahoAccessControlException {
+      throws PentahoAccessControlException {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
@@ -373,13 +374,17 @@ public class AnalysisResource {
       statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
 
-    response = Response.ok( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+    response = buildOkResponse( String.valueOf( statusCode ) );
     logger.debug( "putMondrianSchema Response " + response );
     return response;
   }
 
   protected JaxbList<String> createNewJaxbList( List<String> DSWDatasources ) {
     return new JaxbList<String>( DSWDatasources );
+  }
+
+  protected Response buildOkResponse( String statusCode ) {
+    return Response.ok( statusCode ).type( MediaType.TEXT_PLAIN ).build();
   }
 
   protected Response createAttachment( Map<String, InputStream> fileData, String catalog ) {
@@ -390,4 +395,7 @@ public class AnalysisResource {
     return Response.ok().build();
   }
 
+  protected Response buildUnauthorizedResponse() {
+    return Response.status( UNAUTHORIZED ).build();
+  }
 }
