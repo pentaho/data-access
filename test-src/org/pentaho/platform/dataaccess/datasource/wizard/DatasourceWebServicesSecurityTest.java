@@ -156,7 +156,7 @@ public class DatasourceWebServicesSecurityTest {
 		Response res = analysisDatasourceService.storeDomain(null, null);
 		Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
 
-//		res = analysisDatasourceService.importMetadataDatasource(null, null, null);
+//		res = analysisDatasourceService.importMetadataDatasourceLegacy(null, null, null);
 		Assert.assertTrue(res.getEntity().equals("org.pentaho.platform.api.engine.PentahoAccessControlException: Access Denied"));
 
 		res = analysisDatasourceService.addLocalizationFile(null, null, null);

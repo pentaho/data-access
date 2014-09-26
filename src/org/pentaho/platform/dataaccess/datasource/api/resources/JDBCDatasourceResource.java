@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +62,7 @@ public class JDBCDatasourceResource {
    * Remove the JDBC data source for a given JDBC ID.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/jdbc/TestDataSourceResource/remove
+   *    DELETE pentaho/plugin/data-access/api/datasource/jdbc/connection/TestDataSourceResource
    * </p>
    *
    * @param name The name of the JDBC datasource to remove
@@ -72,8 +74,8 @@ public class JDBCDatasourceResource {
    *      This response does not contain data.
    *    </pre>
    */
-  @GET
-  @Path( "/{name : .+}/remove" )
+  @DELETE
+  @Path( "/connection/{name : .+}" )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "JDBC datasource removed successfully." ),
     @ResponseCode( code = 304,
@@ -98,7 +100,7 @@ public class JDBCDatasourceResource {
    * Get a list of JDBC datasource IDs.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/jdbc/ids
+   *    GET pentaho/plugin/data-access/api/datasource/jdbc/connection
    * </p>
    *
    * @return A list of JDBC datasource IDs.
@@ -144,10 +146,11 @@ public class JDBCDatasourceResource {
    *    </pre>
    */
   @GET
-  @Path( "/ids" )
+  @Path( "/connection" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of JDBC datasource IDs" ),
+    @ResponseCode( code = 500, condition = "Internal error retrieving JDBC datasource IDs" ),
   } )
   public JaxbList<String> getConnectionIDs() {
     List<String> connStrList = new ArrayList<String>();
@@ -159,6 +162,7 @@ public class JDBCDatasourceResource {
       }
     } catch ( ConnectionServiceException e ) {
       logger.error( "Error " + e.getMessage() );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
     JaxbList<String> connections = new JaxbList<String>( connStrList );
     return connections;
@@ -168,7 +172,7 @@ public class JDBCDatasourceResource {
    * Export a JDBC datasource connection.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/jdbc/TestDataSourceResource/download
+   *    GET pentaho/plugin/data-access/api/datasource/jdbc/connection/TestDataSourceResource
    * </p>
    *
    * @param name The name of the JDBC datasource to retrieve
@@ -217,7 +221,7 @@ public class JDBCDatasourceResource {
    *    </pre>
    */
   @GET
-  @Path( "/{name : .+}/download" )
+  @Path( "/connection/{name : .+}" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the JDBC datasource" ),
@@ -233,10 +237,10 @@ public class JDBCDatasourceResource {
   }
 
   /**
-   * Add a JDBC datasource connection.
+   * Add or update a JDBC datasource connection
    *
    * <p><b>Example Request:</b><br />
-   *    POST pentaho/plugin/data-access/api/datasource/jdbc/import
+   *    PUT pentaho/plugin/data-access/api/datasource/jdbc/connection/TestDatasource
    * </p>
    * <br /><b>POST data:</b>
    *  <pre function="syntax.xml">
@@ -278,100 +282,55 @@ public class JDBCDatasourceResource {
    *      This response does not contain data.
    *    </pre>
    */
-  @POST
-  @Path( "/import" )
+  @PUT
+  @Path( "/connection/{connectionId : .+}" )
   @Consumes( { APPLICATION_JSON } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "JDBC datasource added successfully." ),
-    @ResponseCode( code = 304, condition = "User is not authorized to add JDBC datasources." ),
+    @ResponseCode( code = 403, condition = "User is not authorized to add JDBC datasources." ),
+    @ResponseCode( code = 304, condition = "Datasource was not modified" ),
     @ResponseCode( code = 500, condition = "An unexected error occurred while adding the JDBC datasource." )
   } )
-  public Response add( DatabaseConnection connection ) {
+  public Response addOrUpdate( @PathParam( "connectionId" ) String connectionName, DatabaseConnection connection ) {
     try {
       validateAccess();
-      boolean success = service.addConnection( connection );
+      // Prefer the path name over the one in the DTO object
+      connection.setId( connectionName );
+      IDatabaseConnection savedConn = null;
+      try {
+        savedConn = service.getConnectionByName( connectionName );
+      } catch ( ConnectionServiceException e ){
+        // unfortunatley getConnectionById throws an exception not returning null when the conneciton is not present.
+
+      } catch ( NullPointerException e){
+        // unfortunatley getConnectionById throws an exception not returning null when the conneciton is not present.
+
+      }
+      boolean success = false;
+      if( savedConn != null ) {
+        if ( StringUtils.isBlank( connection.getPassword() ) ) {
+          connection.setPassword( savedConn.getPassword() );
+        }
+        connection.setId( savedConn.getId() );
+        success = service.updateConnection( connection );
+      } else {
+        success = service.addConnection( connection );
+      }
+
+
       if ( success ) {
         return buildOkResponse();
       } else {
         return buildNotModifiedResponse();
       }
-    } catch ( Throwable t ) {
+    } catch ( PentahoAccessControlException t ) {
+      throw new WebApplicationException( Response.Status.UNAUTHORIZED );
+    } catch ( Throwable t ){
       logger.error( "Error " + t.getMessage() );
       return buildServerErrorResponse();
     }
   }
 
-  /**
-   * Update an existing JDBC datasource connection.
-   *
-   * <p><b>Example Request:</b><br />
-   *    POST pentaho/plugin/data-access/api/datasource/jdbc/update
-   * </p>
-   * <br /><b>POST data:</b>
-   *  <pre function="syntax.xml">
-   *    {
-   *      "changed": true,
-   *      "usingConnectionPool": true,
-   *      "connectSql": "",
-   *      "databaseName": "SampleData",
-   *      "databasePort": "9001",
-   *      "hostname": "localhost",
-   *      "name": "TestDataSourceResource",
-   *      "password": "password",
-   *      "username": "pentaho_user",
-   *      "attributes": {},
-   *      "connectionPoolingProperties": {},
-   *      "extraOptions": {},
-   *      "accessType": "NATIVE",
-   *      "databaseType": {
-   *        "defaultDatabasePort": 9001,
-   *        "extraOptionsHelpUrl": "http://hsqldb.sourceforge.net/doc/guide/ch04.html#N109DA",
-   *        "name": "Hypersonic",
-   *        "shortName": "HYPERSONIC",
-   *        "supportedAccessTypes": [
-   *          "NATIVE",
-   *          "ODBC",
-   *          "JNDI"
-   *        ]
-   *      }
-   *    }
-   *  </pre>
-   * </p>
-   *
-   * @param connection A DatabaseConnection in JSON representation.
-   *
-   * @return A jax-rs Response object with the appropriate status code, header, and body.
-   *
-   * <p><b>Example Response:</b></p>
-   *    <pre function="syntax.xml">
-   *      This response does not contain data.
-   *    </pre>
-   */
-  @POST
-  @Path( "/update" )
-  @Consumes( { APPLICATION_JSON } )
-  @StatusCodes( {
-    @ResponseCode( code = 200, condition = "JDBC datasource updated successfully." ),
-    @ResponseCode( code = 304, condition = "User is not authorized to update the JDBC datasource or the connection does not exist." ),
-    @ResponseCode( code = 500, condition = "An unexected error occurred while updating the JDBC datasource." )
-  } )
-  public Response update( DatabaseConnection connection ) {
-    try {
-      if ( StringUtils.isBlank( connection.getPassword() ) ) {
-        IDatabaseConnection savedConn = service.getConnectionById( connection.getId() );
-        connection.setPassword( savedConn.getPassword() );
-      }
-      boolean success = service.updateConnection( connection );
-      if ( success ) {
-        return buildOkResponse();
-      } else {
-        return buildNotModifiedResponse();
-      }
-    } catch ( Throwable t ) {
-      logger.error( "Error " + t.getMessage() );
-      return buildServerErrorResponse();
-    }
-  }
 
   protected Response buildOkResponse() {
     return Response.ok().build();

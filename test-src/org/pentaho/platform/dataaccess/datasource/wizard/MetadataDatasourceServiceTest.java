@@ -127,7 +127,7 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 	public void testImportSchema() throws Exception {
 		try {
 			login("joe", "duff", false);
-//			service.importMetadataDatasource(localizeBundleEntries, "steel-wheels", "metadata.xmi");
+//			service.importMetadataDatasourceLegacy(localizeBundleEntries, "steel-wheels", "metadata.xmi");
 			logout();
 		} catch (Exception e) {
 			final RepositoryFile etcMetadata = repository.getFile(PentahoMetadataDomainRepositoryInfo.getMetadataFolderPath());
