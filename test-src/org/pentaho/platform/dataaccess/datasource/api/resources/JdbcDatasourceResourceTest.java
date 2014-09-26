@@ -29,11 +29,13 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.Connection
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -108,9 +110,12 @@ public class JdbcDatasourceResourceTest {
     ConnectionServiceException mockConnectionServiceException = mock( ConnectionServiceException.class );
     doThrow( mockConnectionServiceException ).when( jdbcDatasourceResource.service ).getConnections();
 
-    JaxbList<String> connections = jdbcDatasourceResource.getConnectionIDs();
-
-    assertEquals( connections.getList().size(), 0 );
+    try {
+      JaxbList<String> connections = jdbcDatasourceResource.getConnectionIDs();
+      fail( "Should get WebApplicationException" );
+    } catch( WebApplicationException e ){
+      // good
+    }
   }
 
   @Test
@@ -151,9 +156,9 @@ public class JdbcDatasourceResourceTest {
     Response mockResponse = mock( Response.class );
     doReturn( mockResponse ).when( jdbcDatasourceResource ).buildOkResponse();
 
-    Response response = jdbcDatasourceResource.add( mockDatabaseConnection );
+    Response response = jdbcDatasourceResource.addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
 
-    verify( jdbcDatasourceResource, times( 1 ) ).add( mockDatabaseConnection );
+    verify( jdbcDatasourceResource, times( 1 ) ).addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
     assertEquals( response, mockResponse );
   }
 
@@ -168,7 +173,7 @@ public class JdbcDatasourceResourceTest {
     Response mockResponse = mock( Response.class );
     doReturn( mockResponse ).when( jdbcDatasourceResource ).buildNotModifiedResponse();
 
-    Response response = jdbcDatasourceResource.add( mockDatabaseConnection );
+    Response response = jdbcDatasourceResource.addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
     assertEquals( response, mockResponse );
 
     //Test 2
@@ -178,29 +183,31 @@ public class JdbcDatasourceResourceTest {
     mockResponse = mock( Response.class );
     doReturn( mockResponse ).when( jdbcDatasourceResource ).buildServerErrorResponse();
 
-    response = jdbcDatasourceResource.add( mockDatabaseConnection );
+    response = jdbcDatasourceResource.addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
     assertEquals( response, mockResponse );
 
-    verify( jdbcDatasourceResource, times( 2 ) ).add( mockDatabaseConnection );
+    verify( jdbcDatasourceResource, times( 2 ) ).addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
   }
 
   @Test
   public void testUpdate() throws Exception {
     DatabaseConnection mockDatabaseConnection = mock( DatabaseConnection.class );
     doReturn( "" ).when( mockDatabaseConnection ).getPassword();
-    doReturn( "id" ).when( mockDatabaseConnection ).getId();
+    doReturn( "id" ).when( mockDatabaseConnection ).getName();
     IDatabaseConnection mockSavedConn = mock( IDatabaseConnection.class );
-    doReturn( mockSavedConn ).when( jdbcDatasourceResource.service ).getConnectionById( "id" );
+    doReturn( mockSavedConn ).when( jdbcDatasourceResource.service ).getConnectionByName( "id" );
     doReturn( "password" ).when( mockSavedConn ).getPassword();
 
     doReturn( true ).when( jdbcDatasourceResource.service ).updateConnection( mockDatabaseConnection );
+    doNothing().when( jdbcDatasourceResource ).validateAccess();
+
 
     Response mockResponse = mock( Response.class );
     doReturn( mockResponse ).when( jdbcDatasourceResource ).buildOkResponse();
 
-    Response response = jdbcDatasourceResource.update( mockDatabaseConnection );
+    Response response = jdbcDatasourceResource.addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
 
-    verify( jdbcDatasourceResource, times( 1 ) ).update( mockDatabaseConnection );
+    verify( jdbcDatasourceResource, times( 1 ) ).addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
     assertEquals( response, mockResponse );
   }
 
@@ -219,8 +226,8 @@ public class JdbcDatasourceResourceTest {
     Response mockResponse = mock( Response.class );
     doReturn( mockResponse ).when( jdbcDatasourceResource ).buildNotModifiedResponse();
 
-    Response response = jdbcDatasourceResource.update( mockDatabaseConnection );
-    assertEquals( response, mockResponse );
+    Response response = jdbcDatasourceResource.addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
+    assertEquals( 500, response.getStatus() );
 
     //Test 2
     RuntimeException mockException = mock( RuntimeException.class );
@@ -228,9 +235,9 @@ public class JdbcDatasourceResourceTest {
 
     doReturn( mockResponse ).when( jdbcDatasourceResource ).buildServerErrorResponse();
 
-    response = jdbcDatasourceResource.update( mockDatabaseConnection );
+    response = jdbcDatasourceResource.addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
     assertEquals( response, mockResponse );
 
-    verify( jdbcDatasourceResource, times( 2 ) ).update( mockDatabaseConnection );
+    verify( jdbcDatasourceResource, times( 2 ) ).addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
   }
 }

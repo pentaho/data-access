@@ -88,7 +88,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
 
   }
 
-  protected boolean hasDataAccessPermission() {
+  public boolean hasDataAccessPermission() {
     return dataAccessPermHandler != null
       && dataAccessPermHandler.hasDataAccessPermission( PentahoSessionHolder.getSession() );
   }

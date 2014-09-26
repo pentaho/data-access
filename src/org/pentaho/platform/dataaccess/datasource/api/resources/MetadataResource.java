@@ -30,11 +30,11 @@ import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -64,7 +64,7 @@ import com.sun.jersey.multipart.FormDataParam;
 public class MetadataResource {
 
   private static final Log logger = LogFactory.getLog( MetadataResource.class );
-  private static final String OVERWRITE_IN_REPOS = "overwrite";
+  protected static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final String SUCCESS = "3";
 
   protected MetadataService service;
@@ -81,7 +81,7 @@ public class MetadataResource {
    * Export a metadata datasource.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/metadata/SampleData2
+   *    GET pentaho/plugin/data-access/api/datasource/metadata/domain/SampleData2
    * </p>
    *
    * @param domainId The id of the Metadata datasource to export
@@ -94,7 +94,7 @@ public class MetadataResource {
    *    </pre>
    */
   @GET
-  @Path( "/{domainId : .+}" )
+  @Path( "/domain/{domainId : .+}" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Metadata datasource export succeeded." ),
@@ -103,29 +103,10 @@ public class MetadataResource {
   } )
   public Response downloadMetadata( @PathParam( "domainId" ) String domainId ) {
     if ( !canAdminister() ) {
-      return buildUnauthorizedResponse();
+      throw new WebApplicationException( Response.Status.UNAUTHORIZED );
     }
     if ( !isInstanceOfIPentahoMetadataDomainRepositoryExporter( metadataDomainRepository ) ) {
-      return buildServerErrorResponse();
-    }
-    Map<String, InputStream> fileData = getDomainFilesData( domainId );
-    return createAttachment( fileData, domainId );
-  }
-  
-  @GET
-  @Path( "/{domainId : .+}/download" )
-  @Produces( WILDCARD )
-  @StatusCodes( {
-    @ResponseCode( code = 200, condition = "Metadata datasource export succeeded." ),
-    @ResponseCode( code = 401, condition = "User is not authorized to export Metadata datasource." ),
-    @ResponseCode( code = 500, condition = "Failure to export Metadata datasource." )
-  } )
-  public Response doGetMetadataFilesAsDownload( @PathParam( "domainId" ) String domainId ) {
-    if ( !canAdminister() ) {
-      return buildUnauthorizedResponse();
-    }
-    if ( !isInstanceOfIPentahoMetadataDomainRepositoryExporter( metadataDomainRepository ) ) {
-      return buildServerErrorResponse();
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR);
     }
     Map<String, InputStream> fileData = getDomainFilesData( domainId );
     return createAttachment( fileData, domainId );
@@ -135,12 +116,7 @@ public class MetadataResource {
    * Remove the metadata for a given metadata ID.
    *
    * <p><b>Example Request:</b><br />
-   *    DELETE pentaho/plugin/data-access/api/datasource/metadata/SampleData2
-   * <br /><b>DELETE data:</b>
-   *  <pre function="syntax.xml">
-   *    This DELETE body does not contain data.
-   *  </pre>
-   * </p>
+   *    DELETE pentaho/plugin/data-access/api/datasource/metadata/domain/SampleData2
    *
    * @param domainId The id of the Metadata datasource to remove
    *
@@ -152,42 +128,27 @@ public class MetadataResource {
    *    </pre>
    */
   @DELETE
-  @Path( "/{domainId : .+}" )
+  @Path( "/domain/{domainId : .+}" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
     @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." )
   } )
-  public Response doDeleteMetadata( @PathParam( "domainId" ) String domainId ) {
+  public Response deleteMetadata( @PathParam( "domainId" ) String domainId ) {
     try {
       service.removeMetadata( domainId );
       return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
-      return buildUnauthorizedResponse();
+      throw new WebApplicationException( Response.Status.UNAUTHORIZED );
     }
   }
-  
-  @POST
-  @Path( "/{domainId : .+}/remove" )
-  @Produces( WILDCARD )
-  @StatusCodes( {
-    @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
-    @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." )
-  } )
-  public Response doRemoveMetadata( @PathParam( "domainId" ) String domainId ) {
-    try {
-      service.removeMetadata( domainId );
-      return buildOkResponse();
-    } catch ( PentahoAccessControlException e ) {
-      return buildUnauthorizedResponse();
-    }
-  }
+
 
   /**
    * Get the Metadata datasource IDs.
    *
    * <p><b>Example Request:</b><br />
-   *    GET pentaho/plugin/data-access/api/datasource/metadata/ids
+   *    GET pentaho/plugin/data-access/api/datasource/metadata/domain
    * </p>
    *
    * @return JaxbList<String> of Metadata datasource IDs.
@@ -198,35 +159,23 @@ public class MetadataResource {
    *  </pre>
    */
   @GET
-  @Path( "/ids" )
+  @Path( "/domain" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of existing metadata IDs" )
   } )
-  public JaxbList<String> getMetadataDatasourceIds() {
+  public JaxbList<String> listDomains() {
     return createNewJaxbList( service.getMetadataDatasourceIds() );
   }
 
-  @PUT
-  @Path( "/import" )
-  @Consumes( MediaType.MULTIPART_FORM_DATA )
-  @Produces( "text/plain" )
-  @StatusCodes( {
-    @ResponseCode( code = 200, condition = "Metadata datasource import succeeded. A response of:\n"
-      + "   *  2: Unspecified general error has occurred\n"
-      + "   *  3: Indicates successful import\n"
-      + "   *  9: Content already exists (use overwrite flag to force)\n"
-      + "   * 10: Import failed because publish is prohibited" ),
-    @ResponseCode( code = 500,
-      condition = "Metadata datasource import failed.  Error code or message included in response entity" )
-  } )
-  public Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
-                                            @FormDataParam( "metadataFile" ) InputStream metadataFile,
-                                            @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
-                                            @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-                                            @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam( "localeFiles" )
-                                            List<FormDataContentDisposition> localeFilesInfo ) {
+  public Response importMetadataDatasourceLegacy( @PathParam("domainId") String domainId,
+                                                  @FormDataParam("metadataFile") InputStream metadataFile,
+                                                  @FormDataParam("metadataFile")
+                                                  FormDataContentDisposition metadataFileInfo,
+                                                  @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
+                                                  @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
+                                                  @FormDataParam("localeFiles")
+                                                  List<FormDataContentDisposition> localeFilesInfo ) {
     try {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;      
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
@@ -258,7 +207,7 @@ public class MetadataResource {
    * Import a Metadata datasource.
    *
    * <p><b>Example Request:</b><br />
-   *    PUT pentaho/plugin/data-access/api/datasource/metadata/SampleData
+   *    PUT pentaho/plugin/data-access/api/datasource/metadata/domain/SampleData
    * <br /><b>PUT data:</b>
    *  <pre function="syntax.xml">
    *      ------WebKitFormBoundaryNLNb246RTFIn1elY
@@ -294,7 +243,7 @@ public class MetadataResource {
    *  </pre>
    */
   @PUT
-  @Path( "/{domainId : .+}" )
+  @Path( "/domain/{domainId : .+}" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
   @StatusCodes( {
@@ -317,7 +266,7 @@ public class MetadataResource {
           localeFilesInfo );
       return Response.status( CREATED ).build();
     } catch ( PentahoAccessControlException e ) {
-      throw new ResourceUtil.AccessControlException( e.getMessage() );
+      throw new WebApplicationException( Response.Status.UNAUTHORIZED );
     } catch ( PlatformImportException e ) {
       if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
         throw new ResourceUtil.PublishProhibitedException( e.getMessage() );
@@ -340,7 +289,52 @@ public class MetadataResource {
       logger.error( e );
       throw new ResourceUtil.UnspecifiedErrorException( e.getMessage() );
     }
-  }  
+  }
+
+
+  /**
+   * This exists to support the legacy import only
+   * @param domainId
+   * @param metadataFile
+   * @param metadataFileInfo
+   * @param overwrite
+   * @param localeFiles
+   * @param localeFilesInfo
+   * @return
+   */
+  protected Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
+                                            @FormDataParam( "metadataFile" ) InputStream metadataFile,
+                                            @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
+                                            @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+                                            @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+                                            @FormDataParam( "localeFiles" )
+                                            List<FormDataContentDisposition> localeFilesInfo ) {
+    try {
+      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
+      service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
+          localeFilesInfo );
+      return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
+    } catch ( PentahoAccessControlException e ) {
+      return buildServerErrorResponse( e );
+    } catch ( PlatformImportException e ) {
+      if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
+        FileResource fr = createFileResource();
+        return buildServerError003Response( domainId, fr );
+      } else {
+        String msg = e.getMessage();
+        logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
+        Throwable throwable = e.getCause();
+        if ( throwable != null ) {
+          msg = throwable.getMessage();
+          logger.error( "Root cause: " + msg );
+        }
+        return buildOkResponse( String.valueOf( e.getErrorStatus() ) );
+      }
+    } catch ( Exception e ) {
+      logger.error( e );
+      return buildServerError001Response();
+    }
+  }
 
   protected Response buildOkResponse( String statusCode ) {
     return Response.ok( statusCode ).type( MediaType.TEXT_PLAIN ).build();

@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -59,9 +60,9 @@ public class DataSourceWizardResourceTest {
     doReturn( mockFileData ).when( dataSourceWizardResource.service ).doGetDSWFilesAsDownload( "dswId" );
     doReturn( mockResponse ).when( dataSourceWizardResource ).createAttachment( mockFileData, "dswId" );
 
-    Response response = dataSourceWizardResource.download( "dswId" );
+    Response response = dataSourceWizardResource.downloadDsw( "dswId" );
 
-    verify( dataSourceWizardResource, times( 1 ) ).download(  "dswId" );
+    verify( dataSourceWizardResource, times( 1 ) ).downloadDsw( "dswId" );
     assertEquals( mockResponse, response );
   }
 
@@ -75,10 +76,10 @@ public class DataSourceWizardResourceTest {
       "dswId" );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildUnauthorizedResponse();
 
-    Response response = dataSourceWizardResource.download( "dswId" );
+    Response response = dataSourceWizardResource.downloadDsw( "dswId" );
     assertEquals( mockResponse, response );
 
-    verify( dataSourceWizardResource, times( 1 ) ).download( "dswId" );
+    verify( dataSourceWizardResource, times( 1 ) ).downloadDsw( "dswId" );
   }
 
   @Test
@@ -101,9 +102,12 @@ public class DataSourceWizardResourceTest {
     doThrow( mockPentahoAccessControlException ).when( dataSourceWizardResource.service ).removeDSW( "dswId" );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildUnauthorizedResponse();
 
-    Response response = dataSourceWizardResource.remove( "dswId" );
-    assertEquals( mockResponse, response );
-
+    try {
+      Response response = dataSourceWizardResource.remove( "dswId" );
+      fail( "should have thrown an exception" );
+    } catch ( Exception e ){
+      //good
+    }
     verify( dataSourceWizardResource, times( 1 ) ).remove( "dswId" );
   }
 
@@ -114,9 +118,9 @@ public class DataSourceWizardResourceTest {
     doReturn( mockDSWDatasources ).when( dataSourceWizardResource.service ).getDSWDatasourceIds();
     doReturn( mockJaxbList ).when( dataSourceWizardResource ).createNewJaxbList( mockDSWDatasources );
 
-    JaxbList<String> response = dataSourceWizardResource.getDSWDatasourceIds();
+    JaxbList<String> response = dataSourceWizardResource.getDSWDIds();
 
-    verify( dataSourceWizardResource, times( 1 ) ).getDSWDatasourceIds();
+    verify( dataSourceWizardResource, times( 1 ) ).getDSWDIds();
     assertEquals( mockJaxbList, response );
   }
 
