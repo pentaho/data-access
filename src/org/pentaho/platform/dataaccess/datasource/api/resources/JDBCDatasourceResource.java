@@ -77,10 +77,10 @@ public class JDBCDatasourceResource {
   @DELETE
   @Path( "/connection/{name : .+}" )
   @StatusCodes( {
-      @ResponseCode( code = 200, condition = "JDBC datasource removed successfully." ),
-      @ResponseCode( code = 304,
-          condition = "User is not authorized to remove the JDBC datasource or the connection does not exist." ),
-      @ResponseCode( code = 500, condition = "An unexected error occurred while deleting the JDBC datasource." )
+    @ResponseCode( code = 200, condition = "JDBC datasource removed successfully." ),
+    @ResponseCode( code = 304,
+      condition = "User is not authorized to remove the JDBC datasource or the connection does not exist." ),
+    @ResponseCode( code = 500, condition = "An unexected error occurred while deleting the JDBC datasource." )
   } )
   public Response deleteConnection( @PathParam( "name" ) String name ) {
     try {
@@ -149,8 +149,8 @@ public class JDBCDatasourceResource {
   @Path( "/connection" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
-      @ResponseCode( code = 200, condition = "Successfully retrieved the list of JDBC datasource IDs" ),
-      @ResponseCode( code = 500, condition = "Internal error retrieving JDBC datasource IDs" ),
+    @ResponseCode( code = 200, condition = "Successfully retrieved the list of JDBC datasource IDs" ),
+    @ResponseCode( code = 500, condition = "Internal error retrieving JDBC datasource IDs" )
   } )
   public JaxbList<String> getConnectionIDs() {
     List<String> connStrList = new ArrayList<String>();
@@ -224,8 +224,8 @@ public class JDBCDatasourceResource {
   @Path( "/connection/{name : .+}" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
-      @ResponseCode( code = 200, condition = "Successfully retrieved the JDBC datasource" ),
-      @ResponseCode( code = 500, condition = "An error occurred retrieving the JDBC datasource" )
+    @ResponseCode( code = 200, condition = "Successfully retrieved the JDBC datasource" ),
+    @ResponseCode( code = 500, condition = "An error occurred retrieving the JDBC datasource" )
   } )
   public Response getConnection( @PathParam( "name" ) String name ) {
     try {
@@ -286,10 +286,10 @@ public class JDBCDatasourceResource {
   @Path( "/connection/{connectionId : .+}" )
   @Consumes( { APPLICATION_JSON } )
   @StatusCodes( {
-      @ResponseCode( code = 200, condition = "JDBC datasource added successfully." ),
-      @ResponseCode( code = 403, condition = "User is not authorized to add JDBC datasources." ),
-      @ResponseCode( code = 304, condition = "Datasource was not modified" ),
-      @ResponseCode( code = 500, condition = "An unexected error occurred while adding the JDBC datasource." )
+    @ResponseCode( code = 200, condition = "JDBC datasource added successfully." ),
+    @ResponseCode( code = 403, condition = "User is not authorized to add JDBC datasources." ),
+    @ResponseCode( code = 304, condition = "Datasource was not modified" ),
+    @ResponseCode( code = 500, condition = "An unexected error occurred while adding the JDBC datasource." )
   } )
   public Response addOrUpdate( @PathParam( "connectionId" ) String connectionName, DatabaseConnection connection ) {
     try {
