@@ -150,7 +150,7 @@ public class JDBCDatasourceResource {
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of JDBC datasource IDs" ),
-    @ResponseCode( code = 500, condition = "Internal error retrieving JDBC datasource IDs" ),
+    @ResponseCode( code = 500, condition = "Internal error retrieving JDBC datasource IDs" )
   } )
   public JaxbList<String> getConnectionIDs() {
     List<String> connStrList = new ArrayList<String>();
