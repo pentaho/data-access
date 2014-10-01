@@ -186,14 +186,32 @@ public class DatasourceResource extends DataSourceWizardResource {
     return new AnalysisResource().downloadSchema( analysisId );
   }
 
+
   /**
-   * Download the data source wizard data for a given data source wizard ID
-   * 
-   * @param dswId
-   *          String Id of the data source wizard data to retrieve
-   * 
-   * @return Response containing the file data
+   * Export the DSW data source for the given DSW ID.  The response will be zipped if there is
+   * more than one file.  The response will contain an XMI and/or a mondrian cube definition file.
+   *
+   * <p><b>Example Request:</b><br />
+   *    GET pentaho/plugin/data-access/api/datasource/dsw/jmeter-dsw-pentaho-test.xmi/download
+   * </p>
+   *
+   * @param dswId The id of the DSW datasource to export
+   *
+   * @return A Response object containing the encrypted DSW data source files.
+   *
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *          An encrypted .XMI file or a .zip with encoded .XMI files
+   *    </pre>
    */
+  @GET
+  @Path( "/datasource/dsw/{dswId : .+}/download" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "DSW datasource export succeeded." ),
+      @ResponseCode( code = 401, condition = "User is not authorized to export DSW datasource." ),
+      @ResponseCode( code = 500, condition = "Failure to export DSW datasource." )
+  } )
   public Response doGetDSWFilesAsDownload( @PathParam( "dswId" ) String dswId ) {
     return new DataSourceWizardResource().downloadDsw( dswId );
   }
