@@ -1,0 +1,39 @@
+<style type="text/css">
+	#{{id}}.message-dialog {
+		display: none;
+		width: 376px;
+		height: 116px;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		margin-left: -188px;
+		margin-top: -58px;
+
+		text-align: center;
+	}
+
+	#{{id}} .pentaho-button {
+		display: inline-block;
+	}
+
+	#{{id}} .message {
+		color: #777;
+		padding: 5px 10px 10px;
+	}
+
+	#{{id}} .button-bar {
+		position: absolute;
+		bottom: 10px;
+		width: 100%;
+	}
+
+</style>
+<div id="{{id}}" class="pentaho-dialog message-dialog" draggable drag-id="{{id}}-title">
+	<div id="{{id}}-title" class="message-title Caption">{{messageTitle}}</div>
+	<div class="message">{{message}}</div>
+
+	<div class="button-bar">
+		<div ng-show="showOk === 'true'" class="pentaho-button" ng-click="onOk()">{{text.okButton}}</div>
+		<div ng-show="showCancel === 'true'" class="pentaho-button" ng-click="onCancel()">{{text.cancelButton}}</div>
+	</div>
+</div>

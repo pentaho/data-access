@@ -1,0 +1,53 @@
+<div id="manage-datasource-dialog" class="pentaho-dialog data-access-dialog angular-dialog bootstrap" draggable drag-id="manage-datasource-dialog-title">
+	<div class='nav-bar container-fluid'>
+		<div class="row-fluid">
+			<div id="manage-datasource-dialog-title" class="angular-dialog-title Caption span12">{{text.title}}</div>
+		</div>
+	</div>
+
+	<div id="manage-data-sources-data" class="container-fluid">
+
+		<div class="row-fluid">
+			<div class="span7">
+				<!-- <form class="navbar-search pull-left span5">
+					<input type="text" class="search-query" placeholder="{{text.search}}" ng-model="search"></input>
+				</form> -->
+			</div>
+			<div class="span1">
+				<datasource-settings></datasource-settings>
+			</div>
+			<div id="new-data-source-container" class="span4">
+				<div ng-click="goto('/data-access/new-data-source')" class="nav-button next pentaho-button">{{text.newDataSource}}</div>
+			</div>
+		</div>
+
+		<div class="row-fluid header">
+			<div class="span6 header-cell">
+				<p ng-click="nameReverse = !nameReverse; predicate = 'value'; reverse=nameReverse">
+					{{text.name}}
+					<div class="{{arrowButtonClass(nameReverse)}} title-arrow"></div>
+				</p>
+			</div>
+
+			<div class="span6 type-cell header-cell">
+				<div class="resize-col" ng-mousedown="resize($event)"></div>
+				<p  ng-click="typeReverse = !typeReverse; predicate = 'type'; reverse=typeReverse">
+					{{text.type}}
+					<div class="{{arrowButtonClass(typeReverse)}} title-arrow"></div>
+				</p>
+			</div>
+		</div>
+
+		<div id="data-scroll-container">
+			<div class="row-fluid data {{$even ? 'even' : 'odd'}}" ng-click="select($event)" ng-repeat="connection in data | filter:search | orderBy:predicate:reverse">
+				<div class="span6 content-cell" title="{{connection.value}}">{{connection.value}}</div>
+				<div class="span6 content-cell type-cell" title="{{connection.type}}">{{connection.type}}</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div ng-click="close()" class="nav-button prev pentaho-button">{{text.prevButton}}</div>
+
+	<!-- <div class="glasspane"></div> -->
+</div>
