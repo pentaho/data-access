@@ -88,6 +88,12 @@
       <artifact name="pentaho-modeler" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
 
+    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}" changing="true"
+                transitive="true">
+      <artifact name="pentaho-metadata"/>
+      <artifact name="pentaho-metadata" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+
     <dependency org="pentaho" name="pentaho-connections" rev="${dependency.pentaho-connections.revision}"
                 changing="true"/>
 
