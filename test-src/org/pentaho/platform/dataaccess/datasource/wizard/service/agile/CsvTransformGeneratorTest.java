@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.mockito.Mockito;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.concept.types.AggregationType;
@@ -230,7 +231,35 @@ public class CsvTransformGeneratorTest extends BaseTest {
     
   }
 
-  
+  public void testSemiColonAfterQuoteIsFound() throws Exception {
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+
+    DatabaseMeta realDbMeta = getDatabaseMeta();
+    ModelInfo info = createModel();
+
+    final DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    final Database db = Mockito.mock( Database.class );
+    CsvTransformGenerator gen = new CsvTransformGenerator( info, realDbMeta ) {
+      @Override Database getDatabase( final DatabaseMeta databaseMeta ) {
+        assertSame( dbMeta, databaseMeta );
+        return db;
+      }
+    };
+    gen.execSqlStatement(
+      "UPDATE \"csv_test4\" SET \"YEAR_ID_KTL\"=\"YEAR_ID\";\nALTER TABLE \"csv_test4\" DROP ( \"YEAR_ID\" )",
+      dbMeta, new StringBuilder() );
+    Mockito.verify( db ).execStatement( "UPDATE \"csv_test4\" SET \"YEAR_ID_KTL\"=\"YEAR_ID\"" );
+    Mockito.verify( db ).execStatement( "ALTER TABLE \"csv_test4\" DROP ( \"YEAR_ID\" )" );
+
+    //again but with single quotes
+    gen.execSqlStatement(
+      "UPDATE \"csv_test4\" SET \"YEAR_ID_KTL\"=\'YEAR_ID\';\nALTER TABLE \"csv_test4\" DROP ( \'YEAR_ID\' )",
+      dbMeta, new StringBuilder() );
+    Mockito.verify( db ).execStatement( "UPDATE \"csv_test4\" SET \"YEAR_ID_KTL\"=\'YEAR_ID\'" );
+    Mockito.verify( db ).execStatement( "ALTER TABLE \"csv_test4\" DROP ( \'YEAR_ID\' )" );
+  }
+
   // Test helper to create an in-memory database to use
   private static DatabaseMeta getDatabaseMeta() {
     //------------------------------------------------------------------------
