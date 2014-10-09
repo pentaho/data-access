@@ -2,46 +2,40 @@
  * Defines the plugin for the angular views for data access
  */
 
-pen.require(['mantle/puc-api/pucAngularPlugin'], function(PUCAngularPlugin) {
+var deps = [
+	'mantle/puc-api/pucAngularPlugin', 
+	"content/data-access-v2/resources/web/js/data-access-controllers",
+	"content/data-access-v2/resources/web/js/data-access-services",
+	"content/data-access-v2/resources/web/js/data-access-directives"
+];
+
+require(deps, function(PUCAngularPlugin, controllers, services, directives) {
 	pen.startDataAccess = function() {
-		plugin.goNext("/data-access");
+		// plugin.goto("/data-access/manage-data-sources");
+		plugin.goto("/data-access/manage-data-sources");
 	}
 
 	// Routes
 	var routes = function($routeProvider) {
 		$routeProvider
-			.when("/data-access", {
-				templateUrl : "content/data-access-v2/resources/web/partials/data-access.html",
-				controller : "DataAccessController"		
+			.when("/data-access/manage-data-sources", {
+				templateUrl : "content/data-access-v2/resources/web/partials/manage-data-sources.html",
+				controller : "ManageDataAccessController"		
 			})
-			.when("/data-access-page1", {
-				templateUrl : "content/data-access-v2/resources/web/partials/data-access-page1.html",
-				controller : "DataAccessController1"
+			.when("/data-access/new-data-source", {
+				templateUrl : "content/data-access-v2/resources/web/partials/new-data-source.html",
+				controller : "NewDataSourceController"
 			})
-			.when("/data-access-page2", {
-				templateUrl : "content/data-access-v2/resources/web/partials/data-access-page2.html"
+			.when("/data-access/edit-data-source", {
+				templateUrl : "content/data-access-v2/resources/web/partials/edit-data-source-connection.html",
+				controller : "EditDataSourceController"
 			});
 	}
-	
-	// Controllers
-	var controllers = function($controllerProvider) {
 
-		$controllerProvider("DataAccessController", ["$scope", 
-			function($scope) {
-				$scope.title="Data-access";
-			}]);
-
-		$controllerProvider("DataAccessController1", ["$scope", 
-			function($scope) {
-				$scope.title="Page1";
-			}]);
-	}	
-	
-	// TODO: retrieve data to populate the page
-	var service = null;
-	
 	var plugin = new PUCAngularPlugin({
 		routerCallback : routes,
-		controllerCallback : controllers
+		controllerCallback : controllers,
+		serviceCallback : services,
+		directiveCallback : directives
 	}).register();
 })
