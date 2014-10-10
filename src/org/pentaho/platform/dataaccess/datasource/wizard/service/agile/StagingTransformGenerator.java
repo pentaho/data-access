@@ -460,7 +460,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
       throw new IllegalArgumentException( "DatabaesMeta cannot be null" ); //$NON-NLS-1$
     }
 
-    Database db = new Database( ci );
+    Database db = getDatabase( ci );
     try {
       db.connect( null );
 
@@ -488,6 +488,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
             to++;
           }
         }
+        c = all.charAt( to );
         if ( c == ';' || to >= length - 1 ) { // end of statement
           if ( to >= length - 1 ) {
             to++; // grab last char also!
@@ -516,6 +517,10 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     } finally {
       db.disconnect();
     }
+  }
+
+  Database getDatabase( final DatabaseMeta databaseMeta ) {
+    return new Database( databaseMeta );
   }
 
   protected int convertDataType( ColumnInfo ci ) {
