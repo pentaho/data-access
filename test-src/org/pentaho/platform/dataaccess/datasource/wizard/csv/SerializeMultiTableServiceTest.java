@@ -27,6 +27,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
@@ -39,6 +40,7 @@ import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.olap.OlapDimension;
@@ -170,6 +172,25 @@ public class SerializeMultiTableServiceTest {
     SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
   }
 
+  @After
+  public void tearDown(){
+    /**
+     * This is necessary for HSQLDB only. As otherwise it lefts lock and all the following tests can't access DB
+     */
+    DatabaseMeta dbm = getDatabaseMeta();
+    Database db = new Database( dbm );
+    try{
+      db.connect();
+      db.execStatement( "SHUTDOWN" );
+    }
+    catch(Exception ex){ }
+    finally{
+      db.disconnect();
+    }
+    logout();
+    booter.stop();
+  }
+  
   @Test
   public void testSerialize() throws Exception {
 
@@ -178,8 +199,10 @@ public class SerializeMultiTableServiceTest {
     }
 
     try {
-      KettleEnvironment.init();
-      Props.init(Props.TYPE_PROPERTIES_EMPTY);
+      if( !KettleEnvironment.isInitialized() ){
+        KettleEnvironment.init();
+        Props.init(Props.TYPE_PROPERTIES_EMPTY);
+      }
     } catch (Exception e) {
       // may already be initialized by another test
     }
@@ -218,7 +241,6 @@ public class SerializeMultiTableServiceTest {
 
     ModelerService service = new ModelerService();
     service.serializeModels(domain, "test_file");//$NON-NLS-1$
-
     Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "SampleData");
 
   }
