@@ -163,7 +163,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
   @Override
   public void onFinish( final IDatasourceSummary summary ) {
-    wizardController.resetSelectedDatasource();
     this.summary = summary;
     if ( wizardModel.isEditing() && summary.getErrorCount() == 0 ) {
       // biserver-6210 - manage modeler dialog listener separate from the wizard's listener
@@ -175,6 +174,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
       new XulServiceCallback<IDatasourceSummary>() {
         @Override
         public void error( String s, Throwable throwable ) {
+          wizardController.resetSelectedDatasource();
           MessageHandler.getInstance().closeWaitingDialog();
           MessageHandler.getInstance().showErrorDialog( s, throwable.getMessage() );
         }
@@ -183,12 +183,14 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
         public void success( IDatasourceSummary iDatasourceSummary ) {
           if ( !showModelerDecision ) {
             handleModelerDialog();
+            wizardController.resetSelectedDatasource();
             return;
           } else {
             if ( iDatasourceSummary.isShowModeler() ) {
               showModelEditor();
             } else {
               onDialogAccept();
+              wizardController.resetSelectedDatasource();
             }
           }
           MessageHandler.getInstance().closeWaitingDialog();
@@ -472,10 +474,13 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     // open up the modeler
     final DialogListener<Domain> listener = new DialogListener<Domain>() {
       public void onDialogCancel() {
+        EmbeddedWizard.this.onDialogAccept();
+        wizardController.resetSelectedDatasource();
       }
 
       public void onDialogAccept( final Domain domain ) {
         EmbeddedWizard.this.onDialogAccept();
+        wizardController.resetSelectedDatasource();
       }
 
       public void onDialogReady() {
@@ -483,8 +488,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
 
       @Override
       public void onDialogError( String errorMessage ) {
-        // TODO Auto-generated method stub
-
+        wizardController.resetSelectedDatasource();
       }
     };
     final Domain domain = summary.getDomain();
