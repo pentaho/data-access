@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
@@ -57,10 +57,9 @@ import org.pentaho.ui.xul.util.AbstractXulDialogController;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 
-
 @SuppressWarnings( "unchecked" )
-public class EmbeddedWizard extends AbstractXulDialogController<Domain>
-  implements IXulLoaderCallback, IResourceBundleLoadCallback, IWizardListener, XulServiceCallback<Domain> {
+public class EmbeddedWizard extends AbstractXulDialogController<Domain> implements IXulLoaderCallback,
+  IResourceBundleLoadCallback, IWizardListener, XulServiceCallback<Domain> {
   protected static final String MAIN_WIZARD_PANEL = "main_wizard_panel.xul"; //$NON-NLS-1$
 
   protected static final String MAIN_WIZARD_PANEL_PACKAGE = "main_wizard_panel"; //$NON-NLS-1$
@@ -77,10 +76,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
 
   private WizardDatasourceController datasourceController;
 
-  //TODO: need to move this to the relational data source
+  // TODO: need to move this to the relational data source
   private ConnectionController connectionController;
 
-  //  private IXulAsyncConnectionService connectionService;
+  // private IXulAsyncConnectionService connectionService;
   private boolean checkHasAccess;
 
   private IXulAsyncDSWDatasourceService datasourceService;
@@ -101,10 +100,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
   private DialogListener<Domain> modelerDialogListener;
   private boolean reportingOnlyValid = true;
 
-
   /**
    * /**
-   *
+   * 
    * @param checkHasAccess
    */
   public EmbeddedWizard( boolean checkHasAccess ) {
@@ -120,11 +118,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     }
   }
 
-
   public void init( final AsyncConstructorListener<EmbeddedWizard> constructorListener ) {
     asyncConstructorListener = constructorListener;
-    //    setConnectionService(connectionService);
-    //    setDatasourceService(datasourceService);
+    // setConnectionService(connectionService);
+    // setDatasourceService(datasourceService);
 
     wizardModel.addDatasource( new CsvDatasource( datasourceModel, datasourceService, csvDatasourceService ) );
     wizardModel.addDatasource( new QueryDatasource( datasourceService, datasourceModel ) );
@@ -133,10 +130,10 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     if ( checkHasAccess ) {
       datasourceService.hasPermission( new XulServiceCallback<Boolean>() {
         public void error( String message, Throwable error ) {
-          MessageHandler.getInstance()
-            .showErrorDialog( datasourceMessages.getString( "DatasourceEditor.ERROR" ), //$NON-NLS-1$
-              datasourceMessages.getString(
-                "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", error.getLocalizedMessage() ) ); //$NON-NLS-1$
+          MessageHandler.getInstance().showErrorDialog(
+            datasourceMessages.getString( "DatasourceEditor.ERROR" ), //$NON-NLS-1$
+            datasourceMessages.getString(
+              "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", error.getLocalizedMessage() ) ); //$NON-NLS-1$
         }
 
         public void success( Boolean retVal ) {
@@ -157,7 +154,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
       EmbeddedWizard.this );
   }
 
-
   public void onCancel() {
     dialog.hide();
     datasourceModel.clearModel();
@@ -167,7 +163,6 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
 
   @Override
   public void onFinish( final IDatasourceSummary summary ) {
-    wizardController.resetSelectedDatasource();
     this.summary = summary;
     if ( wizardModel.isEditing() && summary.getErrorCount() == 0 ) {
       // biserver-6210 - manage modeler dialog listener separate from the wizard's listener
@@ -175,10 +170,11 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
       return;
     }
     final boolean showModelerDecision = !wizardModel.isEditing();
-    summaryDialogController
-      .showSummaryDialog( summary, showModelerDecision, new XulServiceCallback<IDatasourceSummary>() {
+    summaryDialogController.showSummaryDialog( summary, showModelerDecision,
+      new XulServiceCallback<IDatasourceSummary>() {
         @Override
         public void error( String s, Throwable throwable ) {
+          wizardController.resetSelectedDatasource();
           MessageHandler.getInstance().closeWaitingDialog();
           MessageHandler.getInstance().showErrorDialog( s, throwable.getMessage() );
         }
@@ -187,12 +183,14 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
         public void success( IDatasourceSummary iDatasourceSummary ) {
           if ( !showModelerDecision ) {
             handleModelerDialog();
+            wizardController.resetSelectedDatasource();
             return;
           } else {
             if ( iDatasourceSummary.isShowModeler() ) {
               showModelEditor();
             } else {
               onDialogAccept();
+              wizardController.resetSelectedDatasource();
             }
           }
           MessageHandler.getInstance().closeWaitingDialog();
@@ -244,8 +242,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     wizardModel.reset();
     wizardModel.setReportingOnlyValid( this.reportingOnlyValid );
 
-    /* BISERVER-5153: Work around where XulGwtButton is getting its disabled state and style
-     * confused.  The only way to get the train on the track is to flip-flop it.
+    /*
+     * BISERVER-5153: Work around where XulGwtButton is getting its disabled state and style confused. The only way to
+     * get the train on the track is to flip-flop it.
      */
     XulButton nextButton =
       (XulButton) mainWizardContainer.getDocumentRoot().getElementById( "main_wizard_window_extra2" ); //$NON-NLS-1$
@@ -256,8 +255,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     dialog.show();
 
     // BISERVER-6473
-    XulTextbox datasourceName =
-      (XulTextbox) mainWizardContainer.getDocumentRoot().getElementById( "datasourceName" ); //$NON-NLS-1$
+    XulTextbox datasourceName = (XulTextbox) mainWizardContainer.getDocumentRoot().getElementById( "datasourceName" ); //$NON-NLS-1$
     datasourceName.setFocus();
   }
 
@@ -269,7 +267,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
 
     String datasourceType = (String) domain.getLogicalModels().get( 0 ).getProperty( "DatasourceType" );
 
-    //previous versions of Data-access would leave this property blank for Query datasources.
+    // previous versions of Data-access would leave this property blank for Query datasources.
     if ( datasourceType == null ) {
       datasourceType = "SQL-DS";
     }
@@ -283,9 +281,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     }
     if ( selectedDatasource == null ) {
       Window.alert( "bad one: " + datasourceType );
-      MessageHandler.getInstance()
-        .showErrorDialog( datasourceMessages.getString( "datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN_TITLE" ),
-          datasourceMessages.getString( "datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN" ) );
+      MessageHandler.getInstance().showErrorDialog(
+        datasourceMessages.getString( "datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN_TITLE" ),
+        datasourceMessages.getString( "datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN" ) );
       return;
     }
 
@@ -297,9 +295,8 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     selectedDatasource.restoreSavedDatasource( domain, new XulServiceCallback<Void>() {
       @Override
       public void error( String s, Throwable throwable ) {
-        MessageHandler.getInstance()
-          .showErrorDialog( datasourceMessages.getString( "datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN" ),
-            throwable.getMessage() );
+        MessageHandler.getInstance().showErrorDialog(
+          datasourceMessages.getString( "datasourceDialog.ERROR_INCOMPATIBLE_DOMAIN" ), throwable.getMessage() );
       }
 
       @Override
@@ -309,14 +306,18 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     } );
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.gwt.util.IXulLoaderCallback#overlayLoaded()
    */
   public void overlayLoaded() {
 
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.gwt.util.IXulLoaderCallback#overlayRemoved()
    */
   public void overlayRemoved() {
@@ -328,17 +329,17 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     return mainWizardContainer;
   }
 
-  //  public void setConnectionService(IXulAsyncConnectionService service) {
-  //    this.connectionService = service;
-  //    if(connectionController != null){
-  //      connectionController.setService(service);
-  //      connectionController.reloadConnections();
-  //    }
-  //  }
+  // public void setConnectionService(IXulAsyncConnectionService service) {
+  // this.connectionService = service;
+  // if(connectionController != null){
+  // connectionController.setService(service);
+  // connectionController.reloadConnections();
+  // }
+  // }
 
-  //  public IXulAsyncConnectionService getConnectionService() {
-  //    return connectionService;
-  //  }
+  // public IXulAsyncConnectionService getConnectionService() {
+  // return connectionService;
+  // }
 
   public IXulAsyncDSWDatasourceService getDatasourceService() {
     return datasourceService;
@@ -352,7 +353,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     this.datasourceService = datasourceService;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.gwt.util.IXulLoaderCallback#xulLoaded(org.pentaho.ui.xul.gwt.GwtXulRunner)
    */
   public void xulLoaded( GwtXulRunner runner ) {
@@ -370,7 +373,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
 
     connectionController = new ConnectionController( rootDocument );
     connectionController.setDatasourceModel( datasourceModel );
-    //    connectionController.setService(connectionService);
+    // connectionController.setService(connectionService);
     mainWizardContainer.addEventHandler( connectionController );
 
     summaryDialogController.setBindingFactory( bf );
@@ -390,11 +393,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     mainWizardContainer.addEventHandler( MessageHandler.getInstance() );
 
     // add the steps ..
-    //    physicalStep = new RelationalPhysicalStep(datasourceService, connectionService, datasourceMessages, this);
-
+    // physicalStep = new RelationalPhysicalStep(datasourceService, connectionService, datasourceMessages, this);
 
     wizardController.addWizardListener( this );
-
 
     // Controller for the File Import functionality
     FileImportController fileImportController = new FileImportController( datasourceModel, datasourceMessages );
@@ -405,10 +406,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     MessageHandler.getInstance().init();
     summaryDialogController.init();
 
-
     // Create the gui
     try {
-      //new WizardContentPanel(wizardController).addContent(mainWizardContainer);
+      // new WizardContentPanel(wizardController).addContent(mainWizardContainer);
       wizardController.init();
       initialized = true;
     } catch ( Exception throwable ) {
@@ -437,7 +437,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     this.datasourceModel = datasourceModel;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.util.AbstractXulDialogController#getDialog()
    */
   @Override
@@ -445,7 +447,9 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     return dialog;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.ui.xul.util.AbstractXulDialogController#getDialogResult()
    */
   @Override
@@ -470,10 +474,13 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
     // open up the modeler
     final DialogListener<Domain> listener = new DialogListener<Domain>() {
       public void onDialogCancel() {
+        EmbeddedWizard.this.onDialogAccept();
+        wizardController.resetSelectedDatasource();
       }
 
       public void onDialogAccept( final Domain domain ) {
         EmbeddedWizard.this.onDialogAccept();
+        wizardController.resetSelectedDatasource();
       }
 
       public void onDialogReady() {
@@ -481,8 +488,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
 
       @Override
       public void onDialogError( String errorMessage ) {
-        // TODO Auto-generated method stub
-
+        wizardController.resetSelectedDatasource();
       }
     };
     final Domain domain = summary.getDomain();
@@ -499,7 +505,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
 
   @Override
   public void error( String s, Throwable throwable ) {
-    //To change body of implemented methods use File | Settings | File Templates.
+    // To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -515,7 +521,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain>
 
   /**
    * Upload path is by necessity relative. as such it will differ where the module is based.
-   *
+   * 
    * @param path
    */
   public void setUploadPath( String path ) {
