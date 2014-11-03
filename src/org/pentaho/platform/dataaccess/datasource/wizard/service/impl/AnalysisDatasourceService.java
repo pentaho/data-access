@@ -17,106 +17,128 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import java.io.InputStream;
+
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.enunciate.Facet;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
+import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
-import org.codehaus.enunciate.Facet;
-import org.codehaus.enunciate.jaxrs.ResponseCode;
-import org.codehaus.enunciate.jaxrs.StatusCodes;
-import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.dataaccess.datasource.api.resources.AnalysisResource;
-import org.pentaho.platform.web.http.api.resources.JaxbList;
 
-import java.io.InputStream;
-
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
-import static javax.ws.rs.core.MediaType.*;
-
-@Path( "/data-access/api/datasource/analysis" )
-public class AnalysisDatasourceService extends AnalysisResource {
-
-  public AnalysisDatasourceService() {
-    super();
-  }
+@Path( "/data-access/api/mondrian" )
+public class AnalysisDatasourceService {
+  
+  private static final Log logger = LogFactory.getLog( AnalysisDatasourceService.class );
+  
+  private static final String XMLA_ENABLED_FLAG = "xmlaEnabledFlag";
+  private static final String CATALOG_NAME = "catalogName";
+  private static final String ORIG_CATALOG_NAME = "origCatalogName";
+  private static final String DATASOURCE_NAME = "datasourceName";
+  private static final String UPLOAD_ANALYSIS = "uploadAnalysis";
+  private static final String PARAMETERS = "parameters";
+  private static final String OVERWRITE_IN_REPOS = "overwrite";
+  private static final int SUCCESS = 3;
 
   /**
-   * Get list of IDs of analysis datasource
-   *
-   * @return JaxbList<String> of analysis IDs
+   * This is used by PUC to use a Jersey put to import a Mondrian Schema XML into PUR
+   * 
+   * @param dataInputStream
+   * @param schemaFileInfo
+   * @param catalogName
+   * @param datasourceName
+   * @param overwrite
+   * @param xmlaEnabledFlag
+   * @param parameters
+   * @return this method returns a response of "3" for success, 8 if exists, etc.
+   * @throws PentahoAccessControlException
    */
-  @GET
-  @Path( "/ids" )
-  @Produces( { APPLICATION_XML, APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public JaxbList<String> getAnalysisDatasourceIds() {
-    return new AnalysisResource().getSchemaIds();
-  }
-
-
-  @GET
-  @Path( "/{catalog : .+}/download" )
-  @Produces( WILDCARD )
-  @StatusCodes( {
-      @ResponseCode( code = 200, condition = "Successfully downloaded the analysis file" ),
-      @ResponseCode( code = 401, condition = "Unauthorized" ),
-      @ResponseCode( code = 500, condition = "Unabled to download analysis file" )
-  } )
-  public Response doGetAnalysisFilesAsDownload( @PathParam( "catalog" ) String catalog ) {
-    return new AnalysisResource().downloadSchema( catalog );
-  }
-
-
   @PUT
-  @Path( "/import" )
+  @Path( "/putSchema" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( "text/plain" )
-  @StatusCodes( {
-      @ResponseCode( code = 200,
-          condition = "Status code indicating a success or failure while importing Mondrian schema XML. A response of:\n"
-              + "   *  2: Unspecified general error has occurred\n"
-              + "   *  3: Success\n"
-              + "   *  5: Authorization error" )
-  } )
+  @Facet( name = "Unsupported" )
   public Response putMondrianSchema(
-      @FormDataParam( UPLOAD_ANALYSIS ) InputStream uploadAnalysis,
+      @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
       @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
-      @FormDataParam( CATALOG_ID ) String catalogName, // Optional
+      @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
       @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
-      throws PentahoAccessControlException {
-    return super.importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters );
-  }
-
-
-
-
-  @POST
-  @Path( "/{catalog : .+}/remove" )
-  @Produces( WILDCARD )
-  @StatusCodes( {
-      @ResponseCode( code = 200, condition = "Successfully removed the analysis data" ),
-      @ResponseCode( code = 401, condition = "User is not authorized to delete the analysis datasource" ),
-      @ResponseCode( code = 500, condition = "Unable to remove the analysis data." )
-  } )
-  public Response doRemoveAnalysis( @PathParam( "catalog" ) String catalog ) {
+    throws PentahoAccessControlException {
+    Response response = null;
+    int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
-      service.removeAnalysis( catalog );
-      return buildOkResponse();
-    } catch ( PentahoAccessControlException e ) {
-      return buildUnauthorizedResponse();
+      AnalysisService service = new AnalysisService();
+      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
+      boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;
+      service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
+          overWriteInRepository, xmlaEnabled, parameters );
+      statusCode = SUCCESS;
+    } catch ( PentahoAccessControlException pac ) {
+      logger.error( pac.getMessage() );
+      statusCode = PlatformImportException.PUBLISH_USERNAME_PASSWORD_FAIL;
+    } catch ( PlatformImportException pe ) {
+      statusCode = pe.getErrorStatus();
+      logger.error( "Error putMondrianSchema " + pe.getMessage() + " status = " + statusCode );
+    } catch ( Exception e ) {
+      logger.error( "Error putMondrianSchema " + e.getMessage() );
+      statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
+
+    response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+    logger.debug( "putMondrianSchema Response " + response );
+    return response;
   }
 
+  /**
+   * This is used by PUC to use a form post to import a Mondrian Schema XML into PUR
+   * 
+   * @param dataInputStream
+   * @param schemaFileInfo
+   * @param catalogName
+   * @param datasourceName
+   * @param overwrite
+   * @param xmlaEnabledFlag
+   * @param parameters
+   * @return this method returns a response of "SUCCESS" for success, 8 if exists, 2 for general error,etc.
+   * @throws PentahoAccessControlException
+   */
+  @POST
+  @Path( "/postAnalysis" )
+  @Consumes( MediaType.MULTIPART_FORM_DATA )
+  @Produces( { "text/plain", "text/html" } )
+  @Facet( name = "Unsupported" )
+  public Response postMondrainSchema(
+      @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
+      @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
+      @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
+      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
+      @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
+      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
+    throws PentahoAccessControlException {
+    // use existing Jersey post method - but translate into text/html for PUC Client
+    ResponseBuilder responseBuilder;
+    Response response =
+        this.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
+            overwrite, xmlaEnabledFlag, parameters );
+    responseBuilder = Response.ok();
+    responseBuilder.entity( String.valueOf( response.getStatus() ) );
+    responseBuilder.status( 200 );
+    return responseBuilder.build();
+  }
 }

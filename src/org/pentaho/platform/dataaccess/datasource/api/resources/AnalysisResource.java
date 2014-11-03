@@ -19,6 +19,8 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
+
+import org.codehaus.enunciate.Facet;
 import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -38,6 +41,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +54,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
  * This service allows for listing, download, upload, and removal of Analysis files or Mondrian schemas in the BA
  * Platform.
  */
+@Path( "/data-access/api/datasource/analysis" )
 public class AnalysisResource {
 
   protected static final String UPLOAD_ANALYSIS = "uploadInput";
@@ -345,7 +350,6 @@ public class AnalysisResource {
     }
   }
 
-
   public Response importMondrianSchema(
       @FormDataParam( UPLOAD_ANALYSIS ) InputStream uploadAnalysis,
       @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
@@ -397,5 +401,72 @@ public class AnalysisResource {
 
   protected Response buildUnauthorizedResponse() {
     return Response.status( UNAUTHORIZED ).build();
+  }
+  
+  /**
+   * Get list of IDs of analysis datasource
+   *
+   * @return JaxbList<String> of analysis IDs
+   */
+  @GET
+  @Path( "/ids" )
+  @Produces( { APPLICATION_XML, APPLICATION_JSON } )
+  @Facet( name = "Unsupported" )
+  public JaxbList<String> getAnalysisDatasourceIds() {
+    return getSchemaIds();
+  }
+
+  @GET
+  @Path( "/{catalog : .+}/download" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully downloaded the analysis file" ),
+      @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 500, condition = "Unabled to download analysis file" )
+  } )
+  
+  public Response doGetAnalysisFilesAsDownload( @PathParam( "catalog" ) String catalog ) {
+    return downloadSchema( catalog );
+  }
+
+  @PUT
+  @Path( "/import" )
+  @Consumes( MediaType.MULTIPART_FORM_DATA )
+  @Produces( "text/plain" )
+  @StatusCodes( {
+      @ResponseCode( code = 200,
+          condition = "Status code indicating a success or failure while importing Mondrian schema XML. A response of:\n"
+              + "   *  2: Unspecified general error has occurred\n"
+              + "   *  3: Success\n"
+              + "   *  5: Authorization error" )
+  } )
+  
+  public Response putMondrianSchema(
+      @FormDataParam( UPLOAD_ANALYSIS ) InputStream uploadAnalysis,
+      @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
+      @FormDataParam( CATALOG_ID ) String catalogName, // Optional
+      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
+      @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
+      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
+      throws PentahoAccessControlException {
+    return importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters );
+  }
+
+  @POST
+  @Path( "/{catalog : .+}/remove" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully removed the analysis data" ),
+      @ResponseCode( code = 401, condition = "User is not authorized to delete the analysis datasource" ),
+      @ResponseCode( code = 500, condition = "Unable to remove the analysis data." )
+  } )
+  public Response doRemoveAnalysis( @PathParam( "catalog" ) String catalog ) {
+    try {
+      service.removeAnalysis( catalog );
+      return buildOkResponse();
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    }
   }
 }

@@ -49,6 +49,7 @@ import org.pentaho.platform.web.http.api.resources.JaxbList;
 /**
  * This service provides methods for listing, creating, downloading, uploading, and removal of JDBC data sources.
  */
+@Path( "/data-access/api/datasource/jdbc/connection" )
 public class JDBCDatasourceResource {
 
   protected ConnectionServiceImpl service;
@@ -75,7 +76,7 @@ public class JDBCDatasourceResource {
    *    </pre>
    */
   @DELETE
-  @Path( "/connection/{name : .+}" )
+  @Path( "/{name : .+}" )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "JDBC datasource removed successfully." ),
     @ResponseCode( code = 304,
@@ -146,7 +147,7 @@ public class JDBCDatasourceResource {
    *    </pre>
    */
   @GET
-  @Path( "/connection" )
+  @Path( "/" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of JDBC datasource IDs" ),
@@ -221,7 +222,7 @@ public class JDBCDatasourceResource {
    *    </pre>
    */
   @GET
-  @Path( "/connection/{name : .+}" )
+  @Path( "/{name : .+}" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the JDBC datasource" ),
@@ -283,7 +284,7 @@ public class JDBCDatasourceResource {
    *    </pre>
    */
   @PUT
-  @Path( "/connection/{connectionId : .+}" )
+  @Path( "/{connectionId : .+}" )
   @Consumes( { APPLICATION_JSON } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "JDBC datasource added successfully." ),
@@ -331,7 +332,6 @@ public class JDBCDatasourceResource {
     }
   }
 
-
   protected Response buildOkResponse() {
     return Response.ok().build();
   }
@@ -351,5 +351,4 @@ public class JDBCDatasourceResource {
   protected void validateAccess() throws PentahoAccessControlException {
     DatasourceService.validateAccess();
   }
-
 }

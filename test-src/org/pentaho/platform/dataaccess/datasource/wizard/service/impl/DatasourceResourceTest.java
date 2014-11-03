@@ -53,6 +53,7 @@ import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.dataaccess.datasource.api.resources.DataSourceWizardResource;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.SystemSettings;
@@ -193,7 +194,7 @@ public class DatasourceResourceTest {
 
     new ModelerService().serializeModels( domain, domainName );
 
-    final Response salesData = new DatasourceResource().doGetDSWFilesAsDownload( domainName + ".xmi" );
+    final Response salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( domainName + ".xmi" );
     Assert.assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
     Assert.assertNotNull( salesData.getMetadata() );
     Assert.assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
@@ -230,7 +231,7 @@ public class DatasourceResourceTest {
             "domain-id", "SalesData" ).build() ;
     metadataImportHandler.importFile( bundle1 );
 
-    final Response salesData = new DatasourceResource().doGetDSWFilesAsDownload( "SalesData" );
+    final Response salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( "SalesData" );
     Assert.assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
     Assert.assertNotNull( salesData.getMetadata() );
     Assert.assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
@@ -241,7 +242,7 @@ public class DatasourceResourceTest {
 
   @Test
   public void testPublishDsw() throws Exception {
-    DatasourceResource service = new DatasourceResource();
+    DataSourceWizardResource service = new DataSourceWizardResource();
     Mockery mockery = new Mockery();
     final IPlatformImporter mockImporter = mockery.mock( IPlatformImporter.class );
     mp.defineInstance( IPlatformImporter.class, mockImporter );
