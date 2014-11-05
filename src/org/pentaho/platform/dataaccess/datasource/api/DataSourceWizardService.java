@@ -52,6 +52,7 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
 import org.pentaho.platform.plugin.action.mondrian.MondrianCachePublisher;
+import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServiceException;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
@@ -124,12 +125,16 @@ public class DataSourceWizardService extends DatasourceService {
     }
     if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
       String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
-      mondrianCatalogService.removeCatalog( catalogRef, getSession() );
+      try {
+        mondrianCatalogService.removeCatalog( catalogRef, getSession() );
+      } catch ( MondrianCatalogServiceException e ) {
+        logger.warn( "Failed to remove mondrian catalog", e );
+      }
     }
     try {
       dswService.deleteLogicalModel( domain.getId(), logicalModel.getId() );
     } catch ( DatasourceServiceException ex ) {
-      //do nothing
+      logger.warn( "Failed to remove logical model", ex );
     }
     metadataDomainRepository.removeDomain( dswId );
   }
