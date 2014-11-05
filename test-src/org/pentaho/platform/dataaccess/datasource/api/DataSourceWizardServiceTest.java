@@ -34,6 +34,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServiceException;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
@@ -135,6 +136,34 @@ public class DataSourceWizardServiceTest {
     dataSourceWizardService.removeDSW( "dswId" );
 
     verify( dataSourceWizardService, times( 1 ) ).removeDSW( "dswId" );
+  }
+
+  @Test
+  public void testErrorRemovingMondrianDoesNotStopXMIRemoval() throws Exception {
+    Domain mockDomain = mock( Domain.class );
+    IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
+    ModelerWorkspace mockModelerWorkspace = mock( ModelerWorkspace.class );
+    LogicalModel mockLogicalModel = mock( LogicalModel.class );
+    String mockObject = "not null";
+    String dswId = "dswId";
+
+    doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
+    doReturn( dswId ).when( dataSourceWizardService ).parseMondrianSchemaNameWrapper( dswId );
+    doReturn( mockDomain ).when( dataSourceWizardService.metadataDomainRepository ).getDomain( dswId );
+    doReturn( mockModelerWorkspace ).when( dataSourceWizardService ).createModelerWorkspace();
+    doReturn( null ).when( mockModelerWorkspace ).getLogicalModel( ModelerPerspective.ANALYSIS );
+    doReturn( mockLogicalModel ).when( mockModelerWorkspace ).getLogicalModel( ModelerPerspective.REPORTING );
+    doReturn( mockObject ).when( mockLogicalModel ).getProperty( "MondrianCatalogRef" );
+    doReturn( mockIPentahoSession ).when( dataSourceWizardService ).getSession();
+    doThrow( new MondrianCatalogServiceException( "who cares" ) )
+      .when( dataSourceWizardService.mondrianCatalogService )
+      .removeCatalog( "not null", mockIPentahoSession );
+    doNothing().when( dataSourceWizardService.metadataDomainRepository ).removeDomain( dswId );
+
+    dataSourceWizardService.removeDSW( "dswId" );
+
+    verify( dataSourceWizardService, times( 1 ) ).removeDSW( "dswId" );
+    verify( dataSourceWizardService.metadataDomainRepository ).removeDomain( dswId );
   }
 
   @Test
