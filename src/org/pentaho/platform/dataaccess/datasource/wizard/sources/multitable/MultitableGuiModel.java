@@ -30,6 +30,7 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
@@ -371,7 +372,12 @@ public class MultitableGuiModel extends XulEventSourceAdapter {
   Outter:
     for ( JoinTableModel table : availableTables ) {
       for ( LogicalTable tbl : domain.getLogicalModels().get( 0 ).getLogicalTables() ) {
-        if ( tbl.getPhysicalTable().getProperty( "target_table" ).equals( table.getName() ) ) {
+        Property targetTableProperty = tbl.getPhysicalTable().getProperty( "target_table" );
+        String targetTable = null;
+        if ( targetTableProperty != null ) {
+          targetTable = (String) targetTableProperty.getValue();
+        }
+        if ( ( targetTable ).equals( table.getName() ) ) {
           for ( LogicalColumn col : tbl.getLogicalColumns() ) {
             JoinFieldModel field = new JoinFieldModel();
             field.setName( col.getName( locale ) );

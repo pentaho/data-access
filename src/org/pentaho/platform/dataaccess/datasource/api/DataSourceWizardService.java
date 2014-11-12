@@ -35,6 +35,7 @@ import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -103,7 +104,11 @@ public class DataSourceWizardService extends DatasourceService {
     }
     if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
       MondrianCatalogRepositoryHelper helper = createMondrianCatalogRepositoryHelper();
-      String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
+      Property catalogProperty = logicalModel.getProperty( MONDRIAN_CATALOG_REF );
+      String catalogRef = "";
+      if( catalogProperty != null ) {
+        catalogRef = (String) catalogProperty.getValue();  
+      }
       fileData.putAll( helper.getModrianSchemaFiles( catalogRef ) );
       parseMondrianSchemaNameWrapper( dswId, fileData );
     }
@@ -124,7 +129,11 @@ public class DataSourceWizardService extends DatasourceService {
       logicalModel = model.getLogicalModel( ModelerPerspective.REPORTING );
     }
     if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
-      String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
+      Property catalogProperty = logicalModel.getProperty( MONDRIAN_CATALOG_REF );
+      String catalogRef = "";
+      if ( catalogProperty != null ) {
+        catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF ).getValue();  
+      }
       try {
         mondrianCatalogService.removeCatalog( catalogRef, getSession() );
       } catch ( MondrianCatalogServiceException e ) {
@@ -148,7 +157,7 @@ public class DataSourceWizardService extends DatasourceService {
         List<LogicalModel> logicalModelList = domain.getLogicalModels();
         if ( logicalModelList != null && logicalModelList.size() >= 1 ) {
           for ( LogicalModel logicalModel : logicalModelList ) {
-            Object property = logicalModel.getProperty( "AGILE_BI_GENERATED_SCHEMA" ); //$NON-NLS-1$
+            Property property = logicalModel.getProperty( "AGILE_BI_GENERATED_SCHEMA" ); //$NON-NLS-1$
             if ( property != null ) {
               datasourceList.add( summary.getDomainId() );
               continue nextModel;
@@ -283,7 +292,7 @@ public class DataSourceWizardService extends DatasourceService {
       throw new IllegalArgumentException( "No analysis model in xmi." );
     }
     // reference schema in xmi
-    olapModel.setProperty( MONDRIAN_CATALOG_REF, analysisDomainId );
+    olapModel.setProperty( MONDRIAN_CATALOG_REF, new Property<String>( analysisDomainId ) );
     // generate schema
     MondrianModelExporter exporter = new MondrianModelExporter( olapModel, locale );
     String mondrianSchema = null;

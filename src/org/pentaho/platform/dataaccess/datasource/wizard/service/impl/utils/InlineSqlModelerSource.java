@@ -24,6 +24,7 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
 import org.pentaho.metadata.model.SqlPhysicalTable;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.util.ThinModelConverter;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -81,7 +82,11 @@ public class InlineSqlModelerSource implements ISpoonModelerSource {
     SqlPhysicalModel model = (SqlPhysicalModel) domain.getPhysicalModels().get( 0 );
     SqlPhysicalTable table = model.getPhysicalTables().get( 0 );
 
-    String targetTable = (String) table.getProperty( "target_table" ); //$NON-NLS-1$
+    String targetTable = null;
+    Property property = table.getProperty( "target_table" ); //$NON-NLS-1$
+    if ( property != null ) {
+      targetTable = (String) property.getValue();
+    }
     if ( !StringUtils.isEmpty( targetTable ) ) {
       domain.setId( targetTable );
     }
@@ -92,7 +97,7 @@ public class InlineSqlModelerSource implements ISpoonModelerSource {
 
   public void serializeIntoDomain( Domain d ) {
     LogicalModel lm = d.getLogicalModels().get( 0 );
-    lm.setProperty( "source_type", SOURCE_TYPE ); //$NON-NLS-1$
+    lm.setProperty( "source_type", new Property<String> ( SOURCE_TYPE ) ); //$NON-NLS-1$
   }
 
   public DatabaseMeta getDatabaseMeta() {

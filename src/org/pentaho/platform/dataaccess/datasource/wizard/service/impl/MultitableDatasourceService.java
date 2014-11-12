@@ -37,6 +37,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.Concept;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
 import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
@@ -149,8 +150,8 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 
       String modelState = serializeModelState( dto );
       for ( LogicalModel lm : domain.getLogicalModels() ) {
-        lm.setProperty( "datasourceModel", modelState );
-        lm.setProperty( "DatasourceType", "MULTI-TABLE-DS" );
+        lm.setProperty( "datasourceModel", new Property<String>( modelState ) );
+        lm.setProperty( "DatasourceType", new Property<String>( "MULTI-TABLE-DS" ) );
 
         // BISERVER-6450 - add security settings to the logical model
         applySecurity( lm );
@@ -250,7 +251,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
         SecurityOwner owner = new SecurityOwner( SecurityOwner.OwnerType.ROLE, role );
         security.putOwnerRights( owner, getDefaultAcls() );
       }
-      logicalModel.setProperty( Concept.SECURITY_PROPERTY, security );
+      logicalModel.setProperty( Concept.SECURITY_PROPERTY, new Property<Security>( security ) );
     }
   }
 

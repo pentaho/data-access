@@ -18,6 +18,10 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -41,6 +45,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.data.IDBDatasourceService;
@@ -95,9 +100,6 @@ import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
 import org.springframework.security.userdetails.UserDetailsService;
 import org.springframework.security.userdetails.UsernameNotFoundException;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.anyString;
 
 /**
  * Integration test. Tests {@link DefaultUnifiedRepository} and
@@ -214,7 +216,7 @@ public class SerializeMultiTableServiceTest {
     dimension.setName("test");//$NON-NLS-1$
     dimension.setTimeDimension(false);
     olapDimensions.add(dimension);
-    domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
+    domain.getLogicalModels().get(0).setProperty("olap_dimensions", new Property<List<OlapDimension>>( olapDimensions ) );//$NON-NLS-1$
 
     ModelerService service = new ModelerService();
     service.serializeModels(domain, "test_file");//$NON-NLS-1$

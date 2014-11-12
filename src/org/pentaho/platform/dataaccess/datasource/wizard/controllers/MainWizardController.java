@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.gwt.widgets.client.utils.NameUtils;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
@@ -423,7 +424,7 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       public void success( IDatasourceSummary iDatasourceSummary ) {
 
         iDatasourceSummary.getDomain().getLogicalModels().get( 0 )
-          .setProperty( "DatasourceType", activeDatasource.getId() );
+          .setProperty( "DatasourceType", new Property<String>( activeDatasource.getId() ) );
         for ( IWizardListener wizardListener : wizardListeners ) {
           wizardListener.onFinish( iDatasourceSummary );
         }

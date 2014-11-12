@@ -31,6 +31,7 @@ import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.Concept;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.Alignment;
 import org.pentaho.metadata.model.concept.types.DataType;
@@ -38,8 +39,8 @@ import org.pentaho.metadata.model.concept.types.FieldType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.query.model.CombinationType;
 import org.pentaho.metadata.query.model.Constraint;
-import org.pentaho.metadata.query.model.Selection;
 import org.pentaho.metadata.query.model.Order.Type;
+import org.pentaho.metadata.query.model.Selection;
 import org.pentaho.metadata.query.model.util.QueryXmlHelper;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.dataaccess.metadata.messages.Messages;
@@ -194,13 +195,17 @@ public class MetadataServiceUtil extends PentahoBase {
     // set the alignment
     DataType dataType = c.getDataType();
     FieldType fieldType = c.getFieldType();
-    Object obj = c.getProperty( "alignment" ); //$NON-NLS-1$
-    if ( obj instanceof Alignment ) {
-      if ( obj == Alignment.LEFT ) {
+    Property property = c.getProperty( "alignment" ); //$NON-NLS-1$
+    Object value = null;
+    if( property != null ) {
+      value = property.getValue();
+    }
+    if ( value instanceof Alignment ) {
+      if ( value == Alignment.LEFT ) {
         col.setHorizontalAlignment( Alignment.LEFT.toString() );
-      } else if ( obj == Alignment.RIGHT ) {
+      } else if ( value == Alignment.RIGHT ) {
         col.setHorizontalAlignment( Alignment.RIGHT.toString() );
-      } else if ( obj == Alignment.CENTERED ) {
+      } else if ( value == Alignment.CENTERED ) {
         col.setHorizontalAlignment( Alignment.CENTERED.toString() );
       }
     } else if ( fieldType == FieldType.FACT ) {
@@ -211,9 +216,9 @@ public class MetadataServiceUtil extends PentahoBase {
       col.setHorizontalAlignment( Alignment.LEFT.toString() );
     }
     // set the format mask
-    obj = c.getProperty( "mask" ); //$NON-NLS-1$
-    if ( obj != null ) {
-      col.setFormatMask( (String) obj );
+    property = c.getProperty( "mask" ); //$NON-NLS-1$
+    if ( property != null ) {
+      col.setFormatMask( (String) property.getValue() );
     }
     return col;
   }
@@ -355,7 +360,7 @@ public class MetadataServiceUtil extends PentahoBase {
       DataType type = logicalColumn.getDataType();
       String[] value = parameter.getValue();
       org.pentaho.metadata.query.model.Parameter fullParam =
-        new org.pentaho.metadata.query.model.Parameter( parameter.getColumn(), type, value[ 0 ] );
+        new org.pentaho.metadata.query.model.Parameter( parameter.getColumn(), type, new Property<String>( value[ 0 ] ) );
       parameters.add( fullParam );
     }
     return dest;
