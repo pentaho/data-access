@@ -30,6 +30,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -44,11 +45,13 @@ import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
+
 import com.sun.jersey.multipart.FormDataParam;
 
 /**
  * This service allows for listing, download, and removal of DSW data sources in the BA Platform.
  */
+@Path( "/data-access/api/datasource/dsw" )
 public class DataSourceWizardResource {
 
   protected DataSourceWizardService service;
@@ -77,7 +80,7 @@ public class DataSourceWizardResource {
    *    </pre>
    */
   @GET
-  @Path( "/datasource/dsw/domain/{dswId : .+}" )
+  @Path( "/domain/{dswId : .+}" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "DSW datasource export succeeded." ),
@@ -109,7 +112,7 @@ public class DataSourceWizardResource {
    *    </pre>
    */
   @DELETE
-  @Path( "/datasource/dsw/domain/{dswId : .+}" )
+  @Path( "/domain/{dswId : .+}" )
   @Produces( WILDCARD )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "DSW datasource removed successfully." ),
@@ -146,7 +149,7 @@ public class DataSourceWizardResource {
    *    </pre>
    */
   @GET
-  @Path( "/datasource/dsw/domain" )
+  @Path( "/domain" )
   @Produces( { APPLICATION_XML, APPLICATION_JSON } )
   public JaxbList<String> getDSWDIds() {
     return createNewJaxbList( service.getDSWDatasourceIds() );
@@ -209,7 +212,7 @@ public class DataSourceWizardResource {
    * TODO:  Change path to /datasource/dsw/{dswId:.+} replace Error Responses with WebApplicationException
    **/
   @PUT
-  @Path( "/datasource/dsw/import" )
+  @Path( "/import" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( MediaType.TEXT_PLAIN )
   @Facet( name = "Unsupported" )
@@ -231,5 +234,66 @@ public class DataSourceWizardResource {
       return buildServerErrorResponse();
     }
   }
+  
+  /**
+   * Returns a list of datasource IDs from datasource wizard
+   *
+   * @return JaxbList<String> list of datasource IDs
+   */
+  @GET
+  @Path( "/ids" )
+  @Produces( { APPLICATION_XML, APPLICATION_JSON } )
+  @Facet( name = "Unsupported" )
+  public JaxbList<String> getDSWDatasourceIds() {
+    return getDSWDIds();
+  }
 
+  /**
+   * Export the DSW data source for the given DSW ID.  The response will be zipped if there is
+   * more than one file.  The response will contain an XMI and/or a mondrian cube definition file.
+   *
+   * <p><b>Example Request:</b><br />
+   *    GET pentaho/plugin/data-access/api/datasource/dsw/jmeter-dsw-pentaho-test.xmi/download
+   * </p>
+   *
+   * @param dswId The id of the DSW datasource to export
+   *
+   * @return A Response object containing the encrypted DSW data source files.
+   *
+   * <p><b>Example Response:</b></p>
+   *    <pre function="syntax.xml">
+   *          An encrypted .XMI file or a .zip with encoded .XMI files
+   *    </pre>
+   */
+  @GET
+  @Path( "/{dswId : .+}/download" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "DSW datasource export succeeded." ),
+      @ResponseCode( code = 401, condition = "User is not authorized to export DSW datasource." ),
+      @ResponseCode( code = 500, condition = "Failure to export DSW datasource." )
+  } )
+  public Response doGetDSWFilesAsDownload( @PathParam( "dswId" ) String dswId ) {
+    return downloadDsw( dswId );
+  }
+
+  /**
+   * Remove the metadata for a given metadata ID
+   * 
+   * @param metadataId
+   *          String ID of the metadata to remove
+   * 
+   * @return Response ok if successful
+   */
+  @POST
+  @Path( "/{dswId : .+}/remove" )
+  @Produces( WILDCARD )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "DSW datasource removed successfully." ),
+      @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." ),
+  } )
+  @Facet( name = "Unsupported" )
+  public Response doRemoveMetadata( @PathParam( "dswId" ) String metadataId ) {
+    return remove( metadataId );
+  }
 }
