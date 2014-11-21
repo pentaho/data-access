@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.After;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
@@ -30,6 +31,7 @@ import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
@@ -37,33 +39,53 @@ import org.pentaho.test.platform.engine.core.BaseTest;
 
 public class JoinMetadataTest extends BaseTest {
 
-	static {
-		PentahoSystemHelper.init();
-		try {
-			KettleEnvironment.init();
-			Props.init(Props.TYPE_PROPERTIES_EMPTY);
-		} catch (Exception e) {
-			//May be already initialized by another test
-		}
-		
-	    if(ModelerMessagesHolder.getMessages() == null){
-	  	   ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
-	  	}
-	}
+  static {
+    PentahoSystemHelper.init();
+    try {
+      if ( !KettleEnvironment.isInitialized() ){
+        KettleEnvironment.init();
+        Props.init(Props.TYPE_PROPERTIES_EMPTY);
+      }
+    } catch (Exception e) {
+    	//May be already initialized by another test
+    }
 
-	public void testGenerateDomain() {
-		
-		Domain domain = null;
-		try {
-			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), getSchemaModel(), this.getDatabaseMeta().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
-			domain = multiTable.generateDomain();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		assertNotNull(domain);
+    if(ModelerMessagesHolder.getMessages() == null){
+       ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
+    }
+  }
 
-	}
+  @After
+  public void tearDown(){
+    /**
+     * This is necessary for HSQLDB only. As otherwise it lefts lock and all the following tests can't access DB
+     */
+    DatabaseMeta dbm = getDatabaseMeta();
+    Database db = new Database( dbm );
+    try{
+      db.connect();
+      db.execStatement( "SHUTDOWN" );
+    }
+    catch(Exception ex){ }
+    finally{
+      db.disconnect();
+    }
+  }
+
+  public void testGenerateDomain() {
+
+    Domain domain = null;
+    try {
+      MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), getSchemaModel(), 
+          this.getDatabaseMeta().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+      domain = multiTable.generateDomain();
+    } catch (Exception e) {
+    // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    assertNotNull(domain);
+
+  }
   private SchemaModel getSchemaModel() {
     List<JoinRelationshipModel> joins = new ArrayList<JoinRelationshipModel>();
 
@@ -90,12 +112,12 @@ public class JoinMetadataTest extends BaseTest {
     return model;
   }
 
-	private DatabaseMeta getDatabaseMeta() {
-		DatabaseMeta database = new DatabaseMeta();
-		database.setDatabaseType("Hypersonic");
-		database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-		database.setDBName("SampleData");
-		database.setName("SampleData");
-		return database;
-	}
+  private DatabaseMeta getDatabaseMeta() {
+    DatabaseMeta database = new DatabaseMeta();
+    database.setDatabaseType("Hypersonic");
+    database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
+    database.setDBName("SampleData");
+    database.setName("SampleData");
+    return database;
+  }
 }

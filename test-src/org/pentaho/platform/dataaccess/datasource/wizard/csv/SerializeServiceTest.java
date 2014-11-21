@@ -30,6 +30,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
@@ -40,6 +41,7 @@ import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.olap.OlapDimension;
@@ -168,6 +170,24 @@ public class SerializeServiceTest {
     PentahoSessionHolder.setStrategyName(PentahoSessionHolder.MODE_GLOBAL);
     SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
   }
+  
+  @After
+  public void tearDown(){
+    /**
+     * This is necessary for HSQLDB only. As otherwise it lefts lock and all the following tests can't access DB
+     */
+    DatabaseMeta dbm = getDatabaseMeta();
+    Database db = new Database( dbm );
+    try{
+      db.connect();
+      db.execStatement( "SHUTDOWN" );
+    }
+    catch(Exception ex){ }
+    finally{
+      db.disconnect();
+    }
+    booter.stop();
+  }
 
   @Test
   public void testSerialize() throws Exception {
@@ -177,8 +197,10 @@ public class SerializeServiceTest {
     }
 
     try {
-      KettleEnvironment.init();
-      Props.init(Props.TYPE_PROPERTIES_EMPTY);
+      if ( !KettleEnvironment.isInitialized() ){
+        KettleEnvironment.init();
+        Props.init(Props.TYPE_PROPERTIES_EMPTY);
+      }
     } catch (Exception e) {
       // may already be initialized by another test
     }
@@ -204,6 +226,12 @@ public class SerializeServiceTest {
     FileUtils.copyFile(olap1, olap2);
 
     Domain domain = generateModel();
+    Assert.assertNotNull( domain );
+    Assert.assertNotNull( domain.getLogicalModels() );
+    Assert.assertNotNull( domain.getLogicalModels().get(1) );
+    Assert.assertNotNull( domain.getLogicalModels().get(1).getProperty( "olap_dimensions" ) );
+    Assert.assertEquals( ( ( List<OlapDimension> ) domain.getLogicalModels().get(1).getProperty( "olap_dimensions" ) )
+        .get(0).getName(), "test" );
     ModelerService service = new ModelerService();
 
     ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
@@ -219,16 +247,7 @@ public class SerializeServiceTest {
     Domain domain = null;
     try {
 
-      DatabaseMeta database = new DatabaseMeta();
-      //database.setDatabaseInterface(new HypersonicDatabaseMeta());
-      database.setDatabaseType("Hypersonic");//$NON-NLS-1$
-      //database.setUsername("sa");//$NON-NLS-1$
-      //database.setPassword("");//$NON-NLS-1$
-      database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-      //database.setHostname(".");
-      database.setDBName("SampleData");//$NON-NLS-1$
-      //database.setDBPort("9001");//$NON-NLS-1$
-      database.setName("SampleData");//$NON-NLS-1$
+      DatabaseMeta database = getDatabaseMeta();
 
       System.out.println(database.testConnection());
 
@@ -248,6 +267,20 @@ public class SerializeServiceTest {
     return domain;
   }
 
+  private  DatabaseMeta getDatabaseMeta(){
+    DatabaseMeta database = new DatabaseMeta();
+    //database.setDatabaseInterface(new HypersonicDatabaseMeta());
+    database.setDatabaseType("Hypersonic");//$NON-NLS-1$
+    //database.setUsername("sa");//$NON-NLS-1$
+    //database.setPassword("");//$NON-NLS-1$
+    database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
+    //database.setHostname(".");
+    database.setDBName("SampleData");//$NON-NLS-1$
+    //database.setDBPort("9001");//$NON-NLS-1$
+    database.setName("SampleData");//$NON-NLS-1$
+    return database;
+  }
+ 
   protected void login(final String username, final String tenantId, final boolean tenantAdmin) {
     StandaloneSession pentahoSession = new StandaloneSession(username);
     pentahoSession.setAuthenticated(username);

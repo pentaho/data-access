@@ -17,17 +17,21 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
-import com.thoughtworks.xstream.XStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+
+import junit.framework.Assert;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
+import com.thoughtworks.xstream.XStream;
 
 public class LegacyDatasourceConverterTest {
 
@@ -62,7 +66,16 @@ public class LegacyDatasourceConverterTest {
 
   @Test
   public void testCanConvert() throws Exception {
-
+    LegacyDatasourceConverter converter = new LegacyDatasourceConverter();
+    MultiTableDatasourceDTO msDS = new MultiTableDatasourceDTO(){
+      @Override
+      public boolean isDoOlap() {
+        return false;
+      }
+    };
+    Assert.assertTrue( converter.canConvert( MultiTableDatasourceDTO.class ) );
+    Assert.assertFalse( converter.canConvert( msDS.getClass() ) );
+    Assert.assertFalse( converter.canConvert( CsvDatasource.class ) );
   }
 
   @Test
