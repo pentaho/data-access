@@ -33,6 +33,8 @@ import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
@@ -67,7 +69,7 @@ public class MetadataService extends DatasourceService {
   public void importMetadataDatasource( String domainId, InputStream metadataFile,
                                         FormDataContentDisposition metadataFileInfo, boolean overwrite,
                                         List<FormDataBodyPart> localeFiles,
-                                        List<FormDataContentDisposition> localeFilesInfo )
+                                        List<FormDataContentDisposition> localeFilesInfo, RepositoryFileAclDto acl )
     throws PentahoAccessControlException, PlatformImportException,
     Exception {
 
@@ -82,7 +84,7 @@ public class MetadataService extends DatasourceService {
       throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
     }
 
-    RepositoryFileImportBundle.Builder bundleBuilder = createNewRepositoryFileImportBundleBuilder( metadataFile, overwrite, domainId );
+    RepositoryFileImportBundle.Builder bundleBuilder = createNewRepositoryFileImportBundleBuilder( metadataFile, overwrite, domainId, acl );
 
 
     if ( localeFiles != null ) {
@@ -140,9 +142,16 @@ public class MetadataService extends DatasourceService {
     return new FileResource();
   }
 
-  protected RepositoryFileImportBundle.Builder createNewRepositoryFileImportBundleBuilder( InputStream metadataFile, boolean overWriteInRepository, String domainId ) {
-    return new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
-      .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
+  protected RepositoryFileImportBundle.Builder createNewRepositoryFileImportBundleBuilder( InputStream metadataFile,
+      boolean overWriteInRepository, String domainId, RepositoryFileAclDto acl ) {
+    final RepositoryFileImportBundle.Builder
+        builder =
+        new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
+            .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
+    if ( acl != null ) {
+      builder.acl( new RepositoryFileAclAdapter().unmarshal( acl ) );
+    }
+    return builder;
   }
 
   protected RepositoryFileImportBundle createNewRepositoryFileImportBundle( ByteArrayInputStream bais, String fileName, String domainId ) {

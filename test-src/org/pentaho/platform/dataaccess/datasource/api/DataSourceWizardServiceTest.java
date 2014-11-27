@@ -274,9 +274,9 @@ public class DataSourceWizardServiceTest {
     doReturn( mockIPlatformImporter ).when( dataSourceWizardService ).getIPlatformImporter();
     doReturn( mockIPentahoSession ).when( dataSourceWizardService ).getSession();
 
-    String response = dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    String response = dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
 
-    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     assertEquals( domainId, response );
   }
 
@@ -301,7 +301,7 @@ public class DataSourceWizardServiceTest {
     doReturn( false ).when( dataSourceWizardService ).hasManageAccessCheck();
 
     try {
-      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
       fail();
     } catch ( PentahoAccessControlException e ) {
       //expected
@@ -312,7 +312,7 @@ public class DataSourceWizardServiceTest {
     doReturn( false ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
 
     try {
-      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
       fail();
     } catch ( IllegalArgumentException e ) {
       //expected
@@ -321,7 +321,7 @@ public class DataSourceWizardServiceTest {
     //Test 3
     doReturn( true ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
     try {
-      dataSourceWizardService.publishDsw( domainId, null, overwrite, checkConnection );
+      dataSourceWizardService.publishDsw( domainId, null, overwrite, checkConnection, null );
       fail();
     } catch ( IllegalArgumentException e ) {
       //expected
@@ -332,7 +332,7 @@ public class DataSourceWizardServiceTest {
     mockList.add( "string1" );
     doReturn( mockList ).when( dataSourceWizardService ).getOverwrittenDomains( domainId );
     try {
-      dataSourceWizardService.publishDsw( domainId, metadataFile, false, checkConnection );
+      dataSourceWizardService.publishDsw( domainId, metadataFile, false, checkConnection, null );
       fail();
     } catch ( Exception e ) {
       //expected
@@ -343,7 +343,7 @@ public class DataSourceWizardServiceTest {
     RuntimeException mockException = mock( RuntimeException.class );
     doThrow( mockException ).when( mockXmiParser ).parseXmi( metadataFile );
     try {
-      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
       fail();
     } catch ( Exception e ) {
       //expected
@@ -353,15 +353,15 @@ public class DataSourceWizardServiceTest {
     doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile );
     doReturn( null ).when( dataSourceWizardService ).getMondrianDatasourceWrapper( mockDomain );
     try {
-      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, true );
+      dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, true, null );
       fail();
     } catch ( Exception e ) {
       //expected
     }
 
-    verify( dataSourceWizardService, times( 3 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
-    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, null, overwrite, checkConnection );
-    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, false, checkConnection );
-    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, true );
+    verify( dataSourceWizardService, times( 3 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
+    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, null, overwrite, checkConnection, null );
+    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, false, checkConnection, null );
+    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, true, null );
   }
 }

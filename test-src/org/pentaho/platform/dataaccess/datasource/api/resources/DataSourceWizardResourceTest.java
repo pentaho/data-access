@@ -131,12 +131,12 @@ public class DataSourceWizardResourceTest {
     boolean overwrite = false;
     boolean checkConnection = false;
     Response mockResponse = mock( Response.class );
-    doReturn( "dswId" ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doReturn( "dswId" ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildOkResponse( "dswId" );
 
-    Response response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    Response response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
 
-    verify( dataSourceWizardResource, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    verify( dataSourceWizardResource, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     assertEquals( mockResponse, response );
   }
 
@@ -150,36 +150,36 @@ public class DataSourceWizardResourceTest {
 
     //Test 1
     PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
-    doThrow( mockPentahoAccessControlException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doThrow( mockPentahoAccessControlException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildUnauthorizedResponse();
 
-    Response response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    Response response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     assertEquals( mockResponse, response );
 
     //Test 2
     IllegalArgumentException mockIllegalArgumentException = mock( IllegalArgumentException.class );
-    doThrow( mockIllegalArgumentException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doThrow( mockIllegalArgumentException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildBadRequestResponse( anyString() );
 
-    response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     assertEquals( mockResponse, response );
 
     //Test 3
     DataSourceWizardService.DswPublishValidationException mockDataSourceWizardServiceDswPublishValidationException = mock( DataSourceWizardService.DswPublishValidationException.class );
-    doThrow( mockDataSourceWizardServiceDswPublishValidationException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doThrow( mockDataSourceWizardServiceDswPublishValidationException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildConfilictResponse( anyString() );
 
-    response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     assertEquals( mockResponse, response );
 
     //Test 4
     RuntimeException mockException = mock( RuntimeException.class );
-    doThrow( mockException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    doThrow( mockException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildServerErrorResponse();
 
-    response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     assertEquals( mockResponse, response );
 
-    verify( dataSourceWizardResource, times( 4 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection );
+    verify( dataSourceWizardResource, times( 4 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
   }
 }

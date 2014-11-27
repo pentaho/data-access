@@ -19,12 +19,8 @@ package org.pentaho.platform.dataaccess.datasource.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -35,17 +31,23 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
+import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
+import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 
 public class AnalysisServiceTest {
-  
+
   private static AnalysisService analysisService;
 
   @Before
@@ -53,6 +55,7 @@ public class AnalysisServiceTest {
     analysisService = spy( new AnalysisService() );
     analysisService.metadataDomainRepository = mock( IMetadataDomainRepository.class );
     analysisService.mondrianCatalogService = mock( IMondrianCatalogService.class );
+    analysisService.importer = mock( IPlatformImporter.class );
   }
 
   @After
@@ -95,7 +98,7 @@ public class AnalysisServiceTest {
     doReturn( true ).when( analysisService ).canAdministerCheck();
     doReturn( "param" ).when( analysisService ).fixEncodedSlashParam( "analysisId" );
     doReturn( mockIPentahoSession ).when( analysisService ).getSession();
-    doNothing().when( analysisService.mondrianCatalogService ).removeCatalog( "param", mockIPentahoSession);
+    doNothing().when( analysisService.mondrianCatalogService ).removeCatalog( "param", mockIPentahoSession );
 
     analysisService.removeAnalysis( "analysisId" );
 
@@ -145,10 +148,40 @@ public class AnalysisServiceTest {
     String parameters = "parameters";
 
     doNothing().when( analysisService ).accessValidation();
-    doNothing().when( analysisService ).processMondrianImport( dataInputStream, catalogName, origCatalogName, true, xmlaEnabledFlag, parameters, null);
+    doNothing().when( analysisService ).processMondrianImport( dataInputStream, catalogName, origCatalogName, true, xmlaEnabledFlag, parameters, null, null );
 
-    analysisService.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, true, xmlaEnabledFlag, parameters);
+    analysisService.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, true, xmlaEnabledFlag, parameters, null );
 
-    verify( analysisService, times( 1 ) ).putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, true, xmlaEnabledFlag, parameters);
+    verify( analysisService, times( 1 ) ).putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, true, xmlaEnabledFlag, parameters, null );
+  }
+
+  @Test
+  public void testPutMondrianSchemaWithACL() throws Exception {
+    InputStream dataInputStream = mock( InputStream.class );
+    when( dataInputStream.read( any( byte[].class ) ) ).thenReturn( 10, -1 );
+
+    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
+    String catalogName = "catalogName";
+    String origCatalogName = "";
+    String dataSourceName = "dataSourceName";
+    boolean xmlaEnabledFlag = true;
+    String parameters = "parameters";
+
+    final RepositoryFileAclDto acl = new RepositoryFileAclDto();
+    acl.setOwner( "owner" );
+    acl.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
+
+    doNothing().when( analysisService ).accessValidation();
+
+    analysisService.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, true, xmlaEnabledFlag, parameters, acl );
+
+    verify( analysisService, times( 1 ) ).putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, dataSourceName, true, xmlaEnabledFlag, parameters, acl );
+
+    verify( analysisService.importer ).importFile( argThat( new ArgumentMatcher<IPlatformImportBundle>() {
+      @Override public boolean matches( Object argument ) {
+        IPlatformImportBundle bundle = (IPlatformImportBundle) argument;
+        return new RepositoryFileAclAdapter().unmarshal( acl ).equals( bundle.getAcl() );
+      }
+    } ) );
   }
 }

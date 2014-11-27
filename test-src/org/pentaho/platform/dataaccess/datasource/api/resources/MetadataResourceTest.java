@@ -164,16 +164,16 @@ public class MetadataResourceTest {
 
 
     doNothing().when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
-      localeFilesInfo );
+      localeFilesInfo, null );
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "3" );
     
     Response response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo,
         overwrite, localeFiles,
-        localeFilesInfo );
+        localeFilesInfo, null );
 
     verify( metadataResource, times( 1 ) ).importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo,
         overwrite, localeFiles,
-        localeFilesInfo );
+        localeFilesInfo, null );
     assertEquals( mockResponse.getStatus(), response.getStatus() );
   }
 
@@ -192,53 +192,53 @@ public class MetadataResourceTest {
     //Test 1
     PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
     doThrow( mockPentahoAccessControlException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, false, localeFiles,
-      localeFilesInfo );
+      localeFilesInfo, null );
     doReturn( mockResponse ).when( metadataResource ).buildServerErrorResponse( mockPentahoAccessControlException );
 
     Response response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo,
         overwrite, localeFiles,
-        localeFilesInfo );
+        localeFilesInfo, null );
     assertEquals( mockResponse, response );
 
     //Test 2
     PlatformImportException mockPlatformImportException = mock( PlatformImportException.class );
     doThrow( mockPlatformImportException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
-      localeFilesInfo );
+      localeFilesInfo, null );
     doReturn( 10 ).when( mockPlatformImportException ).getErrorStatus();
     doReturn( mockFileResource ).when( metadataResource ).createFileResource();
     doReturn( mockResponse ).when( metadataResource ).buildServerError003Response( domainId, mockFileResource );
 
     response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo, overwrite,
         localeFiles,
-        localeFilesInfo );
+        localeFilesInfo, null );
     assertEquals( mockResponse, response );
 
     //Test 3
     RuntimeException mockException = mock( RuntimeException.class );
     doThrow( mockPlatformImportException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
-      localeFilesInfo );
+      localeFilesInfo, null );
     doReturn( 1 ).when( mockPlatformImportException ).getErrorStatus();
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "1" );
     doReturn( mockException ).when( mockPlatformImportException ).getCause();
 
     response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo, overwrite,
         localeFiles,
-        localeFilesInfo );
+        localeFilesInfo, null );
     assertEquals( mockResponse, response );
 
     //Test
     doThrow( mockException ).when( metadataResource.service ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
-      localeFilesInfo );
+      localeFilesInfo, null );
     doReturn( mockResponse ).when( metadataResource ).buildServerError001Response();
 
     response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo, overwrite,
         localeFiles,
-        localeFilesInfo );
+        localeFilesInfo, null );
     assertEquals( mockResponse, response );
 
     verify( metadataResource, times( 4 ) ).importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo,
         overwrite, localeFiles,
-        localeFilesInfo );
+        localeFilesInfo, null );
   }
 }
 
