@@ -47,6 +47,8 @@ import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -68,7 +70,7 @@ public class AnalysisService extends DatasourceService {
   /*
    * register the handler in the PentahoSpringObjects.xml for MondrianImportHandler
    */
-  private static IPlatformImporter importer;
+  protected IPlatformImporter importer;
 
   public AnalysisService() {
     importer = PentahoSystem.get( IPlatformImporter.class );
@@ -112,14 +114,15 @@ public class AnalysisService extends DatasourceService {
                                  String catalogName, // Optional
                                  String origCatalogName, // Optional
                                  String datasourceName, // Optional
-                                 boolean overwrite, boolean xmlaEnabledFlag, String parameters )
+                                 boolean overwrite, boolean xmlaEnabledFlag, String parameters,
+                                 RepositoryFileAclDto acl )
     throws PentahoAccessControlException,
     PlatformImportException, Exception {
 
     accessValidation();
     String fileName = schemaFileInfo.getFileName();
     processMondrianImport( dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters,
-      fileName );
+      fileName, acl );
   }
 
   /**
@@ -131,15 +134,17 @@ public class AnalysisService extends DatasourceService {
    * @param xmlaEnabledFlag
    * @param parameters
    * @param fileName
+   * @param acl acl information for the data source. This parameter is optional.
    * @throws PlatformImportException
    */
   protected void processMondrianImport( InputStream dataInputStream, String catalogName, String origCatalogName,
-                                      boolean overwrite, boolean xmlaEnabledFlag, String parameters, String fileName )
+                                      boolean overwrite, boolean xmlaEnabledFlag, String parameters, String fileName,
+                                      RepositoryFileAclDto acl )
     throws PlatformImportException {
     boolean overWriteInRepository = determineOverwriteFlag( parameters, overwrite );
     IPlatformImportBundle bundle =
       createPlatformBundle( parameters, dataInputStream, catalogName, overWriteInRepository, fileName,
-        xmlaEnabledFlag );
+        xmlaEnabledFlag, acl );
     if ( !StringUtils.isEmpty( origCatalogName ) && !bundle.getName().equals( origCatalogName ) ) {
       // MONDRIAN-1731
       // we are importing a mondrian catalog with a new schema (during edit), remove the old catalog first
@@ -157,7 +162,7 @@ public class AnalysisService extends DatasourceService {
    * helper method to calculate the overwrite in repos flag from parameters or passed value
    *
    * @param parameters
-   * @param overwrite
+   * @param overWriteInRepository
    * @return boolean if overwrite is allowed
    */
   private boolean determineOverwriteFlag( String parameters, boolean overWriteInRepository ) {
@@ -177,11 +182,12 @@ public class AnalysisService extends DatasourceService {
    * @param overWriteInRepository
    * @param fileName
    * @param xmlaEnabled
+   * @param acl acl information for the data source. This parameter is optional.
    * @return IPlatformImportBundle
    */
   private IPlatformImportBundle createPlatformBundle( String parameters, InputStream dataInputStream,
                                                       String catalogName, boolean overWriteInRepository,
-                                                      String fileName, boolean xmlaEnabled ) {
+                                                      String fileName, boolean xmlaEnabled, RepositoryFileAclDto acl ) {
 
     byte[] bytes = null;
     try {
@@ -211,6 +217,9 @@ public class AnalysisService extends DatasourceService {
       new RepositoryFileImportBundle.Builder().input( new ByteArrayInputStream( bytes ) ).charSet( UTF_8 ).hidden(
         false ).name( domainId ).overwriteFile( overWriteInRepository ).mime( MONDRIAN_MIME_TYPE ).withParam(
         PARAMETERS, parameters ).withParam( DOMAIN_ID, domainId );
+    if ( acl != null ) {
+      bundleBuilder.acl( new RepositoryFileAclAdapter().unmarshal( acl ) );
+    }
     bundleBuilder.withParam( ENABLE_XMLA, Boolean.toString( xmlaEnabled ) );
 
     IPlatformImportBundle bundle = bundleBuilder.build();
