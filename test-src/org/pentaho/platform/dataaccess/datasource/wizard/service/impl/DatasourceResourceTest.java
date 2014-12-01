@@ -270,7 +270,7 @@ public class DatasourceResourceTest {
     } );
     FileInputStream in = new FileInputStream( new File( new File( "test-res" ), "SampleDataOlap.xmi" ) );
     try {
-      Response resp = service.publishDsw( "AModel.xmi", in, true, false );
+      Response resp = service.publishDsw( "AModel.xmi", in, true, false, null );
       Assert.assertEquals(
           Response.Status.Family.SUCCESSFUL,
           Response.Status.fromStatusCode( resp.getStatus() ).getFamily() );

@@ -26,12 +26,14 @@ import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -64,6 +66,7 @@ public class AnalysisResource {
   protected static final String OVERWRITE_IN_REPOS = "overwrite";
   protected static final String XMLA_ENABLED_FLAG = "xmlaEnabledFlag";
   protected static final String PARAMETERS = "parameters";
+  private static final String DATASOURCE_ACL = "acl";
   private static final int SUCCESS = 3;
   protected static final Logger logger = LoggerFactory.getLogger( AnalysisResource.class );
 
@@ -284,6 +287,7 @@ public class AnalysisResource {
    * @param overwrite       Flag for overwriting existing version of the file.
    * @param xmlaEnabledFlag Is XMLA enabled or not.
    * @param parameters      Import parameters.
+   * @param acl             acl information for the data source. This parameter is optional.
    *
    * @return Response containing the success of the method.
    *
@@ -311,11 +315,12 @@ public class AnalysisResource {
       @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) Boolean overwrite,
-      @FormDataParam( XMLA_ENABLED_FLAG ) Boolean xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
+      @FormDataParam( XMLA_ENABLED_FLAG ) Boolean xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
       throws PentahoAccessControlException {
     try {
       service.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalog, origCatalogName, datasourceName, overwrite,
-          xmlaEnabledFlag, parameters );
+          xmlaEnabledFlag, parameters, acl );
       Response response = Response.status( CREATED ).build();
       logger.debug( "putMondrianSchema Response " + response );
       return response;
@@ -357,7 +362,8 @@ public class AnalysisResource {
       @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
+      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
       throws PentahoAccessControlException {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
@@ -365,7 +371,7 @@ public class AnalysisResource {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
       boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;
       service.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-          overWriteInRepository, xmlaEnabled, parameters );
+          overWriteInRepository, xmlaEnabled, parameters, acl );
       statusCode = SUCCESS;
     } catch ( PentahoAccessControlException pac ) {
       logger.error( pac.getMessage() );
@@ -402,7 +408,7 @@ public class AnalysisResource {
   protected Response buildUnauthorizedResponse() {
     return Response.status( UNAUTHORIZED ).build();
   }
-  
+
   /**
    * Get list of IDs of analysis datasource
    *
@@ -424,7 +430,7 @@ public class AnalysisResource {
       @ResponseCode( code = 401, condition = "Unauthorized" ),
       @ResponseCode( code = 500, condition = "Unabled to download analysis file" )
   } )
-  
+
   public Response doGetAnalysisFilesAsDownload( @PathParam( "catalog" ) String catalog ) {
     return downloadSchema( catalog );
   }
@@ -440,7 +446,7 @@ public class AnalysisResource {
               + "   *  3: Success\n"
               + "   *  5: Authorization error" )
   } )
-  
+
   public Response putMondrianSchema(
       @FormDataParam( UPLOAD_ANALYSIS ) InputStream uploadAnalysis,
       @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
@@ -448,9 +454,11 @@ public class AnalysisResource {
       @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters )
+      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
       throws PentahoAccessControlException {
-    return importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName, overwrite, xmlaEnabledFlag, parameters );
+    return importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
+        overwrite, xmlaEnabledFlag, parameters, acl );
   }
 
   @POST

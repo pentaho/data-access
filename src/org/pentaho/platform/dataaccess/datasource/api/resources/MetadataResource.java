@@ -27,15 +27,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -53,6 +45,7 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
@@ -69,6 +62,7 @@ public class MetadataResource {
   private static final Log logger = LogFactory.getLog( MetadataResource.class );
   protected static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final String SUCCESS = "3";
+  private static final String DATASOURCE_ACL = "acl";
 
   protected MetadataService service;
   protected IMetadataDomainRepository metadataDomainRepository;
@@ -178,11 +172,13 @@ public class MetadataResource {
                                                   @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
                                                   @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
                                                   @FormDataParam("localeFiles")
-                                                  List<FormDataContentDisposition> localeFilesInfo ) {
+                                                  List<FormDataContentDisposition> localeFilesInfo,
+                                                  @FormDataParam( DATASOURCE_ACL )
+                                                  RepositoryFileAclDto acl ) {
     try {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;      
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
-        localeFilesInfo );
+        localeFilesInfo, acl );
       return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return buildServerErrorResponse( e );
@@ -237,6 +233,7 @@ public class MetadataResource {
    * @param localeFiles List of local files
    * @param localeFilesInfo List of information for each local file
    * @param overwrite Flag for overwriting existing version of the file
+   * @param acl acl information for the data source. This parameter is optional.
    *
    * @return Text response containing the status of the call.
    *
@@ -263,10 +260,11 @@ public class MetadataResource {
       @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
       @FormDataParam( OVERWRITE_IN_REPOS ) Boolean overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) {
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
-          localeFilesInfo );
+          localeFilesInfo, acl );
       return Response.status( CREATED ).build();
     } catch ( PentahoAccessControlException e ) {
       throw new WebApplicationException( Response.Status.UNAUTHORIZED );
@@ -302,6 +300,7 @@ public class MetadataResource {
    * @param overwrite
    * @param localeFiles
    * @param localeFilesInfo
+   * @param acl acl information for the data source. This parameter is optional.
    * @return
    */
   protected Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
@@ -310,11 +309,13 @@ public class MetadataResource {
                                             @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
                                             @FormDataParam( "localeFiles" )
-                                            List<FormDataContentDisposition> localeFilesInfo ) {
+                                            List<FormDataContentDisposition> localeFilesInfo,
+                                            @FormDataParam( DATASOURCE_ACL )
+                                            RepositoryFileAclDto acl) {
     try {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
-          localeFilesInfo );
+          localeFilesInfo, acl );
       return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return buildServerErrorResponse( e );
@@ -448,7 +449,9 @@ public class MetadataResource {
                                             @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
                                             @FormDataParam( "localeFiles" )
-                                            List<FormDataContentDisposition> localeFilesInfo ) {
-    return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
+                                            List<FormDataContentDisposition> localeFilesInfo,
+                                            @FormDataParam( DATASOURCE_ACL )
+                                            RepositoryFileAclDto acl) {
+    return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
   }
 }

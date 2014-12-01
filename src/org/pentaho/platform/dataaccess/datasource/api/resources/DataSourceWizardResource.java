@@ -44,6 +44,7 @@ import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 import com.sun.jersey.multipart.FormDataParam;
@@ -53,6 +54,7 @@ import com.sun.jersey.multipart.FormDataParam;
  */
 @Path( "/data-access/api/datasource/dsw" )
 public class DataSourceWizardResource {
+  private static final String DATASOURCE_ACL = "acl";
 
   protected DataSourceWizardService service;
   protected ResourceUtil resourceUtil;
@@ -202,6 +204,7 @@ public class DataSourceWizardResource {
    * @param metadataFile InputStream with the DSW XMI file
    * @param overwrite Flag for overwriting existing version of the file
    * @param checkConnection Only publish if the required connection exists
+   * @param acl acl information for the data source. This parameter is optional.
    *
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    *
@@ -220,9 +223,10 @@ public class DataSourceWizardResource {
       @FormDataParam( "domainId" ) final String domainId,
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
-      @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection ) {
+      @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl) {
     try {
-      final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+      final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection, acl );
       return buildOkResponse( dswId );
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();

@@ -58,6 +58,8 @@ import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 
 public class DataSourceWizardService extends DatasourceService {
 
@@ -162,7 +164,8 @@ public class DataSourceWizardService extends DatasourceService {
     return datasourceList;
   }
 
-  public String publishDsw( String domainId, InputStream metadataFile, boolean overwrite, boolean checkConnection )
+  public String publishDsw( String domainId, InputStream metadataFile, boolean overwrite, boolean checkConnection,
+      RepositoryFileAclDto acl )
     throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
     if ( !hasManageAccessCheck() ) {
       throw new PentahoAccessControlException();
@@ -208,6 +211,7 @@ public class DataSourceWizardService extends DatasourceService {
     logger.debug( "imported metadata xmi" );
     importer.importFile( mondrianBundle );
     logger.debug( "imported mondrian schema" );
+    // TODO: publish ACL for the DSW
     // trigger refreshes
     IPentahoSession session = getSession();
     PentahoSystem.publish( session, METADATA_PUBLISHER );

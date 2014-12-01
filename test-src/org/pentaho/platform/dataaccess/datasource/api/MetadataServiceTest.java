@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -40,13 +41,17 @@ import javax.ws.rs.core.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
@@ -145,7 +150,7 @@ public class MetadataServiceTest {
     doReturn( null ).when( mockResponse ).getEntity();
     doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
     doReturn( mockRepositoryFileImportBundleBuilder ).when( metadataService ).createNewRepositoryFileImportBundleBuilder(
-      metadataFile, false, domainId );
+      metadataFile, false, domainId, null );
     doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
     doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any(byte[].class) );
     doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
@@ -156,10 +161,10 @@ public class MetadataServiceTest {
     doReturn( mockIPentahoSession ).when( metadataService ).getSession();
     doNothing().when( metadataService ).publish( mockIPentahoSession );
 
-    metadataService.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
+    metadataService.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, null );
 
     verify( metadataService, times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
-      localeFiles, localeFilesInfo );
+      localeFiles, localeFilesInfo, null );
   }
 
   @Test
@@ -186,14 +191,69 @@ public class MetadataServiceTest {
 
     try {
       metadataService
-        .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
+        .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, null );
       fail();
     } catch ( PlatformImportException e ) {
       //expected
     }
 
     verify( metadataService, times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
-      localeFiles, localeFilesInfo );
+      localeFiles, localeFilesInfo, null );
+  }
+
+  @Test
+  public void testImportMetadataDatasourceWithACL() throws Exception {
+    String domainId = "home\\admin/resource/";
+    InputStream metadataFile = mock( InputStream.class );
+    FormDataContentDisposition metadataFileInfo = mock( FormDataContentDisposition.class );
+    boolean overwrite = true;
+    FormDataBodyPart mockFormDataBodyPart = mock( FormDataBodyPart.class );
+    List<FormDataBodyPart> localeFiles = new ArrayList<FormDataBodyPart>();
+    localeFiles.add( mockFormDataBodyPart );
+    List<FormDataContentDisposition> localeFilesInfo = new ArrayList<FormDataContentDisposition>();
+    FormDataContentDisposition mockFormDataContentDisposition = mock( FormDataContentDisposition.class );
+    localeFilesInfo.add( mockFormDataContentDisposition );
+    FileResource mockFileResource = mock( FileResource.class );
+    Response mockResponse = mock( Response.class );
+    IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
+    IPlatformImporter mockIPlatformImporter = mock( IPlatformImporter.class );
+    IPlatformImportBundle mockIPlatformImportBundle = mock( IPlatformImportBundle.class );
+    RepositoryFileImportBundle.Builder mockRepositoryFileImportBundleBuilder = mock( RepositoryFileImportBundle.Builder.class );
+    RepositoryFileImportBundle mockRepositoryFileImportBundle = mock( RepositoryFileImportBundle.class );
+    ByteArrayInputStream mockByteArrayInputStream = mock( ByteArrayInputStream.class );
+
+    doNothing().when( metadataService ).accessValidation();
+    doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
+    doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
+    doReturn( null ).when( mockResponse ).getEntity();
+    doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
+    doReturn( mockRepositoryFileImportBundleBuilder ).when( metadataService ).createNewRepositoryFileImportBundleBuilder(
+        metadataFile, false, domainId, null );
+    doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
+    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any(byte[].class) );
+    doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
+        mockByteArrayInputStream, "fileName", domainId );
+    doReturn( mockRepositoryFileImportBundle ).when( mockRepositoryFileImportBundleBuilder ).build();
+    doReturn( mockIPlatformImporter ).when( metadataService ).getImporter();
+    doNothing().when( mockIPlatformImporter ).importFile( mockIPlatformImportBundle );
+    doReturn( mockIPentahoSession ).when( metadataService ).getSession();
+    doNothing().when( metadataService ).publish( mockIPentahoSession );
+
+    final RepositoryFileAclDto acl = new RepositoryFileAclDto();
+    acl.setOwner( "owner" );
+    acl.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
+
+    metadataService.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
+
+    verify( metadataService, times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
+        localeFiles, localeFilesInfo, acl );
+
+    verify( metadataService.getImporter() ).importFile( argThat( new ArgumentMatcher<IPlatformImportBundle>() {
+      @Override public boolean matches( Object argument ) {
+        IPlatformImportBundle bundle = (IPlatformImportBundle) argument;
+        return new RepositoryFileAclAdapter().unmarshal( acl ).equals( bundle.getAcl() );
+      }
+    } ) );
   }
 }
 
