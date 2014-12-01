@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -20,8 +20,9 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static javax.ws.rs.core.Response.Status.*;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 import com.sun.jersey.multipart.FormDataParam;
@@ -53,13 +55,18 @@ import com.sun.jersey.multipart.FormDataParam;
  */
 @Path( "/data-access/api/datasource/dsw" )
 public class DataSourceWizardResource {
+  private static final String DATASOURCE_ACL = "acl";
 
   protected DataSourceWizardService service;
   protected ResourceUtil resourceUtil;
 
   public DataSourceWizardResource() {
-    service = new DataSourceWizardService();
+    service = createDataSourceWizardService();
     resourceUtil = new ResourceUtil();
+  }
+
+  protected DataSourceWizardService createDataSourceWizardService() {
+    return new DataSourceWizardService();
   }
 
   /**
@@ -202,6 +209,7 @@ public class DataSourceWizardResource {
    * @param metadataFile InputStream with the DSW XMI file
    * @param overwrite Flag for overwriting existing version of the file
    * @param checkConnection Only publish if the required connection exists
+   * @param acl acl information for the data source. This parameter is optional.
    *
    * @return A jax-rs Response object with the appropriate status code, header, and body.
    *
@@ -220,9 +228,10 @@ public class DataSourceWizardResource {
       @FormDataParam( "domainId" ) final String domainId,
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
-      @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection ) {
+      @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl) {
     try {
-      final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection );
+      final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection, acl );
       return buildOkResponse( dswId );
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
@@ -295,5 +304,70 @@ public class DataSourceWizardResource {
   @Facet( name = "Unsupported" )
   public Response doRemoveMetadata( @PathParam( "dswId" ) String metadataId ) {
     return remove( metadataId );
+  }
+
+  /**
+   * Get ACL for the DSW by name
+   *
+   * @param   dswId DSW data source name
+   * @return  ACL or null if the data source doesn't have it
+   * @throws  PentahoAccessControlException if the user doesn't have access
+   */
+  @GET
+  @Path( "/{dswId : .+}/acl" )
+  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully got the ACL" ),
+      @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 404, condition = "ACL doesn't exist" ),
+      @ResponseCode( code = 409, condition = "DSW doesn't exist" ),
+      @ResponseCode(
+          code = 500,
+          condition = "ACL failed to be retrieved. This could be caused by an invalid path, or the file does not exist."
+      )
+      } )
+      public RepositoryFileAclDto doGetDSWAcl( @PathParam( "dswId" ) String dswId ) {
+    try {
+      final RepositoryFileAclDto acl = service.getDSWAcl( dswId );
+      if ( acl == null ) {
+        throw new WebApplicationException( NOT_FOUND );
+      }
+      return acl;
+    } catch ( FileNotFoundException e ) {
+      throw new WebApplicationException( CONFLICT );
+    } catch ( PentahoAccessControlException e ) {
+      throw new WebApplicationException( UNAUTHORIZED );
+    }
+  }
+
+  /**
+   * Set ACL for the DSW
+   *
+   * @param dswId DSW name
+   * @param acl   ACL to set
+   * @return      response
+   * @throws      PentahoAccessControlException if the user doesn't have access
+   */
+  @PUT
+  @Path( "/{dswId : .+}/acl" )
+  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully updated the ACL" ),
+      @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 409, condition = "DSW doesn't exist" ),
+      @ResponseCode( code = 500, condition = "Failed to save acls due to another error." )
+      } )
+      public Response doSetDSWAcl( @PathParam( "dswId" ) String dswId, RepositoryFileAclDto acl )
+      throws PentahoAccessControlException {
+    try {
+      service.setDSWAcl( dswId, acl );
+      return buildOkResponse();
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    } catch ( FileNotFoundException e ) {
+      return Response.status( CONFLICT ).build();
+    } catch ( Exception e ) {
+      return buildServerErrorResponse();
+    }
   }
 }
