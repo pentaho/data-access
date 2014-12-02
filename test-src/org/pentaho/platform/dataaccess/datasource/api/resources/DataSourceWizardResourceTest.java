@@ -16,18 +16,18 @@
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
-import com.sun.jersey.multipart.FormDataParam;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
-import javax.ws.rs.DefaultValue;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +73,7 @@ public class DataSourceWizardResourceTest {
     //Test 1
     PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
     doThrow( mockPentahoAccessControlException ).when( dataSourceWizardResource.service ).doGetDSWFilesAsDownload(
-      "dswId" );
+        "dswId" );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildUnauthorizedResponse();
 
     Response response = dataSourceWizardResource.downloadDsw( "dswId" );
@@ -105,7 +105,7 @@ public class DataSourceWizardResourceTest {
     try {
       Response response = dataSourceWizardResource.remove( "dswId" );
       fail( "should have thrown an exception" );
-    } catch ( Exception e ){
+    } catch ( Exception e ) {
       //good
     }
     verify( dataSourceWizardResource, times( 1 ) ).remove( "dswId" );
@@ -181,5 +181,54 @@ public class DataSourceWizardResourceTest {
     assertEquals( mockResponse, response );
 
     verify( dataSourceWizardResource, times( 4 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
+  }
+
+  @Test
+  public void doGetAnalysisAcl() throws Exception {
+    String domainId = "domainId";
+
+    doReturn( new RepositoryFileAclDto() ).when( dataSourceWizardResource.service ).getDSWAcl( domainId );
+
+    dataSourceWizardResource.doGetDSWAcl( domainId ); // no exception thrown
+
+    //
+    doThrow( new PentahoAccessControlException() ).when( dataSourceWizardResource.service ).getDSWAcl( domainId );
+
+    try {
+      dataSourceWizardResource.doGetDSWAcl( domainId );
+      fail();
+    } catch ( WebApplicationException e ) {
+      assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), e.getResponse().getStatus() );
+    }
+
+    //
+    doThrow( new FileNotFoundException() ).when( dataSourceWizardResource.service ).getDSWAcl( domainId );
+
+    try {
+      dataSourceWizardResource.doGetDSWAcl( domainId );
+      fail();
+    } catch ( WebApplicationException e ) {
+      assertEquals( Response.Status.CONFLICT.getStatusCode(), e.getResponse().getStatus() );
+    }
+  }
+
+  @Test
+  public void doSetMetadataAcl() throws Exception {
+    String domainId = "domainId";
+
+    Response response = dataSourceWizardResource.doSetDSWAcl( domainId, null );
+    assertEquals( Response.Status.OK.getStatusCode(), response.getStatus() );
+
+    //
+    doThrow( new PentahoAccessControlException() ).when( dataSourceWizardResource.service ).setDSWAcl( domainId, null );
+
+    response = dataSourceWizardResource.doSetDSWAcl( domainId, null );
+    assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus() );
+
+    //
+    doThrow( new FileNotFoundException() ).when( dataSourceWizardResource.service ).setDSWAcl( domainId, null );
+
+    response = dataSourceWizardResource.doSetDSWAcl( domainId, null );
+    assertEquals( Response.Status.CONFLICT.getStatusCode(), response.getStatus() );
   }
 }

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+  <!-- set this to true for production, and false for development/localization -->
+  <cache-messages>true</cache-messages>
+  <!-- how far ahead to set the browser's cache -->
+  <max-age>2628001</max-age>
+  <cache>true</cache>
+    
+  <!-- roles with data access permissions -->
+  <data-access-roles>Administrator</data-access-roles>
+  <!-- users with data access permissions -->
+  <!--
+  <data-access-users></data-access-users>
+   -->
+  <!-- roles with datasource view permissions -->
+  <data-access-view-roles>Authenticated,Administrator</data-access-view-roles>
+  <!-- users with datasource view permissions -->
+  <data-access-view-users>suzy</data-access-view-users>
+  <!-- default view acls for user or role -->
+  <data-access-default-view-acls>31</data-access-default-view-acls>
+
+  <!-- settings for Agile Data Access -->
+  <data-access-staging-jndi>Hibernate</data-access-staging-jndi>
+
+  <data-access-datasource-solution-storage>admin</data-access-datasource-solution-storage>
+  <data-access-csv-sample-rows>10000</data-access-csv-sample-rows>
+  <data-access-datasource-illegal-characters><![CDATA[$<>?&#%^*()!~:;[]{}|]]></data-access-datasource-illegal-characters>
+
+  <!-- Agile Mart Datasource  -->
+  <agile-mart-staging-datasource>AgileBI</agile-mart-staging-datasource>
+
+  <!-- Geography settings -->
+  <geo>
+    <roles>territory, continent, country, state, county, city, postal_code</roles>
+    <dimension-name>Geography</dimension-name>
+
+    <territory>
+      <aliases>territory</aliases>
+    </territory>
+
+    <continent>
+      <aliases>continent</aliases>
+    </continent>
+
+    <country>
+      <aliases>country, ctry</aliases>
+    </country>
+
+    <state>
+      <aliases>state, province, st, stateprovince</aliases>
+      <required-parents>country</required-parents>
+    </state>
+
+    <county>
+      <aliases>CountrySecondarySubdivision, county</aliases>
+      <required-parents>country,state</required-parents>
+    </county> 
+
+    <city>
+      <aliases>city, town</aliases>
+      <required-parents>country,state</required-parents>
+    </city>
+
+    <postal_code>
+      <aliases>zip, postal code, zip code</aliases>
+      <required-parents>country</required-parents>
+    </postal_code>
+
+    <latitude>
+      <aliases>lat, latitude</aliases>
+    </latitude>
+
+    <longitude>
+      <aliases>long, lon, lng, longitude</aliases>
+    </longitude>
+  </geo>
+
+    <!-- Settings for the PUC "new" toolbar dropdown: priority, label, tabName, action-url -->  
+    <new-toolbar-button>9,newDataAccess,dataaccess,javascript:window.top.pho.openDatasourceEditor(window.top.datasourceEditorCallback)</new-toolbar-button>
+
+</settings>

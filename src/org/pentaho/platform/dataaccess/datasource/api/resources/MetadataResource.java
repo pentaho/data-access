@@ -20,14 +20,21 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static javax.ws.rs.core.Response.Status.*;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -453,5 +460,72 @@ public class MetadataResource {
                                             @FormDataParam( DATASOURCE_ACL )
                                             RepositoryFileAclDto acl) {
     return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
+  }
+
+  /**
+   * Get ACL for the metadata data source by name
+   *
+   * @param   domainId metadata data source name
+   * @return  ACL or null if the data source doesn't have it
+   */
+  @GET
+  @Path( "/{domainId : .+}/acl" )
+  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully got the ACL" ),
+      @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 404, condition = "ACL doesn't exist" ),
+      @ResponseCode( code = 409, condition = "Metadata DS doesn't exist" ),
+      @ResponseCode(
+          code = 500,
+          condition = "ACL failed to be retrieved. This could be caused by an invalid path, or the file does not exist."
+      )
+      } )
+      public RepositoryFileAclDto doGetMetadataAcl( @PathParam( "domainId" ) String domainId ) {
+    final Map<String, InputStream> domainFilesData = getDomainFilesData( domainId );
+    if ( domainFilesData == null || domainFilesData.isEmpty() ) {
+      throw new WebApplicationException( CONFLICT );
+    }
+    try {
+      final RepositoryFileAclDto acl = service.getMetadataAcl( domainId );
+      if ( acl == null ) {
+        throw new WebApplicationException( NOT_FOUND );
+      }
+      return acl;
+    } catch ( PentahoAccessControlException e ) {
+      throw new WebApplicationException( UNAUTHORIZED );
+    }
+  }
+
+  /**
+   * Set ACL for the metadata data source
+   *
+   * @param domainId  metadata data source name
+   * @param acl       ACL to set
+   * @return          response
+   * @throws          PentahoAccessControlException if the user doesn't have access
+   */
+  @PUT
+  @Path( "/{domainId : .+}/acl" )
+  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully updated the ACL" ),
+      @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 409, condition = "Metadata DS doesn't exist" ),
+      @ResponseCode( code = 500, condition = "Failed to save acls due to another error." )
+      } )
+      public Response doSetMetadataAcl( @PathParam( "domainId" ) String domainId, RepositoryFileAclDto acl ) {
+    try {
+      final Map<String, InputStream> domainFilesData = getDomainFilesData( domainId );
+      if ( domainFilesData == null || domainFilesData.isEmpty() ) {
+        return Response.status( CONFLICT ).build();
+      }
+      service.setMetadataAcl( domainId, acl );
+      return buildOkResponse();
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    } catch ( Exception e ) {
+      return buildServerErrorResponse();
+    }
   }
 }

@@ -18,16 +18,12 @@
 package org.pentaho.platform.dataaccess.datasource.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -45,17 +41,22 @@ import org.mockito.ArgumentMatcher;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
+import org.pentaho.platform.repository2.unified.jcr.IAclNodeHelper;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
+import org.pentaho.platform.web.http.api.resources.services.FileService;
 
 public class MetadataServiceTest {
 
@@ -65,6 +66,8 @@ public class MetadataServiceTest {
   public void setUp() {
     metadataService = spy( new MetadataService() );
     metadataService.metadataDomainRepository = mock( IMetadataDomainRepository.class );
+    metadataService.aclHelper = mock( IAclNodeHelper.class );
+    metadataService.fileService = mock( FileService.class );
   }
 
   @After
@@ -150,11 +153,11 @@ public class MetadataServiceTest {
     doReturn( null ).when( mockResponse ).getEntity();
     doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
     doReturn( mockRepositoryFileImportBundleBuilder ).when( metadataService ).createNewRepositoryFileImportBundleBuilder(
-      metadataFile, false, domainId, null );
+        metadataFile, false, domainId, null );
     doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
-    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any(byte[].class) );
+    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any( byte[].class ) );
     doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
-      mockByteArrayInputStream, "fileName", domainId );
+        mockByteArrayInputStream, "fileName", domainId );
     doReturn( mockRepositoryFileImportBundle ).when( mockRepositoryFileImportBundleBuilder ).build();
     doReturn( mockIPlatformImporter ).when( metadataService ).getImporter();
     doNothing().when( mockIPlatformImporter ).importFile( mockIPlatformImportBundle );
@@ -164,7 +167,7 @@ public class MetadataServiceTest {
     metadataService.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, null );
 
     verify( metadataService, times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
-      localeFiles, localeFilesInfo, null );
+        localeFiles, localeFilesInfo, null );
   }
 
   @Test
@@ -198,7 +201,7 @@ public class MetadataServiceTest {
     }
 
     verify( metadataService, times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
-      localeFiles, localeFilesInfo, null );
+        localeFiles, localeFilesInfo, null );
   }
 
   @Test
@@ -230,7 +233,7 @@ public class MetadataServiceTest {
     doReturn( mockRepositoryFileImportBundleBuilder ).when( metadataService ).createNewRepositoryFileImportBundleBuilder(
         metadataFile, false, domainId, null );
     doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
-    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any(byte[].class) );
+    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any( byte[].class ) );
     doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
         mockByteArrayInputStream, "fileName", domainId );
     doReturn( mockRepositoryFileImportBundle ).when( mockRepositoryFileImportBundleBuilder ).build();
@@ -254,6 +257,68 @@ public class MetadataServiceTest {
         return new RepositoryFileAclAdapter().unmarshal( acl ).equals( bundle.getAcl() );
       }
     } ) );
+  }
+
+  @Test
+  public void testGetMetadataDatasourceAcl() throws Exception {
+    String domainId = "home\\admin/resource/";
+
+    final RepositoryFileAcl acl = new RepositoryFileAcl.Builder( "owner" ).build();
+
+    doReturn( true ).when( metadataService ).canAdministerCheck();
+    when( metadataService.aclHelper.getAclFor( anyString(), any( IAclNodeHelper.DatasourceType.class ) ) )
+        .thenReturn( acl );
+    final IUnifiedRepository repository = mock( IUnifiedRepository.class );
+    when( metadataService.fileService.getRepository() ).thenReturn( repository );
+    when( metadataService.fileService.doGetFileAcl( anyString() ) ).thenReturn( new RepositoryFileAclAdapter().marshal( acl ) );
+    final RepositoryFile repositoryFile = mock( RepositoryFile.class );
+    when( repository.getFileById( anyString() ) ).thenReturn( repositoryFile );
+    final RepositoryFileAclDto aclDto = metadataService.getMetadataAcl( domainId );
+
+    verify( metadataService.aclHelper ).getAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA );
+
+    assertEquals( acl, new RepositoryFileAclAdapter().unmarshal( aclDto ) );
+  }
+
+  @Test
+  public void testGetMetadataDatasourceAclNoAcl() throws Exception {
+    String domainId = "home\\admin/resource/";
+
+    doReturn( true ).when( metadataService ).canAdministerCheck();
+    when( metadataService.aclHelper.getAclFor( anyString(), any( IAclNodeHelper.DatasourceType.class ) ) )
+        .thenReturn( null );
+    final RepositoryFileAclDto aclDto = metadataService.getMetadataAcl( domainId );
+
+    verify( metadataService.aclHelper ).getAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA );
+
+    assertNull( aclDto );
+  }
+
+  @Test
+  public void testSetMetadataDatasourceAcl() throws Exception {
+    String domainId = "home\\admin/resource/";
+
+    final RepositoryFileAclDto aclDto = new RepositoryFileAclDto();
+    aclDto.setOwner( "owner" );
+    aclDto.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
+
+    doReturn( true ).when( metadataService ).canAdministerCheck();
+
+    metadataService.setMetadataAcl( domainId, aclDto );
+
+    verify( metadataService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA,
+        new RepositoryFileAclAdapter().unmarshal( aclDto ) );
+  }
+
+  @Test
+  public void testSetMetadataDatasourceAclNoAcl() throws Exception {
+    String domainId = "home\\admin/resource/";
+
+    doReturn( true ).when( metadataService ).canAdministerCheck();
+
+    metadataService.setMetadataAcl( domainId, null );
+
+    verify( metadataService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA, null );
   }
 }
 
