@@ -79,7 +79,7 @@ public class AnalysisResourceTest {
     try {
       Response response = analysisResource.downloadSchema( "analysisId" );
       fail( "Should have gotten a WebApplicationException" );
-    } catch( WebApplicationException e ) {
+    } catch ( WebApplicationException e ) {
       // Good
     }
 
@@ -110,7 +110,7 @@ public class AnalysisResourceTest {
     try {
       Response response = analysisResource.deleteSchema( "analysisId" );
       fail( "should have gotten a WebApplicationException" );
-    } catch ( WebApplicationException e ){
+    } catch ( WebApplicationException e ) {
       // Good
     }
 
@@ -131,7 +131,7 @@ public class AnalysisResourceTest {
   }
 
   @Test
-  public void testImportMetadataDatasource() throws Exception {
+  public void testImportAnalysisDatasource() throws Exception {
     Response mockResponse = mock( Response.class );
 
     InputStream uploadAnalysis = mock( InputStream.class );
@@ -148,8 +148,8 @@ public class AnalysisResourceTest {
         true, true, parameters, null );
 
     Response response = analysisResource.putSchema( catalogName, uploadAnalysis, schemaFileInfo, catalogName,
-      origCatalogName,
-      Boolean.valueOf( overwrite ), Boolean.valueOf( xmlaEnabledFlag ), parameters, null );
+        origCatalogName,
+        Boolean.valueOf( overwrite ), Boolean.valueOf( xmlaEnabledFlag ), parameters, null );
 
     verify( analysisResource, times( 1 ) ).putSchema( catalogName, uploadAnalysis, schemaFileInfo, catalogName,
         origCatalogName,
@@ -158,7 +158,7 @@ public class AnalysisResourceTest {
   }
 
   @Test
-  public void testImportMetadataDatasourceError() throws Exception {
+  public void testImportAnalysisDatasourceError() throws Exception {
     Response mockResponse = mock( Response.class );
 
     InputStream uploadAnalysis = mock( InputStream.class );
@@ -173,11 +173,11 @@ public class AnalysisResourceTest {
     //Test 1
     PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
     doThrow( mockPentahoAccessControlException ).when( analysisResource.service ).putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      false, false, parameters, null );
+        false, false, parameters, null );
     doReturn( mockResponse ).when( analysisResource ).buildOkResponse( "5" );
 
     Response response = analysisResource.importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters, null );
+        overwrite, xmlaEnabledFlag, parameters, null );
     assertEquals( mockResponse, response );
 
     //Test 2
@@ -201,6 +201,7 @@ public class AnalysisResourceTest {
     assertEquals( mockResponse, response );
 
     verify( analysisResource, times( 3 ) ).importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters, null );
+        overwrite, xmlaEnabledFlag, parameters, null );
   }
+
 }

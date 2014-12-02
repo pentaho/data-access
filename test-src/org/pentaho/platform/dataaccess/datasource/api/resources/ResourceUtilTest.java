@@ -132,7 +132,7 @@ public class ResourceUtilTest {
     doReturn( mockFileInputStream ).when( resourceUtil ).createFileInputStream( mockFile );
     doReturn( mockStreamingOutput ).when( resourceUtil ).createStreamingOutput( mockFileInputStream );
     doReturn( mockResponse ).when( resourceUtil ).buildOkResponse( mockStreamingOutput, resourceUtil.APPLICATION_ZIP,
-      "\"domainId.zip\"" );
+        "\"domainId.zip\"" );
 
     response = resourceUtil.createAttachment( fileData, domainId );
     assertEquals( mockResponse, response );
