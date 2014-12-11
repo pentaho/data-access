@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -44,13 +43,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 import static javax.ws.rs.core.MediaType.*;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static javax.ws.rs.core.Response.Status.*;
 
 /**
  * This service allows for listing, download, upload, and removal of Analysis files or Mondrian schemas in the BA
@@ -409,6 +408,10 @@ public class AnalysisResource {
     return Response.status( UNAUTHORIZED ).build();
   }
 
+  protected Response buildServerErrorResponse() {
+    return Response.serverError().build();
+  }
+
   /**
    * Get list of IDs of analysis datasource
    *
@@ -475,6 +478,66 @@ public class AnalysisResource {
       return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
+    }
+  }
+
+  /**
+   * Get ACL for the analysis data source by name
+   *
+   * @param catalog analysis data source name
+   * @return        ACL or null if the data source doesn't have it
+   * @throws        PentahoAccessControlException if the user doesn't have access
+   */
+  @GET
+  @Path( "/{catalog : .+}/acl" )
+  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully got the ACL" ),
+      @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 409, condition = "Analysis DS doesn't exist" ),
+      @ResponseCode(
+          code = 500,
+          condition = "ACL failed to be retrieved. This could be caused by an invalid path, or the file does not exist."
+      )
+      } )
+      public RepositoryFileAclDto doGetAnalysisDatasourceAcl( @PathParam( "catalog" ) String catalog ) {
+    try {
+      return service.getAnalysisDatasourceAcl( catalog );
+    } catch ( FileNotFoundException e ) {
+      throw new WebApplicationException( CONFLICT );
+    } catch ( PentahoAccessControlException e ) {
+      throw new WebApplicationException( UNAUTHORIZED );
+    }
+  }
+
+  /**
+   * Set ACL for the analysis data source
+   *
+   * @param catalog analysis data source name
+   * @param acl     ACL to set
+   * @return        response
+   * @throws        PentahoAccessControlException if the user doesn't have access
+   */
+  @PUT
+  @Path( "/{catalog : .+}/acl" )
+  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully updated the ACL" ),
+      @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 409, condition = "Analysis DS doesn't exist" ),
+      @ResponseCode( code = 500, condition = "Failed to save acls due to another error." )
+      } )
+      public Response doSetAnalysisDatasourceAcl( @PathParam( "catalog" ) String catalog, RepositoryFileAclDto acl )
+      throws PentahoAccessControlException {
+    try {
+      service.setAnalysisDatasourceAcl( catalog, acl );
+      return buildOkResponse();
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    } catch ( FileNotFoundException e ) {
+      return Response.status( CONFLICT ).build();
+    } catch ( Exception e ) {
+      return buildServerErrorResponse();
     }
   }
 }

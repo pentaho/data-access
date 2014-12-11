@@ -22,10 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
-import org.pentaho.platform.dataaccess.datasource.api.resources.JDBCDatasourceResource;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
@@ -113,7 +110,7 @@ public class JdbcDatasourceResourceTest {
     try {
       JaxbList<String> connections = jdbcDatasourceResource.getConnectionIDs();
       fail( "Should get WebApplicationException" );
-    } catch( WebApplicationException e ){
+    } catch ( WebApplicationException e ) {
       // good
     }
   }
