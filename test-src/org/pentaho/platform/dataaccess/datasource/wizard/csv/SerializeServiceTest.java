@@ -213,7 +213,7 @@ public class SerializeServiceTest {
     model.getWorkspaceHelper().populateDomain(model);
     service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
-    Assert.assertEquals(domain.getLogicalModels().get(1).getProperty("MondrianCatalogRef"), model.getModelName());
+    Assert.assertEquals( ( String) domain.getLogicalModels().get(1).getProperty("MondrianCatalogRef").getValue(), model.getModelName());
   }
 
   private Domain generateModel() {
