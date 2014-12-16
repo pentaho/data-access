@@ -40,6 +40,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -160,8 +161,8 @@ public class ModelerService extends PentahoBase implements IModelerService {
             if ( lModel == null ) {
               lModel = model.getLogicalModel( ModelerPerspective.REPORTING );
             }
-            lModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", "TRUE" );
-            lModel.setProperty( "WIZARD_GENERATED_SCHEMA", "TRUE" );
+            lModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", new Property<String>( "TRUE" ) );
+            lModel.setProperty( "WIZARD_GENERATED_SCHEMA", new Property<String>(  "TRUE" ) );
 
             String catName = lModel.getName( Locale.getDefault().toString() );
 
@@ -169,7 +170,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
             catName = catName.replace( BaseModelerWorkspaceHelper.OLAP_SUFFIX, "" );
 
             if ( doOlap ) {
-              lModel.setProperty( "MondrianCatalogRef", catName ); //$NON-NLS-1$
+              lModel.setProperty( "MondrianCatalogRef", new Property<String>( catName ) ); //$NON-NLS-1$
             }
 
             // Stores metadata into JCR.      

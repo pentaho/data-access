@@ -203,7 +203,7 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   @Override
   public void restoreSavedDatasource( Domain previousDomain, final XulServiceCallback<Void> callback ) {
 
-    String serializedDatasource = (String) previousDomain.getLogicalModels().get( 0 ).getProperty( "datasourceModel" );
+    String serializedDatasource = (String) previousDomain.getLogicalModels().get( 0 ).getProperty( "datasourceModel" ).getValue();
 
     datasourceService.deSerializeModelState( serializedDatasource, new XulServiceCallback<DatasourceDTO>() {
       public void success( DatasourceDTO datasourceDTO ) {
