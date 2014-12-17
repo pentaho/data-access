@@ -246,8 +246,14 @@ public class DataSourceWizardService extends DatasourceService {
       throws PentahoAccessControlException, FileNotFoundException {
     checkDSWExists( dswId );
 
+    if ( !endsWith( dswId, METADATA_EXT ) ) {
+      // if doesn't end in case-sensitive '.xmi' there will be trouble later on
+      final String errorMsg = "domainId must end in " + METADATA_EXT;
+      throw new IllegalArgumentException( errorMsg );
+    }
+
     final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
-    aclHelper.setAclFor( dswId, IAclNodeHelper.DatasourceType.MONDRIAN, acl );
+    aclHelper.setAclFor( dswId.substring( 0, dswId.lastIndexOf( METADATA_EXT ) ), IAclNodeHelper.DatasourceType.MONDRIAN, acl );
     aclHelper.setAclFor( dswId, IAclNodeHelper.DatasourceType.METADATA, acl );
   }
 
