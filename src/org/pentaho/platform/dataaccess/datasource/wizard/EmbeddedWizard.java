@@ -22,7 +22,6 @@ import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
 import org.pentaho.gwt.widgets.client.utils.i18n.IResourceBundleLoadCallback;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.FileImportController;
@@ -266,11 +265,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     // biserver-6210
     this.modelerDialogListener = listener;
 
-    Property property = domain.getLogicalModels().get( 0 ).getProperty( "DatasourceType" );
-    String datasourceType = null;
-    if ( property != null ) {
-      datasourceType = (String) property.getValue();
-    } 
+    String datasourceType = (String) domain.getLogicalModels().get( 0 ).getProperty( "DatasourceType" );
 
     // previous versions of Data-access would leave this property blank for Query datasources.
     if ( datasourceType == null ) {

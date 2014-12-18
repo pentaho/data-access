@@ -41,7 +41,6 @@ import org.pentaho.metadata.model.InlineEtlPhysicalModel;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
 import org.pentaho.metadata.model.SqlPhysicalTable;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.repository.DomainAlreadyExistsException;
 import org.pentaho.metadata.repository.DomainIdNullException;
 import org.pentaho.metadata.repository.DomainStorageException;
@@ -141,29 +140,13 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       LogicalModel logicalModelRep = model.getLogicalModel( ModelerPerspective.REPORTING );
       //CSV related data is bounded to reporting model so need to perform some additional clean up here
       if ( logicalModelRep != null ) {
-        String modelState = null;
-        Property property = logicalModelRep.getProperty( "datasourceModel" );
-        if ( property != null ) {
-          modelState = (String) property.getValue();
-        }
+        String modelState = (String) logicalModelRep.getProperty( "datasourceModel" );
 
-        String targetTableStaged = null;
-        Property targetProperty = logicalModelRep.getProperty( LogicalModel.PROPERTY_TARGET_TABLE_STAGED );
-        if ( targetProperty != null ) {
-          targetTableStaged = (String) targetProperty.getValue();
-        }
-        
         // if CSV, drop the staged table
         // TODO: use the edit story's stored info to do this
-        
-        Property datasourceTypeProperty = logicalModelRep.getProperty( "DatasourceType" );
-        String datasourceType = null;
-        if ( datasourceTypeProperty != null ) {
-          datasourceType = (String) datasourceTypeProperty.getValue();
-        }
-        if ( "CSV".equals( datasourceType )
+        if ( "CSV".equals( logicalModelRep.getProperty( "DatasourceType" ) )
           || "true"
-            .equalsIgnoreCase( targetTableStaged ) ) {
+            .equalsIgnoreCase( (String) logicalModelRep.getProperty( LogicalModel.PROPERTY_TARGET_TABLE_STAGED ) ) ) {
           targetTable =
             ( (SqlPhysicalTable) domain.getPhysicalModels().get( 0 ).getPhysicalTables().get( 0 ) ).getTargetTable();
           DatasourceDTO datasource = null;
@@ -195,7 +178,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       if ( logicalModel.getProperty( "MondrianCatalogRef" ) != null ) {
         // remove Mondrian schema
         IMondrianCatalogService service = PentahoSystem.get( IMondrianCatalogService.class, null );
-        catalogRef = (String) logicalModel.getProperty( "MondrianCatalogRef" ).getValue();
+        catalogRef = (String) logicalModel.getProperty( "MondrianCatalogRef" );
         // check if the model is not already removed
         if ( service.getCatalog( catalogRef, PentahoSessionHolder.getSession() ) != null ) {
           service.removeCatalog( catalogRef, PentahoSessionHolder.getSession() );
@@ -443,11 +426,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       locale = LocaleHelper.getClosestLocale( locale, locales );
 
       for ( LogicalModel model : domain.getLogicalModels() ) {
-        String vis = null;
-        Property property = model.getProperty( "visible" );
-        if ( property != null ) {
-          vis = (String) property.getValue();
-        }
+        String vis = (String) model.getProperty( "visible" );
         if ( vis != null ) {
           String[] visibleContexts = vis.split( "," );
           boolean visibleToContext = false;
@@ -553,8 +532,8 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       modelerWorkspace.getWorkspaceHelper().autoModelRelationalFlat( modelerWorkspace );
       modelerWorkspace.setModelName( datasourceDTO.getDatasourceName() );
       modelerWorkspace.getWorkspaceHelper().populateDomain( modelerWorkspace );
-      domain.getLogicalModels().get( 0 ).setProperty( "datasourceModel", new Property<String>( serializeModelState( datasourceDTO ) ) );
-      domain.getLogicalModels().get( 0 ).setProperty( "DatasourceType", new Property<String>( "SQL-DS" ) );
+      domain.getLogicalModels().get( 0 ).setProperty( "datasourceModel", serializeModelState( datasourceDTO ) );
+      domain.getLogicalModels().get( 0 ).setProperty( "DatasourceType", "SQL-DS" );
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
       prepareForSerializaton( domain );
@@ -600,11 +579,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       String.valueOf( FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) ); //$NON-NLS-1$
     String path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
     LogicalModel logicalModel = domain.getLogicalModels().get( 0 );
-    String modelState = null;
-    Property property = logicalModel.getProperty( "datasourceModel" );
-    if ( property != null ) {
-      modelState = (String) property.getValue();
-    }
+    String modelState = (String) logicalModel.getProperty( "datasourceModel" );
 
     if ( modelState != null ) {
       XStream xs = new XStream();
@@ -639,7 +614,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       }
       // Update datasourceModel with the new modelState
       modelState = xs.toXML( datasource );
-      logicalModel.setProperty( "datasourceModel", new Property<String> ( modelState  ) );
+      logicalModel.setProperty( "datasourceModel", modelState );
     }
   }
 

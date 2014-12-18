@@ -42,7 +42,6 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.data.IDBDatasourceService;
@@ -213,7 +212,7 @@ public class SerializeServiceTest {
     model.getWorkspaceHelper().populateDomain(model);
     service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
-    Assert.assertEquals( ( String) domain.getLogicalModels().get(1).getProperty("MondrianCatalogRef").getValue(), model.getModelName());
+    Assert.assertEquals(domain.getLogicalModels().get(1).getProperty("MondrianCatalogRef"), model.getModelName());
   }
 
   private Domain generateModel() {
@@ -241,7 +240,7 @@ public class SerializeServiceTest {
       dimension.setName("test");//$NON-NLS-1$
       dimension.setTimeDimension(false);
       olapDimensions.add(dimension);
-      domain.getLogicalModels().get(1).setProperty("olap_dimensions", new Property<List<OlapDimension>>( olapDimensions ) );//$NON-NLS-1$
+      domain.getLogicalModels().get(1).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
 
     } catch (Exception e) {
       e.printStackTrace();

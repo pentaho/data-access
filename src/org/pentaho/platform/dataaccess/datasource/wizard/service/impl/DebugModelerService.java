@@ -24,7 +24,6 @@ import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.platform.api.engine.IApplicationContext;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
@@ -88,7 +87,7 @@ public class DebugModelerService extends ModelerService {
 
       LogicalModel lModel = domain.getLogicalModels().get( 0 );
       String catName = lModel.getName( LocalizedString.DEFAULT_LOCALE );
-      lModel.setProperty( "MondrianCatalogRef", new Property<String>( catName ) ); //$NON-NLS-1$
+      lModel.setProperty( "MondrianCatalogRef", catName ); //$NON-NLS-1$
 
       // Serialize domain to xmi.
       /*

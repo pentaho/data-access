@@ -222,7 +222,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
   @Override
   public void restoreSavedDatasource( final Domain previousDomain, final XulServiceCallback<Void> callback ) {
     tablesSelectionStep.setDomain( previousDomain );
-    String serializedDatasource = (String) previousDomain.getLogicalModels().get( 0 ).getProperty( "datasourceModel" ).getValue();
+    String serializedDatasource = (String) previousDomain.getLogicalModels().get( 0 ).getProperty( "datasourceModel" );
     joinSelectionServiceGwtImpl.deSerializeModelState( serializedDatasource,
       new XulServiceCallback<MultiTableDatasourceDTO>() {
 

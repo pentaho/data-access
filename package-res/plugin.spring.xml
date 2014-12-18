@@ -206,10 +206,6 @@
        <value>[Lorg.pentaho.metadata.model.SqlPhysicalTable;</value>
        <value>org.pentaho.metadata.model.concept.Concept</value>
        <value>[Lorg.pentaho.metadata.model.concept.Concept;</value>
-       <value>org.pentaho.metadata.model.concept.Property</value>
-<!--
-       <value>[Lorg.pentaho.metadata.model.concept.Property;</value>
--->
        <value>[Lorg.pentaho.metadata.model.concept.IConcept;</value>
        <value>org.pentaho.metadata.model.concept.security.RowLevelSecurity</value>
        <value>org.pentaho.metadata.model.concept.security.RowLevelSecurity$Type</value>
@@ -299,3 +295,4 @@
   </bean>
   
 </beans>
+
