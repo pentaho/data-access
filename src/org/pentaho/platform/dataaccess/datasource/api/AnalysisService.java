@@ -27,6 +27,9 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -226,6 +229,34 @@ public class AnalysisService extends DatasourceService {
     return propertyList.get( key );
   }
 
+  private String getSchemaName( String encoding, InputStream inputStream ) throws XMLStreamException, IOException {
+    String domainId = null;
+    XMLStreamReader reader = null;
+    try {
+      XMLInputFactory factory = XMLInputFactory.newInstance();
+      factory.setProperty( XMLInputFactory.IS_COALESCING, Boolean.TRUE );
+      if ( StringUtils.isEmpty( encoding ) ) {
+        reader = factory.createXMLStreamReader( inputStream );
+      } else {
+        reader = factory.createXMLStreamReader( inputStream, encoding );
+      }
+
+      while ( reader.next() != XMLStreamReader.END_DOCUMENT ) {
+        if ( reader.getEventType() == XMLStreamReader.START_ELEMENT
+            && reader.getLocalName().equalsIgnoreCase( "Schema" ) ) {
+          domainId = reader.getAttributeValue( "", "name" );
+          return domainId;
+        }
+      }
+    } finally {
+      if ( reader != null ) {
+        reader.close();
+      }
+      inputStream.reset();
+    }
+
+    return domainId;
+  }
   /**
    * helper method to calculate the domain id from the parameters, file name, or pass catalog
    *
@@ -240,23 +271,18 @@ public class AnalysisService extends DatasourceService {
      * Try to resolve the domainId out of the mondrian schema name. If not present then use the catalog name parameter
      * or finally the file name.
      */
-
     String domainId = null;
     try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      org.w3c.dom.Document document = builder.parse( inputStream );
-      NodeList schemas = document.getElementsByTagName( "Schema" );
-      Node schema = schemas.item( 0 );
-      if ( schema != null ) {
-        Node name = schema.getAttributes().getNamedItem( "name" );
-        domainId = name.getTextContent();
-        if ( domainId != null && !"".equals( domainId ) ) {
-          return domainId;
-        }
-      }
+      domainId = getSchemaName( null, inputStream );
     } catch ( Exception e ) {
-      logger.error( e );
+      try {
+        domainId = getSchemaName( UTF_8, inputStream );
+      } catch ( Exception e1 ) {
+        logger.error( e1 );
+      }
+    }
+    if ( !StringUtils.isEmpty( domainId ) ) {
+      return domainId;
     }
 
     domainId = ( getValue( parameters, CATALOG_NAME ) == null ) ? catalogName : getValue( parameters, CATALOG_NAME );
