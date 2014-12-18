@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
@@ -87,7 +86,7 @@ public class DatasourceService {
     if ( logicalModelList != null && logicalModelList.size() >= 1 ) {
       for ( LogicalModel logicalModel : logicalModelList ) {
         // keep this check for backwards compatibility for now
-        Property property = logicalModel.getProperty( "AGILE_BI_GENERATED_SCHEMA" ); //$NON-NLS-1$
+        Object property = logicalModel.getProperty( "AGILE_BI_GENERATED_SCHEMA" ); //$NON-NLS-1$
         if ( property != null ) {
           return false;
         }

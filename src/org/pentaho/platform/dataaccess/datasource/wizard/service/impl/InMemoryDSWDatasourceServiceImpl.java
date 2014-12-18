@@ -40,7 +40,6 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.InlineEtlPhysicalModel;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.repository.DomainAlreadyExistsException;
 import org.pentaho.metadata.repository.DomainIdNullException;
 import org.pentaho.metadata.repository.DomainStorageException;
@@ -292,11 +291,7 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
       locale = LocaleHelper.getClosestLocale( locale, locales );
 
       for ( LogicalModel model : domain.getLogicalModels() ) {
-        String vis = null;
-        Property property = model.getProperty( "visible" );
-        if( property != null ) {
-          vis = (String) property.getValue();
-        }
+        String vis = (String) model.getProperty( "visible" );
         if ( vis != null ) {
           String[] visibleContexts = vis.split( "," );
           boolean visibleToContext = false;
@@ -367,8 +362,8 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
       modelerWorkspace.getWorkspaceHelper().autoModelFlat( modelerWorkspace );
       modelerWorkspace.setModelName( datasourceDTO.getDatasourceName() );
       modelerWorkspace.getWorkspaceHelper().populateDomain( modelerWorkspace );
-      domain.getLogicalModels().get( 0 ).setProperty( "datasourceModel", new Property<String>( serializeModelState( datasourceDTO ) ) );
-      domain.getLogicalModels().get( 0 ).setProperty( "DatasourceType", new Property<String>( "SQL-DS" ) );
+      domain.getLogicalModels().get( 0 ).setProperty( "datasourceModel", serializeModelState( datasourceDTO ) );
+      domain.getLogicalModels().get( 0 ).setProperty( "DatasourceType", "SQL-DS" );
 
       QueryDatasourceSummary summary = new QueryDatasourceSummary();
       modelerService.serializeModels( domain, modelerWorkspace.getModelName() );

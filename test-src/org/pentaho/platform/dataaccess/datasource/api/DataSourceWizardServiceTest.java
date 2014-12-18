@@ -25,7 +25,6 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -49,6 +48,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 public class DataSourceWizardServiceTest {
 
@@ -75,7 +75,7 @@ public class DataSourceWizardServiceTest {
     ModelerWorkspace mockModelerWorkspace = mock( ModelerWorkspace.class );
     MondrianCatalogRepositoryHelper mockMondrianCatalogRepositoryHelper = mock( MondrianCatalogRepositoryHelper.class );
     LogicalModel mockLogicalModel = mock( LogicalModel.class );
-    Property mockObject = new Property( "not null" );
+    String mockObject = "not null";
     String dswId = "dswId";
 
     doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
@@ -118,7 +118,7 @@ public class DataSourceWizardServiceTest {
     IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
     ModelerWorkspace mockModelerWorkspace = mock( ModelerWorkspace.class );
     LogicalModel mockLogicalModel = mock( LogicalModel.class );
-    Property mockObject = new Property( "not null" );
+    String mockObject = "not null";
     String dswId = "dswId";
 
     doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
@@ -144,7 +144,7 @@ public class DataSourceWizardServiceTest {
     IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
     ModelerWorkspace mockModelerWorkspace = mock( ModelerWorkspace.class );
     LogicalModel mockLogicalModel = mock( LogicalModel.class );
-    Property mockObject = new Property( "not null" );
+    String mockObject = "not null";
     String dswId = "dswId";
 
     doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
@@ -172,7 +172,7 @@ public class DataSourceWizardServiceTest {
     IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
     ModelerWorkspace mockModelerWorkspace = mock( ModelerWorkspace.class );
     LogicalModel mockLogicalModel = mock( LogicalModel.class );
-    Property mockObject = new Property( "not null" );
+    String mockObject = "not null";
     String dswId = "dswId";
 
     //Test 1
@@ -214,7 +214,7 @@ public class DataSourceWizardServiceTest {
     List<LogicalModel> mockLogicalModelList = new ArrayList<LogicalModel>();
     LogicalModel mockLogicalModel = mock( LogicalModel.class );
     mockLogicalModelList.add( mockLogicalModel );
-    Property mockObject = mock( Property.class );
+    Object mockObject = mock( Object.class );
 
     List<String> datasourceList = new ArrayList<String>();
     datasourceList.add( mockLogicalModelSummary.getDomainId() );

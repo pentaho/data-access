@@ -28,7 +28,6 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
@@ -170,8 +169,8 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
 
         XStream xstream = new XStream();
         String serializedDto = xstream.toXML( datasourceDto );
-        workspaceDomain.getLogicalModels().get( 0 ).setProperty( "datasourceModel", new Property<String>( serializedDto ) );
-        workspaceDomain.getLogicalModels().get( 0 ).setProperty( "DatasourceType", new Property<String>( "CSV" ) );
+        workspaceDomain.getLogicalModels().get( 0 ).setProperty( "datasourceModel", serializedDto );
+        workspaceDomain.getLogicalModels().get( 0 ).setProperty( "DatasourceType", "CSV" );
         prepareForSerialization( workspaceDomain );
 
         modelerService.serializeModels( workspaceDomain, modelerWorkspace.getModelName() );
@@ -204,12 +203,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
     String sysTmpDir = PentahoSystem.getApplicationContext().getSolutionPath( TMP_FILE_PATH );
     LogicalModel logicalModel = domain.getLogicalModels().get( 0 );
-    
-    String modelState = null;
-    Property property = logicalModel.getProperty( "datasourceModel" ); //$NON-NLS-1$
-    if ( property != null ) {
-      modelState = (String) property.getValue();
-    }
+    String modelState = (String) logicalModel.getProperty( "datasourceModel" ); //$NON-NLS-1$
 
     if ( modelState != null ) {
 
@@ -231,7 +225,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       datasource.setQuery( null );
       // Update datasourceModel with the new modelState
       modelState = xs.toXML( datasource );
-      logicalModel.setProperty( "datasourceModel", new Property<String>( modelState ) );
+      logicalModel.setProperty( "datasourceModel", modelState );
     }
   }
 

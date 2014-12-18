@@ -142,7 +142,7 @@ public class ModelerDialog extends AbstractXulDialogController<Domain> implement
     }
     if ( lModel.getProperty( "MondrianCatalogRef" ) == null
       && ( lModel.getProperty( "DUAL_MODELING_SCHEMA" ) == null || "false"
-        .equals( (String) lModel.getProperty( "DUAL_MODELING_SCHEMA" ).getValue() ) ) ) {
+        .equals( lModel.getProperty( "DUAL_MODELING_SCHEMA" ) ) ) ) {
       doOlap = false;
     }
     service.serializeModels( model.getDomain(), model.getModelName(), doOlap, new XulServiceCallback<String>() {
