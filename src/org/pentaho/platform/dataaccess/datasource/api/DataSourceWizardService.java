@@ -255,6 +255,7 @@ public class DataSourceWizardService extends DatasourceService {
     final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
     aclHelper.setAclFor( dswId.substring( 0, dswId.lastIndexOf( METADATA_EXT ) ), IAclNodeHelper.DatasourceType.MONDRIAN, acl );
     aclHelper.setAclFor( dswId, IAclNodeHelper.DatasourceType.METADATA, acl );
+    metadataDomainRepository.flushDomains();
   }
 
   private void checkDSWExists( String dswId ) throws PentahoAccessControlException, FileNotFoundException {

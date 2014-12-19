@@ -315,6 +315,7 @@ public class DataSourceWizardResource {
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully got the ACL" ),
       @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 404, condition = "ACL doesn't exist" ),
       @ResponseCode( code = 409, condition = "DSW doesn't exist" ),
       @ResponseCode(
           code = 500,
@@ -323,7 +324,11 @@ public class DataSourceWizardResource {
       } )
       public RepositoryFileAclDto doGetDSWAcl( @PathParam( "dswId" ) String dswId ) {
     try {
-      return service.getDSWAcl( dswId );
+      final RepositoryFileAclDto acl = service.getDSWAcl( dswId );
+      if ( acl == null ) {
+        throw new WebApplicationException( NOT_FOUND );
+      }
+      return acl;
     } catch ( FileNotFoundException e ) {
       throw new WebApplicationException( CONFLICT );
     } catch ( PentahoAccessControlException e ) {

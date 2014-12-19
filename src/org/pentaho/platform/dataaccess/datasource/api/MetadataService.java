@@ -119,6 +119,7 @@ public class MetadataService extends DatasourceService {
     }
     final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
     aclHelper.setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA, acl );
+    metadataDomainRepository.flushDomains();
   }
 
   protected void sleep( int i ) throws InterruptedException {

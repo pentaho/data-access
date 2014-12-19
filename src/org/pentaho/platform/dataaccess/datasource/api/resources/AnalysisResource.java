@@ -494,6 +494,7 @@ public class AnalysisResource {
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully got the ACL" ),
       @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 404, condition = "ACL doesn't exist" ),
       @ResponseCode( code = 409, condition = "Analysis DS doesn't exist" ),
       @ResponseCode(
           code = 500,
@@ -502,7 +503,11 @@ public class AnalysisResource {
       } )
       public RepositoryFileAclDto doGetAnalysisDatasourceAcl( @PathParam( "catalog" ) String catalog ) {
     try {
-      return service.getAnalysisDatasourceAcl( catalog );
+      final RepositoryFileAclDto acl = service.getAnalysisDatasourceAcl( catalog );
+      if ( acl == null ) {
+        throw new WebApplicationException( NOT_FOUND );
+      }
+      return acl;
     } catch ( FileNotFoundException e ) {
       throw new WebApplicationException( CONFLICT );
     } catch ( PentahoAccessControlException e ) {

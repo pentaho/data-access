@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.MetadataService;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
@@ -255,6 +256,8 @@ public class MetadataResourceTest {
         put( "test", null );
       } } ).when( metadataResource )
         .getDomainFilesData( domainId );
+
+    doReturn( new RepositoryFileAclDto() ).when( metadataResource.service ).getMetadataAcl( domainId );
 
     metadataResource.doGetMetadataAcl( domainId ); // no exception thrown
 

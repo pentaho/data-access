@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--===========================================================================
+PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+
+Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+
+NOTICE: All information including source code contained herein is, and
+remains the sole property of Pentaho and its licensors. The intellectual
+and technical concepts contained herein are proprietary and confidential
+to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+patents, or patents in process, and are protected by trade secret and
+copyright laws. The receipt or possession of this source code and/or related
+information does not convey or imply any rights to reproduce, disclose or
+distribute its contents, or to manufacture, use, or sell anything that it
+may describe, in whole or in part. Any reproduction, modification, distribution,
+or public display of this information without the express written authorization
+from Pentaho is strictly prohibited and in violation of applicable laws and
+international treaties. Access to the source code contained herein is strictly
+prohibited to anyone except those individuals and entities who have executed
+confidentiality and non-disclosure agreements or other agreements with Pentaho,
+explicitly covering such access.
+============================================================================-->
+<pentaho-system>
+
+  <!--
+ 	The kiosk-mode setting when set to true, will cause the platform to ignore some aspects of security 
+ 	to allow/enable behavior.  For example,	disable saving in WAQR.
+  -->
+  <kiosk-mode>false</kiosk-mode>
+
+  <!--
+    The login-show-users-list setting when set to true, will show a drop-down list of the default 
+    sample pentaho users (admin,suzy,pat,tiffany) in the login dialog which is shown when a user attemps
+    to login to the Pentaho User Console (PUC).
+  -->
+  <login-show-users-list>false</login-show-users-list> 
+  
+  <!-- 
+    If true, show hint about sample users. Ultimately, should replace login-show-users-list.
+  -->
+  <login-show-sample-users-hint>true</login-show-sample-users-hint>
+
+    <!--
+	This is the URL to the user guide
+    -->
+    <documentation-url>docs/InformationMap.jsp</documentation-url>
+
+	<log-file>server.log</log-file>
+	<log-level>DEBUG</log-level>
+
+	<!--
+		The configuration of publishers, system listeners, and session actions has been moved to
+		the systemListeners.xml, adminPlugins.xml, and sessionStartupActions.xml files which 
+		can be found in the "system" folder within your configured pentaho solution directory.
+	
+		If you're looking for the objects node, this functionality
+		has been moved to the file pentahoObjects.spring.xml in the
+		system solution.
+		
+		When everything is completed, this file will go away, and
+		not be at all required by the bi-platform-engine classes.
+		Rather, the wiring of the components/engines/system will
+		be able to be implemented by many different wiring schemes.
+		As a bare minimum, we'll have examples of system wiring using
+			Spring injection
+			Hand coded wiring
+			properties-file wiring
+		
+		This new system will allow for optimized wiring without requiring
+		the PentahoSystem, SystemSettings, or any components to parse
+		or interpret an XML document.
+	-->
+
+        <cache-provider>
+          <class>net.sf.ehcache.hibernate.SingletonEhCacheProvider</class>
+          <region>pentahoCache</region>
+          <!--
+          Uncomment this block to specify some parameters for your cache provider. EHCache has no parameters 
+          other than what are provided in the ehcache.xml.
+          <properties>
+              <property name="someProperty">someValue</property>
+          </properties>
+          -->
+        </cache-provider>
+        <acl-publisher>
+					<!-- 
+						These acls are used when publishing from the file system. Every folder
+						gets these ACLS. Authenticated is a "default" role that everyone
+						gets when they're authenticated (be sure to setup your bean xml properly
+						for this to work).
+					-->
+					<default-acls>
+						<acl-entry role="Administrator" acl="FULL_CONTROL" />				<!-- Administrator users get all authorities -->
+						<acl-entry role="cto" acl="FULL_CONTROL" />				<!-- CTO gets everything -->
+						<acl-entry role="dev" acl="EXECUTE_SUBSCRIBE" />		<!-- Dev gets execute/subscribe -->
+						<acl-entry role="Authenticated" acl="EXECUTE" />		<!-- Authenticated users get execute only -->
+					</default-acls>
+					
+					<!--
+						These acls are overrides to specific file/folders.  The above default-acls will
+						be applied and then these overrides.  This allows for specific access controls to
+						be loaded when the repository if first populated.  Futher changes to acls can be
+						made in the platform GUI tool.  Uncomment these and change add or delete to your hearts desire -->					
+
+					<overrides>
+						<file path="/pentaho-solutions/admin">
+							<acl-entry role="Administrator" acl="FULL_CONTROL" />
+						</file>
+					</overrides>
+
+					<!--
+					<overrides>
+						<file path="/pentaho-solutions/samples/bursting">
+							<acl-entry role="Administrator" acl="FULL_CONTROL" />
+							<acl-entry role="cto" acl="SUBSCRIBE_ADMINISTRATION" />
+							<acl-entry role="dev" acl="EXECUTE_SUBSCRIBE" />
+							<acl-entry role="Authenticated" acl="NOTHING" />
+						</file>
+						<file path="/pentaho-solutions/samples/datasources/MDX_Datasource.xaction">
+							<acl-entry role="Administrator" acl="FULL_CONTROL" />			
+							<acl-entry role="cto" acl="FULL_CONTROL" />			
+							<acl-entry role="dev" acl="EXECUTE_SUBSCRIBE" />	
+							<acl-entry role="Authenticated" acl="EXECUTE" />	
+						</file>
+					</overrides>
+					-->					
+				</acl-publisher>
+				<acl-voter>
+					<!-- What role must someone be in to be an ADMIN of Pentaho -->
+					<admin-role>Administrator</admin-role>
+				</acl-voter>
+				<!-- 
+				  acl-files tag was added in support of PPP-130 
+				  
+				  * Allow specification of ACLs on .url files
+				  
+				  * Allow specification of files acl-able to be
+					in the configuration
+					
+				  Usage: List the file extensions of files allowed to have
+				  acls. This is a performance tuning exercise since any file
+				  with an extension in this list can have ACLs applied.
+				-->
+                
+				<acl-files>xaction,url,prpt,prpti,xdash,xcdf,xanalyzer</acl-files>
+
+				<anonymous-authentication>
+				  <anonymous-user>anonymousUser</anonymous-user>
+				  <anonymous-role>Anonymous</anonymous-role>
+        </anonymous-authentication>
+                                
+	<!-- Insert additional pentaho-system -->
+	
+    <audit>
+      <auditLogFile>/PentahoAuditLog.log</auditLogFile>
+      <id_separator><![CDATA[\t]]></id_separator>
+      <auditDateFormat>yyyy/MM/dd k:mm:ss</auditDateFormat>
+    </audit>
+
+	<solution-repository>
+		<!-- Insert solution-repository -->
+		<cache-size>0</cache-size>
+	</solution-repository>
+
+</pentaho-system>

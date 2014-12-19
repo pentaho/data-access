@@ -474,6 +474,7 @@ public class MetadataResource {
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully got the ACL" ),
       @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 404, condition = "ACL doesn't exist" ),
       @ResponseCode( code = 409, condition = "Metadata DS doesn't exist" ),
       @ResponseCode(
           code = 500,
@@ -486,7 +487,11 @@ public class MetadataResource {
       throw new WebApplicationException( CONFLICT );
     }
     try {
-      return service.getMetadataAcl( domainId );
+      final RepositoryFileAclDto acl = service.getMetadataAcl( domainId );
+      if ( acl == null ) {
+        throw new WebApplicationException( NOT_FOUND );
+      }
+      return acl;
     } catch ( PentahoAccessControlException e ) {
       throw new WebApplicationException( UNAUTHORIZED );
     }
