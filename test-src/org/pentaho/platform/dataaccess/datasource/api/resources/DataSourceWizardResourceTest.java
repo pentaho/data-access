@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 import javax.ws.rs.WebApplicationException;
@@ -185,6 +186,8 @@ public class DataSourceWizardResourceTest {
   @Test
   public void doGetAnalysisAcl() throws Exception {
     String domainId = "domainId";
+
+    doReturn( new RepositoryFileAclDto() ).when( dataSourceWizardResource.service ).getDSWAcl( domainId );
 
     dataSourceWizardResource.doGetDSWAcl( domainId ); // no exception thrown
 

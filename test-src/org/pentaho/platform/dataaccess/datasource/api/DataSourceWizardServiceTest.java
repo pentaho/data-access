@@ -422,7 +422,7 @@ public class DataSourceWizardServiceTest {
 
   @Test
   public void testSetMetadataDatasourceAcl() throws Exception {
-    String domainId = "domainId";
+    String domainId = "domainId.xmi";
 
     final RepositoryFileAclDto aclDto = new RepositoryFileAclDto();
     aclDto.setOwner( "owner" );
@@ -436,13 +436,13 @@ public class DataSourceWizardServiceTest {
     final RepositoryFileAcl acl = new RepositoryFileAclAdapter().unmarshal( aclDto );
     verify( dataSourceWizardService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA,
         acl );
-    verify( dataSourceWizardService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.MONDRIAN,
+    verify( dataSourceWizardService.aclHelper ).setAclFor( domainId.substring( 0, domainId.indexOf( ".xmi" ) ), IAclNodeHelper.DatasourceType.MONDRIAN,
         acl );
   }
 
   @Test
   public void testSetMetadataDatasourceAclNoAcl() throws Exception {
-    String domainId = "domainId";
+    String domainId = "domainId.xmi";
 
     doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
     doReturn( new HashMap<String, InputStream>() ).when( dataSourceWizardService ).doGetDSWFilesAsDownload( domainId );
@@ -451,7 +451,7 @@ public class DataSourceWizardServiceTest {
 
     verify( dataSourceWizardService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA,
         null );
-    verify( dataSourceWizardService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.MONDRIAN,
+    verify( dataSourceWizardService.aclHelper ).setAclFor( domainId.substring( 0, domainId.indexOf( ".xmi" ) ), IAclNodeHelper.DatasourceType.MONDRIAN,
         null );
   }
 }
