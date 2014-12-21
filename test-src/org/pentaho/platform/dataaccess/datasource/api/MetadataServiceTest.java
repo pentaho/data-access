@@ -17,9 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
@@ -104,16 +102,24 @@ public class MetadataServiceTest {
   public void testGetMetadataDatasourceIds() throws Exception {
     List<String> mockMetadataIdsList = new ArrayList<String>();
     Set<String> mockSet = new HashSet<String>();
-    mockSet.add( "domainId1" );
-    mockMetadataIdsList.add( "domainId1" );
+    String domainId = "domainId1";
 
-    doReturn( true ).when( metadataService ).isMetadataDatasource( "domainId1" );
+    mockSet.add( domainId );
+    mockMetadataIdsList.add( domainId );
+
+    doReturn( true ).when( metadataService ).isMetadataDatasource( domainId );
     doReturn( mockSet ).when( metadataService.metadataDomainRepository ).getDomainIds();
+
+    doReturn( true ).when( metadataService.aclHelper ).hasAccess( domainId, IAclNodeHelper.DatasourceType.METADATA);
 
     List<String> response = metadataService.getMetadataDatasourceIds();
 
-    verify( metadataService, times( 1 ) ).getMetadataDatasourceIds();
-    assertEquals( mockMetadataIdsList, response );
+    verify( metadataService, times( 1 ) ).isMetadataDatasource(domainId);
+    verify( metadataService.aclHelper, times( 1 ) ).hasAccess( domainId, IAclNodeHelper.DatasourceType.METADATA );
+    assertEquals(mockMetadataIdsList, response);
+
+    doReturn( false ).when( metadataService.aclHelper ).hasAccess( domainId, IAclNodeHelper.DatasourceType.METADATA);
+    assertNotSame( mockMetadataIdsList, response );
   }
 
   @Test

@@ -58,7 +58,7 @@ public class MetadataService extends DatasourceService {
     try {
       sleep( 100 );
       for ( String id : metadataDomainRepository.getDomainIds() ) {
-        if ( isMetadataDatasource( id ) ) {
+        if ( isMetadataDatasource( id ) && aclHelper.hasAccess( id, IAclNodeHelper.DatasourceType.METADATA ) ) {
           metadataIds.add( id );
         }
       }
