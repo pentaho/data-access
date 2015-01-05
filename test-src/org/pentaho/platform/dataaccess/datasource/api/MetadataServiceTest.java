@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -21,16 +21,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.ws.rs.core.Response;
 
@@ -38,36 +35,46 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
-import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
-import org.pentaho.platform.repository2.unified.jcr.IAclNodeHelper;
+import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
+import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
+import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
-import org.pentaho.platform.web.http.api.resources.services.FileService;
 
-public class MetadataServiceTest {
+ public class MetadataServiceTest {
 
   private static MetadataService metadataService;
 
+  private class MetadataServiceMock extends MetadataService {
+    @Override protected IUnifiedRepository getRepository() {
+      return mock( IUnifiedRepository.class );
+    }
+
+    @Override protected MondrianCatalogRepositoryHelper getMondrianCatalogRepositoryHelper() {
+      return mock( MondrianCatalogRepositoryHelper.class );
+    }
+  }
+
   @Before
   public void setUp() {
-    metadataService = spy( new MetadataService() );
-    metadataService.metadataDomainRepository = mock( IMetadataDomainRepository.class );
-    metadataService.aclHelper = mock( IAclNodeHelper.class );
-    metadataService.fileService = mock( FileService.class );
+    metadataService = spy( new MetadataServiceMock() );
+    metadataService.metadataDomainRepository = mock( PentahoMetadataDomainRepository.class );
+    metadataService.aclAwarePentahoMetadataDomainRepositoryImporter = mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
+    metadataService.mondrianCatalogService = mock( IMondrianCatalogService.class );
   }
 
   @After
@@ -265,31 +272,45 @@ public class MetadataServiceTest {
 
     final RepositoryFileAcl acl = new RepositoryFileAcl.Builder( "owner" ).build();
 
-    doReturn( true ).when( metadataService ).canAdministerCheck();
-    when( metadataService.aclHelper.getAclFor( anyString(), any( IAclNodeHelper.DatasourceType.class ) ) )
-        .thenReturn( acl );
-    final IUnifiedRepository repository = mock( IUnifiedRepository.class );
-    when( metadataService.fileService.getRepository() ).thenReturn( repository );
-    when( metadataService.fileService.doGetFileAcl( anyString() ) ).thenReturn( new RepositoryFileAclAdapter().marshal( acl ) );
-    final RepositoryFile repositoryFile = mock( RepositoryFile.class );
-    when( repository.getFileById( anyString() ) ).thenReturn( repositoryFile );
+    doReturn( true ).when( metadataService ).canManageACL();
+    when( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn( acl );
+    final Map<String, InputStream> domainFilesData = mock( Map.class );
+    when( domainFilesData.isEmpty() ).thenReturn( false );
+    when( ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
+        .thenReturn( domainFilesData );
     final RepositoryFileAclDto aclDto = metadataService.getMetadataAcl( domainId );
 
-    verify( metadataService.aclHelper ).getAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA );
+    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( eq( domainId ) );
 
     assertEquals( acl, new RepositoryFileAclAdapter().unmarshal( aclDto ) );
+  }
+
+  @Test( expected = FileNotFoundException.class )
+  public void testGetMetadataDatasourceAclNoDS() throws Exception {
+    String domainId = "home\\admin/resource/";
+
+    doReturn( true ).when( metadataService ).canManageACL();
+    when( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn( null );
+    final RepositoryFileAclDto aclDto = metadataService.getMetadataAcl( domainId );
+
+    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( eq( domainId ) );
+
+    assertNull( aclDto );
   }
 
   @Test
   public void testGetMetadataDatasourceAclNoAcl() throws Exception {
     String domainId = "home\\admin/resource/";
 
-    doReturn( true ).when( metadataService ).canAdministerCheck();
-    when( metadataService.aclHelper.getAclFor( anyString(), any( IAclNodeHelper.DatasourceType.class ) ) )
-        .thenReturn( null );
+    doReturn( true ).when( metadataService ).canManageACL();
+    when( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn( null );
+    final Map<String, InputStream> domainFilesData = mock( Map.class );
+    when( domainFilesData.isEmpty() ).thenReturn( false );
+    when( ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
+        .thenReturn( domainFilesData );
     final RepositoryFileAclDto aclDto = metadataService.getMetadataAcl( domainId );
 
-    verify( metadataService.aclHelper ).getAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA );
+    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( eq( domainId ) );
 
     assertNull( aclDto );
   }
@@ -302,23 +323,44 @@ public class MetadataServiceTest {
     aclDto.setOwner( "owner" );
     aclDto.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
 
-    doReturn( true ).when( metadataService ).canAdministerCheck();
+    doReturn( true ).when( metadataService ).canManageACL();
+    final Map<String, InputStream> domainFilesData = mock( Map.class );
+    when( domainFilesData.isEmpty() ).thenReturn( false );
+    when( ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
+        .thenReturn( domainFilesData );
 
     metadataService.setMetadataAcl( domainId, aclDto );
 
-    verify( metadataService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA,
-        new RepositoryFileAclAdapter().unmarshal( aclDto ) );
+    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( eq( domainId ),
+        eq( new RepositoryFileAclAdapter().unmarshal( aclDto ) ) );
+  }
+
+  @Test( expected = FileNotFoundException.class )
+  public void testSetMetadataDatasourceAclNoDS() throws Exception {
+    String domainId = "home\\admin/resource/";
+
+    doReturn( true ).when( metadataService ).canManageACL();
+
+    metadataService.setMetadataAcl( domainId, null );
+
+    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( eq( domainId ),
+        (RepositoryFileAcl) isNull() );
   }
 
   @Test
   public void testSetMetadataDatasourceAclNoAcl() throws Exception {
     String domainId = "home\\admin/resource/";
 
-    doReturn( true ).when( metadataService ).canAdministerCheck();
+    doReturn( true ).when( metadataService ).canManageACL();
+    final Map<String, InputStream> domainFilesData = mock( Map.class );
+    when( domainFilesData.isEmpty() ).thenReturn( false );
+    when( ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
+        .thenReturn( domainFilesData );
 
     metadataService.setMetadataAcl( domainId, null );
 
-    verify( metadataService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA, null );
+    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( eq( domainId ),
+        (RepositoryFileAcl) isNull() );
   }
 }
 

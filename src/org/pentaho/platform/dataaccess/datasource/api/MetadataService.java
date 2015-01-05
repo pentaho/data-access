@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +36,8 @@ import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
-import org.pentaho.platform.repository2.unified.jcr.IAclNodeHelper;
+import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
+import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 
@@ -43,8 +45,15 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public class MetadataService extends DatasourceService {
+  protected IAclAwarePentahoMetadataDomainRepositoryImporter aclAwarePentahoMetadataDomainRepositoryImporter;
 
   private static final Log logger = LogFactory.getLog( MetadataService.class );
+
+  public MetadataService() {
+    if ( metadataDomainRepository instanceof IAclAwarePentahoMetadataDomainRepositoryImporter ) {
+      aclAwarePentahoMetadataDomainRepositoryImporter = (IAclAwarePentahoMetadataDomainRepositoryImporter) metadataDomainRepository;
+    }
+  }
 
   public void removeMetadata( String metadataId ) throws PentahoAccessControlException {
     if ( !canAdministerCheck() ) {
@@ -105,21 +114,37 @@ public class MetadataService extends DatasourceService {
     publish( pentahoSession );
   }
 
-  public RepositoryFileAclDto getMetadataAcl( String domainId ) throws PentahoAccessControlException {
-    if ( !canAdministerCheck() ) {
-      throw new PentahoAccessControlException();
+  public RepositoryFileAclDto getMetadataAcl( String domainId )
+      throws PentahoAccessControlException, FileNotFoundException {
+    checkMetadataExists( domainId );
+    if ( aclAwarePentahoMetadataDomainRepositoryImporter != null ) {
+      final RepositoryFileAcl acl = aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId );
+      return acl == null ? null : repositoryFileAclAdapter.marshal( acl );
     }
-    return getAcl( domainId, IAclNodeHelper.DatasourceType.METADATA );
+    return null;
   }
 
   public void setMetadataAcl( String domainId, RepositoryFileAclDto aclDto )
       throws PentahoAccessControlException, FileNotFoundException {
-    if ( !canAdministerCheck() ) {
+    checkMetadataExists( domainId );
+    if ( aclAwarePentahoMetadataDomainRepositoryImporter != null ) {
+      final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
+      aclAwarePentahoMetadataDomainRepositoryImporter.setAclFor( domainId, acl );
+      flushDataSources();
+    }
+  }
+
+  private void checkMetadataExists( String domainId ) throws PentahoAccessControlException, FileNotFoundException {
+    if ( !canManageACL() ) {
       throw new PentahoAccessControlException();
     }
-    final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
-    aclHelper.setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA, acl );
-    metadataDomainRepository.flushDomains();
+    if ( metadataDomainRepository instanceof IPentahoMetadataDomainRepositoryExporter ) {
+      Map<String, InputStream> domainFilesData =
+          ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
+      if ( domainFilesData == null || domainFilesData.isEmpty() ) {
+        throw new FileNotFoundException();
+      }
+    }
   }
 
   protected void sleep( int i ) throws InterruptedException {

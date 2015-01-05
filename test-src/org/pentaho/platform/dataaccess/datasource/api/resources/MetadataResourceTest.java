@@ -12,21 +12,16 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -54,10 +49,15 @@ public class MetadataResourceTest {
 
   private static MetadataResource metadataResource;
 
+  private class MetadataResourceMock extends MetadataResource {
+    @Override protected MetadataService createMetadataService() {
+      return mock( MetadataService.class );
+    }
+  }
+
   @Before
   public void setUp() {
-    metadataResource = spy( new MetadataResource() );
-    metadataResource.service = mock( MetadataService.class );
+    metadataResource = spy( new MetadataResourceMock() );
   }
 
   @After
@@ -272,7 +272,7 @@ public class MetadataResourceTest {
     }
 
     //
-    doReturn( null ).when( metadataResource ).getDomainFilesData( domainId );
+    doThrow( new FileNotFoundException() ).when( metadataResource.service ).getMetadataAcl( domainId );
 
     try {
       metadataResource.doGetMetadataAcl( domainId );
@@ -301,7 +301,7 @@ public class MetadataResourceTest {
     assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus() );
 
     //
-    doReturn( null ).when( metadataResource ).getDomainFilesData( domainId );
+    doThrow( new FileNotFoundException() ).when( metadataResource.service ).setMetadataAcl( domainId, null );
 
     response = metadataResource.doSetMetadataAcl( domainId, null );
     assertEquals( Response.Status.CONFLICT.getStatusCode(), response.getStatus() );

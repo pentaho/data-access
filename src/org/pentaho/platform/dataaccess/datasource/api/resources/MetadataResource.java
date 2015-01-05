@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -22,6 +22,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
 import static javax.ws.rs.core.Response.Status.*;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -76,9 +77,13 @@ public class MetadataResource {
   protected ResourceUtil resourceUtil;
 
   public MetadataResource() {
-    service = new MetadataService();
+    service = createMetadataService();
     resourceUtil = new ResourceUtil();
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
+  }
+
+  protected MetadataService createMetadataService() {
+    return new MetadataService();
   }
 
   /**
@@ -482,10 +487,6 @@ public class MetadataResource {
       )
       } )
       public RepositoryFileAclDto doGetMetadataAcl( @PathParam( "domainId" ) String domainId ) {
-    final Map<String, InputStream> domainFilesData = getDomainFilesData( domainId );
-    if ( domainFilesData == null || domainFilesData.isEmpty() ) {
-      throw new WebApplicationException( CONFLICT );
-    }
     try {
       final RepositoryFileAclDto acl = service.getMetadataAcl( domainId );
       if ( acl == null ) {
@@ -494,6 +495,8 @@ public class MetadataResource {
       return acl;
     } catch ( PentahoAccessControlException e ) {
       throw new WebApplicationException( UNAUTHORIZED );
+    } catch ( FileNotFoundException e) {
+      throw new WebApplicationException( CONFLICT );
     }
   }
 
@@ -516,14 +519,12 @@ public class MetadataResource {
       } )
       public Response doSetMetadataAcl( @PathParam( "domainId" ) String domainId, RepositoryFileAclDto acl ) {
     try {
-      final Map<String, InputStream> domainFilesData = getDomainFilesData( domainId );
-      if ( domainFilesData == null || domainFilesData.isEmpty() ) {
-        return Response.status( CONFLICT ).build();
-      }
       service.setMetadataAcl( domainId, acl );
       return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
+    } catch ( FileNotFoundException e) {
+      return Response.status( CONFLICT ).build();
     } catch ( Exception e ) {
       return buildServerErrorResponse();
     }

@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -54,13 +54,14 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
 import org.pentaho.platform.plugin.action.mondrian.MondrianCachePublisher;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IAclAwareMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServiceException;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
+import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
-import org.pentaho.platform.repository2.unified.jcr.IAclNodeHelper;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 
 public class DataSourceWizardService extends DatasourceService {
@@ -68,6 +69,9 @@ public class DataSourceWizardService extends DatasourceService {
   protected IDSWDatasourceService dswService;
   protected IModelerService modelerService;
   protected IDatasourceMgmtService datasourceMgmtSvc;
+
+  protected IAclAwarePentahoMetadataDomainRepositoryImporter aclAwarePentahoMetadataDomainRepositoryImporter;
+  protected IAclAwareMondrianCatalogService aclAwareMondrianCatalogService;
 
   private static final Log logger = LogFactory.getLog( DataSourceWizardService.class );
 
@@ -83,11 +87,20 @@ public class DataSourceWizardService extends DatasourceService {
   private static final String IMPORT_DOMAIN_ID = "domain-id";
 
   public DataSourceWizardService() {
-    dswService = new DSWDatasourceServiceImpl();
+    dswService = getDswDatasourceService();
     modelerService = new ModelerService();
     datasourceMgmtSvc = PentahoSystem.get( IDatasourceMgmtService.class, PentahoSessionHolder.getSession() );
+    if ( metadataDomainRepository instanceof IAclAwarePentahoMetadataDomainRepositoryImporter ) {
+      aclAwarePentahoMetadataDomainRepositoryImporter = (IAclAwarePentahoMetadataDomainRepositoryImporter) metadataDomainRepository;
+    }
+    if ( mondrianCatalogService instanceof IAclAwareMondrianCatalogService ) {
+      aclAwareMondrianCatalogService = (IAclAwareMondrianCatalogService) mondrianCatalogService;
+    }
   }
 
+  protected IDSWDatasourceService getDswDatasourceService() {
+    return new DSWDatasourceServiceImpl();
+  }
 
   public Map<String, InputStream> doGetDSWFilesAsDownload( String dswId ) throws PentahoAccessControlException {
     if ( !canAdministerCheck() ) {
@@ -231,7 +244,11 @@ public class DataSourceWizardService extends DatasourceService {
   public RepositoryFileAclDto getDSWAcl( String dswId ) throws PentahoAccessControlException, FileNotFoundException {
     checkDSWExists( dswId );
 
-    return getAcl( dswId, IAclNodeHelper.DatasourceType.METADATA );
+    if ( aclAwarePentahoMetadataDomainRepositoryImporter != null ) {
+      final RepositoryFileAcl acl = aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( dswId );
+      return acl == null ? null : repositoryFileAclAdapter.marshal( acl );
+    }
+    return null;
   }
 
   /**
@@ -253,13 +270,17 @@ public class DataSourceWizardService extends DatasourceService {
     }
 
     final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
-    aclHelper.setAclFor( dswId.substring( 0, dswId.lastIndexOf( METADATA_EXT ) ), IAclNodeHelper.DatasourceType.MONDRIAN, acl );
-    aclHelper.setAclFor( dswId, IAclNodeHelper.DatasourceType.METADATA, acl );
-    metadataDomainRepository.flushDomains();
+    if ( aclAwareMondrianCatalogService != null ) {
+      aclAwareMondrianCatalogService.setAclFor( dswId.substring( 0, dswId.lastIndexOf( METADATA_EXT ) ), acl );
+    }
+    if ( aclAwarePentahoMetadataDomainRepositoryImporter != null ) {
+      aclAwarePentahoMetadataDomainRepositoryImporter.setAclFor( dswId, acl );
+    }
+    flushDataSources();
   }
 
   private void checkDSWExists( String dswId ) throws PentahoAccessControlException, FileNotFoundException {
-    if ( !canAdministerCheck() ) {
+    if ( !canManageACL() ) {
       throw new PentahoAccessControlException();
     }
 
