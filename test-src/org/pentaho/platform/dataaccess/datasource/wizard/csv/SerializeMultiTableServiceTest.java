@@ -219,7 +219,7 @@ public class SerializeMultiTableServiceTest {
     ModelerService service = new ModelerService();
     service.serializeModels(domain, "test_file");//$NON-NLS-1$
 
-    Assert.assertEquals(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "SampleData");
+    Assert.assertEquals( ( String) domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "SampleData");
 
   }
 

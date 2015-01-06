@@ -53,6 +53,7 @@ import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.dataaccess.datasource.api.resources.DataSourceWizardResource;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -89,6 +90,8 @@ import org.springframework.security.userdetails.User;
 import org.springframework.security.userdetails.UserDetails;
 import org.springframework.security.userdetails.UserDetailsService;
 import org.springframework.security.userdetails.UsernameNotFoundException;
+
+import com.sun.jersey.core.header.FormDataContentDisposition;
 
 public class DatasourceResourceTest {
   private static MicroPlatform mp;
@@ -278,6 +281,52 @@ public class DatasourceResourceTest {
     } finally {
       IOUtils.closeQuietly( in );
     }
+  }
+
+  private void testImportFile( String filePath, final String expectedSchemaName ) throws Exception {
+    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
+    Mockery mockery = new Mockery();
+    final IPlatformImporter mockImporter = mockery.mock( IPlatformImporter.class );
+    mp.defineInstance( IPlatformImporter.class, mockImporter );
+    mockery.checking( new Expectations() {
+      {
+        oneOf( mockImporter ).importFile( with( match( new TypeSafeMatcher<IPlatformImportBundle>() {
+          public boolean matchesSafely( IPlatformImportBundle bundle ) {
+            return bundle.getProperty( "domain-id" ).equals( expectedSchemaName )
+                && bundle.getMimeType().equals( "application/vnd.pentaho.mondrian+xml" );
+          }
+
+          public void describeTo( Description description ) {
+            description.appendText( "bundle with mondrian schema" );
+          }
+        } ) ) );
+      }
+    } );
+    AnalysisService service = new AnalysisService();
+    FileInputStream in = new FileInputStream( filePath );
+    try {
+      service.putMondrianSchema( in, schemaFileInfo, null, null, null, false, false,
+          "Datasource=SampleData;overwrite=false" );
+
+      mockery.assertIsSatisfied();
+    } finally {
+      IOUtils.closeQuietly( in );
+    }
+  }
+
+  @Test
+  public void testImportMondrianSchemaWithEncodingIssue() throws Exception {
+    testImportFile( "test-res/mysql_steelwheels.mondri_xyz-invalid_encoding.xml", "SteelWheels_xyzxx" );
+  }
+
+  @Test
+  public void testImportMondrianSchemaWithXmlFormatIssue() throws Exception {
+    testImportFile( "test-res/mysql_steelwheels.mondri_xyz-invalid_xml.xml", "SteelWheels_xyzxx1" );
+  }
+
+  @Test
+  public void testImportMondrianSchemaWithDeclaringEncodingIssue() throws Exception {
+    testImportFile( "test-res/mysql_steelwheels.mondri_xyz-invalid_declare_encoding.xml", "SteelWheels_xyzxx" );
   }
 
   @Factory
