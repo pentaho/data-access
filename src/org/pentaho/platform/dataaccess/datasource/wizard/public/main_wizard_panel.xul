@@ -3,7 +3,7 @@
 <window xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
         id="datasourceEditorWindow" title="${datasourceEditorDialog.TITLE}" orient="vertical" height="700" width="900">
   <dialog xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
-          id="main_wizard_window" width="900" height="600" title="${WIZARD_TITLE}" onload="" resizable="false"
+          id="main_wizard_window" width="900" height="700" title="${WIZARD_TITLE}" onload="" resizable="false"
           padding="0" spacing="0"
           buttons="accept,cancel,extra1,extra2"
           pen:acceptbuttonalign="right"
