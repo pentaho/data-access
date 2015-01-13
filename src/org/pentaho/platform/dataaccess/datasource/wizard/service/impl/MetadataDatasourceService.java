@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -28,12 +28,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -53,11 +48,13 @@ import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainReposi
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 
 @Path( "/data-access/api/metadata" )
 public class MetadataDatasourceService {
   
   private static final String OVERWRITE_IN_REPOS = "overwrite";
+  private static final String DATASOURCE_ACL = "acl";
   private static final String LANG = "[a-z]{2}";
   private static final String LANG_CC = LANG + "_[A-Z]{2}";
   private static final String LANG_CC_EXT = LANG_CC + "_[^/]+";
@@ -234,6 +231,8 @@ public class MetadataDatasourceService {
    *          List of local files
    * @param localeFilesInfo
    *          List of information for each local file
+   * @param acl
+   *          acl information for the data source. This parameter is optional.
    * 
    * @return Response containing the success of the method
    * 
@@ -253,10 +252,11 @@ public class MetadataDatasourceService {
       @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo )
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
     throws PentahoAccessControlException {
     Response response =
-        importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
+        importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
     ResponseBuilder responseBuilder;
     responseBuilder = Response.ok();
     responseBuilder.entity( String.valueOf( response.getStatus() ) );
@@ -277,6 +277,8 @@ public class MetadataDatasourceService {
    *          List of information for each local file
    * @param overwrite
    *          Flag for overwriting existing version of the file
+   * @param acl
+   *          acl information for the data source. This parameter is optional.
    * 
    * @return Response containing the success of the method
    * 
@@ -292,8 +294,9 @@ public class MetadataDatasourceService {
       @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) {
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
     return new MetadataResource().importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo, overwrite,
-        localeFiles, localeFilesInfo );
+        localeFiles, localeFilesInfo, acl );
   }
 }
