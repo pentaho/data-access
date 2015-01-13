@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -39,6 +39,7 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IAclAwareMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
@@ -46,7 +47,6 @@ import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
-import org.pentaho.platform.repository2.unified.jcr.IAclNodeHelper;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -70,9 +70,13 @@ public class AnalysisService extends DatasourceService {
    * register the handler in the PentahoSpringObjects.xml for MondrianImportHandler
    */
   protected IPlatformImporter importer;
+  protected IAclAwareMondrianCatalogService aclAwareMondrianCatalogService;
 
   public AnalysisService() {
     importer = PentahoSystem.get( IPlatformImporter.class );
+    if ( mondrianCatalogService instanceof IAclAwareMondrianCatalogService ) {
+      aclAwareMondrianCatalogService = (IAclAwareMondrianCatalogService) mondrianCatalogService;
+    }
   }
 
   public Map<String, InputStream> doGetAnalysisFilesAsDownload( String analysisId )
@@ -128,7 +132,11 @@ public class AnalysisService extends DatasourceService {
       throws PentahoAccessControlException, FileNotFoundException {
     checkAnalysisExists( analysisId );
 
-    return getAcl( analysisId, IAclNodeHelper.DatasourceType.MONDRIAN );
+    if ( aclAwareMondrianCatalogService != null ) {
+      final RepositoryFileAcl acl = aclAwareMondrianCatalogService.getAclFor( analysisId );
+      return acl == null ? null : repositoryFileAclAdapter.marshal( acl );
+    }
+    return null;
   }
 
   public void setAnalysisDatasourceAcl( String analysisId, RepositoryFileAclDto aclDto )
@@ -136,11 +144,14 @@ public class AnalysisService extends DatasourceService {
     checkAnalysisExists( analysisId );
 
     final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
-    aclHelper.setAclFor( analysisId, IAclNodeHelper.DatasourceType.MONDRIAN, acl );
+    if ( aclAwareMondrianCatalogService != null ) {
+      aclAwareMondrianCatalogService.setAclFor( analysisId, acl );
+    }
+    flushDataSources();
   }
 
   private void checkAnalysisExists( String analysisId ) throws FileNotFoundException, PentahoAccessControlException {
-    if ( !canAdministerCheck() ) {
+    if ( !canManageACL() ) {
       throw new PentahoAccessControlException();
     }
     try {

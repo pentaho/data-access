@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -41,10 +41,15 @@ public class DataSourceWizardResourceTest {
 
   private static DataSourceWizardResource dataSourceWizardResource;
 
+  private class DataSourceWizardResourceMock extends DataSourceWizardResource {
+    @Override protected DataSourceWizardService createDataSourceWizardService() {
+      return mock( DataSourceWizardService.class );
+    }
+  }
+
   @Before
   public void setUp() {
-    dataSourceWizardResource = spy( new DataSourceWizardResource() );
-    dataSourceWizardResource.service = mock( DataSourceWizardService.class );
+    dataSourceWizardResource = spy( new DataSourceWizardResourceMock() );
   }
 
   @After

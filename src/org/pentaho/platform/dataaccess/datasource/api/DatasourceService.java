@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -25,39 +25,40 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
-import org.pentaho.platform.api.engine.ISystemConfig;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.api.repository2.unified.RepositoryFile;
-import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
+import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
+import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
-import org.pentaho.platform.repository2.unified.jcr.IAclNodeHelper;
-import org.pentaho.platform.repository2.unified.jcr.JcrAclNodeHelper;
+import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
-import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
-import org.pentaho.platform.web.http.api.resources.services.FileService;
 
 public class DatasourceService {
-
   protected IMetadataDomainRepository metadataDomainRepository;
   protected IMondrianCatalogService mondrianCatalogService;
-  protected FileService fileService;
-  protected IAclNodeHelper aclHelper;
   protected RepositoryFileAclAdapter repositoryFileAclAdapter;
+  private MondrianCatalogRepositoryHelper mondrianCatalogRepositoryHelper;
 
   public DatasourceService() {
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
     mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
-    fileService = new FileService();
-    final ISystemConfig systemConfig = PentahoSystem.get( ISystemConfig.class );
-    aclHelper = new JcrAclNodeHelper( fileService.getRepository(),
-        systemConfig == null ? null : systemConfig.getProperty( "repository.aclNodeFolder" ) );
     repositoryFileAclAdapter = new RepositoryFileAclAdapter();
+  }
+
+  protected IUnifiedRepository getRepository() {
+    return PentahoSystem.get( IUnifiedRepository.class );
+  }
+
+  protected MondrianCatalogRepositoryHelper getMondrianCatalogRepositoryHelper() {
+    if ( mondrianCatalogRepositoryHelper == null ) {
+      mondrianCatalogRepositoryHelper = new MondrianCatalogRepositoryHelper( getRepository() );
+    }
+    return mondrianCatalogRepositoryHelper;
   }
 
   public static boolean canAdminister() {
@@ -74,6 +75,12 @@ public class DatasourceService {
     if ( !isAdmin ) {
       throw new PentahoAccessControlException( "Access Denied" );
     }
+  }
+
+  protected boolean canManageACL() {
+    IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
+    return policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
+      && DataAccessPermissionUtil.hasManageAccess();
   }
 
   /**
@@ -129,12 +136,8 @@ public class DatasourceService {
     }
   }
 
-  protected RepositoryFileAclDto getAcl( String analysisId, IAclNodeHelper.DatasourceType datasourceType ) {
-    RepositoryFileAcl acl = aclHelper.getAclFor( analysisId, datasourceType );
-    if ( acl == null ) {
-      return null;
-    }
-    final RepositoryFile aclFile = fileService.getRepository().getFileById( acl.getId() );
-    return fileService.doGetFileAcl( aclFile.getPath() );
+  protected void flushDataSources() {
+    metadataDomainRepository.flushDomains();
+    mondrianCatalogService.reInit( PentahoSessionHolder.getSession() );
   }
 }

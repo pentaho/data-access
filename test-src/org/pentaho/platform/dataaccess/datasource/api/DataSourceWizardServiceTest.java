@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -37,15 +37,15 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IAclAwareMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServiceException;
 import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
-import org.pentaho.platform.repository2.unified.jcr.IAclNodeHelper;
+import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
-import org.pentaho.platform.web.http.api.resources.services.FileService;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -64,16 +64,29 @@ public class DataSourceWizardServiceTest {
 
   private static DataSourceWizardService dataSourceWizardService;
 
+  private class DataSourceWizardServiceMock extends DataSourceWizardService {
+    @Override protected IUnifiedRepository getRepository() {
+      return mock( IUnifiedRepository.class );
+    }
+
+    @Override protected MondrianCatalogRepositoryHelper getMondrianCatalogRepositoryHelper() {
+      return mock( MondrianCatalogRepositoryHelper.class );
+    }
+
+    @Override protected IDSWDatasourceService getDswDatasourceService() {
+      return mock( IDSWDatasourceService.class );
+    }
+  }
+
   @Before
   public void setUp() {
-    dataSourceWizardService = spy( new DataSourceWizardService() );
+    dataSourceWizardService = spy( new DataSourceWizardServiceMock() );
     dataSourceWizardService.metadataDomainRepository = mock( IMetadataDomainRepository.class );
-    dataSourceWizardService.dswService = mock( IDSWDatasourceService.class );
     dataSourceWizardService.mondrianCatalogService = mock( IMondrianCatalogService.class );
     dataSourceWizardService.datasourceMgmtSvc = mock( IDatasourceMgmtService.class );
     dataSourceWizardService.modelerService = mock( IModelerService.class );
-    dataSourceWizardService.aclHelper = mock( IAclNodeHelper.class );
-    dataSourceWizardService.fileService = mock( FileService.class );
+    dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter = mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
+    dataSourceWizardService.aclAwareMondrianCatalogService = mock( IAclAwareMondrianCatalogService.class );
   }
 
   @After
@@ -387,19 +400,17 @@ public class DataSourceWizardServiceTest {
 
     final RepositoryFileAcl acl = new RepositoryFileAcl.Builder( "owner" ).build();
 
-    doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
-    when( dataSourceWizardService.aclHelper.getAclFor( anyString(), any( IAclNodeHelper.DatasourceType.class ) ) )
-        .thenReturn( acl );
+    doReturn( true ).when( dataSourceWizardService ).canManageACL();
+    when( dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn(
+        acl );
     final IUnifiedRepository repository = mock( IUnifiedRepository.class );
-    when( dataSourceWizardService.fileService.getRepository() ).thenReturn( repository );
-    when( dataSourceWizardService.fileService.doGetFileAcl( anyString() ) ).thenReturn( new RepositoryFileAclAdapter().marshal( acl ) );
     final RepositoryFile repositoryFile = mock( RepositoryFile.class );
     when( repository.getFileById( anyString() ) ).thenReturn( repositoryFile );
     doReturn( new HashMap<String, InputStream>() ).when( dataSourceWizardService ).doGetDSWFilesAsDownload( domainId );
 
     final RepositoryFileAclDto aclDto = dataSourceWizardService.getDSWAcl( domainId );
 
-    verify( dataSourceWizardService.aclHelper ).getAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA );
+    verify( dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( eq( domainId ) );
 
     assertEquals( acl, new RepositoryFileAclAdapter().unmarshal( aclDto ) );
   }
@@ -408,14 +419,14 @@ public class DataSourceWizardServiceTest {
   public void testGetDSWAclNoAcl() throws Exception {
     String domainId = "domainId";
 
-    doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
-    when( dataSourceWizardService.aclHelper.getAclFor( anyString(), any( IAclNodeHelper.DatasourceType.class ) ) )
+    doReturn( true ).when( dataSourceWizardService ).canManageACL();
+    when( dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) )
         .thenReturn( null );
     doReturn( new HashMap<String, InputStream>() ).when( dataSourceWizardService ).doGetDSWFilesAsDownload( domainId );
 
     final RepositoryFileAclDto aclDto = dataSourceWizardService.getDSWAcl( domainId );
 
-    verify( dataSourceWizardService.aclHelper ).getAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA );
+    verify( dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( eq( domainId ) );
 
     assertNull( aclDto );
   }
@@ -423,35 +434,36 @@ public class DataSourceWizardServiceTest {
   @Test
   public void testSetMetadataDatasourceAcl() throws Exception {
     String domainId = "domainId.xmi";
+    String domainIdWithoutExt = "domainId";
 
     final RepositoryFileAclDto aclDto = new RepositoryFileAclDto();
     aclDto.setOwner( "owner" );
     aclDto.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
 
-    doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
+    doReturn( true ).when( dataSourceWizardService ).canManageACL();
     doReturn( new HashMap<String, InputStream>() ).when( dataSourceWizardService ).doGetDSWFilesAsDownload( domainId );
 
     dataSourceWizardService.setDSWAcl( domainId, aclDto );
 
     final RepositoryFileAcl acl = new RepositoryFileAclAdapter().unmarshal( aclDto );
-    verify( dataSourceWizardService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA,
-        acl );
-    verify( dataSourceWizardService.aclHelper ).setAclFor( domainId.substring( 0, domainId.indexOf( ".xmi" ) ), IAclNodeHelper.DatasourceType.MONDRIAN,
-        acl );
+    verify( dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( eq( domainId ),
+        eq( acl ) );
+    verify( dataSourceWizardService.aclAwareMondrianCatalogService ).setAclFor( eq( domainIdWithoutExt ), eq( acl ) );
   }
 
   @Test
   public void testSetMetadataDatasourceAclNoAcl() throws Exception {
     String domainId = "domainId.xmi";
+    String domainIdWithoutExt = "domainId";
 
-    doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
+    doReturn( true ).when( dataSourceWizardService ).canManageACL();
     doReturn( new HashMap<String, InputStream>() ).when( dataSourceWizardService ).doGetDSWFilesAsDownload( domainId );
 
     dataSourceWizardService.setDSWAcl( domainId, null );
 
-    verify( dataSourceWizardService.aclHelper ).setAclFor( domainId, IAclNodeHelper.DatasourceType.METADATA,
-        null );
-    verify( dataSourceWizardService.aclHelper ).setAclFor( domainId.substring( 0, domainId.indexOf( ".xmi" ) ), IAclNodeHelper.DatasourceType.MONDRIAN,
-        null );
+    verify( dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( eq( domainId ),
+        (RepositoryFileAcl) isNull() );
+    verify( dataSourceWizardService.aclAwareMondrianCatalogService ).setAclFor( eq( domainIdWithoutExt ),
+        (RepositoryFileAcl) isNull() );
   }
 }

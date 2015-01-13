@@ -2,8 +2,10 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:sec="http://www.springframework.org/schema/security"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-                      http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
+                      http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd
+                      http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd">
 
   <!-- Bean definitions in this file override bean definitions in repository.spring.xml. -->
 
@@ -29,6 +31,21 @@
         <ref bean="defaultBackingRepositoryLifecycleManager"/>
       </list>
     </constructor-arg>
+  </bean>
+
+  <bean class="org.pentaho.platform.dataaccess.security.policy.rolebased.actions.DatasourceManageAction">
+    <pen:publish as-type="INTERFACES">
+      <pen:attributes>
+        <pen:attr key="priority" value="70"/>
+      </pen:attributes>
+    </pen:publish>
+  </bean>
+
+  <bean id="dataAccessViewPermissionHandler" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessViewPermissionHandler">
+    <pen:publish as-type="INTERFACES" />
+  </bean>
+  <bean id="dataAccessPermissionHandler" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessPermissionHandler">
+    <pen:publish as-type="INTERFACES" />
   </bean>
   <!--
     To enable RMI in a unit test, put jackrabbit-jcr-rmi-1.5.0.jar in dev-lib and add to Eclipse classpath.
