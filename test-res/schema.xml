@@ -1,0 +1,6 @@
+<Schema name="FoodMart">  <Cube name="Sales" defaultMeasure="Unit Sales">    <Table name="sales_fact_1997"/>  <Dimension name="customer">
+    <Hierarchy hasAll="true" primaryKey="customer_id">
+      <Table name="sales_fact_1997"/>
+      <Level name="customer id" type="Integer" column="customer_id" uniqueMembers="true"/>
+    </Hierarchy>
+  </Dimension>    <Measure name="Unit Sales" column="unit_sales" aggregator="sum" formatString="Standard"/>  </Cube></Schema>
