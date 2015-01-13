@@ -69,10 +69,6 @@ public class DataSourceWizardServiceTest {
       return mock( IUnifiedRepository.class );
     }
 
-    @Override protected MondrianCatalogRepositoryHelper getMondrianCatalogRepositoryHelper() {
-      return mock( MondrianCatalogRepositoryHelper.class );
-    }
-
     @Override protected IDSWDatasourceService getDswDatasourceService() {
       return mock( IDSWDatasourceService.class );
     }
@@ -103,7 +99,7 @@ public class DataSourceWizardServiceTest {
     String mockObject = "not null";
     String dswId = "dswId";
 
-    doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
+    doReturn( true ).when( dataSourceWizardService ).canManageACL();
     doReturn( mockFileData ).when( dataSourceWizardService ).getMetadataFiles( dswId );
     doReturn( mockModelerWorkspace ).when( dataSourceWizardService ).createModelerWorkspace();
     doReturn( null ).when( mockModelerWorkspace ).getLogicalModel( ModelerPerspective.ANALYSIS );
@@ -125,7 +121,7 @@ public class DataSourceWizardServiceTest {
     String dswId = "dswId";
 
     //Test 1
-    doReturn( false ).when( dataSourceWizardService ).canAdministerCheck();
+    doReturn( false ).when( dataSourceWizardService ).canManageACL();
 
     try {
       Map<String, InputStream> response = dataSourceWizardService.doGetDSWFilesAsDownload( "dswId" );
