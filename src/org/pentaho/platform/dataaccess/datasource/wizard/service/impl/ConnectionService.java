@@ -16,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.database.IDatabaseDialect;
@@ -47,7 +48,7 @@ public class ConnectionService {
   private ConnectionServiceImpl service;
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
-  
+
   public ConnectionService() {
     service = new ConnectionServiceImpl();
     this.dialectService = new DatabaseDialectService(true);
@@ -58,7 +59,11 @@ public class ConnectionService {
   @Produces({APPLICATION_JSON})
   public IDatabaseConnectionList getConnections() throws ConnectionServiceException {
     IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
-    databaseConnections.setDatabaseConnections(service.getConnections());
+    List<IDatabaseConnection> conns = service.getConnections();
+    for (IDatabaseConnection conn : conns) {
+      hidePassword(conn);
+    }
+    databaseConnections.setDatabaseConnections(conns);
     return databaseConnections;
   }
 
@@ -66,7 +71,9 @@ public class ConnectionService {
   @Path("/get")
   @Produces({APPLICATION_JSON})
   public IDatabaseConnection getConnectionByName(@QueryParam("name") String name) throws ConnectionServiceException {
-    return service.getConnectionByName(name);
+    IDatabaseConnection conn = service.getConnectionByName(name);
+    hidePassword(conn);
+    return conn;
   }
 
   @GET
@@ -98,10 +105,11 @@ public class ConnectionService {
     Response response;
     try{
      conn =service.getConnectionByName(name);
+     hidePassword(conn);
      response = Response.ok().entity(conn).build();
     }catch(Exception ex){
       response =  Response.serverError().entity(ex.getMessage()).build();
-    }    
+    }
      return response;
   }
 
@@ -128,6 +136,7 @@ public class ConnectionService {
   @Consumes({APPLICATION_JSON})
   public Response updateConnection(DatabaseConnection connection) throws ConnectionServiceException {
     try {
+      applySavedPassword(connection);
       boolean success = service.updateConnection(connection);
       if (success) {
         return Response.ok().build();
@@ -178,6 +187,7 @@ public class ConnectionService {
   @Produces({TEXT_PLAIN})
   public Response testConnection(DatabaseConnection connection) throws ConnectionServiceException {
     DatabaseMeta meta = DatabaseUtil.convertToDatabaseMeta(connection);
+    applySavedPassword(connection);
     String returnValue = meta.testConnection();
     if (logger.isDebugEnabled()) {
       logger.debug("Return Value from test connection:\n" + returnValue);
@@ -187,33 +197,33 @@ public class ConnectionService {
     }
     return Response.serverError().entity(returnValue.length() > MAX_RETURN_VALUE_LENGTH ? returnValue.substring(0, MAX_RETURN_VALUE_LENGTH-1) : returnValue).build();
   }
-    
+
   private static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[] {
-    new DatabaseConnectionPoolParameter("defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool."), 
-    new DatabaseConnectionPoolParameter("defaultReadOnly", null, "The default read-only state of connections created by this pool.\nIf not set then the setReadOnly method will not be called.\n (Some drivers don't support read only mode, ex: Informix)"), 
-    new DatabaseConnectionPoolParameter("defaultTransactionIsolation", null, "the default TransactionIsolation state of connections created by this pool. One of the following: (see javadoc)\n\n  * NONE\n  * READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n"), 
+    new DatabaseConnectionPoolParameter("defaultAutoCommit", "true", "The default auto-commit state of connections created by this pool."),
+    new DatabaseConnectionPoolParameter("defaultReadOnly", null, "The default read-only state of connections created by this pool.\nIf not set then the setReadOnly method will not be called.\n (Some drivers don't support read only mode, ex: Informix)"),
+    new DatabaseConnectionPoolParameter("defaultTransactionIsolation", null, "the default TransactionIsolation state of connections created by this pool. One of the following: (see javadoc)\n\n  * NONE\n  * READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n"),
     new DatabaseConnectionPoolParameter("defaultCatalog", null, "The default catalog of connections created by this pool."),
-    
-    new DatabaseConnectionPoolParameter("initialSize", "0", "The initial number of connections that are created when the pool is started."), 
-    new DatabaseConnectionPoolParameter("maxActive", "8", "The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit."), 
-    new DatabaseConnectionPoolParameter("maxIdle", "8", "The maximum number of connections that can remain idle in the pool, without extra ones being released, or negative for no limit."), 
-    new DatabaseConnectionPoolParameter("minIdle", "0", "The minimum number of connections that can remain idle in the pool, without extra ones being created, or zero to create none."), 
+
+    new DatabaseConnectionPoolParameter("initialSize", "0", "The initial number of connections that are created when the pool is started."),
+    new DatabaseConnectionPoolParameter("maxActive", "8", "The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit."),
+    new DatabaseConnectionPoolParameter("maxIdle", "8", "The maximum number of connections that can remain idle in the pool, without extra ones being released, or negative for no limit."),
+    new DatabaseConnectionPoolParameter("minIdle", "0", "The minimum number of connections that can remain idle in the pool, without extra ones being created, or zero to create none."),
     new DatabaseConnectionPoolParameter("maxWait", "-1", "The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception, or -1 to wait indefinitely."),
-    
-    new DatabaseConnectionPoolParameter("validationQuery", null, "The SQL query that will be used to validate connections from this pool before returning them to the caller.\nIf specified, this query MUST be an SQL SELECT statement that returns at least one row."), 
-    new DatabaseConnectionPoolParameter("testOnBorrow", "true", "The indication of whether objects will be validated before being borrowed from the pool.\nIf the object fails to validate, it will be dropped from the pool, and we will attempt to borrow another.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."), 
-    new DatabaseConnectionPoolParameter("testOnReturn", "false", "The indication of whether objects will be validated before being returned to the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."), 
-    new DatabaseConnectionPoolParameter("testWhileIdle", "false", "The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."), 
+
+    new DatabaseConnectionPoolParameter("validationQuery", null, "The SQL query that will be used to validate connections from this pool before returning them to the caller.\nIf specified, this query MUST be an SQL SELECT statement that returns at least one row."),
+    new DatabaseConnectionPoolParameter("testOnBorrow", "true", "The indication of whether objects will be validated before being borrowed from the pool.\nIf the object fails to validate, it will be dropped from the pool, and we will attempt to borrow another.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."),
+    new DatabaseConnectionPoolParameter("testOnReturn", "false", "The indication of whether objects will be validated before being returned to the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."),
+    new DatabaseConnectionPoolParameter("testWhileIdle", "false", "The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string."),
     new DatabaseConnectionPoolParameter("timeBetweenEvictionRunsMillis", null, "The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run."),
-    
-    new DatabaseConnectionPoolParameter("poolPreparedStatements", "false", "Enable prepared statement pooling for this pool."), 
-    new DatabaseConnectionPoolParameter("maxOpenPreparedStatements", "-1", "The maximum number of open statements that can be allocated from the statement pool at the same time, or zero for no limit."), 
-    new DatabaseConnectionPoolParameter("accessToUnderlyingConnectionAllowed", "false", "Controls if the PoolGuard allows access to the underlying connection."), 
-    new DatabaseConnectionPoolParameter("removeAbandoned", "false", "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\nIf set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection."), 
-    new DatabaseConnectionPoolParameter("removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed."), 
-    new DatabaseConnectionPoolParameter("logAbandoned", "false", "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated."), 
+
+    new DatabaseConnectionPoolParameter("poolPreparedStatements", "false", "Enable prepared statement pooling for this pool."),
+    new DatabaseConnectionPoolParameter("maxOpenPreparedStatements", "-1", "The maximum number of open statements that can be allocated from the statement pool at the same time, or zero for no limit."),
+    new DatabaseConnectionPoolParameter("accessToUnderlyingConnectionAllowed", "false", "Controls if the PoolGuard allows access to the underlying connection."),
+    new DatabaseConnectionPoolParameter("removeAbandoned", "false", "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\nIf set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection."),
+    new DatabaseConnectionPoolParameter("removeAbandonedTimeout", "300", "Timeout in seconds before an abandoned connection can be removed."),
+    new DatabaseConnectionPoolParameter("logAbandoned", "false", "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated."),
   };
- 
+
   @GET
   @Path("/poolingParameters")
   @Produces({APPLICATION_JSON})
@@ -224,7 +234,7 @@ public class ConnectionService {
       paramList.add(param);
     }
     value.setDatabaseConnectionPoolParameters(paramList);
-    return value; 
+    return value;
   }
 
   @GET
@@ -232,20 +242,20 @@ public class ConnectionService {
   @Produces({APPLICATION_JSON})
   public IDatabaseConnection createDatabaseConnection(@QueryParam("driver") String driver, @QueryParam("url") String url) {
     for (IDatabaseDialect dialect : dialectService.getDatabaseDialects()) {
-      if (dialect.getNativeDriver() != null && 
+      if (dialect.getNativeDriver() != null &&
           dialect.getNativeDriver().equals(driver)) {
         if (dialect.getNativeJdbcPre() != null && url.startsWith(dialect.getNativeJdbcPre())) {
           return dialect.createNativeConnection(url);
         }
       }
     }
-    
+
     // if no native driver was found, create a custom dialect object.
-    
+
     IDatabaseConnection conn = genericDialect.createNativeConnection(url);
     conn.getAttributes().put(GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS, driver);
-    
-    return conn;    
+
+    return conn;
   }
 
   @POST
@@ -261,7 +271,7 @@ public class ConnectionService {
     }
     return array;
   }
-  
+
   /**
    * internal validation of authorization
    * @throws PentahoAccessControlException
@@ -276,4 +286,24 @@ public class ConnectionService {
       throw new PentahoAccessControlException("Access Denied");
     }
   }
+
+  /**
+  * Hides password for connections for return to user.
+  */
+  private void hidePassword(IDatabaseConnection conn) {
+    conn.setPassword(null);
+  }
+
+  /**
+  * If password is empty, that means connection sent from UI and user didn't
+  * change password. Since we cleaned password during sending to UI, we need
+  * to use stored password.
+  */
+  private void applySavedPassword(IDatabaseConnection conn) throws ConnectionServiceException {
+    if (StringUtils.isBlank(conn.getPassword())) {
+      IDatabaseConnection savedConn = service.getConnectionById(conn.getId());
+      conn.setPassword(savedConn.getPassword());
+    }
+  }
+
 }
