@@ -49,6 +49,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAcces
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAccessViewPermissionHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessPermissionHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessViewPermissionHandler;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.TenantUtils;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
@@ -120,6 +121,16 @@ public class DataSourcePublishACLTest extends JerseyTest implements ApplicationC
       protected String getSolutionPath() {
         return "test-src/solutionACL";
       }
+
+      @Override public void login( String username, ITenant tenant, String[] roles ) {
+        super.login( username, tenant, roles );
+        try {
+          PentahoSystem.get( IMetadataDomainRepository.class ).flushDomains();
+          PentahoSystem.get( IMondrianCatalogService.class ).reInit( PentahoSessionHolder.getSession() );
+        } catch ( Exception e ) {
+          // do nothing
+        }
+      }
     };
   }
 
@@ -176,8 +187,6 @@ public class DataSourcePublishACLTest extends JerseyTest implements ApplicationC
     mp.define( IDataAccessPermissionHandler.class, SimpleDataAccessPermissionHandler.class );
     mp.define( IDataAccessViewPermissionHandler.class, SimpleDataAccessViewPermissionHandler.class );
     mp.defineInstance( IAclVoter.class, applicationContext.getBean( "IAclVoter" ) );
-
-    PentahoSystem.get( IMetadataDomainRepository.class ).flushDomains();
 
     SecurityContextHolder.setStrategyName( SecurityContextHolder.MODE_GLOBAL );
     super.setUp();

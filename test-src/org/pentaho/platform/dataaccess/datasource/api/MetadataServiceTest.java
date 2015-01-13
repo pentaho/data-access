@@ -63,10 +63,6 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     @Override protected IUnifiedRepository getRepository() {
       return mock( IUnifiedRepository.class );
     }
-
-    @Override protected MondrianCatalogRepositoryHelper getMondrianCatalogRepositoryHelper() {
-      return mock( MondrianCatalogRepositoryHelper.class );
-    }
   }
 
   @Before

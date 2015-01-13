@@ -42,7 +42,6 @@ public class DatasourceService {
   protected IMetadataDomainRepository metadataDomainRepository;
   protected IMondrianCatalogService mondrianCatalogService;
   protected RepositoryFileAclAdapter repositoryFileAclAdapter;
-  private MondrianCatalogRepositoryHelper mondrianCatalogRepositoryHelper;
 
   public DatasourceService() {
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
@@ -52,13 +51,6 @@ public class DatasourceService {
 
   protected IUnifiedRepository getRepository() {
     return PentahoSystem.get( IUnifiedRepository.class );
-  }
-
-  protected MondrianCatalogRepositoryHelper getMondrianCatalogRepositoryHelper() {
-    if ( mondrianCatalogRepositoryHelper == null ) {
-      mondrianCatalogRepositoryHelper = new MondrianCatalogRepositoryHelper( getRepository() );
-    }
-    return mondrianCatalogRepositoryHelper;
   }
 
   public static boolean canAdminister() {

@@ -81,7 +81,7 @@ public class AnalysisService extends DatasourceService {
 
   public Map<String, InputStream> doGetAnalysisFilesAsDownload( String analysisId )
     throws PentahoAccessControlException {
-    if ( !canAdministerCheck() ) {
+    if ( !canManageACL() ) {
       throw new PentahoAccessControlException();
     }
 
@@ -154,9 +154,7 @@ public class AnalysisService extends DatasourceService {
     if ( !canManageACL() ) {
       throw new PentahoAccessControlException();
     }
-    try {
-      doGetAnalysisFilesAsDownload( analysisId );
-    } catch ( NullPointerException e ) {
+    if ( mondrianCatalogService.getCatalog( analysisId, PentahoSessionHolder.getSession() ) == null ) {
       throw new FileNotFoundException( analysisId + " doesn't exist" );
     }
   }

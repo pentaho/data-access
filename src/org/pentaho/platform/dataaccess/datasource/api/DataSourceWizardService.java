@@ -43,6 +43,7 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
+import org.pentaho.platform.api.repository2.unified.UnifiedRepositoryException;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService.DswPublishValidationException.Type;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
@@ -103,7 +104,7 @@ public class DataSourceWizardService extends DatasourceService {
   }
 
   public Map<String, InputStream> doGetDSWFilesAsDownload( String dswId ) throws PentahoAccessControlException {
-    if ( !canAdministerCheck() ) {
+    if ( !canManageACL() ) {
       throw new PentahoAccessControlException();
     }
     // First get the metadata files;
@@ -280,10 +281,6 @@ public class DataSourceWizardService extends DatasourceService {
   }
 
   private void checkDSWExists( String dswId ) throws PentahoAccessControlException, FileNotFoundException {
-    if ( !canManageACL() ) {
-      throw new PentahoAccessControlException();
-    }
-
     try {
       doGetDSWFilesAsDownload( dswId );
     } catch ( NullPointerException e ) {

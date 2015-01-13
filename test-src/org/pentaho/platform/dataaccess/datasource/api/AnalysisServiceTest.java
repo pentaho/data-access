@@ -60,19 +60,15 @@ public class AnalysisServiceTest {
     @Override protected IUnifiedRepository getRepository() {
       return mock( IUnifiedRepository.class );
     }
-
-    @Override protected MondrianCatalogRepositoryHelper getMondrianCatalogRepositoryHelper() {
-      return mock( MondrianCatalogRepositoryHelper.class );
-    }
   }
 
   @Before
   public void setUp() {
     analysisService = spy( new AnalysisServiceMock());
     analysisService.metadataDomainRepository = mock( IMetadataDomainRepository.class );
-    analysisService.mondrianCatalogService = mock( IMondrianCatalogService.class );
     analysisService.importer = mock( IPlatformImporter.class );
     analysisService.aclAwareMondrianCatalogService = mock( IAclAwareMondrianCatalogService.class );
+    analysisService.mondrianCatalogService = analysisService.aclAwareMondrianCatalogService;
   }
 
   @After
@@ -82,32 +78,40 @@ public class AnalysisServiceTest {
 
   @Test
   public void testDoGetAnalysisFilesAsDownload() throws Exception {
+    final String analysisId = "analysisId";
     Map<String, InputStream> mockMap = mock( Map.class );
     MondrianCatalogRepositoryHelper
         mockMondrianCatalogRepositoryHelpere =
         mock( MondrianCatalogRepositoryHelper.class );
 
-    doReturn( true ).when( analysisService ).canAdministerCheck();
+    doReturn( true ).when( analysisService ).canManageACL();
+    final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
+    when( analysisService.aclAwareMondrianCatalogService.getCatalog( eq( analysisId ), any( IPentahoSession.class ) ) ).thenReturn(
+        mondrianCatalog );
     doReturn( mockMondrianCatalogRepositoryHelpere ).when( analysisService ).createNewMondrianCatalogRepositoryHelper();
-    doReturn( mockMap ).when( mockMondrianCatalogRepositoryHelpere ).getModrianSchemaFiles( "analysisId" );
+    doReturn( mockMap ).when( mockMondrianCatalogRepositoryHelpere ).getModrianSchemaFiles( analysisId );
 
-    Map<String, InputStream> response = analysisService.doGetAnalysisFilesAsDownload( "analysisId" );
+    Map<String, InputStream> response = analysisService.doGetAnalysisFilesAsDownload( analysisId );
 
-    verify( analysisService, times( 1 ) ).doGetAnalysisFilesAsDownload( "analysisId" );
+    verify( analysisService, times( 1 ) ).doGetAnalysisFilesAsDownload( analysisId );
     assertEquals( mockMap, response );
   }
 
   @Test
   public void testDoGetAnalysisFilesAsDownloadError() throws Exception {
-    doReturn( false ).when( analysisService ).canAdministerCheck();
+    final String analysisId = "analysisId";
+    doReturn( false ).when( analysisService ).canManageACL();
+    final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
+    when( analysisService.aclAwareMondrianCatalogService.getCatalog( eq( analysisId ), any( IPentahoSession.class ) ) ).thenReturn(
+        mondrianCatalog );
     try {
-      analysisService.doGetAnalysisFilesAsDownload( "analysisId" );
+      analysisService.doGetAnalysisFilesAsDownload( analysisId );
       fail();
     } catch ( PentahoAccessControlException e ) {
       //expected
     }
 
-    verify( analysisService, times( 1 ) ).doGetAnalysisFilesAsDownload( "analysisId" );
+    verify( analysisService, times( 1 ) ).doGetAnalysisFilesAsDownload( analysisId );
   }
 
   @Test
@@ -223,6 +227,9 @@ public class AnalysisServiceTest {
 
     doReturn( true ).when( analysisService ).canManageACL();
     when( analysisService.aclAwareMondrianCatalogService.getAclFor( catalogName ) ).thenReturn( acl );
+    final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
+    when( analysisService.aclAwareMondrianCatalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn(
+        mondrianCatalog );
     final IUnifiedRepository repository = mock( IUnifiedRepository.class );
     final RepositoryFile repositoryFile = mock( RepositoryFile.class );
     when( repository.getFileById( anyString() ) ).thenReturn( repositoryFile );
@@ -243,6 +250,9 @@ public class AnalysisServiceTest {
     String catalogName = "catalogName";
 
     doReturn( true ).when( analysisService ).canManageACL();
+    final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
+    when( analysisService.aclAwareMondrianCatalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn(
+        mondrianCatalog );
     when( analysisService.aclAwareMondrianCatalogService.getAclFor( catalogName ) ).thenReturn( null );
     doReturn( new HashMap<String, InputStream>() { {
         put( "test", null );
@@ -265,6 +275,9 @@ public class AnalysisServiceTest {
     aclDto.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
 
     doReturn( true ).when( analysisService ).canManageACL();
+    final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
+    when( analysisService.aclAwareMondrianCatalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn(
+        mondrianCatalog );
     doReturn( new HashMap<String, InputStream>() { {
         put( "test", null );
       } } ).when( analysisService )
@@ -281,6 +294,9 @@ public class AnalysisServiceTest {
     String catalogName = "catalogName";
 
     doReturn( true ).when( analysisService ).canManageACL();
+    final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
+    when( analysisService.aclAwareMondrianCatalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn(
+        mondrianCatalog );
     doReturn( new HashMap<String, InputStream>() { {
         put( "test", null );
       } } ).when( analysisService )
