@@ -3,7 +3,7 @@
 <window xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
         id="datasourceEditorWindow" title="${datasourceEditorDialog.TITLE}" orient="vertical" height="700" width="900">
   <dialog xmlns="http://www.pentaho.org/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul"
-          id="main_wizard_window" width="900" height="700" title="${WIZARD_TITLE}" onload="" resizable="false"
+          id="main_wizard_window" width="900" height="650" title="${WIZARD_TITLE}" onload="" resizable="false"
           padding="0" spacing="0"
           buttons="accept,cancel,extra1,extra2"
           pen:acceptbuttonalign="right"
@@ -20,11 +20,11 @@
           buttonlabelextra2="${NEXT}"
       >
 
-    <hbox id="main_box" padding="0" spacing="0" width="900" height="600">
-      <vbox id="stepsPanel" width="150" height="600" padding="0" spacing="0">
+    <hbox id="main_box" padding="0" spacing="0" width="900" height="550">
+      <vbox id="stepsPanel" width="150" height="550" padding="0" spacing="0">
         <hbox flex="1" padding="0" spacing="0">
           <spacer width="2"/>
-          <vbox flex="1" padding="0" spacing="0" height="594">
+          <vbox flex="1" padding="0" spacing="0" height="544">
             <spacer height="10"/>
             <grid id="step_grid">
               <columns>
@@ -37,9 +37,9 @@
           </vbox>
         </hbox>
       </vbox>
-      <deck id="content_deck" height="600" width="750">
+      <deck id="content_deck" height="550" width="750">
         <!-- Wizard "Source" Step -->
-        <vbox id="sourcestep" height="600" flex="1" spacing="3" padding="0">
+        <vbox id="sourcestep" height="550" flex="1" spacing="3" padding="0">
           <vbox id="datasourceInfoBox" spacing="0" padding="0">
             <label value="${datasourceDialog.DatasourceName}" tooltiptext="${datasourceDialog.DatasourceNameToolTip}"/>
             <textbox id="datasourceName" width="200" multiline="false"/>
@@ -49,7 +49,7 @@
               </menupopup>
             </menulist>
           </vbox>
-          <deck id="datasourceDialogDeck" height="500">
+          <deck id="datasourceDialogDeck" height="450">
             <hbox id="NoopDatasource" flex="1">
               <!-- Empty panel for select Database type menu item. -->
             </hbox>
@@ -59,7 +59,7 @@
               <!--  ###############################################################################  -->
               <!--     SQL datasource step 1 -->
               <!--  ###############################################################################  -->
-              <vbox height="500">
+              <vbox height="450">
                 <vbox id="connectionsLbl">
                   <label value="${multitable.CONNECTIONS_LBL}"/>
                 </vbox>
@@ -83,7 +83,7 @@
                           onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true"
                           pen:classname="pentaho-deletebutton"/>
                 </hbox>
-                <listbox id="connectionList" pen:binding="modelName" disabled="true" height="475" width="280"/>
+                <listbox id="connectionList" pen:binding="modelName" disabled="true" height="425" width="280"/>
                 <vbox id="metadata" flex="1" height="80">
                   <label value="${multitable.REPORTING_METADATA_GROUP_LABEL}" tooltiptext=""/>
                   <radiogroup id="metadataRadioGrup" padding="0">
@@ -94,12 +94,12 @@
                   </radiogroup>
                 </vbox>
               </vbox>
-              <spacer width="10" height="500"/>
-              <vbox id="queryBox" height="500" flex="1">
+              <spacer width="10" height="450"/>
+              <vbox id="queryBox" height="450" flex="1">
                 <hbox>
                   <label value="${datasourceDialog.Query}" tooltiptext="${datasourceDialog.QueryToolTip}" flex="1"/>
                 </hbox>
-                <textbox height="432" id="query" multiline="true" disabled="false"/>
+                <textbox height="382" id="query" multiline="true" disabled="false"/>
                 <hbox>
                   <spacer flex="1"/>
                   <label value="Limit:"/>
@@ -111,7 +111,7 @@
               </vbox>
             </hbox>
 
-            <vbox id="csvDeckPanel" height="505" spacing="0" padding="0">
+            <vbox id="csvDeckPanel" height="455" spacing="0" padding="0">
               <!--  ###############################################################################  -->
               <!--     CSV datasource step 1 -->
               <!--  ###############################################################################  -->
@@ -195,7 +195,7 @@
               <checkbox id="isHeaderCheckBox" checked="true" label="${physicalDatasourceDialog.IS_HEADER}"
                         disabled="true"/>
               <spacer height="8"/>
-              <groupbox height="286">
+              <groupbox height="236">
                 <caption label="${physicalDatasourceDialog.PREVIEW}"/>
                 <label multiline="true" id="csvTextPreview" height="260" width="730" pre="true"/>
               </groupbox>
@@ -226,7 +226,7 @@
           <hbox>
             <vbox>
               <label value="${multitable.AVAILABLE_TABLES}" tooltiptext=""/>
-              <listbox id="availableTables" pen:binding="name" disabled="false" height="410" width="350"
+              <listbox id="availableTables" pen:binding="name" disabled="false" height="360" width="350"
                        seltype="multi"/>
             </vbox>
             <vbox>
@@ -243,7 +243,7 @@
             </vbox>
             <vbox>
               <label value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
-              <listbox id="selectedTables" pen:binding="name" disabled="false" height="410" width="350"
+              <listbox id="selectedTables" pen:binding="name" disabled="false" height="360" width="350"
                        seltype="multi"/>
             </vbox>
           </hbox>
@@ -262,7 +262,7 @@
         <!--Multi-table STEP 2-->
 
         <!-- Wizard "Stage Data" Step -->
-        <vbox id="stagedatastep" height="600">
+        <vbox id="stagedatastep" height="550">
           <!--  ###############################################################################  -->
           <!--    CSV datasource step 2 - stage data step -->
           <!--  ###############################################################################  -->
@@ -272,9 +272,9 @@
             <!--<button image="images/stageStepImage.png" />-->
           </hbox>
           <!-- Columns -->
-          <vbox height="420" id="csvColumnsBox">
-            <hbox id="csvColumnsContent" flex="1" height="520">
-              <tree id="csvModelDataTable" seltype="single" width="730" height="415" pen:showalleditcontrols="false">
+          <vbox height="370" id="csvColumnsBox">
+            <hbox id="csvColumnsContent" flex="1" height="470">
+              <tree id="csvModelDataTable" seltype="single" width="730" height="365" pen:showalleditcontrols="false">
                 <treecols id="csvModelDataTableCols">
                   <treecol flex="1" id="csvColumnIncludeTreeCol" label="${stageDataStep.COLUMN_INCLUDE}" editable="true"
                            pen:binding="include" type="checkbox"/>
