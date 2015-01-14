@@ -12,20 +12,23 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -33,14 +36,24 @@ import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
+import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
+import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public class MetadataService extends DatasourceService {
+  protected IAclAwarePentahoMetadataDomainRepositoryImporter aclAwarePentahoMetadataDomainRepositoryImporter;
 
   private static final Log logger = LogFactory.getLog( MetadataService.class );
+
+  public MetadataService() {
+    if ( metadataDomainRepository instanceof IAclAwarePentahoMetadataDomainRepositoryImporter ) {
+      aclAwarePentahoMetadataDomainRepositoryImporter = (IAclAwarePentahoMetadataDomainRepositoryImporter) metadataDomainRepository;
+    }
+  }
 
   public void removeMetadata( String metadataId ) throws PentahoAccessControlException {
     if ( !canAdministerCheck() ) {
@@ -67,7 +80,7 @@ public class MetadataService extends DatasourceService {
   public void importMetadataDatasource( String domainId, InputStream metadataFile,
                                         FormDataContentDisposition metadataFileInfo, boolean overwrite,
                                         List<FormDataBodyPart> localeFiles,
-                                        List<FormDataContentDisposition> localeFilesInfo )
+                                        List<FormDataContentDisposition> localeFilesInfo, RepositoryFileAclDto acl )
     throws PentahoAccessControlException, PlatformImportException,
     Exception {
 
@@ -77,12 +90,12 @@ public class MetadataService extends DatasourceService {
     Object reservedCharsObject = fr.doGetReservedChars().getEntity();
     String reservedChars = objectToString( reservedCharsObject );
     if ( reservedChars != null
-      && domainId.matches( ".*[" + reservedChars.replaceAll( "/", "" ) + "]+.*" ) ) {
+        && domainId.matches( ".*[" + reservedChars.replaceAll( "/", "" ) + "]+.*" ) ) {
       String msg = prohibitedSymbolMessage( domainId, fr );
       throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
     }
 
-    RepositoryFileImportBundle.Builder bundleBuilder = createNewRepositoryFileImportBundleBuilder( metadataFile, overwrite, domainId );
+    RepositoryFileImportBundle.Builder bundleBuilder = createNewRepositoryFileImportBundleBuilder( metadataFile, overwrite, domainId, acl );
 
 
     if ( localeFiles != null ) {
@@ -99,6 +112,39 @@ public class MetadataService extends DatasourceService {
     importer.importFile( bundle );
     IPentahoSession pentahoSession = getSession();
     publish( pentahoSession );
+  }
+
+  public RepositoryFileAclDto getMetadataAcl( String domainId )
+      throws PentahoAccessControlException, FileNotFoundException {
+    checkMetadataExists( domainId );
+    if ( aclAwarePentahoMetadataDomainRepositoryImporter != null ) {
+      final RepositoryFileAcl acl = aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId );
+      return acl == null ? null : repositoryFileAclAdapter.marshal( acl );
+    }
+    return null;
+  }
+
+  public void setMetadataAcl( String domainId, RepositoryFileAclDto aclDto )
+      throws PentahoAccessControlException, FileNotFoundException {
+    checkMetadataExists( domainId );
+    if ( aclAwarePentahoMetadataDomainRepositoryImporter != null ) {
+      final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
+      aclAwarePentahoMetadataDomainRepositoryImporter.setAclFor( domainId, acl );
+      flushDataSources();
+    }
+  }
+
+  private void checkMetadataExists( String domainId ) throws PentahoAccessControlException, FileNotFoundException {
+    if ( !canManageACL() ) {
+      throw new PentahoAccessControlException();
+    }
+    if ( metadataDomainRepository instanceof IPentahoMetadataDomainRepositoryExporter ) {
+      Map<String, InputStream> domainFilesData =
+          ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
+      if ( domainFilesData == null || domainFilesData.isEmpty() ) {
+        throw new FileNotFoundException();
+      }
+    }
   }
 
   protected void sleep( int i ) throws InterruptedException {
@@ -140,9 +186,16 @@ public class MetadataService extends DatasourceService {
     return new FileResource();
   }
 
-  protected RepositoryFileImportBundle.Builder createNewRepositoryFileImportBundleBuilder( InputStream metadataFile, boolean overWriteInRepository, String domainId ) {
-    return new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
-      .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
+  protected RepositoryFileImportBundle.Builder createNewRepositoryFileImportBundleBuilder( InputStream metadataFile,
+      boolean overWriteInRepository, String domainId, RepositoryFileAclDto acl ) {
+    final RepositoryFileImportBundle.Builder
+        builder =
+        new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
+            .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
+    if ( acl != null ) {
+      builder.acl( repositoryFileAclAdapter.unmarshal( acl ) ).applyAclSettings( true );
+    }
+    return builder;
   }
 
   protected RepositoryFileImportBundle createNewRepositoryFileImportBundle( ByteArrayInputStream bais, String fileName, String domainId ) {

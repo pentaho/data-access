@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--===========================================================================
+PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+
+Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+
+NOTICE: All information including source code contained herein is, and
+remains the sole property of Pentaho and its licensors. The intellectual
+and technical concepts contained herein are proprietary and confidential
+to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+patents, or patents in process, and are protected by trade secret and
+copyright laws. The receipt or possession of this source code and/or related
+information does not convey or imply any rights to reproduce, disclose or
+distribute its contents, or to manufacture, use, or sell anything that it
+may describe, in whole or in part. Any reproduction, modification, distribution,
+or public display of this information without the express written authorization
+from Pentaho is strictly prohibited and in violation of applicable laws and
+international treaties. Access to the source code contained herein is strictly
+prohibited to anyone except those individuals and entities who have executed
+confidentiality and non-disclosure agreements or other agreements with Pentaho,
+explicitly covering such access.
+============================================================================-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd 
+       http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd"
+	default-lazy-init="true">
+
+	<bean id="MimeTypeListFactory" class="org.pentaho.platform.plugin.services.importer.mimeType.MimeTypeListFactory">
+		<constructor-arg value="system/ImportHandlerMimeTypeDefinitions.xml" />
+	</bean>
+	
+  <bean id="streamConverter"
+		class="org.pentaho.platform.plugin.services.importexport.StreamConverter">
+		<constructor-arg ref="unifiedRepository"/>
+		<pen:publish as-type="INTERFACES">
+			<pen:attributes>
+				<pen:attr key="name" value="streamConverter" />
+			</pen:attributes>
+		</pen:publish>
+	</bean>
+
+	<bean id="IRepositoryContentConverterHandler"
+		class="org.pentaho.platform.plugin.services.importer.DefaultRepositoryContentConverterHandler" scope="singleton">
+		<constructor-arg>
+			<util:map id="convertersMap">
+				<entry key="mondrian.xml" value-ref="streamConverter"/>
+				<entry key="jpeg" value-ref="streamConverter"/>
+			</util:map>
+		</constructor-arg>
+	</bean>
+
+	<bean id="ITenant" class="org.pentaho.platform.core.mt.Tenant"
+		scope="prototype" />
+
+	<bean id="IPlatformImportMimeResolver" class="org.pentaho.platform.plugin.services.importer.NameBaseMimeResolver" />
+	<!-- For compatibility with Migrators that still use the actual class name	-->
+	<alias name="IPlatformImportMimeResolver" alias="NameBaseMimeResolver"/>
+
+	<bean id="DefaultExportHandler"
+		class="org.pentaho.platform.plugin.services.importexport.DefaultExportHandler">
+		<property name="repository" ref="unifiedRepository" />
+		<property name="localeExportList">
+			<list>
+				<value>.xanalyzer</value>
+				<value>.prpti</value>
+				<value>.prpt</value>
+				<value>.xaction</value>
+				<value>.xdash</value>
+				<value>.url</value>
+				<value>.xanalyzer</value>
+				<value>.xjpivot</value>
+				<value>.xcdf</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="defaultImportHandler"
+		class="org.pentaho.platform.plugin.services.importer.RepositoryFileImportFileHandler">
+		<constructor-arg>
+			<bean factory-bean="MimeTypeListFactory" factory-method="createMimeTypeList" >
+				<constructor-arg value="org.pentaho.platform.plugin.services.importer.RepositoryFileImportFileHandler"/> 
+			</bean>
+		</constructor-arg>
+		<property name="repository" ref="unifiedRepository" />
+		<property name="defaultAclHandler" ref="defaultAclHandler" />
+	</bean>
+
+	<bean id="IPlatformImporter"
+		class="org.pentaho.platform.plugin.services.importer.PentahoPlatformImporter"
+		scope="singleton">
+		<constructor-arg>
+			<ref bean="importHandlers" />
+		</constructor-arg>
+		<constructor-arg>
+			<ref bean="IRepositoryContentConverterHandler" />
+		</constructor-arg>
+		<property name="defaultHandler">
+			<ref bean="defaultImportHandler" />
+		</property>
+		<property name="repositoryImportLogger">
+			<bean
+				class="org.pentaho.platform.plugin.services.importexport.Log4JRepositoryImportLogger" />
+		</property>
+	</bean>
+
+	<bean id="importHandlers" class="java.util.ArrayList">
+		<constructor-arg>
+			<util:list list-class="java.util.ArrayList"
+				value-type="org.pentaho.platform.plugin.services.importer.IPlatformImportHandler">
+				<ref bean="defaultImportHandler" />
+
+				<bean
+					class="org.pentaho.platform.plugin.services.importer.SolutionImportHandler">
+					<constructor-arg>
+						<bean factory-bean="MimeTypeListFactory" factory-method="createMimeTypeList" >
+							<constructor-arg value="org.pentaho.platform.plugin.services.importer.SolutionImportHandler"/> 
+						</bean>
+					</constructor-arg>
+				</bean>
+
+				<bean
+					class="org.pentaho.platform.plugin.services.importer.MetadataImportHandler">
+					<constructor-arg>
+						<bean factory-bean="MimeTypeListFactory" factory-method="createMimeTypeList" >
+							<constructor-arg value="org.pentaho.platform.plugin.services.importer.MetadataImportHandler"/> 
+						</bean>
+					</constructor-arg>
+					<constructor-arg ref="IMetadataDomainRepositoryImpl" />
+				</bean>
+				
+				<bean
+					class="org.pentaho.platform.plugin.services.importer.MondrianImportHandler">
+					<constructor-arg>
+						<bean factory-bean="MimeTypeListFactory" factory-method="createMimeTypeList" >
+							<constructor-arg value="org.pentaho.platform.plugin.services.importer.MondrianImportHandler"/> 
+						</bean>
+					</constructor-arg>
+					<constructor-arg ref="IMondrianCatalogService" />
+				</bean>
+				
+				<bean
+					class="org.pentaho.platform.plugin.services.importer.LocaleImportHandler">
+					<constructor-arg>
+						<bean factory-bean="MimeTypeListFactory" factory-method="createMimeTypeList" >
+							<constructor-arg value="org.pentaho.platform.plugin.services.importer.LocaleImportHandler"/> 
+						</bean>
+					</constructor-arg>
+					<constructor-arg>
+						<list>
+							<value>xaction</value>
+							<value>url</value>
+							<value>xdash</value>
+							<value>prpt</value>
+							<value>prpti</value>
+							<value>xanalyzer</value>
+							<value>wcdf</value>
+							<value>xcdf</value>
+						</list>
+					</constructor-arg>
+					<property name="repository" ref="unifiedRepository" />
+					<property name="defaultAclHandler" ref="defaultAclHandler" />
+				</bean>
+				
+				<bean
+					class="org.pentaho.platform.plugin.services.importer.XActionImportHandler">
+					<constructor-arg>
+						<bean factory-bean="MimeTypeListFactory" factory-method="createMimeTypeList" >
+							<constructor-arg value="org.pentaho.platform.plugin.services.importer.XActionImportHandler"/> 
+						</bean>
+					</constructor-arg>
+				    <property name="repository" ref="unifiedRepository" />
+					<property name="defaultAclHandler" ref="defaultAclHandler" />
+				</bean>
+
+			</util:list>
+		</constructor-arg>
+	</bean>
+</beans>
