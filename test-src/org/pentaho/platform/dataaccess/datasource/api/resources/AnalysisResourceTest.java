@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -42,10 +42,15 @@ public class AnalysisResourceTest {
 
   private static AnalysisResource analysisResource;
 
+  private class AnalysisResourceMock extends AnalysisResource {
+    @Override protected AnalysisService createAnalysisService() {
+      return mock( AnalysisService.class );
+    }
+  }
+
   @Before
   public void setUp() {
-    analysisResource = spy( new AnalysisResource() );
-    analysisResource.service = mock( AnalysisService.class );
+    analysisResource = spy( new AnalysisResourceMock() );
   }
 
   @After
@@ -79,7 +84,7 @@ public class AnalysisResourceTest {
     try {
       Response response = analysisResource.downloadSchema( "analysisId" );
       fail( "Should have gotten a WebApplicationException" );
-    } catch( WebApplicationException e ) {
+    } catch ( WebApplicationException e ) {
       // Good
     }
 
@@ -110,7 +115,7 @@ public class AnalysisResourceTest {
     try {
       Response response = analysisResource.deleteSchema( "analysisId" );
       fail( "should have gotten a WebApplicationException" );
-    } catch ( WebApplicationException e ){
+    } catch ( WebApplicationException e ) {
       // Good
     }
 
@@ -131,7 +136,7 @@ public class AnalysisResourceTest {
   }
 
   @Test
-  public void testImportMetadataDatasource() throws Exception {
+  public void testImportAnalysisDatasource() throws Exception {
     Response mockResponse = mock( Response.class );
 
     InputStream uploadAnalysis = mock( InputStream.class );
@@ -145,20 +150,20 @@ public class AnalysisResourceTest {
 
     doNothing().when( analysisResource.service ).putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName,
         origCatalogName, datasourceName,
-        true, true, parameters );
+        true, true, parameters, null );
 
     Response response = analysisResource.putSchema( catalogName, uploadAnalysis, schemaFileInfo, catalogName,
-      origCatalogName,
-      Boolean.valueOf( overwrite ), Boolean.valueOf( xmlaEnabledFlag ), parameters );
+        origCatalogName,
+        Boolean.valueOf( overwrite ), Boolean.valueOf( xmlaEnabledFlag ), parameters, null );
 
     verify( analysisResource, times( 1 ) ).putSchema( catalogName, uploadAnalysis, schemaFileInfo, catalogName,
         origCatalogName,
-        Boolean.valueOf( overwrite ), Boolean.valueOf( xmlaEnabledFlag ), parameters );
+        Boolean.valueOf( overwrite ), Boolean.valueOf( xmlaEnabledFlag ), parameters, null );
     assertEquals( 201, response.getStatus() );
   }
 
   @Test
-  public void testImportMetadataDatasourceError() throws Exception {
+  public void testImportAnalysisDatasourceError() throws Exception {
     Response mockResponse = mock( Response.class );
 
     InputStream uploadAnalysis = mock( InputStream.class );
@@ -173,34 +178,35 @@ public class AnalysisResourceTest {
     //Test 1
     PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
     doThrow( mockPentahoAccessControlException ).when( analysisResource.service ).putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      false, false, parameters );
+        false, false, parameters, null );
     doReturn( mockResponse ).when( analysisResource ).buildOkResponse( "5" );
 
     Response response = analysisResource.importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters );
+        overwrite, xmlaEnabledFlag, parameters, null );
     assertEquals( mockResponse, response );
 
     //Test 2
     PlatformImportException mockPlatformImportException = mock( PlatformImportException.class );
     doThrow( mockPlatformImportException ).when( analysisResource.service ).putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-        true, true, parameters );
+        true, true, parameters, null );
     doReturn( mockResponse ).when( analysisResource ).buildOkResponse( "0" );
 
     response = analysisResource.importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters );
+      overwrite, xmlaEnabledFlag, parameters, null );
     assertEquals( mockResponse, response );
 
     //Test 3
     RuntimeException mockException = mock( RuntimeException.class );
     doThrow( mockException ).when( analysisResource.service ).putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-        true, true, parameters );
+        true, true, parameters, null );
     doReturn( mockResponse ).when( analysisResource ).buildOkResponse( "2" );
 
     response = analysisResource.importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters );
+      overwrite, xmlaEnabledFlag, parameters, null );
     assertEquals( mockResponse, response );
 
     verify( analysisResource, times( 3 ) ).importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-      overwrite, xmlaEnabledFlag, parameters );
+        overwrite, xmlaEnabledFlag, parameters, null );
   }
+
 }
