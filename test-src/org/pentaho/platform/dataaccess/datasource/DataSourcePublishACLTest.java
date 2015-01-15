@@ -29,7 +29,9 @@ import com.sun.jersey.test.framework.WebAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerException;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.grizzly.web.GrizzlyWebTestContainerFactory;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -147,6 +149,12 @@ public class DataSourcePublishACLTest extends JerseyTest implements ApplicationC
   @BeforeClass
   public static void setUpClass() throws Exception {
     DefaultUnifiedRepositoryBase.setUpClass();
+    FileUtils.deleteDirectory( new File( "/tmp/data-access/jackrabbit-test-TRUNK" ) );
+  }
+
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    DefaultUnifiedRepositoryBase.tearDownClass();
   }
 
   @Before
@@ -158,11 +166,11 @@ public class DataSourcePublishACLTest extends JerseyTest implements ApplicationC
     defaultTenant = repositoryBase.createTenant( repositoryBase.getSystemTenant(), TenantUtils.getDefaultTenant() );
 
     singleTenantAdminUserName = (String) applicationContext.getBean( "singleTenantAdminUserName" );
-    repositoryBase.createUser( defaultTenant, singleTenantAdminUserName, PASSWORD, repositoryBase.getTenantAdminRoleName() );
+    repositoryBase.createUser( defaultTenant, singleTenantAdminUserName, PASSWORD, new String[] { repositoryBase.getTenantAdminRoleName() } );
     final String singleTenantAuthenticatedAuthorityName =
         (String) applicationContext.getBean( "singleTenantAuthenticatedAuthorityName" );
-    repositoryBase.createUser( defaultTenant, USERNAME_SUZY, PASSWORD, singleTenantAuthenticatedAuthorityName );
-    repositoryBase.createUser( defaultTenant, USERNAME_TIFFANY, PASSWORD, singleTenantAuthenticatedAuthorityName );
+    repositoryBase.createUser( defaultTenant, USERNAME_SUZY, PASSWORD, new String[] { singleTenantAuthenticatedAuthorityName } );
+    repositoryBase.createUser( defaultTenant, USERNAME_TIFFANY, PASSWORD, new String[] { singleTenantAuthenticatedAuthorityName } );
 
     repositoryBase.login( singleTenantAdminUserName, defaultTenant, new String[] { repositoryBase.getTenantAdminRoleName() } );
 
