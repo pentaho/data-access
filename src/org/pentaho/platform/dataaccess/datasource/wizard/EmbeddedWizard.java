@@ -240,6 +240,7 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
     wizardModel.setEditing( false );
     wizardController.setActiveStep( 0 );
     wizardModel.reset();
+    wizardController.resetSelectedDatasource();
     wizardModel.setReportingOnlyValid( this.reportingOnlyValid );
 
     /*
