@@ -132,38 +132,44 @@
        <value>org.pentaho.agilebi.modeler.models.JoinTableModel</value>
        <value>org.pentaho.agilebi.modeler.nodes.AbstractAvailableItem</value>
        <value>[Lorg.pentaho.agilebi.modeler.nodes.AbstractAvailableItem;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;</value>
        <value>org.pentaho.agilebi.modeler.nodes.AvailableField</value>
        <value>[Lorg.pentaho.agilebi.modeler.nodes.AvailableField;</value>
        <value>org.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData;</value>
        <value>org.pentaho.agilebi.modeler.nodes.CategoryMetaData</value>
        <value>org.pentaho.agilebi.modeler.nodes.CategoryMetaDataCollection</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.CategoryMetaDataCollection;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.CategoryMetaData;</value>
        <value>org.pentaho.agilebi.modeler.nodes.DimensionMetaData</value>
        <value>org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.DimensionMetaData;</value>
        <value>org.pentaho.agilebi.modeler.nodes.HierarchyMetaData</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.HierarchyMetaData;</value>
        <value>[Lorg.pentaho.agilebi.modeler.nodes.IAvailableItem;</value>
        <value>org.pentaho.agilebi.modeler.nodes.LevelMetaData</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.LevelMetaData;</value>
        <value>org.pentaho.agilebi.modeler.nodes.MeasuresCollection</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.MeasuresCollection;</value>
        <value>org.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData;</value>
        <value>org.pentaho.database.DatabaseDialectException</value>
        <value>org.pentaho.gwt.widgets.client.text.ValidationTextBoxKeyUpHandlerCollection</value>
        <value>org.pentaho.gwt.widgets.client.text.ValidationTextBoxListenerCollection</value>
        <value>org.pentaho.gwt.widgets.client.wizards.WizardPanelListenerCollection</value>
        <value>org.pentaho.gwt.widgets.login.client.AuthenticationCanceledException</value>
        <value>org.pentaho.gwt.widgets.login.client.AuthenticationFailedException</value>
+
+<!--
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;</value>
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData;</value>
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.CategoryMetaData;</value>
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.DimensionMetaData;</value>
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.HierarchyMetaData;</value>
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.LevelMetaData;</value>
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData;</value>
+
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.AvailableItemCollection;</value>
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.MeasuresCollection;</value>
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;</value>
+       <value>[Lorg.pentaho.agilebi.modeler.nodes.CategoryMetaDataCollection;</value>
+
        <value>org.pentaho.metadata.model.AbstractPhysicalColumn</value>
        <value>[Lorg.pentaho.metadata.model.AbstractPhysicalColumn;</value>
        <value>org.pentaho.metadata.model.AbstractPhysicalModel</value>
        <value>[Lorg.pentaho.metadata.model.AbstractPhysicalModel;</value>
+-->
        <value>org.pentaho.metadata.model.Category</value>
        <value>[Lorg.pentaho.metadata.model.Category;</value>
        <value>org.pentaho.metadata.model.Domain</value>
@@ -259,5 +265,5 @@
 		<pen:attr key="plugin" value="data-access"/>
 	  </pen:attributes>
 	</pen:publish>
-  </bean>
+  </bean>  
 </beans>
