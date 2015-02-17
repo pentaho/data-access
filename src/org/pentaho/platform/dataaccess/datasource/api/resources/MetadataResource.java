@@ -352,7 +352,7 @@ public class MetadataResource {
   }
 
   protected Response buildOkResponse( String statusCode ) {
-    return Response.ok( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+    return Response.ok().status( new Integer( statusCode) ).type( MediaType.TEXT_PLAIN ).build();
   }
 
   protected Response buildOkResponse() {
