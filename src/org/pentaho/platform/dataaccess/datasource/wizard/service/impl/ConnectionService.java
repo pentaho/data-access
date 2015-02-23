@@ -179,73 +179,73 @@ public class ConnectionService {
   private static final DatabaseConnectionPoolParameter[] poolingParameters =
       new DatabaseConnectionPoolParameter[] {
         new DatabaseConnectionPoolParameter( "defaultAutoCommit", "true",
-            "The default auto-commit state of connections created by this pool." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0002_DEFAULT_AUTO_COMMIT" ) ),
         new DatabaseConnectionPoolParameter(
             "defaultReadOnly",
             null,
-            "The default read-only state of connections created by this pool.\nIf not set then the setReadOnly method will not be called.\n (Some drivers don't support read only mode, ex: Informix)" ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0003_DEFAULT_READ_ONLY" ) ),
         new DatabaseConnectionPoolParameter(
             "defaultTransactionIsolation",
             null,
-            "the default TransactionIsolation state of connections created by this pool. One of the following: (see javadoc)\n\n  * NONE\n  * READ_COMMITTED\n  * READ_UNCOMMITTED\n  * REPEATABLE_READ  * SERIALIZABLE\n" ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0004_DEFAULT_TRANSACTION_ISOLATION" ) ),
         new DatabaseConnectionPoolParameter( "defaultCatalog", null,
-            "The default catalog of connections created by this pool." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0005_DEFAULT_CATALOG" ) ),
         new DatabaseConnectionPoolParameter( "initialSize", "0",
-            "The initial number of connections that are created when the pool is started." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0006_INITAL_SIZE" ) ),
         new DatabaseConnectionPoolParameter(
             "maxActive",
             "8",
-            "The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0007_MAX_ACTIVE" ) ),
         new DatabaseConnectionPoolParameter(
             "maxIdle",
             "8",
-            "The maximum number of connections that can remain idle in the pool, without extra ones being released, or negative for no limit." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0008_MAX_IDLE" ) ),
         new DatabaseConnectionPoolParameter(
             "minIdle",
             "0",
-            "The minimum number of connections that can remain idle in the pool, without extra ones being created, or zero to create none." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0009_MIN_IDLE" ) ),
         new DatabaseConnectionPoolParameter(
             "maxWait",
             "-1",
-            "The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception, or -1 to wait indefinitely." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0010_MAX_WAIT" ) ),
         new DatabaseConnectionPoolParameter(
             "validationQuery",
             null,
-            "The SQL query that will be used to validate connections from this pool before returning them to the caller.\nIf specified, this query MUST be an SQL SELECT statement that returns at least one row." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0011_VALIDATION_QUERY" ) ),
         new DatabaseConnectionPoolParameter(
             "testOnBorrow",
             "true",
-            "The indication of whether objects will be validated before being borrowed from the pool.\nIf the object fails to validate, it will be dropped from the pool, and we will attempt to borrow another.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0012_TEST_ON_BORROW" ) ),
         new DatabaseConnectionPoolParameter(
             "testOnReturn",
             "false",
-            "The indication of whether objects will be validated before being returned to the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0013_TEST_ON_RETURN" ) ),
         new DatabaseConnectionPoolParameter(
             "testWhileIdle",
             "false",
-            "The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool.\nNOTE - for a true value to have any effect, the validationQuery parameter must be set to a non-null string." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0014_TEST_WHILE_IDLE" ) ),
         new DatabaseConnectionPoolParameter(
             "timeBetweenEvictionRunsMillis",
             null,
-            "The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0015_TIME_BETWEEN_EVICTION_RUNS_MILLIS" ) ),
         new DatabaseConnectionPoolParameter( "poolPreparedStatements", "false",
-            "Enable prepared statement pooling for this pool." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0016_POOL_PREPARED_STATEMENTS" ) ),
         new DatabaseConnectionPoolParameter(
             "maxOpenPreparedStatements",
             "-1",
-            "The maximum number of open statements that can be allocated from the statement pool at the same time, or zero for no limit." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0017_MAX_OPEN_PREPARED_STATEMENTS" ) ),
         new DatabaseConnectionPoolParameter( "accessToUnderlyingConnectionAllowed", "false",
-            "Controls if the PoolGuard allows access to the underlying connection." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0018_ACCESS_TO_UNDERLYING_CONNECTION_ALLOWED" ) ),
         new DatabaseConnectionPoolParameter(
             "removeAbandoned",
             "false",
-            "Flag to remove abandoned connections if they exceed the removeAbandonedTimout.\nIf set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0019_REMOVE_ABANDONED" ) ),
         new DatabaseConnectionPoolParameter( "removeAbandonedTimeout", "300",
-            "Timeout in seconds before an abandoned connection can be removed." ),
+            Messages.getString( "ConnectionServiceImpl.INFO_0020_REMOVE_ABANDONED_TIMEOUT" ) ),
         new DatabaseConnectionPoolParameter(
             "logAbandoned",
             "false",
-            "Flag to log stack traces for application code which abandoned a Statement or Connection.\nLogging of abandoned Statements and Connections adds overhead for every Connection open or new Statement because a stack trace has to be generated." ), };
+            Messages.getString( "ConnectionServiceImpl.INFO_0021_LOGS_ABANDONED" ) ), };
 
   /**
    * Tests the database connection
