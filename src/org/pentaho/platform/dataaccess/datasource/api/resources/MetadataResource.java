@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -20,9 +20,9 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static javax.ws.rs.core.Response.Status.*;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +53,7 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
@@ -69,15 +70,20 @@ public class MetadataResource {
   private static final Log logger = LogFactory.getLog( MetadataResource.class );
   protected static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final String SUCCESS = "3";
+  private static final String DATASOURCE_ACL = "acl";
 
   protected MetadataService service;
   protected IMetadataDomainRepository metadataDomainRepository;
   protected ResourceUtil resourceUtil;
 
   public MetadataResource() {
-    service = new MetadataService();
+    service = createMetadataService();
     resourceUtil = new ResourceUtil();
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
+  }
+
+  protected MetadataService createMetadataService() {
+    return new MetadataService();
   }
 
   /**
@@ -178,11 +184,13 @@ public class MetadataResource {
                                                   @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
                                                   @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
                                                   @FormDataParam("localeFiles")
-                                                  List<FormDataContentDisposition> localeFilesInfo ) {
+                                                  List<FormDataContentDisposition> localeFilesInfo,
+                                                  @FormDataParam( DATASOURCE_ACL )
+                                                  RepositoryFileAclDto acl ) {
     try {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;      
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
-        localeFilesInfo );
+        localeFilesInfo, acl );
       return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return buildServerErrorResponse( e );
@@ -237,6 +245,7 @@ public class MetadataResource {
    * @param localeFiles List of local files
    * @param localeFilesInfo List of information for each local file
    * @param overwrite Flag for overwriting existing version of the file
+   * @param acl acl information for the data source. This parameter is optional.
    *
    * @return Text response containing the status of the call.
    *
@@ -263,10 +272,11 @@ public class MetadataResource {
       @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
       @FormDataParam( OVERWRITE_IN_REPOS ) Boolean overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo ) {
+      @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
-          localeFilesInfo );
+          localeFilesInfo, acl );
       return Response.status( CREATED ).build();
     } catch ( PentahoAccessControlException e ) {
       throw new WebApplicationException( Response.Status.UNAUTHORIZED );
@@ -302,6 +312,7 @@ public class MetadataResource {
    * @param overwrite
    * @param localeFiles
    * @param localeFilesInfo
+   * @param acl acl information for the data source. This parameter is optional.
    * @return
    */
   protected Response importMetadataDatasource( @FormDataParam( "domainId" ) String domainId,
@@ -310,11 +321,13 @@ public class MetadataResource {
                                             @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
                                             @FormDataParam( "localeFiles" )
-                                            List<FormDataContentDisposition> localeFilesInfo ) {
+                                            List<FormDataContentDisposition> localeFilesInfo,
+                                            @FormDataParam( DATASOURCE_ACL )
+                                            RepositoryFileAclDto acl) {
     try {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
-          localeFilesInfo );
+          localeFilesInfo, acl );
       return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return buildServerErrorResponse( e );
@@ -339,7 +352,7 @@ public class MetadataResource {
   }
 
   protected Response buildOkResponse( String statusCode ) {
-    return Response.ok( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+    return Response.ok().status( new Integer( statusCode) ).type( MediaType.TEXT_PLAIN ).build();
   }
 
   protected Response buildOkResponse() {
@@ -448,7 +461,72 @@ public class MetadataResource {
                                             @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
                                             @FormDataParam( "localeFiles" )
-                                            List<FormDataContentDisposition> localeFilesInfo ) {
-    return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo );
+                                            List<FormDataContentDisposition> localeFilesInfo,
+                                            @FormDataParam( DATASOURCE_ACL )
+                                            RepositoryFileAclDto acl) {
+    return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
+  }
+
+  /**
+   * Get ACL for the metadata data source by name
+   *
+   * @param   domainId metadata data source name
+   * @return  ACL or null if the data source doesn't have it
+   */
+  @GET
+  @Path( "/{domainId : .+}/acl" )
+  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully got the ACL" ),
+      @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 404, condition = "ACL doesn't exist" ),
+      @ResponseCode( code = 409, condition = "Metadata DS doesn't exist" ),
+      @ResponseCode(
+          code = 500,
+          condition = "ACL failed to be retrieved. This could be caused by an invalid path, or the file does not exist."
+      )
+      } )
+      public RepositoryFileAclDto doGetMetadataAcl( @PathParam( "domainId" ) String domainId ) {
+    try {
+      final RepositoryFileAclDto acl = service.getMetadataAcl( domainId );
+      if ( acl == null ) {
+        throw new WebApplicationException( NOT_FOUND );
+      }
+      return acl;
+    } catch ( PentahoAccessControlException e ) {
+      throw new WebApplicationException( UNAUTHORIZED );
+    } catch ( FileNotFoundException e) {
+      throw new WebApplicationException( CONFLICT );
+    }
+  }
+
+  /**
+   * Set ACL for the metadata data source
+   *
+   * @param domainId  metadata data source name
+   * @param acl       ACL to set
+   * @return          response
+   * @throws          PentahoAccessControlException if the user doesn't have access
+   */
+  @PUT
+  @Path( "/{domainId : .+}/acl" )
+  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "Successfully updated the ACL" ),
+      @ResponseCode( code = 401, condition = "Unauthorized" ),
+      @ResponseCode( code = 409, condition = "Metadata DS doesn't exist" ),
+      @ResponseCode( code = 500, condition = "Failed to save acls due to another error." )
+      } )
+      public Response doSetMetadataAcl( @PathParam( "domainId" ) String domainId, RepositoryFileAclDto acl ) {
+    try {
+      service.setMetadataAcl( domainId, acl );
+      return buildOkResponse();
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    } catch ( FileNotFoundException e) {
+      return Response.status( CONFLICT ).build();
+    } catch ( Exception e ) {
+      return buildServerErrorResponse();
+    }
   }
 }
