@@ -48,7 +48,7 @@ import org.pentaho.platform.api.engine.ICacheManager;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.ISystemConfig;
 import org.pentaho.platform.api.mt.ITenant;
-import org.pentaho.platform.api.repository2.unified.IPlatformMimeResolver;
+import org.pentaho.platform.api.mimetype.IPlatformMimeResolver;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
