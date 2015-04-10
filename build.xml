@@ -157,4 +157,25 @@
 	<target name="findbugs.clean" description="cleans up any previous findbugs reports">
 		<delete dir="${findbugs.output-dir}"></delete>
 	</target>
+
+	<target name="compile.post" depends="subfloor.compile.post" >
+		<antcall target="wadl-javadoc"/>
+	</target>
+
+	<property name="wadl.path" value="${basedir}/wadlExtension.xml" />
+
+	<target name="wadl-javadoc" depends="javadoc.init">
+		<javadoc sourcepath="${basedir}/src" access="public" source="6" postProcessGeneratedJavadocs="false" packagenames="*">
+			<classpath id="wadl-lib">
+				<fileset dir="${lib.dir}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+			<doclet name="org.pentaho.wadl.PentahoResourceDoclet" pathref="wadl-lib" >
+				<param name="-output" value="${wadl.path}"/>
+			</doclet>
+		</javadoc>
+
+		<move file="${wadl.path}" todir="${bin.dir}/classes/META-INF/wadl"/>
+	</target>
 </project>
