@@ -29,7 +29,7 @@
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DataAccessPermissionResource"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionReaderWriter"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionListReaderWriter"/>
-  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypeReaderWriter"/>
+ <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypeReaderWriter"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypesListReaderWriter"/>
  <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" scope="singleton"/>
  <bean class="org.pentaho.platform.web.servlet.PentahoSerializationPolicy">
@@ -294,6 +294,11 @@
 	      <pen:attr key="priority" value="70"/>
 	    </pen:attributes>
   	</pen:publish>
+  </bean>
+  
+  <bean class="org.pentaho.platform.web.servlet.DefaultSpringWadlResourceDocument">
+    <constructor-arg value="classpath:META-INF/wadl/wadlResource.xml"/>
+    <pen:publish as-type="INTERFACES"/>
   </bean>
   
 </beans>

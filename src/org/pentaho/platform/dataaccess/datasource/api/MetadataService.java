@@ -59,7 +59,7 @@ public class MetadataService extends DatasourceService {
     if ( !canAdministerCheck() ) {
       throw new PentahoAccessControlException();
     }
-    metadataDomainRepository.removeDomain( fixEncodedSlashParam( metadataId ) );
+    metadataDomainRepository.removeDomain( metadataId );
   }
 
   public List<String> getMetadataDatasourceIds() {

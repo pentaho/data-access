@@ -28,6 +28,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,11 +51,11 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.plugin.services.importer.IPlatformImportBundle;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
@@ -92,8 +93,6 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 
   @Test
   public void testRemoveMetadata() throws Exception {
-    IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
-
     doReturn( true ).when( metadataService ).canAdministerCheck();
     doReturn( "param" ).when( metadataService ).fixEncodedSlashParam( "metadataId" );
     doNothing().when( metadataService.metadataDomainRepository ).removeDomain( "param" );
@@ -101,6 +100,8 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     metadataService.removeMetadata( "metadataId" );
 
     verify( metadataService, times( 1 ) ).removeMetadata( "metadataId" );
+	// checking fixEncodedSlashParam method is not called (BISERVER-12403 issue)
+    verify( metadataService, never() ).fixEncodedSlashParam( "metadataId" );
   }
 
   @Test
