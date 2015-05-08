@@ -28,6 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.database.service.DatabaseDialectService;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
@@ -72,6 +75,10 @@ public class DefaultDatasourceCatalogTest {
     datasourceProviders.add( createAnalysisDatasourceProvider() );
     datasourceProviders.add( createMetadataDatasourceProvider() );
     datasourceCatalog = new DatasourceCatalog( datasourceProviders );
+
+    PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
+    PluginRegistry.init();
+    Encr.init( "Kettle" );
   }
 
   @After
@@ -130,6 +137,11 @@ public class DefaultDatasourceCatalogTest {
   private AnalysisDatasourceProvider createAnalysisDatasourceProvider() {
     final String fileId = "456";
     final String mondrianFolderPath = "/etc/mondrian";
+    final String olap4jFolderPath = "/etc/olap-servers";
+
+    // Stub the olap servers folder
+    stubGetFolder( repo, olap4jFolderPath );
+    stubGetChildren( repo, olap4jFolderPath );
 
     doReturn( new RepositoryFile.Builder( "123", "mondrian" ).folder( true ).build() ).when( repo ).getFile(
         mondrianFolderPath );
