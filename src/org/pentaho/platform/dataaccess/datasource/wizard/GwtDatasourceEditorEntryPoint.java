@@ -998,7 +998,8 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
   }
 
   public void showEditDatabaseDialog(final DialogListener dialogListener, final String databaseName) {
-    String url = ConnectionController.getServiceURL("get", new String[][] { { "name", databaseName } });
+    String cacheBuster = String.valueOf( new java.util.Date().getTime() );
+    String url = ConnectionController.getServiceURL("get", new String[][] { { "name", databaseName }, { "ts", cacheBuster }  });
     RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
     builder.setHeader("Accept", "application/json");
 
