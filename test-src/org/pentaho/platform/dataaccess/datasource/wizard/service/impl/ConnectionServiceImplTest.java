@@ -20,16 +20,15 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.omg.SendingContext.RunTime;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.platform.api.engine.IPentahoSession;
-import org.pentaho.platform.api.engine.IPluginResourceLoader;
+import org.pentaho.platform.api.data.IDBDatasourceService;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
 import org.pentaho.platform.api.repository.datasource.DuplicateDatasourceException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.ConnectionServiceHelper;
 
 import java.util.List;
 
@@ -40,12 +39,18 @@ import static org.mockito.Mockito.*;
 public class ConnectionServiceImplTest {
 
   private static ConnectionServiceImpl connectionServiceImpl;
-//  private static IDatabaseConnection mockIDatabaseConnection;
+
+  @Mock private IDBDatasourceService datasourceService;
+
+  @Mock private IDatasourceMgmtService datasourceMgmtService;
+
 
   @Before
   public void setUp() throws ConnectionServiceException {
+    MockitoAnnotations.initMocks( this );
     connectionServiceImpl = spy( new ConnectionServiceImpl() );
-    connectionServiceImpl.datasourceMgmtSvc = mock( IDatasourceMgmtService.class );
+    connectionServiceImpl.datasourceMgmtSvc = datasourceMgmtService;
+    connectionServiceImpl.datasourceService = datasourceService;
   }
 
   @After
@@ -61,6 +66,7 @@ public class ConnectionServiceImplTest {
     boolean tmp = connectionServiceImpl.deleteConnection( "Test Connection" );
 
     verify( connectionServiceImpl, times( 1 ) ).deleteConnection( "Test Connection" );
+    verify( datasourceService, times( 1 ) ).clearDataSource( "Test Connection" );
     assertEquals( tmp, true );
   }
 
@@ -226,7 +232,7 @@ public class ConnectionServiceImplTest {
     //Test 1
     DuplicateDatasourceException mockDuplicateDatasourceException = mock( DuplicateDatasourceException.class );
     doThrow( mockDuplicateDatasourceException ).when( connectionServiceImpl.datasourceMgmtSvc ).createDatasource(
-      mockIDatabaseConnection );
+        mockIDatabaseConnection );
 
     try {
       connectionServiceImpl.addConnection( mockIDatabaseConnection );
@@ -238,7 +244,7 @@ public class ConnectionServiceImplTest {
     //Test 2
     RuntimeException mockException = mock( RuntimeException.class );
     doThrow( mockException ).when( connectionServiceImpl.datasourceMgmtSvc ).createDatasource(
-      mockIDatabaseConnection );
+        mockIDatabaseConnection );
 
     try {
       connectionServiceImpl.addConnection( mockIDatabaseConnection );
@@ -256,11 +262,13 @@ public class ConnectionServiceImplTest {
 
     IDatabaseConnection mockIDatabaseConnection = mock( IDatabaseConnection.class );
     doNothing().when( mockIDatabaseConnection ).setPassword( anyString() );
+    doReturn( "DB Name" ).when( mockIDatabaseConnection ).getName();
     doReturn( "" ).when( connectionServiceImpl ).getConnectionPassword( anyString(), anyString() );
 
     boolean connectionUpdated = connectionServiceImpl.updateConnection( mockIDatabaseConnection );
 
     verify( connectionServiceImpl, times( 1 ) ).updateConnection( mockIDatabaseConnection );
+    verify( datasourceService, times( 1 ) ).clearDataSource( "DB Name" );
     assertEquals( connectionUpdated, true );
   }
 
