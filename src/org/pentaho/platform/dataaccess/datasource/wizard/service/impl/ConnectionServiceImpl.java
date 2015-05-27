@@ -29,6 +29,8 @@ import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.service.DatabaseDialectService;
+import org.pentaho.platform.api.data.IDBDatasourceService;
+import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
@@ -56,6 +58,8 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
 
   protected IDatasourceMgmtService datasourceMgmtSvc;
 
+  protected IDBDatasourceService datasourceService;
+
   private DatabaseDialectService dialectService = new DatabaseDialectService();
 
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
@@ -76,8 +80,11 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       dataAccessClassName = resLoader.getPluginSetting( getClass(),
         "settings/data-access-permission-handler", SimpleDataAccessPermissionHandler.class.getName() ); //$NON-NLS-1$
       Class<?> clazz = Class.forName( dataAccessClassName, true, getClass().getClassLoader() );
-      Constructor<?> defaultConstructor = clazz.getConstructor( new Class[] { } );
+      Constructor<?> defaultConstructor = clazz.getConstructor( new Class[] {} );
       dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance();
+      IPentahoObjectFactory objectFactory = PentahoSystem.getObjectFactory();
+      datasourceService = PentahoSystem.getObjectFactory().objectDefined( IDBDatasourceService.class )
+          ?  objectFactory.get( IDBDatasourceService.class, null ) : null;
     } catch ( Exception e ) {
       logger.error(
         Messages.getErrorString( "ConnectionServiceImpl.ERROR_0007_DATAACCESS_PERMISSIONS_INIT_ERROR", e //$NON-NLS-1$
@@ -191,6 +198,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       connection.setPassword( getConnectionPassword( connection.getName(), connection
         .getPassword() ) );
       datasourceMgmtSvc.updateDatasourceByName( connection.getName(), connection );
+      clearDatasource( connection.getName() );
       return true;
     } catch ( NonExistingDatasourceException nonExistingDatasourceException ) {
       String message = Messages.getErrorString(
@@ -214,6 +222,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     ensureDataAccessPermission();
     try {
       datasourceMgmtSvc.deleteDatasourceByName( connection.getName() );
+      clearDatasource( connection.getName() );
       return true;
     } catch ( NonExistingDatasourceException nonExistingDatasourceException ) {
       String message = Messages.getErrorString(
@@ -237,6 +246,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
     ensureDataAccessPermission();
     try {
       datasourceMgmtSvc.deleteDatasourceByName( name );
+      clearDatasource( name );
       return true;
     } catch ( NonExistingDatasourceException nonExistingDatasourceException ) {
       String message = Messages.getErrorString(
@@ -327,6 +337,15 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       throw new ConnectionServiceException( message, dme );
     }
 
+  }
+
+  private void clearDatasource( String name ) {
+    if ( datasourceService == null ) {
+      logger.warn( "IDBDatasourceService bean not initialized. "
+          + "Unable to clear data source:  " + name );
+      return;
+    }
+    datasourceService.clearDataSource( name );
   }
 
 }
