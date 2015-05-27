@@ -210,7 +210,7 @@
           <!--  ###############################################################################  -->
           <hbox>
             <vbox>
-              <label value="${multitable.SELECT_JOIN_TABLES}" tooltiptext=""/>
+              <label value="${multitable.SELECT_JOIN_TABLES}" tooltiptext="" multiline="true"/>
             </vbox>
           </hbox>
           <hbox>
@@ -311,7 +311,7 @@
           <!--  ###############################################################################  -->
           <hbox>
             <vbox>
-              <label value="${multitable.DEFINE_JOIN_TABLES}" tooltiptext=""/>
+              <label value="${multitable.DEFINE_JOIN_TABLES}" tooltiptext="" multiline="true"/>
             </vbox>
           </hbox>
           <hbox>
