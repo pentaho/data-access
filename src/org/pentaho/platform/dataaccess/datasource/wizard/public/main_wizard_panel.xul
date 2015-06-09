@@ -210,7 +210,7 @@
           <!--  ###############################################################################  -->
           <hbox>
             <vbox>
-              <label value="${multitable.SELECT_JOIN_TABLES}" tooltiptext=""/>
+              <label value="${multitable.SELECT_JOIN_TABLES}" tooltiptext="" multiline="true"/>
             </vbox>
           </hbox>
           <hbox>
@@ -311,7 +311,7 @@
           <!--  ###############################################################################  -->
           <hbox>
             <vbox>
-              <label value="${multitable.DEFINE_JOIN_TABLES}" tooltiptext=""/>
+              <label value="${multitable.DEFINE_JOIN_TABLES}" tooltiptext="" multiline="true"/>
             </vbox>
           </hbox>
           <hbox>
@@ -603,7 +603,7 @@
       </vbox>
       <spacer height="10"/>
       <vbox id="showModelerCheckboxHider" height="140">
-        <groupbox flex="1" height="132">
+        <groupbox flex="1" height="155">
           <caption label="${summaryDialog.note}"/>
           <label id="summaryDialogDescription" value="${summaryDialog.description}" multiline="true"/>
           <radiogroup id="modelerDecision" flex="1" height="53">

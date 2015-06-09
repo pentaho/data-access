@@ -305,10 +305,11 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       //if editing and no name change, proceed.
       updateConnection();
     } else {
+      String cacheBuster = String.valueOf( new java.util.Date().getTime() );
       //either new connection, or editing involved a name change.
       RequestBuilder getConnectionBuilder =
         new RequestBuilder( RequestBuilder.GET, ConnectionController.getServiceURL( "get",
-          new String[][] { { "name", currentConnection.getName() } } ) );
+          new String[][] { { "name", currentConnection.getName() }, { "ts", cacheBuster } } ) );
       getConnectionBuilder.setHeader( "Content-Type", "application/json" );
       try {
         AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
