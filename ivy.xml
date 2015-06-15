@@ -75,7 +75,7 @@
     <dependency org="stax" name="stax" rev="1.2.0"/>
     <dependency org="org.codehaus.jettison" name="jettison" rev="${dependency.jettison.revision}"/>
     <dependency org="jaxen" name="jaxen" rev="1.1.1" transitive="false" conf="default->default"/>
-    <dependency org="hsqldb" name="hsqldb" rev="1.8.0.7" conf="test->default"/>
+    <dependency org="org.hsqldb" name="hsqldb" rev="2.3.2" conf="test->default"/>
     <dependency org="com.h2database" name="h2" rev="1.0.78" transitive="false" conf="test->default"/>
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.3" conf="default->default"/>
 
