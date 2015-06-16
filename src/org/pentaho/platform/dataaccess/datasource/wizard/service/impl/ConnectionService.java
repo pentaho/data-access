@@ -394,8 +394,7 @@ public class ConnectionService {
   @Consumes( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
-    try {
-      validateAccess();
+    try {      
       boolean success = connectionService.addConnection( connection );
       if ( success ) {
         return Response.ok().build();
