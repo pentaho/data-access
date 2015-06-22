@@ -364,7 +364,7 @@ public class CsvUtils extends PentahoBase {
       // pad the string lengths
       size = meta.getLength() + ( meta.getLength() / 2 );
     } else {
-      size = 0;
+      size = precision > 0 ? meta.getLength() : 0;
     }
 
     profile.setLength( size );

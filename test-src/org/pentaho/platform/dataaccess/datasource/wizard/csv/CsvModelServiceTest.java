@@ -117,4 +117,17 @@ public class CsvModelServiceTest extends BaseTest {
     assertEquals("MM/dd/yyyy", ci.getFormat());
 
   }
+  
+  @Test
+  public void testAssumeColumnDetails_NumericWithPrecisionAndLength() {
+    service = new CsvUtils();
+    String[] samples = new String[] {"11.1", "11.111", "11.1111"};
+    ColumnInfo ci = new ColumnInfo();
+
+    service.assumeColumnDetails(ci, Arrays.asList(samples));
+    assertEquals(DataType.NUMERIC, ci.getDataType());
+    assertEquals(4, ci.getPrecision());
+    assertEquals(7, ci.getLength());
+
+  }
 }
