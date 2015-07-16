@@ -36,6 +36,7 @@ import org.pentaho.di.core.util.StringEvaluationResult;
 import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.metadata.model.concept.types.DataType;
+import org.pentaho.metadata.util.Util;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvParseException;
@@ -110,6 +111,16 @@ public class CsvUtils extends PentahoBase {
     }
 
     String fileLocation = path + filename;
+    return generateFields( project, fileLocation, filename, rowLimit, delimiter, enclosure, headerRows, doData, doColumns, encoding
+
+    );
+  }
+
+  /* package-local visibility for testing purposes */
+  ModelInfo generateFields( String project, String fileLocation, String filename, int rowLimit, String delimiter,
+                            String enclosure,
+                            int headerRows, boolean doData, boolean doColumns, String encoding )
+    throws Exception {
     ModelInfo result = new ModelInfo();
     CsvFileInfo fileInfo = new CsvFileInfo();
     result.setFileInfo( fileInfo );
@@ -278,7 +289,7 @@ public class CsvUtils extends PentahoBase {
         }
       } catch ( Exception e ) {
         throw e;
-        // ignore 
+        // ignore
       }
     }
     String[][] headerValues = new String[ headerSample.size() ][ maxColumns ];
@@ -327,6 +338,9 @@ public class CsvUtils extends PentahoBase {
         if ( headerValues[ headerValues.length - 1 ][ idx ] != null ) {
           title = headerValues[ headerValues.length - 1 ][ idx ];
           colId = title;
+          if ( !Util.validateId( title ) ) {
+            colId = Util.toId( colId );
+          }
         }
       }
       profile.setTitle( title );
