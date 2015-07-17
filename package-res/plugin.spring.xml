@@ -300,6 +300,8 @@
     <constructor-arg value="classpath:META-INF/wadl/wadlResource.xml"/>
     <pen:publish as-type="INTERFACES"/>
   </bean>
-  
+
+  <bean id="inlineModeling" class="org.pentaho.agilebi.modeler.models.annotations.ModelingSchemaAnnotator"/>
+
 </beans>
 
