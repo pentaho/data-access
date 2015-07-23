@@ -142,7 +142,7 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
   public void onFinish( final XulServiceCallback<IDatasourceSummary> callback ) {
 
     datasourceModel.getGuiStateModel().setDataStagingComplete( false );
-    setColumnIdsToColumnNames();
+    setColumnIdsToColumnNamesIfNecessary();
 
     // set the modelInfo.stageTableName to the database table name generated from the datasourceName
     datasourceModel.getModelInfo().setStageTableName( datasourceModel.generateTableName() );
@@ -177,9 +177,11 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
       } );
   }
 
-  private void setColumnIdsToColumnNames() {
+  private void setColumnIdsToColumnNamesIfNecessary() {
     for ( ColumnInfo ci : datasourceModel.getModelInfo().getColumns() ) {
-      ci.setId( ci.getTitle() );
+      if ( ci.getId() == null ) {
+        ci.setId( ci.getTitle() );
+      }
     }
   }
 
