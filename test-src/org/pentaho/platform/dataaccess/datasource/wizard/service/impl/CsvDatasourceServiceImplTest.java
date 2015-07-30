@@ -47,7 +47,7 @@ public class CsvDatasourceServiceImplTest {
 
   @Before
   public void setUp() throws Exception {
-    assertNotNull( "Temp directory was not found", TMP_DIR );
+    assertNotNull( "Temp directory was not found", TMP_DIR + '/' );
 
     existingContext = PentahoSystem.getApplicationContext();
 
