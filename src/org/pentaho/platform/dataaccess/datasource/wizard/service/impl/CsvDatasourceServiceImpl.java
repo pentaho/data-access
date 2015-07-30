@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -97,11 +98,9 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
     throws Exception {
     ModelInfo modelInfo;
     try {
-      CsvUtils csvModelService = new CsvUtils();
       int headerRows = isFirstRowHeader ? 1 : 0;
-      modelInfo = csvModelService
-        .generateFields( "", fileName, AgileHelper.getCsvSampleRowSize(), delimiter, enclosure, headerRows, true, true,
-          encoding ); //$NON-NLS-1$
+      modelInfo = new CsvUtils().generateFields( "", FilenameUtils.getName( fileName ),
+        AgileHelper.getCsvSampleRowSize(), delimiter, enclosure, headerRows, true, true, encoding ); //$NON-NLS-1$
     } catch ( Exception e ) {
       logger.error( e );
       throw e;
@@ -190,11 +189,11 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
 
   protected void prepareForSerialization( Domain domain ) throws IOException {
 
-		/*
+    /*
      * This method is responsible for cleaning up legacy information when
-		 * changing datasource types and also manages CSV files for CSV based
-		 * datasources.
-		 */
+     * changing datasource types and also manages CSV files for CSV based
+     * datasources.
+     */
 
     String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
       String.valueOf( FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) ); //$NON-NLS-1$
