@@ -52,7 +52,7 @@ public class CsvDatasourceServiceImplTest {
     existingContext = PentahoSystem.getApplicationContext();
 
     mockContext = mock( IApplicationContext.class );
-    when( mockContext.getSolutionPath( anyString() ) ).thenReturn( TMP_DIR );
+    when( mockContext.getSolutionPath( anyString() ) ).thenReturn( TMP_DIR + '/' );
     PentahoSystem.setApplicationContext( mockContext );
 
     service = new CsvDatasourceServiceImpl();
