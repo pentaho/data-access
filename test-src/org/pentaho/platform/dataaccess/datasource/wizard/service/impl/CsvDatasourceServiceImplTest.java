@@ -47,12 +47,12 @@ public class CsvDatasourceServiceImplTest {
 
   @Before
   public void setUp() throws Exception {
-    assertNotNull( "Temp directory was not found", TMP_DIR + '/' );
+    assertNotNull( "Temp directory was not found", TMP_DIR );
 
     existingContext = PentahoSystem.getApplicationContext();
 
     mockContext = mock( IApplicationContext.class );
-    when( mockContext.getSolutionPath( anyString() ) ).thenReturn( TMP_DIR );
+    when( mockContext.getSolutionPath( anyString() ) ).thenReturn( TMP_DIR + '/' );
     PentahoSystem.setApplicationContext( mockContext );
 
     service = new CsvDatasourceServiceImpl();
