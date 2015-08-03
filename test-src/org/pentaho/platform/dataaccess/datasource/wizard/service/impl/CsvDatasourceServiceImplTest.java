@@ -26,7 +26,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
 import static org.junit.Assert.*;
@@ -67,24 +66,36 @@ public class CsvDatasourceServiceImplTest {
   }
 
 
-  @Test( expected = FileNotFoundException.class )
+  @Test( expected = Exception.class )
   public void stageFile_InvalidPath_Csv_ThrowsException() throws Exception {
     service.stageFile( "../../../secret-file.csv", ",", "\n", false, "utf-8" );
   }
 
-  @Test( expected = FileNotFoundException.class )
+  @Test( expected = Exception.class )
   public void stageFile_InvalidPath_Tmp_ThrowsException() throws Exception {
     service.stageFile( "../../../secret-file.tmp", ",", "\n", false, "utf-8" );
   }
 
-  @Test( expected = FileNotFoundException.class )
+  @Test( expected = Exception.class )
   public void stageFile_InvalidPath_WindowsStyle_ThrowsException() throws Exception {
     service.stageFile( "..\\..\\..\\secret-file.csv", ",", "\n", false, "utf-8" );
   }
 
-  @Test( expected = FileNotFoundException.class )
+  @Test( expected = Exception.class )
   public void stageFile_InvalidPath_SlashAtEnd_ThrowsException() throws Exception {
     service.stageFile( "../../../secret-file/", ",", "\n", false, "utf-8" );
+  }
+
+
+  @Test
+  public void stageFile_InvalidPath_DoesNotRevealInternalDetails() throws Exception {
+    try {
+      service.stageFile( "../../../secret-file.tmp", ",", "\n", false, "utf-8" );
+      fail( "Should throw exception" );
+    } catch ( Exception e ) {
+      String message = e.getMessage();
+      assertFalse( message, message.contains( TMP_DIR ) );
+    }
   }
 
 

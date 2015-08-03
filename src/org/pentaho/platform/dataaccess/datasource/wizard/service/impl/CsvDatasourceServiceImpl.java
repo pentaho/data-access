@@ -18,6 +18,7 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,10 +98,14 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
                               String encoding )
     throws Exception {
     ModelInfo modelInfo;
+    fileName = FilenameUtils.getName( fileName );
     try {
       int headerRows = isFirstRowHeader ? 1 : 0;
-      modelInfo = new CsvUtils().generateFields( "", FilenameUtils.getName( fileName ),
-        AgileHelper.getCsvSampleRowSize(), delimiter, enclosure, headerRows, true, true, encoding ); //$NON-NLS-1$
+      modelInfo = new CsvUtils().generateFields( "", fileName, AgileHelper.getCsvSampleRowSize(),
+        delimiter, enclosure, headerRows, true, true, encoding ); //$NON-NLS-1$
+    } catch ( FileNotFoundException e ) {
+      logger.error( e );
+      throw new Exception( "File was not found: " + fileName );
     } catch ( Exception e ) {
       logger.error( e );
       throw e;
