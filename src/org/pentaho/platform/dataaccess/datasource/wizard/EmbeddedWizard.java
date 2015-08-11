@@ -17,11 +17,15 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
 
+import java.util.List;
+
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerMessages;
+import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.gwt.widgets.client.utils.i18n.IResourceBundleLoadCallback;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.ConnectionController;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.FileImportController;
@@ -32,9 +36,12 @@ import org.pentaho.platform.dataaccess.datasource.wizard.controllers.WizardDatas
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.IWizardModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.WizardModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 //import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceServiceAsync;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceGwtImpl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.CsvDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable.MultiTableDatasource;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasource;
@@ -492,16 +499,38 @@ public class EmbeddedWizard extends AbstractXulDialogController<Domain> implemen
         wizardController.resetSelectedDatasource();
       }
     };
-    final Domain domain = summary.getDomain();
+    
+    final String domainId = summary.getDomain().getId();
+    final EmbeddedWizard wizard = this;
+    //reload model for synchronize between GWT model and backend model http://jira.pentaho.com/browse/BISERVER-10399
+    GwtModelerServiceImpl ssd = new GwtModelerServiceImpl();
+    ssd.loadDomain( domainId, new  XulServiceCallback<Domain>() {
 
-    ModelerDialog.getInstance( this, new AsyncConstructorListener<ModelerDialog>() {
-      public void asyncConstructorDone( ModelerDialog dialog ) {
-        dialog.addDialogListener( listener );
+      @Override
+      public void error( String arg0, Throwable arg1 ) {
+        //js console log
+        arg1.printStackTrace();
+        wizardController.resetSelectedDatasource();
         MessageHandler.getInstance().closeWaitingDialog();
-        dialog.showDialog( domain );
+        //user error dialog
+        MessageHandler.getInstance().showErrorDialog(   
+            datasourceMessages.getString( "DatasourceEditor.ERROR" ), //$NON-NLS-1$
+            datasourceMessages.getString( "DatasourceEditor.ERROR_0002_UNABLE_TO_SHOW_DIALOG", arg1.getLocalizedMessage() ) ); //$NON-NLS-1$ );
+      }
+
+      @Override
+      public void success( Domain arg0 ) {
+        summary.setDomain( arg0 );     
+        final Domain domain = summary.getDomain(); 
+        ModelerDialog.getInstance( wizard, new AsyncConstructorListener<ModelerDialog>() {
+          public void asyncConstructorDone( ModelerDialog dialog ) {
+            dialog.addDialogListener( listener );
+            MessageHandler.getInstance().closeWaitingDialog();
+            dialog.showDialog( domain );
+          }
+        } );
       }
     } );
-
   }
 
   @Override
