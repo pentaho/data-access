@@ -104,7 +104,7 @@ public class AnalysisService extends DatasourceService {
     for ( MondrianCatalog mondrianCatalog : mockMondrianCatalogList ) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
       Set<String> ids = metadataDomainRepository.getDomainIds();
-      if ( ids.contains( domainId ) == false ) {
+      if ( !ids.contains( domainId ) ) {
         analysisIds.add( mondrianCatalog.getName() );
       }
     }
@@ -123,8 +123,8 @@ public class AnalysisService extends DatasourceService {
 
     accessValidation();
     String fileName = schemaFileInfo.getFileName();
-    processMondrianImport( dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters,
-        fileName, acl );
+    processMondrianImport(
+        dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters, fileName, acl );
   }
 
   public RepositoryFileAclDto getAnalysisDatasourceAcl( String analysisId )
@@ -171,24 +171,43 @@ public class AnalysisService extends DatasourceService {
    * @throws PlatformImportException
    */
   protected void processMondrianImport( InputStream dataInputStream, String catalogName, String origCatalogName,
-                                      boolean overwrite, boolean xmlaEnabledFlag, String parameters, String fileName,
-                                      RepositoryFileAclDto acl )
+                                        boolean overwrite, boolean xmlaEnabledFlag, String parameters, String fileName,
+                                        RepositoryFileAclDto acl )
     throws PlatformImportException {
     boolean overWriteInRepository = determineOverwriteFlag( parameters, overwrite );
     IPlatformImportBundle bundle =
-        createPlatformBundle( parameters, dataInputStream, catalogName, overWriteInRepository, fileName,
-        xmlaEnabledFlag, acl );
-    if ( !StringUtils.isEmpty( origCatalogName ) && !bundle.getName().equals( origCatalogName ) ) {
-      // MONDRIAN-1731
-      // we are importing a mondrian catalog with a new schema (during edit), remove the old catalog first
-      // processing the bundle without doing this will result in a new catalog, giving the effect of adding
-      // a catalog rather than editing
+        createPlatformBundle(
+          parameters, dataInputStream, catalogName, overWriteInRepository, fileName, xmlaEnabledFlag, acl );
+    if ( isChangeCatalogName( origCatalogName, bundle ) ) {
       IMondrianCatalogService catalogService =
           PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
       catalogService.removeCatalog( origCatalogName, PentahoSessionHolder.getSession() );
     }
-
+    if ( isOverwriteAnnotations( parameters, overWriteInRepository ) ) {
+      IMondrianCatalogService catalogService =
+          PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
+      List<MondrianCatalog> catalogs = catalogService.listCatalogs( PentahoSessionHolder.getSession(), false );
+      for ( MondrianCatalog catalog : catalogs ) {
+        if ( catalog.getName().equals( bundle.getName() ) ) {
+          catalogService.removeCatalog( bundle.getName(), PentahoSessionHolder.getSession() );
+          break;
+        }
+      }
+    }
     importer.importFile( bundle );
+  }
+
+
+  private boolean isChangeCatalogName( final String origCatalogName, final IPlatformImportBundle bundle ) {
+    // MONDRIAN-1731
+    // we are importing a mondrian catalog with a new schema (during edit), remove the old catalog first
+    // processing the bundle without doing this will result in a new catalog, giving the effect of adding
+    // a catalog rather than editing
+    return !StringUtils.isEmpty( origCatalogName ) && !bundle.getName().equals( origCatalogName );
+  }
+
+  private boolean isOverwriteAnnotations( final String parameters, final boolean overWriteInRepository ) {
+    return overWriteInRepository && !"true".equalsIgnoreCase( getValue( parameters, "retainInlineAnnotations" ) );
   }
 
   /**
