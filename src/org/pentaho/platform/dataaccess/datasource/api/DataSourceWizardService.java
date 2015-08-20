@@ -132,7 +132,6 @@ public class DataSourceWizardService extends DatasourceService {
     if ( !canAdministerCheck() ) {
       throw new PentahoAccessControlException();
     }
-    dswId = parseMondrianSchemaNameWrapper( dswId );
     Domain domain = metadataDomainRepository.getDomain( dswId );
     ModelerWorkspace model = createModelerWorkspace();
     model.setDomain( domain );
