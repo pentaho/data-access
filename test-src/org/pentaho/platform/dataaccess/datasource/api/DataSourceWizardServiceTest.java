@@ -17,9 +17,33 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.services.IModelerService;
@@ -47,22 +71,11 @@ import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDom
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
-
 public class DataSourceWizardServiceTest {
 
   private static DataSourceWizardService dataSourceWizardService;
+  
+  private String returnedDswId;
 
   private class DataSourceWizardServiceMock extends DataSourceWizardService {
     @Override protected IUnifiedRepository getRepository() {
@@ -134,13 +147,21 @@ public class DataSourceWizardServiceTest {
   }
 
   @Test
-  public void testRemoveDSW() throws Exception {
+  public void testRemoveDSW1() throws Exception {
+	  testRemoveDswById( "dswId" );
+  }
+  
+  @Test
+  public void testRemoveDSW2() throws Exception {
+	  testRemoveDswById( "test%:[]*|\t" );
+  }
+  
+  public void testRemoveDswById( String dswId ) throws Exception {
     Domain mockDomain = mock( Domain.class );
     IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
     ModelerWorkspace mockModelerWorkspace = mock( ModelerWorkspace.class );
     LogicalModel mockLogicalModel = mock( LogicalModel.class );
     String mockObject = "not null";
-    String dswId = "dswId";
 
     doReturn( true ).when( dataSourceWizardService ).canAdministerCheck();
     doReturn( dswId ).when( dataSourceWizardService ).parseMondrianSchemaNameWrapper( dswId );
@@ -151,12 +172,20 @@ public class DataSourceWizardServiceTest {
     doReturn( mockObject ).when( mockLogicalModel ).getProperty( "MondrianCatalogRef" );
     doReturn( mockIPentahoSession ).when( dataSourceWizardService ).getSession();
     doNothing().when( dataSourceWizardService.mondrianCatalogService ).removeCatalog(
-        "not null", mockIPentahoSession );
-    doNothing().when( dataSourceWizardService.metadataDomainRepository ).removeDomain( dswId );
+        "not null", mockIPentahoSession );    
+    doAnswer( new Answer<Object>() {
 
-    dataSourceWizardService.removeDSW( "dswId" );
+		@Override
+		public Object answer( InvocationOnMock invocation ) throws Throwable {
+		      Object[] args = invocation.getArguments();
+		      returnedDswId = (String) args[0];
+		      return null;
+		} 
+	}).when( dataSourceWizardService.metadataDomainRepository ).removeDomain( dswId );
 
-    verify( dataSourceWizardService, times( 1 ) ).removeDSW( "dswId" );
+    dataSourceWizardService.removeDSW( dswId );
+    assertEquals( "The method should call removal for original id", dswId, returnedDswId );
+    verify( dataSourceWizardService, times( 1 ) ).removeDSW( dswId );
   }
 
   @Test
