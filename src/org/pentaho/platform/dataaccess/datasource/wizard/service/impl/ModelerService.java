@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -65,6 +65,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
   public static final String TMP_FILE_PATH =
     File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
   private SimpleDataAccessPermissionHandler dataAccessPermHandler;
+  private DSWDatasourceServiceImpl datasourceService;
 
   public ModelerService() {
     super();
@@ -149,7 +150,10 @@ public class ModelerService extends PentahoBase implements IModelerService {
         public Void call() throws Exception {
 
           try {
-            DSWDatasourceServiceImpl datasourceService = new DSWDatasourceServiceImpl();
+            if ( datasourceService == null ) {
+              datasourceService = new DSWDatasourceServiceImpl();
+            }
+
             ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper(), datasourceService
               .getGeoContext() );
             model.setModelName( name );
@@ -172,7 +176,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
               lModel.setProperty( "MondrianCatalogRef", catName ); //$NON-NLS-1$
             }
 
-            // Stores metadata into JCR.      
+            // Stores metadata into JCR.
             IMetadataDomainRepository metadataDomainRep = PentahoSystem.get( IMetadataDomainRepository.class );
             if ( metadataDomainRep != null ) {
               metadataDomainRep.storeDomain( model.getDomain(), true );
@@ -183,6 +187,19 @@ public class ModelerService extends PentahoBase implements IModelerService {
               String mondrianSchema = exporter.createMondrianModelXML();
               IPentahoSession session = PentahoSessionHolder.getSession();
               if ( session != null ) {
+                // first remove the existing schema, including any
+                // model annotations which may have been previously applied
+                IMondrianCatalogService mondrianCatalogService =
+                    PentahoSystem.get( IMondrianCatalogService.class, "IMondrianCatalogService", session ); //$NON-NLS-1$
+
+                // try to get the current catalog
+                MondrianCatalog currentCatalog = mondrianCatalogService.getCatalog( catName, session );
+
+                // if current catalog exists, remove it
+                if ( currentCatalog != null ) {
+                  mondrianCatalogService.removeCatalog( catName, session );
+                }
+
                 session.setAttribute( "MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema );
                 String catConnectStr = "Provider=mondrian;DataSource=" + getMondrianDatasource( domain ); //$NON-NLS-1$
                 addCatalog( catName, catConnectStr, session );
@@ -228,5 +245,13 @@ public class ModelerService extends PentahoBase implements IModelerService {
   public Domain loadDomain( String id ) throws Exception {
     IMetadataDomainRepository repo = PentahoSystem.get( IMetadataDomainRepository.class );
     return repo.getDomain( id );
+  }
+
+  public DSWDatasourceServiceImpl getDatasourceService() {
+    return datasourceService;
+  }
+
+  public void setDatasourceService( DSWDatasourceServiceImpl datasourceService ) {
+    this.datasourceService = datasourceService;
   }
 }
