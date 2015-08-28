@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringEvaluationResult;
 import org.pentaho.di.core.util.StringEvaluator;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputUtils;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.util.Util;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
@@ -246,7 +246,7 @@ public class CsvUtils extends PentahoBase {
 
       //read each line of text file
       StringBuilder stringBuilder = new StringBuilder( 1000 );
-      line = TextFileInput.getLine( null, reader, fileType, stringBuilder );
+      line = TextFileInputUtils.getLine( null, reader, fileType, stringBuilder );
 
       while ( line != null && row < rowLimit ) {
 
@@ -270,7 +270,7 @@ public class CsvUtils extends PentahoBase {
         } else {
           dataSample.add( rowData );
         }
-        line = TextFileInput.getLine( null, reader, fileType, stringBuilder );
+        line = TextFileInputUtils.getLine( null, reader, fileType, stringBuilder );
         row++;
       }
 
