@@ -100,7 +100,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       && dataAccessPermHandler.hasDataAccessPermission( PentahoSessionHolder.getSession() );
   }
 
-  protected void ensureDataAccessPermission() throws ConnectionServiceException {
+  public void ensureDataAccessPermission() throws ConnectionServiceException {
     if ( !hasDataAccessPermission() ) {
       String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED" ); //$NON-NLS-1$
       logger.error( message );

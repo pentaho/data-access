@@ -49,6 +49,7 @@ import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 
@@ -92,7 +93,9 @@ public class AnalysisService extends DatasourceService {
   }
 
   public void removeAnalysis( String analysisId ) throws PentahoAccessControlException {
-    if ( !canAdministerCheck() ) {
+    try {
+      ensureDataAccessPermissionCheck();
+    } catch ( ConnectionServiceException e ) {
       throw new PentahoAccessControlException();
     }
     mondrianCatalogService.removeCatalog( fixEncodedSlashParam( analysisId ), getSession() );
@@ -367,6 +370,10 @@ public class AnalysisService extends DatasourceService {
 
   protected boolean canAdministerCheck() {
     return super.canAdminister();
+  }
+
+  protected void ensureDataAccessPermissionCheck() throws ConnectionServiceException {
+    super.ensureDataAccessPermission();
   }
 
   protected void accessValidation() throws PentahoAccessControlException {

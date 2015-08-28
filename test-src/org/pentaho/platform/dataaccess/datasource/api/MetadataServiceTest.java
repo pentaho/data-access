@@ -55,6 +55,7 @@ import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
@@ -93,7 +94,7 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 
   @Test
   public void testRemoveMetadata() throws Exception {
-    doReturn( true ).when( metadataService ).canAdministerCheck();
+    doNothing().when( metadataService ).ensureDataAccessPermissionCheck();
     doReturn( "param" ).when( metadataService ).fixEncodedSlashParam( "metadataId" );
     doNothing().when( metadataService.metadataDomainRepository ).removeDomain( "param" );
 
@@ -106,7 +107,8 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 
   @Test
   public void testRemoveMetadataError() throws Exception {
-    doReturn( false ).when( metadataService ).canAdministerCheck();
+    ConnectionServiceException cse = new ConnectionServiceException();
+    doThrow( cse ).when( metadataService ).ensureDataAccessPermissionCheck();
     try {
       metadataService.removeMetadata( "metadataId" );
       fail();

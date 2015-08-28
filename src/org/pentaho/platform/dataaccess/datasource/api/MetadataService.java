@@ -40,6 +40,7 @@ import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDom
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.web.http.api.resources.FileResource;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -56,7 +57,9 @@ public class MetadataService extends DatasourceService {
   }
 
   public void removeMetadata( String metadataId ) throws PentahoAccessControlException {
-    if ( !canAdministerCheck() ) {
+    try {
+      ensureDataAccessPermissionCheck();
+    } catch ( ConnectionServiceException e ) {
       throw new PentahoAccessControlException();
     }
     metadataDomainRepository.removeDomain( metadataId );
@@ -180,6 +183,10 @@ public class MetadataService extends DatasourceService {
 
   protected boolean canAdministerCheck() {
     return super.canAdminister();
+  }
+
+  protected void ensureDataAccessPermissionCheck() throws ConnectionServiceException {
+    super.ensureDataAccessPermission();
   }
 
   protected FileResource createNewFileResource() {

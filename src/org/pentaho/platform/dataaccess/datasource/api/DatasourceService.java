@@ -28,6 +28,8 @@ import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
@@ -131,5 +133,10 @@ public class DatasourceService {
   protected void flushDataSources() {
     metadataDomainRepository.flushDomains();
     mondrianCatalogService.reInit( PentahoSessionHolder.getSession() );
+  }
+
+  public void ensureDataAccessPermission() throws ConnectionServiceException {
+    ConnectionServiceImpl connectionService = new ConnectionServiceImpl();
+    connectionService.ensureDataAccessPermission();
   }
 }

@@ -63,6 +63,7 @@ import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogR
 import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 
 public class DataSourceWizardService extends DatasourceService {
 
@@ -129,7 +130,9 @@ public class DataSourceWizardService extends DatasourceService {
   }
 
   public void removeDSW( String dswId ) throws PentahoAccessControlException {
-    if ( !canAdministerCheck() ) {
+    try {
+      ensureDataAccessPermissionCheck();
+    } catch ( ConnectionServiceException e ){
       throw new PentahoAccessControlException();
     }
     Domain domain = metadataDomainRepository.getDomain( dswId );
@@ -383,6 +386,10 @@ public class DataSourceWizardService extends DatasourceService {
 
   protected boolean canAdministerCheck() {
     return super.canAdminister();
+  }
+
+  protected void ensureDataAccessPermissionCheck() throws ConnectionServiceException {
+    super.ensureDataAccessPermission();
   }
 
   protected boolean hasManageAccessCheck() {
