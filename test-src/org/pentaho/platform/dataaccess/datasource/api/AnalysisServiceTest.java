@@ -207,6 +207,9 @@ public class AnalysisServiceTest {
     when( policy.isAllowed( RepositoryReadAction.NAME ) ).thenReturn( hasRead );
     when( policy.isAllowed( RepositoryCreateAction.NAME ) ).thenReturn( hasCreate );
     when( policy.isAllowed( AdministerSecurityAction.NAME ) ).thenReturn( hasAdmin );
+    if( hasRead && hasCreate && hasAdmin ) {
+      when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
+    }
     try {
       new AnalysisService().removeAnalysis( "analysisId" );
       if ( hasRead && hasCreate && hasAdmin ) {
