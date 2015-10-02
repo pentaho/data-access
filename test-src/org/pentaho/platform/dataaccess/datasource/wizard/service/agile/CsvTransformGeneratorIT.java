@@ -17,13 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Date;
-import java.util.Map;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.mockito.Mockito;
 import org.pentaho.di.core.database.Database;
@@ -36,16 +29,22 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DataRow;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.StandaloneApplicationContext;
 import org.pentaho.platform.engine.core.system.StandaloneSession;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.test.platform.engine.core.BaseTest;
 
+import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Date;
+
 @SuppressWarnings( { "all" })
-public class CsvTransformGeneratorTest extends BaseTest {
+public class CsvTransformGeneratorIT extends BaseTest {
 
   private static final String solution = "testsolution"; //$NON-NLS-1$
 

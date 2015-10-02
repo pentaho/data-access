@@ -17,15 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.database.model.DatabaseAccessType;
@@ -48,10 +39,19 @@ import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.concept.types.TargetTableType;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorTest;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorIT;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.InMemoryDSWDatasourceServiceImpl;
 import org.pentaho.platform.engine.core.TestObjectFactory;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("nls")
 public class DatasourceModelTest {
@@ -71,7 +71,7 @@ public class DatasourceModelTest {
     Assert.assertEquals(false, datasourceModel.isValidated());
     //    datasourceModel.setCsvModel(constructCsvModel(datasourceModel.getCsvModel()));    
     Assert.assertEquals(false, datasourceModel.isValidated());
-    datasourceModel.setModelInfo(CsvTransformGeneratorTest.createModel());
+    datasourceModel.setModelInfo(CsvTransformGeneratorIT.createModel());
     assertEquals(false, datasourceModel.isValidated());
   }
 
