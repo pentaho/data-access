@@ -114,7 +114,7 @@ import org.springframework.security.userdetails.UsernameNotFoundException;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 
-public class DatasourceResourceTest {
+public class DatasourceResourceIT {
   private static MicroPlatform mp;
 
   @BeforeClass
