@@ -25,7 +25,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class ModelerServiceTest extends DataAccessServiceTestBase {
+public class ModelerServiceIT extends DataAccessServiceTestBase {
   private final String TEST_CATALOG_NAME = "TEST_CATALOG_NAME";
 
   @Test

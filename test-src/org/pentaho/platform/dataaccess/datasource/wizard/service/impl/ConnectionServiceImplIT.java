@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
-public class ConnectionServiceImplTest {
+public class ConnectionServiceImplIT {
 
   private static ConnectionServiceImpl connectionServiceImpl;
 
