@@ -17,10 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.modeler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
@@ -35,7 +31,11 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
 import org.pentaho.test.platform.engine.core.BaseTest;
 
-public class JoinMetadataTest extends BaseTest {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class JoinMetadataIT extends BaseTest {
 
 	static {
 		PentahoSystemHelper.init();

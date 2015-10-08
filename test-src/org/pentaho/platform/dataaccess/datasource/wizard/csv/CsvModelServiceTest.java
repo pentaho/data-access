@@ -17,17 +17,17 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
-import java.io.File;
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.pentaho.gwt.widgets.client.utils.string.StringTokenizer;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorTest;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorIT;
 import org.pentaho.test.platform.engine.core.BaseTest;
+
+import java.io.File;
+import java.util.Arrays;
 
 
 public class CsvModelServiceTest extends BaseTest {
@@ -54,7 +54,7 @@ public class CsvModelServiceTest extends BaseTest {
   @Test
   public void testGetLines() throws Exception {
     service = new CsvUtils();
-    ModelInfo modelInfo = CsvTransformGeneratorTest.createModel();
+    ModelInfo modelInfo = CsvTransformGeneratorIT.createModel();
     String project = modelInfo.getFileInfo().getProject() == null ? "" : modelInfo.getFileInfo().getProject();
     String filepath = AgileHelper.getFolderPath(project) + "/" + modelInfo.getFileInfo().getTmpFilename();
 
