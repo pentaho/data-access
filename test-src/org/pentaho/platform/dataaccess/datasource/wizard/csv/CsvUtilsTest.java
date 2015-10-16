@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.util.Util;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DataRow;
@@ -27,6 +28,8 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -38,6 +41,7 @@ import static org.junit.Assert.assertTrue;
 public class CsvUtilsTest {
 
   private static final String delimiter = ";";
+  private static final int DEFAULT_INTEGER_SIZE = 15;
 
   private CsvUtils utils;
   private File tempFile;
@@ -109,6 +113,16 @@ public class CsvUtilsTest {
     assertEquals( 2, data[ 0 ].getCells().length );
     assertEquals( "1", data[ 0 ].getCells()[ 0 ] );
     assertEquals( "2", data[ 0 ].getCells()[ 1 ] );
+  }
+
+  @Test
+  public void ColumnOfIntegerType_HasCorrectLength() {
+    ColumnInfo columnInfo = new ColumnInfo();
+    List<String> data = Arrays.asList( "1", "2" );
+
+    utils.assumeColumnDetails( columnInfo, data );
+    assertEquals( DataType.NUMERIC, columnInfo.getDataType() );
+    assertEquals( DEFAULT_INTEGER_SIZE, columnInfo.getLength() );
   }
 
 
