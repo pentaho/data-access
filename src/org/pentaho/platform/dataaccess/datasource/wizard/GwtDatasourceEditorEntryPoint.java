@@ -171,6 +171,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
 
           RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
           builder.setHeader("accept", "application/json");
+          builder.setHeader("Pragma", "no-cache");
 
           try {
               builder.sendRequest(null, new RequestCallback() {
