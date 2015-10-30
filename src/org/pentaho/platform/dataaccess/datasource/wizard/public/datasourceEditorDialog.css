@@ -164,14 +164,6 @@ aggregation-dialog-checkbox-label {
   border-collapse: separate;
 }
 
-#stepsPanel {
-  /*border-right: 1px solid black;*/
-  background-image: url(images/bg_steps.png);
-  background-repeat: no-repeat;
-  overflow: hidden;
-  height: 500px;
-}
-
 #step_grid td {
   padding-top: 5px;
   padding-bottom: 10px;
