@@ -98,7 +98,7 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration( locations = { "classpath:/repository.spring.xml",
     "classpath:/solutionACL/system/repository-test-override.spring.xml",
     "classpath:/solutionACL/system/importExport.xml", "classpath:/solutionACL/system/pentahoObjects.spring.xml" } )
-public class DataSourcePublishACLIT extends JerseyTest implements ApplicationContextAware {
+public class DataSourcePublishIT extends JerseyTest implements ApplicationContextAware {
   private static final String USERNAME_SUZY = "suzy";
   private static final String USERNAME_TIFFANY = "tiffany";
   private static final String PASSWORD = "password";
@@ -120,7 +120,7 @@ public class DataSourcePublishACLIT extends JerseyTest implements ApplicationCon
   private String singleTenantAdminUserName;
   public static final String DATA_ACCESS_API_DATASOURCE_ANALYSIS = "data-access/api/datasource/analysis/";
 
-  public DataSourcePublishACLIT() throws TestContainerException {
+  public DataSourcePublishIT() throws TestContainerException {
     repositoryBase = new DefaultUnifiedRepositoryBase() {
       @Override
       protected String getSolutionPath() {
