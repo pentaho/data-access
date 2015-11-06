@@ -128,7 +128,7 @@ public class DatasourceResourceIT {
     IUserRoleListService mockUserRoleListService = mock( IUserRoleListService.class );
 
     IDataAccessPermissionHandler mockDataAccessPermHandler = mock( IDataAccessPermissionHandler.class );
-    when( mockDataAccessPermHandler.hasDataAccessPermission( any (IPentahoSession.class) ) ).thenReturn( true ); 
+    when( mockDataAccessPermHandler.hasDataAccessPermission( any ( IPentahoSession.class ) ) ).thenReturn( true );
 
     mp.define( ISolutionEngine.class, SolutionEngine.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
     mp.define( IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
@@ -183,7 +183,7 @@ public class DatasourceResourceIT {
 
   @Test
   public void DummyTest() throws Exception {
-    
+
   }
   @Test
   public void testMondrianImportExport() throws Exception {
@@ -196,8 +196,8 @@ public class DatasourceResourceIT {
     RepositoryFile repoMondrianFile = new RepositoryFile.Builder( mondrian.getName() ).folder( false ).hidden( false )
         .build();
     RepositoryFileImportBundle bundle1 = new RepositoryFileImportBundle.Builder()
-    .file( repoMondrianFile ).charSet( "UTF-8" ).input( new FileInputStream( mondrian ) ).mime( "mondrian.xml" )
-        .withParam( "parameters", "Datasource=Pentaho;overwrite=true" ).withParam( "domain-id", "SalesData" ).build() ;
+      .file( repoMondrianFile ).charSet( "UTF-8" ).input( new FileInputStream( mondrian ) ).mime( "mondrian.xml" )
+        .withParam( "parameters", "Datasource=Pentaho;overwrite=true" ).withParam( "domain-id", "SalesData" ).build();
     MondrianImportHandler mondrianImportHandler = new MondrianImportHandler( mimeTypeList,
         PentahoSystem.get( IMondrianCatalogService.class ) );
     mondrianImportHandler.importFile( bundle1 );
@@ -243,7 +243,7 @@ public class DatasourceResourceIT {
   @Test
   public void testMetadataImportExport() throws PlatformInitializationException, IOException, PlatformImportException {
     List<IMimeType> mimeTypeList = new ArrayList<IMimeType>();
-    mimeTypeList.add( new MimeType("Metadata", ".xmi") );
+    mimeTypeList.add( new MimeType( "Metadata", ".xmi" ) );
 
     File metadata = new File( "test-res/dsw/testData/metadata.xmi" );
     RepositoryFile repoMetadataFile = new RepositoryFile.Builder( metadata.getName() ).folder( false ).hidden( false )
@@ -251,8 +251,8 @@ public class DatasourceResourceIT {
     MetadataImportHandler metadataImportHandler = new MetadataImportHandler( mimeTypeList,
         (IPentahoMetadataDomainRepositoryImporter) PentahoSystem.get( IMetadataDomainRepository.class ) );
     RepositoryFileImportBundle bundle1 = new RepositoryFileImportBundle.Builder()
-    .file( repoMetadataFile ).charSet( "UTF-8" ).input( new FileInputStream( metadata ) ).mime( ".xmi" ).withParam(
-            "domain-id", "SalesData" ).build() ;
+      .file( repoMetadataFile ).charSet( "UTF-8" ).input( new FileInputStream( metadata ) ).mime( ".xmi" ).withParam(
+            "domain-id", "SalesData" ).build();
     metadataImportHandler.importFile( bundle1 );
 
     final Response salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( "SalesData" );
