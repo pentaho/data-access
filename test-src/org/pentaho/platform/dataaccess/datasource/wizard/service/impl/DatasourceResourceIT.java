@@ -128,7 +128,7 @@ public class DatasourceResourceIT {
     IUserRoleListService mockUserRoleListService = mock( IUserRoleListService.class );
 
     IDataAccessPermissionHandler mockDataAccessPermHandler = mock( IDataAccessPermissionHandler.class );
-    when( mockDataAccessPermHandler.hasDataAccessPermission( any ( IPentahoSession.class ) ) ).thenReturn( true );
+    when( mockDataAccessPermHandler.hasDataAccessPermission( any( IPentahoSession.class ) ) ).thenReturn( true );
 
     mp.define( ISolutionEngine.class, SolutionEngine.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
     mp.define( IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
