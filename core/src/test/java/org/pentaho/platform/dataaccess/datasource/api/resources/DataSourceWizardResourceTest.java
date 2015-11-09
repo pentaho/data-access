@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -142,6 +142,25 @@ public class DataSourceWizardResourceTest {
     Response response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
 
     verify( dataSourceWizardResource, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
+    assertEquals( mockResponse, response );
+  }
+
+  @Test
+  public void publishDswFromTemp() throws Exception {
+    String domainId = "domainId";
+    MetadataTempFilesListDto dto = new MetadataTempFilesListDto( );
+    dto.setXmiFileName( "fileName" );
+    String fileList = "{xmiFileName :fileList}";
+    InputStream metadataFile = mock( InputStream.class );
+    boolean overwrite = false;
+    boolean checkConnection = false;
+    Response mockResponse = mock( Response.class );
+    doReturn( "dswId" ).when( dataSourceWizardResource.service ).publishDswFromTemp( eq(domainId), anyObject(), eq(overwrite), eq(checkConnection), eq(null ) );
+    doReturn( mockResponse ).when( dataSourceWizardResource ).buildOkResponse( "dswId" );
+
+    Response response = dataSourceWizardResource.publishDswFromTemp( domainId, fileList, overwrite, checkConnection, null );
+
+    verify( dataSourceWizardResource, times( 1 ) ).publishDswFromTemp( domainId, fileList, overwrite, checkConnection, null );
     assertEquals( mockResponse, response );
   }
 
