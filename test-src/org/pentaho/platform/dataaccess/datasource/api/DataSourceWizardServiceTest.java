@@ -23,9 +23,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -33,6 +33,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,6 +60,7 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
+import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataTempFilesListDto;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -74,6 +76,9 @@ import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto
 
 public class DataSourceWizardServiceTest {
 
+  private static final String DOMAIN_ID = "domainId.xmi";
+  private static final String TEST_XMI_FILE_PATH = "test-res/test.xmi";
+  private static final String XMI_TEMP_FILE_NAME = "test_file.xmi";
   private static DataSourceWizardService dataSourceWizardService;
   private String returnedDswId;
 
@@ -300,7 +305,7 @@ public class DataSourceWizardServiceTest {
 
   @Test
   public void testPublishDsw() throws Exception {
-    String domainId = "domainId.xmi";
+    String domainId = DOMAIN_ID;
     InputStream metadataFile = mock( InputStream.class );
     boolean overwrite = true;
     boolean checkConnection = false;
@@ -336,6 +341,45 @@ public class DataSourceWizardServiceTest {
     assertEquals( domainId, response );
   }
 
+  @Test
+  public void testPublishDswFromTemp() throws Exception {
+    InputStream metadataFile = new FileInputStream( TEST_XMI_FILE_PATH );
+    boolean overwrite = true;
+    boolean checkConnection = false;
+
+    XmiParser mockXmiParser = mock( XmiParser.class );
+    Domain mockDomain = mock( Domain.class );
+    InputStream mockInputStream = mock( InputStream.class );
+    IPlatformImportBundle mockMetadataBundle = mock( IPlatformImportBundle.class );
+    IPlatformImportBundle mockMondrianBundle = mock( IPlatformImportBundle.class );
+    IPlatformImporter mockIPlatformImporter = mock( IPlatformImporter.class );
+    IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
+
+    final RepositoryFileAclDto aclDto = new RepositoryFileAclDto();
+    aclDto.setOwner( "owner" );
+    aclDto.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
+
+    doReturn( true ).when( dataSourceWizardService ).hasManageAccessCheck();
+    doReturn( true ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
+    doReturn( mockXmiParser ).when( dataSourceWizardService ).createXmiParser();
+    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile );
+    doReturn( mockInputStream ).when( dataSourceWizardService ).toInputStreamWrapper( mockDomain, mockXmiParser );
+    doReturn( mockMetadataBundle ).when( dataSourceWizardService ).createMetadataDswBundle( mockDomain, mockInputStream,
+        overwrite, aclDto );
+    doReturn( mockMondrianBundle ).when( dataSourceWizardService ).createMondrianDswBundle( mockDomain, aclDto );
+    doReturn( mockIPlatformImporter ).when( dataSourceWizardService ).getIPlatformImporter();
+    doReturn( mockIPentahoSession ).when( dataSourceWizardService ).getSession();
+    doReturn( metadataFile ).when( dataSourceWizardService ).createInputStreamFromFile( anyString() );
+    
+    
+    MetadataTempFilesListDto fileList = new MetadataTempFilesListDto();
+    fileList.setXmiFileName( XMI_TEMP_FILE_NAME );
+
+    String response = dataSourceWizardService.publishDswFromTemp( DOMAIN_ID, fileList, overwrite, checkConnection, aclDto );
+
+    assertEquals( DOMAIN_ID + DataSourceWizardService.METADATA_EXT, response );
+  }
+  
   @Test
   public void testPublishDswError() throws Exception {
     String domainId = "domainId";
@@ -460,7 +504,7 @@ public class DataSourceWizardServiceTest {
 
   @Test
   public void testSetMetadataDatasourceAcl() throws Exception {
-    String domainId = "domainId.xmi";
+    String domainId = DOMAIN_ID;
     String domainIdWithoutExt = "domainId";
 
     final RepositoryFileAclDto aclDto = new RepositoryFileAclDto();
@@ -480,7 +524,7 @@ public class DataSourceWizardServiceTest {
 
   @Test
   public void testSetMetadataDatasourceAclNoAcl() throws Exception {
-    String domainId = "domainId.xmi";
+    String domainId = DOMAIN_ID;
     String domainIdWithoutExt = "domainId";
 
     doReturn( true ).when( dataSourceWizardService ).canManageACL();

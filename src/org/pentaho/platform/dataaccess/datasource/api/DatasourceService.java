@@ -88,7 +88,7 @@ public class DatasourceService {
     return param.replaceAll( "\\\\", "%5C" ).replaceAll( "/", "%2F" );
   }
 
-  protected boolean isMetadataDatasource( String id ) {
+  public boolean isMetadataDatasource( String id ) {
     Domain domain;
     try {
       domain = metadataDomainRepository.getDomain( id );
@@ -96,6 +96,15 @@ public class DatasourceService {
         return false;
       }
     } catch ( Exception e ) { // If we can't load the domain then we MUST return false
+      return false;
+    }
+
+    return isMetadataDatasource( domain );
+  }
+  
+  public static boolean isMetadataDatasource( Domain domain ) {
+  
+    if ( domain == null ) {
       return false;
     }
 

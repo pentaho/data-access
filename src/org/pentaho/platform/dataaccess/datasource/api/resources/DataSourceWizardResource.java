@@ -20,7 +20,9 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -30,6 +32,7 @@ import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -232,6 +235,45 @@ public class DataSourceWizardResource {
       @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl) {
     try {
       final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection, acl );
+      return buildOkResponse( dswId );
+    } catch ( PentahoAccessControlException e ) {
+      return buildUnauthorizedResponse();
+    } catch ( IllegalArgumentException e ) {
+      return buildBadRequestResponse( e.getMessage() );
+    } catch ( DataSourceWizardService.DswPublishValidationException e ) {
+      return buildConfilictResponse( e.getMessage() );
+    } catch ( Exception e ) {
+      return buildServerErrorResponse();
+    }
+  }
+  
+  /**
+   * Imports metadata(xmi) file and its related localization bundle files
+   * from temporary directory
+   * Should be called after the /datasource/metadata/uploadxmi
+   * @param domainId
+   * @param jsonFileList
+   * @param overwrite
+   * @param checkConnection
+   * @param acl
+   * @return
+   */
+  @POST
+  @Path( "/import/uploaded" )
+  @Consumes( MediaType.APPLICATION_FORM_URLENCODED )
+  @Produces( MediaType.TEXT_PLAIN )
+  @StatusCodes( {
+      @ResponseCode( code = 200, condition = "File succesfully imported." ),
+      @ResponseCode( code = 401, condition = "User is not authorized" )
+  } )
+  public Response publishDswFromTemp( @FormParam( "domainId" ) String domainId,
+                                        @FormParam ( "jsonFileList" ) MetadataTempFilesListDto fileList,
+                                        @FormParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
+                                        @FormParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
+                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {  
+    try {  
+      String dswId = service.publishDswFromTemp( domainId, fileList, overwrite, checkConnection, acl );
+      
       return buildOkResponse( dswId );
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
