@@ -203,6 +203,11 @@ public class CsvUtilsTest {
   }
 
   @Test
+  public void testDateFormat1() {
+    testAssumeColumnDetails_Dates( asList( "20151110" ), "yyyyMMdd" );
+  }
+
+  @Test
   public void testDateFormat2() {
     testAssumeColumnDetails_Dates( asList( "10-11-15" ), "dd-MM-yy" );
   }
@@ -231,6 +236,72 @@ public class CsvUtilsTest {
   public void testDateFormat7() {
     testAssumeColumnDetails_Dates( asList( "2015/11/10" ), "yyyy/MM/dd" );
   }
+  //minutes
+  @Test
+  public void testDateFormat1m() {
+    testAssumeColumnDetails_Dates( asList( "201511101157" ), "yyyyMMddHHmm" );
+  }
+
+  @Test
+  public void testDateFormat1m2() {
+    testAssumeColumnDetails_Dates( asList( "20151110 1157" ), "yyyyMMdd HHmm" );
+  }
+
+  @Test
+  public void testDateFormat2m() {
+    testAssumeColumnDetails_Dates( asList( "10-11-15 11:57" ), "dd-MM-yy HH:mm" );
+  }
+
+  @Test
+  public void testDateFormat3m() {
+    testAssumeColumnDetails_Dates( asList( "10-11-2015 11:57" ), "dd-MM-yyyy HH:mm" );
+  }
+
+  @Test
+  public void testDateFormat4m() {
+    testAssumeColumnDetails_Dates( asList( "11/10/15 11:57" ), "MM/dd/yy HH:mm" );
+  }
+
+  @Test
+  public void testDateFormat5m() {
+    testAssumeColumnDetails_Dates( asList( "11/10/2015 11:57" ), "MM/dd/yyyy HH:mm" );
+  }
+
+  @Test
+  public void testDateFormat6m() {
+    testAssumeColumnDetails_Dates( asList( "2015-11-10 11:57" ), "yyyy-MM-dd HH:mm" );
+  }
+
+  @Test
+  public void testDateFormat7m() {
+    testAssumeColumnDetails_Dates( asList( "2015/11/10 11:57" ), "yyyy/MM/dd HH:mm" );
+  }
+
+  //seconds
+  @Test
+  public void testDateFormat1ms() {
+    testAssumeColumnDetails_Dates( asList( "20151110115733" ), "yyyyMMddHHmmss" );
+  }
+
+  @Test
+  public void testDateFormat1m2s() {
+    testAssumeColumnDetails_Dates( asList( "20151110 115733" ), "yyyyMMdd HHmmss" );
+  }
+
+  @Test
+  public void testDateFormat2ms() {
+    testAssumeColumnDetails_Dates( asList( "10-11-15 11:57:33" ), "dd-MM-yy HH:mm:ss" );
+  }
+
+  @Test
+  public void testDateFormat3ms() {
+    testAssumeColumnDetails_Dates( asList( "10-11-2015 11:57:33" ), "dd-MM-yyyy HH:mm:ss" );
+  }
+
+  @Test
+  public void testDateFormat4ms() {
+    testAssumeColumnDetails_Dates( asList( "11/10/15 11:57:33" ), "MM/dd/yy HH:mm:ss" );
+  }
 
   @Test
   public void testDateFormat5ms() {
@@ -240,6 +311,11 @@ public class CsvUtilsTest {
   @Test
   public void testDateFormat6ms() {
     testAssumeColumnDetails_Dates( asList( "2015-11-10 11:57:33" ), "yyyy-MM-dd HH:mm:ss" );
+  }
+
+  @Test
+  public void testDateFormat7ms() {
+    testAssumeColumnDetails_Dates( asList( "2015/11/10 11:57:33" ), "yyyy/MM/dd HH:mm:ss" );
   }
 
   private void testAssumeColumnDetails_Dates( List<String> samples, String dateFormat ) {
