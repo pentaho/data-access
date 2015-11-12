@@ -28,18 +28,36 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
 
-  public static final List<String> DATE_FORMATS = Arrays.asList( "MM-dd-yyyy",
-    "MM/dd/yyyy HH:mm:ss",
-    "MM/dd/yyyy",
-    "dd-MM-yyyy",
-    "dd/MM/yyyy",
-    "yyyy-MM-dd HH:mm:ss",
-    "yyyy-MM-dd",
-    "yyyy/MM/dd",
-    "MM-dd-yy",
-    "MM/dd/yy",
-    "dd-MM-yy",
-    "dd/MM/yy"
+  public static final List<String> DATE_FORMATS = Arrays.asList(
+      "yyyyMMdd",
+      "dd-MM-yy",
+      "dd-MM-yyyy",
+      "MM/dd/yy",
+      "MM/dd/yyyy",
+      "yyyy-MM-dd",
+      "yyyy/MM/dd",
+      "dd MMM yyyy",
+      "dd MMMM yyyy",
+      "yyyyMMddHHmm",
+      "yyyyMMdd HHmm",
+      "dd-MM-yy HH:mm",
+      "dd-MM-yyyy HH:mm",
+      "MM/dd/yy HH:mm",
+      "MM/dd/yyyy HH:mm",
+      "yyyy-MM-dd HH:mm",
+      "yyyy/MM/dd HH:mm",
+      "dd MMM yyyy HH:mm",
+      "dd MMMM yyyy HH:mm",
+      "yyyyMMddHHmmss",
+      "yyyyMMdd HHmmss",
+      "dd-MM-yy HH:mm:ss",
+      "dd-MM-yyyy HH:mm:ss",
+      "MM/dd/yy HH:mm:ss",
+      "MM/dd/yyyy HH:mm:ss",
+      "yyyy-MM-dd HH:mm:ss",
+      "yyyy/MM/dd HH:mm:ss",
+      "dd MMM yyyy HH:mm:ss",
+      "dd MMMM yyyy HH:mm:ss"
   );
 
   private static final long serialVersionUID = 2498345633158485182L;
@@ -89,7 +107,12 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   private int precision;
 
   private int dateFieldBreakout =
-    DATE_LEVEL_YEAR | DATE_LEVEL_MONTH | DATE_LEVEL_QUARTER | DATE_LEVEL_WEEK | DATE_LEVEL_DAY | DATE_LEVEL_DAYOFWEEK;
+      DATE_LEVEL_YEAR
+      | DATE_LEVEL_MONTH
+      | DATE_LEVEL_QUARTER
+      | DATE_LEVEL_WEEK
+      | DATE_LEVEL_DAY
+      | DATE_LEVEL_DAYOFWEEK;
 
   @Bindable
   public int getLength() {
@@ -224,7 +247,7 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
       DataType[] dt = DataType.values();
       for ( DataType dataType : dt ) {
         // don't support url, binary, unknown, or image in csv 
-        switch( dataType ) {
+        switch ( dataType ) {
           case URL:
           case BINARY:
           case IMAGE:
@@ -361,6 +384,5 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
   public void setDateFieldBreakout( int dateFieldBreakout ) {
     this.dateFieldBreakout = dateFieldBreakout;
   }
-
 
 }
