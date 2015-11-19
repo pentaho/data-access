@@ -52,7 +52,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-import org.mockito.Matchers;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
@@ -75,7 +74,7 @@ import org.pentaho.platform.web.http.api.resources.FileResource;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
- public class MetadataServiceTest {
+public class MetadataServiceTest {
 
   private static final String TEST_XMI_FILE_PATH = "test-res/test.xmi";
   private static final String XMI_TEMP_FILE_NAME = "test_file.xmi";
@@ -84,7 +83,6 @@ import com.sun.jersey.multipart.FormDataBodyPart;
   private static MetadataService metadataService;
 
   private class MetadataServiceMock extends MetadataService {
-    
     @Override protected IUnifiedRepository getRepository() {
       return mock( IUnifiedRepository.class );
     }
@@ -112,7 +110,7 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     metadataService.removeMetadata( "metadataId" );
 
     verify( metadataService, times( 1 ) ).removeMetadata( "metadataId" );
-	// checking fixEncodedSlashParam method is not called (BISERVER-12403 issue)
+    // checking fixEncodedSlashParam method is not called (BISERVER-12403 issue)
     verify( metadataService, never() ).fixEncodedSlashParam( "metadataId" );
   }
 
@@ -384,63 +382,63 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( eq( domainId ),
         (RepositoryFileAcl) isNull() );
   }
-  
+
   @Test
   public void testIsContainsModel() throws Exception {
     testIsContainsModel( true );
     testIsContainsModel( false );
   }
-  
+
   private void testIsContainsModel( final boolean isContainsValue ) throws Exception {
-    
+
     InputStream metadataFile = new FileInputStream( TEST_XMI_FILE_PATH );
-    
+
     fillServiceMock( DOMAIN_ID, metadataFile );
     doReturn( isContainsValue ).when( metadataService ).isContainsModel( any( Domain.class ) );
     doReturn( metadataFile ).when( metadataService ).createInputStreamFromFile( any( String.class ) );
-    
+
     MetadataTempFilesListDto fileList = new MetadataTempFilesListDto();
     fileList.setXmiFileName( XMI_TEMP_FILE_NAME );
-    
+
     assertEquals( metadataService.isContainsModel( XMI_TEMP_FILE_NAME ), isContainsValue );
- 
+
   }
-  
+
   @Test
   public void testImportMetadataFromTemp() throws Exception {
-    
+
     final boolean IS_CONTAINS_MODEL = true;
     InputStream metadataFile = mock( InputStream.class );
     boolean overwrite = true;
-    
+
     fillServiceMock( DOMAIN_ID, metadataFile );
     doReturn( IS_CONTAINS_MODEL ).when( metadataService ).isContainsModel( any( Domain.class ) );
     doReturn( metadataFile ).when( metadataService ).createInputStreamFromFile( anyString() );
-    
+
     MetadataTempFilesListDto fileList = new MetadataTempFilesListDto();
     fileList.setXmiFileName( XMI_TEMP_FILE_NAME );
-    
+
     metadataService.importMetadataFromTemp( DOMAIN_ID, fileList, overwrite, null );
-  
+
     verify( metadataService, times( 1 ) ).importMetadataDatasource( DOMAIN_ID, metadataFile, overwrite, new ArrayList<InputStream>(), new ArrayList<String>(), null );
-    
+
   }
-  
+
   @Test
   public void testUploadMetadataFilesToTempDir() throws Exception {
-    
+
     InputStream metadataFile = mock( InputStream.class );
-    
+
     fillServiceMock( DOMAIN_ID, metadataFile );
     doReturn( new StringInputStream( "" ) ).when( metadataService ).createInputStreamFromFile( any( String.class ) );
     doReturn( XMI_TEMP_FILE_NAME ).when( metadataService ).uploadFile( any( InputStream.class ) );
-    
+
     MetadataTempFilesListDto res = metadataService.uploadMetadataFilesToTempDir( metadataFile, null, null );
-    
+
     assertEquals( res.getXmiFileName(), XMI_TEMP_FILE_NAME );
-  
+
   }
-  
+
   private void fillServiceMock( String domainId, InputStream metadataFile ) throws Exception {
     FileResource mockFileResource = mock( FileResource.class );
     Response mockResponse = mock( Response.class );
@@ -450,7 +448,7 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     RepositoryFileImportBundle.Builder mockRepositoryFileImportBundleBuilder = mock( RepositoryFileImportBundle.Builder.class );
     RepositoryFileImportBundle mockRepositoryFileImportBundle = mock( RepositoryFileImportBundle.class );
     ByteArrayInputStream mockByteArrayInputStream = mock( ByteArrayInputStream.class );
-  
+
     doNothing().when( metadataService ).accessValidation();
     doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
     doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
@@ -468,6 +466,5 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     doReturn( mockIPentahoSession ).when( metadataService ).getSession();
     doNothing().when( metadataService ).publish( mockIPentahoSession );
   }
-  
 }
 

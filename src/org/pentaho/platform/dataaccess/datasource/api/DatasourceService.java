@@ -33,7 +33,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.Connection
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
-import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
@@ -101,9 +100,9 @@ public class DatasourceService {
 
     return isMetadataDatasource( domain );
   }
-  
+
   public static boolean isMetadataDatasource( Domain domain ) {
-  
+
     if ( domain == null ) {
       return false;
     }

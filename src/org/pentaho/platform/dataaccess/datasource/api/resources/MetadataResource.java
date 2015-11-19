@@ -120,7 +120,7 @@ public class MetadataResource {
       throw new WebApplicationException( Response.Status.UNAUTHORIZED );
     }
     if ( !isInstanceOfIPentahoMetadataDomainRepositoryExporter( metadataDomainRepository ) ) {
-      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR);
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
     Map<String, InputStream> fileData = getDomainFilesData( domainId );
     return createAttachment( fileData, domainId );
@@ -182,18 +182,18 @@ public class MetadataResource {
     return createNewJaxbList( service.getMetadataDatasourceIds() );
   }
 
-  public Response importMetadataDatasourceLegacy( @PathParam("domainId") String domainId,
-                                                  @FormDataParam("metadataFile") InputStream metadataFile,
-                                                  @FormDataParam("metadataFile")
+  public Response importMetadataDatasourceLegacy( @PathParam( "domainId" ) String domainId,
+                                                  @FormDataParam( "metadataFile" ) InputStream metadataFile,
+                                                  @FormDataParam( "metadataFile" )
                                                   FormDataContentDisposition metadataFileInfo,
-                                                  @FormDataParam(OVERWRITE_IN_REPOS) String overwrite,
-                                                  @FormDataParam("localeFiles") List<FormDataBodyPart> localeFiles,
-                                                  @FormDataParam("localeFiles")
+                                                  @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+                                                  @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
+                                                  @FormDataParam( "localeFiles" )
                                                   List<FormDataContentDisposition> localeFilesInfo,
                                                   @FormDataParam( DATASOURCE_ACL )
                                                   RepositoryFileAclDto acl ) {
     try {
-      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;      
+      boolean overWriteInRepository = "true".equalsIgnoreCase( overwrite ) ? true : false;
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
         localeFilesInfo, acl );
       return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
@@ -218,7 +218,7 @@ public class MetadataResource {
       return buildServerError001Response();
     }
   }
-  
+
   /**
    * Import a Metadata datasource.
    *
@@ -328,7 +328,7 @@ public class MetadataResource {
                                             @FormDataParam( "localeFiles" )
                                             List<FormDataContentDisposition> localeFilesInfo,
                                             @FormDataParam( DATASOURCE_ACL )
-                                            RepositoryFileAclDto acl) {
+                                            RepositoryFileAclDto acl ) {
     try {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
@@ -357,7 +357,7 @@ public class MetadataResource {
   }
 
   protected Response buildOkResponse( String statusCode ) {
-    return Response.ok().status( new Integer( statusCode) ).type( MediaType.TEXT_PLAIN ).build();
+    return Response.ok().status( new Integer( statusCode ) ).type( MediaType.TEXT_PLAIN ).build();
   }
 
   protected Response buildOkResponse() {
@@ -410,7 +410,7 @@ public class MetadataResource {
   protected FileResource createFileResource() {
     return new FileResource();
   }
-  
+
   /**
    * Get the Metadata datasource IDs
    *
@@ -446,7 +446,7 @@ public class MetadataResource {
   public Response doRemoveMetadata( @PathParam( "domainId" ) String domainId ) {
     return deleteMetadata( domainId );
   }
-  
+
   /**
    * Uploads metadata file and localization bundle files to "tmp" dir
    * @param metadataFile
@@ -468,14 +468,14 @@ public class MetadataResource {
     @ResponseCode( code = 403, condition = "Access Control Forbidden" ),
     @ResponseCode( code = 200, condition = "Indicates successful upload" )
   } )
-  public MetadataTempFilesListDto uploadMetadataFilesToTempDir( 
+  public MetadataTempFilesListDto uploadMetadataFilesToTempDir(
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles ) throws Exception {
-        
-      return service.uploadMetadataFilesToTempDir( metadataFile, localeFiles );
+
+    return service.uploadMetadataFilesToTempDir( metadataFile, localeFiles );
 
   }
-  
+
   /**
    * Checks xmi file from tmp directory for existence of a mondrian model
    * Could be called after the /uploadxmi
@@ -489,7 +489,7 @@ public class MetadataResource {
       @ResponseCode( code = 200, condition = "File succesfully checked." ),
       @ResponseCode( code = 401, condition = "User is not authorized" )
   } )
-  public Response isContainsModel( @QueryParam ( "tempFileName" ) String tempFileName ) {  
+  public Response isContainsModel( @QueryParam ( "tempFileName" ) String tempFileName ) {
     boolean res;
     try {
       res = service.isContainsModel( tempFileName );
@@ -497,10 +497,10 @@ public class MetadataResource {
       logger.error( e );
       return buildServerErrorResponse();
     }
-    
+
     return Response.ok( Boolean.toString( res ) ).build();
   }
-  
+
   /**
    * Imports metadata(xmi) file and its related localization bundle files
    * from temporary directory
@@ -526,11 +526,11 @@ public class MetadataResource {
   } )
   public Response importMetadataFromTemp( @FormParam( "domainId" ) String domainId,
                                         @FormParam ( "jsonFileList" ) MetadataTempFilesListDto fileList,
-                                        @FormParam( OVERWRITE_IN_REPOS ) boolean overwrite, 
-                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {  
-    
-    try {  
-      service.importMetadataFromTemp( domainId, fileList, overwrite, acl );;
+                                        @FormParam( OVERWRITE_IN_REPOS ) boolean overwrite,
+                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+
+    try {
+      service.importMetadataFromTemp( domainId, fileList, overwrite, acl );
       return Response.ok( "UDLOADED" ).build();
     } catch ( PentahoAccessControlException e ) {
       return buildServerErrorResponse( e );
@@ -580,7 +580,7 @@ public class MetadataResource {
                                             @FormDataParam( "localeFiles" )
                                             List<FormDataContentDisposition> localeFilesInfo,
                                             @FormDataParam( DATASOURCE_ACL )
-                                            RepositoryFileAclDto acl) {
+                                            RepositoryFileAclDto acl ) {
     return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
   }
 
@@ -603,7 +603,7 @@ public class MetadataResource {
           condition = "ACL failed to be retrieved. This could be caused by an invalid path, or the file does not exist."
       )
       } )
-      public RepositoryFileAclDto doGetMetadataAcl( @PathParam( "domainId" ) String domainId ) {
+  public RepositoryFileAclDto doGetMetadataAcl( @PathParam( "domainId" ) String domainId ) {
     try {
       final RepositoryFileAclDto acl = service.getMetadataAcl( domainId );
       if ( acl == null ) {
@@ -612,7 +612,7 @@ public class MetadataResource {
       return acl;
     } catch ( PentahoAccessControlException e ) {
       throw new WebApplicationException( UNAUTHORIZED );
-    } catch ( FileNotFoundException e) {
+    } catch ( FileNotFoundException e ) {
       throw new WebApplicationException( CONFLICT );
     }
   }
@@ -634,13 +634,13 @@ public class MetadataResource {
       @ResponseCode( code = 409, condition = "Metadata DS doesn't exist" ),
       @ResponseCode( code = 500, condition = "Failed to save acls due to another error." )
       } )
-      public Response doSetMetadataAcl( @PathParam( "domainId" ) String domainId, RepositoryFileAclDto acl ) {
+  public Response doSetMetadataAcl( @PathParam( "domainId" ) String domainId, RepositoryFileAclDto acl ) {
     try {
       service.setMetadataAcl( domainId, acl );
       return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
-    } catch ( FileNotFoundException e) {
+    } catch ( FileNotFoundException e ) {
       return Response.status( CONFLICT ).build();
     } catch ( Exception e ) {
       return buildServerErrorResponse();

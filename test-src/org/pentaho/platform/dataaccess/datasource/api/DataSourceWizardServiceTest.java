@@ -153,14 +153,14 @@ public class DataSourceWizardServiceTest {
 
   @Test
   public void testRemoveDSW1() throws Exception {
-	  testRemoveDswById( "dswId" );
+    testRemoveDswById( "dswId" );
   }
-  
+
   @Test
   public void testRemoveDSW2() throws Exception {
-	  testRemoveDswById( "test%:[]*|\t" );
+    testRemoveDswById( "test%:[]*|\t" );
   }
-  
+
   public void testRemoveDswById( String dswId ) throws Exception {
     Domain mockDomain = mock( Domain.class );
     IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
@@ -177,21 +177,20 @@ public class DataSourceWizardServiceTest {
     doReturn( mockObject ).when( mockLogicalModel ).getProperty( "MondrianCatalogRef" );
     doReturn( mockIPentahoSession ).when( dataSourceWizardService ).getSession();
     doNothing().when( dataSourceWizardService.mondrianCatalogService ).removeCatalog(
-        "not null", mockIPentahoSession );    
+        "not null", mockIPentahoSession );
     doAnswer( new Answer<Object>() {
-
-		@Override
-		public Object answer( InvocationOnMock invocation ) throws Throwable {
-		      Object[] args = invocation.getArguments();
-		      returnedDswId = (String) args[0];
-		      return null;
-		} 
-	}).when( dataSourceWizardService.metadataDomainRepository ).removeDomain( dswId );
+      @Override
+      public Object answer( InvocationOnMock invocation ) throws Throwable {
+        Object[] args = invocation.getArguments();
+        returnedDswId = (String) args[0];
+        return null;
+      }
+    } ).when( dataSourceWizardService.metadataDomainRepository ).removeDomain( dswId );
 
     dataSourceWizardService.removeDSW( dswId );
     assertEquals( "The method should call removal for original id", dswId, returnedDswId );
     verify( dataSourceWizardService, times( 1 ) ).removeDSW( dswId );
-    
+
   }
 
   @Test
@@ -370,8 +369,7 @@ public class DataSourceWizardServiceTest {
     doReturn( mockIPlatformImporter ).when( dataSourceWizardService ).getIPlatformImporter();
     doReturn( mockIPentahoSession ).when( dataSourceWizardService ).getSession();
     doReturn( metadataFile ).when( dataSourceWizardService ).createInputStreamFromFile( anyString() );
-    
-    
+
     MetadataTempFilesListDto fileList = new MetadataTempFilesListDto();
     fileList.setXmiFileName( XMI_TEMP_FILE_NAME );
 
@@ -379,7 +377,7 @@ public class DataSourceWizardServiceTest {
 
     assertEquals( DOMAIN_ID + DataSourceWizardService.METADATA_EXT, response );
   }
-  
+
   @Test
   public void testPublishDswError() throws Exception {
     String domainId = "domainId";

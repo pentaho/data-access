@@ -97,7 +97,7 @@ public class DataSourceWizardResource {
     @ResponseCode( code = 401, condition = "User is not authorized to export DSW datasource." ),
     @ResponseCode( code = 500, condition = "Failure to export DSW datasource." )
   } )
-  public Response downloadDsw( @PathParam("dswId") String dswId ) {
+  public Response downloadDsw( @PathParam( "dswId" ) String dswId ) {
     try {
       Map<String, InputStream> fileData = service.doGetDSWFilesAsDownload( dswId );
       return createAttachment( fileData, dswId );
@@ -232,7 +232,7 @@ public class DataSourceWizardResource {
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
       @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl) {
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
     try {
       final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection, acl );
       return buildOkResponse( dswId );
@@ -246,7 +246,7 @@ public class DataSourceWizardResource {
       return buildServerErrorResponse();
     }
   }
-  
+
   /**
    * Imports metadata(xmi) file and its related localization bundle files
    * from temporary directory
@@ -270,10 +270,10 @@ public class DataSourceWizardResource {
                                         @FormParam ( "jsonFileList" ) MetadataTempFilesListDto fileList,
                                         @FormParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
                                         @FormParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
-                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {  
-    try {  
+                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+    try {
       String dswId = service.publishDswFromTemp( domainId, fileList, overwrite, checkConnection, acl );
-      
+
       return buildOkResponse( dswId );
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
@@ -285,7 +285,7 @@ public class DataSourceWizardResource {
       return buildServerErrorResponse();
     }
   }
-  
+
   /**
    * Returns a list of datasource IDs from datasource wizard
    *
@@ -399,8 +399,8 @@ public class DataSourceWizardResource {
       @ResponseCode( code = 409, condition = "DSW doesn't exist" ),
       @ResponseCode( code = 500, condition = "Failed to save acls due to another error." )
       } )
-      public Response doSetDSWAcl( @PathParam( "dswId" ) String dswId, RepositoryFileAclDto acl )
-      throws PentahoAccessControlException {
+  public Response doSetDSWAcl( @PathParam( "dswId" ) String dswId, RepositoryFileAclDto acl )
+    throws PentahoAccessControlException {
     try {
       service.setDSWAcl( dswId, acl );
       return buildOkResponse();

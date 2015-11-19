@@ -136,7 +136,7 @@ public class DataSourceWizardService extends DatasourceService {
   public void removeDSW( String dswId ) throws PentahoAccessControlException {
     try {
       ensureDataAccessPermissionCheck();
-    } catch ( ConnectionServiceException e ){
+    } catch ( ConnectionServiceException e ) {
       throw new PentahoAccessControlException();
     }
     Domain domain = metadataDomainRepository.getDomain( dswId );
@@ -190,8 +190,8 @@ public class DataSourceWizardService extends DatasourceService {
     throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
     return publishDsw( domainId, metadataFile, null, null, overwrite, checkConnection, acl );
   }
-  
-  public String publishDsw( String domainId, InputStream metadataFile, List<InputStream> localizeFiles, List<String> localizeFileNames, 
+
+  public String publishDsw( String domainId, InputStream metadataFile, List<InputStream> localizeFiles, List<String> localizeFileNames,
       boolean overwrite, boolean checkConnection, RepositoryFileAclDto acl )
     throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
     if ( !hasManageAccessCheck() ) {
@@ -235,7 +235,7 @@ public class DataSourceWizardService extends DatasourceService {
     InputStream metadataIn = toInputStreamWrapper( domain, xmiParser );
     IPlatformImportBundle metadataBundle = createMetadataDswBundle( domain, metadataIn, overwrite, acl );
     IPlatformImportBundle mondrianBundle = createMondrianDswBundle( domain, acl );
-    
+
     //add localization bundles
     if ( localizeFiles != null ) {
       for ( int i = 0; i < localizeFiles.size(); i++ ) {
@@ -244,7 +244,7 @@ public class DataSourceWizardService extends DatasourceService {
         logger.info( "created language file" );
       }
     }
-    
+
     // do import
     IPlatformImporter importer = getIPlatformImporter();
     importer.importFile( metadataBundle );
@@ -258,27 +258,27 @@ public class DataSourceWizardService extends DatasourceService {
     logger.info( "publishDsw: Published DSW with domainId='" + domainId + "'." );
     return domainId;
   }
-  
+
   public String publishDswFromTemp( String domainId,
       MetadataTempFilesListDto fileList,
       boolean overwrite,
       boolean checkConnection,
-      RepositoryFileAclDto acl ) throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {  
-    
+      RepositoryFileAclDto acl ) throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
+
     String metadataTempFileName = fileList.getXmiFileName();
     InputStream metaDataFileInputStream = createInputStreamFromFile( MetadataService.getUploadDir() + File.separatorChar + metadataTempFileName );
     List<MetadataTempFilesListBundleDto> locBundles = fileList.getBundles();
     List<String> localeFileNames = new ArrayList<String>();
     List<InputStream> localeFileStreams = new ArrayList<InputStream>();
-    
-    if( locBundles != null ) {
-      for( MetadataTempFilesListBundleDto bundle : locBundles ) {
+
+    if ( locBundles != null ) {
+      for ( MetadataTempFilesListBundleDto bundle : locBundles ) {
         localeFileNames.add( bundle.getOriginalFileName() );
         localeFileStreams.add( new FileInputStream( MetadataService.getUploadDir() + File.separatorChar + bundle.getTempFileName() ) );
       }
     }
-    
-    return publishDsw( domainId + DataSourceWizardService.METADATA_EXT, metaDataFileInputStream, 
+
+    return publishDsw( domainId + DataSourceWizardService.METADATA_EXT, metaDataFileInputStream,
         localeFileStreams, localeFileNames, overwrite, checkConnection, acl );
   }
 
@@ -308,7 +308,7 @@ public class DataSourceWizardService extends DatasourceService {
    * @throws FileNotFoundException
    */
   public void setDSWAcl( String dswId, RepositoryFileAclDto aclDto )
-      throws PentahoAccessControlException, FileNotFoundException {
+    throws PentahoAccessControlException, FileNotFoundException {
     checkDSWExists( dswId );
 
     if ( !endsWith( dswId, METADATA_EXT ) ) {
@@ -485,8 +485,8 @@ public class DataSourceWizardService extends DatasourceService {
   protected IPlatformImporter getIPlatformImporter() {
     return PentahoSystem.get( IPlatformImporter.class );
   }
-  
-  protected InputStream createInputStreamFromFile( String fileName) throws FileNotFoundException {
+
+  protected InputStream createInputStreamFromFile( String fileName ) throws FileNotFoundException {
     return new FileInputStream( fileName );
   }
 
