@@ -17,19 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -39,6 +27,7 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IAclAwareMondrianCatalogService;
@@ -49,9 +38,19 @@ import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class AnalysisService extends DatasourceService {
 
@@ -104,9 +103,9 @@ public class AnalysisService extends DatasourceService {
   public List<String> getAnalysisDatasourceIds() {
     List<String> analysisIds = new ArrayList<String>();
     List<MondrianCatalog> mockMondrianCatalogList = mondrianCatalogService.listCatalogs( getSession(), false );
+    Set<String> ids = metadataDomainRepository.getDomainIds();
     for ( MondrianCatalog mondrianCatalog : mockMondrianCatalogList ) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
-      Set<String> ids = metadataDomainRepository.getDomainIds();
       if ( !ids.contains( domainId ) ) {
         analysisIds.add( mondrianCatalog.getName() );
       }
