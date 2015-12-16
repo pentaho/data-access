@@ -105,9 +105,9 @@ public class AnalysisService extends DatasourceService {
   public List<String> getAnalysisDatasourceIds() {
     List<String> analysisIds = new ArrayList<String>();
     List<MondrianCatalog> mockMondrianCatalogList = mondrianCatalogService.listCatalogs( getSession(), false );
+    Set<String> ids = metadataDomainRepository.getDomainIds();
     for ( MondrianCatalog mondrianCatalog : mockMondrianCatalogList ) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
-      Set<String> ids = metadataDomainRepository.getDomainIds();
       if ( ids.contains( domainId ) == false ) {
         analysisIds.add( mondrianCatalog.getName() );
       }
