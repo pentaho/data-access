@@ -28,6 +28,7 @@ import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IAclAwareMondrianCatalogService;
@@ -125,6 +126,7 @@ public class AnalysisService extends DatasourceService {
 
     accessValidation();
     String fileName = schemaFileInfo.getFileName();
+    fileNameValidation( fileName );
     processMondrianImport(
         dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters, fileName, acl );
   }
@@ -377,6 +379,12 @@ public class AnalysisService extends DatasourceService {
 
   protected void accessValidation() throws PentahoAccessControlException {
     super.validateAccess();
+  }
+
+  protected void fileNameValidation( final String fileName ) throws PlatformImportException {
+    if ( fileName != null && !fileName.endsWith( ".xml" ) ) {
+      throw new PlatformImportException( Messages.getString( "AnalysisService.ERROR_001_ANALYSIS_DATASOURCE_ERROR" ), PlatformImportException.PUBLISH_GENERAL_ERROR );
+    }
   }
 
   protected IPentahoSession getSession() {
