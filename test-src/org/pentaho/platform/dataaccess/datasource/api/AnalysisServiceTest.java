@@ -195,7 +195,7 @@ public class AnalysisServiceTest {
     final Map<String, InputStream> sampleData = new AnalysisService().doGetAnalysisFilesAsDownload( "SampleData" );
     assertEquals( 1, sampleData.size() );
     final FileInputStream inputStream = new FileInputStream( "test-res/solution1/etc/mondrian/SampleData/schema.xml" );
-    assertEquals( IOUtils.toString( inputStream ), IOUtils.toString( sampleData.get( "schema.xml" ) ) );
+    assertEquals( IOUtils.toString( inputStream ), IOUtils.toString( sampleData.get( "SampleData.mondrian.xml" ) ) );
   }
 
   @Test( expected = PentahoAccessControlException.class )
