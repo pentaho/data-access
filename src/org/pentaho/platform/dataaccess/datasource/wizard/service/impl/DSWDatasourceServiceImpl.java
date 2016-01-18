@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -586,10 +586,10 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   public void prepareForSerializaton( Domain domain ) {
     /*
-		 * This method is responsible for cleaning up legacy information when
-		 * changing datasource types and also manages CSV files for CSV based
-		 * datasources.
-		 */
+     * This method is responsible for cleaning up legacy information when
+     * changing datasource types and also manages CSV files for CSV based
+     * datasources.
+     */
 
     String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
       String.valueOf( FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) ); //$NON-NLS-1$
