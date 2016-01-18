@@ -130,8 +130,8 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     String targetTable = null;
     try {
       // first load the model
-      Domain domain = metadataDomainRepository.getDomain( domainId );
-      ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+      Domain domain = getMetadataDomainRepository().getDomain( domainId );
+      ModelerWorkspace model = createModelerWorkspace();
       model.setDomain( domain );
       LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
       if ( logicalModel == null ) {
@@ -185,7 +185,23 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
         }
       }
 
-      metadataDomainRepository.removeModel( domainId, logicalModel.getId() );
+      getMetadataDomainRepository().removeModel( domainId, logicalModel.getId() );
+
+      if ( logicalModelRep != null && !logicalModelRep.getId().equals( logicalModel.getId() ) ) {
+        getMetadataDomainRepository().removeModel( domainId, logicalModelRep.getId() );
+      }
+
+      // get updated domain
+      domain = getMetadataDomainRepository().getDomain( domainId );
+
+      if ( domain == null ) {
+        // already deleted
+        return true;
+      }
+
+      if ( domain.getLogicalModels() == null || domain.getLogicalModels().isEmpty() ) {
+        getMetadataDomainRepository().removeDomain( domainId );
+      }
     } catch ( MondrianCatalogServiceException me ) {
       logger.error( Messages.getErrorString(
         "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage() ),
@@ -631,4 +647,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     return this.geoContext;
   }
 
+  protected ModelerWorkspace createModelerWorkspace() {
+    return new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+  }
 }
