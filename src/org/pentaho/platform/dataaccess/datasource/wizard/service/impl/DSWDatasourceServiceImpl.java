@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -130,8 +130,8 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     String targetTable = null;
     try {
       // first load the model
-      Domain domain = metadataDomainRepository.getDomain( domainId );
-      ModelerWorkspace model = new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+      Domain domain = getMetadataDomainRepository().getDomain( domainId );
+      ModelerWorkspace model = createModelerWorkspace();
       model.setDomain( domain );
       LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
       if ( logicalModel == null ) {
@@ -185,7 +185,23 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
         }
       }
 
-      metadataDomainRepository.removeModel( domainId, logicalModel.getId() );
+      getMetadataDomainRepository().removeModel( domainId, logicalModel.getId() );
+
+      if ( logicalModelRep != null && !logicalModelRep.getId().equals( logicalModel.getId() ) ) {
+        getMetadataDomainRepository().removeModel( domainId, logicalModelRep.getId() );
+      }
+
+      // get updated domain
+      domain = getMetadataDomainRepository().getDomain( domainId );
+
+      if ( domain == null ) {
+        // already deleted
+        return true;
+      }
+
+      if ( domain.getLogicalModels() == null || domain.getLogicalModels().isEmpty() ) {
+        getMetadataDomainRepository().removeDomain( domainId );
+      }
     } catch ( MondrianCatalogServiceException me ) {
       logger.error( Messages.getErrorString(
         "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage() ),
@@ -570,10 +586,10 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   public void prepareForSerializaton( Domain domain ) {
     /*
-		 * This method is responsible for cleaning up legacy information when
-		 * changing datasource types and also manages CSV files for CSV based
-		 * datasources.
-		 */
+     * This method is responsible for cleaning up legacy information when
+     * changing datasource types and also manages CSV files for CSV based
+     * datasources.
+     */
 
     String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
       String.valueOf( FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) ); //$NON-NLS-1$
@@ -631,4 +647,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     return this.geoContext;
   }
 
+  protected ModelerWorkspace createModelerWorkspace() {
+    return new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+  }
 }
