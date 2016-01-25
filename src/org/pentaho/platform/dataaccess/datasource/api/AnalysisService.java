@@ -383,7 +383,7 @@ public class AnalysisService extends DatasourceService {
   }
 
   protected void fileNameValidation( final String fileName ) throws PlatformImportException {
-    if ( fileName != null && !fileName.endsWith( ".xml" ) ) {
+    if ( StringUtils.isNotEmpty( fileName ) && !fileName.endsWith( ".xml" ) ) {
       throw new PlatformImportException( Messages.getString( "AnalysisService.ERROR_001_ANALYSIS_DATASOURCE_ERROR" ), PlatformImportException.PUBLISH_GENERAL_ERROR );
     }
   }
