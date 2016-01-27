@@ -157,7 +157,7 @@
     <dependency org="com.sun.jersey.contribs"               name="jersey-multipart"               rev="1.5" conf="test->default"/>
 
     <dependency org="commons-codec" name="commons-codec" rev="1.9" transitive="false" conf="test->default"/>
-    <dependency org="org.springframework" name="spring-mock" rev="${dependency.spring.mock.revision}" transitive="false"/>
+    <dependency org="org.springframework" name="spring-mock" rev="${dependency.spring.mock.revision}" transitive="false" conf="test->default"/>
     <dependency org="org.springframework" name="se-jcr" rev="${dependency.spring.extensions.jcr.revision}" transitive="false" />
     
     <!-- The organization of GWT Widgets can not be varied since we do not create optimized versions of the GWT Widgets -->
