@@ -91,6 +91,7 @@ public class AnalysisService extends DatasourceService {
     MondrianCatalogRepositoryHelper helper = createNewMondrianCatalogRepositoryHelper();
 
     Map<String, InputStream> fileData = helper.getModrianSchemaFiles( analysisId );
+    super.parseMondrianSchemaName( analysisId, fileData );
 
     return fileData;
   }

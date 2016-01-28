@@ -94,6 +94,7 @@ public class AnalysisServiceTest {
     Map<String, InputStream> response = analysisService.doGetAnalysisFilesAsDownload( analysisId );
 
     verify( analysisService, times( 1 ) ).doGetAnalysisFilesAsDownload( analysisId );
+    verify( analysisService, times( 1 ) ).parseMondrianSchemaName( analysisId, mockMap );
     assertEquals( mockMap, response );
   }
 
