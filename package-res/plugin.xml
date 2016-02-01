@@ -11,14 +11,14 @@
    
    <overlays>
         <overlay id="launch" resourcebundle="api/repos/data-access/resources/messages/messages" priority="10010">
-            <button id="datasource" label="${newDatasourceEllipsis}" command="window.top.pho.openDatasourceEditor(window.top.datasourceEditorCallback)"/>
+            <button id="datasource" label="${newDatasourceEllipsis}" command="window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback)"/>
         </overlay>
 	    <overlay id="dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages" loadatstart="false">
 			<menubar id="filemenu">
-			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="window.top.pho.showDatasourceManageDialog(window.top.datasourceEditorCallback)" />
+			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="window.parent.pho.showDatasourceManageDialog(window.parent.datasourceEditorCallback)" />
 			</menubar>
 			<menubar id="newmenu">
-				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="window.top.pho.openDatasourceEditor(window.top.datasourceEditorCallback)" />				
+				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback)" />				
 			</menubar>
 	    </overlay>
 	</overlays>
