@@ -15,10 +15,10 @@
         </overlay>
 	    <overlay id="dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages" loadatstart="false">
 			<menubar id="filemenu">
-			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="window.parent.pho.showDatasourceManageDialog(window.parent.datasourceEditorCallback)" />
+			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="pho.showDatasourceManageDialog(window.parent.datasourceEditorCallback)" />
 			</menubar>
 			<menubar id="newmenu">
-				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback)" />				
+				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="pho.openDatasourceEditor(window.parent.datasourceEditorCallback)" />				
 			</menubar>
 	    </overlay>
 	</overlays>
