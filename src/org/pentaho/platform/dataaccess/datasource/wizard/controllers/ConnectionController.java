@@ -616,18 +616,23 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   @SuppressWarnings( "deprecation" )
   public void showEditConnectionDialog( DialogListener dialogListener ) {
+    IDatabaseConnection connection = datasourceModel.getSelectedRelationalConnection();
+    showEditConnectionDialog( dialogListener, connection );
+  }
+
+  @SuppressWarnings( "deprecation" )
+  public void showEditConnectionDialog( DialogListener dialogListener, IDatabaseConnection connection ) {
     connectionSetter = new DatabaseConnectionSetter( dialogListener );
     datasourceModel.setEditing( true );
     if ( databaseDialog != null ) {
-      IDatabaseConnection connection = datasourceModel.getSelectedRelationalConnection();
-      if (connection != null) {
+      if ( connection != null ) {
         databaseDialog.setDatabaseConnection( connection );
         previousConnectionName = connection.getName();
         existingConnectionName = previousConnectionName;
         databaseDialog.show();
       } else {
         openErrorDialog( MessageHandler.getString( "DatasourceEditor.USER_ERROR_TITLE" ), MessageHandler
-            .getString( "DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED" ) );
+          .getString( "DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED" ) );
       }
     } else {
       createNewDatabaseDialog();
