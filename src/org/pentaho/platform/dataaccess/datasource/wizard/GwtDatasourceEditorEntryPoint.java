@@ -1029,7 +1029,7 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
           // This is important for edit mode of datasource model
           datasourceModel.setEditing(true);
           connectionController.setDatasourceModel(datasourceModel);
-          connectionController.showEditConnectionDialog(dialogListener);
+          connectionController.showEditConnectionDialog( dialogListener, conn );
         }
       });
     } catch (Exception e) {
