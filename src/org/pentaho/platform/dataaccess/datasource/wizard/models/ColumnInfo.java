@@ -29,6 +29,10 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
 
   public static final List<String> DATE_FORMATS = Arrays.asList(
+      "MM-dd-yyyy",
+      "dd/MM/yyyy",
+      "MM-dd-yy",
+      "dd/MM/yy",
       "yyyyMMdd",
       "dd-MM-yy",
       "dd-MM-yyyy",
