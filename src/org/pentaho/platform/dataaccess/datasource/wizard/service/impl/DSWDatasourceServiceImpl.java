@@ -36,6 +36,8 @@ import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.InlineEtlPhysicalModel;
 import org.pentaho.metadata.model.LogicalModel;
@@ -58,8 +60,10 @@ import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidationException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.SqlQueriesNotSupportedException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
@@ -84,6 +88,8 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   private static final Log logger = LogFactory.getLog( DSWDatasourceServiceImpl.class );
 
+  private static final String DB_TYPE_ID_PENTAHO_DATA_SERVICE = "Pentaho Data Services";
+
   private IMetadataDomainRepository metadataDomainRepository;
 
   private static final String BEFORE_QUERY = " SELECT * FROM ("; //$NON-NLS-1$
@@ -92,12 +98,15 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   private GeoContext geoContext;
 
+  private ConnectionServiceImpl connService;
+
   public DSWDatasourceServiceImpl() {
     this( new ConnectionServiceImpl() );
   }
 
-  public DSWDatasourceServiceImpl( ConnectionServiceImpl connectionService ) {
+  public DSWDatasourceServiceImpl( ConnectionServiceImpl connService ) {
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, null );
+    this.connService = connService;
   }
 
   protected boolean hasDataAccessPermission() {
@@ -228,9 +237,11 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
 
   private IPentahoResultSet executeQuery( String connectionName, String query, String previewLimit )
-    throws QueryValidationException {
+    throws QueryValidationException, SqlQueriesNotSupportedException {
     SQLConnection sqlConnection = null;
     try {
+      checkSqlQueriesSupported( connectionName );
+
       int limit = ( previewLimit != null && previewLimit.length() > 0 ) ? Integer.parseInt( previewLimit ) : -1;
       sqlConnection = (SQLConnection) PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE,
         connectionName, PentahoSessionHolder.getSession(),
@@ -238,6 +249,9 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       sqlConnection.setMaxRows( limit );
       sqlConnection.setReadOnly( true );
       return sqlConnection.executeQuery( BEFORE_QUERY + query + AFTER_QUERY );
+    } catch ( SqlQueriesNotSupportedException e ) {
+      logger.error( e.getLocalizedMessage() );
+      throw e;
     } catch ( SQLException e ) {
       String error = "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED";
       if ( e.getSQLState().equals( "S0021" ) ) { // Column already exists
@@ -256,6 +270,29 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     }
   }
 
+  /**
+   * Method is designed to check whether sql queries can be executed via connection with a {@core connName}.
+   * For now we can't allow sql queries for connections, that are based on Pentaho Data Services.
+   * See BISERVER-13225 for more info.
+   *
+   * @param connName
+   *          name of connection, to be examined for sql queries support
+   * @throws ConnectionServiceException
+   *            if an error occurs while receiving connection with {@code connectionName}
+   * @throws SqlQueriesNotSupportedException
+   *            if query is not supported for a connection with a {@code connectionName}
+   */
+  void checkSqlQueriesSupported( String connName )
+    throws ConnectionServiceException, SqlQueriesNotSupportedException {
+    IDatabaseConnection conn = connService.getConnectionByName( connName );
+    IDatabaseType dbType = conn.getDatabaseType();
+
+    if ( dbType.getName().equals( DB_TYPE_ID_PENTAHO_DATA_SERVICE ) ) {
+      throw new SqlQueriesNotSupportedException( Messages
+        .getErrorString( "DatasourceServiceImpl.ERROR_0024_SQL_QUERIES_NOT_SUPPORTED_FOR_PENTAHO_DATA_SERVICE" ) );
+    }
+  }
+
   public SerializedResultSet doPreview( String connectionName, String query, String previewLimit )
     throws DatasourceServiceException {
     if ( !hasDataAccessPermission() ) {
@@ -269,10 +306,10 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       returnResultSet = DatasourceServiceHelper.getSerializeableResultSet( connectionName, query,
         Integer.parseInt( previewLimit ), PentahoSessionHolder.getSession() );
     } catch ( QueryValidationException e ) {
-      logger.error( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
       throw new DatasourceServiceException( Messages.getErrorString(
         "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
+    } catch ( SqlQueriesNotSupportedException e ) {
+      throw new DatasourceServiceException( e.getLocalizedMessage(), e ); //$NON-NLS-1$
     }
     return returnResultSet;
 
@@ -346,10 +383,10 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       throw new DatasourceServiceException( Messages.getErrorString(
         "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", smge.getLocalizedMessage() ), smge ); //$NON-NLS-1$
     } catch ( QueryValidationException e ) {
-      logger.error( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
       throw new DatasourceServiceException( Messages.getErrorString(
         "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
+    } catch ( SqlQueriesNotSupportedException e ) {
+      throw new DatasourceServiceException( e.getLocalizedMessage(), e ); //$NON-NLS-1$
     }
   }
 
@@ -574,6 +611,8 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       throw new DatasourceServiceException( Messages
         .getErrorString( "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", e.getLocalizedMessage() ),
         e ); //$NON-NLS-1$
+    } catch ( SqlQueriesNotSupportedException e ) {
+      throw new DatasourceServiceException( e.getLocalizedMessage(), e ); //$NON-NLS-1$
     } catch ( Exception e ) {
       logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0011_UNABLE_TO_GENERATE_MODEL", //$NON-NLS-1$
         e.getLocalizedMessage() ), e );

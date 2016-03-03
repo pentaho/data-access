@@ -24,21 +24,31 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.database.model.DatabaseAccessType;
+import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.DatabaseType;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.junit.Test;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.SqlQueriesNotSupportedException;
 
 import java.util.ArrayList;
+
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 
 public class DSWDatasourceServiceImplTest {
   private static final String DOMAIN_ID = "DOMAIN_ID";
   private static final String MODEL_NAME = "modelName";
 
-  private static final String LOGICAL_MODEL_ID_DEFAULT = "<def>";
   private static final String LOGICAL_MODEL_ID_REPORTING = "Reporting";
   private static final String LOGICAL_MODEL_ID_ANALYSIS = "Analysis";
+
+  private static final String STRING_DEFAULT = "<def>";
 
   private LogicalModel analysisModel;
   private LogicalModel reportingModel;
@@ -77,7 +87,7 @@ public class DSWDatasourceServiceImplTest {
 
     mockDomainRepository( domainOnlyReportingModel, DOMAIN_ID );
 
-    ModelerWorkspace workspace = Mockito.mock( ModelerWorkspace.class );
+    ModelerWorkspace workspace = mock( ModelerWorkspace.class );
     Mockito.when( workspace.getLogicalModel( ModelerPerspective.REPORTING ) ).thenReturn( reportingModel );
 
     DSWDatasourceServiceImpl service = mockService( workspace );
@@ -109,19 +119,53 @@ public class DSWDatasourceServiceImplTest {
     Mockito.verify( domainRepository ).removeDomain( domain2Models.getId() );
   }
 
+
+  @Test( expected = SqlQueriesNotSupportedException.class )
+  public void testSqlQueries_AreNotSupported_PentahoDataServices() throws Exception {
+
+    final String connNameDataService = "connToDataService";
+    final String dbTypeIdDataService = "Pentaho Data Services";
+
+    IDatabaseConnection connDataService = new DatabaseConnection();
+    connDataService.setDatabaseType( new DatabaseType( dbTypeIdDataService, STRING_DEFAULT, new ArrayList
+      <DatabaseAccessType>(), 0, STRING_DEFAULT ) );
+
+    ConnectionServiceImpl connService = mock( ConnectionServiceImpl.class );
+    doReturn( connDataService ).when( connService ).getConnectionByName( eq( connNameDataService ) );
+    DSWDatasourceServiceImpl service = new DSWDatasourceServiceImpl( connService );
+
+    service.checkSqlQueriesSupported( connNameDataService );
+  }
+
+  @Test
+  public void testSqlQueries_Supported_PostgresDb() throws Exception {
+    final String connNamePostgres = "connToPostgresDb";
+    final String dbTypeIdPostgres = "PostgresDb";
+
+    IDatabaseConnection connDataService = new DatabaseConnection();
+    connDataService.setDatabaseType( new DatabaseType( dbTypeIdPostgres, STRING_DEFAULT, new ArrayList
+      <DatabaseAccessType>(), 0, STRING_DEFAULT ) );
+
+    ConnectionServiceImpl connService = mock( ConnectionServiceImpl.class );
+    doReturn( connDataService ).when( connService ).getConnectionByName( eq( connNamePostgres ) );
+    DSWDatasourceServiceImpl service = new DSWDatasourceServiceImpl( connService );
+
+    service.checkSqlQueriesSupported( connNamePostgres );
+  }
+
   private LogicalModel mockLogicalModel() {
-    return mockLogicalModel( LOGICAL_MODEL_ID_DEFAULT );
+    return mockLogicalModel( STRING_DEFAULT );
   }
 
   private LogicalModel mockLogicalModel( final String id ) {
-    LogicalModel logicalModel = Mockito.mock( LogicalModel.class );
+    LogicalModel logicalModel = mock( LogicalModel.class );
     Mockito.when( logicalModel.getId() ).thenReturn( id );
     Mockito.when( logicalModel.getProperty( Mockito.anyString() ) ).thenReturn( null );
     return logicalModel;
   }
 
   private ModelerWorkspace mockModelerWorkspace() {
-    ModelerWorkspace workspace = Mockito.mock( ModelerWorkspace.class );
+    ModelerWorkspace workspace = mock( ModelerWorkspace.class );
     Mockito.when( workspace.getLogicalModel( ModelerPerspective.ANALYSIS ) ).thenReturn( analysisModel );
     Mockito.when( workspace.getLogicalModel( ModelerPerspective.REPORTING ) ).thenReturn( reportingModel );
 
@@ -129,18 +173,18 @@ public class DSWDatasourceServiceImplTest {
   }
 
   private IMetadataDomainRepository mockDomainRepository( Domain domainToReturn, String domainId ) {
-    IMetadataDomainRepository domainRepository = Mockito.mock( IMetadataDomainRepository.class );
-    Mockito.doReturn( domainToReturn ).when( domainRepository ).getDomain( domainId );
+    IMetadataDomainRepository domainRepository = mock( IMetadataDomainRepository.class );
+    doReturn( domainToReturn ).when( domainRepository ).getDomain( domainId );
 
     return domainRepository;
   }
 
   private DSWDatasourceServiceImpl mockService( ModelerWorkspace workspace ) throws Exception {
-    DSWDatasourceServiceImpl service = Mockito.mock( DSWDatasourceServiceImpl.class );
+    DSWDatasourceServiceImpl service = mock( DSWDatasourceServiceImpl.class );
 
-    Mockito.doReturn( true ).when( service ).hasDataAccessPermission();
-    Mockito.doReturn( domainRepository ).when( service ).getMetadataDomainRepository();
-    Mockito.doReturn( workspace ).when( service ).createModelerWorkspace();
+    doReturn( true ).when( service ).hasDataAccessPermission();
+    doReturn( domainRepository ).when( service ).getMetadataDomainRepository();
+    doReturn( workspace ).when( service ).createModelerWorkspace();
 
     Mockito.doCallRealMethod().when( service ).deleteLogicalModel( DOMAIN_ID, MODEL_NAME );
 
