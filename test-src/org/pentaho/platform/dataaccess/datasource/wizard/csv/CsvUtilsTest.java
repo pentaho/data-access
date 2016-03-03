@@ -209,22 +209,22 @@ public class CsvUtilsTest {
 
   @Test
   public void testDateFormat2() {
-    testAssumeColumnDetails_Dates( asList( "10-11-15" ), "dd-MM-yy" );
+    testAssumeColumnDetails_Dates( asList( "10-11-15", "31-12-15" ), "dd-MM-yy" );
   }
 
   @Test
   public void testDateFormat3() {
-    testAssumeColumnDetails_Dates( asList( "10-11-2015" ), "dd-MM-yyyy" );
+    testAssumeColumnDetails_Dates( asList( "10-11-2015", "31-12-2015" ), "dd-MM-yyyy" );
   }
 
   @Test
   public void testDateFormat4() {
-    testAssumeColumnDetails_Dates( asList( "11/10/15" ), "MM/dd/yy" );
+    testAssumeColumnDetails_Dates( asList( "11/10/15", "12/31/15" ), "MM/dd/yy" );
   }
 
   @Test
   public void testDateFormat5() {
-    testAssumeColumnDetails_Dates( asList( "11/10/2015" ), "MM/dd/yyyy" );
+    testAssumeColumnDetails_Dates( asList( "11/10/2015", "12/31/2015" ), "MM/dd/yyyy" );
   }
 
   @Test
