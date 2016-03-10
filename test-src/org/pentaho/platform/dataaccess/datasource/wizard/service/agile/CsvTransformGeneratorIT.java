@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
@@ -196,7 +196,13 @@ public class CsvTransformGeneratorIT extends BaseTest {
     assertEquals((long) 0, rowCount);
   }
 
-  public void testDropTable() throws Exception {
+  /**
+   * Given a name of an existing table to drop.
+   * <br/>
+   * When StagingTransformGenerator is called to drop this table,
+   * then it should execute drop statement.
+   */
+  public void testDropExistingTable() throws Exception {
 
     IPentahoSession session = new StandaloneSession("test");
     KettleSystemListener.environmentInit(session);
@@ -219,7 +225,6 @@ public class CsvTransformGeneratorIT extends BaseTest {
     assertEquals((long) 0, rowCount);
     
     // now make sure I can drop the table as well
-    
     gen.dropTable(tableName);
     try {
       this.getRowCount(tableName);
@@ -228,6 +233,39 @@ public class CsvTransformGeneratorIT extends BaseTest {
       // expect the table to not exist
     }
     
+  }
+
+  /**
+   * Given a name of a non-existing table to drop.
+   * <br/>
+   * When StagingTransformGenerator is called to drop this table,
+   * then it shouldn't execute drop statement.
+   */
+  public void testDropNonExistingTable() throws Exception {
+
+    IPentahoSession session = new StandaloneSession("test");
+    KettleSystemListener.environmentInit(session);
+
+    DatabaseMeta dbMeta = getDatabaseMeta();
+    ModelInfo info = createModel();
+    CsvTransformGenerator gen = new CsvTransformGenerator(info,dbMeta);
+
+    String tableName = info.getStageTableName();
+
+    try {
+      gen.execSqlStatement(getDropTableStatement(tableName), dbMeta, null);
+    } catch (CsvTransformGeneratorException e) {
+      // it is OK if the table doesn't exist previously
+    }
+
+    // now make sure we do not execute drop statement for non-existing table
+    try {
+      gen.dropTable(tableName);
+    } catch (CsvTransformGeneratorException e) {
+      // no need to forward exception, just fail the test
+      fail();
+    }
+
   }
 
   public void testSemiColonAfterQuoteIsFound() throws Exception {
