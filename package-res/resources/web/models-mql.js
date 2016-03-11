@@ -310,7 +310,7 @@ pentaho.pda.model.mql.prototype.submitQuery = function( queryObject, rowLimit, c
           var nodes = result.getElementsByTagName('return');
           resultJson = this.getText( nodes[0] );
 //          alert(resultJson);
-          var result = eval('('+resultJson+')');
+          var result = JSON.parse(resultJson);
           if (callback) {
             callback(result);
           }
@@ -353,7 +353,7 @@ pentaho.pda.model.mql.prototype.submitXmlQuery = function( queryObject, rowLimit
             var nodes = result.getElementsByTagName('return');
             resultJson = this.getText( nodes[0] );
 //            alert(resultJson);
-            var result = eval('('+resultJson+')');
+            var result = JSON.parse(resultJson);
             return result;
         } catch (e) {
             alert(e.message);
