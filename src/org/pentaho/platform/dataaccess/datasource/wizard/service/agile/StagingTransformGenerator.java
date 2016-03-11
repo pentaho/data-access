@@ -528,7 +528,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
 
   protected int convertDataType( ColumnInfo ci ) {
     if ( ci != null && ci.getDataType() != null ) {
-      switch( ci.getDataType() ) {
+      switch ( ci.getDataType() ) {
         case NUMERIC:
           if ( ci.getPrecision() <= 0 ) {
             return ValueMeta.getType( "Integer" ); //$NON-NLS-1$
