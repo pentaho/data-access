@@ -52,6 +52,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAcces
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAccessViewPermissionHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessPermissionHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessViewPermissionHandler;
+import org.pentaho.platform.engine.core.system.PathBasedSystemSettings;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.TenantUtils;
@@ -151,6 +152,7 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    PentahoSystem.setSystemSettingsService( new PathBasedSystemSettings() );
     DefaultUnifiedRepositoryBase.setUpClass();
     FileUtils.deleteDirectory( new File( "/tmp/data-access/jackrabbit-test-TRUNK" ) );
   }
