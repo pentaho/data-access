@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
@@ -64,7 +64,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
 
   private static final Log log = LogFactory.getLog( StagingTransformGenerator.class );
 
-  private DatabaseMeta targetDatabaseMeta = AgileHelper.getDatabaseMeta();
+  private DatabaseMeta targetDatabaseMeta;
 
   private String tableName = null;
 
@@ -84,6 +84,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
    * Default constructor that uses the JNDI datasource configured in the plugin.xml file.
    */
   public StagingTransformGenerator() {
+    targetDatabaseMeta = AgileHelper.getDatabaseMeta();
   }
 
   /**
@@ -121,10 +122,12 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     if ( tableName == null ) {
       throw new IllegalArgumentException( "Table Name cannot be null" ); //$NON-NLS-1$
     }
-    // TODO this should be dialected
-    String ddl =
-      "DROP TABLE IF EXISTS " + targetDatabaseMeta.getSchemaTableCombination( AgileHelper.getSchemaName(), tableName );
-    execSqlStatement( ddl, targetDatabaseMeta, null );
+    if ( checkTableExists( tableName ) ) {
+      // TODO this should be dialected
+      String ddl =
+        "DROP TABLE " + targetDatabaseMeta.getSchemaTableCombination( AgileHelper.getSchemaName(), tableName );
+      execSqlStatement( ddl, targetDatabaseMeta, null );
+    }
   }
 
   public void createOrModifyTable( IPentahoSession session )
@@ -525,7 +528,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
 
   protected int convertDataType( ColumnInfo ci ) {
     if ( ci != null && ci.getDataType() != null ) {
-      switch( ci.getDataType() ) {
+      switch ( ci.getDataType() ) {
         case NUMERIC:
           if ( ci.getPrecision() <= 0 ) {
             return ValueMeta.getType( "Integer" ); //$NON-NLS-1$
@@ -669,4 +672,21 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     this.modelInfo = modelInfo;
   }
 
+  private boolean checkTableExists( String tableName ) throws CsvTransformGeneratorException {
+    Database db = getDatabase( targetDatabaseMeta );
+    try {
+      db.connect( null );
+      try {
+        return db.checkTableExists( tableName );
+      } catch ( KettleDatabaseException dbe ) {
+        error( "Error executing DDL", dbe );
+        throw new CsvTransformGeneratorException( dbe.getMessage(), dbe, getStackTraceAsString( dbe ) );
+      }
+    } catch ( KettleDatabaseException dbe ) {
+      error( "Connection error", dbe );
+      throw new CsvTransformGeneratorException( "Connection error", dbe, getStackTraceAsString( dbe ) );
+    } finally {
+      db.disconnect();
+    }
+  }
 }
