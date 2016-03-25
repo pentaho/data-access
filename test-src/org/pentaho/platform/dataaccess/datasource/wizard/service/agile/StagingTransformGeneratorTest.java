@@ -68,7 +68,7 @@ public class StagingTransformGeneratorTest {
   public void shouldDropTableIfExists() throws Exception {
     String existingTable = "existingTable";
     when( database.checkTableExists( existingTable ) ).thenReturn( true );
-    when( databaseMeta.getSchemaTableCombination( (String) isNull(), eq( existingTable ) ) )
+    when( databaseMeta.getQuotedSchemaTableCombination( (String) isNull(), eq( existingTable ) ) )
       .thenReturn( existingTable );
 
     stagingTransformGenerator.dropTable( existingTable );
@@ -86,7 +86,7 @@ public class StagingTransformGeneratorTest {
   public void shouldNotDropTableIfNotExists() throws Exception {
     String nonExistingTable = "nonExistingTable";
     when( database.checkTableExists( nonExistingTable ) ).thenReturn( false );
-    when( databaseMeta.getSchemaTableCombination( (String) isNull(), eq( nonExistingTable ) ) )
+    when( databaseMeta.getQuotedSchemaTableCombination( (String) isNull(), eq( nonExistingTable ) ) )
       .thenReturn( nonExistingTable );
 
     stagingTransformGenerator.dropTable( nonExistingTable );

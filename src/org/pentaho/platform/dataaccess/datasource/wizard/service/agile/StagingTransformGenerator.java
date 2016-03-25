@@ -122,10 +122,11 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     if ( tableName == null ) {
       throw new IllegalArgumentException( "Table Name cannot be null" ); //$NON-NLS-1$
     }
-    if ( checkTableExists( tableName ) ) {
+    String schemaTableName =
+      targetDatabaseMeta.getQuotedSchemaTableCombination( AgileHelper.getSchemaName(), tableName );
+    if ( checkTableExists( schemaTableName ) ) {
       // TODO this should be dialected
-      String ddl =
-        "DROP TABLE " + targetDatabaseMeta.getSchemaTableCombination( AgileHelper.getSchemaName(), tableName );
+      String ddl = "DROP TABLE " + schemaTableName;
       execSqlStatement( ddl, targetDatabaseMeta, null );
     }
   }
