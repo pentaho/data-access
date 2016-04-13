@@ -17,10 +17,35 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang.ArrayUtils;
+import org.junit.Assert;
 import org.mockito.Mockito;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.platform.api.engine.IApplicationContext;
@@ -37,12 +62,6 @@ import org.pentaho.platform.engine.core.system.StandaloneSession;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.test.platform.engine.core.BaseTest;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Date;
-
 @SuppressWarnings( { "all" } )
 public class CsvTransformGeneratorIT extends BaseTest {
 
@@ -55,6 +74,21 @@ public class CsvTransformGeneratorIT extends BaseTest {
   private static final String PENTAHO_XML_PATH = "/system/pentaho.xml"; //$NON-NLS-1$
 
   private static final String SYSTEM_FOLDER = "/system"; //$NON-NLS-1$
+
+  static class CutLongNamesStepInputContext {
+    String[] fieldNames = new String[] {"a", "b", "A_1", "b_1", "LONGlonglong", "longlonglong_again", "a_2", };
+    int[] fieldLengths = new int[] { 5, 6, 10, 15, 12, 7, 4 };
+    int[] fieldPrecisions = new int[] { 0, 0, 1, 1, 2, 0, 2 };
+    RowMetaInterface fields = new RowMeta();
+    {
+      for ( int i = 0; i < fieldNames.length; i++ ) {
+        final ValueMetaInterface valueMeta = new ValueMetaBigNumber( fieldNames[i] );
+        valueMeta.setLength( fieldLengths[i] );
+        valueMeta.setPrecision( fieldPrecisions[i] );
+        fields.addValueMeta( valueMeta );
+      }
+    }
+  }
 
   public String getSolutionPath() {
     File file = new File( SOLUTION_PATH + PENTAHO_XML_PATH );
@@ -181,6 +215,54 @@ public class CsvTransformGeneratorIT extends BaseTest {
     DatabaseMeta dbMeta = getDatabaseMeta();
     ModelInfo info = createModel();
     CsvTransformGenerator gen = new CsvTransformGenerator( info, dbMeta );
+
+    String tableName = info.getStageTableName();
+
+    try {
+      gen.execSqlStatement( getDropTableStatement( tableName ), dbMeta, null );
+    } catch ( CsvTransformGeneratorException e ) {
+      // it is OK if the table doesn't exist previously
+    }
+    gen.createOrModifyTable( session );
+
+    // check the results
+    long rowCount = this.getRowCount( tableName );
+    assertEquals( (long) 0, rowCount );
+  }
+
+  public void testCreateTable_longColumnNames() throws Exception {
+
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+
+    DatabaseMeta dbMeta = getDatabaseMeta();
+    ModelInfo info = createModel();
+    CsvTransformGenerator gen = spy( new CsvTransformGenerator( info, dbMeta ) );
+    doReturn( 8 ).when( gen ).getMaxColumnNameLength();
+
+    String tableName = info.getStageTableName();
+
+    try {
+      gen.execSqlStatement( getDropTableStatement( tableName ), dbMeta, null );
+    } catch ( CsvTransformGeneratorException e ) {
+      // it is OK if the table doesn't exist previously
+    }
+    gen.createOrModifyTable( session );
+
+    // check the results
+    long rowCount = this.getRowCount( tableName );
+    assertEquals( (long) 0, rowCount );
+  }
+
+  public void testCreateTable_littleMaxColumnNameLength() throws Exception {
+
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+
+    DatabaseMeta dbMeta = getDatabaseMeta();
+    ModelInfo info = createModel();
+    CsvTransformGenerator gen = spy( new CsvTransformGenerator( info, dbMeta ) );
+    doReturn( 1 ).when( gen ).getMaxColumnNameLength();
 
     String tableName = info.getStageTableName();
 
@@ -416,7 +498,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
     // generate the database table initially
     gen.createOrModifyTable( session );
 
-    // now, lets update it by changing the model info slightly.. add a column 
+    // now, lets update it by changing the model info slightly.. add a column
     addColumnToModel( info );
 
     gen.createOrModifyTable( session );
@@ -440,7 +522,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
     String removedColumn = info.getColumns()[ info.getColumns().length - 1 ].getId();
 
-    // now, lets update it by changing the model info slightly.. add a column 
+    // now, lets update it by changing the model info slightly.. add a column
     removeColumnFromModel( info );
 
     gen.createOrModifyTable( session );
@@ -542,7 +624,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
     FileTransformStats stats = gen.getTransformStats();
 
-    // wait until it it done    
+    // wait until it it done
     while ( !stats.isRowsFinished() ) {
       Thread.sleep( 100 );
     }
@@ -725,6 +807,176 @@ public class CsvTransformGeneratorIT extends BaseTest {
     info.setStageTableName( "UNIT_TESTS" );
 
     return info;
+  }
+
+
+  private static DatabaseMeta getJndiDatabaseMeta( String jndi ) {
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
+    databaseMeta.setDBName( jndi );
+    databaseMeta.setName( jndi );
+    return databaseMeta;
+  }
+
+  public void testGetMaxColumnNameLength() throws Exception {
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+    ModelInfo info = createModel();
+
+    final String H2_JNDI = "pentaho_staging_H2"; // test-res/solution1/system/simple-jndi/jdbc.properties
+    final int H2_MAX_COLUMN_NAME_LENGTH = 0; // org.h2.jdbc.JdbcDatabaseMetaData: h2-1.0.78.jar
+
+    final String HYPERSONIC_JNDI = "pentaho_staging_Hypersonic"; // test-res/solution1/system/simple-jndi/jdbc.properties
+    final int HYPERSONIC_MAX_COLUMN_NAME_LENGTH = 128; // org.hsqldb.jdbc.JDBCDatabaseMetaData: hsqldb-2.3.2.jar
+
+    final String INVALID_JNDI = "some_invalid_jndi";
+    final int DEFAULT_MAX_COLUMN_NAME_LENGTH = 0;
+
+    CsvTransformGenerator genH2 = new CsvTransformGenerator( info, getJndiDatabaseMeta( H2_JNDI ) );
+    assertEquals( H2_MAX_COLUMN_NAME_LENGTH, genH2.getMaxColumnNameLength() );
+
+    CsvTransformGenerator genHsqldb = new CsvTransformGenerator( info, getJndiDatabaseMeta( HYPERSONIC_JNDI ) );
+    assertEquals( HYPERSONIC_MAX_COLUMN_NAME_LENGTH, genHsqldb.getMaxColumnNameLength() );
+
+    CsvTransformGenerator genInvalid = new CsvTransformGenerator( info, getJndiDatabaseMeta( INVALID_JNDI ) );
+    assertEquals( DEFAULT_MAX_COLUMN_NAME_LENGTH, genInvalid.getMaxColumnNameLength() );
+  }
+
+  public void testGetMaxColumnNameLength_specialCases() throws Exception {
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+    ModelInfo info = createModel();
+    DatabaseMeta dbMeta = getDatabaseMeta();
+
+    final int DEFAULT_MAX_COLUMN_NAME_LENGTH = 0;
+
+    CsvTransformGenerator genNoDB = spy( new CsvTransformGenerator( info, dbMeta ) );
+    doReturn( null ).when( genNoDB ).getDatabase( dbMeta );
+    assertEquals( DEFAULT_MAX_COLUMN_NAME_LENGTH, genNoDB.getMaxColumnNameLength() );
+
+    CsvTransformGenerator genNoMetadata = spy( new CsvTransformGenerator( info, dbMeta ) );
+    Database dbNoMetadata = mock( Database.class );
+    doReturn( null ).when( dbNoMetadata ).getDatabaseMetaData();
+    doReturn( dbNoMetadata ).when( genNoDB ).getDatabase( dbMeta );
+    assertEquals( DEFAULT_MAX_COLUMN_NAME_LENGTH, genNoMetadata.getMaxColumnNameLength() );
+
+    CsvTransformGenerator genInvalidDb = spy( new CsvTransformGenerator( info, dbMeta ) );
+    Database dbInvalid = mock( Database.class );
+    doThrow( new KettleDatabaseException() ).when( dbInvalid ).connect();
+    doReturn( dbInvalid ).when( genInvalidDb ).getDatabase( dbMeta );
+    assertEquals( DEFAULT_MAX_COLUMN_NAME_LENGTH, genInvalidDb.getMaxColumnNameLength() );
+
+    CsvTransformGenerator genInvalidDbMetadata = spy( new CsvTransformGenerator( info, dbMeta ) );
+    final DatabaseMetaData dbMetaDataInvalid = mock( DatabaseMetaData.class );
+    Database dbInvalidMetadata = mock( Database.class );
+    doThrow( new SQLException() ).when( dbMetaDataInvalid ).getMaxColumnNameLength();
+    doReturn( dbMetaDataInvalid ).when( dbInvalidMetadata ).getDatabaseMetaData();
+    doReturn( dbInvalidMetadata ).when( genInvalidDbMetadata ).getDatabase( dbMeta );
+    assertEquals( DEFAULT_MAX_COLUMN_NAME_LENGTH, genInvalidDbMetadata.getMaxColumnNameLength() );
+
+  }
+
+  public void testCreateCutLongNamesStep_longColumnNames() throws Exception {
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+    ModelInfo info = createModel();
+
+    final int DATABASE_MAX_COLUMN_NAME_LENGTH = 8;
+    final String STEP_NAME = "TEST_STEP_CutLongNames";
+    CutLongNamesStepInputContext prev = new CutLongNamesStepInputContext();
+    String[] fieldRenames = new String[] {"a", "b", "A_1", "b_1", "LONGlong", "longlo_1", "a_2"};
+    StepMeta prevStepMeta = mock( StepMeta.class ); // No functionality is required
+    List<StepMeta> steps = java.util.Collections.singletonList( prevStepMeta );
+    TransMeta transMeta = spy( new TransMeta() );
+    doReturn( prev.fields ).when( transMeta ).getStepFields( prevStepMeta );
+
+    final DatabaseMeta databaseMeta = getDatabaseMeta();
+    CsvTransformGenerator gen = new CsvTransformGenerator( info, databaseMeta );
+
+    StepMeta step = gen.createCutLongNamesStep( transMeta, steps, DATABASE_MAX_COLUMN_NAME_LENGTH, STEP_NAME );
+
+    Assert.assertNotNull( "step", step );
+    Assert.assertEquals( "step name", STEP_NAME, step.getName() );
+
+    StepMetaInterface stepMetaIntegrface = step.getStepMetaInterface();
+    Assert.assertNotNull( "stepMetaIntegrface", stepMetaIntegrface );
+    Assert.assertTrue( "stepMetaIntegrface instanceof SelectValuesMeta", stepMetaIntegrface instanceof SelectValuesMeta );
+    SelectValuesMeta svm = (SelectValuesMeta) stepMetaIntegrface;
+
+    String[] selectName = svm.getSelectName();
+    Assert.assertArrayEquals( "selectName", prev.fieldNames, selectName );
+    String[] selectRename = svm.getSelectRename();
+    Assert.assertArrayEquals( "selectRename", fieldRenames, selectRename );
+    int[] selectLengths = svm.getSelectLength();
+    Assert.assertArrayEquals( "selectLength", prev.fieldLengths, selectLengths );
+    int[] selectPrecisions = svm.getSelectPrecision();
+    Assert.assertArrayEquals( "selectPrecision", selectPrecisions, selectPrecisions );
+
+    Assert.assertEquals( step, transMeta.findStep( STEP_NAME ) );
+  }
+
+  public void testCreateCutLongNamesStep_shortColumnNames() throws Exception {
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+    ModelInfo info = createModel();
+
+    final int DATABASE_MAX_COLUMN_NAME_LENGTH = 18;
+    final String STEP_NAME = "TEST_STEP_CutLongNames";
+    CutLongNamesStepInputContext prev = new CutLongNamesStepInputContext();
+
+    StepMeta prevStepMeta = mock( StepMeta.class ); // No functionality is required
+    List<StepMeta> steps = java.util.Collections.singletonList( prevStepMeta );
+    TransMeta transMeta = spy( new TransMeta() );
+    doReturn( prev.fields ).when( transMeta ).getStepFields( prevStepMeta );
+
+    final DatabaseMeta databaseMeta = getDatabaseMeta();
+    CsvTransformGenerator gen = new CsvTransformGenerator( info, databaseMeta );
+
+    StepMeta step = gen.createCutLongNamesStep( transMeta, steps, DATABASE_MAX_COLUMN_NAME_LENGTH, STEP_NAME );
+
+    Assert.assertNull( "step", step );
+  }
+
+  public void testCreateCutLongNamesStep_littleMaxColumnNameLength() throws Exception {
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+    ModelInfo info = createModel();
+
+    final int DATABASE_MAX_COLUMN_NAME_LENGTH = 1;
+    final String STEP_NAME = "TEST_STEP_CutLongNames";
+    CutLongNamesStepInputContext prev = new CutLongNamesStepInputContext();
+
+    StepMeta prevStepMeta = mock( StepMeta.class ); // No functionality is required
+    List<StepMeta> steps = java.util.Collections.singletonList( prevStepMeta );
+    TransMeta transMeta = spy( new TransMeta() );
+    doReturn( prev.fields ).when( transMeta ).getStepFields( prevStepMeta );
+
+    final DatabaseMeta databaseMeta = getDatabaseMeta();
+    CsvTransformGenerator gen = new CsvTransformGenerator( info, databaseMeta );
+
+    StepMeta step = gen.createCutLongNamesStep( transMeta, steps, DATABASE_MAX_COLUMN_NAME_LENGTH, STEP_NAME );
+    assertNull( step );
+  }
+
+  public void testCreateCutLongNamesStep_prevStepError() throws Exception {
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+    ModelInfo info = createModel();
+
+    final int DATABASE_MAX_COLUMN_NAME_LENGTH = 18;
+    final String STEP_NAME = "TEST_STEP_CutLongNames";
+
+    StepMeta prevStepMeta = mock( StepMeta.class ); // No functionality is required
+    List<StepMeta> steps = java.util.Collections.singletonList( prevStepMeta );
+    TransMeta transMeta = spy( new TransMeta() );
+    doThrow( new KettleStepException() ).when( transMeta ).getStepFields( prevStepMeta );
+
+    final DatabaseMeta databaseMeta = getDatabaseMeta();
+    CsvTransformGenerator gen = new CsvTransformGenerator( info, databaseMeta );
+
+    StepMeta step = gen.createCutLongNamesStep( transMeta, steps, DATABASE_MAX_COLUMN_NAME_LENGTH, STEP_NAME );
+
+    Assert.assertNull( "step", step );
   }
 
 }

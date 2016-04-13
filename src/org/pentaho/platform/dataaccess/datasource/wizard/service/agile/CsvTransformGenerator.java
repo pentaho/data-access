@@ -12,19 +12,28 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
 
 import java.io.File;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleTransException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -33,8 +42,8 @@ import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class CsvTransformGenerator extends StagingTransformGenerator {
@@ -44,6 +53,8 @@ public class CsvTransformGenerator extends StagingTransformGenerator {
   private static final String CSV_INPUT = "csvinput"; //$NON-NLS-1$
 
   private static final String SELECT_VALUES = "select"; //$NON-NLS-1$
+
+  private static final String CUT_LONG_NAMES = "cutLongNames"; //$NON-NLS-1$
 
   public static final String DEFAULT_RELATIVE_UPLOAD_FILE_PATH = File.separatorChar
     + "system" + File.separatorChar + "metadata" + File.separatorChar + "csvfiles" + File.separatorChar;
@@ -106,6 +117,14 @@ public class CsvTransformGenerator extends StagingTransformGenerator {
       createHop(steps.get(steps.size()-2), step, transMeta);
     }
     */
+
+    final int targetDatabaseMaxColumnNameLength = getMaxColumnNameLength();
+    StepMeta cutLongNamesStep = createCutLongNamesStep( transMeta, steps, targetDatabaseMaxColumnNameLength, CUT_LONG_NAMES );
+    if ( cutLongNamesStep != null ) {
+      steps.add( cutLongNamesStep );
+      createHop( steps.get( steps.size() - 2 ), cutLongNamesStep, transMeta );
+    }
+
     return steps.toArray( new StepMeta[ steps.size() ] );
   }
 
@@ -229,4 +248,148 @@ public class CsvTransformGenerator extends StagingTransformGenerator {
     return log;
   }
 
+  /**
+   * The target database maxColumnNameLength value if available;
+   * 0 otherwise.
+   * @return
+   */
+  protected int getMaxColumnNameLength() {
+    int maxLen = 0;
+    Database db = null;
+    try {
+      db = this.getDatabase( getTargetDatabaseMeta() );
+      if ( db == null ) {
+        log.debug( "Cannot getMaxColumnNameLength (defaults to 0): database is not available." ); //$NON-NLS-1$
+        return maxLen;
+      }
+      db.connect( null );
+      final DatabaseMetaData databaseMetaData = db.getDatabaseMetaData();
+      if ( databaseMetaData == null ) {
+        log.debug( "Cannot getMaxColumnNameLength (defaults to 0): database metadata are not available." ); //$NON-NLS-1$
+        return maxLen;
+      }
+      maxLen = databaseMetaData.getMaxColumnNameLength();
+    } catch ( KettleDatabaseException e ) {
+      log.debug( "Cannot getMaxColumnNameLength (defaults to 0): " + e.getMessage(), e ); //$NON-NLS-1$
+    } catch ( SQLException e ) {
+      log.debug( "Cannot getMaxColumnNameLength (defaults to 0): " + e.getMessage(), e ); //$NON-NLS-1$
+    } finally {
+      if ( db != null ) {
+        db.disconnect();
+      }
+    }
+    return maxLen;
+  }
+
+  /**
+   * This step scans output fields of the last step in <code>steps</code>,
+   * 
+   * cut field names that longer than <code>maxColumnNameLength</code>,
+   * 
+   * renames them if necessary to keep them unique.
+   * <br/>
+   * If <code>maxColumnNameLength</code>&lt;=0 or all field names are short enough, the step is not created;
+   * @param transMeta
+   * @param steps
+   * @param maxColumnNameLength
+   * @param stepName
+   * @return created {@link StepMeta} or null
+   * @throws KettleTransException 
+   */
+  protected StepMeta createCutLongNamesStep( TransMeta transMeta, List<StepMeta> steps, int maxColumnNameLength, String stepName ) {
+    if ( maxColumnNameLength <= 0 ) {
+      return null;
+    }
+    try {
+      StepMeta prevStepMeta = steps.get( steps.size() - 1 );
+      RowMetaInterface fields = transMeta.getStepFields( prevStepMeta );
+      StepMeta stepMeta = createCutLongNamesStep( fields, maxColumnNameLength, stepName );
+      if ( stepMeta != null ) {
+        transMeta.addStep( stepMeta );
+      }
+      return stepMeta;
+    } catch ( KettleTransException e ) {
+      log.warn( "Unable to createCutLongNamesStep. Skipping it.", e );
+    } catch ( RuntimeException e ) {
+      log.warn( "Unable to createCutLongNamesStep. Skipping it.", e );
+    }
+    return null;
+  }
+
+  /**
+   * 
+   * @param fields
+   * @param maxColumnNameLength
+   * @param stepName
+   * @return
+   * @throws KettleTransException 
+   */
+  protected StepMeta createCutLongNamesStep( RowMetaInterface fields, int maxColumnNameLength, String stepName ) throws KettleTransException {
+    final int fieldsCount = fields.size();
+
+    SelectValuesMeta meta = new SelectValuesMeta();
+    List<String> selectNameList = new ArrayList<String>( fieldsCount );
+    List<String> selectRenameList = new ArrayList<String>( fieldsCount );
+    List<Integer> selectLengthList = new ArrayList<Integer>( fieldsCount );
+    List<Integer> selectPrecisionList = new ArrayList<Integer>( fieldsCount );
+    final Collection<String> controlNames = new HashSet<String>();
+    boolean renameRequired = false;
+    for ( ValueMetaInterface valueMeta : fields.getValueMetaList() ) {
+      final String oldName = valueMeta.getName();
+      selectNameList.add( oldName );
+      String newName = oldName;
+      if ( newName.length() > maxColumnNameLength ) {
+        renameRequired = true;
+        newName = newName.substring( 0, maxColumnNameLength );
+      }
+      if ( controlNames.contains( newName.toLowerCase() ) ) {
+        renameRequired = true;
+        newName = null;
+        String candidateName = null;
+        final int maxAppendableSuffixLength = maxColumnNameLength - oldName.length();
+        for ( int j = 1; newName == null && j < Integer.MAX_VALUE; j++ ) {
+          String suffix = "_" + j;
+          if ( suffix.length() > maxColumnNameLength ) {
+            throw new KettleTransException( "Cannot cut field name. Maximum suffix length is exceeded" ); //$NON-NLS-1$
+          }
+          if ( suffix.length() <= maxAppendableSuffixLength ) {
+            candidateName = oldName + suffix;
+          } else {
+            candidateName = oldName.substring( 0, maxColumnNameLength - suffix.length() ) + suffix;
+          }
+          if ( !controlNames.contains( candidateName.toLowerCase() ) ) {
+            newName = candidateName;
+          }
+        }
+        if ( newName == null ) { // This is fantastic but... let it be
+          throw new KettleTransException( "Cannot cut field name. Maximum trials number is reached." ); //$NON-NLS-1$
+        }
+      }
+      controlNames.add( newName.toLowerCase() );
+      selectRenameList.add( newName );
+      selectLengthList.add( valueMeta.getLength() );
+      selectPrecisionList.add( valueMeta.getPrecision() );
+    }
+    if ( !renameRequired ) {
+      return null;
+    }
+    String[] selectName = selectNameList.toArray( new String[ selectNameList.size() ] );
+    meta.setSelectName( selectName );
+    String[] selectRename = selectRenameList.toArray( new String[ selectRenameList.size() ] );
+    meta.setSelectRename( selectRename );
+
+    int[] selectLength = new int[ selectLengthList.size() ];
+    int[] selectPrecision = new int[ selectPrecisionList.size() ];
+    for ( int i = 0; i < selectLength.length; i++ ) {
+      selectLength[ i ] = selectLengthList.get( i );
+    }
+    for ( int i = 0; i < selectPrecision.length; i++ ) {
+      selectPrecision[ i ] = selectPrecisionList.get( i );
+    }
+    meta.setSelectLength( selectLength );
+    meta.setSelectPrecision( selectPrecision );
+
+    StepMeta stepMeta = new StepMeta( stepName, stepName, meta );
+    return stepMeta;
+  }
 }
