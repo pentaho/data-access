@@ -24,7 +24,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorIT.CutLongNamesStepInputContext;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGeneratorIT.CutLongNamesStepContext;
 
 public class CsvTransformGeneratorTest {
 
@@ -33,8 +33,8 @@ public class CsvTransformGeneratorTest {
     CsvTransformGenerator ctg = new CsvTransformGenerator( new ModelInfo(), null );
     int maxColumnNameLength = 18;
     String stepName = "TEST_STEP_CutLongNames";
-    CutLongNamesStepInputContext prev = new CutLongNamesStepInputContext();
-    StepMeta step = ctg.createCutLongNamesStep( prev.fields, maxColumnNameLength, stepName );
+    CutLongNamesStepContext testData = new CutLongNamesStepContext();
+    StepMeta step = ctg.createCutLongNamesStep( testData.fields, maxColumnNameLength, stepName );
     Assert.assertNull( "step", step );
   }
 
@@ -43,10 +43,10 @@ public class CsvTransformGeneratorTest {
     CsvTransformGenerator ctg = new CsvTransformGenerator( new ModelInfo(), null );
     int maxColumnNameLength = 8;
     String stepName = "TEST_STEP_CutLongNames";
-    CutLongNamesStepInputContext prev = new CutLongNamesStepInputContext();
-    String[] fieldRenames = new String[] {"a", "b", "A_1", "b_1", "LONGlong", "longlo_1", "a_2"};
+    CutLongNamesStepContext testData = new CutLongNamesStepContext();
+    String[] fieldRenames = testData.fieldRenamesCut8;
 
-    StepMeta step = ctg.createCutLongNamesStep( prev.fields, maxColumnNameLength, stepName );
+    StepMeta step = ctg.createCutLongNamesStep( testData.fields, maxColumnNameLength, stepName );
     Assert.assertNotNull( "step", step );
     Assert.assertEquals( "step name", stepName, step.getName() );
     StepMetaInterface stepMetaIntegrface = step.getStepMetaInterface();
@@ -54,7 +54,7 @@ public class CsvTransformGeneratorTest {
     Assert.assertTrue( "stepMetaIntegrface instanceof SelectValuesMeta", stepMetaIntegrface instanceof SelectValuesMeta );
     SelectValuesMeta svm = (SelectValuesMeta) stepMetaIntegrface;
     String[] selectName = svm.getSelectName();
-    Assert.assertArrayEquals( "selectName", prev.fieldNames, selectName );
+    Assert.assertArrayEquals( "selectName", testData.fieldNames, selectName );
     String[] selectRename = svm.getSelectRename();
     Assert.assertArrayEquals( "selectName", fieldRenames, selectRename );
   }
@@ -64,10 +64,10 @@ public class CsvTransformGeneratorTest {
     CsvTransformGenerator ctg = new CsvTransformGenerator( new ModelInfo(), null );
     int maxColumnNameLength = 1;
     String stepName = "TEST_STEP_CutLongNames";
-    CutLongNamesStepInputContext prev = new CutLongNamesStepInputContext();
+    CutLongNamesStepContext testData = new CutLongNamesStepContext();
 
     try {
-      StepMeta step = ctg.createCutLongNamesStep( prev.fields, maxColumnNameLength, stepName );
+      StepMeta step = ctg.createCutLongNamesStep( testData.fields, maxColumnNameLength, stepName );
       fail( "Ex[pected exception: Cannot cut field name. Maximum suffix length is exceeded" );
     } catch ( Exception e ) {
       // expected

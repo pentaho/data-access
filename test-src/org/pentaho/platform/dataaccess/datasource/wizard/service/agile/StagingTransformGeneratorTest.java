@@ -25,11 +25,16 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -92,5 +97,23 @@ public class StagingTransformGeneratorTest {
     stagingTransformGenerator.dropTable( nonExistingTable );
 
     verify( database, never() ).execStatement( anyString() );
+  }
+
+  @Test
+  public void testGetTargetDatabaseMeta() throws Exception {
+    assertEquals( databaseMeta, stagingTransformGenerator.getTargetDatabaseMeta() );
+  }
+
+  @Test
+  public void testDropTable() throws Exception {
+    final String tableName = "tableName";
+    final String quotedTableName = "\"" + tableName + "\"";
+    final String expectedDdl = "DROP TABLE " + quotedTableName;
+
+    doReturn( quotedTableName ).when( databaseMeta ).getQuotedSchemaTableCombination( anyString(), eq( tableName ) );
+    doReturn( true ).when( database ).checkTableExists( quotedTableName );
+    StagingTransformGenerator stg = spy( stagingTransformGenerator );
+    stg.dropTable( tableName );
+    verify( stg, times( 1 ) ).execSqlStatement( eq( expectedDdl ), eq( databaseMeta ), any( StringBuilder.class ) );
   }
 }
