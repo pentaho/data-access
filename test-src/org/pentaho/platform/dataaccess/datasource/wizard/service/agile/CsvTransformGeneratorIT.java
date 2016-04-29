@@ -214,6 +214,15 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
   }
 
+  public void testInit_DefaultDb() throws Exception {
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+
+    ModelInfo info = createModel();
+    CsvTransformGenerator gen = new CsvTransformGenerator( info );
+    assertEquals( getDatabaseMeta(), gen.getTargetDatabaseMeta() );
+  }
+
   public void testCreateTable() throws Exception {
 
     IPentahoSession session = new StandaloneSession( "test" );
@@ -235,6 +244,67 @@ public class CsvTransformGeneratorIT extends BaseTest {
     // check the results
     long rowCount = this.getRowCount( tableName );
     assertEquals( (long) 0, rowCount );
+  }
+
+  public void testCreateTable_noIgnoredColumns() throws Exception {
+
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+
+    DatabaseMeta dbMeta = getDatabaseMeta();
+    ModelInfo info = createModel();
+    ColumnInfo[] columns = info.getColumns();
+    columns[ 4 ].setIgnore( false );
+    info.setColumns( columns );
+    CsvTransformGenerator gen = new CsvTransformGenerator( info, dbMeta );
+
+    String tableName = info.getStageTableName();
+
+    try {
+      gen.execSqlStatement( getDropTableStatement( tableName ), dbMeta, null );
+    } catch ( CsvTransformGeneratorException e ) {
+      // it is OK if the table doesn't exist previously
+    }
+    gen.createOrModifyTable( session );
+
+    // check the results
+    long rowCount = this.getRowCount( tableName );
+    assertEquals( (long) 0, rowCount );
+
+
+    DatabaseMeta databaseMeta = getDatabaseMeta();
+    assertNotNull( databaseMeta );
+    Database database = new Database( databaseMeta );
+    assertNotNull( database );
+    database.connect();
+
+    Connection connection = null;
+    Statement stmt = null;
+    ResultSet sqlResult = null;
+
+    try {
+      connection = database.getConnection();
+      assertNotNull( connection );
+      stmt = database.getConnection().createStatement();
+
+      boolean ok = stmt.execute( "select * from " + tableName );
+      assertTrue( ok );
+      sqlResult = stmt.getResultSet();
+      assertNotNull( sqlResult );
+      assertEquals( 1, sqlResult.findColumn( "PC_0" ) );
+      assertEquals( 2, sqlResult.findColumn( "PC_1" ) );
+      assertEquals( 3, sqlResult.findColumn( "PC_2" ) );
+      assertEquals( 4, sqlResult.findColumn( "PC_3" ) );
+      assertEquals( 5, sqlResult.findColumn( "PC_4" ) );
+      assertEquals( 6, sqlResult.findColumn( "PC_5" ) );
+      assertEquals( 7, sqlResult.findColumn( "PC_6" ) );
+      assertEquals( 8, sqlResult.findColumn( "PC_7" ) );
+      assertEquals( 9, sqlResult.findColumn( "PC_8" ) );
+    } finally {
+      sqlResult.close();
+      stmt.close();
+      connection.close();
+    }
   }
 
   public void testCreateTable_longColumnNames() throws Exception {
@@ -259,6 +329,43 @@ public class CsvTransformGeneratorIT extends BaseTest {
     verify( gen, atLeastOnce() ).createCutLongNamesStep( any( TransMeta.class ), any( List.class ), eq( maxColumnNameLength ), anyString() );
 
     // check the results
+    long rowCount = this.getRowCount( tableName );
+    assertEquals( (long) 0, rowCount );
+    assertEquals( 0, gen.getTransformStats().getErrorCount() );
+  }
+
+  public void testCreateTable_CannotCreateCutLongNamesStep() throws Exception {
+
+    IPentahoSession session = new StandaloneSession( "test" );
+    KettleSystemListener.environmentInit( session );
+
+    DatabaseMeta dbMeta = getDatabaseMeta();
+    ModelInfo info = createModel();
+    CsvTransformGenerator gen = spy( new CsvTransformGenerator( info, dbMeta ) );
+    final int maxColumnNameLength = 3;
+    doReturn( maxColumnNameLength  ).when( gen ).getMaxColumnNameLength();
+
+    String tableName = info.getStageTableName();
+
+    try {
+      gen.execSqlStatement( getDropTableStatement( tableName ), dbMeta, null );
+    } catch ( CsvTransformGeneratorException e ) {
+      // it is OK if the table doesn't exist previously
+    }
+    try {
+      this.getRowCount( tableName );
+      fail( "Test table must not exist now" );
+    } catch ( SQLException e ) {
+      // ok
+    }
+
+    doThrow( new RuntimeException() ).when( gen ).createCutLongNamesStep( any( RowMetaInterface.class ), eq( maxColumnNameLength ), anyString() );
+    // This error is not critical. It's supposed to be skipped.
+
+    gen.createOrModifyTable( session );
+    verify( gen, atLeastOnce() ).createCutLongNamesStep( any( TransMeta.class ), any( List.class ), eq( maxColumnNameLength ), anyString() );
+
+    // check the results.
     long rowCount = this.getRowCount( tableName );
     assertEquals( (long) 0, rowCount );
     assertEquals( 0, gen.getTransformStats().getErrorCount() );
