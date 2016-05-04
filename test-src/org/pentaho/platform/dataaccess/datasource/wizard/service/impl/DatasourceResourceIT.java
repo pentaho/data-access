@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -306,6 +306,7 @@ public class DatasourceResourceIT {
 
   private void testImportFile( String filePath, final String expectedSchemaName ) throws Exception {
     FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
+    when( schemaFileInfo.getFileName() ).thenReturn( "stubFileName" );
     Mockery mockery = new Mockery();
     final IPlatformImporter mockImporter = mockery.mock( IPlatformImporter.class );
     mp.defineInstance( IPlatformImporter.class, mockImporter );

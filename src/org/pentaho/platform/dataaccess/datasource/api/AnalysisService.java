@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -28,6 +28,7 @@ import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IAclAwareMondrianCatalogService;
@@ -47,7 +48,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -126,6 +126,9 @@ public class AnalysisService extends DatasourceService {
 
     accessValidation();
     String fileName = schemaFileInfo.getFileName();
+    // sanity check to prevent common mistake - import of .xmi files.
+    // See BISERVER-12815
+    fileNameValidation( fileName );
     processMondrianImport(
         dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters, fileName, acl );
   }
@@ -382,5 +385,16 @@ public class AnalysisService extends DatasourceService {
 
   protected IPentahoSession getSession() {
     return PentahoSessionHolder.getSession();
+  }
+
+  private void fileNameValidation( final String fileName ) throws PlatformImportException {
+    if ( fileName == null ) {
+      throw new PlatformImportException( Messages.getString( "AnalysisService.ERROR_001_ANALYSIS_DATASOURCE_ERROR" ),
+          PlatformImportException.PUBLISH_GENERAL_ERROR );
+    }
+    if ( fileName.endsWith( METADATA_EXT ) ) {
+      throw new PlatformImportException( Messages.getString( "AnalysisService.ERROR_002_ANALYSIS_DATASOURCE_ERROR" ),
+          PlatformImportException.PUBLISH_GENERAL_ERROR );
+    }
   }
 }

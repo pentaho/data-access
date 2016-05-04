@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -101,78 +101,65 @@ public class AnalysisServiceTest {
 
   }
 
-  private void allAccess() {
+  private void policyAccess() {
     when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
+  }
+
+  private void allAccess() {
+    policyAccess();
     when( permissionHandler.hasDataAccessPermission( any( IPentahoSession.class ) ) ).thenReturn( true );
+  }
+
+  private InputStream getSchemaAsStream() {
+    return getClass().getResourceAsStream( "schema.xml" );
   }
 
   @Test
   public void testImportingSchemaRemovesExistingAnnotationsByDefault() throws Exception {
-    when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
-    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
-    InputStream schema = getClass().getResourceAsStream( "schema.xml" );
     MondrianCatalog otherCatalog = new MondrianCatalog( "other", "", "", null );
     MondrianCatalog salesCatalog = new MondrianCatalog( "sales", "", "", null );
     when( catalogService.listCatalogs( any( IPentahoSession.class ), eq( false ) ) )
-      .thenReturn( Arrays.asList( otherCatalog, salesCatalog ) );
-    new AnalysisService()
-        .putMondrianSchema(
-          schema, schemaFileInfo, "sample", null, "sample", true, false, "overwrite=true", acl );
+        .thenReturn( Arrays.asList( otherCatalog, salesCatalog ) );
+    putMondrianSchemaWithSchemaFileName( "stubFileName", "overwrite=true" );
     verify( importer ).importFile( argThat( matchBundle( true, acl ) ) );
     verify( catalogService ).removeCatalog( eq( "sales" ), any( IPentahoSession.class ) );
   }
 
   @Test
   public void testImportingSkipsRemoveWhenNotPresent() throws Exception {
-    when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
-    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
-    InputStream schema = getClass().getResourceAsStream( "schema.xml" );
     MondrianCatalog otherCatalog = new MondrianCatalog( "other", "", "", null );
     when( catalogService.listCatalogs( any( IPentahoSession.class ), eq( false ) ) )
-      .thenReturn( Collections.singletonList( otherCatalog ) );
-    new AnalysisService()
-        .putMondrianSchema(
-          schema, schemaFileInfo, "sample", null, "sample", true, false, "overwrite=true", acl );
+        .thenReturn( Collections.singletonList( otherCatalog ) );
+    putMondrianSchemaWithSchemaFileName( "stubFileName", "overwrite=true" );
     verify( importer ).importFile( argThat( matchBundle( true, acl ) ) );
     verify( catalogService, never() ).removeCatalog( eq( "sales" ), any( IPentahoSession.class ) );
   }
 
   @Test
   public void testImportingSchemaCanRetainAnnotations() throws Exception {
-    when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
-    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
-    InputStream schema = getClass().getResourceAsStream( "schema.xml" );
-    new AnalysisService()
-        .putMondrianSchema(
-          schema, schemaFileInfo, "sample", null, "sample", true, false,
-          "overwrite=true;retainInlineAnnotations=true", acl );
+    putMondrianSchemaWithSchemaFileName( "stubFileName" );
     verify( importer ).importFile( argThat( matchBundle( true, acl ) ) );
     verify( catalogService, Mockito.times( 0 ) ).removeCatalog( eq( "sales" ), any( IPentahoSession.class ) );
   }
 
   @Test
   public void testImportingSchemaWillNotOverwrite() throws Exception {
-    when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
-    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
-    InputStream schema = getClass().getResourceAsStream( "schema.xml" );
-    new AnalysisService()
-        .putMondrianSchema(
-          schema, schemaFileInfo, "sample", null, "sample", true, false,
-          "overwrite=false;retainInlineAnnotations=true", acl );
+    putMondrianSchemaWithSchemaFileName( "stubFileName", "overwrite=false;retainInlineAnnotations=true" );
     verify( importer ).importFile( argThat( matchBundle( false, acl ) ) );
     verify( catalogService, never() ).removeCatalog( eq( "sales" ), any( IPentahoSession.class ) );
   }
 
   private BaseMatcher<IPlatformImportBundle> matchBundle( final boolean overwrite, final RepositoryFileAclDto acl ) {
     return new BaseMatcher<IPlatformImportBundle>() {
-      @Override public void describeTo( final Description description ) {
+      @Override
+      public void describeTo( final Description description ) {
       }
 
-      @Override public boolean matches( final Object item ) {
+      @Override
+      public boolean matches( final Object item ) {
         RepositoryFileImportBundle bundle = (RepositoryFileImportBundle) item;
-        return bundle.getName().equals( "sales" )
-          && bundle.isOverwriteInRepository() == overwrite
-          && bundle.getAcl().equals( new RepositoryFileAclAdapter().unmarshal( acl ) );
+        return bundle.getName().equals( "sales" ) && bundle.isOverwriteInRepository() == overwrite && bundle.getAcl()
+            .equals( new RepositoryFileAclAdapter().unmarshal( acl ) );
       }
     };
   }
@@ -204,11 +191,12 @@ public class AnalysisServiceTest {
     testRemove( true, false, false );
   }
 
-  private void testRemove( final boolean hasRead, final boolean hasCreate, final boolean hasAdmin ) throws PentahoAccessControlException {
+  private void testRemove( final boolean hasRead, final boolean hasCreate, final boolean hasAdmin )
+      throws PentahoAccessControlException {
     when( policy.isAllowed( RepositoryReadAction.NAME ) ).thenReturn( hasRead );
     when( policy.isAllowed( RepositoryCreateAction.NAME ) ).thenReturn( hasCreate );
     when( policy.isAllowed( AdministerSecurityAction.NAME ) ).thenReturn( hasAdmin );
-    if( hasRead && hasCreate && hasAdmin ) {
+    if ( hasRead && hasCreate && hasAdmin ) {
       when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
     }
     try {
@@ -303,20 +291,19 @@ public class AnalysisServiceTest {
     putMondrianSchemaWithSchemaFileName( "" );
   }
 
-  private void putMondrianSchemaWithSchemaFileName( String fileame ) throws Exception {
-    when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
-    FormDataContentDisposition schemaFileInfo = mockSchemaFileInfo( fileame );
-    InputStream schema = getClass().getResourceAsStream( "schema.xml" );
-    new AnalysisService().putMondrianSchema( schema, schemaFileInfo, null, null, null, true, false,
-        "overwrite=false;retainInlineAnnotations=true", acl );
+  private void putMondrianSchemaWithSchemaFileName( String fileName ) throws Exception {
+    String params = "overwrite=true;retainInlineAnnotations=true";
+    putMondrianSchemaWithSchemaFileName( fileName, params );
   }
 
-  private FormDataContentDisposition mockSchemaFileInfo( String fileName ) {
+  private void putMondrianSchemaWithSchemaFileName( String fileName, String parameters ) throws Exception {
+    policyAccess();
     FormDataContentDisposition schemaFileInfoMock = mock( FormDataContentDisposition.class );
     if ( fileName != null ) {
       when( schemaFileInfoMock.getFileName() ).thenReturn( fileName );
     }
-    return schemaFileInfoMock;
+    InputStream schema = getSchemaAsStream();
+    new AnalysisService()
+        .putMondrianSchema( schema, schemaFileInfoMock, "sample", null, "sample", true, false, parameters, acl );
   }
-
 }
