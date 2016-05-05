@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -37,12 +37,17 @@ import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.metadata.automodel.PhysicalTableImporter;
+import org.pentaho.metadata.automodel.importing.strategy.CsvDatasourceImportStrategy;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
+import org.pentaho.metadata.model.thin.Column;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.InlineSqlModelerSource;
 import org.pentaho.platform.engine.core.system.PentahoBase;
@@ -119,12 +124,38 @@ public class ModelerService extends PentahoBase implements IModelerService {
     }
   }
 
+  /**
+   * Use {@link ModelerService#generateCSVDomain(ModelInfo)} instead,
+   * as ModelInfo object contains information about csv column names,
+   * provided by user, that are not always the same as the names of columns,
+   * stored in database. (see BISERVER-13026 for more info)
+   *
+   */
+  @Deprecated
   public Domain generateCSVDomain( String tableName, String datasourceName ) throws Exception {
     initKettle();
     try {
       DatabaseMeta database = AgileHelper.getDatabaseMeta();
       IModelerSource source = new TableModelerSource( database, tableName, null, datasourceName );
       return source.generateDomain();
+    } catch ( Exception e ) {
+      logger.error( e );
+      throw new Exception( e.getLocalizedMessage() );
+    }
+  }
+
+  public Domain generateCSVDomain( ModelInfo modelInfo ) throws Exception {
+    initKettle();
+    try {
+      DatabaseMeta database = getDatabaseMeta();
+      final String tableName = modelInfo.getStageTableName();
+      final String datasourceName = modelInfo.getDatasourceName();
+
+      Column[] columns = toColumns( modelInfo.getColumns() );
+      PhysicalTableImporter.ImportStrategy importStrategy = new CsvDatasourceImportStrategy( columns );
+      TableModelerSource source = createTableModelerSource( database, tableName, null, datasourceName );
+
+      return source.generateDomain( importStrategy );
     } catch ( Exception e ) {
       logger.error( e );
       throw new Exception( e.getLocalizedMessage() );
@@ -254,4 +285,40 @@ public class ModelerService extends PentahoBase implements IModelerService {
   public void setDatasourceService( DSWDatasourceServiceImpl datasourceService ) {
     this.datasourceService = datasourceService;
   }
+
+  Column[] toColumns( ColumnInfo[] columnInfos ) {
+    Column[] columns = new Column[ columnInfos.length ];
+    for ( int i = 0; i < columnInfos.length; i++ ) {
+      ColumnInfo columnInfo = columnInfos[ i ];
+      final String id = columnInfo.getId();
+      final String title = columnInfo.getTitle();
+      if ( id == null || title == null ) {
+        continue;
+      }
+      Column column = new Column();
+      column.setId( id );
+      column.setName( title );
+
+      columns[ i ] = column;
+    }
+
+    return columns;
+  }
+
+  /**
+   * For testing
+   */
+  DatabaseMeta getDatabaseMeta() {
+    return AgileHelper.getDatabaseMeta();
+  }
+
+  /**
+   * For testing
+   */
+  TableModelerSource createTableModelerSource( DatabaseMeta database, String tableName, String schemaName,
+                                               String datasourceName ) {
+    return new TableModelerSource( database, tableName, schemaName, datasourceName );
+  }
+
+
 }
