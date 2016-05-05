@@ -41,6 +41,7 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCube;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianSchema;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
+import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
@@ -286,4 +287,36 @@ public class AnalysisServiceTest {
     new AnalysisService().setAnalysisDatasourceAcl( catalogName, null );
     verify( catalogService ).setAclFor( eq( catalogName ), (RepositoryFileAcl) isNull() );
   }
+
+  @Test( expected = PlatformImportException.class )
+  public void testPutNullMondrianSchema() throws Exception {
+    putMondrianSchemaWithSchemaFileName( null );
+  }
+
+  @Test( expected = PlatformImportException.class )
+  public void testPutXmiMondrianSchema() throws Exception {
+    putMondrianSchemaWithSchemaFileName( "sample.xmi" );
+  }
+
+  @Test
+  public void testPutEmptyMondrianSchema() throws Exception {
+    putMondrianSchemaWithSchemaFileName( "" );
+  }
+
+  private void putMondrianSchemaWithSchemaFileName( String fileame ) throws Exception {
+    when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
+    FormDataContentDisposition schemaFileInfo = mockSchemaFileInfo( fileame );
+    InputStream schema = getClass().getResourceAsStream( "schema.xml" );
+    new AnalysisService().putMondrianSchema( schema, schemaFileInfo, null, null, null, true, false,
+        "overwrite=false;retainInlineAnnotations=true", acl );
+  }
+
+  private FormDataContentDisposition mockSchemaFileInfo( String fileName ) {
+    FormDataContentDisposition schemaFileInfoMock = mock( FormDataContentDisposition.class );
+    if ( fileName != null ) {
+      when( schemaFileInfoMock.getFileName() ).thenReturn( fileName );
+    }
+    return schemaFileInfoMock;
+  }
+
 }
