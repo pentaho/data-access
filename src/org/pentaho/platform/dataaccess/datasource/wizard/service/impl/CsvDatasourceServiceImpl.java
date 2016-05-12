@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -163,8 +163,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
           Thread.sleep( 200 );
         }
 
-        modelerWorkspace.setDomain(
-          modelerService.generateCSVDomain( modelInfo.getStageTableName(), modelInfo.getDatasourceName() ) );
+        modelerWorkspace.setDomain( modelerService.generateCSVDomain( modelInfo ) );
         modelerWorkspace.getWorkspaceHelper().autoModelFlat( modelerWorkspace );
         modelerWorkspace.getWorkspaceHelper().autoModelRelationalFlat( modelerWorkspace );
         modelerWorkspace.setModelName( modelInfo.getDatasourceName() );
