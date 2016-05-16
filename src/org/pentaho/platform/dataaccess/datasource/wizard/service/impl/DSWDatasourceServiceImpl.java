@@ -228,7 +228,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     SQLConnection sqlConnection = null;
     try {
       int limit = ( previewLimit != null && previewLimit.length() > 0 ) ? Integer.parseInt( previewLimit ) : -1;
-      sqlConnection = getSqlConnection(connectionName);
+      sqlConnection = getSqlConnection( connectionName );
       sqlConnection.setMaxRows( limit );
       sqlConnection.setReadOnly( true );
       return sqlConnection.executeQuery( query );
