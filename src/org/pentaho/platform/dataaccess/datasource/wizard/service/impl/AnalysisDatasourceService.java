@@ -84,12 +84,12 @@ public class AnalysisDatasourceService {
       @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
       @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
     throws PentahoAccessControlException {
-    Response response = null;
-    int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
+    int statusCode;
+
     try {
       AnalysisService service = new AnalysisService();
-      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
-      boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;
+      boolean overWriteInRepository = "true".equalsIgnoreCase( overwrite );
+      boolean xmlaEnabled = "true".equalsIgnoreCase( xmlaEnabledFlag );
       service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
           overWriteInRepository, xmlaEnabled, parameters, acl );
       statusCode = SUCCESS;
@@ -104,7 +104,7 @@ public class AnalysisDatasourceService {
       statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
 
-    response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+    Response response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
     logger.debug( "putMondrianSchema Response " + response );
     return response;
   }

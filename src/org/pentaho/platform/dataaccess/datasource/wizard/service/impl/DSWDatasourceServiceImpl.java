@@ -86,10 +86,6 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   private IMetadataDomainRepository metadataDomainRepository;
 
-  private static final String BEFORE_QUERY = " SELECT * FROM ("; //$NON-NLS-1$
-
-  private static final String AFTER_QUERY = ") tbl"; //$NON-NLS-1$
-
   private GeoContext geoContext;
 
   public DSWDatasourceServiceImpl() {
@@ -227,17 +223,15 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     return true;
   }
 
-  private IPentahoResultSet executeQuery( String connectionName, String query, String previewLimit )
+  IPentahoResultSet executeQuery( String connectionName, String query, String previewLimit )
     throws QueryValidationException {
     SQLConnection sqlConnection = null;
     try {
       int limit = ( previewLimit != null && previewLimit.length() > 0 ) ? Integer.parseInt( previewLimit ) : -1;
-      sqlConnection = (SQLConnection) PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE,
-        connectionName, PentahoSessionHolder.getSession(),
-        new SimpleLogger( DatasourceServiceHelper.class.getName() ) );
+      sqlConnection = getSqlConnection(connectionName);
       sqlConnection.setMaxRows( limit );
       sqlConnection.setReadOnly( true );
-      return sqlConnection.executeQuery( BEFORE_QUERY + query + AFTER_QUERY );
+      return sqlConnection.executeQuery( query );
     } catch ( SQLException e ) {
       String error = "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED";
       if ( e.getSQLState().equals( "S0021" ) ) { // Column already exists
@@ -254,6 +248,12 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
         sqlConnection.close();
       }
     }
+  }
+
+  SQLConnection getSqlConnection( String connectionName ) {
+    return (SQLConnection) PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE,
+      connectionName, PentahoSessionHolder.getSession(),
+      new SimpleLogger( DatasourceServiceHelper.class.getName() ) );
   }
 
   public SerializedResultSet doPreview( String connectionName, String query, String previewLimit )
