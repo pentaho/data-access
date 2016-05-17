@@ -84,6 +84,26 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   private static final Log logger = LogFactory.getLog( DSWDatasourceServiceImpl.class );
 
+  /**
+   * property which can be saved in  {@link org.pentaho.metadata.model.LogicalModel} 
+   */
+  protected static final String LM_PROP_DATASOURCE_TYPE = "DatasourceType";
+
+  /**
+   * property which can be saved in  {@link org.pentaho.metadata.model.LogicalModel} 
+   */
+  protected static final String LM_PROP_MONDRIAN_CATALOG_REF = "MondrianCatalogRef";
+
+  /**
+   * property which can be saved in  {@link org.pentaho.metadata.model.LogicalModel} 
+   */
+  protected static final String LM_PROP_DATASOURCE_MODEL = "datasourceModel";
+
+  /**
+   * property which can be saved in  {@link org.pentaho.metadata.model.LogicalModel} 
+   */
+  protected static final String LM_PROP_VISIBLE = "visible";
+
   private IMetadataDomainRepository metadataDomainRepository;
 
   private static final String BEFORE_QUERY = " SELECT * FROM ("; //$NON-NLS-1$
@@ -117,8 +137,15 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
 
   protected int getDefaultAcls() {
-    return DataAccessPermissionUtil.getDataAccessViewPermissionHandler().getDefaultAcls(
-      PentahoSessionHolder.getSession() );
+    return DataAccessPermissionUtil.getDataAccessViewPermissionHandler().getDefaultAcls( PentahoSessionHolder.getSession() );
+  }
+
+  protected ModelerWorkspace createModelerWorkspace() {
+    return new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
+  }
+
+  protected ModelerService createModelerService() {
+    return new ModelerService();
   }
 
   public boolean deleteLogicalModel( String domainId, String modelName ) throws DatasourceServiceException {
@@ -140,15 +167,13 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       LogicalModel logicalModelRep = model.getLogicalModel( ModelerPerspective.REPORTING );
       //CSV related data is bounded to reporting model so need to perform some additional clean up here
       if ( logicalModelRep != null ) {
-        String modelState = (String) logicalModelRep.getProperty( "datasourceModel" );
+        String modelState = (String) logicalModelRep.getProperty( LM_PROP_DATASOURCE_MODEL );
 
         // if CSV, drop the staged table
         // TODO: use the edit story's stored info to do this
-        if ( "CSV".equals( logicalModelRep.getProperty( "DatasourceType" ) )
-          || "true"
-            .equalsIgnoreCase( (String) logicalModelRep.getProperty( LogicalModel.PROPERTY_TARGET_TABLE_STAGED ) ) ) {
-          targetTable =
-            ( (SqlPhysicalTable) domain.getPhysicalModels().get( 0 ).getPhysicalTables().get( 0 ) ).getTargetTable();
+        if ( "CSV".equals( logicalModelRep.getProperty( LM_PROP_DATASOURCE_TYPE ) )
+          || "true".equalsIgnoreCase( (String) logicalModelRep.getProperty( LogicalModel.PROPERTY_TARGET_TABLE_STAGED ) ) ) {
+          targetTable = ( (SqlPhysicalTable) domain.getPhysicalModels().get( 0 ).getPhysicalTables().get( 0 ) ).getTargetTable();
           DatasourceDTO datasource = null;
 
           if ( modelState != null ) {
@@ -175,10 +200,10 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       }
 
       // if associated mondrian file, delete
-      if ( logicalModel.getProperty( "MondrianCatalogRef" ) != null ) {
+      if ( logicalModel.getProperty( LM_PROP_MONDRIAN_CATALOG_REF ) != null ) {
         // remove Mondrian schema
         IMondrianCatalogService service = PentahoSystem.get( IMondrianCatalogService.class, null );
-        catalogRef = (String) logicalModel.getProperty( "MondrianCatalogRef" );
+        catalogRef = (String) logicalModel.getProperty( LM_PROP_MONDRIAN_CATALOG_REF );
         // check if the model is not already removed
         if ( service.getCatalog( catalogRef, PentahoSessionHolder.getSession() ) != null ) {
           service.removeCatalog( catalogRef, PentahoSessionHolder.getSession() );
@@ -204,23 +229,17 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       }
     } catch ( MondrianCatalogServiceException me ) {
       logger.error( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage() ),
-        me ); //$NON-NLS-1$
+        "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage() ), me ); //$NON-NLS-1$
       throw new DatasourceServiceException( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage() ),
-        me ); //$NON-NLS-1$
-
+        "DatasourceServiceImpl.ERROR_0020_UNABLE_TO_DELETE_CATALOG", catalogRef, domainId, me.getLocalizedMessage() ), me ); //$NON-NLS-1$
     } catch ( DomainStorageException dse ) {
       logger.error( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0017_UNABLE_TO_STORE_DOMAIN", domainId, dse.getLocalizedMessage() ),
-        dse ); //$NON-NLS-1$
+        "DatasourceServiceImpl.ERROR_0017_UNABLE_TO_STORE_DOMAIN", domainId, dse.getLocalizedMessage() ), dse ); //$NON-NLS-1$
       throw new DatasourceServiceException( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0016_UNABLE_TO_STORE_DOMAIN", domainId, dse.getLocalizedMessage() ),
-        dse ); //$NON-NLS-1$
+        "DatasourceServiceImpl.ERROR_0016_UNABLE_TO_STORE_DOMAIN", domainId, dse.getLocalizedMessage() ), dse ); //$NON-NLS-1$
     } catch ( DomainIdNullException dne ) {
       logger.error( Messages
-        .getErrorString( "DatasourceServiceImpl.ERROR_0019_DOMAIN_IS_NULL", dne.getLocalizedMessage() ),
-        dne ); //$NON-NLS-1$
+        .getErrorString( "DatasourceServiceImpl.ERROR_0019_DOMAIN_IS_NULL", dne.getLocalizedMessage() ), dne ); //$NON-NLS-1$
       throw new DatasourceServiceException( Messages.getErrorString(
         "DatasourceServiceImpl.ERROR_0019_DOMAIN_IS_NULL", dne.getLocalizedMessage() ), dne ); //$NON-NLS-1$
     }
@@ -288,8 +307,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     try {
       conn = DatasourceServiceHelper.getDataSourceConnection( connectionName, PentahoSessionHolder.getSession() );
       if ( conn == null ) {
-        logger.error( Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName ) ); //$NON-NLS-1$
+        logger.error( Messages.getErrorString( "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName ) ); //$NON-NLS-1$
         throw new DatasourceServiceException( Messages.getErrorString(
           "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName ) ); //$NON-NLS-1$
       }
@@ -300,11 +318,9 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
         }
       } catch ( SQLException e ) {
         logger.error( Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName, e.getLocalizedMessage() ),
-          e ); //$NON-NLS-1$
+          "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName, e.getLocalizedMessage() ), e ); //$NON-NLS-1$
         throw new DatasourceServiceException( Messages.getErrorString(
-          "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName, e.getLocalizedMessage() ),
-          e ); //$NON-NLS-1$
+          "DatasourceServiceImpl.ERROR_0018_UNABLE_TO_TEST_CONNECTION", connectionName, e.getLocalizedMessage() ), e ); //$NON-NLS-1$
       }
     }
     return true;
@@ -386,23 +402,17 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       return true;
     } catch ( DomainStorageException dse ) {
       logger.error( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0012_UNABLE_TO_STORE_DOMAIN", domainName,
-        dse.getLocalizedMessage() ) ); //$NON-NLS-1$
-      logger.error( "error", dse ); //$NON-NLS-1$
+        "DatasourceServiceImpl.ERROR_0012_UNABLE_TO_STORE_DOMAIN", domainName, dse.getLocalizedMessage() ), dse ); //$NON-NLS-1$
       throw new DatasourceServiceException( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0012_UNABLE_TO_STORE_DOMAIN", domainName, dse.getLocalizedMessage() ),
-        dse ); //$NON-NLS-1$
+        "DatasourceServiceImpl.ERROR_0012_UNABLE_TO_STORE_DOMAIN", domainName, dse.getLocalizedMessage() ), dse ); //$NON-NLS-1$
     } catch ( DomainAlreadyExistsException dae ) {
       logger.error( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0013_DOMAIN_ALREADY_EXIST", domainName, dae.getLocalizedMessage() ) ); //$NON-NLS-1$
-      logger.error( "error", dae ); //$NON-NLS-1$
+        "DatasourceServiceImpl.ERROR_0013_DOMAIN_ALREADY_EXIST", domainName, dae.getLocalizedMessage() ), dae ); //$NON-NLS-1$
       throw new DatasourceServiceException( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0013_DOMAIN_ALREADY_EXIST", domainName, dae.getLocalizedMessage() ),
-        dae ); //$NON-NLS-1$
+        "DatasourceServiceImpl.ERROR_0013_DOMAIN_ALREADY_EXIST", domainName, dae.getLocalizedMessage() ), dae ); //$NON-NLS-1$
     } catch ( DomainIdNullException dne ) {
       logger.error( Messages
-        .getErrorString( "DatasourceServiceImpl.ERROR_0014_DOMAIN_IS_NULL", dne.getLocalizedMessage() ) ); //$NON-NLS-1$
-      logger.error( "error", dne ); //$NON-NLS-1$
+        .getErrorString( "DatasourceServiceImpl.ERROR_0014_DOMAIN_IS_NULL", dne.getLocalizedMessage() ), dne ); //$NON-NLS-1$
       throw new DatasourceServiceException( Messages.getErrorString(
         "DatasourceServiceImpl.ERROR_0014_DOMAIN_IS_NULL", dne.getLocalizedMessage() ), dne ); //$NON-NLS-1$
     }
@@ -442,7 +452,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       locale = LocaleHelper.getClosestLocale( locale, locales );
 
       for ( LogicalModel model : domain.getLogicalModels() ) {
-        String vis = (String) model.getProperty( "visible" );
+        String vis = (String) model.getProperty( LM_PROP_VISIBLE );
         if ( vis != null ) {
           String[] visibleContexts = vis.split( "," );
           boolean visibleToContext = false;
@@ -523,7 +533,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
                                                      DatasourceDTO datasourceDTO ) throws DatasourceServiceException {
 
     ModelerWorkspace modelerWorkspace = new ModelerWorkspace( new GwtModelerWorkspaceHelper(), getGeoContext() );
-    ModelerService modelerService = new ModelerService();
+    ModelerService modelerService = createModelerService();
     modelerWorkspace.setModelName( name );
 
     try {
@@ -645,9 +655,5 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       this.geoContext = DatasourceServiceHelper.getGeoContext();
     }
     return this.geoContext;
-  }
-
-  protected ModelerWorkspace createModelerWorkspace() {
-    return new ModelerWorkspace( new GwtModelerWorkspaceHelper() );
   }
 }
