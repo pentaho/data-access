@@ -28,8 +28,12 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.junit.Test;
+import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 
 import java.util.ArrayList;
+
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 
 public class DSWDatasourceServiceImplTest {
@@ -109,6 +113,22 @@ public class DSWDatasourceServiceImplTest {
     Mockito.verify( domainRepository ).removeDomain( domain2Models.getId() );
   }
 
+  @Test
+  public void queryIsExecuted_WithoutBeingWrappedIntoAnotherQuery() throws Exception {
+    final String query = "SELECT * FROM tableName;";
+    final String connName = "connectionToDb";
+    final String previewLimit = "5";
+
+    final SQLConnection connToDataBase = mock( SQLConnection.class );
+    doReturn( connToDataBase ).when( service ).getSqlConnection( connName );
+
+    doCallRealMethod().when( service ).executeQuery( eq( connName ), eq( query ), eq( previewLimit ) );
+
+    service.executeQuery( connName, query, previewLimit );
+
+    verify( connToDataBase ).executeQuery( query );
+  }
+
   private LogicalModel mockLogicalModel() {
     return mockLogicalModel( LOGICAL_MODEL_ID_DEFAULT );
   }
@@ -130,7 +150,7 @@ public class DSWDatasourceServiceImplTest {
 
   private IMetadataDomainRepository mockDomainRepository( Domain domainToReturn, String domainId ) {
     IMetadataDomainRepository domainRepository = Mockito.mock( IMetadataDomainRepository.class );
-    Mockito.doReturn( domainToReturn ).when( domainRepository ).getDomain( domainId );
+    doReturn( domainToReturn ).when( domainRepository ).getDomain( domainId );
 
     return domainRepository;
   }
@@ -138,9 +158,9 @@ public class DSWDatasourceServiceImplTest {
   private DSWDatasourceServiceImpl mockService( ModelerWorkspace workspace ) throws Exception {
     DSWDatasourceServiceImpl service = Mockito.mock( DSWDatasourceServiceImpl.class );
 
-    Mockito.doReturn( true ).when( service ).hasDataAccessPermission();
-    Mockito.doReturn( domainRepository ).when( service ).getMetadataDomainRepository();
-    Mockito.doReturn( workspace ).when( service ).createModelerWorkspace();
+    doReturn( true ).when( service ).hasDataAccessPermission();
+    doReturn( domainRepository ).when( service ).getMetadataDomainRepository();
+    doReturn( workspace ).when( service ).createModelerWorkspace();
 
     Mockito.doCallRealMethod().when( service ).deleteLogicalModel( DOMAIN_ID, MODEL_NAME );
 

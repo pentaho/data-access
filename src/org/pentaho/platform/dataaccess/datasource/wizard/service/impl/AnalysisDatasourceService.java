@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -20,7 +20,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -84,12 +83,12 @@ public class AnalysisDatasourceService {
       @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
       @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
     throws PentahoAccessControlException {
-    Response response = null;
-    int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
+    int statusCode;
+
     try {
       AnalysisService service = new AnalysisService();
-      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
-      boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;
+      boolean overWriteInRepository = "true".equalsIgnoreCase( overwrite );
+      boolean xmlaEnabled = "true".equalsIgnoreCase( xmlaEnabledFlag );
       service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
           overWriteInRepository, xmlaEnabled, parameters, acl );
       statusCode = SUCCESS;
@@ -104,7 +103,7 @@ public class AnalysisDatasourceService {
       statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     }
 
-    response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
+    Response response = Response.ok().status( statusCode ).type( MediaType.TEXT_PLAIN ).build();
     logger.debug( "putMondrianSchema Response " + response );
     return response;
   }
