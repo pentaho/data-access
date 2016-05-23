@@ -351,6 +351,11 @@ public class DatasourceResourceIT {
     testImportFile( "test-res/mysql_steelwheels.mondri_xyz-invalid_declare_encoding.xml", "SteelWheels_xyzxx" );
   }
 
+  @Test
+  public void testImportMondrianSchemaFromZip() throws Exception {
+    testImportFile( "test-res/mysql_steelwheels_qq.zip", "SteelWheels_qq" );
+  }
+
   @Factory
   public static <T> Matcher<T> match( Matcher<T> matcher ) {
     return matcher;

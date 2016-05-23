@@ -43,7 +43,9 @@ import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +53,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class AnalysisService extends DatasourceService {
 
@@ -63,6 +67,9 @@ public class AnalysisService extends DatasourceService {
   private static final String MONDRIAN_MIME_TYPE = "application/vnd.pentaho.mondrian+xml";
   private static final String CATALOG_NAME = "catalogName";
   private static final String UTF_8 = "UTF-8";
+  private static final String ZIP_EXTENSION = ".zip";
+  private static final String MONDRIAN_FILE_EXTENSION = ".mondrian.xml";
+  private static final String ANNOTATIONS_FILE = "annotations.xml";
   private static final Log logger = LogFactory.getLog( AnalysisService.class );
 
   /*
@@ -129,8 +136,42 @@ public class AnalysisService extends DatasourceService {
     // sanity check to prevent common mistake - import of .xmi files.
     // See BISERVER-12815
     fileNameValidation( fileName );
-    processMondrianImport(
+
+    ZipInputStream zis = null;
+    ByteArrayOutputStream mondrian = null;
+    ByteArrayOutputStream annotations = null;
+    if ( fileName.endsWith( ZIP_EXTENSION ) ) {
+      zis = new ZipInputStream ( dataInputStream );
+      ZipEntry ze = null;
+      int len = 0;
+      while ( ( ze = zis.getNextEntry() ) != null ) {
+        if ( ze.getName().endsWith( MONDRIAN_FILE_EXTENSION ) ) {
+          IOUtils.copy( zis, mondrian = new ByteArrayOutputStream() );
+        }
+        else if ( ze.getName().equals( ANNOTATIONS_FILE ) ) {
+          IOUtils.copy( zis, annotations = new ByteArrayOutputStream() );
+        }
+        zis.closeEntry();
+      }
+      if ( mondrian != null ) {
+        dataInputStream = new ByteArrayInputStream( mondrian.toByteArray() );
+      }
+    }
+    try{
+      processMondrianImport(
         dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters, fileName, acl );
+    }
+    finally {
+      if ( zis != null ) {
+        zis.close();
+      }
+      if ( mondrian != null ) {
+        mondrian.close();
+      }
+      if ( annotations != null ) {
+        annotations.close();
+      }
+    }
   }
 
   public RepositoryFileAclDto getAnalysisDatasourceAcl( String analysisId )
