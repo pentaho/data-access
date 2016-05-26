@@ -40,6 +40,8 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.DatabaseType;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -60,6 +62,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.SqlQueriesNotSupportedException;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -87,6 +90,8 @@ public class DSWDatasourceServiceImplTest {
   private static final String LOGICAL_MODEL_ID_ANALYSIS = "Analysis";
 
   private static final String LOGICAL_MODEL_CONTEXTNAME = "contextName";
+
+  private static final String STRING_DEFAULT = "<def>";
 
   private LogicalModel analysisModel;
   private LogicalModel reportingModel;
@@ -149,6 +154,7 @@ public class DSWDatasourceServiceImplTest {
     when( workspace2Models.getLogicalModel( ModelerPerspective.REPORTING ) ).thenReturn( reportingModel );
 
     dswService = spy( new DSWDatasourceServiceImpl( mock( ConnectionServiceImpl.class ) ) );
+    doNothing().when( dswService ).checkSqlQueriesSupported( anyString() );
     dswService.setMetadataDomainRepository( domainRepository );
 
     Object[][] coumnHeaders = new Object[][]{ columns };
@@ -622,6 +628,40 @@ public class DSWDatasourceServiceImplTest {
   public void testCreateModelerWorkspace() {
     ModelerWorkspace workspace = dswService.createModelerWorkspace();
     assertNotNull( workspace );
+  }
+
+
+  @Test( expected = SqlQueriesNotSupportedException.class )
+  public void testSqlQueries_AreNotSupported_PentahoDataServices() throws Exception {
+
+    final String connNameDataService = "connToDataService";
+    final String dbTypeIdDataService = "Pentaho Data Services";
+
+    IDatabaseConnection connDataService = new DatabaseConnection();
+    connDataService.setDatabaseType( new DatabaseType( dbTypeIdDataService, STRING_DEFAULT, new ArrayList
+      <>(), 0, STRING_DEFAULT ) );
+
+    ConnectionServiceImpl connService = mock( ConnectionServiceImpl.class );
+    doReturn( connDataService ).when( connService ).getConnectionByName( eq( connNameDataService ) );
+    DSWDatasourceServiceImpl service = new DSWDatasourceServiceImpl( connService );
+
+    service.checkSqlQueriesSupported( connNameDataService );
+  }
+
+  @Test
+  public void testSqlQueries_Supported_PostgresDb() throws Exception {
+    final String connNamePostgres = "connToPostgresDb";
+    final String dbTypeIdPostgres = "PostgresDb";
+
+    IDatabaseConnection connDataService = new DatabaseConnection();
+    connDataService.setDatabaseType( new DatabaseType( dbTypeIdPostgres, STRING_DEFAULT, new ArrayList
+      <>(), 0, STRING_DEFAULT ) );
+
+    ConnectionServiceImpl connService = mock( ConnectionServiceImpl.class );
+    doReturn( connDataService ).when( connService ).getConnectionByName( eq( connNamePostgres ) );
+    DSWDatasourceServiceImpl service = new DSWDatasourceServiceImpl( connService );
+
+    service.checkSqlQueriesSupported( connNamePostgres );
   }
 
   private Class<?> anyClass() {
