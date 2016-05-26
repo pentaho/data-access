@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import  org.pentaho.platform.api.repository2.unified.RepositoryFile;
 
 public class AnalysisService extends DatasourceService {
 
@@ -71,6 +72,8 @@ public class AnalysisService extends DatasourceService {
   private static final String MONDRIAN_FILE_EXTENSION = ".mondrian.xml";
   private static final String ANNOTATIONS_FILE = "annotations.xml";
   private static final Log logger = LogFactory.getLog( AnalysisService.class );
+  private static final String ANNOTATION_FOLDER = RepositoryFile.SEPARATOR + "etc"
+      + RepositoryFile.SEPARATOR + "mondrian" + RepositoryFile.SEPARATOR;
 
   /*
    * register the handler in the PentahoSpringObjects.xml for MondrianImportHandler
@@ -141,14 +144,13 @@ public class AnalysisService extends DatasourceService {
     ByteArrayOutputStream mondrian = null;
     ByteArrayOutputStream annotations = null;
     if ( fileName.endsWith( ZIP_EXTENSION ) ) {
-      zis = new ZipInputStream ( dataInputStream );
+      zis = new ZipInputStream( dataInputStream );
       ZipEntry ze = null;
       int len = 0;
       while ( ( ze = zis.getNextEntry() ) != null ) {
         if ( ze.getName().endsWith( MONDRIAN_FILE_EXTENSION ) ) {
           IOUtils.copy( zis, mondrian = new ByteArrayOutputStream() );
-        }
-        else if ( ze.getName().equals( ANNOTATIONS_FILE ) ) {
+        } else if ( ze.getName().equals( ANNOTATIONS_FILE ) ) {
           IOUtils.copy( zis, annotations = new ByteArrayOutputStream() );
         }
         zis.closeEntry();
@@ -157,11 +159,23 @@ public class AnalysisService extends DatasourceService {
         dataInputStream = new ByteArrayInputStream( mondrian.toByteArray() );
       }
     }
-    try{
+    try {
       processMondrianImport(
         dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters, fileName, acl );
-    }
-    finally {
+      if ( annotations != null ) {
+        String catName = ( catalogName != null ) ? catalogName : fileName.substring( 0, fileName.indexOf( '.' ) );
+        ByteArrayInputStream annots = new ByteArrayInputStream( annotations.toByteArray() );
+        IPlatformImportBundle mondrianBundle = new RepositoryFileImportBundle.Builder()
+          .input( annots ).path( ANNOTATION_FOLDER + catName )
+          .name( ANNOTATIONS_FILE ).charSet( "UTF-8" ).overwriteFile( true )
+          .mime( "text/xml" ) .withParam( "domain-id", catName )
+          .build();
+          // do import
+        importer.importFile( mondrianBundle );
+        logger.debug( "imported mondrian annotations" );
+        annots.close();
+      }
+    } finally {
       if ( zis != null ) {
         zis.close();
       }
