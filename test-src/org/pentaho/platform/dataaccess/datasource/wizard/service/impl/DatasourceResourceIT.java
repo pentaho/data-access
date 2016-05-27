@@ -21,6 +21,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,8 +35,6 @@ import java.util.zip.ZipFile;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Description;
@@ -182,10 +181,6 @@ public class DatasourceResourceIT {
   }
 
   @Test
-  public void DummyTest() throws Exception {
-
-  }
-  @Test
   public void testMondrianImportExport() throws Exception {
     final String domainName = "SalesData";
     List<IMimeType> mimeTypeList = new ArrayList<IMimeType>();
@@ -219,11 +214,11 @@ public class DatasourceResourceIT {
     new ModelerService().serializeModels( domain, domainName );
 
     final Response salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( domainName + ".xmi" );
-    Assert.assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
-    Assert.assertNotNull( salesData.getMetadata() );
-    Assert.assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
-    Assert.assertEquals( salesData.getMetadata().getFirst( "Content-Disposition" ).getClass(), String.class );
-    Assert.assertTrue( ( (String) salesData.getMetadata().getFirst( "Content-Disposition" ) ).endsWith( domainName + ".zip\"" ) );
+    assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
+    assertNotNull( salesData.getMetadata() );
+    assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
+    assertEquals( salesData.getMetadata().getFirst( "Content-Disposition" ).getClass(), String.class );
+    assertTrue( ( (String) salesData.getMetadata().getFirst( "Content-Disposition" ) ).endsWith( domainName + ".zip\"" ) );
 
     File file = File.createTempFile( domainName, ".zip" );
     final FileOutputStream fileOutputStream = new FileOutputStream( file );
@@ -234,7 +229,7 @@ public class DatasourceResourceIT {
     final Enumeration<? extends ZipEntry> entries = zipFile.entries();
     while ( entries.hasMoreElements() ) {
       final ZipEntry zipEntry = entries.nextElement();
-      Assert.assertTrue( zipEntry.getName().equals( domainName + ".xmi" ) || zipEntry.getName().equals( domainName + ".mondrian.xml" ) );
+      assertTrue( zipEntry.getName().equals( domainName + ".xmi" ) || zipEntry.getName().equals( domainName + ".mondrian.xml" ) );
     }
     zipFile.close();
     file.delete();
@@ -256,11 +251,11 @@ public class DatasourceResourceIT {
     metadataImportHandler.importFile( bundle1 );
 
     final Response salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( "SalesData" );
-    Assert.assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
-    Assert.assertNotNull( salesData.getMetadata() );
-    Assert.assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
-    Assert.assertEquals( salesData.getMetadata().getFirst( "Content-Disposition" ).getClass(), String.class );
-    Assert.assertTrue( ( (String) salesData.getMetadata().getFirst( "Content-Disposition" ) ).endsWith( ".xmi\"" ) );
+    assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
+    assertNotNull( salesData.getMetadata() );
+    assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
+    assertEquals( salesData.getMetadata().getFirst( "Content-Disposition" ).getClass(), String.class );
+    assertTrue( ( (String) salesData.getMetadata().getFirst( "Content-Disposition" ) ).endsWith( ".xmi\"" ) );
   }
 
 
@@ -295,7 +290,7 @@ public class DatasourceResourceIT {
     FileInputStream in = new FileInputStream( new File( new File( "test-res" ), "SampleDataOlap.xmi" ) );
     try {
       Response resp = service.publishDsw( "AModel.xmi", in, true, false, null );
-      Assert.assertEquals(
+      assertEquals(
           Response.Status.Family.SUCCESSFUL,
           Response.Status.fromStatusCode( resp.getStatus() ).getFamily() );
       mockery.assertIsSatisfied();
@@ -351,11 +346,6 @@ public class DatasourceResourceIT {
     testImportFile( "test-res/mysql_steelwheels.mondri_xyz-invalid_declare_encoding.xml", "SteelWheels_xyzxx" );
   }
 
-  @Test
-  public void testImportMondrianSchemaFromZip() throws Exception {
-    testImportFile( "test-res/mysql_steelwheels_qq.zip", "SteelWheels_qq" );
-  }
-
   @Factory
   public static <T> Matcher<T> match( Matcher<T> matcher ) {
     return matcher;
@@ -364,8 +354,8 @@ public class DatasourceResourceIT {
   private static PentahoMetadataDomainRepository createMetadataDomainRepository() throws Exception {
     IUnifiedRepository repository = new FileSystemBackedUnifiedRepository( "test-res/dsw" );
     mp.defineInstance( IUnifiedRepository.class, repository );
-    Assert.assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/metadata", true, true, null ) );
-    Assert.assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/mondrian", true, true, null ) );
+    assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/metadata", true, true, null ) );
+    assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/mondrian", true, true, null ) );
     PentahoMetadataDomainRepository pentahoMetadataDomainRepository = new PentahoMetadataDomainRepository( repository );
     return pentahoMetadataDomainRepository;
   }
