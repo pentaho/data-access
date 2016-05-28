@@ -336,6 +336,52 @@ public class DatasourceResourceIT {
     }
   }
 
+  private void testImportZipFile( String filePath, final String expectedSchemaName, boolean annotated ) throws Exception {
+    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
+    File f = new File( filePath );
+    when( schemaFileInfo.getFileName() ).thenReturn( f.getName() );
+    Mockery mockery = new Mockery();
+    final IPlatformImporter mockImporter = mockery.mock( IPlatformImporter.class );
+    mp.defineInstance( IPlatformImporter.class, mockImporter );
+    if ( annotated ) {
+      mockery.checking( new Expectations() {
+        {
+          exactly( 2 ).of( mockImporter ).importFile( with( match( new TypeSafeMatcher<IPlatformImportBundle>() {
+            public boolean matchesSafely( IPlatformImportBundle bundle ) {
+              return true;
+            }
+            public void describeTo( Description description ) {
+              description.appendText( "bundle with zipped mondrian schema" );
+            }
+          } ) ) );
+        }
+      } );
+    } else {
+      mockery.checking( new Expectations() {
+        {
+          oneOf( mockImporter ).importFile( with( match( new TypeSafeMatcher<IPlatformImportBundle>() {
+            public boolean matchesSafely( IPlatformImportBundle bundle ) {
+              return bundle.getProperty( "domain-id" ).equals( expectedSchemaName );
+            }
+            public void describeTo( Description description ) {
+              description.appendText( "bundle with zipped mondrian schema" );
+            }
+          } ) ) );
+        }
+      } );
+    }
+    AnalysisService service = new AnalysisService();
+    FileInputStream in = new FileInputStream( filePath );
+    try {
+      service.putMondrianSchema( in, schemaFileInfo, null, null, null, false, false,
+          "Datasource=SampleData;overwrite=false", null );
+
+      mockery.assertIsSatisfied();
+    } finally {
+      IOUtils.closeQuietly( in );
+    }
+  }
+
   @Test
   public void testImportMondrianSchemaWithEncodingIssue() throws Exception {
     testImportFile( "test-res/mysql_steelwheels.mondri_xyz-invalid_encoding.xml", "SteelWheels_xyzxx" );
@@ -353,7 +399,12 @@ public class DatasourceResourceIT {
 
   @Test
   public void testImportMondrianSchemaFromZip() throws Exception {
-    testImportFile( "test-res/mysql_steelwheels_qq.zip", "SteelWheels_qq" );
+    testImportZipFile( "test-res/mysql_steelwheels_no_annot.zip", "SteelWheels_no_annot", false );
+  }
+
+  @Test
+  public void testImportAnnotatedMondrianSchemaFromZip() throws Exception {
+    testImportZipFile( "test-res/mysql_steelwheels_qq.zip", "SteelWheels_qq", true );
   }
 
   @Factory
