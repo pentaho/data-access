@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
@@ -79,13 +79,13 @@ public class Condition implements ICondition {
   }
 
   public String getCondition( String type, String paramName ) {
-    String[] val = this.value;
+    String[] val = getValue();
 /*
     if(val == null && defaultValue != null) {
       val = defaultValue;
     }
 */
-    Operator theOperator = Operator.parse( operator );
+    Operator theOperator = Operator.parse( getOperator() );
     if ( type.equalsIgnoreCase( DataType.STRING.getName() ) && theOperator == Operator.EQUAL ) {
       theOperator = Operator.EXACTLY_MATCHES;
     }
@@ -96,7 +96,7 @@ public class Condition implements ICondition {
       }
     }
     boolean enforceParameters = paramName != null;
-    String columnName = "[" + category + "." + column + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$;
+    String columnName = "[" + getCategory() + "." + getColumn() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$;
     // Date is a special case where we craft a formula function.
     if ( type.equals( DataType.DATE.getName() ) ) {
       if ( enforceParameters ) {
