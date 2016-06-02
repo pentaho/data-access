@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource;
@@ -52,6 +52,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAcces
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAccessViewPermissionHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessPermissionHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessViewPermissionHandler;
+import org.pentaho.platform.engine.core.system.PathBasedSystemSettings;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.TenantUtils;
@@ -96,8 +97,8 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/repository.spring.xml",
-    "classpath:/solutionACL/system/repository-test-override.spring.xml",
-    "classpath:/solutionACL/system/importExport.xml", "classpath:/solutionACL/system/pentahoObjects.spring.xml" } )
+  "classpath:/solutionACL/system/repository-test-override.spring.xml",
+  "classpath:/solutionACL/system/importExport.xml", "classpath:/solutionACL/system/pentahoObjects.spring.xml" } )
 public class DataSourcePublishIT extends JerseyTest implements ApplicationContextAware {
   private static final String USERNAME_SUZY = "suzy";
   private static final String USERNAME_TIFFANY = "tiffany";
@@ -108,11 +109,11 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
   private static final String DATA_ACCESS_API_DATASOURCE_DSW = "data-access/api/datasource/dsw/";
 
   private static WebAppDescriptor webAppDescriptor = new WebAppDescriptor.Builder(
-      new String[] {
-          "org.pentaho.platform.dataaccess.datasource.api.resources",
-          "org.pentaho.platform.dataaccess.datasource.wizard.service.impl"
-      } ).contextPath( "plugin" ).addFilter(
-      PentahoRequestContextFilter.class, "pentahoRequestContextFilter" ).build();
+    new String[] {
+      "org.pentaho.platform.dataaccess.datasource.api.resources",
+      "org.pentaho.platform.dataaccess.datasource.wizard.service.impl"
+    } ).contextPath( "plugin" ).addFilter(
+    PentahoRequestContextFilter.class, "pentahoRequestContextFilter" ).build();
 
   private ApplicationContext applicationContext;
   private ITenant defaultTenant;
@@ -151,6 +152,7 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    PentahoSystem.setSystemSettingsService( new PathBasedSystemSettings() );
     DefaultUnifiedRepositoryBase.setUpClass();
     FileUtils.deleteDirectory( new File( "/tmp/data-access/jackrabbit-test-TRUNK" ) );
   }
@@ -169,19 +171,27 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     defaultTenant = repositoryBase.createTenant( repositoryBase.getSystemTenant(), TenantUtils.getDefaultTenant() );
 
     singleTenantAdminUserName = (String) applicationContext.getBean( "singleTenantAdminUserName" );
-    repositoryBase.createUser( defaultTenant, singleTenantAdminUserName, PASSWORD, new String[] { repositoryBase.getTenantAdminRoleName() } );
+    repositoryBase.createUser( defaultTenant, singleTenantAdminUserName, PASSWORD,
+      new String[] { repositoryBase.getTenantAdminRoleName() } );
     final String singleTenantAuthenticatedAuthorityName =
-        (String) applicationContext.getBean( "singleTenantAuthenticatedAuthorityName" );
-    repositoryBase.createUser( defaultTenant, USERNAME_SUZY, PASSWORD, new String[] { singleTenantAuthenticatedAuthorityName } );
-    repositoryBase.createUser( defaultTenant, USERNAME_TIFFANY, PASSWORD, new String[] { singleTenantAuthenticatedAuthorityName } );
+      (String) applicationContext.getBean( "singleTenantAuthenticatedAuthorityName" );
+    repositoryBase
+      .createUser( defaultTenant, USERNAME_SUZY, PASSWORD, new String[] { singleTenantAuthenticatedAuthorityName } );
+    repositoryBase
+      .createUser( defaultTenant, USERNAME_TIFFANY, PASSWORD, new String[] { singleTenantAuthenticatedAuthorityName } );
 
-    repositoryBase.login( singleTenantAdminUserName, defaultTenant, new String[] { repositoryBase.getTenantAdminRoleName() } );
+    repositoryBase
+      .login( singleTenantAdminUserName, defaultTenant, new String[] { repositoryBase.getTenantAdminRoleName() } );
 
     final IUnifiedRepository repo = PentahoSystem.get( IUnifiedRepository.class );
 
     String etcID = String.valueOf( repo.getFile( ClientRepositoryPaths.getEtcFolderPath() ).getId() );
-    repo.createFolder( etcID, new RepositoryFile.Builder( MondrianCatalogHelper.MONDRIAN_DATASOURCE_FOLDER ).folder( true ).build(), "initialization" );
-    repo.createFolder( etcID, new RepositoryFile.Builder( PentahoMetadataDomainRepositoryInfo.getMetadataFolderName() ).folder( true ).build(), "initialization" );
+    repo.createFolder( etcID,
+      new RepositoryFile.Builder( MondrianCatalogHelper.MONDRIAN_DATASOURCE_FOLDER ).folder( true ).build(),
+      "initialization" );
+    repo.createFolder( etcID,
+      new RepositoryFile.Builder( PentahoMetadataDomainRepositoryInfo.getMetadataFolderName() ).folder( true ).build(),
+      "initialization" );
 
     final MicroPlatform mp = repositoryBase.getMp();
     mp.define( IMondrianCatalogService.class, MondrianCatalogHelper.class );
@@ -192,7 +202,8 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     mp.defineInstance( ICacheManager.class, applicationContext.getBean( "ICacheManager" ) );
     mp.defineInstance( IMetadataDomainRepository.class, applicationContext.getBean( "IMetadataDomainRepository" ) );
 
-    final PluginResourceLoader pluginResourceLoader = (PluginResourceLoader) applicationContext.getBean( "IPluginResourceLoader" );
+    final PluginResourceLoader pluginResourceLoader =
+      (PluginResourceLoader) applicationContext.getBean( "IPluginResourceLoader" );
     pluginResourceLoader.setRootDir( new File( "test-src/solutionACL/system/data-access" ) );
     mp.defineInstance( IPluginResourceLoader.class, pluginResourceLoader );
     mp.define( IDataAccessPermissionHandler.class, SimpleDataAccessPermissionHandler.class );
@@ -220,7 +231,7 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
   @Test
   public void testPublishAnalysis() throws Exception {
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
 
     final String catalogID = "FoodMart";
     final InputStream uploadAnalysis = new FileInputStream( "test-res/schema.xml" );
@@ -231,31 +242,31 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     final RepositoryFileAclDto acl = generateACL( USERNAME_SUZY, RepositoryFileSid.Type.USER );
 
     MultiPart part = new FormDataMultiPart()
-        .field( "catalogName", catalogID )
-        .field( "datasourceName", catalogID )
-        .field( "overwrite", String.valueOf( overwrite ) )
-        .field( "xmlaEnabledFlag", String.valueOf( xmlaEnabledFlag ) )
-        .field( "acl", marshalACL( acl ) )
-        .field( "parameters", parameters )
-        .bodyPart(
-            new FormDataBodyPart(
-                FormDataContentDisposition.name( "uploadAnalysis" )
-                    .fileName( "schema.xml" )
-                    .size( uploadAnalysis.available() )
-                    .build()
-                , uploadAnalysis, MediaType.TEXT_XML_TYPE )
-        );
+      .field( "catalogName", catalogID )
+      .field( "datasourceName", catalogID )
+      .field( "overwrite", String.valueOf( overwrite ) )
+      .field( "xmlaEnabledFlag", String.valueOf( xmlaEnabledFlag ) )
+      .field( "acl", marshalACL( acl ) )
+      .field( "parameters", parameters )
+      .bodyPart(
+        new FormDataBodyPart(
+          FormDataContentDisposition.name( "uploadAnalysis" )
+            .fileName( "schema.xml" )
+            .size( uploadAnalysis.available() )
+            .build(),
+          uploadAnalysis, MediaType.TEXT_XML_TYPE )
+      );
 
     WebResource webResource = resource();
 
     ClientResponse postAnalysis = webResource.path( "data-access/api/mondrian/postAnalysis" )
-        .type( MediaType.MULTIPART_FORM_DATA_TYPE )
-        .post( ClientResponse.class, part );
+      .type( MediaType.MULTIPART_FORM_DATA_TYPE )
+      .post( ClientResponse.class, part );
     assertEquals( Response.Status.OK.getStatusCode(), postAnalysis.getStatus() );
 
     final RepositoryFileAclDto savedACL = webResource
-        .path( "data-access/api/datasource/analysis/" + catalogID + "/acl" )
-        .get( ClientResponse.class ).getEntity( RepositoryFileAclDto.class );
+      .path( "data-access/api/datasource/analysis/" + catalogID + "/acl" )
+      .get( ClientResponse.class ).getEntity( RepositoryFileAclDto.class );
     assertNotNull( savedACL );
 
     repositoryBase.login( USERNAME_SUZY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
@@ -265,10 +276,10 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     checkAnalysis( webResource, catalogID, false );
 
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
     final ClientResponse changeACL = webResource
-        .path( "data-access/api/datasource/analysis/" + catalogID + "/acl" )
-        .put( ClientResponse.class, generateACL( AUTHENTICATED_ROLE_NAME, RepositoryFileSid.Type.ROLE ) );
+      .path( "data-access/api/datasource/analysis/" + catalogID + "/acl" )
+      .put( ClientResponse.class, generateACL( AUTHENTICATED_ROLE_NAME, RepositoryFileSid.Type.ROLE ) );
     assertEquals( Response.Status.OK.getStatusCode(), changeACL.getStatus() );
 
     repositoryBase.login( USERNAME_TIFFANY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
@@ -278,7 +289,7 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
   @Test
   public void testAnalysis_ACL() throws Exception {
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
 
     final String catalogID = "FoodMart";
     final InputStream uploadAnalysis = new FileInputStream( "test-res/schema.xml" );
@@ -287,65 +298,65 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     final String parameters = "DataSource=" + catalogID + ";EnableXmla=" + xmlaEnabledFlag + ";overwrite=" + overwrite;
 
     MultiPart part = new FormDataMultiPart()
-        .field( "catalogName", catalogID )
-        .field( "datasourceName", catalogID )
-        .field( "overwrite", String.valueOf( overwrite ) )
-        .field( "xmlaEnabledFlag", String.valueOf( xmlaEnabledFlag ) )
-        .field( "parameters", parameters )
-        .bodyPart(
-            new FormDataBodyPart(
-                FormDataContentDisposition.name( "uploadAnalysis" )
-                    .fileName( "schema.xml" )
-                    .size( uploadAnalysis.available() )
-                    .build()
-                , uploadAnalysis, MediaType.TEXT_XML_TYPE )
-        );
+      .field( "catalogName", catalogID )
+      .field( "datasourceName", catalogID )
+      .field( "overwrite", String.valueOf( overwrite ) )
+      .field( "xmlaEnabledFlag", String.valueOf( xmlaEnabledFlag ) )
+      .field( "parameters", parameters )
+      .bodyPart(
+        new FormDataBodyPart(
+          FormDataContentDisposition.name( "uploadAnalysis" )
+            .fileName( "schema.xml" )
+            .size( uploadAnalysis.available() )
+            .build(),
+          uploadAnalysis, MediaType.TEXT_XML_TYPE )
+      );
 
     WebResource webResource = resource();
 
     final ClientResponse noAnalysis = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.CONFLICT.getStatusCode(), noAnalysis.getStatus() );
 
     ClientResponse postAnalysis = webResource.path( "data-access/api/mondrian/postAnalysis" )
-        .type( MediaType.MULTIPART_FORM_DATA_TYPE )
-        .post( ClientResponse.class, part );
+      .type( MediaType.MULTIPART_FORM_DATA_TYPE )
+      .post( ClientResponse.class, part );
     assertEquals( Response.Status.OK.getStatusCode(), postAnalysis.getStatus() );
 
     final ClientResponse noACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.NOT_FOUND.getStatusCode(), noACL.getStatus() );
 
     repositoryBase.login( USERNAME_SUZY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
     checkAnalysis( webResource, catalogID, true );
 
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
     final ClientResponse changeACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "/acl" )
-        .put( ClientResponse.class, generateACL( USERNAME_SUZY, RepositoryFileSid.Type.USER ) );
+      .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "/acl" )
+      .put( ClientResponse.class, generateACL( USERNAME_SUZY, RepositoryFileSid.Type.USER ) );
     assertEquals( Response.Status.OK.getStatusCode(), changeACL.getStatus() );
 
     repositoryBase.login( USERNAME_SUZY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
     checkAnalysis( webResource, catalogID, true );
 
     final ClientResponse noAccessACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), noAccessACL.getStatus() );
 
     final ClientResponse noAccessACLNoDS = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "_not_exist/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + catalogID + "_not_exist/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), noAccessACLNoDS.getStatus() );
   }
 
   private void checkAnalysis( WebResource webResource, String catalogID, boolean hasAccess ) {
     final JaxbList analysisDatasourceIds = webResource
-          .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + "ids" )
-          .get( JaxbList.class );
+      .path( DATA_ACCESS_API_DATASOURCE_ANALYSIS + "ids" )
+      .get( JaxbList.class );
 
     final List list = analysisDatasourceIds.getList();
     if ( hasAccess ) {
@@ -358,7 +369,7 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
   @Test
   public void testPublishMetadata() throws Exception {
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
 
     final String domainID = "domainID";
     final FileInputStream metadataFile = new FileInputStream( "test-res/Sample_SQL_Query.xmi" );
@@ -366,28 +377,28 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     final RepositoryFileAclDto acl = generateACL( USERNAME_SUZY, RepositoryFileSid.Type.USER );
 
     MultiPart part = new FormDataMultiPart()
-        .field( "domainId", domainID )
-        .field( "overwrite", String.valueOf( overwrite ) )
-        .field( "acl", marshalACL( acl ) )
-        .bodyPart(
-            new FormDataBodyPart(
-                FormDataContentDisposition.name( "metadataFile" )
-                    .fileName( "Sample_SQL_Query.xmi" )
-                    .size( metadataFile.available() )
-                    .build()
-                , metadataFile, MediaType.TEXT_XML_TYPE )
-        );
+      .field( "domainId", domainID )
+      .field( "overwrite", String.valueOf( overwrite ) )
+      .field( "acl", marshalACL( acl ) )
+      .bodyPart(
+        new FormDataBodyPart(
+          FormDataContentDisposition.name( "metadataFile" )
+            .fileName( "Sample_SQL_Query.xmi" )
+            .size( metadataFile.available() )
+            .build(),
+          metadataFile, MediaType.TEXT_XML_TYPE )
+      );
 
     WebResource webResource = resource();
 
     ClientResponse postAnalysis = webResource.path( "data-access/api/metadata/import" )
-        .type( MediaType.MULTIPART_FORM_DATA_TYPE )
-        .put( ClientResponse.class, part );
+      .type( MediaType.MULTIPART_FORM_DATA_TYPE )
+      .put( ClientResponse.class, part );
     assertEquals( 3, postAnalysis.getStatus() );
 
     final RepositoryFileAclDto savedACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
-        .get( ClientResponse.class ).getEntity( RepositoryFileAclDto.class );
+      .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
+      .get( ClientResponse.class ).getEntity( RepositoryFileAclDto.class );
     assertNotNull( savedACL );
 
     repositoryBase.login( USERNAME_SUZY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
@@ -397,10 +408,10 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     checkMetadata( webResource, domainID, false );
 
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
     final ClientResponse changeACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
-        .put( ClientResponse.class, generateACL( AUTHENTICATED_ROLE_NAME, RepositoryFileSid.Type.ROLE ) );
+      .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
+      .put( ClientResponse.class, generateACL( AUTHENTICATED_ROLE_NAME, RepositoryFileSid.Type.ROLE ) );
     assertEquals( Response.Status.OK.getStatusCode(), changeACL.getStatus() );
 
     repositoryBase.login( USERNAME_TIFFANY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
@@ -410,69 +421,69 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
   @Test
   public void testMetadata_ACL() throws Exception {
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
 
     final String domainID = "domainID";
     final FileInputStream metadataFile = new FileInputStream( "test-res/Sample_SQL_Query.xmi" );
     final String overwrite = "true";
 
     MultiPart part = new FormDataMultiPart()
-        .field( "domainId", domainID )
-        .field( "overwrite", String.valueOf( overwrite ) )
-        .bodyPart(
-            new FormDataBodyPart(
-                FormDataContentDisposition.name( "metadataFile" )
-                    .fileName( "Sample_SQL_Query.xmi" )
-                    .size( metadataFile.available() )
-                    .build()
-                , metadataFile, MediaType.TEXT_XML_TYPE )
-        );
+      .field( "domainId", domainID )
+      .field( "overwrite", String.valueOf( overwrite ) )
+      .bodyPart(
+        new FormDataBodyPart(
+          FormDataContentDisposition.name( "metadataFile" )
+            .fileName( "Sample_SQL_Query.xmi" )
+            .size( metadataFile.available() )
+            .build(),
+          metadataFile, MediaType.TEXT_XML_TYPE )
+      );
 
     WebResource webResource = resource();
 
     final ClientResponse noMetadata = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.CONFLICT.getStatusCode(), noMetadata.getStatus() );
 
     ClientResponse postAnalysis = webResource.path( "data-access/api/metadata/import" )
-        .type( MediaType.MULTIPART_FORM_DATA_TYPE )
-        .put( ClientResponse.class, part );
+      .type( MediaType.MULTIPART_FORM_DATA_TYPE )
+      .put( ClientResponse.class, part );
     assertEquals( 3, postAnalysis.getStatus() );
 
     final ClientResponse noACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.NOT_FOUND.getStatusCode(), noACL.getStatus() );
 
     repositoryBase.login( USERNAME_SUZY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
     checkMetadata( webResource, domainID, true );
 
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
     final ClientResponse changeACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
-        .put( ClientResponse.class, generateACL( USERNAME_SUZY, RepositoryFileSid.Type.USER ) );
+      .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
+      .put( ClientResponse.class, generateACL( USERNAME_SUZY, RepositoryFileSid.Type.USER ) );
     assertEquals( Response.Status.OK.getStatusCode(), changeACL.getStatus() );
 
     repositoryBase.login( USERNAME_SUZY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
     checkMetadata( webResource, domainID, true );
 
     final ClientResponse noAccessACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), noAccessACL.getStatus() );
 
     final ClientResponse noAccessACLNoDS = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "_not_exist/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_METADATA + domainID + "_not_exist/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), noAccessACLNoDS.getStatus() );
   }
 
   private void checkMetadata( WebResource webResource, String domainID, boolean hasAccess ) {
     final JaxbList metadataDatasourceIds = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_METADATA + "ids" )
-        .get( JaxbList.class );
+      .path( DATA_ACCESS_API_DATASOURCE_METADATA + "ids" )
+      .get( JaxbList.class );
 
     final List list = metadataDatasourceIds.getList();
     if ( hasAccess ) {
@@ -485,7 +496,7 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
   @Test
   public void testPublishDSW() throws Exception {
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
 
     final String domainID = "test.xmi";
     final FileInputStream metadataFile = new FileInputStream( "test-res/test.xmi" );
@@ -493,28 +504,28 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     final RepositoryFileAclDto acl = generateACL( USERNAME_SUZY, RepositoryFileSid.Type.USER );
 
     MultiPart part = new FormDataMultiPart()
-        .field( "domainId", domainID )
-        .field( "overwrite", String.valueOf( overwrite ) )
-        .field( "acl", marshalACL( acl ) )
-        .bodyPart(
-            new FormDataBodyPart(
-                FormDataContentDisposition.name( "metadataFile" )
-                    .fileName( "test.xmi" )
-                    .size( metadataFile.available() )
-                    .build()
-                , metadataFile, MediaType.TEXT_XML_TYPE )
-        );
+      .field( "domainId", domainID )
+      .field( "overwrite", String.valueOf( overwrite ) )
+      .field( "acl", marshalACL( acl ) )
+      .bodyPart(
+        new FormDataBodyPart(
+          FormDataContentDisposition.name( "metadataFile" )
+            .fileName( "test.xmi" )
+            .size( metadataFile.available() )
+            .build(),
+          metadataFile, MediaType.TEXT_XML_TYPE )
+      );
 
     WebResource webResource = resource();
 
     ClientResponse postAnalysis = webResource.path( DATA_ACCESS_API_DATASOURCE_DSW + "import" )
-        .type( MediaType.MULTIPART_FORM_DATA_TYPE )
-        .put( ClientResponse.class, part );
+      .type( MediaType.MULTIPART_FORM_DATA_TYPE )
+      .put( ClientResponse.class, part );
     assertEquals( Response.Status.OK.getStatusCode(), postAnalysis.getStatus() );
 
     final RepositoryFileAclDto savedACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
-        .get( ClientResponse.class ).getEntity( RepositoryFileAclDto.class );
+      .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
+      .get( ClientResponse.class ).getEntity( RepositoryFileAclDto.class );
     assertNotNull( savedACL );
 
     repositoryBase.login( USERNAME_SUZY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
@@ -524,10 +535,10 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     checkDSW( webResource, domainID, false );
 
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
     final ClientResponse changeACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
-        .put( ClientResponse.class, generateACL( AUTHENTICATED_ROLE_NAME, RepositoryFileSid.Type.ROLE ) );
+      .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
+      .put( ClientResponse.class, generateACL( AUTHENTICATED_ROLE_NAME, RepositoryFileSid.Type.ROLE ) );
     assertEquals( Response.Status.OK.getStatusCode(), changeACL.getStatus() );
 
     repositoryBase.login( USERNAME_TIFFANY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
@@ -537,69 +548,69 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
   @Test
   public void testDSW_ACL() throws Exception {
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
 
     final String domainID = "test.xmi";
     final FileInputStream metadataFile = new FileInputStream( "test-res/test.xmi" );
     final boolean overwrite = true;
 
     MultiPart part = new FormDataMultiPart()
-        .field( "domainId", domainID )
-        .field( "overwrite", String.valueOf( overwrite ) )
-        .bodyPart(
-            new FormDataBodyPart(
-                FormDataContentDisposition.name( "metadataFile" )
-                    .fileName( "test.xmi" )
-                    .size( metadataFile.available() )
-                    .build()
-                , metadataFile, MediaType.TEXT_XML_TYPE )
-        );
+      .field( "domainId", domainID )
+      .field( "overwrite", String.valueOf( overwrite ) )
+      .bodyPart(
+        new FormDataBodyPart(
+          FormDataContentDisposition.name( "metadataFile" )
+            .fileName( "test.xmi" )
+            .size( metadataFile.available() )
+            .build(),
+          metadataFile, MediaType.TEXT_XML_TYPE )
+      );
 
     WebResource webResource = resource();
 
     final ClientResponse noDSW = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.CONFLICT.getStatusCode(), noDSW.getStatus() );
 
     ClientResponse postAnalysis = webResource.path( DATA_ACCESS_API_DATASOURCE_DSW + "import" )
-        .type( MediaType.MULTIPART_FORM_DATA_TYPE )
-        .put( ClientResponse.class, part );
+      .type( MediaType.MULTIPART_FORM_DATA_TYPE )
+      .put( ClientResponse.class, part );
     assertEquals( Response.Status.OK.getStatusCode(), postAnalysis.getStatus() );
 
     final ClientResponse noACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.NOT_FOUND.getStatusCode(), noACL.getStatus() );
 
     repositoryBase.login( USERNAME_SUZY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
     checkDSW( webResource, domainID, true );
 
     repositoryBase.login( singleTenantAdminUserName, defaultTenant,
-        new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
+      new String[] { repositoryBase.getTenantAdminRoleName(), AUTHENTICATED_ROLE_NAME } );
     final ClientResponse setSuzyACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
-        .put( ClientResponse.class, generateACL( USERNAME_SUZY, RepositoryFileSid.Type.USER ) );
+      .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
+      .put( ClientResponse.class, generateACL( USERNAME_SUZY, RepositoryFileSid.Type.USER ) );
     assertEquals( Response.Status.OK.getStatusCode(), setSuzyACL.getStatus() );
 
     repositoryBase.login( USERNAME_SUZY, defaultTenant, new String[] { AUTHENTICATED_ROLE_NAME } );
     checkDSW( webResource, domainID, true );
 
     final ClientResponse noAccessACL = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), noAccessACL.getStatus() );
 
     final ClientResponse noAccessACLNoDS = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "_not_exist/acl" )
-        .get( ClientResponse.class );
+      .path( DATA_ACCESS_API_DATASOURCE_DSW + domainID + "_not_exist/acl" )
+      .get( ClientResponse.class );
     assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), noAccessACLNoDS.getStatus() );
   }
 
   private void checkDSW( WebResource webResource, String domainID, boolean hasAccess ) {
     final JaxbList dswIds = webResource
-        .path( DATA_ACCESS_API_DATASOURCE_DSW + "ids" )
-        .get( JaxbList.class );
+      .path( DATA_ACCESS_API_DATASOURCE_DSW + "ids" )
+      .get( JaxbList.class );
 
     final List list = dswIds.getList();
     if ( hasAccess ) {
