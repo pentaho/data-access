@@ -351,11 +351,12 @@ public class AnalysisService extends DatasourceService {
     return propertyList.get( key );
   }
 
-  private String getSchemaName( String encoding, InputStream inputStream ) throws XMLStreamException, IOException {
+  String getSchemaName( String encoding, InputStream inputStream ) throws XMLStreamException, IOException {
     String domainId = null;
     XMLStreamReader reader = null;
     try {
       XMLInputFactory factory = XMLInputFactory.newInstance();
+      factory.setProperty( XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false );
       factory.setProperty( XMLInputFactory.IS_COALESCING, Boolean.TRUE );
       if ( StringUtils.isEmpty( encoding ) ) {
         reader = factory.createXMLStreamReader( inputStream );
