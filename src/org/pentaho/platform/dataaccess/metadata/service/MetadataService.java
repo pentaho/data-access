@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.service;
@@ -80,8 +80,8 @@ public class MetadataService extends PentahoBase {
   @Path( "/getDatasourcePermissions" )
   @Produces( { APPLICATION_JSON } )
   public String getDatasourcePermissions() {
-    boolean canEdit = DataAccessPermissionUtil.hasManageAccess();
-    boolean canView = DataAccessPermissionUtil.hasViewAccess();
+    boolean canEdit = hasManageAccess();
+    boolean canView = hasViewAccess();
 
     if ( canEdit ) {
       return "EDIT"; //$NON-NLS-1$
@@ -212,7 +212,7 @@ public class MetadataService extends PentahoBase {
     }
 
     // create the thin metadata model and return it
-    MetadataServiceUtil util = new MetadataServiceUtil();
+    MetadataServiceUtil util = getMetadataServiceUtil();
     util.setDomain( domain );
     Model thinModel = util.createThinModel( model, domainId );
     return thinModel;
@@ -244,7 +244,7 @@ public class MetadataService extends PentahoBase {
    */
   public MarshallableResultSet doQuery( Query query, Integer rowLimit ) {
 
-    MetadataServiceUtil util = new MetadataServiceUtil();
+    MetadataServiceUtil util = getMetadataServiceUtil();
     org.pentaho.metadata.query.model.Query fullQuery = util.convertQuery( query );
     QueryXmlHelper helper = new QueryXmlHelper();
     String xml = helper.toXML( fullQuery );
@@ -262,7 +262,7 @@ public class MetadataService extends PentahoBase {
     if ( resultSet == null ) {
       return null;
     }
-    MarshallableResultSet result = new MarshallableResultSet();
+    MarshallableResultSet result = getMarshallableResultSet();
     result.setResultSet( resultSet );
     return result;
   }
@@ -296,7 +296,7 @@ public class MetadataService extends PentahoBase {
     }
     String json = null;
     try {
-      MetadataServiceUtil util = new MetadataServiceUtil();
+      MetadataServiceUtil util = getMetadataServiceUtil();
       Domain domain = util.getDomainObject( xml );
       util.setDomain( domain );
       String locale = LocaleHelper.getClosestLocale( LocaleHelper.getLocale().toString(), domain.getLocaleCodes() );
@@ -374,7 +374,7 @@ public class MetadataService extends PentahoBase {
    * @return
    */
   protected String getQueryXmlFromJson( String json ) {
-    MetadataServiceUtil util = new MetadataServiceUtil();
+    MetadataServiceUtil util = getMetadataServiceUtil();
     Query query = util.deserializeJsonQuery( json );
     try {
       // convert the thin query model into a full one
@@ -407,5 +407,21 @@ public class MetadataService extends PentahoBase {
   @Override
   public Log getLogger() {
     return logger;
+  }
+
+  protected boolean hasManageAccess() {
+    return DataAccessPermissionUtil.hasManageAccess();
+  }
+
+  protected boolean hasViewAccess() {
+    return DataAccessPermissionUtil.hasViewAccess();
+  }
+
+  protected MetadataServiceUtil getMetadataServiceUtil() {
+    return new MetadataServiceUtil();
+  }
+
+  protected MarshallableResultSet getMarshallableResultSet() {
+    return new MarshallableResultSet();
   }
 }

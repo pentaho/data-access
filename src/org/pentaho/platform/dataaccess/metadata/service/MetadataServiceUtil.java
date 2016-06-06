@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.service;
@@ -42,6 +42,7 @@ import org.pentaho.metadata.query.model.Selection;
 import org.pentaho.metadata.query.model.Order.Type;
 import org.pentaho.metadata.query.model.util.QueryXmlHelper;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.platform.api.engine.ILogger;
 import org.pentaho.platform.dataaccess.metadata.messages.Messages;
 import org.pentaho.platform.dataaccess.metadata.model.impl.Category;
 import org.pentaho.platform.dataaccess.metadata.model.impl.Column;
@@ -274,8 +275,7 @@ public class MetadataServiceUtil extends PentahoBase {
    */
   public org.pentaho.metadata.model.Domain getDomainObject( String query ) throws PentahoMetadataException {
     QueryXmlHelper helper = new QueryXmlHelper();
-    IMetadataDomainRepository domainRepository =
-      PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
+    IMetadataDomainRepository domainRepository = getMetadataRepository();
     org.pentaho.metadata.query.model.Query fatQuery = helper.fromXML( domainRepository, query );
     return fatQuery.getDomain();
   }
@@ -288,8 +288,7 @@ public class MetadataServiceUtil extends PentahoBase {
    */
   public org.pentaho.metadata.query.model.Query convertQuery( Query src ) {
 
-    IMetadataDomainRepository domainRepository =
-      PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
+    IMetadataDomainRepository domainRepository = getMetadataRepository();
 
     Domain fullDomain = domainRepository.getDomain( src.getDomainName() );
     LogicalModel logicalModel = fullDomain.findLogicalModel( src.getModelId() );
@@ -402,6 +401,20 @@ public class MetadataServiceUtil extends PentahoBase {
   @Override
   public Log getLogger() {
     return logger;
+  }
+
+  /**
+   * Returns a instance of the IMetadataDomainRepository for the current session
+   *
+   * @return
+   */
+  protected IMetadataDomainRepository getMetadataRepository() {
+    IMetadataDomainRepository mdr =
+      PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
+    if ( mdr instanceof ILogger ) {
+      ( (ILogger) mdr ).setLoggingLevel( getLoggingLevel() );
+    }
+    return mdr;
   }
 
 }
