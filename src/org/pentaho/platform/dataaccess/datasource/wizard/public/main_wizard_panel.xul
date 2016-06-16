@@ -102,7 +102,7 @@
                 <textbox height="432" id="query" multiline="true" disabled="false"/>
                 <hbox>
                   <spacer flex="1"/>
-                  <label value="Limit:"/>
+                  <label value="${datasourceDialog.limit}"/>
                   <textbox id="previewLimit" value="10" width="22"/>
                   <button id="preview" label="${datasourceDialog.PREVIEW}"
                           tooltiptext="${datasourceDialog.previewToolTip}"
