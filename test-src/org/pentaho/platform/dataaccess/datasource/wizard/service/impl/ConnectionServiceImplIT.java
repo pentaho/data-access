@@ -12,297 +12,394 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
-
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.pentaho.commons.connection.IPentahoConnection;
+import org.pentaho.database.model.DatabaseAccessType;
+import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.api.data.IDBDatasourceService;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
 import org.pentaho.platform.api.repository.datasource.DuplicateDatasourceException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
+import org.pentaho.platform.engine.core.system.boot.PlatformInitializationException;
+import org.pentaho.platform.engine.services.MockDataSourceService;
+import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
+import org.pentaho.platform.plugin.services.pluginmgr.PluginClassLoader;
+import org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader;
+import org.pentaho.test.platform.engine.core.MicroPlatform;
+import org.springframework.security.context.SecurityContextHolder;
 
 public class ConnectionServiceImplIT {
 
+  private static final String EXIST_CONNECTION_NAME = "ExistConnection";
+
+  private static final String EXIST_CONNECTION_ID = "ExistConnectionID";
+
+  private static final String NON_EXIST_CONNECTION_NAME = "NonExistConnection";
+
+  private static final String NON_EXIST_CONNECTION_ID = "NonExistConnectionID";
+
+  private static final String ERROR_CONNECTION_NAME = "ErrorConnection";
+
+  private static final String ERROR_CONNECTION_ID = "ErrorConnectionID";
+
+  private static final String DUBLICATE_CONNECTION_NAME = "DublicateConnection";
+
+  private static final String SECOND_CONNECTION = "SecondConnection";
+
+  private static final String PASSWORD = "password";
+
+  private static final String NEW_PASSWORD = "new_password";
+
   private static ConnectionServiceImpl connectionServiceImpl;
 
-  @Mock private IDBDatasourceService datasourceService;
+  private static MicroPlatform booter;
 
-  @Mock private IDatasourceMgmtService datasourceMgmtService;
+  private static MockDatasourceMgmtService mgmtService = new MockDatasourceMgmtService();
 
+  @BeforeClass
+  public static void setUpClass() throws PlatformInitializationException, DuplicateDatasourceException,
+    DatasourceMgmtServiceException {
+
+    MockDataSourceService dataSourceService = new MockDataSourceService( false );
+
+    IAuthorizationPolicy mockAuthorizationPolicy = mock( IAuthorizationPolicy.class );
+    when( mockAuthorizationPolicy.isAllowed( anyString() ) ).thenReturn( true );
+
+    booter = new MicroPlatform( "test-res/solution1" );
+    booter.define( IPentahoConnection.class, SQLConnection.class );
+    booter.defineInstance( IDBDatasourceService.class, dataSourceService );
+    booter.defineInstance( IAuthorizationPolicy.class, mockAuthorizationPolicy );
+    booter.defineInstance( IPluginResourceLoader.class, new PluginResourceLoader() {
+      protected PluginClassLoader getOverrideClassloader() {
+        return new PluginClassLoader( new File( ".", "test-res/solution1/system/simple-jndi" ), this );
+      }
+    } );
+    booter.defineInstance( IDatasourceMgmtService.class, mgmtService );
+    booter.start();
+
+    PentahoSessionHolder.setStrategyName( PentahoSessionHolder.MODE_GLOBAL );
+    SecurityContextHolder.setStrategyName( SecurityContextHolder.MODE_GLOBAL );
+
+    connectionServiceImpl = new ConnectionServiceImpl();
+  }
 
   @Before
-  public void setUp() throws ConnectionServiceException {
-    MockitoAnnotations.initMocks( this );
-    connectionServiceImpl = spy( new ConnectionServiceImpl() );
-    connectionServiceImpl.datasourceMgmtSvc = datasourceMgmtService;
-    connectionServiceImpl.datasourceService = datasourceService;
+  public void setUp() throws DuplicateDatasourceException, DatasourceMgmtServiceException {
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( EXIST_CONNECTION_NAME );
+    connection.setId( EXIST_CONNECTION_ID );
+    connection.setPassword( PASSWORD );
+    mgmtService.createDatasource( connection );
   }
 
   @After
-  public void cleanup() {
-    connectionServiceImpl = null;
+  public void tearDown() throws DatasourceMgmtServiceException {
+    for ( Iterator<IDatabaseConnection> iterator = mgmtService.getDatasources().iterator(); iterator.hasNext(); ) {
+      iterator.next();
+      iterator.remove();
+    }
   }
 
+  @AfterClass
+  public static void tearDownClass() {
+    booter.stop();
+  }
+
+  @Test
+  public void testDeleteConnectionByName() throws Exception {
+    assertTrue( connectionServiceImpl.deleteConnection( EXIST_CONNECTION_NAME ) );
+    for ( Iterator<IDatabaseConnection> iterator = connectionServiceImpl.getConnections().iterator(); iterator
+        .hasNext(); ) {
+      if ( iterator.next().getName().equals( EXIST_CONNECTION_NAME ) ) {
+        fail( "connection should be deleted" );
+      }
+    }
+    ;
+  }
+
+  @Test( expected = ConnectionServiceException.class )
+  public void testDeleteConnectionByNameNONExist() throws Exception {
+    connectionServiceImpl.deleteConnection( NON_EXIST_CONNECTION_NAME );
+  }
+
+  @Test( expected = ConnectionServiceException.class )
+  public void testDeleteConnectionByNameError() throws Exception {
+    connectionServiceImpl.deleteConnection( ERROR_CONNECTION_NAME );
+  }
+
+  // we should remove connection if it is have the same name
   @Test
   public void testDeleteConnection() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-    doNothing().when( connectionServiceImpl.datasourceMgmtSvc ).deleteDatasourceByName( "Test Connection" );
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( EXIST_CONNECTION_NAME );
 
-    boolean tmp = connectionServiceImpl.deleteConnection( "Test Connection" );
-
-    verify( connectionServiceImpl, times( 1 ) ).deleteConnection( "Test Connection" );
-    verify( datasourceService, times( 1 ) ).clearDataSource( "Test Connection" );
-    assertEquals( tmp, true );
+    assertTrue( connectionServiceImpl.deleteConnection( connection ) );
+    for ( Iterator<IDatabaseConnection> iterator = connectionServiceImpl.getConnections().iterator(); iterator
+        .hasNext(); ) {
+      if ( iterator.next().getName().equals( EXIST_CONNECTION_NAME ) ) {
+        fail( "connection should be deleted" );
+      }
+    }
+    ;
   }
 
-  @Test
+  @Test( expected = ConnectionServiceException.class )
+  public void testDeleteConnectionNONExist() throws Exception {
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( NON_EXIST_CONNECTION_NAME );
+    connectionServiceImpl.deleteConnection( connection );
+  }
+
+  @Test( expected = ConnectionServiceException.class )
   public void testDeleteConnectionError() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-
-    //Test 1
-    NonExistingDatasourceException mockNonExistingDatasourceException = mock( NonExistingDatasourceException.class );
-    doThrow( mockNonExistingDatasourceException ).when(
-      connectionServiceImpl.datasourceMgmtSvc ).deleteDatasourceByName( "Test Connection" );
-
-    try {
-      connectionServiceImpl.deleteConnection( "Test Connection" );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
-    }
-
-    //Test 2
-    RuntimeException mockException = mock( RuntimeException.class );
-    doThrow( mockException ).when( connectionServiceImpl.datasourceMgmtSvc ).deleteDatasourceByName( "Test Connection" );
-
-    try {
-      connectionServiceImpl.deleteConnection( "Test Connection" );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
-    }
-
-    verify( connectionServiceImpl, times( 2 ) ).deleteConnection( anyString() );
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( ERROR_CONNECTION_NAME );
+    connectionServiceImpl.deleteConnection( connection );
   }
 
   @Test
-  public void testGetConnections() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
+  public void testGetConnectionByName() throws ConnectionServiceException {
+    IDatabaseConnection connection = connectionServiceImpl.getConnectionByName( EXIST_CONNECTION_NAME );
+    assertNotNull( connection );
+    assertEquals( EXIST_CONNECTION_NAME, connection.getName() );
+  }
 
-    List<IDatabaseConnection> mockConnectionList = mock( List.class );
-    doReturn( mockConnectionList ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasources();
+  @Test( expected = ConnectionServiceException.class )
+  public void testGetConnectionByNameNONEXIST() throws ConnectionServiceException {
+    connectionServiceImpl.getConnectionByName( NON_EXIST_CONNECTION_NAME );
+  }
 
-    List<IDatabaseConnection> connectionList = connectionServiceImpl.getConnections();
-
-    verify( connectionServiceImpl, times( 1 ) ).getConnections();
-    assertEquals( connectionList, mockConnectionList );
+  @Test( expected = ConnectionServiceException.class )
+  public void testGetConnectionByNameError() throws ConnectionServiceException {
+    connectionServiceImpl.getConnectionByName( ERROR_CONNECTION_NAME );
   }
 
   @Test
-  public void testGetConnectionsError() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
+  public void testGetConnectionByID() throws ConnectionServiceException {
+    IDatabaseConnection connection = connectionServiceImpl.getConnectionById( EXIST_CONNECTION_ID );
+    assertNotNull( connection );
+    assertEquals( EXIST_CONNECTION_NAME, connection.getName() );
+  }
 
-    //Test 1
-    DatasourceMgmtServiceException mockDatasourceMgmtServiceException = mock( DatasourceMgmtServiceException.class );
-    doThrow( mockDatasourceMgmtServiceException ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasources();
+  @Test( expected = ConnectionServiceException.class )
+  public void testGetConnectionByIDNONEXIST() throws ConnectionServiceException {
+    connectionServiceImpl.getConnectionById( NON_EXIST_CONNECTION_ID );
+  }
 
-    try {
-      connectionServiceImpl.getConnections();
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
-    }
-
-    verify( connectionServiceImpl, times( 1 ) ).getConnections();
+  @Test( expected = ConnectionServiceException.class )
+  public void testGetConnectionByIDError() throws ConnectionServiceException {
+    connectionServiceImpl.getConnectionById( ERROR_CONNECTION_ID );
   }
 
   @Test
-  public void testGetConnectionById() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-
-    IDatabaseConnection mockIDatabaseConnection = mock( IDatabaseConnection.class );
-    doReturn( mockIDatabaseConnection ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasourceById( "Connection Id" );
-
-    IDatabaseConnection connection = connectionServiceImpl.getConnectionById( "Connection Id" );
-
-    verify( connectionServiceImpl, times( 1 ) ).getConnectionById( "Connection Id" );
-    assertEquals( mockIDatabaseConnection, connection );
+  public void testIsConnectionExist() throws ConnectionServiceException {
+    assertTrue( connectionServiceImpl.isConnectionExist( EXIST_CONNECTION_NAME ) );
   }
 
   @Test
-  public void testGetConnectionByIdError() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
+  public void testIsConnectionExistFalse() throws ConnectionServiceException {
+    assertFalse( connectionServiceImpl.isConnectionExist( NON_EXIST_CONNECTION_NAME ) );
+  }
 
-    //Test 1
-    doReturn( null ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasourceById( "Connection Id" );
-
-    try {
-      connectionServiceImpl.getConnectionById( "Connection Id" );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
-    }
-
-    //Test 2
-    DatasourceMgmtServiceException mockDatasourceMgmtServiceException = mock( DatasourceMgmtServiceException.class );
-    doThrow( mockDatasourceMgmtServiceException ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasourceById( "Connection Id" );
-
-    try {
-      connectionServiceImpl.getConnectionById( "Connection Id" );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
-    }
-
-    verify( connectionServiceImpl, times( 2 ) ).getConnectionById( "Connection Id" );
+  @Test( expected = ConnectionServiceException.class )
+  public void testIsConnectionExistError() throws ConnectionServiceException {
+    connectionServiceImpl.isConnectionExist( ERROR_CONNECTION_NAME );
   }
 
   @Test
-  public void testGetConnectionByName() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
+  public void testAddConnection() throws ConnectionServiceException {
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( SECOND_CONNECTION );
+    connectionServiceImpl.addConnection( connection );
+    IDatabaseConnection actualCnnection = connectionServiceImpl.getConnectionByName( SECOND_CONNECTION );
+    assertEquals( connection, actualCnnection );
+  }
 
-    IDatabaseConnection mockIDatabaseConnection = mock( IDatabaseConnection.class );
-    doReturn( mockIDatabaseConnection ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasourceByName( "Connection Name" );
+  @Test( expected = ConnectionServiceException.class )
+  public void testAddConnectionError() throws ConnectionServiceException {
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( ERROR_CONNECTION_NAME );
+    connectionServiceImpl.addConnection( connection );
+  }
 
-    IDatabaseConnection connection = connectionServiceImpl.getConnectionByName( "Connection Name" );
-
-    verify( connectionServiceImpl, times( 1 ) ).getConnectionByName( "Connection Name" );
-    assertEquals( mockIDatabaseConnection, connection );
+  @Test( expected = ConnectionServiceException.class )
+  public void testAddConnectionDublicate() throws ConnectionServiceException {
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( DUBLICATE_CONNECTION_NAME );
+    connectionServiceImpl.addConnection( connection );
   }
 
   @Test
-  public void testGetConnectionByNameError() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
+  public void testUpdateConnection() throws ConnectionServiceException {
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( EXIST_CONNECTION_NAME );
+    connection.setPassword( NEW_PASSWORD );
+    connectionServiceImpl.updateConnection( connection );
+    IDatabaseConnection actualConnection = connectionServiceImpl.getConnectionByName( EXIST_CONNECTION_NAME );
+    assertEquals( NEW_PASSWORD, actualConnection.getPassword() );
+  }
 
-    //Test 1
-    doReturn( null ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasourceByName( "Connection Name" );
+  @Test( expected = ConnectionServiceException.class )
+  public void testUpdateConnectionError() throws ConnectionServiceException {
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( ERROR_CONNECTION_NAME );
+    connectionServiceImpl.updateConnection( connection );
+  }
 
-    try {
-      connectionServiceImpl.getConnectionByName( "Connection Name" );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
-    }
-
-    //Test 2
-    DatasourceMgmtServiceException mockDatasourceMgmtServiceException = mock( DatasourceMgmtServiceException.class );
-    doThrow( mockDatasourceMgmtServiceException ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasourceByName( "Connection Name" );
-
-    try {
-      connectionServiceImpl.getConnectionByName( "Connection Name" );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
-    }
-
-    verify( connectionServiceImpl, times( 2 ) ).getConnectionByName( "Connection Name" );
+  @Test( expected = ConnectionServiceException.class )
+  public void testUpdateConnectionNonExist() throws ConnectionServiceException {
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( NON_EXIST_CONNECTION_NAME );
+    connectionServiceImpl.updateConnection( connection );
   }
 
   @Test
-  public void testAddConnection() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-
-    IDatabaseConnection mockIDatabaseConnection = mock( IDatabaseConnection.class );
-    boolean connectionCreated = connectionServiceImpl.addConnection( mockIDatabaseConnection );
-
-    verify( connectionServiceImpl, times( 1 ) ).addConnection( mockIDatabaseConnection );
-    assertEquals( connectionCreated, true );
+  public void testTestConnection() throws ConnectionServiceException {
+    DatabaseConnection connection = new DatabaseConnection();
+    connection.setName( NON_EXIST_CONNECTION_NAME );
+    connection.setAccessType( DatabaseAccessType.NATIVE );
+    connection.setDatabaseType( new DatabaseType( "H2", "H2", Arrays.asList( DatabaseAccessType.NATIVE ), 0, null ) );
+    assertTrue( connectionServiceImpl.testConnection( connection ) );
   }
 
-  @Test
-  public void testAddConnectionError() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-    IDatabaseConnection mockIDatabaseConnection = mock( IDatabaseConnection.class );
+  public static class MockDatasourceMgmtService implements IDatasourceMgmtService {
 
-    //Test 1
-    DuplicateDatasourceException mockDuplicateDatasourceException = mock( DuplicateDatasourceException.class );
-    doThrow( mockDuplicateDatasourceException ).when( connectionServiceImpl.datasourceMgmtSvc ).createDatasource(
-        mockIDatabaseConnection );
+    private List<IDatabaseConnection> connections = new ArrayList<IDatabaseConnection>();
 
-    try {
-      connectionServiceImpl.addConnection( mockIDatabaseConnection );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
+    @Override
+    public void init( IPentahoSession arg0 ) {
     }
 
-    //Test 2
-    RuntimeException mockException = mock( RuntimeException.class );
-    doThrow( mockException ).when( connectionServiceImpl.datasourceMgmtSvc ).createDatasource(
-        mockIDatabaseConnection );
-
-    try {
-      connectionServiceImpl.addConnection( mockIDatabaseConnection );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
+    @Override
+    public String createDatasource( IDatabaseConnection connection ) throws DuplicateDatasourceException,
+      DatasourceMgmtServiceException {
+      if ( connection.getName().equals( ERROR_CONNECTION_NAME ) ) {
+        throw new DatasourceMgmtServiceException();
+      }
+      if ( connection.getName().equals( DUBLICATE_CONNECTION_NAME ) ) {
+        throw new DuplicateDatasourceException();
+      }
+      connections.add( connection );
+      return connection.getDatabaseName();
     }
 
-    verify( connectionServiceImpl, times( 2 ) ).addConnection( mockIDatabaseConnection );
-  }
-
-  @Test
-  public void testUpdateConnection() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-
-    IDatabaseConnection mockIDatabaseConnection = mock( IDatabaseConnection.class );
-    doNothing().when( mockIDatabaseConnection ).setPassword( anyString() );
-    doReturn( "DB Name" ).when( mockIDatabaseConnection ).getName();
-    doReturn( "" ).when( connectionServiceImpl ).getConnectionPassword( anyString(), anyString() );
-
-    boolean connectionUpdated = connectionServiceImpl.updateConnection( mockIDatabaseConnection );
-
-    verify( connectionServiceImpl, times( 1 ) ).updateConnection( mockIDatabaseConnection );
-    verify( datasourceService, times( 1 ) ).clearDataSource( "DB Name" );
-    assertEquals( connectionUpdated, true );
-  }
-
-  @Test
-  public void testUpdateConnectionError() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-
-    IDatabaseConnection mockIDatabaseConnection = mock( IDatabaseConnection.class );
-    doNothing().when( mockIDatabaseConnection ).setPassword( anyString() );
-    doReturn( "Name" ).when( mockIDatabaseConnection ).getName();
-    doReturn( "" ).when( connectionServiceImpl ).getConnectionPassword( anyString(), anyString() );
-
-    //Test 1
-    NonExistingDatasourceException mockNonExistingDatasourceException = mock( NonExistingDatasourceException.class );
-    doThrow( mockNonExistingDatasourceException ).when( connectionServiceImpl.datasourceMgmtSvc ).updateDatasourceByName( "Name", mockIDatabaseConnection );
-
-    try {
-      connectionServiceImpl.updateConnection( mockIDatabaseConnection );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
+    @Override
+    public void deleteDatasourceById( String arg0 ) throws NonExistingDatasourceException,
+      DatasourceMgmtServiceException {
     }
 
-    //Test 2
-    RuntimeException mockException = mock( RuntimeException.class );
-    doThrow( mockException ).when( connectionServiceImpl.datasourceMgmtSvc ).updateDatasourceByName( "Name", mockIDatabaseConnection );
-
-    try {
-      connectionServiceImpl.updateConnection( mockIDatabaseConnection );
-      fail(); //This line should never be reached
-    } catch ( ConnectionServiceException e ) {
-      //Expected exception
+    @Override
+    public void deleteDatasourceByName( String connectionName ) throws NonExistingDatasourceException,
+      DatasourceMgmtServiceException {
+      for ( Iterator<IDatabaseConnection> iterator = connections.iterator(); iterator.hasNext(); ) {
+        IDatabaseConnection connection = (IDatabaseConnection) iterator.next();
+        if ( connection.getName().equals( connectionName ) ) {
+          iterator.remove();
+        }
+        ;
+        if ( connectionName.equals( NON_EXIST_CONNECTION_NAME ) ) {
+          throw new NonExistingDatasourceException();
+        }
+        if ( connectionName.equals( ERROR_CONNECTION_NAME ) ) {
+          throw new DatasourceMgmtServiceException();
+        }
+      }
     }
 
-    verify( connectionServiceImpl, times( 2 ) ).updateConnection( mockIDatabaseConnection );
+    @Override
+    public IDatabaseConnection getDatasourceById( String connectionID ) throws DatasourceMgmtServiceException {
+      for ( Iterator<IDatabaseConnection> iterator = connections.iterator(); iterator.hasNext(); ) {
+        IDatabaseConnection connection = (IDatabaseConnection) iterator.next();
+        if ( connection.getId().equals( connectionID ) ) {
+          return connection;
+        }
+        ;
+        if ( connectionID.equals( ERROR_CONNECTION_ID ) ) {
+          throw new DatasourceMgmtServiceException();
+        }
+      }
+      return null;
+    }
+
+    @Override
+    public IDatabaseConnection getDatasourceByName( String connectionName ) throws DatasourceMgmtServiceException {
+      for ( Iterator<IDatabaseConnection> iterator = connections.iterator(); iterator.hasNext(); ) {
+        IDatabaseConnection connection = (IDatabaseConnection) iterator.next();
+        if ( connection.getName().equals( connectionName ) ) {
+          return connection;
+        }
+        ;
+        if ( connectionName.equals( ERROR_CONNECTION_NAME ) ) {
+          throw new DatasourceMgmtServiceException();
+        }
+      }
+      return null;
+    }
+
+    @Override
+    public List<String> getDatasourceIds() throws DatasourceMgmtServiceException {
+      return null;
+    }
+
+    @Override
+    public List<IDatabaseConnection> getDatasources() throws DatasourceMgmtServiceException {
+      return connections;
+    }
+
+    @Override
+    public String updateDatasourceById( String arg0, IDatabaseConnection arg1 ) throws NonExistingDatasourceException,
+      DatasourceMgmtServiceException {
+      return null;
+    }
+
+    @Override
+    public String updateDatasourceByName( String connectionName, IDatabaseConnection connection )
+      throws NonExistingDatasourceException, DatasourceMgmtServiceException {
+      for ( IDatabaseConnection conn : connections ) {
+        if ( conn.getName().equals( connectionName ) ) {
+          connections.remove( conn );
+          connections.add( connection );
+        }
+        ;
+        if ( connectionName.equals( NON_EXIST_CONNECTION_NAME ) ) {
+          throw new NonExistingDatasourceException();
+        }
+        if ( connectionName.equals( ERROR_CONNECTION_NAME ) ) {
+          throw new DatasourceMgmtServiceException();
+        }
+      }
+      return connectionName;
+    }
   }
 }
