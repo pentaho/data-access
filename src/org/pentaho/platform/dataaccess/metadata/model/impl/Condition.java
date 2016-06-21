@@ -79,7 +79,7 @@ public class Condition implements ICondition {
   }
 
   public String getCondition( String type, String paramName ) {
-    String[] val = getValue();
+    String[] val = getValue().clone();
 /*
     if(val == null && defaultValue != null) {
       val = defaultValue;
@@ -103,7 +103,7 @@ public class Condition implements ICondition {
         // Due to the fact that the value of a Date is a forumula function, the tokenizing of
         // the value needs to happen here instead of letting the Operator class handle it.
         for ( int idx = 0; idx < val.length; idx++ ) {
-          val[ idx ] = "DATEVALUE(" + "[param:" + value[ idx ].replaceAll( "[\\{\\}]", "" ) + "]"
+          val[ idx ] = "DATEVALUE(" + "[param:" + getValue()[ idx ].replaceAll( "[\\{\\}]", "" ) + "]"
             + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
         return theOperator.formatCondition( columnName, paramName, val, false );
