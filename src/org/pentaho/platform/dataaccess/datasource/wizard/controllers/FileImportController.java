@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
@@ -62,10 +62,12 @@ public class FileImportController extends AbstractXulEventHandler {
 
     BindingConvertor<String, Boolean> isDisabledConvertor = new BindingConvertor<String, Boolean>() {
 
+      @Override
       public Boolean sourceToTarget( String aValue ) {
         return ( aValue == null || "".equals( aValue ) );
       }
 
+      @Override
       public String targetToSource( Boolean aValue ) {
         return null;
       }
@@ -76,6 +78,7 @@ public class FileImportController extends AbstractXulEventHandler {
 
   }
 
+  @Override
   public String getName() {
     return "fileImportController"; //$NON-NLS-1$
   }
@@ -120,6 +123,8 @@ public class FileImportController extends AbstractXulEventHandler {
     closeWaitingDialog();
     close();
     String selectedFile = this.fileUpload.getSeletedFile();
+    String selectedFileLc = selectedFile.toLowerCase();
+    String uploadedFileLc = uploadedFile.toLowerCase();
 
     if ( uploadedFile.indexOf( "\n" ) != -1 ) {
       // uploadedFile is newline-separated list of file names
@@ -127,16 +132,16 @@ public class FileImportController extends AbstractXulEventHandler {
       showErroDialog( messages.getString( "fileImportDialog.COMPRESSED_TOO_MANY_FILES" ) );
       return;
     }
-    if ( selectedFile.endsWith( ".zip" ) || selectedFile.endsWith( ".tgz" ) || selectedFile.endsWith( ".tar" ) ) {
+    if ( selectedFileLc.endsWith( ".zip" ) || selectedFileLc.endsWith( ".tgz" ) || selectedFileLc.endsWith( ".tar" ) ) {
       // check to see what kind of file was extracted from the compressed upload
-      if ( !uploadedFile.endsWith( ".csv.tmp" ) && !uploadedFile.endsWith( ".txt.tmp" ) ) {
+      if ( !uploadedFileLc.endsWith( ".csv.tmp" ) && !uploadedFileLc.endsWith( ".txt.tmp" ) ) {
         showErroDialog( messages.getString( "fileImportDialog.COMPRESSED_NO_CSV" ) );
         return;
       }
     }
 
-    if ( selectedFile.endsWith( ".csv" ) || selectedFile.endsWith( ".txt" )
-      || selectedFile.endsWith( ".zip" ) || selectedFile.endsWith( ".tgz" ) || selectedFile.endsWith( ".tar" ) ) {
+    if ( selectedFileLc.endsWith( ".csv" ) || selectedFileLc.endsWith( ".txt" )
+      || selectedFileLc.endsWith( ".zip" ) || selectedFileLc.endsWith( ".tgz" ) || selectedFileLc.endsWith( ".tar" ) ) {
       datasourceModel.getModelInfo().getFileInfo().setTmpFilename( uploadedFile );
       datasourceModel.getModelInfo().getFileInfo().setFriendlyFilename( extractFilename( selectedFile ) );
     } else {
