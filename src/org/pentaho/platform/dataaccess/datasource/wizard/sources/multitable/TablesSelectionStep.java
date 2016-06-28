@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
@@ -93,6 +93,7 @@ public class TablesSelectionStep extends AbstractWizardStep {
   }
 
   private void processAvailableTables( IDatabaseConnection connection, String schema ) {
+
     joinSelectionServiceGwtImpl.getDatabaseTables( connection, schema, new XulServiceCallback<List>() {
       public void error( String message, Throwable error ) {
         error.printStackTrace();
@@ -101,17 +102,20 @@ public class TablesSelectionStep extends AbstractWizardStep {
       }
 
       public void success( List tables ) {
-        if ( tables.size() == 0 ) {
-          return;
-        }
-        if ( domain != null && datasourceDTO != null ) {
-          joinGuiModel.populateJoinGuiModel( domain, datasourceDTO, tables );
-          if ( joinGuiModel.getFactTable() != null ) {
-            setFactTable( joinGuiModel.getFactTable() );
+        try {
+          if ( tables.size() == 0 ) {
+            return;
           }
+          if ( domain != null && datasourceDTO != null ) {
+            joinGuiModel.populateJoinGuiModel( domain, datasourceDTO, tables );
+            if ( joinGuiModel.getFactTable() != null ) {
+              setFactTable( joinGuiModel.getFactTable() );
+            }
+          }
+          joinGuiModel.processAvailableTables( tables );
+        } finally {
+          closeWaitingDialog();
         }
-        joinGuiModel.processAvailableTables( tables );
-        closeWaitingDialog();
       }
     } );
   }
