@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
@@ -84,6 +84,7 @@ public class GuiStateModel extends XulEventSourceAdapter {
     conn.setPassword( connection.getPassword() );
     conn.setQuoteAllFields( connection.isQuoteAllFields() );
     conn.setExtraOptions( connection.getExtraOptions() );
+    conn.setExtraOptionsOrder( connection.getExtraOptionsOrder() );
     conn.setStreamingResults( connection.isStreamingResults() );
     conn.setUsername( connection.getUsername() );
     conn.setUsingConnectionPool( connection.isUsingConnectionPool() );
