@@ -156,9 +156,16 @@
     <dependency org="org.mockito" 						 name="mockito-all" 								 rev="1.8.0" 			transitive="false" conf="test->default"/>
     <!--dependency org="com.google.collections" name="google-collections" rev="1.0-rc5" transitive="false" conf="test->default"/-->
     <dependency org="org.aspectj"            name="aspectjrt"          rev="1.6.6"   transitive="false" conf="test->default"/>
-    <dependency org="com.sun.jersey.jersey-test-framework"  name="jersey-test-framework-core"     rev="1.5" conf="test->default"/>
-    <dependency org="com.sun.jersey.jersey-test-framework"  name="jersey-test-framework-grizzly"  rev="1.5" conf="test->default"/>
-    <dependency org="com.sun.jersey.contribs"               name="jersey-multipart"               rev="1.5" conf="test->default"/>
+    <dependency org="com.sun.jersey.jersey-test-framework"  name="jersey-test-framework-core"     rev="1.19.1" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.jersey.jersey-test-framework"  name="jersey-test-framework-grizzly"  rev="1.19.1" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.grizzly" name="grizzly-framework" rev="1.9.45" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.grizzly" name="grizzly-lzma" rev="1.9.45" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.grizzly" name="grizzly-portunif" rev="1.9.45" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.grizzly" name="grizzly-rcm" rev="1.9.45" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.grizzly" name="grizzly-servlet-webserver" rev="1.9.45" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.grizzly" name="grizzly-utils" rev="1.9.45" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.grizzly" name="grizzly-http" rev="1.9.45" transitive="false" conf="test->default"/>
+    <dependency org="com.sun.grizzly" name="grizzly-http-servlet" rev="1.9.45" transitive="false" conf="test->default"/>
 
     <dependency org="commons-codec" name="commons-codec" rev="1.9" transitive="false" conf="test->default"/>
     <dependency org="org.springframework" name="spring-mock" rev="${dependency.spring.mock.revision}" transitive="false" conf="test->default"/>
@@ -215,19 +222,20 @@
     <dependency org="pentaho" name="simple-jndi" rev="${dependency.pentaho-simple-jndi.revision}" conf="test->default" transitive="false"/>
 
     <!-- jersey -->
-    <dependency org="com.sun.jersey.contribs" name="jersey-multipart" rev="1.5"/>
-    <dependency org="com.sun.jersey.contribs" name="jersey-apache-client" rev="1.5" transitive="false"/>
+    <dependency org="com.sun.jersey.contribs" name="jersey-multipart" rev="1.19.1" transitive="false"/>
+    <dependency org="org.jvnet.mimepull" name="mimepull" rev="1.9.3" transitive="false"/>
+    <dependency org="com.sun.jersey.contribs" name="jersey-apache-client" rev="1.19.1" transitive="false"/>
 
     <!-- jersey -->
-    <dependency org="com.sun.jersey" name="jersey-core" rev="1.5" transitive="false"/>
-    <dependency org="com.sun.jersey" name="jersey-json" rev="1.5" transitive="false"/>
-    <dependency org="com.sun.jersey.contribs" name="jersey-spring" rev="1.5" transitive="false"/>
-    <dependency org="com.sun.jersey" name="jersey-client" rev="1.5" transitive="false"/>
-    <dependency org="com.sun.jersey" name="jersey-server" rev="1.5" transitive="false"/>
+    <dependency org="com.sun.jersey" name="jersey-core" rev="1.19.1" transitive="false"/>
+    <dependency org="com.sun.jersey" name="jersey-json" rev="1.19.1" transitive="false"/>
+    <dependency org="com.sun.jersey.contribs" name="jersey-spring" rev="1.19.1" transitive="false"/>
+    <dependency org="com.sun.jersey" name="jersey-client" rev="1.19.1" transitive="false"/>
+    <dependency org="com.sun.jersey" name="jersey-server" rev="1.19.1" transitive="false"/>
     <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" transitive="false"/>
 
     <!-- wadl -->
-    <dependency org="com.sun.jersey.contribs" name="wadl-resourcedoc-doclet" rev="1.19" transitive="false" />
+    <dependency org="com.sun.jersey.contribs" name="wadl-resourcedoc-doclet" rev="1.19.1" transitive="false" />
 
      <override org="pentaho-kettle" rev="${dependency.kettle.revision}" />
      
