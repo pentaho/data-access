@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
@@ -105,6 +105,7 @@ public class ConnectionController extends AbstractXulEventHandler {
     target.setAccessType( source.getAccessType() );
     target.setDatabaseType( source.getDatabaseType() );
     target.setExtraOptions( source.getExtraOptions() );
+    target.setExtraOptionsOrder( source.getExtraOptionsOrder() );
     target.setName( source.getName() );
     target.setHostname( source.getHostname() );
     target.setDatabaseName( source.getDatabaseName() );
