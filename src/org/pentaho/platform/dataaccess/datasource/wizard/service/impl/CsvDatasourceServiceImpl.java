@@ -181,7 +181,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
 
         return stats;
       } catch ( Exception e ) {
-        logger.error( e );
+        logger.error( e.getMessage() );
         throw e;
       } finally {
         if ( pentahoSession != null ) {

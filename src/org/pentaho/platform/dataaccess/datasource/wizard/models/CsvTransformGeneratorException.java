@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
@@ -24,6 +24,7 @@ public class CsvTransformGeneratorException extends Exception implements Seriali
   private static final long serialVersionUID = 1L;
   private String causeMessage;
   private String causeStackTrace;
+  private String localizedMessage;
 
   public CsvTransformGeneratorException() {
     super();
@@ -54,6 +55,12 @@ public class CsvTransformGeneratorException extends Exception implements Seriali
     this.causeStackTrace = causeStackTrace;
   }
 
+  public CsvTransformGeneratorException( String message, Throwable cause, String causeMessage,
+      String causeStackTrace, String localizedMessage ) {
+    this( message, cause, causeMessage, causeStackTrace );
+    this.localizedMessage = localizedMessage;
+  }
+
   public String getCauseMessage() {
     return causeMessage;
   }
@@ -69,4 +76,13 @@ public class CsvTransformGeneratorException extends Exception implements Seriali
   public void setCauseStackTrace( String causeStackTrace ) {
     this.causeStackTrace = causeStackTrace;
   }
+
+  @Override
+  public String getLocalizedMessage() {
+    if ( localizedMessage != null ) {
+      return localizedMessage;
+    }
+    return super.getLocalizedMessage();
+  }
+
 }
