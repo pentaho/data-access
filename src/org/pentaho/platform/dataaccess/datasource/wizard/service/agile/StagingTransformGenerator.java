@@ -49,6 +49,7 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 
@@ -160,8 +161,8 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     } catch ( CsvTransformGeneratorException e ) {
       if ( !e.getMessage().equalsIgnoreCase( "No SQL generated" ) ) { //$NON-NLS-1$
         error( e.getMessage() );
-        throw new CsvTransformGeneratorException( "Could not create or modify table", e,
-          getStackTraceAsString( e ) ); //$NON-NLS-1$
+        throw new CsvTransformGeneratorException( "Could not create or modify table", e, //$NON-NLS-1$
+          getStackTraceAsString( e ), null, Messages.getString( "StagingTransformGenerator.ERROR_0001_UNABLE_TO_CREATE_OR_MODIFY_TABLE" ) ); //$NON-NLS-1$
       }
     }
   }
