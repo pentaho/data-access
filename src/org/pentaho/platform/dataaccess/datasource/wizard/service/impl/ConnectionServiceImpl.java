@@ -12,9 +12,8 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
-
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.lang.reflect.Constructor;
@@ -54,13 +53,15 @@ import com.google.gwt.http.client.Response;
  */
 public class ConnectionServiceImpl extends PentahoBase implements IConnectionService {
 
+  private static final long serialVersionUID = -4321819783067403620L;
+
   private IDataAccessPermissionHandler dataAccessPermHandler;
 
   protected IDatasourceMgmtService datasourceMgmtSvc;
 
   protected IDBDatasourceService datasourceService;
 
-  private DatabaseDialectService dialectService = new DatabaseDialectService();
+  protected DatabaseDialectService dialectService = new DatabaseDialectService();
 
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
 
@@ -83,7 +84,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       Constructor<?> defaultConstructor = clazz.getConstructor( new Class[] {} );
       dataAccessPermHandler = (IDataAccessPermissionHandler) defaultConstructor.newInstance();
       IPentahoObjectFactory objectFactory = PentahoSystem.getObjectFactory();
-      datasourceService = PentahoSystem.getObjectFactory().objectDefined( IDBDatasourceService.class )
+      datasourceService = objectFactory.objectDefined( IDBDatasourceService.class )
           ?  objectFactory.get( IDBDatasourceService.class, null ) : null;
     } catch ( Exception e ) {
       logger.error(
@@ -225,18 +226,12 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       clearDatasource( connection.getName() );
       return true;
     } catch ( NonExistingDatasourceException nonExistingDatasourceException ) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
-        connection.getName(),
-        nonExistingDatasourceException.getLocalizedMessage()
-      );
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+        connection.getName(), nonExistingDatasourceException.getLocalizedMessage() );
       throw new ConnectionServiceException( Response.SC_NOT_FOUND, message, nonExistingDatasourceException );
     } catch ( Exception e ) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
-        connection.getName(),
-        e.getLocalizedMessage()
-      );
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+        connection.getName(), e.getLocalizedMessage() );
       logger.error( message );
       throw new ConnectionServiceException( message, e );
     }
@@ -249,17 +244,13 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       clearDatasource( name );
       return true;
     } catch ( NonExistingDatasourceException nonExistingDatasourceException ) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
-        name,
-        nonExistingDatasourceException.getLocalizedMessage()
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+        name, nonExistingDatasourceException.getLocalizedMessage()
       );
       throw new ConnectionServiceException( Response.SC_NOT_FOUND, message, nonExistingDatasourceException );
     } catch ( Exception e ) {
-      String message = Messages.getErrorString(
-        "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
-        name,
-        e.getLocalizedMessage()
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0006_UNABLE_TO_DELETE_CONNECTION", //$NON-NLS-1$
+        name, e.getLocalizedMessage()
       );
       logger.error( message );
       throw new ConnectionServiceException( message, e );
@@ -282,20 +273,14 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       }
       IPentahoConnection pentahoConnection = null;
       try {
-
         if ( connection.getAccessType().equals( DatabaseAccessType.JNDI ) ) {
-
           pentahoConnection = PentahoConnectionFactory
             .getConnection( IPentahoConnection.SQL_DATASOURCE, connection.getDatabaseName(), null, this );
-
         } else {
-
           pentahoConnection = PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE, driverClass,
             dialect.getURLWithExtraOptions( connection ), connection.getUsername(),
             getConnectionPassword( connection.getName(), connection.getPassword() ), null, this );
-
         }
-
       } catch ( DatabaseDialectException e ) {
         throw new ConnectionServiceException( e );
       }
@@ -309,40 +294,31 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
         return false;
       }
     } else {
-      String message =
-        Messages.getErrorString( "ConnectionServiceImpl.ERROR_0008_UNABLE_TO_TEST_NULL_CONNECTION" ); //$NON-NLS-1$
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0008_UNABLE_TO_TEST_NULL_CONNECTION" ); //$NON-NLS-1$
       logger.error( message );
       throw new ConnectionServiceException( Response.SC_BAD_REQUEST, message ); //$NON-NLS-1$
     }
   }
 
-  public boolean isConnectionExist( String connectionName )
-    throws ConnectionServiceException {
+  public boolean isConnectionExist( String connectionName ) throws ConnectionServiceException {
     ensureDataAccessPermission();
-
     try {
-      IDatabaseConnection connection = datasourceMgmtSvc
-        .getDatasourceByName( connectionName );
+      IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceByName( connectionName );
       if ( connection == null ) {
         return false;
       }
       return true;
-
     } catch ( DatasourceMgmtServiceException dme ) {
-      String message = Messages
-        .getErrorString(
-          "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
+      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", //$NON-NLS-1$
           dme.getLocalizedMessage() );
       logger.error( message );
       throw new ConnectionServiceException( message, dme );
     }
-
   }
 
   private void clearDatasource( String name ) {
     if ( datasourceService == null ) {
-      logger.warn( "IDBDatasourceService bean not initialized. "
-          + "Unable to clear data source:  " + name );
+      logger.warn( "IDBDatasourceService bean not initialized. Unable to clear data source:  " + name );
       return;
     }
     datasourceService.clearDataSource( name );

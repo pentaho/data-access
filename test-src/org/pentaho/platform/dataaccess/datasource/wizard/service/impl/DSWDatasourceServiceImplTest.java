@@ -633,13 +633,12 @@ public class DSWDatasourceServiceImplTest {
 
   @Test( expected = SqlQueriesNotSupportedException.class )
   public void testSqlQueries_AreNotSupported_PentahoDataServices() throws Exception {
+    String connNameDataService = "connToDataService";
+    String dbTypeIdDataService = "Pentaho Data Services";
 
-    final String connNameDataService = "connToDataService";
-    final String dbTypeIdDataService = "Pentaho Data Services";
-
+    DatabaseType  dbtype = new DatabaseType( dbTypeIdDataService, STRING_DEFAULT, null, 0, STRING_DEFAULT );
     IDatabaseConnection connDataService = new DatabaseConnection();
-    connDataService.setDatabaseType( new DatabaseType( dbTypeIdDataService, STRING_DEFAULT, new ArrayList
-      <>(), 0, STRING_DEFAULT ) );
+    connDataService.setDatabaseType( dbtype );
 
     ConnectionServiceImpl connService = mock( ConnectionServiceImpl.class );
     doReturn( connDataService ).when( connService ).getConnectionByName( eq( connNameDataService ) );
@@ -650,12 +649,11 @@ public class DSWDatasourceServiceImplTest {
 
   @Test
   public void testSqlQueries_Supported_PostgresDb() throws Exception {
-    final String connNamePostgres = "connToPostgresDb";
-    final String dbTypeIdPostgres = "PostgresDb";
+    String connNamePostgres = "connToPostgresDb";
+    String dbTypeIdPostgres = "PostgresDb";
 
     IDatabaseConnection connDataService = new DatabaseConnection();
-    connDataService.setDatabaseType( new DatabaseType( dbTypeIdPostgres, STRING_DEFAULT, new ArrayList
-      <>(), 0, STRING_DEFAULT ) );
+    connDataService.setDatabaseType( new DatabaseType( dbTypeIdPostgres, STRING_DEFAULT, null, 0, STRING_DEFAULT ) );
 
     ConnectionServiceImpl connService = mock( ConnectionServiceImpl.class );
     doReturn( connDataService ).when( connService ).getConnectionByName( eq( connNamePostgres ) );
