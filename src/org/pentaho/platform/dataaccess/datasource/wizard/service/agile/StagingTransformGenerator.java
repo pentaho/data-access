@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
@@ -49,6 +49,7 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 
@@ -156,8 +157,8 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     } catch ( CsvTransformGeneratorException e ) {
       if ( !e.getMessage().equalsIgnoreCase( "No SQL generated" ) ) { //$NON-NLS-1$
         error( e.getMessage() );
-        throw new CsvTransformGeneratorException( "Could not create or modify table", e,
-          getStackTraceAsString( e ) ); //$NON-NLS-1$
+        throw new CsvTransformGeneratorException( "Could not create or modify table", e, //$NON-NLS-1$
+          getStackTraceAsString( e ), null, Messages.getString( "StagingTransformGenerator.ERROR_0001_UNABLE_TO_CREATE_OR_MODIFY_TABLE" ) ); //$NON-NLS-1$
       }
     }
   }
@@ -525,7 +526,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
 
   protected int convertDataType( ColumnInfo ci ) {
     if ( ci != null && ci.getDataType() != null ) {
-      switch( ci.getDataType() ) {
+      switch ( ci.getDataType() ) {
         case NUMERIC:
           if ( ci.getPrecision() <= 0 ) {
             return ValueMeta.getType( "Integer" ); //$NON-NLS-1$
