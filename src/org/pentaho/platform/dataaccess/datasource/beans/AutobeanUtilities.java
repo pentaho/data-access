@@ -68,7 +68,7 @@ public class AutobeanUtilities {
     connectionImpl
       .setUsingDoubleDecimalAsSchemaTableSeparator( connectionBean.isUsingDoubleDecimalAsSchemaTableSeparator() );
     connectionImpl.setExtraOptions( mapBeanToImpl( connectionBean.getExtraOptions() ) );
-    connectionImpl.setExtraOptionsOrder( connectionBean.getExtraOptionsOrder() );
+    connectionImpl.setExtraOptionsOrder( mapBeanToImpl( connectionBean.getExtraOptionsOrder() ) );
     return connectionImpl;
   }
 
