@@ -1,5 +1,5 @@
 /*
-* Copyright 2002 - 2013 Pentaho Corporation.  All rights reserved.
+* Copyright 2002 - 2016 Pentaho Corporation.  All rights reserved.
 * 
 * This software was developed by Pentaho Corporation and is provided under the terms
 * of the Mozilla Public License, Version 1.1, or any later version. You may not use
@@ -68,7 +68,7 @@ public class AutobeanUtilities {
     connectionImpl
       .setUsingDoubleDecimalAsSchemaTableSeparator( connectionBean.isUsingDoubleDecimalAsSchemaTableSeparator() );
     connectionImpl.setExtraOptions( mapBeanToImpl( connectionBean.getExtraOptions() ) );
-
+    connectionImpl.setExtraOptionsOrder( mapBeanToImpl( connectionBean.getExtraOptionsOrder() ) );
     return connectionImpl;
   }
 
