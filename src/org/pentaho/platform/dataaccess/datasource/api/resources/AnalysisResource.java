@@ -58,7 +58,7 @@ import static javax.ws.rs.core.Response.Status.*;
 @Path( "/data-access/api/datasource/analysis" )
 public class AnalysisResource {
 
-  protected static final String UPLOAD_ANALYSIS = "uploadInput";
+  protected static final String UPLOAD_ANALYSIS = "uploadAnalysis";
   protected static final String CATALOG_ID = "catalogId";
   protected static final String ORIG_CATALOG_NAME = "origCatalogName";
   protected static final String DATASOURCE_NAME = "datasourceName";
