@@ -179,76 +179,47 @@ public class ConnectionService {
     return value;
   }
 
-  private static final DatabaseConnectionPoolParameter[] poolingParameters =
-      new DatabaseConnectionPoolParameter[] {
-          new DatabaseConnectionPoolParameter( "defaultAutoCommit", "true",
-              Messages.getString( "ConnectionServiceImpl.INFO_0002_DEFAULT_AUTO_COMMIT" ) ),
-          new DatabaseConnectionPoolParameter(
-              "defaultReadOnly",
-              null,
-              Messages.getString( "ConnectionServiceImpl.INFO_0003_DEFAULT_READ_ONLY" ) ),
-          new DatabaseConnectionPoolParameter(
-              "defaultTransactionIsolation",
-              null,
-              Messages.getString( "ConnectionServiceImpl.INFO_0004_DEFAULT_TRANSACTION_ISOLATION" ) ),
-          new DatabaseConnectionPoolParameter( "defaultCatalog", null,
-              Messages.getString( "ConnectionServiceImpl.INFO_0005_DEFAULT_CATALOG" ) ),
-          new DatabaseConnectionPoolParameter( "initialSize", "0",
-              Messages.getString( "ConnectionServiceImpl.INFO_0006_INITAL_SIZE" ) ),
-          new DatabaseConnectionPoolParameter(
-              "maxActive",
-              "8",
-              Messages.getString( "ConnectionServiceImpl.INFO_0007_MAX_ACTIVE" ) ),
-          new DatabaseConnectionPoolParameter(
-              "maxIdle",
-              "8",
-              Messages.getString( "ConnectionServiceImpl.INFO_0008_MAX_IDLE" ) ),
-          new DatabaseConnectionPoolParameter(
-              "minIdle",
-              "0",
-              Messages.getString( "ConnectionServiceImpl.INFO_0009_MIN_IDLE" ) ),
-          new DatabaseConnectionPoolParameter(
-              "maxWait",
-              "-1",
-              Messages.getString( "ConnectionServiceImpl.INFO_0010_MAX_WAIT" ) ),
-          new DatabaseConnectionPoolParameter(
-              "validationQuery",
-              null,
-              Messages.getString( "ConnectionServiceImpl.INFO_0011_VALIDATION_QUERY" ) ),
-          new DatabaseConnectionPoolParameter(
-              "testOnBorrow",
-              "true",
-              Messages.getString( "ConnectionServiceImpl.INFO_0012_TEST_ON_BORROW" ) ),
-          new DatabaseConnectionPoolParameter(
-              "testOnReturn",
-              "false",
-              Messages.getString( "ConnectionServiceImpl.INFO_0013_TEST_ON_RETURN" ) ),
-          new DatabaseConnectionPoolParameter(
-              "testWhileIdle",
-              "false",
-              Messages.getString( "ConnectionServiceImpl.INFO_0014_TEST_WHILE_IDLE" ) ),
-          new DatabaseConnectionPoolParameter(
-              "timeBetweenEvictionRunsMillis",
-              null,
-              Messages.getString( "ConnectionServiceImpl.INFO_0015_TIME_BETWEEN_EVICTION_RUNS_MILLIS" ) ),
-          new DatabaseConnectionPoolParameter( "poolPreparedStatements", "false",
-              Messages.getString( "ConnectionServiceImpl.INFO_0016_POOL_PREPARED_STATEMENTS" ) ),
-          new DatabaseConnectionPoolParameter(
-              "maxOpenPreparedStatements",
-              "-1",
-              Messages.getString( "ConnectionServiceImpl.INFO_0017_MAX_OPEN_PREPARED_STATEMENTS" ) ),
-          new DatabaseConnectionPoolParameter( "accessToUnderlyingConnectionAllowed", "false",
-              Messages.getString( "ConnectionServiceImpl.INFO_0018_ACCESS_TO_UNDERLYING_CONNECTION_ALLOWED" ) ),
-          new DatabaseConnectionPoolParameter(
-              "removeAbandoned",
-              "false",
-              Messages.getString( "ConnectionServiceImpl.INFO_0019_REMOVE_ABANDONED" ) ),
-          new DatabaseConnectionPoolParameter( "removeAbandonedTimeout", "300",
-              Messages.getString( "ConnectionServiceImpl.INFO_0020_REMOVE_ABANDONED_TIMEOUT" ) ),
-          new DatabaseConnectionPoolParameter(
-              "logAbandoned",
-              "false",
-              Messages.getString( "ConnectionServiceImpl.INFO_0021_LOGS_ABANDONED" ) ), };
+  private static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[] {
+    new DatabaseConnectionPoolParameter( "defaultAutoCommit", "true",
+      Messages.getString( "ConnectionServiceImpl.INFO_0002_DEFAULT_AUTO_COMMIT" ) ),
+    new DatabaseConnectionPoolParameter( "defaultReadOnly", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0003_DEFAULT_READ_ONLY" ) ),
+    new DatabaseConnectionPoolParameter( "defaultTransactionIsolation", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0004_DEFAULT_TRANSACTION_ISOLATION" ) ),
+    new DatabaseConnectionPoolParameter( "defaultCatalog", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0005_DEFAULT_CATALOG" ) ),
+    new DatabaseConnectionPoolParameter( "initialSize", "0",
+      Messages.getString( "ConnectionServiceImpl.INFO_0006_INITAL_SIZE" ) ),
+    new DatabaseConnectionPoolParameter( "maxActive", "8",
+      Messages.getString( "ConnectionServiceImpl.INFO_0007_MAX_ACTIVE" ) ),
+    new DatabaseConnectionPoolParameter( "maxIdle", "8",
+      Messages.getString( "ConnectionServiceImpl.INFO_0008_MAX_IDLE" ) ),
+    new DatabaseConnectionPoolParameter( "minIdle", "0",
+      Messages.getString( "ConnectionServiceImpl.INFO_0009_MIN_IDLE" ) ),
+    new DatabaseConnectionPoolParameter( "maxWait", "-1",
+      Messages.getString( "ConnectionServiceImpl.INFO_0010_MAX_WAIT" ) ),
+    new DatabaseConnectionPoolParameter( "validationQuery", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0011_VALIDATION_QUERY" ) ),
+    new DatabaseConnectionPoolParameter( "testOnBorrow", "true",
+      Messages.getString( "ConnectionServiceImpl.INFO_0012_TEST_ON_BORROW" ) ),
+    new DatabaseConnectionPoolParameter( "testOnReturn", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0013_TEST_ON_RETURN" ) ),
+    new DatabaseConnectionPoolParameter( "testWhileIdle", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0014_TEST_WHILE_IDLE" ) ),
+    new DatabaseConnectionPoolParameter( "timeBetweenEvictionRunsMillis", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0015_TIME_BETWEEN_EVICTION_RUNS_MILLIS" ) ),
+    new DatabaseConnectionPoolParameter( "poolPreparedStatements", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0016_POOL_PREPARED_STATEMENTS" ) ),
+    new DatabaseConnectionPoolParameter( "maxOpenPreparedStatements", "-1",
+      Messages.getString( "ConnectionServiceImpl.INFO_0017_MAX_OPEN_PREPARED_STATEMENTS" ) ),
+    new DatabaseConnectionPoolParameter( "accessToUnderlyingConnectionAllowed", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0018_ACCESS_TO_UNDERLYING_CONNECTION_ALLOWED" ) ),
+    new DatabaseConnectionPoolParameter( "removeAbandoned", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0019_REMOVE_ABANDONED" ) ),
+    new DatabaseConnectionPoolParameter( "removeAbandonedTimeout", "300",
+      Messages.getString( "ConnectionServiceImpl.INFO_0020_REMOVE_ABANDONED_TIMEOUT" ) ),
+    new DatabaseConnectionPoolParameter( "logAbandoned", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0021_LOGS_ABANDONED" ) ), };
 
   /**
    * Tests the database connection
@@ -273,9 +244,8 @@ public class ConnectionService {
           .build();
     } else {
       return Response.serverError()
-          .entity(
-              Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED", connection
-                  .getDatabaseName() ) ).build();
+          .entity( Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED",
+                  connection.getDatabaseName() ) ).build();
     }
   }
 
