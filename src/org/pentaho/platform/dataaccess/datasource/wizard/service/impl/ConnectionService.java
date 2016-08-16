@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -48,6 +48,7 @@ import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
@@ -66,19 +67,21 @@ public class ConnectionService {
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
   private static final Log logger = LogFactory.getLog( ConnectionService.class );
+  private UtilHtmlSanitizer sanitizer;
 
   public ConnectionService() {
     connectionService = new ConnectionServiceImpl();
     this.dialectService = new DatabaseDialectService( true );
+    sanitizer = new UtilHtmlSanitizer();
   }
-  
+
   /**
    * Returns a response with id of a database connection
-   * 
+   *
    * @param name
    *          String representing the name of the database to search
    * @return Response based on the string value of the connection id
-   * 
+   *
    * @throws ConnectionServiceException
    */
   @GET
@@ -86,7 +89,7 @@ public class ConnectionService {
   @Produces( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response getConnectionIdByNameWithResponse( @QueryParam( "name" ) String name )
-    throws ConnectionServiceException {
+      throws ConnectionServiceException {
     IDatabaseConnection conn = null;
     Response response;
     try {
@@ -101,13 +104,13 @@ public class ConnectionService {
     }
     return response;
   }
-  
+
   /**
    * Returns the database meta for the given connection.
-   * 
+   *
    * @param connection
    *          DatabaseConnection to retrieve meta from
-   * 
+   *
    * @return array containing the database connection metadata
    */
   @POST
@@ -124,15 +127,15 @@ public class ConnectionService {
     }
     return array;
   }
-  
+
   /**
    * Create a database connection
-   * 
+   *
    * @param driver
    *          String name of the driver to use
    * @param url
    *          String name of the url used to create the connection.
-   * 
+   *
    * @return IDatabaseConnection for the given parameters
    */
   @GET
@@ -156,10 +159,10 @@ public class ConnectionService {
 
     return conn;
   }
-  
+
   /**
    * Returns a list of the database connection pool parameters
-   * 
+   *
    * @return IDatabaseConnectionPoolParameterList a list of the pooling parameters
    */
   @GET
@@ -175,81 +178,52 @@ public class ConnectionService {
     value.setDatabaseConnectionPoolParameters( paramList );
     return value;
   }
-  
-  private static final DatabaseConnectionPoolParameter[] poolingParameters =
-      new DatabaseConnectionPoolParameter[] {
-        new DatabaseConnectionPoolParameter( "defaultAutoCommit", "true",
-            Messages.getString( "ConnectionServiceImpl.INFO_0002_DEFAULT_AUTO_COMMIT" ) ),
-        new DatabaseConnectionPoolParameter(
-            "defaultReadOnly",
-            null,
-            Messages.getString( "ConnectionServiceImpl.INFO_0003_DEFAULT_READ_ONLY" ) ),
-        new DatabaseConnectionPoolParameter(
-            "defaultTransactionIsolation",
-            null,
-            Messages.getString( "ConnectionServiceImpl.INFO_0004_DEFAULT_TRANSACTION_ISOLATION" ) ),
-        new DatabaseConnectionPoolParameter( "defaultCatalog", null,
-            Messages.getString( "ConnectionServiceImpl.INFO_0005_DEFAULT_CATALOG" ) ),
-        new DatabaseConnectionPoolParameter( "initialSize", "0",
-            Messages.getString( "ConnectionServiceImpl.INFO_0006_INITAL_SIZE" ) ),
-        new DatabaseConnectionPoolParameter(
-            "maxActive",
-            "8",
-            Messages.getString( "ConnectionServiceImpl.INFO_0007_MAX_ACTIVE" ) ),
-        new DatabaseConnectionPoolParameter(
-            "maxIdle",
-            "8",
-            Messages.getString( "ConnectionServiceImpl.INFO_0008_MAX_IDLE" ) ),
-        new DatabaseConnectionPoolParameter(
-            "minIdle",
-            "0",
-            Messages.getString( "ConnectionServiceImpl.INFO_0009_MIN_IDLE" ) ),
-        new DatabaseConnectionPoolParameter(
-            "maxWait",
-            "-1",
-            Messages.getString( "ConnectionServiceImpl.INFO_0010_MAX_WAIT" ) ),
-        new DatabaseConnectionPoolParameter(
-            "validationQuery",
-            null,
-            Messages.getString( "ConnectionServiceImpl.INFO_0011_VALIDATION_QUERY" ) ),
-        new DatabaseConnectionPoolParameter(
-            "testOnBorrow",
-            "true",
-            Messages.getString( "ConnectionServiceImpl.INFO_0012_TEST_ON_BORROW" ) ),
-        new DatabaseConnectionPoolParameter(
-            "testOnReturn",
-            "false",
-            Messages.getString( "ConnectionServiceImpl.INFO_0013_TEST_ON_RETURN" ) ),
-        new DatabaseConnectionPoolParameter(
-            "testWhileIdle",
-            "false",
-            Messages.getString( "ConnectionServiceImpl.INFO_0014_TEST_WHILE_IDLE" ) ),
-        new DatabaseConnectionPoolParameter(
-            "timeBetweenEvictionRunsMillis",
-            null,
-            Messages.getString( "ConnectionServiceImpl.INFO_0015_TIME_BETWEEN_EVICTION_RUNS_MILLIS" ) ),
-        new DatabaseConnectionPoolParameter( "poolPreparedStatements", "false",
-            Messages.getString( "ConnectionServiceImpl.INFO_0016_POOL_PREPARED_STATEMENTS" ) ),
-        new DatabaseConnectionPoolParameter(
-            "maxOpenPreparedStatements",
-            "-1",
-            Messages.getString( "ConnectionServiceImpl.INFO_0017_MAX_OPEN_PREPARED_STATEMENTS" ) ),
-        new DatabaseConnectionPoolParameter( "accessToUnderlyingConnectionAllowed", "false",
-            Messages.getString( "ConnectionServiceImpl.INFO_0018_ACCESS_TO_UNDERLYING_CONNECTION_ALLOWED" ) ),
-        new DatabaseConnectionPoolParameter(
-            "removeAbandoned",
-            "false",
-            Messages.getString( "ConnectionServiceImpl.INFO_0019_REMOVE_ABANDONED" ) ),
-        new DatabaseConnectionPoolParameter( "removeAbandonedTimeout", "300",
-            Messages.getString( "ConnectionServiceImpl.INFO_0020_REMOVE_ABANDONED_TIMEOUT" ) ),
-        new DatabaseConnectionPoolParameter(
-            "logAbandoned",
-            "false",
-            Messages.getString( "ConnectionServiceImpl.INFO_0021_LOGS_ABANDONED" ) ), };
+
+  private static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[] {
+    new DatabaseConnectionPoolParameter( "defaultAutoCommit", "true",
+      Messages.getString( "ConnectionServiceImpl.INFO_0002_DEFAULT_AUTO_COMMIT" ) ),
+    new DatabaseConnectionPoolParameter( "defaultReadOnly", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0003_DEFAULT_READ_ONLY" ) ),
+    new DatabaseConnectionPoolParameter( "defaultTransactionIsolation", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0004_DEFAULT_TRANSACTION_ISOLATION" ) ),
+    new DatabaseConnectionPoolParameter( "defaultCatalog", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0005_DEFAULT_CATALOG" ) ),
+    new DatabaseConnectionPoolParameter( "initialSize", "0",
+      Messages.getString( "ConnectionServiceImpl.INFO_0006_INITAL_SIZE" ) ),
+    new DatabaseConnectionPoolParameter( "maxActive", "8",
+      Messages.getString( "ConnectionServiceImpl.INFO_0007_MAX_ACTIVE" ) ),
+    new DatabaseConnectionPoolParameter( "maxIdle", "8",
+      Messages.getString( "ConnectionServiceImpl.INFO_0008_MAX_IDLE" ) ),
+    new DatabaseConnectionPoolParameter( "minIdle", "0",
+      Messages.getString( "ConnectionServiceImpl.INFO_0009_MIN_IDLE" ) ),
+    new DatabaseConnectionPoolParameter( "maxWait", "-1",
+      Messages.getString( "ConnectionServiceImpl.INFO_0010_MAX_WAIT" ) ),
+    new DatabaseConnectionPoolParameter( "validationQuery", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0011_VALIDATION_QUERY" ) ),
+    new DatabaseConnectionPoolParameter( "testOnBorrow", "true",
+      Messages.getString( "ConnectionServiceImpl.INFO_0012_TEST_ON_BORROW" ) ),
+    new DatabaseConnectionPoolParameter( "testOnReturn", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0013_TEST_ON_RETURN" ) ),
+    new DatabaseConnectionPoolParameter( "testWhileIdle", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0014_TEST_WHILE_IDLE" ) ),
+    new DatabaseConnectionPoolParameter( "timeBetweenEvictionRunsMillis", null,
+      Messages.getString( "ConnectionServiceImpl.INFO_0015_TIME_BETWEEN_EVICTION_RUNS_MILLIS" ) ),
+    new DatabaseConnectionPoolParameter( "poolPreparedStatements", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0016_POOL_PREPARED_STATEMENTS" ) ),
+    new DatabaseConnectionPoolParameter( "maxOpenPreparedStatements", "-1",
+      Messages.getString( "ConnectionServiceImpl.INFO_0017_MAX_OPEN_PREPARED_STATEMENTS" ) ),
+    new DatabaseConnectionPoolParameter( "accessToUnderlyingConnectionAllowed", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0018_ACCESS_TO_UNDERLYING_CONNECTION_ALLOWED" ) ),
+    new DatabaseConnectionPoolParameter( "removeAbandoned", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0019_REMOVE_ABANDONED" ) ),
+    new DatabaseConnectionPoolParameter( "removeAbandonedTimeout", "300",
+      Messages.getString( "ConnectionServiceImpl.INFO_0020_REMOVE_ABANDONED_TIMEOUT" ) ),
+    new DatabaseConnectionPoolParameter( "logAbandoned", "false",
+      Messages.getString( "ConnectionServiceImpl.INFO_0021_LOGS_ABANDONED" ) ), };
 
   /**
    * Tests the database connection
-   * 
+   *
    * @param connection
    *          Database connection object to test
    * @return Response based on the boolean value of the connection test
@@ -270,19 +244,18 @@ public class ConnectionService {
           .build();
     } else {
       return Response.serverError()
-          .entity(
-              Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED", connection
-                  .getDatabaseName() ) ).build();
+          .entity( Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED",
+                  connection.getDatabaseName() ) ).build();
     }
   }
-  
+
   /**
    * Update an existing database connection
-   * 
+   *
    * @param connection
    *          Database connection object to update
    * @return Response indicating the success of this operation
-   * 
+   *
    * @throws ConnectionServiceException
    */
   @POST
@@ -290,6 +263,7 @@ public class ConnectionService {
   @Consumes( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
+    sanitizer.sanitizeConnectionParameters( connection );
     try {
       applySavedPassword( connection );
       boolean success = connectionService.updateConnection( connection );
@@ -303,7 +277,7 @@ public class ConnectionService {
       return Response.serverError().build();
     }
   }
-  
+
   /**
    * If password is empty, that means connection sent from UI and user didn't change password. Since we cleaned password
    * during sending to UI, we need to use stored password.
@@ -328,14 +302,14 @@ public class ConnectionService {
       }
     }
   }
-  
+
   /**
    * Delete an existing database connection
-   * 
+   *
    * @param connection
    *          Database connection object to delete
    * @return Response indicating the success of this operation
-   * 
+   *
    * @throws ConnectionServiceException
    */
   @DELETE
@@ -358,11 +332,11 @@ public class ConnectionService {
 
   /**
    * Delete an existing database connection by name
-   * 
+   *
    * @param name
    *          String representing the name of the database connection to delete
    * @return Response indicating the success of this operation
-   * 
+   *
    * @throws ConnectionServiceException
    */
   @DELETE
@@ -379,14 +353,14 @@ public class ConnectionService {
       return Response.serverError().build();
     }
   }
-  
+
   /**
    * Add a database connection
-   * 
+   *
    * @param connection
    *          A database connection object to add
    * @return Response indicating the success of this operation
-   * 
+   *
    * @throws ConnectionServiceException
    */
   @POST
@@ -394,7 +368,7 @@ public class ConnectionService {
   @Consumes( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
-    try {      
+    try {
       boolean success = connectionService.addConnection( connection );
       if ( success ) {
         return Response.ok().build();
@@ -406,10 +380,10 @@ public class ConnectionService {
       return Response.serverError().build();
     }
   }
-  
+
   /**
    * internal validation of authorization
-   * 
+   *
    * @throws PentahoAccessControlException
    */
   private void validateAccess() throws PentahoAccessControlException {
@@ -421,12 +395,12 @@ public class ConnectionService {
       throw new PentahoAccessControlException( "Access Denied" );
     }
   }
-  
+
   /**
    * Returns the list of database connections
-   * 
+   *
    * @return List of database connections
-   * 
+   *
    * @throws ConnectionServiceException
    */
   @GET
@@ -445,11 +419,11 @@ public class ConnectionService {
 
   /**
    * Returns the list of database connections
-   * 
+   *
    * @param name
    *          String representing the name of the database to return
    * @return Database connection by name
-   * 
+   *
    * @throws ConnectionServiceException
    */
   @GET
@@ -464,11 +438,11 @@ public class ConnectionService {
 
   /**
    * Returns a response based on the existence of a database connection
-   * 
+   *
    * @param name
    *          String representing the name of the database to check
    * @return Response based on the boolean value of the connection existing
-   * 
+   *
    * @throws ConnectionServiceException
    */
   @GET
@@ -498,7 +472,7 @@ public class ConnectionService {
   @Produces( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response getConnectionByNameWithResponse( @QueryParam( "name" ) String name )
-    throws ConnectionServiceException {
+      throws ConnectionServiceException {
     IDatabaseConnection conn = null;
     Response response;
     try {
@@ -510,7 +484,7 @@ public class ConnectionService {
     }
     return response;
   }
-  
+
   /**
    * Hides password for connections for return to user.
    */
