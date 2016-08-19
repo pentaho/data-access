@@ -92,10 +92,11 @@
  -->
 
     <!--  internal dependencies -->
-    <dependency org="pentaho" name="pentaho-modeler" rev="${dependency.pentaho-modeler.revision}" changing="true"
+    <dependency org="pentaho" name="pentaho-modeler-gwt" rev="${dependency.pentaho-modeler.revision}" changing="true"
                 transitive="true">
-      <artifact name="pentaho-modeler"/>
-      <artifact name="pentaho-modeler" type="source" ext="jar" m:classifier="sources"/>
+                
+      <artifact name="pentaho-modeler-gwt"/>
+      <artifact name="pentaho-modeler-gwt" type="source" ext="jar" m:classifier="sources"/>
       <exclude org="org.slf4j" name="slf4j-jcl"/>
     </dependency>
 

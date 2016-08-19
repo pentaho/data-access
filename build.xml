@@ -77,7 +77,8 @@
 			<fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
 			<!--fileset file="${gwt.sdk.dir}/gwt-user*.jar" /-->
 			<fileset file="${codegenlib.dir}/pentaho-database-gwt-${dependency.pentaho-database.revision}.jar" />
-			<fileset file="${codegenlib.dir}/pentaho-modeler-${dependency.pentaho-modeler.revision}.jar" />
+			<fileset file="${codegenlib.dir}/pentaho-modeler-xul-${dependency.pentaho-modeler.revision}.jar" />
+			<fileset file="${codegenlib.dir}/pentaho-modeler-gwt-${dependency.pentaho-modeler.revision}.jar" />
 		</copy>
 
 		<copy todir="${approot.stage.dir}" overwrite="true">
