@@ -87,14 +87,21 @@
     <dependency org="com.h2database" name="h2" rev="1.0.78" transitive="false" conf="test->default"/>
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.3" conf="default->default"/>
 
-<!-- 
+<!--
  <dependency org="org.slf4j" name="slf4j-jcl" rev="1.7.3" conf="default->default"/>
  -->
 
     <!--  internal dependencies -->
+    <dependency org="pentaho" name="pentaho-modeler" rev="${dependency.pentaho-modeler.revision}" changing="true"
+                transitive="true">
+
+      <artifact name="pentaho-modeler"/>
+      <artifact name="pentaho-modeler" type="source" ext="jar" m:classifier="sources"/>
+      <exclude org="org.slf4j" name="slf4j-jcl"/>
+    </dependency>
     <dependency org="pentaho" name="pentaho-modeler-gwt" rev="${dependency.pentaho-modeler.revision}" changing="true"
                 transitive="true">
-                
+
       <artifact name="pentaho-modeler-gwt"/>
       <artifact name="pentaho-modeler-gwt" type="source" ext="jar" m:classifier="sources"/>
       <exclude org="org.slf4j" name="slf4j-jcl"/>
@@ -171,7 +178,7 @@
     <dependency org="commons-codec" name="commons-codec" rev="1.9" transitive="false" conf="test->default"/>
     <dependency org="org.springframework" name="spring-mock" rev="${dependency.spring.mock.revision}" transitive="false" conf="test->default"/>
     <dependency org="org.springframework" name="se-jcr" rev="${dependency.spring.extensions.jcr.revision}" transitive="false" />
-    
+
     <!-- The organization of GWT Widgets can not be varied since we do not create optimized versions of the GWT Widgets -->
     <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}" conf="codegen->default" changing="true">
       <artifact name="pentaho-gwt-widgets"/>
@@ -239,7 +246,7 @@
     <dependency org="com.sun.jersey.contribs" name="wadl-resourcedoc-doclet" rev="1.19.1" transitive="false" />
 
      <override org="pentaho-kettle" rev="${dependency.kettle.revision}" />
-     
+
      <conflict org="pentaho" module='pentaho-database-.*' rev="${dependency.pentaho-database.revision}" matcher='regexp' />
 
     <conflict org="commons-dbcp" rev="1.4"/>
