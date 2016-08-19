@@ -368,6 +368,7 @@ public class ConnectionService {
   @Consumes( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
+    sanitizer.sanitizeConnectionParameters( connection );
     try {
       boolean success = connectionService.addConnection( connection );
       if ( success ) {
