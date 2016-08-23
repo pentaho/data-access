@@ -99,6 +99,9 @@
       <artifact name="pentaho-modeler" type="source" ext="jar" m:classifier="sources"/>
       <exclude org="org.slf4j" name="slf4j-jcl"/>
     </dependency>
+
+   <dependency org="org.eclipse" name="swt" force="true" rev="3.3.0-v3346" />
+
     <dependency org="pentaho" name="pentaho-modeler-gwt" rev="${dependency.pentaho-modeler.revision}" changing="true"
                 transitive="true">
 
