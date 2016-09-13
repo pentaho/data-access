@@ -40,9 +40,7 @@ public class FileUtils {
 
   public FileInfo[] listFiles() {
     List<FileInfo> fileList = new ArrayList<FileInfo>();
-    String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
-      String.valueOf( DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) );  //$NON-NLS-1$
-    String path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
+    String path = getRelativeSolutionPath();
     File folder = new File( path );
     if ( folder.exists() ) {
       File[] files = folder.listFiles();
@@ -67,14 +65,22 @@ public class FileUtils {
     return fileList.toArray( new FileInfo[ fileList.size() ] );
   }
 
+  protected String getRelativeSolutionPath() {
+    String relativePath = PentahoSystem.getSystemSetting(
+        "file-upload-defaults/relative-path",
+        String.valueOf( FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) ); //$NON-NLS-1$
+    return PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
+
+  }
+
   public Boolean deleteFile( String aFileName ) {
     boolean result = false;
-    String relativePath = PentahoSystem.getSystemSetting(
-      "file-upload-defaults/relative-path",
-      String.valueOf( FileUtils.DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) ); //$NON-NLS-1$
-    String path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
+    String path = getRelativeSolutionPath();
     File file = new File( path + File.separatorChar + aFileName );
 
+    System.err.println( "File not null " + file != null );
+    System.err.println( "File path " + file.getAbsolutePath() );
+    System.err.println( "File exist " + file.exists() );
     if ( file.exists() ) {
       result = file.delete();
     }

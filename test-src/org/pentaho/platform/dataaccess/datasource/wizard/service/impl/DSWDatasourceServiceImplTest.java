@@ -351,7 +351,7 @@ public class DSWDatasourceServiceImplTest {
   @Test( expected = DatasourceServiceException.class )
   public void testTestDataSourceConnection_CouldNotClose() throws Exception {
     doReturn( true ).when( dswService ).hasDataAccessPermission();
-    doThrow( SQLException.class ).when( nativeConnection ).close();
+    doThrow( new SQLException() ).when( nativeConnection ).close();
     assertTrue( dswService.testDataSourceConnection( CONNECTION_NAME ) );
   }
 
@@ -475,7 +475,7 @@ public class DSWDatasourceServiceImplTest {
 
   @Test( expected = DatasourceServiceException.class )
   public void testGenerateQueryDomain_UnableToSerializeCommonCause() throws Exception {
-    doThrow( Exception.class ).when( modelerService ).serializeModels( any( Domain.class ), anyString() );
+    doThrow( new Exception() ).when( modelerService ).serializeModels( any( Domain.class ), anyString() );
     testGenerateQueryDomain( MODEL_NAME, VALID_QUERY, null, null );
   }
 

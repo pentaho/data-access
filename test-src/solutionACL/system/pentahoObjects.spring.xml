@@ -37,8 +37,8 @@ PentahoSystem which is initialized after Spring
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd 
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
        http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd" default-lazy-init="true">
 
   <bean id="ISolutionEngine" class="org.pentaho.platform.engine.services.solution.SolutionEngine" scope="prototype"/>
@@ -71,17 +71,15 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   <bean id="contentrepo" class="org.pentaho.platform.repository2.unified.fileio.RepositoryContentOutputHandler"
         scope="session"/>
   <bean id="vfs-ftp" class="org.pentaho.platform.plugin.outputs.ApacheVFSOutputHandler" scope="session"/>
-  <bean id="IAclPublisher" class="org.pentaho.platform.engine.security.acls.AclPublisher" scope="singleton"/>
-  <bean id="IAclVoter" class="org.pentaho.platform.engine.security.acls.voter.PentahoBasicAclVoter" scope="singleton"/>
-  <bean id="IVersionHelper" class="com.pentaho.util.SubscriptionVersionHelper" scope="singleton"/>
+  <bean id="IVersionHelper" class="org.pentaho.platform.util.VersionHelper" scope="singleton"/>
   <bean id="ICacheManager" class="org.pentaho.platform.plugin.services.cache.CacheManager" scope="singleton"/>
 
   <bean id="IBlockoutManager" class="org.pentaho.platform.scheduler2.blockout.PentahoBlockoutManager" scope="singleton"/>
   <bean id="IConditionalExecution" class="org.pentaho.platform.plugin.condition.javascript.ConditionalExecution"
         scope="prototype"/>
   <bean id="IMessageFormatter" class="org.pentaho.platform.engine.services.MessageFormatter" scope="singleton"/>
-  <bean id="IVersionCheckDataProvider" class="com.pentaho.core.system.PentahoEEVersionCheckDataProvider"
-        scope="prototype"/>
+  <!-- bean id="IVersionCheckDataProvider" class="com.pentaho.core.system.PentahoEEVersionCheckDataProvider"
+        scope="prototype"/ -->
   <!--
     IDBDatasourceService - options are: 
     org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService
@@ -190,14 +188,14 @@ not directly from the PentahoObjectFactory. -->
   </bean>
 
   <!-- Reference to a bean in one of the applicationContext-pentaho-security-*.xml; selected by configured provider-->
-  <pen:bean id="activeUserDetailsService" class="org.springframework.security.userdetails.UserDetailsService">
+  <pen:bean id="activeUserDetailsService" class="org.springframework.security.core.userdetails.UserDetailsService">
     <pen:attributes>
       <pen:attr key="providerName" value="${security.provider}"/>
     </pen:attributes>
   </pen:bean>
 
   <!-- The system must have access to the jackrabbit version even if another is configured. -->
-  <pen:bean id="systemUserDetailsService" class="org.springframework.security.userdetails.UserDetailsService">
+  <pen:bean id="systemUserDetailsService" class="org.springframework.security.core.userdetails.UserDetailsService">
     <pen:attributes>
       <pen:attr key="providerName" value="jackrabbit"/>
     </pen:attributes>
@@ -213,7 +211,7 @@ not directly from the PentahoObjectFactory. -->
     </constructor-arg>
   </bean>
 
-  <bean id="ehCacheUserCache" class="org.springframework.security.providers.dao.cache.EhCacheBasedUserCache">
+  <bean id="ehCacheUserCache" class="org.springframework.security.core.userdetails.cache.EhCacheBasedUserCache">
     <property name="cache">
       <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager">
@@ -242,7 +240,7 @@ not directly from the PentahoObjectFactory. -->
   </bean>
 
 
-    <pen:bean class="org.springframework.security.providers.AuthenticationProvider">
+    <pen:bean class="org.springframework.security.authentication.AuthenticationProvider">
         <pen:attributes>
             <pen:attr key="providerName" value="${security.provider}"/>
         </pen:attributes>
@@ -323,11 +321,11 @@ not directly from the PentahoObjectFactory. -->
     <property name="sessionProperty" value="MondrianUserRoles" />
   </bean>
   -->
-  <bean id="ReportCache" class="org.pentaho.reporting.platform.plugin.cache.NullReportCache" scope="singleton"/>
-  <bean id="PentahoNameGenerator" class="org.pentaho.reporting.platform.plugin.repository.TempDirectoryNameGenerator"
-        scope="prototype"/>
-  <bean id="MondrianConnectionProvider"
-        class="org.pentaho.reporting.platform.plugin.connection.PentahoMondrianConnectionProvider" scope="singleton"/>
+  <!-- bean id="ReportCache" class="org.pentaho.reporting.platform.plugin.cache.NullReportCache" scope="singleton"/ -->
+  <!-- bean id="PentahoNameGenerator" class="org.pentaho.reporting.platform.plugin.repository.TempDirectoryNameGenerator"
+        scope="prototype"/ -->
+  <!-- bean id="MondrianConnectionProvider"
+        class="org.pentaho.reporting.platform.plugin.connection.PentahoMondrianConnectionProvider" scope="singleton"/ -->
 
   <bean id="metadataqueryexec-SQL"
         class="org.pentaho.platform.plugin.services.connections.metadata.sql.SqlMetadataQueryExec" scope="prototype"/>

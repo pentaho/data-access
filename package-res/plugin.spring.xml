@@ -3,10 +3,10 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ws="http://jax-ws.dev.java.net/spring/core" xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
   xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
   xmlns:util="http://www.springframework.org/schema/util"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
-                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
-                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
                            http://jax-ws.dev.java.net/spring/core http://jax-ws.dev.java.net/spring/core.xsd
                            http://jax-ws.dev.java.net/spring/servlet http://jax-ws.dev.java.net/spring/servlet.xsd
 						   http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd"
@@ -25,12 +25,12 @@
   <bean class="org.pentaho.platform.dataaccess.datasource.api.resources.MetadataResource"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.api.resources.JDBCDatasourceResource"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseDialectService"/>
-  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.PentahoJAXBContextResolver"/>
-  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DataAccessPermissionResource"/>
-  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionReaderWriter"/>
-  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionListReaderWriter"/>
- <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypeReaderWriter"/>
-  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypesListReaderWriter"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.PentahoJAXBContextResolver" scope="singleton"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DataAccessPermissionResource" />
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionReaderWriter" scope="singleton"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionListReaderWriter" scope="singleton"/>
+ <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypeReaderWriter" scope="singleton"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypesListReaderWriter" scope="singleton"/>
  <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" scope="singleton"/>
  <bean class="org.pentaho.platform.web.servlet.PentahoSerializationPolicy">
    <property name="whiteList">

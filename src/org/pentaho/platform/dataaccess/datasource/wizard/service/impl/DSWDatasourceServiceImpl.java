@@ -77,10 +77,16 @@ import org.pentaho.platform.engine.services.connection.PentahoConnectionFactory;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServiceException;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
+import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
+import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
+
 import org.pentaho.platform.uifoundation.component.xml.PMDUIComponent;
 import org.pentaho.platform.util.logging.SimpleLogger;
 import org.pentaho.platform.util.messages.LocaleHelper;
 import org.pentaho.platform.util.web.SimpleUrlFactory;
+import org.pentaho.platform.web.http.api.resources.utils.SystemUtils;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -457,8 +463,9 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   public boolean hasPermission() {
     if ( PentahoSessionHolder.getSession() != null ) {
-      return ( SecurityHelper.getInstance().isPentahoAdministrator( PentahoSessionHolder.getSession() )
-        || hasDataAccessPermission() );
+      IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class, PentahoSessionHolder.getSession() );
+      return policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
+          && ( policy.isAllowed( AdministerSecurityAction.NAME ) );
     } else {
       return false;
     }

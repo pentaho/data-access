@@ -58,13 +58,13 @@ import org.pentaho.test.platform.MethodTrackingData;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.pentaho.test.platform.engine.security.MockSecurityHelper;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.userdetails.User;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Integration test. Tests {@link DefaultUnifiedRepository} and
@@ -193,13 +193,13 @@ public class DatasourceWebServicesSecurityTest {
 		final String password = "password";
 
 		List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
-		authList.add(new GrantedAuthorityImpl(MessageFormat.format(tenantAuthenticatedAuthorityNamePattern, tenantId)));
+		authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAuthenticatedAuthorityNamePattern, tenantId)));
 		if (tenantAdmin) {
-			authList.add(new GrantedAuthorityImpl(MessageFormat.format(tenantAdminAuthorityNamePattern, tenantId)));
+			authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAdminAuthorityNamePattern, tenantId)));
 		}
-		GrantedAuthority[] authorities = authList.toArray(new GrantedAuthority[0]);
-		UserDetails userDetails = new User(username, password, true, true, true, true, authorities);
-		Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, password, authorities);
+
+		UserDetails userDetails = new User(username, password, true, true, true, true, authList);
+		Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, password, authList);
 		PentahoSessionHolder.setSession(pentahoSession);
 		// this line necessary for Spring Security's MethodSecurityInterceptor
 		SecurityContextHolder.getContext().setAuthentication(auth);
