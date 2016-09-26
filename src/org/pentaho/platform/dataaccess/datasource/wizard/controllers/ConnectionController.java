@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.HTML;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
@@ -631,6 +632,7 @@ public class ConnectionController extends AbstractXulEventHandler {
         previousConnectionName = connection.getName();
         existingConnectionName = previousConnectionName;
         databaseDialog.show();
+        unescapeConnectionParameters( connection );
       } else {
         openErrorDialog( MessageHandler.getString( "DatasourceEditor.USER_ERROR_TITLE" ), MessageHandler
           .getString( "DatasourceEditor.ERROR_0001_UNKNOWN_ERROR_HAS_OCCURED" ) );
@@ -804,5 +806,25 @@ public class ConnectionController extends AbstractXulEventHandler {
         showEditConnectionDialog( wrappedListener );
       }
     }
+  }
+
+  private void unescapeConnectionParameters( IDatabaseConnection connection ) {
+    String safeName = new HTML( connection.getName() ).getText();
+    connection.setName( safeName );
+
+    String safeDbName = new HTML( connection.getDatabaseName() ).getText();
+    connection.setDatabaseName( safeDbName );
+
+    String safeDbPort = new HTML( connection.getDatabasePort() ).getText();
+    connection.setDatabasePort( safeDbPort );
+
+    String safeHostname = new HTML( connection.getHostname() ).getText();
+    connection.setHostname( safeHostname );
+
+    String safePassword = new HTML( connection.getPassword() ).getText();
+    connection.setPassword( safePassword );
+
+    String safeUsername = new HTML( connection.getUsername() ).getText();
+    connection.setUsername( safeUsername );
   }
 }
