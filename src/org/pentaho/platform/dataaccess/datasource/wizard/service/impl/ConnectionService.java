@@ -376,6 +376,8 @@ public class ConnectionService {
       } else {
         return Response.notModified().build();
       }
+    } catch ( ConnectionServiceException cse ) {
+      return Response.status( cse.getStatusCode() ).build();
     } catch ( Throwable t ) {
       t.printStackTrace();
       return Response.serverError().build();
