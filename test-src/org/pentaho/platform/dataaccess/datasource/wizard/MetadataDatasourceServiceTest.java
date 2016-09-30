@@ -52,13 +52,13 @@ import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.pentaho.test.platform.engine.security.MockSecurityHelper;
 import org.pentaho.test.platform.repository2.unified.MockUnifiedRepository;
 import org.springframework.extensions.jcr.JcrTemplate;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.userdetails.User;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @SuppressWarnings("nls")
 public class MetadataDatasourceServiceTest extends TestCase  {
@@ -173,13 +173,13 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 		final String password = "password";
 
 		List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
-		authList.add(new GrantedAuthorityImpl(MessageFormat.format(tenantAuthenticatedAuthorityNamePattern, tenantId)));
+		authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAuthenticatedAuthorityNamePattern, tenantId)));
 		if (tenantAdmin) {
-			authList.add(new GrantedAuthorityImpl(MessageFormat.format(tenantAdminAuthorityNamePattern, tenantId)));
+			authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAdminAuthorityNamePattern, tenantId)));
 		}
-		GrantedAuthority[] authorities = authList.toArray(new GrantedAuthority[0]);
-		UserDetails userDetails = new User(username, password, true, true, true, true, authorities);
-		Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, password, authorities);
+
+		UserDetails userDetails = new User(username, password, true, true, true, true, authList);
+		Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, password, authList);
 		PentahoSessionHolder.setSession(pentahoSession);
 		// this line necessary for Spring Security's MethodSecurityInterceptor
 		SecurityContextHolder.getContext().setAuthentication(auth);
@@ -191,10 +191,11 @@ public class MetadataDatasourceServiceTest extends TestCase  {
 	protected void loginAsRepositoryAdmin() {
 		StandaloneSession pentahoSession = new StandaloneSession(repositoryAdminUsername);
 		pentahoSession.setAuthenticated(repositoryAdminUsername);
-		final GrantedAuthority[] repositoryAdminAuthorities = new GrantedAuthority[0];
+
+		List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
 		final String password = "ignored";
-		UserDetails repositoryAdminUserDetails = new User(repositoryAdminUsername, password, true, true, true, true, repositoryAdminAuthorities);
-		Authentication repositoryAdminAuthentication = new UsernamePasswordAuthenticationToken(repositoryAdminUserDetails, password, repositoryAdminAuthorities);
+		UserDetails repositoryAdminUserDetails = new User(repositoryAdminUsername, password, true, true, true, true, authList);
+		Authentication repositoryAdminAuthentication = new UsernamePasswordAuthenticationToken(repositoryAdminUserDetails, password, authList);
 		PentahoSessionHolder.setSession(pentahoSession);
 		// this line necessary for Spring Security's MethodSecurityInterceptor
 		SecurityContextHolder.getContext().setAuthentication(repositoryAdminAuthentication);

@@ -57,7 +57,7 @@ import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginClassLoader;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
-import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class ConnectionServiceImplIT {
 

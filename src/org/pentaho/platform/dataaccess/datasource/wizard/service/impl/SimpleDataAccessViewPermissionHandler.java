@@ -27,7 +27,7 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.security.SecurityHelper;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 public class SimpleDataAccessViewPermissionHandler implements IDataAccessViewPermissionHandler {
 

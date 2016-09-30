@@ -19,6 +19,11 @@ package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 
 public class FileUtilsTest {
@@ -33,11 +38,34 @@ public class FileUtilsTest {
   @Test
   public void testDeleteFile() {
     FileUtils fu = new FileUtils();
+    String testUniqueFileName = "testFileToDelete-" + System.currentTimeMillis();
+    File testUniqueFile = new File( fu.getRelativeSolutionPath() + File.separatorChar + testUniqueFileName );
+    try {
+      testUniqueFile.createNewFile();
+    } catch ( IOException  ioe ) {
+      fail( "File creation failed" );
+    }
+    //Make sure the file got deleted
+    if ( !testUniqueFile.exists() ) {
+      fail( "File could not be created" );
+    }
+
     FileInfo [] files = fu.listFiles();
     if ( files != null && files.length > 0 ) {
-      fu.deleteFile( "file-to-delete.txt" );
+      fu.deleteFile( testUniqueFileName );
       FileInfo [] files1 = fu.listFiles();
-      assertTrue( files1.length < files.length );
+      System.err.println( "File1 length " + files1.length  );
+      System.err.println( "Files length " + files.length  );
+      try {
+        assertTrue( files1.length < files.length );
+      } finally {
+        for ( FileInfo file : files1 ) {
+          if ( file.getName().contains( testUniqueFileName ) ) {
+            testUniqueFile.deleteOnExit();
+            fail( "File should have been deleted. We will delete the file ourselves" );
+          }
+        }
+      }
     }
   }
 }
