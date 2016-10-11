@@ -189,7 +189,12 @@ public class ModelerService extends PentahoBase implements IModelerService {
               .getGeoContext() );
             model.setModelName( name );
             model.setDomain( domain );
-            domain.setId( name + ".xmi" );
+
+            if ( name.endsWith( ".xmi" ) ) {
+              domain.setId( name );
+            } else {
+              domain.setId( name + ".xmi" );
+            }
 
             LogicalModel lModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
             if ( lModel == null ) {
