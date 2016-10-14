@@ -105,6 +105,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
 
     RequestBuilder builder = new RequestBuilder( RequestBuilder.GET, url );
     builder.setHeader( "accept", "application/json" );
+    builder.setHeader( "If-Modified-Since", "01 Jan 1970 00:00:00 GMT" );
 
     try {
       builder.sendRequest( null, new RequestCallback() {
