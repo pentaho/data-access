@@ -110,7 +110,7 @@ aggregation-dialog-checkbox-label {
 }
 
 .gwt-FileUpload {
-  size: 160;
+  width: 160px;
 }
 
 #columnsHeaderLabel {
