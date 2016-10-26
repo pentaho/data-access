@@ -12,9 +12,8 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
-
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
 import java.io.BufferedReader;
@@ -66,8 +65,9 @@ public class DatasourceInMemoryServiceHelper {
       ConnectionServiceImpl service = new ConnectionServiceImpl();
       connection = service.getConnectionByName( connectionName );
     } catch ( ConnectionServiceException e1 ) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      logger.error( Messages.getErrorString( "DatasourceInMemoryServiceHelper.ERROR_0008_CONNECTION_SERVICE_EXCEPTION" ) ); //$NON-NLS-1$
+      //we should return null because we do not able to use connection 
+      return null;
     }
     java.sql.Connection conn = null;
 
@@ -80,8 +80,7 @@ public class DatasourceInMemoryServiceHelper {
       driverClass = dialect.getNativeDriver();
     }
     if ( StringUtils.isEmpty( driverClass ) ) {
-      logger.error( Messages
-        .getErrorString( "DatasourceInMemoryServiceHelper.ERROR_0001_CONNECTION_ATTEMPT_FAILED" ) ); //$NON-NLS-1$
+      logger.error( Messages.getErrorString( "DatasourceInMemoryServiceHelper.ERROR_0001_CONNECTION_ATTEMPT_FAILED" ) ); //$NON-NLS-1$
       throw new DatasourceServiceException( Messages
         .getErrorString( "DatasourceInMemoryServiceHelper.ERROR_0001_CONNECTION_ATTEMPT_FAILED" ) ); //$NON-NLS-1$
     }
@@ -219,8 +218,7 @@ public class DatasourceInMemoryServiceHelper {
     try {
       bufRdr = new BufferedReader( new FileReader( file ) );
     } catch ( FileNotFoundException e ) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.error( Messages.getErrorString( "DatasourceInMemoryServiceHelper.ERROR_0006_FILE_NOT_FOUND", fileLocation ), e );
     }
     //read each line of text file
     try {
@@ -237,12 +235,11 @@ public class DatasourceInMemoryServiceHelper {
           }
           row++;
         }
+        //close the file
+        bufRdr.close();
       }
-      //close the file
-      bufRdr.close();
     } catch ( IOException e ) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.error( Messages.getErrorString( "DatasourceInMemoryServiceHelper.ERROR_0007_DO_NOT_HAVE_ACCESS_TO_FILE", fileLocation ), e );
     }
     return dataSample;
   }
