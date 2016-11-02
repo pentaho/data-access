@@ -119,6 +119,7 @@ public class MetadataServiceTest {
 
     metadataServiceUtil = mock( MetadataServiceUtil.class );
     when( metadataServiceUtil.getMetadataRepository() ).thenReturn( iMetadataDomainRepository );
+    when( metadataServiceUtil.getCategory( anyString(), any( LogicalModel.class ) ) ).thenCallRealMethod();
     when( metadataServiceUtil.createThinModel( any( LogicalModel.class ), anyString() ) ).thenCallRealMethod();
     when( metadataService.getMetadataServiceUtil() ).thenReturn( metadataServiceUtil );
   }
@@ -232,7 +233,6 @@ public class MetadataServiceTest {
     when( metadataService.doQuery( any( Query.class ), anyInt() ) ).thenCallRealMethod();
     when( metadataService.doXmlQuery( anyString(), any( Integer.class ) ) ).thenCallRealMethod();
     when( metadataServiceUtil.convertQuery( any( Query.class ) ) ).thenCallRealMethod();
-    when( metadataServiceUtil.getCategory( anyString(), any( LogicalModel.class ) ) ).thenCallRealMethod();
 
     MarshallableResultSet marshallableResultSet = getMarshallableResultSet();
     when( metadataService.getMarshallableResultSet() ).thenReturn( marshallableResultSet );
@@ -320,6 +320,37 @@ public class MetadataServiceTest {
     } catch ( Exception ex ) {
       fail();
     }
+
+  }
+
+  @Test
+  public void testGetQueryXmlFromJson() {
+
+    final String jsonQuery = "{\"columns\": [ {\"id\":\"" + COLUMN_NAME + "\", \"name\":\"" + COLUMN_ID
+      + "\", \"selectedAggType\":\"" + AggregationType.NONE.toString() + "\", \"category\":\"" + CATEGORY_ID + "\", \"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Column\"}],"
+      + "\"conditions\":[],"
+      + "\"orders\":[ {\"column\":\"" + COLUMN_ID + "\", \"orderType\":\"" + org.pentaho.metadata.query.model.Order.Type.ASC.toString() + "\","
+      + "\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Order\"}],"
+      + "\"parameters\":[ {\"column\":\"" + COLUMN_NAME + "\", \"value\":[\"" + VALUE + "\"],"
+      + "\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Parameter\"}],"
+      + "\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl.Query\",\"domainName\":\"" + DOMAIN_ID + "\","
+      + "\"modelId\":\"" + LOGICAL_MODEL_ID + "\",\"disableDistinct\":null,\"defaultParameterMap\":null}";
+
+    final String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><mql><domain_id>DOMAIN_ID</domain_id"
+      + "><model_id>MODEL_ID</model_id><options><disable_distinct>false</disable_distinct><limit>-1</limit></options"
+      + "><parameters><parameter defaultValue=\"VALUE1\" name=\"COLUMN_NAME\" "
+      + "type=\"STRING\"/></parameters><selections><selection><view>CATEGORY_ID</view><column>COLUMN_ID</column"
+      + "><aggregation>NONE</aggregation></selection></selections><constraints/><orders><order><direction>ASC"
+      + "</direction><view_id>CATEGORY_ID</view_id><column_id>COLUMN_ID</column_id><aggregation>NONE</aggregation"
+      + "></order></orders></mql>";
+
+    when( metadataServiceUtil.deserializeJsonQuery( anyString() ) ).thenCallRealMethod();
+    when( metadataServiceUtil.convertQuery( any( Query.class ) ) ).thenCallRealMethod();
+    when( metadataService.getQueryXmlFromJson( anyString() ) ).thenCallRealMethod();
+
+    String xmlFromJson = metadataService.getQueryXmlFromJson( jsonQuery );
+
+    Assert.assertTrue( expectedXml.equals( xmlFromJson ) );
 
   }
 

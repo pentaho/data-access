@@ -101,7 +101,7 @@ public class MetadataServiceUtil extends PentahoBase {
    * @return
    */
   protected String getLocale() {
-    String locale = LocaleHelper.getClosestLocale( LocaleHelper.getLocale().toString(), domain.getLocaleCodes() );
+    String locale = LocaleHelper.getClosestLocale( LocaleHelper.getLocale().toString(), getDomain().getLocaleCodes() );
     return locale;
   }
 
