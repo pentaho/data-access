@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -46,6 +46,9 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public class MetadataService extends DatasourceService {
+
+  private static final String XMI_EXTENSION = ".xmi";
+
   protected IAclAwarePentahoMetadataDomainRepositoryImporter aclAwarePentahoMetadataDomainRepositoryImporter;
 
   private static final Log logger = LogFactory.getLog( MetadataService.class );
@@ -97,6 +100,12 @@ public class MetadataService extends DatasourceService {
       String msg = prohibitedSymbolMessage( domainId, fr );
       throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
     }
+
+    // domain ID comes with ".xmi" suffix when creating or editing domain
+    // (see ModelerService.serializeModels( Domain, String, boolean ) ),
+    // but when the user enters domain ID manually when importing metadata file,
+    // it will unlikely contain that suffix, so let's add it forcibly.
+    domainId = forceXmiSuffix( domainId );
 
     RepositoryFileImportBundle.Builder bundleBuilder = createNewRepositoryFileImportBundleBuilder( metadataFile, overwrite, domainId, acl );
 
@@ -213,5 +222,13 @@ public class MetadataService extends DatasourceService {
 
   protected ByteArrayInputStream createNewByteArrayInputStream( byte[] buf ) {
     return new ByteArrayInputStream( buf );
+  }
+
+  private static String forceXmiSuffix( String domainId ) {
+    if ( domainId.endsWith( XMI_EXTENSION ) ) {
+      return domainId;
+    } else {
+      return domainId + XMI_EXTENSION;
+    }
   }
 }
