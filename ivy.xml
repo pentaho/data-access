@@ -45,8 +45,8 @@
     <dependency org="org.apache.ws.commons.axiom" name="axiom-api" rev="1.2.7" transitive="false"/>
     <dependency org="org.apache.ws.commons.axiom" name="axiom-dom" rev="1.2.7" transitive="false"/>
     <dependency org="org.apache.ws.commons.axiom" name="axiom-impl" rev="1.2.7" transitive="false"/>
-    <dependency org="org.apache.axis2" name="axis2-adb" rev="1.5" transitive="false"/>
-    <dependency org="org.apache.axis2" name="axis2-kernel" rev="1.5" transitive="false"/>
+    <dependency org="org.apache.axis2" name="axis2-adb" rev="1.7.3" transitive="false"/>
+    <dependency org="org.apache.axis2" name="axis2-kernel" rev="1.7.3" transitive="false"/>
     <dependency org="ognl" name="ognl" rev="2.6.9" transitive="false"/>
     <dependency org="log4j" name="log4j" rev="1.2.17"/>
     <dependency org="jfree" name="jcommon" rev="1.0.14"/>
