@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.ui.service;
@@ -36,6 +36,7 @@ public class MetadataUIDatasourceService implements IUIDatasourceAdminService {
   private String newUI = "builtin:";
   private String editUI = "builtin:";
   private IXulAsyncDatasourceServiceManager datasourceService;
+  private static final String EXT = ".xmi";
 
   public MetadataUIDatasourceService( IXulAsyncDatasourceServiceManager datasourceService ) {
     this.datasourceService = datasourceService;
@@ -44,6 +45,14 @@ public class MetadataUIDatasourceService implements IUIDatasourceAdminService {
   @Override
   public String getType() {
     return TYPE;
+  }
+
+  private String createName( String id ) {
+    if ( id.endsWith( EXT ) ) {
+      return id.substring( 0, id.lastIndexOf( EXT ) );
+    } else {
+      return id;
+    }
   }
 
   @Override
@@ -55,7 +64,7 @@ public class MetadataUIDatasourceService implements IUIDatasourceAdminService {
         List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
         for ( String id : ids ) {
           if ( id != null && id.length() > 0 ) {
-            datasourceInfos.add( new DatasourceInfo( id, id, TYPE, editable, removable, importable, exportable ) );
+            datasourceInfos.add( new DatasourceInfo( createName( id ), id, TYPE, editable, removable, importable, exportable ) );
           }
         }
         callback.success( datasourceInfos );
