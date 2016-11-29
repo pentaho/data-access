@@ -119,9 +119,9 @@
           ondialogcancel="analysisImportDialogController.closeParametersDialog()">
     <vbox>
       <label id="nameLabel" value="${importDialog.NAME}:"/>
-      <textbox id="paramNameTextBox" value="" height="20" width="300"/>
+      <textbox id="paramNameTextBox" value="" width="300"/>
       <label id="valueLabel" value="${importDialog.VALUE}:"/>
-      <textbox id="paramValueTextBox" value="" height="20" width="300"/>
+      <textbox id="paramValueTextBox" value="" width="300"/>
     </vbox>
   </dialog>
 </window>
