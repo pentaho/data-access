@@ -324,25 +324,30 @@ public class ConnectionServiceImplTest {
 
   @Test( expected = ConnectionServiceException.class )
   public void testTestConnection_Null() throws Exception {
-    testTestConnection( DatabaseAccessType.JNDI, null, "NONGENERIC" );
+    testTestConnection( DatabaseAccessType.JNDI, null, "NONGENERIC", false );
   }
 
   @Test
   public void testTestConnection_Native() throws Exception {
-    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "NONGENERIC" );
+    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "NONGENERIC", false );
   }
 
   @Test
   public void testTestConnection_JNDI() throws Exception {
-    testTestConnection( DatabaseAccessType.JNDI, mockDBConnection, "NONGENERIC" );
+    testTestConnection( DatabaseAccessType.JNDI, mockDBConnection, "NONGENERIC", false );
   }
 
   @Test
   public void testTestConnection_NativeGenericConnection() throws Exception {
-    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC" );
+    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC", false );
   }
 
-  private void testTestConnection( DatabaseAccessType accessType, IDatabaseConnection connection, String database ) throws Exception {
+  @Test
+  public void testTestConnection_NativeGenericConnectionPool() throws Exception {
+    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC", true );
+  }
+
+  private void testTestConnection( DatabaseAccessType accessType, IDatabaseConnection connection, String database, boolean isPool ) throws Exception {
     doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
     doReturn( "connectionPassword" ).when( connectionServiceImpl ).getConnectionPassword( anyString(), anyString() );
 
@@ -352,6 +357,7 @@ public class ConnectionServiceImplTest {
     doReturn( database ).when( databaseType ).getShortName();
     doReturn( accessType ).when( mockDBConnection ).getAccessType();
     doReturn( "DATABASENAME" ).when( mockDBConnection ).getDatabaseName();
+    doReturn( isPool ).when( mockDBConnection ).isUsingConnectionPool();
     assertTrue( connectionServiceImpl.testConnection( connection ) );
     verify( sqlConnection ).close();
   }
