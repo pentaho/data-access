@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
@@ -29,7 +29,6 @@ import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
-import org.pentaho.platform.dataaccess.datasource.utils.DataSourceInfoUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.ui.database.event.IConnectionAutoBeanFactory;
@@ -62,6 +61,8 @@ import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -451,7 +452,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   public String convertToNLSMessage( String results, String fileName ) {
     String msg = results;
     int code = new Integer( results ).intValue();
-    switch ( code ) {
+    switch( code ) {
       case 1:
         msg = messages.getString( "Mondrian.ERROR_OO1_PUBLISH" );
         break;
@@ -706,8 +707,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     boolean hasParameters = false;
     boolean connectionFound = false;
     String paramName = name.toString();
-    //Unescape quotes is used, because value can contain &quot; elements.
-    String paramValue = DataSourceInfoUtil.unescapeQuotes( value.toString() );
+    String paramValue = value.toString();
     if ( paramName.equalsIgnoreCase( "Datasource" ) ) {
       for ( IDatabaseConnection connection : importDialogModel.getConnectionList() ) {
         if ( connection.getName().equals( paramValue ) ) {
@@ -774,13 +774,13 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
           int i, len = responseValue.length();
           for ( i = 0; i < len; i++ ) {
             ch = responseValue.charAt( i );
-            switch ( state ) {
+            switch( state ) {
               case 0: //new name/value pair
                 paramHandled = handleParam( name, value );
                 if ( !hasParameters ) {
                   hasParameters = paramHandled;
                 }
-                switch ( ch ) {
+                switch( ch ) {
                   case ';':
                     break;
                   default:
@@ -789,7 +789,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               case 1: //looking for equals
-                switch ( ch ) {
+                switch( ch ) {
                   case '=':
                     state = 2;
                     break;
@@ -798,7 +798,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               case 2: //about to parse the value
-                switch ( ch ) {
+                switch( ch ) {
                   case '"':
                     state = 3;
                     break;
@@ -811,7 +811,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               case 3: //parse value till closing quote.
-                switch ( ch ) {
+                switch( ch ) {
                   case '"':
                     state = 0;
                     break;
@@ -820,7 +820,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
                 }
                 break;
               case 4:
-                switch ( ch ) {
+                switch( ch ) {
                   case ';':
                     state = 0;
                     break;
