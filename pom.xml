@@ -18,6 +18,15 @@
     <module>assemblies</module>
   </modules>
 
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+
   <properties>
     <dependency.com.allen_sauer.gwt-dnd.version>3.1.2</dependency.com.allen_sauer.gwt-dnd.version>
     <dependency.com.google.gwt.gwt-codeserver.version>2.5.1</dependency.com.google.gwt.gwt-codeserver.version>
@@ -40,30 +49,20 @@
     <dependency.org.springframework.spring-tx.version>4.3.2.RELEASE</dependency.org.springframework.spring-tx.version>
     <dependency.org.springframework.spring-web.version>4.3.2.RELEASE</dependency.org.springframework.spring-web.version>
     <dependency.org.springframework.spring-webmvc.version>4.3.2.RELEASE</dependency.org.springframework.spring-webmvc.version>
-    <dependency.pentaho-kettle.kettle-core.version>7.1-SNAPSHOT</dependency.pentaho-kettle.kettle-core.version>
-    <dependency.pentaho-kettle.kettle-engine.version>7.1-SNAPSHOT</dependency.pentaho-kettle.kettle-engine.version>
-    <dependency.pentaho-library.libbase.version>7.1-SNAPSHOT</dependency.pentaho-library.libbase.version>
-    <dependency.pentaho-library.libformula.version>7.1-SNAPSHOT</dependency.pentaho-library.libformula.version>
-    <dependency.pentaho.mondrian.version>3.14-SNAPSHOT</dependency.pentaho.mondrian.version>
-    <dependency.pentaho.pentaho-actionsequence-dom.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-actionsequence-dom.version>
-    <dependency.pentaho.pentaho-connections.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-connections.version>
-    <dependency.pentaho.pentaho-cwm.version>1.5.4</dependency.pentaho.pentaho-cwm.version>
-    <dependency.pentaho.pentaho-database-gwt.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-database-gwt.version>
-    <dependency.pentaho.pentaho-database-model.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-database-model.version>
-    <dependency.pentaho.pentaho-gwt-widgets.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-gwt-widgets.version>
-    <dependency.pentaho.pentaho-metadata.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-metadata.version>
-    <dependency.pentaho.pentaho-modeler-gwt.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-modeler-gwt.version>
-    <dependency.pentaho.pentaho-modeler.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-modeler.version>
-    <dependency.pentaho.pentaho-platform-api.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-platform-api.version>
-    <dependency.pentaho.pentaho-platform-core-test.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-platform-core-test.version>
-    <dependency.pentaho.pentaho-platform-core.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-platform-core.version>
-    <dependency.pentaho.pentaho-platform-extensions.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-platform-extensions.version>
-    <dependency.pentaho.pentaho-platform-repository-test.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-platform-repository-test.version>
-    <dependency.pentaho.pentaho-platform-repository.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-platform-repository.version>
-    <dependency.pentaho.pentaho-platform-scheduler.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-platform-scheduler.version>
-    <dependency.pentaho.pentaho-xul-core.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-xul-core.version>
-    <dependency.pentaho.pentaho-xul-gwt.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-xul-gwt.version>
-    <dependency.pentaho.pentaho-xul-swing.version>7.1-SNAPSHOT</dependency.pentaho.pentaho-xul-swing.version>
+    <kettle.version>7.1-SNAPSHOT</kettle.version>
+    <libbase.version>7.1-SNAPSHOT</libbase.version>
+    <libformula.version>7.1-SNAPSHOT</libformula.version>
+    <mondrian.version>3.14-SNAPSHOT</mondrian.version>
+    <pentaho-actionsequence-dom.version>7.1-SNAPSHOT</pentaho-actionsequence-dom.version>
+    <pentaho-connections.version>7.1-SNAPSHOT</pentaho-connections.version>
+    <pentaho-cwm.version>1.5.4</pentaho-cwm.version>
+    <pentaho-database.version>7.1-SNAPSHOT</pentaho-database.version>
+    <pentaho-database-model.version>7.1-SNAPSHOT</pentaho-database-model.version>
+    <pentaho-gwt-widgets.version>7.1-SNAPSHOT</pentaho-gwt-widgets.version>
+    <pentaho-metadata.version>7.1-SNAPSHOT</pentaho-metadata.version>
+    <pentaho-modeler.version>7.1-SNAPSHOT</pentaho-modeler.version>
+    <pentaho-platform.version>7.1-SNAPSHOT</pentaho-platform.version>
+    <pentaho-xul.version>7.1-SNAPSHOT</pentaho-xul.version>
     <dependency.pentaho.simple-jndi.version>1.0.0</dependency.pentaho.simple-jndi.version>
     <dependency.reporting-library.group>pentaho-library</dependency.reporting-library.group>
 
@@ -173,7 +172,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>mondrian</artifactId>
-        <version>${dependency.pentaho.mondrian.version}</version>
+        <version>${mondrian.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -533,7 +532,7 @@
       <dependency>
         <groupId>pentaho-library</groupId>
         <artifactId>libbase</artifactId>
-        <version>${dependency.pentaho-library.libbase.version}</version>
+        <version>${libbase.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -544,7 +543,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-connections</artifactId>
-        <version>${dependency.pentaho.pentaho-connections.version}</version>
+        <version>${pentaho-connections.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -555,12 +554,12 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-cwm</artifactId>
-        <version>${dependency.pentaho.pentaho-cwm.version}</version>
+        <version>${pentaho-cwm.version}</version>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-engine</artifactId>
-        <version>${dependency.pentaho-kettle.kettle-engine.version}</version>
+        <version>${kettle.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -571,7 +570,7 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${dependency.pentaho-kettle.kettle-core.version}</version>
+        <version>${kettle.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -670,7 +669,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-modeler</artifactId>
-        <version>${dependency.pentaho.pentaho-modeler.version}</version>
+        <version>${pentaho-modeler.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -686,7 +685,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-modeler-gwt</artifactId>
-        <version>${dependency.pentaho.pentaho-modeler-gwt.version}</version>
+        <version>${pentaho-modeler.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -697,12 +696,12 @@
       <dependency>
         <groupId>pentaho-library</groupId>
         <artifactId>libformula</artifactId>
-        <version>${dependency.pentaho-library.libformula.version}</version>
+        <version>${libformula.version}</version>
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-platform-api</artifactId>
-        <version>${dependency.pentaho.pentaho-platform-api.version}</version>
+        <version>${pentaho-platform.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -713,7 +712,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-platform-core</artifactId>
-        <version>${dependency.pentaho.pentaho-platform-core.version}</version>
+        <version>${pentaho-platform.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -724,7 +723,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-platform-extensions</artifactId>
-        <version>${dependency.pentaho.pentaho-platform-extensions.version}</version>
+        <version>${pentaho-platform.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -735,12 +734,12 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-platform-repository</artifactId>
-        <version>${dependency.pentaho.pentaho-platform-repository.version}</version>
+        <version>${pentaho-platform.version}</version>
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-platform-scheduler</artifactId>
-        <version>${dependency.pentaho.pentaho-platform-scheduler.version}</version>
+        <version>${pentaho-platform.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -751,7 +750,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-actionsequence-dom</artifactId>
-        <version>${dependency.pentaho.pentaho-actionsequence-dom.version}</version>
+        <version>${pentaho-actionsequence-dom.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -761,9 +760,10 @@
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
-        <artifactId>pentaho-platform-core-test</artifactId>
-        <version>${dependency.pentaho.pentaho-platform-core-test.version}</version>
+        <artifactId>pentaho-platform-core</artifactId>
+        <version>${pentaho-platform.version}</version>
         <scope>test</scope>
+        <classifier>tests</classifier>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -773,9 +773,10 @@
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
-        <artifactId>pentaho-platform-repository-test</artifactId>
-        <version>${dependency.pentaho.pentaho-platform-repository-test.version}</version>
+        <artifactId>pentaho-platform-repository</artifactId>
+        <version>${pentaho-platform.version}</version>
         <scope>test</scope>
+        <classifier>tests</classifier>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1214,18 +1215,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-platform-scheduler</artifactId>
-        <version>${dependency.pentaho.pentaho-platform-scheduler.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>se-jcr</artifactId>
         <version>${dependency.org.springframework.se-jcr.version}</version>
@@ -1266,7 +1255,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-database-model</artifactId>
-        <version>${dependency.pentaho.pentaho-database-model.version}</version>
+        <version>${pentaho-database-model.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1277,7 +1266,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-xul-swing</artifactId>
-        <version>${dependency.pentaho.pentaho-xul-swing.version}</version>
+        <version>${pentaho-xul.version}</version>
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
@@ -1403,7 +1392,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-database-gwt</artifactId>
-        <version>${dependency.pentaho.pentaho-database-gwt.version}</version>
+        <version>${pentaho-database.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1414,7 +1403,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-metadata</artifactId>
-        <version>${dependency.pentaho.pentaho-metadata.version}</version>
+        <version>${pentaho-metadata.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1425,7 +1414,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-xul-core</artifactId>
-        <version>${dependency.pentaho.pentaho-xul-core.version}</version>
+        <version>${pentaho-xul.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1436,7 +1425,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-xul-gwt</artifactId>
-        <version>${dependency.pentaho.pentaho-xul-gwt.version}</version>
+        <version>${pentaho-xul.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1448,7 +1437,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-gwt-widgets</artifactId>
-        <version>${dependency.pentaho.pentaho-gwt-widgets.version}</version>
+        <version>${pentaho-gwt-widgets.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>

@@ -96,63 +96,63 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-xul-core</artifactId>
-      <version>${dependency.pentaho.pentaho-xul-core.version}</version>
+      <version>${pentaho-xul.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-xul-gwt</artifactId>
-      <version>${dependency.pentaho.pentaho-xul-core.version}</version>
+      <version>${pentaho-xul.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-gwt-widgets</artifactId>
-      <version>${dependency.pentaho.pentaho-xul-gwt.version}</version>
+      <version>${pentaho-xul.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-modeler-gwt</artifactId>
-      <version>${dependency.pentaho.pentaho-modeler-gwt.version}</version>
+      <version>${pentaho-modeler.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-database-gwt</artifactId>
-      <version>${dependency.pentaho.pentaho-database-gwt.version}</version>
+      <version>${pentaho-database.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-database-model</artifactId>
-      <version>${dependency.pentaho.pentaho-database-model.version}</version>
+      <version>${pentaho-database-model.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-modeler</artifactId>
-      <version>${dependency.pentaho.pentaho-modeler.version}</version>
+      <version>${pentaho-modeler.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-metadata</artifactId>
-      <version>${dependency.pentaho.pentaho-metadata.version}</version>
+      <version>${pentaho-metadata.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-library</groupId>
       <artifactId>libbase</artifactId>
-      <version>${dependency.pentaho-library.libbase.version}</version>
+      <version>${libbase.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
