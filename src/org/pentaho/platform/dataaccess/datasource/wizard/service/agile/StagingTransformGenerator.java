@@ -671,4 +671,8 @@ public abstract class StagingTransformGenerator extends PentahoBase {
       db.disconnect();
     }
   }
+
+  DatabaseMeta getTargetDatabaseMeta() {
+    return targetDatabaseMeta;
+  }
 }
