@@ -179,7 +179,7 @@
 		<if>
 			<istrue value="${ant.version.atleast.1.9.2}"/>
 			<then>
-				<javadoc sourcepath="${basedir}/src" access="public" postprocessgeneratedjavadocs="false" source="6" packagenames="*">
+				<javadoc sourcepath="${basedir}/src" access="public" postprocessgeneratedjavadocs="false" source="8" packagenames="*">
 					<classpath refid="wadl-lib" />
 					<doclet name="org.pentaho.wadl.PentahoResourceDoclet" pathref="wadl-lib" >
 						<param name="-output" value="${wadl.path}"/>
@@ -187,7 +187,7 @@
 				</javadoc>
 			</then>
 			<else>
-				<javadoc sourcepath="${basedir}/src" access="public" source="6" packagenames="*">
+				<javadoc sourcepath="${basedir}/src" access="public" source="8" packagenames="*">
 					<classpath refid="wadl-lib" />
 					<doclet name="org.pentaho.wadl.PentahoResourceDoclet" pathref="wadl-lib" >
 						<param name="-output" value="${wadl.path}"/>
