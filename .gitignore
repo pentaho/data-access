@@ -23,3 +23,7 @@ Thumbs.db
 /war
 /.project
 /.classpath
+target/
+*.iml
+pentaho.log
+null*db
