@@ -29,15 +29,17 @@
 
     <dependency>
       <groupId>pentaho</groupId>
-      <artifactId>pentaho-platform-repository</artifactId>
+      <!-- <artifactId>pentaho-platform-repository</artifactId> -->
+      <artifactId>pentaho-platform-repository-test</artifactId>
       <scope>test</scope>
-      <classifier>tests</classifier>
+      <!-- <classifier>tests</classifier> -->
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
-      <artifactId>pentaho-platform-core</artifactId>
+      <!-- <artifactId>pentaho-platform-core</artifactId> -->
+      <artifactId>pentaho-platform-core-test</artifactId>
       <scope>test</scope>
-      <classifier>tests</classifier>
+      <!-- <classifier>tests</classifier> -->
     </dependency>
 
     <dependency>
