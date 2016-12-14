@@ -760,11 +760,10 @@
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
-        <!-- <artifactId>pentaho-platform-core</artifactId> -->
-        <artifactId>pentaho-platform-core-test</artifactId>
+        <artifactId>pentaho-platform-core</artifactId>
         <version>${pentaho-platform.version}</version>
         <scope>test</scope>
-        <!-- <classifier>tests</classifier> -->
+        <classifier>tests</classifier>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -774,11 +773,10 @@
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
-        <!-- <artifactId>pentaho-platform-repository</artifactId> -->
-        <artifactId>pentaho-platform-repository-test</artifactId>
+        <artifactId>pentaho-platform-repository</artifactId>
         <version>${pentaho-platform.version}</version>
         <scope>test</scope>
-        <!-- <classifier>tests</classifier> -->
+        <classifier>tests</classifier>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
