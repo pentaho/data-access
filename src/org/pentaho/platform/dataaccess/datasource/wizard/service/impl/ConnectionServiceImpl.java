@@ -18,9 +18,10 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
-
+import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.database.DatabaseDialectException;
 import org.pentaho.database.IDatabaseDialect;
@@ -277,9 +278,16 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
           pentahoConnection = PentahoConnectionFactory
             .getConnection( IPentahoConnection.SQL_DATASOURCE, connection.getDatabaseName(), null, this );
         } else {
-          pentahoConnection = PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE, driverClass,
+          if ( connection.isUsingConnectionPool() ) {
+            Properties props = new Properties();
+            props.put( IPentahoConnection.CONNECTION_NAME, connection.getName() );
+            props.put( IPentahoConnection.CONNECTION, connection );
+            pentahoConnection = PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE, props, null, this );
+          } else {
+            pentahoConnection = PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE, driverClass,
             dialect.getURLWithExtraOptions( connection ), connection.getUsername(),
             getConnectionPassword( connection.getName(), connection.getPassword() ), null, this );
+          }
         }
       } catch ( DatabaseDialectException e ) {
         throw new ConnectionServiceException( e );
