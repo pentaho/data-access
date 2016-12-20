@@ -552,8 +552,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.owasp.esapi</groupId>
-      <artifactId>esapi</artifactId>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
