@@ -27,6 +27,7 @@ import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
+import org.pentaho.platform.api.data.DBDatasourceServiceException;
 import org.pentaho.platform.api.data.IDBDatasourceService;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -38,11 +39,14 @@ import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.services.connection.datasource.dbcp.PooledDatasourceHelper;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
+
+import javax.sql.DataSource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -72,9 +76,11 @@ public class ConnectionServiceImplTest {
 
   private final Connection nativeConnection = mock( Connection.class );
 
+  private final PooledDatasourceHelper pdh = mock(PooledDatasourceHelper.class);
+  
   @Before
-  public void setUp() throws ConnectionServiceException, ObjectFactoryException {
-    doReturn( nativeConnection ).when( sqlConnection ).getNativeConnection();
+  public void setUp() throws ConnectionServiceException, ObjectFactoryException, DBDatasourceServiceException {
+	doReturn( nativeConnection ).when( sqlConnection ).getNativeConnection();
     doReturn( SimpleDataAccessPermissionHandler.class.getName() ).when( loader ).getPluginSetting( this.anyClass(), anyString(), anyString() );
 
     when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
@@ -88,6 +94,12 @@ public class ConnectionServiceImplTest {
             if ( invocation.getArguments()[0].equals( IPentahoConnection.class ) ) {
               return sqlConnection;
             }
+            if ( invocation.getArguments()[0].equals( IDBDatasourceService.class ) ) {
+                return datasourceService;
+              }
+            if ( invocation.getArguments()[0].equals( PooledDatasourceHelper.class ) ) {
+                return pdh;
+              }
             return null;
           }
         } );
@@ -324,25 +336,30 @@ public class ConnectionServiceImplTest {
 
   @Test( expected = ConnectionServiceException.class )
   public void testTestConnection_Null() throws Exception {
-    testTestConnection( DatabaseAccessType.JNDI, null, "NONGENERIC" );
+    testTestConnection( DatabaseAccessType.JNDI, null, "NONGENERIC", false );
   }
 
   @Test
   public void testTestConnection_Native() throws Exception {
-    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "NONGENERIC" );
+    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "NONGENERIC", false );
   }
 
   @Test
   public void testTestConnection_JNDI() throws Exception {
-    testTestConnection( DatabaseAccessType.JNDI, mockDBConnection, "NONGENERIC" );
+    testTestConnection( DatabaseAccessType.JNDI, mockDBConnection, "NONGENERIC", false );
   }
 
   @Test
   public void testTestConnection_NativeGenericConnection() throws Exception {
-    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC" );
+    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC", false );
   }
-
-  private void testTestConnection( DatabaseAccessType accessType, IDatabaseConnection connection, String database ) throws Exception {
+  
+  @Test
+   public void testTestConnection_NativeGenericConnectionPool() throws Exception {
+     testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC", true );
+  }
+  
+  private void testTestConnection( DatabaseAccessType accessType, IDatabaseConnection connection, String database, boolean isPool ) throws Exception {
     doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
     doReturn( "connectionPassword" ).when( connectionServiceImpl ).getConnectionPassword( anyString(), anyString() );
 
@@ -352,6 +369,7 @@ public class ConnectionServiceImplTest {
     doReturn( database ).when( databaseType ).getShortName();
     doReturn( accessType ).when( mockDBConnection ).getAccessType();
     doReturn( "DATABASENAME" ).when( mockDBConnection ).getDatabaseName();
+    doReturn( isPool ).when( mockDBConnection ).isUsingConnectionPool();
     assertTrue( connectionServiceImpl.testConnection( connection ) );
     verify( sqlConnection ).close();
   }
