@@ -32,7 +32,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -65,7 +66,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
 
   private static final Log log = LogFactory.getLog( StagingTransformGenerator.class );
 
-  private DatabaseMeta targetDatabaseMeta = AgileHelper.getDatabaseMeta();
+  private DatabaseMeta targetDatabaseMeta;
 
   private String tableName = null;
 
@@ -85,6 +86,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
    * Default constructor that uses the JNDI datasource configured in the plugin.xml file.
    */
   public StagingTransformGenerator() {
+    targetDatabaseMeta = AgileHelper.getDatabaseMeta();
   }
 
   /**
@@ -122,10 +124,13 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     if ( tableName == null ) {
       throw new IllegalArgumentException( "Table Name cannot be null" ); //$NON-NLS-1$
     }
-    // TODO this should be dialected
-    String ddl =
-      "DROP TABLE IF EXISTS " + targetDatabaseMeta.getSchemaTableCombination( AgileHelper.getSchemaName(), tableName );
-    execSqlStatement( ddl, targetDatabaseMeta, null );
+    String schemaTableName =
+      targetDatabaseMeta.getQuotedSchemaTableCombination( AgileHelper.getSchemaName(), tableName );
+    if ( checkTableExists( schemaTableName ) ) {
+      // TODO this should be dialected
+      String ddl = "DROP TABLE " + schemaTableName;
+      execSqlStatement( ddl, targetDatabaseMeta, null );
+    }
   }
 
   public void createOrModifyTable( IPentahoSession session )
@@ -139,21 +144,15 @@ public abstract class StagingTransformGenerator extends PentahoBase {
       throw new IllegalArgumentException( "Table name cannot be null" ); //$NON-NLS-1$
     }
 
-    Trans trans = createTransform( true );
+    TransMeta transMeta = createTransMeta( true );
     // the table output is the last step
-    StepMeta[] steps = trans.getTransMeta().getStepsArray();
+    StepMeta[] steps = transMeta.getStepsArray();
     StepMeta tableStepMeta = steps[ steps.length - 1 ];
     TableOutputMeta meta = (TableOutputMeta) tableStepMeta.getStepMetaInterface();
     meta.setDatabaseMeta( targetDatabaseMeta );
+
     try {
-      prepareTransform( trans, session );
-    } catch ( Exception e ) {
-      error( "Preview Failed: transformation preparation", e ); //$NON-NLS-1$
-      throw new CsvTransformGeneratorException( "Could not prepare transformation", e,
-        getStackTraceAsString( e ) ); //$NON-NLS-1$
-    }
-    try {
-      executeSql( meta, tableStepMeta, trans.getTransMeta() );
+      executeSql( meta, tableStepMeta, transMeta );
     } catch ( CsvTransformGeneratorException e ) {
       if ( !e.getMessage().equalsIgnoreCase( "No SQL generated" ) ) { //$NON-NLS-1$
         error( e.getMessage() );
@@ -280,30 +279,13 @@ public abstract class StagingTransformGenerator extends PentahoBase {
   protected StepMeta addTableOutputStep( TransMeta transMeta, String tableOutputStepName, String modelName ) {
     TableOutputMeta tableOutputMeta = new TableOutputMeta();
     tableOutputMeta.setCommitSize( 1000 );
-    // meta.setID(4);
     tableOutputMeta.setIgnoreErrors( true );
     tableOutputMeta.setPartitioningEnabled( false );
     tableOutputMeta.setSchemaName( AgileHelper.getSchemaName() );
-    tableOutputMeta.setTablename( getTableName() );
+    tableOutputMeta.setTableName( getTableName() );
     tableOutputMeta.setUseBatchUpdate( false );
 
     StepMeta tableOutputStepMeta = new StepMeta( tableOutputStepName, tableOutputStepName, tableOutputMeta );
-
-    // StepErrorMeta tableOutputErrorMeta = new StepErrorMeta(transMeta, tableOutputStepMeta) {
-    // public void addErrorRowData(Object[] row, int startIndex, long nrErrors, String errorDescriptions,
-    // String fieldNames, String errorCodes) {
-    // System.out.print("Rejected Row: ");
-    // for (Object rowData : row) {
-    // System.out.print(rowData);
-    // }
-    // System.out.println();
-    // info.getTableOutputErrors().add(fieldNames + ":" + errorDescriptions);
-    // super.addErrorRowData(row, startIndex, nrErrors, errorDescriptions, fieldNames, errorCodes);
-    // }
-    // };
-    // tableOutputErrorMeta.setTargetStep(outputDummyStepMeta);
-    // tableOutputErrorMeta.setEnabled(true);
-    // tableOutputStepMeta.setStepErrorMeta(tableOutputErrorMeta);
 
     transMeta.addStep( tableOutputStepMeta );
     return tableOutputStepMeta;
@@ -318,7 +300,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
   }
 
   protected void prepareTransform( Trans trans, final IPentahoSession session ) throws KettleException {
-    trans.prepareExecution( trans.getTransMeta().getArguments() );
+    trans.prepareExecution( trans.getArguments() );
 
     StepInterface tableOutputStep = trans.findRunThread( TABLE_OUTPUT );
 
@@ -400,6 +382,11 @@ public abstract class StagingTransformGenerator extends PentahoBase {
   }
 
   protected Trans createTransform( boolean doOutput ) {
+    TransMeta transMeta = createTransMeta( doOutput );
+    return new Trans( transMeta );
+  }
+
+  private TransMeta createTransMeta( boolean doOutput ) {
     TransMeta transMeta = new TransMeta();
 
     StepMeta[] steps = getSteps( transMeta );
@@ -420,10 +407,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
       dummyStepMeta = addDummyStep( transMeta, DUMMY );
       createHop( lastStep, dummyStepMeta, transMeta );
     }
-
-    // trans.setLogLevel(LogLevel.DETAILED);
-    // trans.setLog(logChannel);
-    return new Trans( transMeta );
+    return transMeta;
   }
 
   protected void executeSql( TableOutputMeta meta, StepMeta stepMeta, TransMeta transMeta )
@@ -529,15 +513,15 @@ public abstract class StagingTransformGenerator extends PentahoBase {
       switch ( ci.getDataType() ) {
         case NUMERIC:
           if ( ci.getPrecision() <= 0 ) {
-            return ValueMeta.getType( "Integer" ); //$NON-NLS-1$
+            return ValueMetaInterface.TYPE_INTEGER;
           } else {
-            return ValueMeta.getType( "Number" ); //$NON-NLS-1$
+            return ValueMetaInterface.TYPE_NUMBER;
           }
         default:
-          return ValueMeta.getType( ci.getDataType().getName() );
+          return ValueMetaBase.getType( ci.getDataType().getName() );
       }
     } else {
-      return ValueMeta.getType( "String" ); //$NON-NLS-1$
+      return ValueMetaInterface.TYPE_STRING;
     }
   }
 
@@ -638,7 +622,7 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     String fieldB = null;
     System.out.println( 99 );
     String fieldC = null;
-    int valueType = ValueMeta.TYPE_INTEGER;
+    int valueType = ValueMetaInterface.TYPE_INTEGER;
     int valuePrecision = 0;
     boolean removedFromResult = false;
     String conversionMask = ""; //$NON-NLS-1$
@@ -670,4 +654,21 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     this.modelInfo = modelInfo;
   }
 
+  private boolean checkTableExists( String tableName ) throws CsvTransformGeneratorException {
+    Database db = getDatabase( targetDatabaseMeta );
+    try {
+      db.connect( null );
+      try {
+        return db.checkTableExists( tableName );
+      } catch ( KettleDatabaseException dbe ) {
+        error( "Error executing DDL", dbe );
+        throw new CsvTransformGeneratorException( dbe.getMessage(), dbe, getStackTraceAsString( dbe ) );
+      }
+    } catch ( KettleDatabaseException dbe ) {
+      error( "Connection error", dbe );
+      throw new CsvTransformGeneratorException( "Connection error", dbe, getStackTraceAsString( dbe ) );
+    } finally {
+      db.disconnect();
+    }
+  }
 }
