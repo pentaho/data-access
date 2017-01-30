@@ -96,7 +96,7 @@
     <icu4j.version>4_4_1_1</icu4j.version>
     <icu4j-charsets.version>4_4_1_1</icu4j-charsets.version>
     <flexjson.version>2.1</flexjson.version>
-    <json.version>3.1.1</json.version>
+    <org.json.version>3.1.1</org.json.version>
     <dom4j.version>1.6.1</dom4j.version>
     <xmlpull.version>1.1.3.1</xmlpull.version>
     <xpp3_min.version>1.1.4c</xpp3_min.version>
@@ -521,7 +521,7 @@
       <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
-        <version>${json.version}</version>
+        <version>${org.json.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
