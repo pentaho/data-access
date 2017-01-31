@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
@@ -247,7 +247,10 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
                                                                                       $wnd.pho = {};
                                                                                       }
                                                                                       $wnd.addDataAccessGlassPaneListener = function(callback) {
-                                                                                      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::addGlassPaneListener(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
+                                                                                      return wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::addGlassPaneListener(Lcom/google/gwt/core/client/JavaScriptObject;)(callback);
+                                                                                      }
+                                                                                      $wnd.removeDataAccessGlassPaneListenerById = function(uuid) {
+                                                                                      wizard.@org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint::removeGlassPaneListenerById(Ljava/lang/String;)(uuid);
                                                                                       }
 
                                                                                       $wnd.pho.showDatasourceSelectionDialog = function(context, callback) {
@@ -368,8 +371,12 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
     confirm.open();
   }
 
-  private void addGlassPaneListener( JavaScriptObject obj ) {
-    GlassPane.getInstance().addGlassPaneListener( new GlassPaneNativeListener( obj ) );
+  private String addGlassPaneListener( JavaScriptObject obj ) {
+    return GlassPane.getInstance().addGlassPaneListener( new GlassPaneNativeListener( obj ) );
+  }
+
+  private void removeGlassPaneListenerById( String uuid ) {
+    GlassPane.getInstance().removeGlassPaneListenerById( uuid );
   }
 
   public void showWizard( final boolean reportingOnlyValid, final DialogListener<Domain> listener ) {
