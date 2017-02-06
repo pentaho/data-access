@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -20,10 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -56,6 +53,7 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
@@ -144,6 +142,31 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     verify( metadataService, times( 1 ) ).getMetadataDatasourceIds();
   }
 
+   @Test( expected = PlatformImportException.class )
+   public void testImportMetadataDatasourceMaxFileSize() throws Exception {
+     // test should work in case max-file-limit is set
+     int fileDefaultSize = 10000000;
+     String maxFileLimit = PentahoSystem
+       .getSystemSetting( "file-upload-defaults/max-file-limit", String.valueOf( fileDefaultSize ) );  //$NON-NLS-1$
+
+     assertEquals( fileDefaultSize, Integer.parseInt( maxFileLimit ) );
+
+     // fileDefaultSize will be exceeded
+     byte[] bytes = new byte[ fileDefaultSize + 1 ];
+     InputStream metadataFile = new ByteArrayInputStream( bytes );
+
+     FileResource mockFileResource = mock( FileResource.class );
+     Response mockResponse = mock( Response.class );
+     IPlatformImporter mockIPlatformImporter = mock( IPlatformImporter.class );
+
+     doNothing().when( metadataService ).accessValidation();
+     doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
+     doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
+     doReturn( mockIPlatformImporter ).when( metadataService ).getImporter();
+
+     metadataService.importMetadataDatasource( "test_file", metadataFile, null, false, null, null, null );
+   }
+
   @Test
   public void testImportMetadataDatasource() throws Exception {
     String domainId = "home\\admin/resource/";
@@ -166,6 +189,7 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     ByteArrayInputStream mockByteArrayInputStream = mock( ByteArrayInputStream.class );
 
     doNothing().when( metadataService ).accessValidation();
+    doReturn( metadataFile ).when( metadataService ).validateFileSize( any( InputStream.class ), anyString() );
     doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
     doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
     doReturn( null ).when( mockResponse ).getEntity();
@@ -244,6 +268,7 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     ByteArrayInputStream mockByteArrayInputStream = mock( ByteArrayInputStream.class );
 
     doNothing().when( metadataService ).accessValidation();
+    doReturn( metadataFile ).when( metadataService ).validateFileSize( any( InputStream.class ), anyString() );
     doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
     doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
     doReturn( null ).when( mockResponse ).getEntity();
