@@ -12,18 +12,21 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.thirdparty.guava.common.annotations.VisibleForTesting;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -101,6 +104,8 @@ public class MetadataService extends DatasourceService {
       throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
     }
 
+    metadataFile = validateFileSize( metadataFile, domainId );
+
     // domain ID comes with ".xmi" suffix when creating or editing domain
     // (see ModelerService.serializeModels( Domain, String, boolean ) ),
     // but when the user enters domain ID manually when importing metadata file,
@@ -126,8 +131,23 @@ public class MetadataService extends DatasourceService {
     publish( pentahoSession );
   }
 
+  @VisibleForTesting
+  InputStream validateFileSize( InputStream metadataFile, String domainId )
+    throws IOException, PlatformImportException {
+    // maxFileLimit is 10 Mb by default
+    String maxFileLimit = PentahoSystem
+      .getSystemSetting( "file-upload-defaults/max-file-limit", String.valueOf( 10000000 ) );  //$NON-NLS-1$
+    byte[] bytes = IOUtils.toByteArray( metadataFile );
+
+    if ( Long.parseLong( maxFileLimit ) < bytes.length ) {
+      String msg = Messages.getString( "MetadataDatasourceService.ERROR_004_MAX_FILE_SIZE_EXCEEDED_ERROR", domainId );
+      throw new PlatformImportException( msg, PlatformImportException.PUBLISH_DATASOURCE_ERROR );
+    }
+    return new ByteArrayInputStream( bytes );
+  }
+
   public RepositoryFileAclDto getMetadataAcl( String domainId )
-      throws PentahoAccessControlException, FileNotFoundException {
+    throws PentahoAccessControlException, FileNotFoundException {
     checkMetadataExists( domainId );
     if ( aclAwarePentahoMetadataDomainRepositoryImporter != null ) {
       final RepositoryFileAcl acl = aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId );
@@ -137,7 +157,7 @@ public class MetadataService extends DatasourceService {
   }
 
   public void setMetadataAcl( String domainId, RepositoryFileAclDto aclDto )
-      throws PentahoAccessControlException, FileNotFoundException {
+    throws PentahoAccessControlException, FileNotFoundException {
     checkMetadataExists( domainId );
     if ( aclAwarePentahoMetadataDomainRepositoryImporter != null ) {
       final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
