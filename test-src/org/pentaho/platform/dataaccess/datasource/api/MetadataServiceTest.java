@@ -1,38 +1,21 @@
- /*!
- * This program is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- * Foundation.
- *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- * or from the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
- *
- * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
- */
+/*!
+* This program is free software; you can redistribute it and/or modify it under the
+* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+* Foundation.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this
+* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+* or from the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
+*/
 
 package org.pentaho.platform.dataaccess.datasource.api;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -46,9 +29,11 @@ import java.util.Set;
 import javax.ws.rs.core.Response;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
@@ -56,6 +41,7 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
@@ -69,22 +55,23 @@ import org.pentaho.platform.web.http.api.resources.FileResource;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
- public class MetadataServiceTest {
+public class MetadataServiceTest {
 
   private static MetadataService metadataService;
 
   private class MetadataServiceMock extends MetadataService {
     @Override protected IUnifiedRepository getRepository() {
-      return mock( IUnifiedRepository.class );
+      return Mockito.mock( IUnifiedRepository.class );
     }
   }
 
   @Before
   public void setUp() {
-    metadataService = spy( new MetadataServiceMock() );
-    metadataService.metadataDomainRepository = mock( PentahoMetadataDomainRepository.class );
-    metadataService.aclAwarePentahoMetadataDomainRepositoryImporter = mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
-    metadataService.mondrianCatalogService = mock( IMondrianCatalogService.class );
+    metadataService = Mockito.spy( new MetadataServiceMock() );
+    metadataService.metadataDomainRepository = Mockito.mock( PentahoMetadataDomainRepository.class );
+    metadataService.aclAwarePentahoMetadataDomainRepositoryImporter =
+      Mockito.mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
+    metadataService.mondrianCatalogService = Mockito.mock( IMondrianCatalogService.class );
   }
 
   @After
@@ -94,28 +81,28 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 
   @Test
   public void testRemoveMetadata() throws Exception {
-    doNothing().when( metadataService ).ensureDataAccessPermissionCheck();
-    doReturn( "param" ).when( metadataService ).fixEncodedSlashParam( "metadataId" );
-    doNothing().when( metadataService.metadataDomainRepository ).removeDomain( "param" );
+    Mockito.doNothing().when( metadataService ).ensureDataAccessPermissionCheck();
+    Mockito.doReturn( "param" ).when( metadataService ).fixEncodedSlashParam( "metadataId" );
+    Mockito.doNothing().when( metadataService.metadataDomainRepository ).removeDomain( "param" );
 
     metadataService.removeMetadata( "metadataId" );
 
-    verify( metadataService, times( 1 ) ).removeMetadata( "metadataId" );
-	// checking fixEncodedSlashParam method is not called (BISERVER-12403 issue)
-    verify( metadataService, never() ).fixEncodedSlashParam( "metadataId" );
+    Mockito.verify( metadataService, Mockito.times( 1 ) ).removeMetadata( "metadataId" );
+    // checking fixEncodedSlashParam method is not called (BISERVER-12403 issue)
+    Mockito.verify( metadataService, Mockito.never() ).fixEncodedSlashParam( "metadataId" );
   }
 
   @Test
   public void testRemoveMetadataError() throws Exception {
     ConnectionServiceException cse = new ConnectionServiceException();
-    doThrow( cse ).when( metadataService ).ensureDataAccessPermissionCheck();
+    Mockito.doThrow( cse ).when( metadataService ).ensureDataAccessPermissionCheck();
     try {
       metadataService.removeMetadata( "metadataId" );
-      fail();
+      Assert.fail();
     } catch ( PentahoAccessControlException e ) {
       //expected
     }
-    verify( metadataService, times( 1 ) ).removeMetadata( "metadataId" );
+    Mockito.verify( metadataService, Mockito.times( 1 ) ).removeMetadata( "metadataId" );
   }
 
   @Test
@@ -125,151 +112,187 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     mockSet.add( "domainId1" );
     mockMetadataIdsList.add( "domainId1" );
 
-    doReturn( true ).when( metadataService ).isMetadataDatasource( "domainId1" );
-    doReturn( mockSet ).when( metadataService.metadataDomainRepository ).getDomainIds();
+    Mockito.doReturn( true ).when( metadataService ).isMetadataDatasource( "domainId1" );
+    Mockito.doReturn( mockSet ).when( metadataService.metadataDomainRepository ).getDomainIds();
 
     List<String> response = metadataService.getMetadataDatasourceIds();
 
-    verify( metadataService, times( 1 ) ).getMetadataDatasourceIds();
-    assertEquals( mockMetadataIdsList, response );
+    Mockito.verify( metadataService, Mockito.times( 1 ) ).getMetadataDatasourceIds();
+    Assert.assertEquals( mockMetadataIdsList, response );
   }
 
   @Test
   public void testGetMetadataDatasourceIdsError() throws Exception {
-    InterruptedException mockInterruptedException = mock( InterruptedException.class );
-    doThrow( mockInterruptedException ).when( metadataService ).sleep( 100 );
+    InterruptedException mockInterruptedException = Mockito.mock( InterruptedException.class );
+    Mockito.doThrow( mockInterruptedException ).when( metadataService ).sleep( 100 );
 
     List<String> response = metadataService.getMetadataDatasourceIds();
 
-    verify( metadataService, times( 1 ) ).getMetadataDatasourceIds();
+    Mockito.verify( metadataService, Mockito.times( 1 ) ).getMetadataDatasourceIds();
+  }
+
+  @Test( expected = PlatformImportException.class )
+  public void testImportMetadataDatasourceMaxFileSize() throws Exception {
+    // test should work in case max-file-limit is set
+    int fileDefaultSize = 10000000;
+    String maxFileLimit = PentahoSystem
+      .getSystemSetting( "file-upload-defaults/max-file-limit", String.valueOf( fileDefaultSize ) );  //$NON-NLS-1$
+
+    Assert.assertEquals( fileDefaultSize, Integer.parseInt( maxFileLimit ) );
+
+    // fileDefaultSize will be exceeded
+    byte[] bytes = new byte[ fileDefaultSize + 1 ];
+    InputStream metadataFile = new ByteArrayInputStream( bytes );
+
+    FileResource mockFileResource = Mockito.mock( FileResource.class );
+    Response mockResponse = Mockito.mock( Response.class );
+    IPlatformImporter mockIPlatformImporter = Mockito.mock( IPlatformImporter.class );
+
+    Mockito.doNothing().when( metadataService ).accessValidation();
+    Mockito.doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
+    Mockito.doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
+    Mockito.doReturn( mockIPlatformImporter ).when( metadataService ).getImporter();
+
+    metadataService.importMetadataDatasource( "test_file", metadataFile, null, false, null, null, null );
   }
 
   @Test
   public void testImportMetadataDatasource() throws Exception {
     String domainId = "home\\admin/resource/";
-    InputStream metadataFile = mock( InputStream.class );
-    FormDataContentDisposition metadataFileInfo = mock( FormDataContentDisposition.class );
+    InputStream metadataFile = Mockito.mock( InputStream.class );
+    FormDataContentDisposition metadataFileInfo = Mockito.mock( FormDataContentDisposition.class );
     boolean overwrite = true;
-    FormDataBodyPart mockFormDataBodyPart = mock( FormDataBodyPart.class );
+    FormDataBodyPart mockFormDataBodyPart = Mockito.mock( FormDataBodyPart.class );
     List<FormDataBodyPart> localeFiles = new ArrayList<FormDataBodyPart>();
     localeFiles.add( mockFormDataBodyPart );
     List<FormDataContentDisposition> localeFilesInfo = new ArrayList<FormDataContentDisposition>();
-    FormDataContentDisposition mockFormDataContentDisposition = mock( FormDataContentDisposition.class );
+    FormDataContentDisposition mockFormDataContentDisposition = Mockito.mock( FormDataContentDisposition.class );
     localeFilesInfo.add( mockFormDataContentDisposition );
-    FileResource mockFileResource = mock( FileResource.class );
-    Response mockResponse = mock( Response.class );
-    IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
-    IPlatformImporter mockIPlatformImporter = mock( IPlatformImporter.class );
-    IPlatformImportBundle mockIPlatformImportBundle = mock( IPlatformImportBundle.class );
-    RepositoryFileImportBundle.Builder mockRepositoryFileImportBundleBuilder = mock( RepositoryFileImportBundle.Builder.class );
-    RepositoryFileImportBundle mockRepositoryFileImportBundle = mock( RepositoryFileImportBundle.class );
-    ByteArrayInputStream mockByteArrayInputStream = mock( ByteArrayInputStream.class );
+    FileResource mockFileResource = Mockito.mock( FileResource.class );
+    Response mockResponse = Mockito.mock( Response.class );
+    IPentahoSession mockIPentahoSession = Mockito.mock( IPentahoSession.class );
+    IPlatformImporter mockIPlatformImporter = Mockito.mock( IPlatformImporter.class );
+    IPlatformImportBundle mockIPlatformImportBundle = Mockito.mock( IPlatformImportBundle.class );
+    RepositoryFileImportBundle.Builder mockRepositoryFileImportBundleBuilder =
+      Mockito.mock( RepositoryFileImportBundle.Builder.class );
+    RepositoryFileImportBundle mockRepositoryFileImportBundle = Mockito.mock( RepositoryFileImportBundle.class );
+    ByteArrayInputStream mockByteArrayInputStream = Mockito.mock( ByteArrayInputStream.class );
 
-    doNothing().when( metadataService ).accessValidation();
-    doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
-    doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
-    doReturn( null ).when( mockResponse ).getEntity();
-    doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
-    doReturn( mockRepositoryFileImportBundleBuilder ).when( metadataService ).createNewRepositoryFileImportBundleBuilder(
+    Mockito.doNothing().when( metadataService ).accessValidation();
+    Mockito.doReturn( metadataFile ).when( metadataService ).validateFileSize( Mockito.any( InputStream.class ), Mockito.anyString() );
+    Mockito.doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
+    Mockito.doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
+    Mockito.doReturn( null ).when( mockResponse ).getEntity();
+    Mockito.doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
+    Mockito.doReturn( mockRepositoryFileImportBundleBuilder ).when( metadataService )
+      .createNewRepositoryFileImportBundleBuilder(
         metadataFile, false, domainId, null );
-    doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
-    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any( byte[].class ) );
-    doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
-        mockByteArrayInputStream, "fileName", domainId );
-    doReturn( mockRepositoryFileImportBundle ).when( mockRepositoryFileImportBundleBuilder ).build();
-    doReturn( mockIPlatformImporter ).when( metadataService ).getImporter();
-    doNothing().when( mockIPlatformImporter ).importFile( mockIPlatformImportBundle );
-    doReturn( mockIPentahoSession ).when( metadataService ).getSession();
-    doNothing().when( metadataService ).publish( mockIPentahoSession );
+    Mockito.doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
+    Mockito.doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( Mockito.any( byte[].class ) );
+    Mockito.doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
+      mockByteArrayInputStream, "fileName", domainId );
+    Mockito.doReturn( mockRepositoryFileImportBundle ).when( mockRepositoryFileImportBundleBuilder ).build();
+    Mockito.doReturn( mockIPlatformImporter ).when( metadataService ).getImporter();
+    Mockito.doNothing().when( mockIPlatformImporter ).importFile( mockIPlatformImportBundle );
+    Mockito.doReturn( mockIPentahoSession ).when( metadataService ).getSession();
+    Mockito.doNothing().when( metadataService ).publish( mockIPentahoSession );
 
-    metadataService.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, null );
+    metadataService
+      .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo,
+        null );
 
-    verify( metadataService, times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
-        localeFiles, localeFilesInfo, null );
+    Mockito.verify( metadataService, Mockito.times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
+      localeFiles, localeFilesInfo, null );
   }
 
   @Test
   public void testImportMetadataDatasourceError() throws Exception {
     String domainId = "home\\admin\tresource/";
-    InputStream metadataFile = mock( InputStream.class );
-    FormDataContentDisposition metadataFileInfo = mock( FormDataContentDisposition.class );
+    InputStream metadataFile = Mockito.mock( InputStream.class );
+    FormDataContentDisposition metadataFileInfo = Mockito.mock( FormDataContentDisposition.class );
     boolean overwrite = true;
-    FormDataBodyPart mockFormDataBodyPart = mock( FormDataBodyPart.class );
+    FormDataBodyPart mockFormDataBodyPart = Mockito.mock( FormDataBodyPart.class );
     List<FormDataBodyPart> localeFiles = new ArrayList<FormDataBodyPart>();
     localeFiles.add( mockFormDataBodyPart );
     List<FormDataContentDisposition> localeFilesInfo = new ArrayList<FormDataContentDisposition>();
-    FormDataContentDisposition mockFormDataContentDisposition = mock( FormDataContentDisposition.class );
+    FormDataContentDisposition mockFormDataContentDisposition = Mockito.mock( FormDataContentDisposition.class );
     localeFilesInfo.add( mockFormDataContentDisposition );
-    FileResource mockFileResource = mock( FileResource.class );
-    Response mockResponse = mock( Response.class );
+    FileResource mockFileResource = Mockito.mock( FileResource.class );
+    Response mockResponse = Mockito.mock( Response.class );
 
-    doNothing().when( metadataService ).accessValidation();
-    doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
-    doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
-    doReturn( null ).when( mockResponse ).getEntity();
-    doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
-    doReturn( "" ).when( metadataService ).prohibitedSymbolMessage( domainId, mockFileResource );
+    Mockito.doNothing().when( metadataService ).accessValidation();
+    Mockito.doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
+    Mockito.doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
+    Mockito.doReturn( null ).when( mockResponse ).getEntity();
+    Mockito.doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
+    Mockito.doReturn( "" ).when( metadataService ).prohibitedSymbolMessage( domainId, mockFileResource );
 
     try {
       metadataService
-        .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, null );
-      fail();
+        .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo,
+          null );
+      Assert.fail();
     } catch ( PlatformImportException e ) {
       //expected
     }
 
-    verify( metadataService, times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
-        localeFiles, localeFilesInfo, null );
+    Mockito.verify( metadataService, Mockito.times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
+      localeFiles, localeFilesInfo, null );
   }
 
   @Test
   public void testImportMetadataDatasourceWithACL() throws Exception {
     String domainId = "home\\admin/resource/";
-    InputStream metadataFile = mock( InputStream.class );
-    FormDataContentDisposition metadataFileInfo = mock( FormDataContentDisposition.class );
+    InputStream metadataFile = Mockito.mock( InputStream.class );
+    FormDataContentDisposition metadataFileInfo = Mockito.mock( FormDataContentDisposition.class );
     boolean overwrite = true;
-    FormDataBodyPart mockFormDataBodyPart = mock( FormDataBodyPart.class );
+    FormDataBodyPart mockFormDataBodyPart = Mockito.mock( FormDataBodyPart.class );
     List<FormDataBodyPart> localeFiles = new ArrayList<FormDataBodyPart>();
     localeFiles.add( mockFormDataBodyPart );
     List<FormDataContentDisposition> localeFilesInfo = new ArrayList<FormDataContentDisposition>();
-    FormDataContentDisposition mockFormDataContentDisposition = mock( FormDataContentDisposition.class );
+    FormDataContentDisposition mockFormDataContentDisposition = Mockito.mock( FormDataContentDisposition.class );
     localeFilesInfo.add( mockFormDataContentDisposition );
-    FileResource mockFileResource = mock( FileResource.class );
-    Response mockResponse = mock( Response.class );
-    IPentahoSession mockIPentahoSession = mock( IPentahoSession.class );
-    IPlatformImporter mockIPlatformImporter = mock( IPlatformImporter.class );
-    IPlatformImportBundle mockIPlatformImportBundle = mock( IPlatformImportBundle.class );
-    RepositoryFileImportBundle.Builder mockRepositoryFileImportBundleBuilder = mock( RepositoryFileImportBundle.Builder.class );
-    RepositoryFileImportBundle mockRepositoryFileImportBundle = mock( RepositoryFileImportBundle.class );
-    ByteArrayInputStream mockByteArrayInputStream = mock( ByteArrayInputStream.class );
+    FileResource mockFileResource = Mockito.mock( FileResource.class );
+    Response mockResponse = Mockito.mock( Response.class );
+    IPentahoSession mockIPentahoSession = Mockito.mock( IPentahoSession.class );
+    IPlatformImporter mockIPlatformImporter = Mockito.mock( IPlatformImporter.class );
+    IPlatformImportBundle mockIPlatformImportBundle = Mockito.mock( IPlatformImportBundle.class );
+    RepositoryFileImportBundle.Builder mockRepositoryFileImportBundleBuilder =
+      Mockito.mock( RepositoryFileImportBundle.Builder.class );
+    RepositoryFileImportBundle mockRepositoryFileImportBundle = Mockito.mock( RepositoryFileImportBundle.class );
+    ByteArrayInputStream mockByteArrayInputStream = Mockito.mock( ByteArrayInputStream.class );
 
-    doNothing().when( metadataService ).accessValidation();
-    doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
-    doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
-    doReturn( null ).when( mockResponse ).getEntity();
-    doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
-    doReturn( mockRepositoryFileImportBundleBuilder ).when( metadataService ).createNewRepositoryFileImportBundleBuilder(
+    Mockito.doNothing().when( metadataService ).accessValidation();
+    Mockito.doReturn( metadataFile ).when( metadataService ).validateFileSize( Mockito.any( InputStream.class ), Mockito.anyString() );
+    Mockito.doReturn( mockFileResource ).when( metadataService ).createNewFileResource();
+    Mockito.doReturn( mockResponse ).when( mockFileResource ).doGetReservedChars();
+    Mockito.doReturn( null ).when( mockResponse ).getEntity();
+    Mockito.doReturn( "\t\n/" ).when( metadataService ).objectToString( null );
+    Mockito.doReturn( mockRepositoryFileImportBundleBuilder ).when( metadataService )
+      .createNewRepositoryFileImportBundleBuilder(
         metadataFile, false, domainId, null );
-    doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
-    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any( byte[].class ) );
-    doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
-        mockByteArrayInputStream, "fileName", domainId );
-    doReturn( mockRepositoryFileImportBundle ).when( mockRepositoryFileImportBundleBuilder ).build();
-    doReturn( mockIPlatformImporter ).when( metadataService ).getImporter();
-    doNothing().when( mockIPlatformImporter ).importFile( mockIPlatformImportBundle );
-    doReturn( mockIPentahoSession ).when( metadataService ).getSession();
-    doNothing().when( metadataService ).publish( mockIPentahoSession );
+    Mockito.doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
+    Mockito.doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( Mockito.any( byte[].class ) );
+    Mockito.doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
+      mockByteArrayInputStream, "fileName", domainId );
+    Mockito.doReturn( mockRepositoryFileImportBundle ).when( mockRepositoryFileImportBundleBuilder ).build();
+    Mockito.doReturn( mockIPlatformImporter ).when( metadataService ).getImporter();
+    Mockito.doNothing().when( mockIPlatformImporter ).importFile( mockIPlatformImportBundle );
+    Mockito.doReturn( mockIPentahoSession ).when( metadataService ).getSession();
+    Mockito.doNothing().when( metadataService ).publish( mockIPentahoSession );
 
     final RepositoryFileAclDto acl = new RepositoryFileAclDto();
     acl.setOwner( "owner" );
     acl.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
 
-    metadataService.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
+    metadataService
+      .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo,
+        acl );
 
-    verify( metadataService, times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
-        localeFiles, localeFilesInfo, acl );
+    Mockito.verify( metadataService, Mockito.times( 1 ) ).importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite,
+      localeFiles, localeFilesInfo, acl );
 
-    verify( metadataService.getImporter() ).importFile( argThat( new ArgumentMatcher<IPlatformImportBundle>() {
+    Mockito.verify( metadataService.getImporter() ).importFile( Mockito.argThat( new ArgumentMatcher<IPlatformImportBundle>() {
       @Override public boolean matches( Object argument ) {
         IPlatformImportBundle bundle = (IPlatformImportBundle) argument;
         return new RepositoryFileAclAdapter().unmarshal( acl ).equals( bundle.getAcl() );
@@ -283,47 +306,49 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 
     final RepositoryFileAcl acl = new RepositoryFileAcl.Builder( "owner" ).build();
 
-    doReturn( true ).when( metadataService ).canManageACL();
-    when( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn( acl );
-    final Map<String, InputStream> domainFilesData = mock( Map.class );
-    when( domainFilesData.isEmpty() ).thenReturn( false );
-    when( ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
-        .thenReturn( domainFilesData );
+    Mockito.doReturn( true ).when( metadataService ).canManageACL();
+    Mockito.when( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn( acl );
+    final Map<String, InputStream> domainFilesData = Mockito.mock( Map.class );
+    Mockito.when( domainFilesData.isEmpty() ).thenReturn( false );
+    Mockito.when(
+      ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
+      .thenReturn( domainFilesData );
     final RepositoryFileAclDto aclDto = metadataService.getMetadataAcl( domainId );
 
-    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( eq( domainId ) );
+    Mockito.verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( Mockito.eq( domainId ) );
 
-    assertEquals( acl, new RepositoryFileAclAdapter().unmarshal( aclDto ) );
+    Assert.assertEquals( acl, new RepositoryFileAclAdapter().unmarshal( aclDto ) );
   }
 
   @Test( expected = FileNotFoundException.class )
   public void testGetMetadataDatasourceAclNoDS() throws Exception {
     String domainId = "home\\admin/resource/";
 
-    doReturn( true ).when( metadataService ).canManageACL();
-    when( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn( null );
+    Mockito.doReturn( true ).when( metadataService ).canManageACL();
+    Mockito.when( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn( null );
     final RepositoryFileAclDto aclDto = metadataService.getMetadataAcl( domainId );
 
-    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( eq( domainId ) );
+    Mockito.verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( Mockito.eq( domainId ) );
 
-    assertNull( aclDto );
+    Assert.assertNull( aclDto );
   }
 
   @Test
   public void testGetMetadataDatasourceAclNoAcl() throws Exception {
     String domainId = "home\\admin/resource/";
 
-    doReturn( true ).when( metadataService ).canManageACL();
-    when( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn( null );
-    final Map<String, InputStream> domainFilesData = mock( Map.class );
-    when( domainFilesData.isEmpty() ).thenReturn( false );
-    when( ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
-        .thenReturn( domainFilesData );
+    Mockito.doReturn( true ).when( metadataService ).canManageACL();
+    Mockito.when( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter.getAclFor( domainId ) ).thenReturn( null );
+    final Map<String, InputStream> domainFilesData = Mockito.mock( Map.class );
+    Mockito.when( domainFilesData.isEmpty() ).thenReturn( false );
+    Mockito.when(
+      ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
+      .thenReturn( domainFilesData );
     final RepositoryFileAclDto aclDto = metadataService.getMetadataAcl( domainId );
 
-    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( eq( domainId ) );
+    Mockito.verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).getAclFor( Mockito.eq( domainId ) );
 
-    assertNull( aclDto );
+    Assert.assertNull( aclDto );
   }
 
   @Test
@@ -334,44 +359,46 @@ import com.sun.jersey.multipart.FormDataBodyPart;
     aclDto.setOwner( "owner" );
     aclDto.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
 
-    doReturn( true ).when( metadataService ).canManageACL();
-    final Map<String, InputStream> domainFilesData = mock( Map.class );
-    when( domainFilesData.isEmpty() ).thenReturn( false );
-    when( ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
-        .thenReturn( domainFilesData );
+    Mockito.doReturn( true ).when( metadataService ).canManageACL();
+    final Map<String, InputStream> domainFilesData = Mockito.mock( Map.class );
+    Mockito.when( domainFilesData.isEmpty() ).thenReturn( false );
+    Mockito.when(
+      ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
+      .thenReturn( domainFilesData );
 
     metadataService.setMetadataAcl( domainId, aclDto );
 
-    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( eq( domainId ),
-        eq( new RepositoryFileAclAdapter().unmarshal( aclDto ) ) );
+    Mockito.verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( Mockito.eq( domainId ),
+      Mockito.eq( new RepositoryFileAclAdapter().unmarshal( aclDto ) ) );
   }
 
   @Test( expected = FileNotFoundException.class )
   public void testSetMetadataDatasourceAclNoDS() throws Exception {
     String domainId = "home\\admin/resource/";
 
-    doReturn( true ).when( metadataService ).canManageACL();
+    Mockito.doReturn( true ).when( metadataService ).canManageACL();
 
     metadataService.setMetadataAcl( domainId, null );
 
-    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( eq( domainId ),
-        (RepositoryFileAcl) isNull() );
+    Mockito.verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( Mockito.eq( domainId ),
+      (RepositoryFileAcl) Mockito.isNull() );
   }
 
   @Test
   public void testSetMetadataDatasourceAclNoAcl() throws Exception {
     String domainId = "home\\admin/resource/";
 
-    doReturn( true ).when( metadataService ).canManageACL();
-    final Map<String, InputStream> domainFilesData = mock( Map.class );
-    when( domainFilesData.isEmpty() ).thenReturn( false );
-    when( ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
-        .thenReturn( domainFilesData );
+    Mockito.doReturn( true ).when( metadataService ).canManageACL();
+    final Map<String, InputStream> domainFilesData = Mockito.mock( Map.class );
+    Mockito.when( domainFilesData.isEmpty() ).thenReturn( false );
+    Mockito.when(
+      ( (PentahoMetadataDomainRepository) metadataService.metadataDomainRepository ).getDomainFilesData( domainId ) )
+      .thenReturn( domainFilesData );
 
     metadataService.setMetadataAcl( domainId, null );
 
-    verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( eq( domainId ),
-        (RepositoryFileAcl) isNull() );
+    Mockito.verify( metadataService.aclAwarePentahoMetadataDomainRepositoryImporter ).setAclFor( Mockito.eq( domainId ),
+      (RepositoryFileAcl) Mockito.isNull() );
   }
 }
 
