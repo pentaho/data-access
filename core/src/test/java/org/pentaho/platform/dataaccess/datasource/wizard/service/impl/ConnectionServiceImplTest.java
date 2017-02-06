@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
@@ -46,8 +46,6 @@ import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -76,11 +74,11 @@ public class ConnectionServiceImplTest {
 
   private final Connection nativeConnection = mock( Connection.class );
 
-  private final PooledDatasourceHelper pdh = mock(PooledDatasourceHelper.class);
+  private final PooledDatasourceHelper pdh = mock( PooledDatasourceHelper.class );
   
   @Before
   public void setUp() throws ConnectionServiceException, ObjectFactoryException, DBDatasourceServiceException {
-	doReturn( nativeConnection ).when( sqlConnection ).getNativeConnection();
+    doReturn( nativeConnection ).when( sqlConnection ).getNativeConnection();
     doReturn( SimpleDataAccessPermissionHandler.class.getName() ).when( loader ).getPluginSetting( this.anyClass(), anyString(), anyString() );
 
     when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
@@ -95,11 +93,11 @@ public class ConnectionServiceImplTest {
               return sqlConnection;
             }
             if ( invocation.getArguments()[0].equals( IDBDatasourceService.class ) ) {
-                return datasourceService;
-              }
+              return datasourceService;
+            }
             if ( invocation.getArguments()[0].equals( PooledDatasourceHelper.class ) ) {
-                return pdh;
-              }
+              return pdh;
+            }
             return null;
           }
         } );
@@ -356,7 +354,7 @@ public class ConnectionServiceImplTest {
   
   @Test
    public void testTestConnection_NativeGenericConnectionPool() throws Exception {
-     testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC", true );
+    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC", true );
   }
   
   private void testTestConnection( DatabaseAccessType accessType, IDatabaseConnection connection, String database, boolean isPool ) throws Exception {
@@ -372,6 +370,7 @@ public class ConnectionServiceImplTest {
     doReturn( isPool ).when( mockDBConnection ).isUsingConnectionPool();
     assertTrue( connectionServiceImpl.testConnection( connection ) );
     verify( sqlConnection ).close();
+    verify( connection ).getName();
   }
 
   @Test
