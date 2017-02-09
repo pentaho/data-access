@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
@@ -43,10 +43,9 @@ import org.pentaho.platform.engine.services.connection.datasource.dbcp.PooledDat
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.Collections;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -76,11 +75,14 @@ public class ConnectionServiceImplTest {
 
   private final Connection nativeConnection = mock( Connection.class );
 
-  private final PooledDatasourceHelper pdh = mock(PooledDatasourceHelper.class);
-  
+  private final PooledDatasourceHelper pdh = mock( PooledDatasourceHelper.class );
+
+  private final DatabaseMetaData dmd = mock( DatabaseMetaData.class );
+
   @Before
-  public void setUp() throws ConnectionServiceException, ObjectFactoryException, DBDatasourceServiceException {
-	doReturn( nativeConnection ).when( sqlConnection ).getNativeConnection();
+  public void setUp() throws ConnectionServiceException, ObjectFactoryException, DBDatasourceServiceException, java.sql.SQLException {
+    doReturn( dmd ).when( nativeConnection ).getMetaData();
+    doReturn( nativeConnection ).when( sqlConnection ).getNativeConnection();
     doReturn( SimpleDataAccessPermissionHandler.class.getName() ).when( loader ).getPluginSetting( this.anyClass(), anyString(), anyString() );
 
     when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
@@ -95,11 +97,11 @@ public class ConnectionServiceImplTest {
               return sqlConnection;
             }
             if ( invocation.getArguments()[0].equals( IDBDatasourceService.class ) ) {
-                return datasourceService;
-              }
+              return datasourceService;
+            }
             if ( invocation.getArguments()[0].equals( PooledDatasourceHelper.class ) ) {
-                return pdh;
-              }
+              return pdh;
+            }
             return null;
           }
         } );
@@ -107,6 +109,7 @@ public class ConnectionServiceImplTest {
 
     doReturn( databaseType ).when( mockDBConnection ).getDatabaseType();
     doReturn( CONN_NAME ).when( mockDBConnection ).getName();
+    doReturn( CONN_NAME ).when( mockDBConnection ).getDatabaseName();
     doNothing().when( mockDBConnection ).setPassword( anyString() );
 
     connectionServiceImpl = spy( new ConnectionServiceImpl() );
@@ -276,7 +279,11 @@ public class ConnectionServiceImplTest {
   @Test
   public void testAddConnection() throws Exception {
     doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
+    doReturn( DatabaseAccessType.NATIVE ).when( mockDBConnection ).getAccessType();
     assertTrue( connectionServiceImpl.addConnection( mockDBConnection ) );
+    doReturn( DatabaseAccessType.JNDI ).when( mockDBConnection ).getAccessType();
+    assertTrue( connectionServiceImpl.addConnection( mockDBConnection ) );
+    verify( mockDBConnection ).setUsername( anyString() );
   }
 
   @Test
@@ -353,12 +360,12 @@ public class ConnectionServiceImplTest {
   public void testTestConnection_NativeGenericConnection() throws Exception {
     testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC", false );
   }
-  
+
   @Test
-   public void testTestConnection_NativeGenericConnectionPool() throws Exception {
-     testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC", true );
+  public void testTestConnection_NativeGenericConnectionPool() throws Exception {
+    testTestConnection( DatabaseAccessType.NATIVE, mockDBConnection, "GENERIC", true );
   }
-  
+
   private void testTestConnection( DatabaseAccessType accessType, IDatabaseConnection connection, String database, boolean isPool ) throws Exception {
     doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
     doReturn( "connectionPassword" ).when( connectionServiceImpl ).getConnectionPassword( anyString(), anyString() );
@@ -372,6 +379,11 @@ public class ConnectionServiceImplTest {
     doReturn( isPool ).when( mockDBConnection ).isUsingConnectionPool();
     assertTrue( connectionServiceImpl.testConnection( connection ) );
     verify( sqlConnection ).close();
+    if ( DatabaseAccessType.JNDI == accessType ) {
+      verify( connection ).getDatabaseName();
+    } else {
+      verify( connection ).getName();
+    }
   }
 
   @Test
