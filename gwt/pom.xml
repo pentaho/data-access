@@ -150,7 +150,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>pentaho-library</groupId>
+      <groupId>org.pentaho.reporting.library</groupId>
       <artifactId>libbase</artifactId>
       <version>${libbase.version}</version>
       <classifier>sources</classifier>
