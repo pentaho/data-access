@@ -12,17 +12,12 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.thoughtworks.xstream.XStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +25,7 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
@@ -49,8 +45,13 @@ import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.reporting.libraries.base.util.StringUtils;
+import org.pentaho.platform.dataaccess.metadata.messages.Messages;
 
-import com.thoughtworks.xstream.XStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings( "unchecked" )
 public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasourceService {
@@ -84,6 +85,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   }
 
   public String getEncoding( String fileName ) {
+    checkPermissions();
     String encoding = null;
     try {
       CsvUtils csvModelService = new CsvUtils();
@@ -97,6 +99,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   public ModelInfo stageFile( String fileName, String delimiter, String enclosure, boolean isFirstRowHeader,
                               String encoding )
     throws Exception {
+    checkPermissions();
     ModelInfo modelInfo;
     fileName = FilenameUtils.getName( fileName );
     try {
@@ -114,6 +117,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   }
 
   public FileInfo[] getStagedFiles() throws Exception {
+    checkPermissions();
     FileInfo[] files;
     try {
       FileUtils fileService = new FileUtils();
@@ -126,6 +130,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
   }
 
   public FileTransformStats generateDomain( DatasourceDTO datasourceDto ) throws Exception {
+    checkPermissions();
     synchronized ( lock ) {
       ModelInfo modelInfo = datasourceDto.getCsvModelInfo();
       IPentahoSession pentahoSession = null;
@@ -234,6 +239,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
 
   public List<String> getPreviewRows( String filename, boolean isFirstRowHeader, int rows, String encoding )
     throws Exception {
+    checkPermissions();
     List<String> previewRows = null;
     if ( !StringUtils.isEmpty( filename ) ) {
       CsvUtils service = new CsvUtils();
@@ -242,6 +248,32 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
       previewRows = mi.getFileInfo().getContents();
     }
     return previewRows;
+  }
+
+  /**
+   * Returns true if the current user has Manage Data Source Security. Otherwise returns false.
+   * @return
+   */
+  protected boolean hasManageDataAccessPermission() {
+    // If this breaks an OEM's plugin, provide a get-out-of-jail card with an entry in the pentaho.xml.
+    final String override = PentahoSystem.getSystemSetting( "data-access-override", "false" );
+    final Boolean rtnOverride = Boolean.valueOf( override );
+    if ( !rtnOverride ) {
+      final IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
+      if ( policy != null ) {
+        return policy.isAllowed( "org.pentaho.platform.dataaccess.datasource.security.manage" );
+      } else {
+        return false;
+      }
+    } else {
+      return true; // Override the security policy with the entry in the pentaho.xml.
+    }
+  }
+
+  private void checkPermissions() throws SecurityException {
+    if ( !hasManageDataAccessPermission() ) {
+      throw new SecurityException( Messages.getErrorString( "CsvDatasourceServiceImpl.ERROR_0009_UNAUTHORIZED" ) );
+    }
   }
 
   @Override
