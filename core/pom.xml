@@ -110,7 +110,7 @@
       <artifactId>kettle-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho-library</groupId>
+      <groupId>org.pentaho.reporting.library</groupId>
       <artifactId>libbase</artifactId>
     </dependency>
     <dependency>
