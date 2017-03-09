@@ -166,11 +166,6 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-codeserver</artifactId>
-    </dependency>
-
 
     <!-- 3rd party dependencies -->
     <dependency>
