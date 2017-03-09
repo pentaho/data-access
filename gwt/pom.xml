@@ -79,11 +79,6 @@
       <artifactId>gwt-dev</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-codeserver</artifactId>
-    </dependency>
-
-    <dependency>
         <groupId>com.google.code.gwtx</groupId>
         <artifactId>gwtx</artifactId>
         <version>${gwtx.version}</version>
