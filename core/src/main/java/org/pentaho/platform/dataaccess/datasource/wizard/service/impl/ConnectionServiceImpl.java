@@ -12,13 +12,14 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -169,6 +170,17 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   public boolean addConnection( IDatabaseConnection connection ) throws ConnectionServiceException {
     ensureDataAccessPermission();
     try {
+      if ( connection.getAccessType().equals( DatabaseAccessType.JNDI ) ) {
+        IPentahoConnection pentahoConnection = null;
+        pentahoConnection = PentahoConnectionFactory
+          .getConnection( IPentahoConnection.SQL_DATASOURCE, connection.getDatabaseName(), null, this );
+        try {
+          connection.setUsername( ( ( (SQLConnection) pentahoConnection ).getNativeConnection().getMetaData().getUserName() ) );
+        } catch ( Exception e ) {
+          logger.warn( "Unable to get username from datasource: " + connection.getName() );
+        }
+      }
+
       datasourceMgmtSvc.createDatasource( connection );
       return true;
     } catch ( DuplicateDatasourceException duplicateDatasourceException ) {
