@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
@@ -163,20 +163,44 @@ public class CsvUtils extends PentahoBase {
 
   protected List<String> getLinesList( String fileLocation, int rows, String encoding ) throws IOException {
     List<String> lines = new ArrayList<String>();
+    FileInputStream fis = null;
+    InputStreamReader isr = null;
+    LineNumberReader reader = null;
     try {
       File file = new File( fileLocation );
-      FileInputStream fis = new FileInputStream( file );
-      InputStreamReader isr = new InputStreamReader( fis, encoding );
-      LineNumberReader reader = new LineNumberReader( isr );
+      fis = new FileInputStream( file );
+      isr = new InputStreamReader( fis, encoding );
+      reader = new LineNumberReader( isr );
       String line;
       int lineNumber = 0;
       while ( ( line = reader.readLine() ) != null && lineNumber < rows ) {
         lines.add( line );
         lineNumber++;
       }
-      reader.close();
     } catch ( Exception e ) {
       log.equals( e );
+    } finally {
+      if ( reader != null ) {
+        try {
+          reader.close();
+        } catch ( Exception e ) {
+          log.warn( "Close LineNumberReader exception", e );
+        }
+      }
+      if ( isr != null ) {
+        try {
+          isr.close();
+        } catch ( Exception e ) {
+          log.warn( "Close InputStreamReader exception", e );
+        }
+      }
+      if ( fis != null ) {
+        try {
+          fis.close();
+        } catch ( Exception e ) {
+          log.warn( "Close FileInputStream exception", e );
+        }
+      }
     }
     return lines;
   }
@@ -433,7 +457,7 @@ public class CsvUtils extends PentahoBase {
   }
 
   private DataType convertDataType( int type ) {
-    switch( type ) {
+    switch ( type ) {
       case 1:
       case 5:
       case 6:
