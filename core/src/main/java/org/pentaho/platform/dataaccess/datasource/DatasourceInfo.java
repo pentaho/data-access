@@ -13,12 +13,13 @@
 * See the GNU General Public License for more details.
 *
 *
-* Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
+* Copyright 2006 - 2017 Pentaho Corporation.  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource;
 
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
@@ -95,7 +96,7 @@ public class DatasourceInfo extends XulEventSourceAdapter implements IDatasource
   @Bindable
   @Override
   public String getName() {
-    return name;
+    return SafeHtmlUtils.htmlEscape( name );
   }
 
   @Bindable
