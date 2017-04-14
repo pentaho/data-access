@@ -161,7 +161,11 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
 
         ArrayList<String> combinedErrors = new ArrayList<String>( modelInfo.getCsvInputErrors() );
         combinedErrors.addAll( modelInfo.getTableOutputErrors() );
-        stats.setErrors( combinedErrors );
+        if ( stats.getErrors() != null && stats.getErrors().size() > 0 ) {
+          stats.getErrors().addAll( combinedErrors );
+        } else {
+          stats.setErrors( combinedErrors );
+        }
 
         // wait until it it done
         while ( !stats.isRowsFinished() ) {
