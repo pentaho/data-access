@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.platform.dataaccess.datasource.utils.DataSourceInfoUtil;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -119,8 +120,8 @@ public class AnalysisImportDialogModel extends XulEventSourceAdapter {
           result += sep;
         }
         //add name / value pair
-        value = currentParameter.getValue();
-        //TODO: check if the value contains a quote character. currently not supported.
+        //Escape is used, because value can contain quotes and it is parse-unsafe.
+        value = DataSourceInfoUtil.escapeQuotes( currentParameter.getValue() );
         if ( //if the value is not quoted
           ( !( value.startsWith( quot ) && value.endsWith( quot ) ) )
             //and the value contains the separator

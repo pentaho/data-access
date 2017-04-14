@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -25,19 +25,22 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.codehaus.enunciate.Facet;
 import org.pentaho.platform.dataaccess.datasource.api.resources.AnalysisResource;
 import org.pentaho.platform.dataaccess.datasource.api.resources.DataSourceWizardResource;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataResource;
+import org.pentaho.platform.dataaccess.datasource.utils.DataSourceInfoUtil;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
+import java.util.Map;
+
 @Path( "/data-access/api/datasource" )
 public class DatasourceResource {
-  
   /**
    * Get the data source wizard info (parameters) for a specific data source wizard id
    * 
@@ -54,10 +57,27 @@ public class DatasourceResource {
     IMondrianCatalogService mondrianCatalogService =
         PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
     MondrianCatalog catalog = mondrianCatalogService.getCatalog( catalogId, PentahoSessionHolder.getSession() );
-    String parameters = catalog.getDataSourceInfo();
+    //dataSourceInfo can contain XML-escaped characters
+    String parameters = prepareDataSourceInfo( catalog.getDataSourceInfo() );
+    //after preparation, parameters have escaped only quotes
     return Response.ok().entity( parameters ).build();
   }
-  
+
+  static String prepareDataSourceInfo( String dataSourceInfo ) {
+    StringBuilder sb = new StringBuilder();
+    Map<String, String> parameters = DataSourceInfoUtil.parseDataSourceInfo( dataSourceInfo );
+    parameters.forEach( ( key, value ) -> {
+      String unescapedValue = StringEscapeUtils.unescapeXml( value );
+      String valueWithEscapedQuotes = DataSourceInfoUtil.escapeQuotes( unescapedValue );
+      sb.append( key );
+      sb.append( "=\"" );
+      sb.append( valueWithEscapedQuotes );
+      sb.append( "\"" );
+      sb.append( ";" );
+    } );
+    return sb.toString();
+  }
+
   /**
    * Get list of IDs of analysis datasource
    *
@@ -101,7 +121,6 @@ public class DatasourceResource {
   public Response doGetAnalysisFilesAsDownload( @PathParam( "analysisId" ) String analysisId ) {
     return new AnalysisResource().downloadSchema( analysisId );
   }
-  
   /**
    * Remove the analysis data for a given analysis ID
    * 
