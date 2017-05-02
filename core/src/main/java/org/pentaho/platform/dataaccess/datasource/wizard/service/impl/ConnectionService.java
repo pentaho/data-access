@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -33,6 +33,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -93,7 +94,7 @@ public class ConnectionService {
     IDatabaseConnection conn = null;
     Response response;
     try {
-      conn = connectionService.getConnectionByName( name );
+      conn = connectionService.getConnectionByName( StringEscapeUtils.escapeHtml( name ) );
       if ( conn != null ) {
         response = Response.ok().entity( conn.getId() ).build();
       } else {
@@ -236,6 +237,7 @@ public class ConnectionService {
   @Facet( name = "Unsupported" )
   public Response testConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     boolean success = false;
+    sanitizer.sanitizeConnectionParameters( connection );
     applySavedPassword( connection );
     success = connectionService.testConnection( connection );
     if ( success ) {
@@ -318,6 +320,7 @@ public class ConnectionService {
   @Facet( name = "Unsupported" )
   public Response deleteConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
+      sanitizer.sanitizeConnectionParameters( connection );
       boolean success = connectionService.deleteConnection( connection );
       if ( success ) {
         return Response.ok().build();
@@ -343,7 +346,7 @@ public class ConnectionService {
   @Path( "/deletebyname" )
   public Response deleteConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     try {
-      boolean success = connectionService.deleteConnection( name );
+      boolean success = connectionService.deleteConnection( StringEscapeUtils.escapeHtml( name ) );
       if ( success ) {
         return Response.ok().build();
       } else {
@@ -414,6 +417,7 @@ public class ConnectionService {
     IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
     List<IDatabaseConnection> conns = connectionService.getConnections();
     for ( IDatabaseConnection conn : conns ) {
+      sanitizer.unsanitizeConnectionParameters( conn );
       hidePassword( conn );
     }
     databaseConnections.setDatabaseConnections( conns );
@@ -434,7 +438,7 @@ public class ConnectionService {
   @Produces( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
-    IDatabaseConnection conn = connectionService.getConnectionByName( name );
+    IDatabaseConnection conn = connectionService.getConnectionByName( StringEscapeUtils.escapeHtml( name ) );
     hidePassword( conn );
     return conn;
   }
@@ -453,7 +457,7 @@ public class ConnectionService {
   @Produces( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response isConnectionExist( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
-    boolean exists = connectionService.isConnectionExist( name );
+    boolean exists = connectionService.isConnectionExist( StringEscapeUtils.escapeHtml( name ) );
     try {
       if ( exists ) {
         return Response.ok().build();
@@ -479,7 +483,7 @@ public class ConnectionService {
     IDatabaseConnection conn = null;
     Response response;
     try {
-      conn = connectionService.getConnectionByName( name );
+      conn = connectionService.getConnectionByName( StringEscapeUtils.escapeHtml( name ) );
       hidePassword( conn );
       response = Response.ok().entity( conn ).build();
     } catch ( Exception ex ) {
