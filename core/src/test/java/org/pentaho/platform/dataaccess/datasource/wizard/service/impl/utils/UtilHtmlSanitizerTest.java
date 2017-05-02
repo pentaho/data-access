@@ -12,11 +12,12 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.database.model.DatabaseConnection;
 
@@ -28,10 +29,15 @@ import static junit.framework.TestCase.assertNull;
  */
 public class UtilHtmlSanitizerTest {
 
+  UtilHtmlSanitizer sanitizer;
+
+  @Before
+  public void setUp() {
+    sanitizer = new UtilHtmlSanitizer();
+  }
+
   @Test
   public void testSanitizeConnectionParameters() throws Exception {
-    UtilHtmlSanitizer sanitizer = new UtilHtmlSanitizer();
-
     DatabaseConnection connection = new DatabaseConnection();
 
     //see http://jira.pentaho.com/browse/PPP-3546
@@ -47,6 +53,29 @@ public class UtilHtmlSanitizerTest {
 
     //check that null is not transformed to an empty string
     assertNull( connection.getDatabaseName() );
+  }
+
+  @Test
+  public void testUnsanitizeConnectionParameters() throws Exception {
+    DatabaseConnection connection = new DatabaseConnection();
+
+    connection.setName( "<font color=\"red\">\"AAAAAAAAAAAA\"" );
+    assertEquals( "<font color=\"red\">\"AAAAAAAAAAAA\"", connection.getName() );
+    sanitizer.sanitizeConnectionParameters( connection );
+    assertEquals( "&lt;font color=&quot;red&quot;&gt;&quot;AAAAAAAAAAAA&quot;", connection.getName() );
+    sanitizer.unsanitizeConnectionParameters( connection );
+    assertEquals( "<font color=\"red\">\"AAAAAAAAAAAA\"", connection.getName() );
+
+    assertNull( connection.getDatabaseName() );
+  }
+
+  @Test
+  public void testSafeEscapeHtml() {
+    String unsanitizedName = "<font color=\"red\">\"AAAAAAAAAAAA\"";
+    String sanitizedName = "&lt;font color=&quot;red&quot;&gt;&quot;AAAAAAAAAAAA&quot;";
+
+    assertEquals( sanitizedName, sanitizer.safeEscapeHtml( unsanitizedName ) );
+    assertEquals( sanitizedName, sanitizer.safeEscapeHtml( sanitizedName ) );
   }
 }
 
