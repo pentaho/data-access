@@ -42,7 +42,7 @@
           ondialogaccept="datasourceSelectionDialogController.removeDatasourceAccept()"
           buttonalign="right" title="${removeDatasourceConfirmationDialog.title}" height="200" width="300">
     <vbox>
-      <label value="${removeDatasourceConfirmationDialog.message}"/>
+      <label id="removeDatasourceConfirmationDialogLabel" value="${removeDatasourceConfirmationDialog.message}"/>
     </vbox>
   </dialog>
 

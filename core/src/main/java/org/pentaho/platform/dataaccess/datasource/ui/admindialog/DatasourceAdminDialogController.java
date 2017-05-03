@@ -17,20 +17,14 @@
 
 package org.pentaho.platform.dataaccess.datasource.ui.admindialog;
 
-import java.util.List;
-
+import com.google.gwt.user.client.Window;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.gwt.widgets.client.dialogs.MessageDialogBox;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.DatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
-import org.pentaho.platform.dataaccess.datasource.ui.service.DSWUIDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.ui.service.IUIDatasourceAdminService;
-import org.pentaho.platform.dataaccess.datasource.ui.service.JdbcDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.ui.service.MondrianUIDatasourceService;
-import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
+import org.pentaho.platform.dataaccess.datasource.ui.service.*;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceEditorEntryPoint;
 import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
@@ -39,11 +33,7 @@ import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulServiceCallback;
-import org.pentaho.ui.xul.binding.Binding;
-import org.pentaho.ui.xul.binding.BindingConvertor;
-import org.pentaho.ui.xul.binding.BindingException;
-import org.pentaho.ui.xul.binding.BindingExceptionHandler;
-import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.*;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuitem;
@@ -54,13 +44,14 @@ import org.pentaho.ui.xul.containers.XulTreeCols;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 
-import com.google.gwt.user.client.Window;
+import java.util.List;
 
 public class DatasourceAdminDialogController extends AbstractXulDialogController<IDatasourceInfo> implements BindingExceptionHandler{
 
   // ~ Static fields/initializers ======================================================================================
   private static final String IMPORT_MSG_ID = "datasourceAdminDialog.IMPORT";
-    private static final String PLUGIN_MSG_ID = "datasourceAdminDialog.PLUGIN";
+  private static final String PLUGIN_MSG_ID = "datasourceAdminDialog.PLUGIN";
+  private static final String REMOVE_DS_MSG_ID = "removeDatasourceConfirmationDialog.message";
 
   // ~ Instance fields =================================================================================================
   private BindingFactory bf;
@@ -481,6 +472,12 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
                 "datasourceAdminErrorDialog.SELECT_DATASOURCE_DELETE");
         return;
     }
+
+    if (messageBundle != null) {
+      XulLabel removeDatasourceConfirmationDialogLabel = (XulLabel) removeDatasourceConfirmationDialog.getElementById("removeDatasourceConfirmationDialogLabel");
+      removeDatasourceConfirmationDialogLabel.setValue(messageBundle.getString(REMOVE_DS_MSG_ID, dsInfo.getName()));
+    }
+
     removeDatasourceConfirmationDialog.show();
   }
 
