@@ -12,13 +12,17 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.ui.selectdialog;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.http.client.*;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.pentaho.metadata.model.Domain;
@@ -469,10 +473,10 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
 
   @Bindable
   public void removeDatasourceConfirm() {
-    if (messageBundle != null) {
-      XulLabel removeDatasourceConfirmationDialogLabel = (XulLabel) removeDatasourceConfirmationDialog.getElementById("removeDatasourceConfirmationDialogLabel");
+    if ( messageBundle != null ) {
+      XulLabel removeDatasourceConfirmationDialogLabel = (XulLabel) removeDatasourceConfirmationDialog.getElementById( "removeDatasourceConfirmationDialogLabel" );
       LogicalModelSummary logicalModelSummary = getDialogResult();
-      removeDatasourceConfirmationDialogLabel.setValue(messageBundle.getString(REMOVE_DS_MSG_ID, logicalModelSummary.getModelName()));
+      removeDatasourceConfirmationDialogLabel.setValue( messageBundle.getString( REMOVE_DS_MSG_ID, logicalModelSummary.getModelName() ) );
     }
 
     removeDatasourceConfirmationDialog.show();
@@ -515,7 +519,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
     this.context = context;
   }
 
-  public void setMessageBundle(GwtDatasourceMessages messageBundle) {
+  public void setMessageBundle( GwtDatasourceMessages messageBundle ) {
     this.messageBundle = messageBundle;
   }
 
