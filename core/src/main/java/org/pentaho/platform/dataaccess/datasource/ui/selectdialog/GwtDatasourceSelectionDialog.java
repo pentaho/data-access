@@ -12,13 +12,16 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.ui.selectdialog;
 
+import com.google.gwt.core.client.GWT;
+import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
+import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.gwt.GwtXulDomContainer;
@@ -28,8 +31,6 @@ import org.pentaho.ui.xul.gwt.util.AsyncConstructorListener;
 import org.pentaho.ui.xul.gwt.util.AsyncXulLoader;
 import org.pentaho.ui.xul.gwt.util.IXulLoaderCallback;
 import org.pentaho.ui.xul.util.DialogController;
-
-import com.google.gwt.core.client.GWT;
 
 public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogController<LogicalModelSummary> {
 
@@ -103,6 +104,11 @@ public class GwtDatasourceSelectionDialog implements IXulLoaderCallback, DialogC
       // end DatasourceSelectionDialogController setup
 
       datasourceSelectionDialogController.setDatasourceDialogController( gwtDatasourceEditor );
+
+      ResourceBundle resBundle = (ResourceBundle) container.getResourceBundles().get( 0 );
+      GwtDatasourceMessages datasourceMessages = new GwtDatasourceMessages();
+      datasourceMessages.setMessageBundle( resBundle );
+      datasourceSelectionDialogController.setMessageBundle( datasourceMessages );
 
       runner.initialize();
 

@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.ui.selectdialog;
@@ -31,6 +31,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.modeler.ModelerDialog;
 import org.pentaho.platform.dataaccess.datasource.ui.service.UIDatasourceServiceManager;
 import org.pentaho.platform.dataaccess.datasource.wizard.EmbeddedWizard;
+import org.pentaho.platform.dataaccess.datasource.wizard.GwtDatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDatasourceService;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
@@ -39,6 +40,7 @@ import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulListbox;
@@ -54,6 +56,7 @@ import java.util.List;
 public class DatasourceSelectionDialogController extends AbstractXulDialogController<LogicalModelSummary> {
 
   // ~ Static fields/initializers ======================================================================================
+  private static final String REMOVE_DS_MSG_ID = "removeDatasourceConfirmationDialog.message";
 
   // ~ Instance fields =================================================================================================
 
@@ -85,6 +88,7 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   private String context;
   UIDatasourceServiceManager manager;
   private List<IDatasourceInfo> datasourceInfos = new ArrayList<IDatasourceInfo>();
+  private GwtDatasourceMessages messageBundle;
 
 
   // ~ Constructors ====================================================================================================
@@ -469,6 +473,14 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
 
   @Bindable
   public void removeDatasourceConfirm() {
+    if ( messageBundle != null ) {
+      XulLabel removeDatasourceConfirmationDialogLabel = (XulLabel) removeDatasourceConfirmationDialog.getElementById( "removeDatasourceConfirmationDialogLabel" );
+      LogicalModelSummary logicalModelSummary = getDialogResult();
+      if ( removeDatasourceConfirmationDialogLabel != null && logicalModelSummary != null ) {
+        removeDatasourceConfirmationDialogLabel.setValue( messageBundle.getString( REMOVE_DS_MSG_ID, logicalModelSummary.getModelName() ) );
+      }
+    }
+
     removeDatasourceConfirmationDialog.show();
   }
 
@@ -508,4 +520,9 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
   public void setContext( String context ) {
     this.context = context;
   }
+
+  public void setMessageBundle( GwtDatasourceMessages messageBundle ) {
+    this.messageBundle = messageBundle;
+  }
+
 }
