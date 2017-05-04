@@ -476,7 +476,9 @@ public class DatasourceSelectionDialogController extends AbstractXulDialogContro
     if ( messageBundle != null ) {
       XulLabel removeDatasourceConfirmationDialogLabel = (XulLabel) removeDatasourceConfirmationDialog.getElementById( "removeDatasourceConfirmationDialogLabel" );
       LogicalModelSummary logicalModelSummary = getDialogResult();
-      removeDatasourceConfirmationDialogLabel.setValue( messageBundle.getString( REMOVE_DS_MSG_ID, logicalModelSummary.getModelName() ) );
+      if ( removeDatasourceConfirmationDialogLabel != null && logicalModelSummary != null ) {
+        removeDatasourceConfirmationDialogLabel.setValue( messageBundle.getString( REMOVE_DS_MSG_ID, logicalModelSummary.getModelName() ) );
+      }
     }
 
     removeDatasourceConfirmationDialog.show();
