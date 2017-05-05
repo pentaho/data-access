@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
@@ -55,15 +55,18 @@ import org.pentaho.metadata.repository.DomainStorageException;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.SqlQueriesNotSupportedException;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
+import org.pentaho.platform.engine.core.TestObjectFactory;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
@@ -660,6 +663,48 @@ public class DSWDatasourceServiceImplTest {
     DSWDatasourceServiceImpl service = new DSWDatasourceServiceImpl( connService );
 
     service.checkSqlQueriesSupported( connNamePostgres );
+  }
+
+  @Test
+  public void testDeSerializeModelStateValidString() throws Exception {
+    PentahoSystem.registerObjectFactory( new TestObjectFactory() );
+
+    DatasourceModel datasourceModel = new DatasourceModel();
+    datasourceModel.setDatasourceName( "testDatasource" );
+    datasourceModel.setDatasourceType( DatasourceType.CSV );
+
+    DatasourceDTO dto = DatasourceDTO.generateDTO( datasourceModel );
+    assertNotNull( dto );
+
+    String serializedDTO = dswService.serializeModelState( dto );
+    dswService.deSerializeModelState( serializedDTO );
+  }
+
+  @Test( expected = DatasourceServiceException.class )
+  public void testDeSerializeModelStateInvalidString() throws Exception {
+    String notSafeString = "<com.malicious.DatasourceDTO>\n"
+      + "  <datasourceName>testDatasource</datasourceName>\n"
+      + "  <datasourceType>CSV</datasourceType>\n"
+      + "  <csvModelInfo>\n"
+      + "    <fileInfo>\n"
+      + "      <delimiter>,</delimiter>\n"
+      + "      <enclosure>&quot;</enclosure>\n"
+      + "      <headerRows>1</headerRows>\n"
+      + "      <currencySymbol></currencySymbol>\n"
+      + "      <decimalSymbol>.</decimalSymbol>\n"
+      + "      <groupSymbol>,</groupSymbol>\n"
+      + "      <ifNull>---</ifNull>\n"
+      + "      <nullStr></nullStr>\n"
+      + "    </fileInfo>\n"
+      + "    <stageTableName>testdatasource</stageTableName>\n"
+      + "    <validated>false</validated>\n"
+      + "    <csvInputErrors/>\n"
+      + "    <tableOutputErrors/>\n"
+      + "  </csvModelInfo>\n"
+      + "  <connectionName>SampleData</connectionName>\n"
+      + "  <version>2.0</version>\n"
+      + "</com.malicious.DatasourceDTO>";
+    dswService.deSerializeModelState( notSafeString );
   }
 
   private Class<?> anyClass() {
