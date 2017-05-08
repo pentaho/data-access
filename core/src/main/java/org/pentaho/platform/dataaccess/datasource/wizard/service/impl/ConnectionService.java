@@ -93,7 +93,7 @@ public class ConnectionService {
     IDatabaseConnection conn = null;
     Response response;
     try {
-      conn = connectionService.getConnectionByName( sanitizer.safeEscapeHtml( name ) );
+      conn = connectionService.getConnectionByName( name );
       if ( conn != null ) {
         response = Response.ok().entity( conn.getId() ).build();
       } else {
@@ -236,7 +236,6 @@ public class ConnectionService {
   @Facet( name = "Unsupported" )
   public Response testConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     boolean success = false;
-    sanitizer.sanitizeConnectionParameters( connection );
     applySavedPassword( connection );
     success = connectionService.testConnection( connection );
     if ( success ) {
@@ -319,7 +318,6 @@ public class ConnectionService {
   @Facet( name = "Unsupported" )
   public Response deleteConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     try {
-      sanitizer.sanitizeConnectionParameters( connection );
       boolean success = connectionService.deleteConnection( connection );
       if ( success ) {
         return Response.ok().build();
@@ -345,7 +343,7 @@ public class ConnectionService {
   @Path( "/deletebyname" )
   public Response deleteConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     try {
-      boolean success = connectionService.deleteConnection( sanitizer.safeEscapeHtml( name ) );
+      boolean success = connectionService.deleteConnection( name );
       if ( success ) {
         return Response.ok().build();
       } else {
@@ -414,11 +412,7 @@ public class ConnectionService {
   @Facet( name = "Unsupported" )
   public IDatabaseConnectionList getConnections() throws ConnectionServiceException {
     IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
-    List<IDatabaseConnection> conns = connectionService.getConnections();
-    for ( IDatabaseConnection conn : conns ) {
-      sanitizer.unsanitizeConnectionParameters( conn );
-      hidePassword( conn );
-    }
+    List<IDatabaseConnection> conns = connectionService.getConnections( true );
     databaseConnections.setDatabaseConnections( conns );
     return databaseConnections;
   }
@@ -437,8 +431,7 @@ public class ConnectionService {
   @Produces( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
-    IDatabaseConnection conn = connectionService.getConnectionByName( sanitizer.safeEscapeHtml( name ) );
-    sanitizer.unsanitizeConnectionParameters( conn );
+    IDatabaseConnection conn = connectionService.getConnectionByName( name );
     hidePassword( conn );
     return conn;
   }
@@ -457,7 +450,7 @@ public class ConnectionService {
   @Produces( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response isConnectionExist( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
-    boolean exists = connectionService.isConnectionExist( sanitizer.safeEscapeHtml( name ) );
+    boolean exists = connectionService.isConnectionExist( name );
     try {
       if ( exists ) {
         return Response.ok().build();
@@ -483,7 +476,7 @@ public class ConnectionService {
     IDatabaseConnection conn = null;
     Response response;
     try {
-      conn = connectionService.getConnectionByName( sanitizer.safeEscapeHtml( name ) );
+      conn = connectionService.getConnectionByName( name );
       sanitizer.unsanitizeConnectionParameters( conn );
       hidePassword( conn );
       response = Response.ok().entity( conn ).build();

@@ -18,7 +18,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
 
 /**
@@ -26,7 +25,7 @@ import org.pentaho.database.model.IDatabaseConnection;
  */
 public class UtilHtmlSanitizer {
 
-  public void sanitizeConnectionParameters( DatabaseConnection connection ) {
+  public void sanitizeConnectionParameters( IDatabaseConnection connection ) {
     String safeName = safeEscapeHtml( connection.getName() );
     connection.setName( safeName );
 
