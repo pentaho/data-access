@@ -186,7 +186,7 @@ public class JdbcDatasourceService implements IUIDatasourceAdminService {
   public void remove( IDatasourceInfo dsInfo, Object callback ) {
     final XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>) callback;
     RequestBuilder deleteConnectionBuilder = new RequestBuilder( RequestBuilder.DELETE,
-      getBaseURL() + NameUtils.URLEncode( "deletebyname?name={0}", dsInfo.getId() ) );
+      getBaseURL() + NameUtils.URLEncode( "deletebyname?name={0}", dsInfo.getName() ) );
     try {
       deleteConnectionBuilder.sendRequest( null, new RequestCallback() {
         public void onResponseReceived( Request request, Response response ) {
