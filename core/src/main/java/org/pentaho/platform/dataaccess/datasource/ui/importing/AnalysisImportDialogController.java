@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
@@ -498,7 +498,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     // If user selects manual data source, pass in whatever parameters they specify even if it is empty.
     String parameters = importDialogModel.getParameters();
     if ( availableRadio.isSelected() ) {
-      parameters = "Datasource=" + connectionList.getValue();
+      parameters = datasourceParam( connectionList.getValue() );
     }
     // Parameters would contain either the data source from connectionList drop-down
     // or the parameters manually entered (even if list is empty)
@@ -506,6 +506,10 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     parameters += ";overwrite=" + String.valueOf( isEditMode ? isEditMode : overwrite );
     Hidden queryParameters = new Hidden( "parameters", parameters );
     mainFormPanel.add( queryParameters );
+  }
+
+  protected String datasourceParam( String datasourceName ) {
+    return "Datasource=\"" + datasourceName + "\"";
   }
 
   // TODO - this method should be removed after it is removed by MetadataImportDialogController
