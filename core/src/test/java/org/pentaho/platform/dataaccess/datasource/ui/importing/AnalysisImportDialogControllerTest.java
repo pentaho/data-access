@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 
@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.apache.commons.lang.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,6 +30,12 @@ import static org.junit.Assert.assertEquals;
  * @author Vadim_Polynkov.
  */
 public class AnalysisImportDialogControllerTest {
+
+  @Test
+  public void testDatasourceParamGetsQuoted() throws Exception {
+    AnalysisImportDialogController controller = new AnalysisImportDialogController();
+    assertEquals( "Datasource=\"semi;name\"", controller.datasourceParam( "semi;name" ) );
+  }
 
   @Test
   public void testHandleParam() throws Exception {
