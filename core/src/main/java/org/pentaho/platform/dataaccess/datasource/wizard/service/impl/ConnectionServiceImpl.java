@@ -41,6 +41,7 @@ import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceExcep
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IConnectionService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.ConnectionServiceHelper;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -68,6 +69,8 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
 
   private static final Log logger = LogFactory.getLog( ConnectionServiceImpl.class );
+
+  private UtilHtmlSanitizer sanitizer = new UtilHtmlSanitizer();
 
   public Log getLogger() {
     return logger;
@@ -112,10 +115,21 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   }
 
   public List<IDatabaseConnection> getConnections() throws ConnectionServiceException {
+    return getConnections( false );
+  }
+
+  public List<IDatabaseConnection> getConnections( boolean hidePassword ) throws ConnectionServiceException {
     ensureDataAccessPermission();
     List<IDatabaseConnection> connectionList = null;
     try {
       connectionList = datasourceMgmtSvc.getDatasources();
+      for ( IDatabaseConnection conn : connectionList ) {
+        sanitizer.unsanitizeConnectionParameters( conn );
+
+        if ( hidePassword ) {
+          conn.setPassword( null );
+        }
+      }
     } catch ( DatasourceMgmtServiceException dme ) {
       String message = Messages.getErrorString(
         "ConnectionServiceImpl.ERROR_0002_UNABLE_TO_GET_CONNECTION_LIST", //$NON-NLS-1$
@@ -130,11 +144,12 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   public IDatabaseConnection getConnectionByName( String name ) throws ConnectionServiceException {
     ensureDataAccessPermission();
     try {
-      IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceByName( name );
+      IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceByName( sanitizer.safeEscapeHtml( name ) );
       if ( connection == null ) {
         throw new ConnectionServiceException( Response.SC_NOT_FOUND, Messages.getErrorString(
           "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", name ) ); //$NON-NLS-1$
       } else {
+        sanitizer.unsanitizeConnectionParameters( connection );
         return connection;
       }
     } catch ( DatasourceMgmtServiceException dme ) {
@@ -234,6 +249,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
 
   public boolean deleteConnection( IDatabaseConnection connection ) throws ConnectionServiceException {
     ensureDataAccessPermission();
+    sanitizer.sanitizeConnectionParameters( connection );
     try {
       datasourceMgmtSvc.deleteDatasourceByName( connection.getName() );
       clearDatasource( connection.getName() );
@@ -252,6 +268,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
 
   public boolean deleteConnection( String name ) throws ConnectionServiceException {
     ensureDataAccessPermission();
+    name = sanitizer.safeEscapeHtml( name );
     try {
       datasourceMgmtSvc.deleteDatasourceByName( name );
       clearDatasource( name );
@@ -273,6 +290,8 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   public boolean testConnection( IDatabaseConnection connection ) throws ConnectionServiceException {
     ensureDataAccessPermission();
     if ( connection != null ) {
+      sanitizer.sanitizeConnectionParameters( connection );
+
       if ( connection.getPassword() == null ) { // Can have an empty password but not a null one
         connection.setPassword( "" ); //$NON-NLS-1$
       }
@@ -322,6 +341,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
 
   public boolean isConnectionExist( String connectionName ) throws ConnectionServiceException {
     ensureDataAccessPermission();
+    connectionName = sanitizer.safeEscapeHtml( connectionName );
     try {
       IDatabaseConnection connection = datasourceMgmtSvc.getDatasourceByName( connectionName );
       if ( connection == null ) {
