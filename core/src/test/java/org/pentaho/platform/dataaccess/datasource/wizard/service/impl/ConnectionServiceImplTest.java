@@ -25,7 +25,6 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.commons.connection.IPentahoConnection;
 import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.model.DatabaseAccessType;
-import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.platform.api.data.DBDatasourceServiceException;
@@ -45,7 +44,6 @@ import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -195,26 +193,6 @@ public class ConnectionServiceImplTest {
     List<IDatabaseConnection> connectionList = connectionServiceImpl.getConnections();
     verify( connectionServiceImpl ).getConnections();
     assertEquals( connectionList, mockConnectionList );
-  }
-
-  @Test
-  public void testGetConnectionsPasswords() throws Exception {
-    doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-    List<IDatabaseConnection> mockConnectionList = new ArrayList<>();
-    IDatabaseConnection mockConnection = new DatabaseConnection();
-    mockConnectionList.add( mockConnection );
-    mockConnection.setPassword( "testPassword" );
-    doReturn( mockConnectionList ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasources();
-    List<IDatabaseConnection> connectionList = connectionServiceImpl.getConnections();
-    verify( connectionServiceImpl ).getConnections();
-
-    // Default getConnections() method does not hide password
-    assertEquals( "testPassword", mockConnectionList.get( 0 ).getPassword() );
-
-    // Hide passwords
-    connectionList = connectionServiceImpl.getConnections( true );
-    verify( connectionServiceImpl ).getConnections();
-    assertEquals( null, mockConnectionList.get( 0 ).getPassword() );
   }
 
   @Test
@@ -402,10 +380,9 @@ public class ConnectionServiceImplTest {
     assertTrue( connectionServiceImpl.testConnection( connection ) );
     verify( sqlConnection ).close();
     if ( DatabaseAccessType.JNDI == accessType ) {
-      // Default is times(1), will get called 2x due to testConnection() change
-      verify( connection, atLeastOnce() ).getDatabaseName();
+      verify( connection ).getDatabaseName();
     } else {
-      verify( connection, atLeastOnce() ).getName();
+      verify( connection ).getName();
     }
   }
 
