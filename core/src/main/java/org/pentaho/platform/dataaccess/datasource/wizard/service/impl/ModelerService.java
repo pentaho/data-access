@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -237,7 +237,7 @@ public class ModelerService extends PentahoBase implements IModelerService {
                 }
 
                 session.setAttribute( "MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema );
-                String catConnectStr = "Provider=mondrian;DataSource=" + getMondrianDatasource( domain ); //$NON-NLS-1$
+                String catConnectStr = "Provider=mondrian;DataSource=\"" + getMondrianDatasource( domain ) + "\""; //$NON-NLS-1$
                 addCatalog( catName, catConnectStr, session );
               }
             }
