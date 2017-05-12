@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -79,7 +79,8 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
     // DatabaseConnection objects may be de-serialized from the client and missing extra parameters and attributes.
     // Resolve the connection by name through ConnectionService before use.
     // All public methods should use getDatabaseMeta to guarantee accurate connection info.
-    connection = connectionServiceImpl.getConnectionByName( connection.getName() );
+    // NOTE: We want to retrieve the connection again later, so we don't want an unsanitized name here
+    connection = connectionServiceImpl.getConnectionByName( connection.getName(), false );
     connection
       .setPassword( ConnectionServiceHelper.getConnectionPassword( connection.getName(), connection.getPassword() ) );
     DatabaseMeta dbmeta = DatabaseUtil.convertToDatabaseMeta( connection );
