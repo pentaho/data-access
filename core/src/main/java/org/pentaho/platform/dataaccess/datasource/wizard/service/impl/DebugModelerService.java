@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -120,8 +120,8 @@ public class DebugModelerService extends ModelerService {
       File file = new File( path + name + ".mondrian.xml" ); //$NON-NLS-1$
       // Need to find a better way to get the connection name instead of using the Id.      
       String catConnectStr =
-        "Provider=mondrian;DataSource=" + ( (SqlPhysicalModel) domain.getPhysicalModels().get( 0 ) )
-          .getId(); //$NON-NLS-1$
+        "Provider=mondrian;DataSource=\"" + ( (SqlPhysicalModel) domain.getPhysicalModels().get( 0 ) )
+          .getId() + "\""; //$NON-NLS-1$
       String catDef = "solution:" + solutionStorage + RepositoryFile.SEPARATOR //$NON-NLS-1$
         + "resources" + RepositoryFile.SEPARATOR + "metadata" + RepositoryFile.SEPARATOR + file
         .getName(); //$NON-NLS-1$//$NON-NLS-2$
