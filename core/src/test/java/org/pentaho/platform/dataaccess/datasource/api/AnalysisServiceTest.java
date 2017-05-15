@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -38,7 +39,6 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.IDataAcces
 import org.pentaho.platform.plugin.action.mondrian.catalog.IAclAwareMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
-import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCube;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianSchema;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
@@ -75,6 +75,8 @@ public class AnalysisServiceTest {
   private static IDataAccessPermissionHandler permissionHandler;
   private static final RepositoryFileAclDto acl = new RepositoryFileAclDto();
 
+  private AnalysisService analysisService;
+
   @BeforeClass
   public static void initPlatform() throws Exception {
     MicroPlatform platform = new MicroPlatform();
@@ -95,10 +97,14 @@ public class AnalysisServiceTest {
     acl.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
   }
 
+  @Before
+  public void setUp() {
+    analysisService = new AnalysisService();
+  }
+
   @After
   public void tearDown() throws Exception {
     Mockito.reset( metadataRepository, importer, policy, catalogService, permissionHandler );
-
   }
 
   private void policyAccess() {
@@ -149,6 +155,25 @@ public class AnalysisServiceTest {
     verify( catalogService, never() ).removeCatalog( eq( "sales" ), any( IPentahoSession.class ) );
   }
 
+  @Test
+  public void testPutMondrianSchemaNoPublishPermissions() throws Exception {
+    analysisService = new AnalysisService() {
+      @Override
+      protected void accessValidation() throws PentahoAccessControlException {
+        throw new PentahoAccessControlException();
+      }
+    };
+
+    try {
+      putMondrianSchemaWithSchemaFileName( "stubFileName" );
+      fail();
+    } catch ( PentahoAccessControlException e ) {
+      // expected
+    }
+    verify( importer, never() ).importFile( any() );
+    verify( catalogService, never() ).removeCatalog( anyString(), any( IPentahoSession.class ) );
+  }
+
   private BaseMatcher<IPlatformImportBundle> matchBundle( final boolean overwrite, final RepositoryFileAclDto acl ) {
     return new BaseMatcher<IPlatformImportBundle>() {
       @Override
@@ -167,7 +192,7 @@ public class AnalysisServiceTest {
   @Test
   public void testDoGetAnalysisFilesAsDownload() throws Exception {
     allAccess();
-    final Map<String, InputStream> sampleData = new AnalysisService().doGetAnalysisFilesAsDownload( "SampleData" );
+    final Map<String, InputStream> sampleData = analysisService.doGetAnalysisFilesAsDownload( "SampleData" );
     assertEquals( 1, sampleData.size() );
     final FileInputStream inputStream = new FileInputStream( "target/test-classes/solution1/etc/mondrian/SampleData/schema.xml" );
     assertEquals( IOUtils.toString( inputStream ), IOUtils.toString( sampleData.get( "SampleData.mondrian.xml" ) ) );
@@ -177,7 +202,7 @@ public class AnalysisServiceTest {
   public void testDoGetAnalysisFilesAsDownloadError() throws Exception {
     when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
     when( permissionHandler.hasDataAccessPermission( any( IPentahoSession.class ) ) ).thenReturn( false );
-    new AnalysisService().doGetAnalysisFilesAsDownload( "SampleData" );
+    analysisService.doGetAnalysisFilesAsDownload( "SampleData" );
   }
 
   @Test
@@ -200,7 +225,7 @@ public class AnalysisServiceTest {
       when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
     }
     try {
-      new AnalysisService().removeAnalysis( "analysisId" );
+      analysisService.removeAnalysis( "analysisId" );
       if ( hasRead && hasCreate && hasAdmin ) {
         verify( catalogService ).removeCatalog( eq( "analysisId" ), any( IPentahoSession.class ) );
       } else {
@@ -219,14 +244,14 @@ public class AnalysisServiceTest {
   @Test
   public void testGetAnalysisDatasourceIds() throws Exception {
     final MondrianCatalog foodmartCatalog = new MondrianCatalog( "foodmart", "info", "file:///place",
-        new MondrianSchema( "foodmart", Collections.<MondrianCube>emptyList() ) );
+        new MondrianSchema( "foodmart", Collections.emptyList() ) );
     final MondrianCatalog foodmartCatalog2 = new MondrianCatalog( "foodmart2", "info", "file:///place",
-        new MondrianSchema( "foodmart2", Collections.<MondrianCube>emptyList() ) );
+        new MondrianSchema( "foodmart2", Collections.emptyList() ) );
     final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2 );
     doReturn( catalogs ).when( catalogService ).listCatalogs( any( IPentahoSession.class ), eq( false ) );
     final HashSet<String> domainIds = Sets.newHashSet( "foodmart.xmi", "sample.xmi" );
     doReturn( domainIds ).when( metadataRepository ).getDomainIds();
-    final List<String> response = new AnalysisService().getAnalysisDatasourceIds();
+    final List<String> response = analysisService.getAnalysisDatasourceIds();
     assertEquals( Collections.singletonList( "foodmart2" ), response );
   }
 
@@ -238,7 +263,7 @@ public class AnalysisServiceTest {
     when( catalogService.getAclFor( catalogName ) ).thenReturn( expectedAcl );
     final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
     when( catalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn( mondrianCatalog );
-    final RepositoryFileAclDto actualAcl = new AnalysisService().getAnalysisDatasourceAcl( catalogName );
+    final RepositoryFileAclDto actualAcl = analysisService.getAnalysisDatasourceAcl( catalogName );
     assertEquals( expectedAcl, new RepositoryFileAclAdapter().unmarshal( actualAcl ) );
   }
 
@@ -249,7 +274,7 @@ public class AnalysisServiceTest {
     final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
     when( catalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn( mondrianCatalog );
     when( catalogService.getAclFor( catalogName ) ).thenReturn( null );
-    final RepositoryFileAclDto aclDto = new AnalysisService().getAnalysisDatasourceAcl( catalogName );
+    final RepositoryFileAclDto aclDto = analysisService.getAnalysisDatasourceAcl( catalogName );
     assertNull( aclDto );
   }
 
@@ -262,7 +287,7 @@ public class AnalysisServiceTest {
     aclDto.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
     final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
     when( catalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn( mondrianCatalog );
-    new AnalysisService().setAnalysisDatasourceAcl( catalogName, aclDto );
+    analysisService.setAnalysisDatasourceAcl( catalogName, aclDto );
     verify( catalogService ).setAclFor( eq( catalogName ), eq( new RepositoryFileAclAdapter().unmarshal( aclDto ) ) );
   }
 
@@ -272,7 +297,7 @@ public class AnalysisServiceTest {
     String catalogName = "catalogName";
     final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
     when( catalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn( mondrianCatalog );
-    new AnalysisService().setAnalysisDatasourceAcl( catalogName, null );
+    analysisService.setAnalysisDatasourceAcl( catalogName, null );
     verify( catalogService ).setAclFor( eq( catalogName ), (RepositoryFileAcl) isNull() );
   }
 
@@ -303,7 +328,6 @@ public class AnalysisServiceTest {
       when( schemaFileInfoMock.getFileName() ).thenReturn( fileName );
     }
     InputStream schema = getSchemaAsStream();
-    new AnalysisService()
-        .putMondrianSchema( schema, schemaFileInfoMock, "sample", null, "sample", true, false, parameters, acl );
+    analysisService.putMondrianSchema( schema, schemaFileInfoMock, "sample", null, "sample", true, false, parameters, acl );
   }
 }
