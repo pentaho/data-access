@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
@@ -236,5 +237,21 @@ public class JdbcDatasourceResourceTest {
     assertEquals( response, mockResponse );
 
     verify( jdbcDatasourceResource, times( 2 ) ).addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
+  }
+
+  @Test
+  public void testAddOrUpdateNoPublishPermission() throws Exception {
+    doThrow( new PentahoAccessControlException() ).when( jdbcDatasourceResource ).validateAccess();
+
+    DatabaseConnection mockDatabaseConnection = mock( DatabaseConnection.class );
+
+    try {
+      jdbcDatasourceResource.addOrUpdate( mockDatabaseConnection.getName(), mockDatabaseConnection );
+      fail();
+    } catch ( WebApplicationException e ) {
+      assertEquals( 401, e.getResponse().getStatus() );
+    }
+    verify( jdbcDatasourceResource.service, never() ).addConnection( any() );
+    verify( jdbcDatasourceResource.service, never() ).updateConnection( any() );
   }
 }
