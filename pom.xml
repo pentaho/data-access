@@ -33,7 +33,6 @@
     <slf4j-api.version>1.7.3</slf4j-api.version>
     <commons-codec.version>1.9</commons-codec.version>
     <aspectjrt.version>1.6.6</aspectjrt.version>
-    <webservices-api.version>2.1</webservices-api.version>
     <pentaho-reporting-engine-classic-core.version>8.0-SNAPSHOT</pentaho-reporting-engine-classic-core.version>
     <mockito-all.version>1.9.5</mockito-all.version>
     <dependency.org.springframework.spring-test.version>4.3.2.RELEASE</dependency.org.springframework.spring-test.version>
@@ -82,7 +81,7 @@
     <dependency.com.google.gwt.gwt-dev.version>2.5.1</dependency.com.google.gwt.gwt-dev.version>
     <olap4j.version>1.2.0</olap4j.version>
     <dependency.org.springframework.spring-core.version>4.3.2.RELEASE</dependency.org.springframework.spring-core.version>
-    <webservices-rt.version>2.1</webservices-rt.version>
+    <webservices.version>2.3.1</webservices.version>
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <jta.version>1.1</jta.version>
     <dependency.org.springframework.spring-context-support.version>4.3.2.RELEASE</dependency.org.springframework.spring-context-support.version>
@@ -1684,13 +1683,13 @@
       <dependency>
         <groupId>org.glassfish.metro</groupId>
         <artifactId>webservices-api</artifactId>
-        <version>${webservices-api.version}</version>
+        <version>${webservices.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.glassfish.metro</groupId>
         <artifactId>webservices-rt</artifactId>
-        <version>${webservices-rt.version}</version>
+        <version>${webservices.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
