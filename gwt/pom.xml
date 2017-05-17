@@ -60,6 +60,12 @@
       <version>${project.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -115,6 +121,12 @@
       <version>${pentaho-modeler.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -136,6 +148,12 @@
       <version>${pentaho-modeler.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
