@@ -1670,12 +1670,6 @@
       </dependency>
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>${jaxb-impl.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-xjc</artifactId>
         <version>${jaxb-xjc.version}</version>
         <scope>test</scope>
