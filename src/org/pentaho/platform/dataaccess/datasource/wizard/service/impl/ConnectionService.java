@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -46,7 +46,6 @@ import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
@@ -65,12 +64,10 @@ public class ConnectionService {
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
   private static final Log logger = LogFactory.getLog( ConnectionService.class );
-  private UtilHtmlSanitizer sanitizer;
 
   public ConnectionService() {
     connectionService = new ConnectionServiceImpl();
     this.dialectService = new DatabaseDialectService( true );
-    sanitizer = new UtilHtmlSanitizer();
   }
 
   /**
@@ -261,7 +258,6 @@ public class ConnectionService {
   @Consumes( { MediaType.APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
-    sanitizer.sanitizeConnectionParameters( connection );
     try {
       applySavedPassword( connection );
       boolean success = connectionService.updateConnection( connection );
@@ -366,7 +362,6 @@ public class ConnectionService {
   @Consumes( { MediaType.APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
-    sanitizer.sanitizeConnectionParameters( connection );
     try {
       boolean success = connectionService.addConnection( connection );
       if ( success ) {
