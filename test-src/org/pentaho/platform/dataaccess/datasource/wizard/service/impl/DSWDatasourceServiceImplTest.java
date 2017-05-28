@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -32,14 +32,15 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.junit.Test;
+import org.pentaho.platform.dataaccess.datasource.DatasourceType;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.SqlQueriesNotSupportedException;
+import org.pentaho.platform.engine.core.TestObjectFactory;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 import java.util.ArrayList;
-
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-
 
 public class DSWDatasourceServiceImplTest {
   private static final String DOMAIN_ID = "DOMAIN_ID";
@@ -87,7 +88,7 @@ public class DSWDatasourceServiceImplTest {
 
     mockDomainRepository( domainOnlyReportingModel, DOMAIN_ID );
 
-    ModelerWorkspace workspace = mock( ModelerWorkspace.class );
+    ModelerWorkspace workspace = org.mockito.Mockito.mock( ModelerWorkspace.class );
     Mockito.when( workspace.getLogicalModel( ModelerPerspective.REPORTING ) ).thenReturn( reportingModel );
 
     DSWDatasourceServiceImpl service = mockService( workspace );
@@ -130,8 +131,8 @@ public class DSWDatasourceServiceImplTest {
     connDataService.setDatabaseType( new DatabaseType( dbTypeIdDataService, STRING_DEFAULT, new ArrayList
       <DatabaseAccessType>(), 0, STRING_DEFAULT ) );
 
-    ConnectionServiceImpl connService = mock( ConnectionServiceImpl.class );
-    doReturn( connDataService ).when( connService ).getConnectionByName( eq( connNameDataService ) );
+    ConnectionServiceImpl connService = org.mockito.Mockito.mock( ConnectionServiceImpl.class );
+    org.mockito.Mockito.doReturn( connDataService ).when( connService ).getConnectionByName( org.mockito.Matchers.eq( connNameDataService ) );
     DSWDatasourceServiceImpl service = new DSWDatasourceServiceImpl( connService );
 
     service.checkSqlQueriesSupported( connNameDataService );
@@ -146,8 +147,8 @@ public class DSWDatasourceServiceImplTest {
     connDataService.setDatabaseType( new DatabaseType( dbTypeIdPostgres, STRING_DEFAULT, new ArrayList
       <DatabaseAccessType>(), 0, STRING_DEFAULT ) );
 
-    ConnectionServiceImpl connService = mock( ConnectionServiceImpl.class );
-    doReturn( connDataService ).when( connService ).getConnectionByName( eq( connNamePostgres ) );
+    ConnectionServiceImpl connService = org.mockito.Mockito.mock( ConnectionServiceImpl.class );
+    org.mockito.Mockito.doReturn( connDataService ).when( connService ).getConnectionByName( org.mockito.Matchers.eq( connNamePostgres ) );
     DSWDatasourceServiceImpl service = new DSWDatasourceServiceImpl( connService );
 
     service.checkSqlQueriesSupported( connNamePostgres );
@@ -158,14 +159,14 @@ public class DSWDatasourceServiceImplTest {
   }
 
   private LogicalModel mockLogicalModel( final String id ) {
-    LogicalModel logicalModel = mock( LogicalModel.class );
+    LogicalModel logicalModel = org.mockito.Mockito.mock( LogicalModel.class );
     Mockito.when( logicalModel.getId() ).thenReturn( id );
     Mockito.when( logicalModel.getProperty( Mockito.anyString() ) ).thenReturn( null );
     return logicalModel;
   }
 
   private ModelerWorkspace mockModelerWorkspace() {
-    ModelerWorkspace workspace = mock( ModelerWorkspace.class );
+    ModelerWorkspace workspace = org.mockito.Mockito.mock( ModelerWorkspace.class );
     Mockito.when( workspace.getLogicalModel( ModelerPerspective.ANALYSIS ) ).thenReturn( analysisModel );
     Mockito.when( workspace.getLogicalModel( ModelerPerspective.REPORTING ) ).thenReturn( reportingModel );
 
@@ -173,18 +174,18 @@ public class DSWDatasourceServiceImplTest {
   }
 
   private IMetadataDomainRepository mockDomainRepository( Domain domainToReturn, String domainId ) {
-    IMetadataDomainRepository domainRepository = mock( IMetadataDomainRepository.class );
-    doReturn( domainToReturn ).when( domainRepository ).getDomain( domainId );
+    IMetadataDomainRepository domainRepository = org.mockito.Mockito.mock( IMetadataDomainRepository.class );
+    org.mockito.Mockito.doReturn( domainToReturn ).when( domainRepository ).getDomain( domainId );
 
     return domainRepository;
   }
 
   private DSWDatasourceServiceImpl mockService( ModelerWorkspace workspace ) throws Exception {
-    DSWDatasourceServiceImpl service = mock( DSWDatasourceServiceImpl.class );
+    DSWDatasourceServiceImpl service = org.mockito.Mockito.mock( DSWDatasourceServiceImpl.class );
 
-    doReturn( true ).when( service ).hasDataAccessPermission();
-    doReturn( domainRepository ).when( service ).getMetadataDomainRepository();
-    doReturn( workspace ).when( service ).createModelerWorkspace();
+    org.mockito.Mockito.doReturn( true ).when( service ).hasDataAccessPermission();
+    org.mockito.Mockito.doReturn( domainRepository ).when( service ).getMetadataDomainRepository();
+    org.mockito.Mockito.doReturn( workspace ).when( service ).createModelerWorkspace();
 
     Mockito.doCallRealMethod().when( service ).deleteLogicalModel( DOMAIN_ID, MODEL_NAME );
 
@@ -218,4 +219,52 @@ public class DSWDatasourceServiceImplTest {
       }
     } ).when( domainRepository ).removeModel( Mockito.anyString(), Mockito.anyString() );
   }
+
+  @Test
+  public void testDeSerializeModelStateValidString() throws Exception {
+    PentahoSystem.registerObjectFactory( new TestObjectFactory() );
+
+    DatasourceModel datasourceModel = new DatasourceModel();
+    datasourceModel.setDatasourceName( "testDatasource" );
+    datasourceModel.setDatasourceType( DatasourceType.CSV );
+
+    DatasourceDTO dto = DatasourceDTO.generateDTO( datasourceModel );
+    Assert.assertNotNull( dto );
+
+    org.mockito.Mockito.doCallRealMethod().when( service ).serializeModelState( org.mockito.Matchers.any( DatasourceDTO.class ) );
+    String serializedDTO = service.serializeModelState( dto );
+
+    org.mockito.Mockito.doCallRealMethod().when( service ).deSerializeModelState( org.mockito.Matchers.anyString() );
+    service.deSerializeModelState( serializedDTO );
+  }
+
+  @Test( expected = DatasourceServiceException.class )
+  public void testDeSerializeModelStateInvalidString() throws Exception {
+    String notSafeString = "<com.malicious.DatasourceDTO>\n"
+      + "  <datasourceName>testDatasource</datasourceName>\n"
+      + "  <datasourceType>CSV</datasourceType>\n"
+      + "  <csvModelInfo>\n"
+      + "    <fileInfo>\n"
+      + "      <delimiter>,</delimiter>\n"
+      + "      <enclosure>&quot;</enclosure>\n"
+      + "      <headerRows>1</headerRows>\n"
+      + "      <currencySymbol></currencySymbol>\n"
+      + "      <decimalSymbol>.</decimalSymbol>\n"
+      + "      <groupSymbol>,</groupSymbol>\n"
+      + "      <ifNull>---</ifNull>\n"
+      + "      <nullStr></nullStr>\n"
+      + "    </fileInfo>\n"
+      + "    <stageTableName>testdatasource</stageTableName>\n"
+      + "    <validated>false</validated>\n"
+      + "    <csvInputErrors/>\n"
+      + "    <tableOutputErrors/>\n"
+      + "  </csvModelInfo>\n"
+      + "  <connectionName>SampleData</connectionName>\n"
+      + "  <version>2.0</version>\n"
+      + "</com.malicious.DatasourceDTO>";
+
+    org.mockito.Mockito.doCallRealMethod().when( service ).deSerializeModelState( org.mockito.Matchers.anyString() );
+    service.deSerializeModelState( notSafeString );
+  }
+
 }
