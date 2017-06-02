@@ -157,6 +157,7 @@
     <gwt-maven-plugin.version>2.5.1</gwt-maven-plugin.version>
     <GWT-FX.version>0.5.0</GWT-FX.version>
     <gwtx.version>1.5.2</gwtx.version>
+    <sjsxp.version>1.0</sjsxp.version>
   </properties>
 
   <dependencyManagement>
@@ -1701,6 +1702,11 @@
         <artifactId>webservices-rt</artifactId>
         <version>${webservices.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml.stream</groupId>
+        <artifactId>sjsxp</artifactId>
+        <version>${sjsxp.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
