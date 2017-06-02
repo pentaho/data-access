@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -351,11 +351,16 @@ public class AnalysisService extends DatasourceService {
     return propertyList.get( key );
   }
 
+  // for unit test
+  XMLInputFactory getXMLInputFactory() {
+    return XMLInputFactory.newInstance();
+  }
+
   String getSchemaName( String encoding, InputStream inputStream ) throws XMLStreamException, IOException {
     String domainId = null;
     XMLStreamReader reader = null;
     try {
-      XMLInputFactory factory = XMLInputFactory.newInstance();
+      XMLInputFactory factory = getXMLInputFactory();
       factory.setProperty( XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false );
       factory.setProperty( XMLInputFactory.IS_COALESCING, Boolean.TRUE );
       if ( StringUtils.isEmpty( encoding ) ) {
@@ -368,6 +373,9 @@ public class AnalysisService extends DatasourceService {
         if ( reader.getEventType() == XMLStreamReader.START_ELEMENT
             && reader.getLocalName().equalsIgnoreCase( "Schema" ) ) {
           domainId = reader.getAttributeValue( "", "name" );
+          if ( domainId == null ) {
+            domainId = reader.getAttributeValue( null, "name" );
+          }
           return domainId;
         }
       }
