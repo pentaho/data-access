@@ -12,11 +12,12 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import com.ctc.wstx.stax.WstxInputFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 public class AnalysisServiceXxeAttackTest {
@@ -38,6 +40,7 @@ public class AnalysisServiceXxeAttackTest {
   public void setUp() throws Exception {
     analysisService = mock( AnalysisService.class );
     doCallRealMethod().when( analysisService ).getSchemaName( anyString(), any( InputStream.class ) );
+    doReturn( new WstxInputFactory() ).when( analysisService ).getXMLInputFactory();
   }
 
   @Test( timeout = 1500/*, expected = XMLStreamException.class*/ )
