@@ -51,7 +51,6 @@ import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAc
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -317,15 +316,6 @@ public class AnalysisServiceTest {
     putMondrianSchemaWithSchemaFileName( "" );
   }
 
-  @Test
-  public void testGetSchemaName() throws Exception {
-    AnalysisService analysis = Mockito.spy( new AnalysisService() );
-    String xml = "<Schema name=\"Test4\"></Schema>";
-    InputStream schema = new ByteArrayInputStream( xml.getBytes() );
-    doReturn( new com.sun.xml.stream.ZephyrParserFactory() ).when( analysis ).getXMLInputFactory();
-    String domainId = analysis.getSchemaName( null, schema );
-    assertEquals( "Test4", domainId);
-  }
   private void putMondrianSchemaWithSchemaFileName( String fileName ) throws Exception {
     String params = "overwrite=true;retainInlineAnnotations=true";
     putMondrianSchemaWithSchemaFileName( fileName, params );
