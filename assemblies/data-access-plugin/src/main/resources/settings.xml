@@ -75,7 +75,7 @@
     </longitude>
   </geo>
 
-    <!-- Settings for the PUC "new" toolbar dropdown: priority, label, tabName, action-url -->  
-    <new-toolbar-button>9,newDataAccess,dataaccess,javascript:window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback)</new-toolbar-button>
+    <!-- Settings for the PUC "new" toolbar dropdown: priority, label, tabName, action-url, check if enabled url -->
+    <new-toolbar-button>9,newDataAccess,dataaccess,javascript:window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback),plugin/data-access/api/permissions/hasDataAccess</new-toolbar-button>
 
 </settings>
