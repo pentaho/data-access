@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2011-2015 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2011-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
@@ -30,6 +30,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -53,9 +54,12 @@ public class CsvUtilsTest {
   private ColumnInfo columnInfo;
 
   private File tempFile;
+  private Locale defaultLocale;
 
   @Before
   public void setUp() throws Exception {
+    defaultLocale = Locale.getDefault();
+    Locale.setDefault( new Locale( "en", "US" ) );
     utils = new CsvUtils();
     columnInfo = new ColumnInfo();
 
@@ -68,6 +72,7 @@ public class CsvUtilsTest {
     if ( tempFile != null ) {
       tempFile.delete();
     }
+    Locale.setDefault( defaultLocale );
   }
 
 
@@ -236,6 +241,7 @@ public class CsvUtilsTest {
   public void testDateFormat7() {
     testAssumeColumnDetails_Dates( asList( "2015/11/10" ), "yyyy/MM/dd" );
   }
+
   //minutes
   @Test
   public void testDateFormat1m() {
