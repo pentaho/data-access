@@ -35,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -300,6 +301,24 @@ import com.sun.jersey.multipart.FormDataBodyPart;
         return new RepositoryFileAclAdapter().unmarshal( acl ).equals( bundle.getAcl() );
       }
     } ) );
+  }
+
+  @Test
+  public void testImportMetadataDatasourceNoPublishPermission() throws Exception {
+    String domainId = "home\\admin\tresource/";
+    InputStream metadataFile = mock( InputStream.class );
+    FormDataContentDisposition metadataFileInfo = mock( FormDataContentDisposition.class );
+
+    doThrow( new PentahoAccessControlException() ).when( metadataService ).accessValidation();
+
+    try {
+      metadataService.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true,
+        Collections.emptyList(), Collections.emptyList(), null );
+      fail();
+    } catch ( PentahoAccessControlException e ) {
+      //expected
+    }
+    verify( metadataService, never() ).getImporter();
   }
 
   @Test
