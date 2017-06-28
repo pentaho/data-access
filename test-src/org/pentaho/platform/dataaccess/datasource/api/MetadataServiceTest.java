@@ -205,6 +205,12 @@ public class MetadataServiceTest {
       localeFiles, localeFilesInfo, null );
   }
 
+  @Test( expected = PlatformImportException.class )
+  public void testImportMetadataDatasourceDomainEmpty() throws Exception {
+    String domainId = "";
+    metadataService.importMetadataDatasource( domainId, null, null, false, null, null, null );
+  }
+
   @Test
   public void testImportMetadataDatasourceError() throws Exception {
     String domainId = "home\\admin\tresource/";
