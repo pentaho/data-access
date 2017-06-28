@@ -27,6 +27,7 @@ import java.util.Map;
 
 import com.google.gwt.thirdparty.guava.common.annotations.VisibleForTesting;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -92,7 +93,9 @@ public class MetadataService extends DatasourceService {
                                         List<FormDataContentDisposition> localeFilesInfo, RepositoryFileAclDto acl )
     throws PentahoAccessControlException, PlatformImportException,
     Exception {
-
+    if ( StringUtils.isEmpty( domainId ) ) {
+      throw new PlatformImportException( Messages.getString( "MetadataDatasourceService.ERROR_005_DOMAIN_NAME_EMPTY" ) );
+    }
     accessValidation();
 
     FileResource fr = createNewFileResource();
