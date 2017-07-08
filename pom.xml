@@ -40,6 +40,7 @@
     <dependency.com.google.gwt.gwt-codeserver.version>2.5.1</dependency.com.google.gwt.gwt-codeserver.version>
     <commons-fileupload.version>1.3.2</commons-fileupload.version>
     <dependency.com.allen_sauer.gwt-dnd.version>3.1.2</dependency.com.allen_sauer.gwt-dnd.version>
+    <commons-httpclient.version>3.0.1</commons-httpclient.version>
     <fontbox.version>0.1.0</fontbox.version>
     <xpp3_min.version>1.1.4c</xpp3_min.version>
     <xmlpull.version>1.1.3.1</xmlpull.version>
@@ -324,6 +325,17 @@
         <artifactId>spring-jdbc</artifactId>
         <version>${dependency.org.springframework.spring-core.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>${commons-httpclient.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
