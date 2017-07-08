@@ -123,6 +123,11 @@
       <artifactId>commons-fileupload</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.safehaus.jug</groupId>
       <artifactId>jug-lgpl</artifactId>
     </dependency>
