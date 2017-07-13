@@ -380,3 +380,7 @@ aggregation-dialog-checkbox-label {
 #options-parameter-tree .gwt-ScrollTable .dataWrapper {
   height: 100% !important;
 }
+
+#options-parameter-tree > table > tbody > tr > td > div > div {
+  height: 225px; /*BISERVER-10582*/
+}
