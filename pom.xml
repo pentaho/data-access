@@ -91,7 +91,7 @@
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
     <jaxws-spring.version>1.8</jaxws-spring.version>
     <ehcache-core.version>2.5.1</ehcache-core.version>
-    <jackrabbit-core.version>2.10.0</jackrabbit-core.version>
+    <jackrabbit-core.version>2.14.2</jackrabbit-core.version>
     <pentaho-xul.version>8.0-SNAPSHOT</pentaho-xul.version>
     <lucene-core.version>3.6.0</lucene-core.version>
     <dependency.org.springframework.spring-webmvc.version>4.3.2.RELEASE</dependency.org.springframework.spring-webmvc.version>
