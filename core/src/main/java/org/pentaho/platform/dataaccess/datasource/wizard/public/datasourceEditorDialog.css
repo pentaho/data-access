@@ -380,3 +380,13 @@ aggregation-dialog-checkbox-label {
 #options-parameter-tree .gwt-ScrollTable .dataWrapper {
   height: 100% !important;
 }
+
+@-moz-document url-prefix() {
+  #puc_options-parameter-tree .gwt-ScrollTable {
+    height: 330px !important;
+    overflow: auto !important;
+  }
+  #puc_options-parameter-tree .gwt-ScrollTable .dataWrapper {
+    height: 100% !important;
+  }
+}
