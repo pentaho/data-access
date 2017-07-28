@@ -1691,6 +1691,7 @@
         <groupId>com.sun.xml.stream</groupId>
         <artifactId>sjsxp</artifactId>
         <version>${sjsxp.version}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
