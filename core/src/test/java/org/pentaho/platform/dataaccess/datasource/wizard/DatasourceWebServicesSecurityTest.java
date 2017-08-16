@@ -13,7 +13,7 @@
 * See the GNU General Public License for more details.
 *
 *
-* Copyright 2006 - 2013 Pentaho Corporation.  All rights reserved.
+* Copyright 2006 - 2017 Pentaho Corporation.  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
@@ -53,7 +53,7 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogServi
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
 import org.pentaho.platform.plugin.services.cache.CacheManager;
 import org.pentaho.platform.repository2.unified.DefaultUnifiedRepository;
-import org.pentaho.platform.util.Base64PasswordService;
+import org.pentaho.platform.util.KettlePasswordService;
 import org.pentaho.test.platform.MethodTrackingData;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.pentaho.test.platform.engine.security.MockSecurityHelper;
@@ -105,7 +105,7 @@ public class DatasourceWebServicesSecurityTest {
 		repo = context.mock(IUnifiedRepository.class);
 	  
 		booter = new MicroPlatform("target/test-classes/solution1");
-		booter.define(IPasswordService.class, Base64PasswordService.class, Scope.GLOBAL);
+		booter.define(IPasswordService.class, KettlePasswordService.class, Scope.GLOBAL);
 		booter.define(IDatabaseConnection.class, DatabaseConnection.class, Scope.GLOBAL);
 		booter.define(IDatabaseDialectService.class, DatabaseDialectService.class, Scope.GLOBAL);
 		booter.define(IMondrianCatalogService.class, MondrianCatalogHelper.class, Scope.GLOBAL);
