@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
@@ -85,9 +85,10 @@ public class FileImportController extends AbstractXulEventHandler {
 
   @Bindable
   public void submitCsv() {
-    String fileName = datasourceModel.getModelInfo().getFileInfo().getTmpFilename();
-    if ( fileName != null && fileName.endsWith( ".tmp" ) ) {  //$NON-NLS-1$
-      fileName = fileName.substring( 0, fileName.lastIndexOf( ".tmp" ) ); //$NON-NLS-1$
+    String fileName = fileUpload.getSeletedFile();
+
+    if ( fileName != null ) {
+      fileName = extractFilename( fileName );
     }
 
     fileUpload.addParameter( "file_name", fileName == null ? "" : fileName ); //$NON-NLS-1$ //$NON-NLS-2$
