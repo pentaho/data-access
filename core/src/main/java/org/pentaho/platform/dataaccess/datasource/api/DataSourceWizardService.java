@@ -232,9 +232,9 @@ public class DataSourceWizardService extends DatasourceService {
       }
     }
     // build bundles
+    IPlatformImportBundle mondrianBundle = createMondrianDswBundle( domain, acl );
     InputStream metadataIn = toInputStreamWrapper( domain, xmiParser );
     IPlatformImportBundle metadataBundle = createMetadataDswBundle( domain, metadataIn, overwrite, acl );
-    IPlatformImportBundle mondrianBundle = createMondrianDswBundle( domain, acl );
 
     //add localization bundles
     if ( localizeFiles != null ) {
@@ -409,6 +409,7 @@ public class DataSourceWizardService extends DatasourceService {
     olapModel.setProperty( MONDRIAN_CATALOG_REF, analysisDomainId );
     // generate schema
     MondrianModelExporter exporter = new MondrianModelExporter( olapModel, locale );
+    exporter.updateModelToNewDomainName( analysisDomainId );
     String mondrianSchema = null;
     try {
       mondrianSchema = exporter.createMondrianModelXML();
