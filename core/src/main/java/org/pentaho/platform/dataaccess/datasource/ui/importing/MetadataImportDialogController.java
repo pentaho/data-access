@@ -97,6 +97,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private boolean overwrite;
   private boolean allowToHide = true;
   private static FormPanel.SubmitCompleteHandler submitHandler = null;
+  private ImportCompleteCallback importCompleteCallback;
 
   // GWT controls
   private FormPanel formPanel;
@@ -244,6 +245,14 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     };
   }
 
+  public void setImportCompleteCallback( ImportCompleteCallback callback ) {
+    this.importCompleteCallback = callback;
+  }
+
+  public interface ImportCompleteCallback {
+    public void onImportSuccess();
+  }
+
   private class XmiImporterRequest implements RequestCallback {
 
     private JSONObject jsonFileList = null;
@@ -371,6 +380,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     domainIdText.setValue( "" );
     overwrite = false;
     formPanel = null;
+    importCompleteCallback = null;
 
     removeHiddenPanels();
   }
@@ -388,6 +398,9 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private void onImportSuccess() {
     showMessagebox( resBundle.getString( "importDialog.IMPORT_METADATA" ), resBundle.getString( "importDialog.SUCCESS_METADATA_IMPORT" ) );
     super.hideDialog();
+    if ( importCompleteCallback != null ) {
+      importCompleteCallback.onImportSuccess();
+    }
   }
 
   private void onImportError( String message ) {
