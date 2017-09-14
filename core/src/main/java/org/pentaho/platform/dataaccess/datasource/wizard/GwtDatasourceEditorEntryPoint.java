@@ -688,6 +688,10 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
               public void onImportSuccess() {
                 listener.onDialogAccept( null );
               }
+
+              @Override public void onImportCancel() {
+                listener.onDialogCancel();
+              }
             } );
             metaDataFormPanel.submit();
           }

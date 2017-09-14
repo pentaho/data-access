@@ -251,6 +251,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
   public interface ImportCompleteCallback {
     public void onImportSuccess();
+    public void onImportCancel();
   }
 
   private class XmiImporterRequest implements RequestCallback {
@@ -395,12 +396,15 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     acceptButton.setDisabled( !isValid() );
   }
 
+  private void onImportCancel() {
+    if ( importCompleteCallback != null ) {
+      importCompleteCallback.onImportCancel();
+    }
+  }
+
   private void onImportSuccess() {
     showMessagebox( resBundle.getString( "importDialog.IMPORT_METADATA" ), resBundle.getString( "importDialog.SUCCESS_METADATA_IMPORT" ) );
     super.hideDialog();
-    if ( importCompleteCallback != null ) {
-      importCompleteCallback.onImportSuccess();
-    }
   }
 
   private void onImportError( String message ) {
@@ -504,7 +508,14 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
    * @param message message within dialog
    */
   private void showMessagebox( final String title, final String message ) {
-    XulMessageBox messagebox = new GwtMessageBox();
+    XulMessageBox messagebox = new GwtMessageBox() {
+      @Override public void hide() {
+        super.hide();
+        if ( importCompleteCallback != null ) {
+          importCompleteCallback.onImportSuccess();
+        }
+      }
+    };
 
     messagebox.setTitle( title );
     messagebox.setMessage( message );
@@ -563,6 +574,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     final RadioButton dswRadio = new RadioButton( "importMetadata" );
     RadioButton metadataRadio = new RadioButton( "importMetadata" );
     dswRadio.setEnabled( true );
+    dswRadio.setValue( true );
     hp.add( dswRadio );
     hp.add( new Label( radioDSWLabel ) );
     vp.add( hp );
@@ -597,6 +609,9 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
       @Override
       public void onClose( XulComponent component, Status status, String value ) {
         if ( status == Status.CANCEL ) {
+          onImportCancel();
+          allowToHide = true;
+          hideDialog();
           return;
         }
         if ( onResulthandler != null ) {
