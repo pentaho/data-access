@@ -17,13 +17,24 @@
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -56,20 +67,10 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MetadataImportDialogController extends AbstractXulDialogController<MetadataImportDialogModel>
   implements IImportPerspective, IOverwritableController {
@@ -105,6 +106,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private TextBox formDomainIdText;
 
   protected static final int OVERWRITE_EXISTING_SCHEMA = 8;
+  private List<DialogListener> dialogCopyListeners = new ArrayList<DialogListener>( );
 
   public void init() {
     try {
@@ -251,6 +253,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
   public interface ImportCompleteCallback {
     public void onImportSuccess();
+    public void onImportCancel();
   }
 
   private class XmiImporterRequest implements RequestCallback {
@@ -285,10 +288,10 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
         onImportSuccess();
       } else if ( response.getStatusCode() == HttpStatus.SC_CONFLICT ) {
         //exists
-        confirm( resBundle.getString( "importDialog.IMPORT_METADATA" ),
-            resBundle.getString( "Metadata.OVERWRITE_EXISTING_SCHEMA" ),
-            resBundle.getString( "importDialog.DIALOG_YES", "Yes" ),
-            resBundle.getString( "importDialog.DIALOG_NO", "No" ),
+        confirm( resBundle.getString( "Metadata.OVERWRITE_TITLE" ),
+          messages.getString( "Metadata.OVERWRITE_EXISTING_SCHEMA" ),
+          resBundle.getString( "importDialog.DIALOG_OK", "Ok" ),
+          resBundle.getString( "importDialog.DIALOG_CANCEL", "Cancel" ),
             new AsyncCallback<Boolean>() {
               @Override
               public void onSuccess( Boolean result ) {
@@ -395,12 +398,15 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     acceptButton.setDisabled( !isValid() );
   }
 
+  private void onImportCancel() {
+    if ( importCompleteCallback != null ) {
+      importCompleteCallback.onImportCancel();
+    }
+  }
+
   private void onImportSuccess() {
     showMessagebox( resBundle.getString( "importDialog.IMPORT_METADATA" ), resBundle.getString( "importDialog.SUCCESS_METADATA_IMPORT" ) );
     super.hideDialog();
-    if ( importCompleteCallback != null ) {
-      importCompleteCallback.onImportSuccess();
-    }
   }
 
   private void onImportError( String message ) {
@@ -415,6 +421,14 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     fileLabel.setValue( resBundle.getString( "importDialog.XMI_FILE", "XMI File" ) + ":" );
     super.showDialog();
     createWorkingForm();
+  }
+
+  public void reShowDialog() {
+    importDialog.setDisabled( false );
+    allowToHide = true;
+    for ( DialogListener l : dialogCopyListeners ) {
+      super.addDialogListener( l );
+    }
   }
 
   public void setBindingFactory( final BindingFactory bf ) {
@@ -504,7 +518,14 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
    * @param message message within dialog
    */
   private void showMessagebox( final String title, final String message ) {
-    XulMessageBox messagebox = new GwtMessageBox();
+    XulMessageBox messagebox = new GwtMessageBox() {
+      @Override public void hide() {
+        super.hide();
+        if ( importCompleteCallback != null ) {
+          importCompleteCallback.onImportSuccess();
+        }
+      }
+    };
 
     messagebox.setTitle( title );
     messagebox.setMessage( message );
@@ -563,6 +584,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     final RadioButton dswRadio = new RadioButton( "importMetadata" );
     RadioButton metadataRadio = new RadioButton( "importMetadata" );
     dswRadio.setEnabled( true );
+    dswRadio.setValue( true );
     hp.add( dswRadio );
     hp.add( new Label( radioDSWLabel ) );
     vp.add( hp );
@@ -597,6 +619,8 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
       @Override
       public void onClose( XulComponent component, Status status, String value ) {
         if ( status == Status.CANCEL ) {
+          onImportCancel();
+          reShowDialog();
           return;
         }
         if ( onResulthandler != null ) {
@@ -635,6 +659,11 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   public void setOverwrite( boolean overwrite ) {
     this.overwrite = overwrite;
 
+  }
+
+  @Override public void addDialogListener( DialogListener<MetadataImportDialogModel> listener ) {
+    super.addDialogListener( listener );
+    this.dialogCopyListeners.add( listener );
   }
 
   @Override
