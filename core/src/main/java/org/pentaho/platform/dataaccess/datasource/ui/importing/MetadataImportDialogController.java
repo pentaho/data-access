@@ -97,6 +97,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private boolean overwrite;
   private boolean allowToHide = true;
   private static FormPanel.SubmitCompleteHandler submitHandler = null;
+  private ImportCompleteCallback importCompleteCallback;
 
   // GWT controls
   private FormPanel formPanel;
@@ -244,6 +245,15 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     };
   }
 
+  public void setImportCompleteCallback( ImportCompleteCallback callback ) {
+    this.importCompleteCallback = callback;
+  }
+
+  public interface ImportCompleteCallback {
+    public void onImportSuccess();
+    public void onImportCancel();
+  }
+
   private class XmiImporterRequest implements RequestCallback {
 
     private JSONObject jsonFileList = null;
@@ -371,6 +381,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     domainIdText.setValue( "" );
     overwrite = false;
     formPanel = null;
+    importCompleteCallback = null;
 
     removeHiddenPanels();
   }
@@ -383,6 +394,12 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   public void genericUploadCallback( String uploadedFile ) {
     importDialogModel.setUploadedFile( uploadedFile );
     acceptButton.setDisabled( !isValid() );
+  }
+
+  private void onImportCancel() {
+    if ( importCompleteCallback != null ) {
+      importCompleteCallback.onImportCancel();
+    }
   }
 
   private void onImportSuccess() {
@@ -491,7 +508,14 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
    * @param message message within dialog
    */
   private void showMessagebox( final String title, final String message ) {
-    XulMessageBox messagebox = new GwtMessageBox();
+    XulMessageBox messagebox = new GwtMessageBox() {
+      @Override public void hide() {
+        super.hide();
+        if ( importCompleteCallback != null ) {
+          importCompleteCallback.onImportSuccess();
+        }
+      }
+    };
 
     messagebox.setTitle( title );
     messagebox.setMessage( message );
@@ -550,6 +574,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     final RadioButton dswRadio = new RadioButton( "importMetadata" );
     RadioButton metadataRadio = new RadioButton( "importMetadata" );
     dswRadio.setEnabled( true );
+    dswRadio.setValue( true );
     hp.add( dswRadio );
     hp.add( new Label( radioDSWLabel ) );
     vp.add( hp );
@@ -584,6 +609,9 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
       @Override
       public void onClose( XulComponent component, Status status, String value ) {
         if ( status == Status.CANCEL ) {
+          onImportCancel();
+          allowToHide = true;
+          hideDialog();
           return;
         }
         if ( onResulthandler != null ) {
