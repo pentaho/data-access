@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -20,9 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.Response.Status.CONFLICT;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static javax.ws.rs.core.Response.Status.*;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -32,7 +30,6 @@ import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -96,8 +93,8 @@ public class DataSourceWizardResource {
     @ResponseCode( code = 200, condition = "DSW datasource export succeeded." ),
     @ResponseCode( code = 401, condition = "User is not authorized to export DSW datasource." ),
     @ResponseCode( code = 500, condition = "Failure to export DSW datasource." )
-    } )
-  public Response downloadDsw( @PathParam( "dswId" ) String dswId ) {
+  } )
+  public Response downloadDsw( @PathParam("dswId") String dswId ) {
     try {
       Map<String, InputStream> fileData = service.doGetDSWFilesAsDownload( dswId );
       return createAttachment( fileData, dswId );
@@ -127,7 +124,7 @@ public class DataSourceWizardResource {
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "DSW datasource removed successfully." ),
     @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." )
-    } )
+  } )
   public Response remove( @PathParam( "dswId" ) String dswId ) {
     try {
       service.removeDSW( dswId );
@@ -232,7 +229,7 @@ public class DataSourceWizardResource {
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
       @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl) {
     try {
       final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection, acl );
       return buildOkResponse( dswId );
@@ -246,46 +243,7 @@ public class DataSourceWizardResource {
       return buildServerErrorResponse();
     }
   }
-
-  /**
-   * Imports metadata(xmi) file and its related localization bundle files
-   * from temporary directory
-   * Should be called after the /datasource/metadata/uploadxmi
-   * @param domainId
-   * @param jsonFileList
-   * @param overwrite
-   * @param checkConnection
-   * @param acl
-   * @return
-   */
-  @POST
-  @Path( "/import/uploaded" )
-  @Consumes( MediaType.APPLICATION_FORM_URLENCODED )
-  @Produces( MediaType.TEXT_PLAIN )
-  @StatusCodes( {
-      @ResponseCode( code = 200, condition = "File succesfully imported." ),
-      @ResponseCode( code = 401, condition = "User is not authorized" )
-    } )
-  public Response publishDswFromTemp( @FormParam( "domainId" ) String domainId,
-                                        @FormParam ( "jsonFileList" ) String fileList,
-                                        @FormParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
-                                        @FormParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
-                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
-    try {
-      String dswId = service.publishDswFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, checkConnection, acl );
-
-      return buildOkResponse( dswId );
-    } catch ( PentahoAccessControlException e ) {
-      return buildUnauthorizedResponse();
-    } catch ( IllegalArgumentException e ) {
-      return buildBadRequestResponse( e.getMessage() );
-    } catch ( DataSourceWizardService.DswPublishValidationException e ) {
-      return buildConfilictResponse( e.getMessage() );
-    } catch ( Exception e ) {
-      return buildServerErrorResponse();
-    }
-  }
-
+  
   /**
    * Returns a list of datasource IDs from datasource wizard
    *
@@ -323,17 +281,17 @@ public class DataSourceWizardResource {
       @ResponseCode( code = 200, condition = "DSW datasource export succeeded." ),
       @ResponseCode( code = 401, condition = "User is not authorized to export DSW datasource." ),
       @ResponseCode( code = 500, condition = "Failure to export DSW datasource." )
-    } )
+  } )
   public Response doGetDSWFilesAsDownload( @PathParam( "dswId" ) String dswId ) {
     return downloadDsw( dswId );
   }
 
   /**
    * Remove the metadata for a given metadata ID
-   *
+   * 
    * @param metadataId
    *          String ID of the metadata to remove
-   *
+   * 
    * @return Response ok if successful
    */
   @POST
@@ -342,7 +300,7 @@ public class DataSourceWizardResource {
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "DSW datasource removed successfully." ),
       @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." ),
-    } )
+  } )
   @Facet( name = "Unsupported" )
   public Response doRemoveMetadata( @PathParam( "dswId" ) String metadataId ) {
     return remove( metadataId );
@@ -399,8 +357,8 @@ public class DataSourceWizardResource {
       @ResponseCode( code = 409, condition = "DSW doesn't exist" ),
       @ResponseCode( code = 500, condition = "Failed to save acls due to another error." )
       } )
-  public Response doSetDSWAcl( @PathParam( "dswId" ) String dswId, RepositoryFileAclDto acl )
-    throws PentahoAccessControlException {
+      public Response doSetDSWAcl( @PathParam( "dswId" ) String dswId, RepositoryFileAclDto acl )
+      throws PentahoAccessControlException {
     try {
       service.setDSWAcl( dswId, acl );
       return buildOkResponse();
