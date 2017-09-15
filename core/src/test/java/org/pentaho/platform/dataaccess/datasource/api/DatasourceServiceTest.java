@@ -21,8 +21,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.stubbing.Answer;
-import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -34,11 +32,6 @@ import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -60,7 +53,7 @@ public class DatasourceServiceTest {
     when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
     when( pentahoObjectFactory.get( anyClass(), anyString(), any( IPentahoSession.class ) ) )
       .thenAnswer( (Answer<Object>) invocation -> {
-        if ( invocation.getArguments()[ 0 ].equals( IAuthorizationPolicy.class ) ) {
+        if ( invocation.getArguments()[0].equals( IAuthorizationPolicy.class ) ) {
           return authorizationPolicy;
         }
         return null;
@@ -126,31 +119,6 @@ public class DatasourceServiceTest {
     } catch ( PentahoAccessControlException e ) {
       // then exception should be thrown
     }
-  }
-
-  @Test
-  public void isMetadataDomainTest() throws ObjectFactoryException {
-    // given
-    Domain domain = mock( Domain.class );
-    List<LogicalModel> logicalModelList = new ArrayList<>(  );
-    LogicalModel model = new LogicalModel();
-    LogicalModel model2 = new LogicalModel();
-    // when
-    assertFalse( DatasourceService.isMetadataDatasource( (Domain) null ) );
-    assertTrue( DatasourceService.isMetadataDatasource( domain ) );
-
-    logicalModelList.add( model );
-    when(domain.getLogicalModels()).thenReturn( logicalModelList );
-    assertTrue( DatasourceService.isMetadataDatasource( domain ) );
-
-    model.setProperty( "AGILE_BI_GENERATED_SCHEMA", true );
-    assertFalse( DatasourceService.isMetadataDatasource( domain ) );
-
-    model2.setProperty( "WIZARD_GENERATED_SCHEMA", true );
-    logicalModelList.clear();
-    logicalModelList.add( model2 );
-    assertFalse( DatasourceService.isMetadataDatasource( domain ) );
-
   }
 
   private static Class<?> anyClass() {
