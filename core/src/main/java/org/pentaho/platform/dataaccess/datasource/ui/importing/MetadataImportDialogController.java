@@ -78,7 +78,8 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
    *
    */
   private static final String UPLOAD_URL = "plugin/data-access/api/datasource/metadata/uploadxmi"; //POST
-  private static final String METADATA_IMPORT_XMI_URL = "plugin/data-access/api/datasource/metadata/import/uploaded"; //POST
+  private static final String METADATA_IMPORT_XMI_URL = "plugin/data-access/api/datasource/metadata/import/uploaded";
+    //POST
   private static final String METADATA_IMPORT_DSW_URL = "plugin/data-access/api/datasource/dsw/import/uploaded"; //POST
   private static final String METADATA_CHECK_URL = "plugin/data-access/api/datasource/metadata/iscontainsmodel"; //GET
   private static Integer FILE_UPLOAD_SUFFIX = 0;
@@ -106,7 +107,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   private TextBox formDomainIdText;
 
   protected static final int OVERWRITE_EXISTING_SCHEMA = 8;
-  private List<DialogListener> dialogCopyListeners = new ArrayList<DialogListener>( );
+  private List<DialogListener> dialogCopyListeners = new ArrayList<DialogListener>();
 
   public void init() {
     try {
@@ -199,7 +200,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
         String tempFileName = jsonResponse.get( "xmiFileName" ).isString().stringValue();
         RequestBuilder checkFileRequest = new RequestBuilder( RequestBuilder.GET,
-            METADATA_CHECK_URL + "?tempFileName=" + URL.encode( tempFileName ) );
+          METADATA_CHECK_URL + "?tempFileName=" + URL.encode( tempFileName ) );
 
         checkFileRequest.setCallback( new RequestCallback() {
           @Override
@@ -207,21 +208,22 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
             if ( response.getStatusCode() == HttpStatus.SC_OK ) {
               if ( Boolean.TRUE.toString().equalsIgnoreCase( response.getText() ) ) {
                 promptImportMetadata( resBundle.getString( "importDialog.IMPORT_METADATA" ),
-                    resBundle.getString( "importDialog.CONFIRMATION_LOAD_DSW" ),
-                    resBundle.getString( "importDialog.DIALOG_DSW_RADIO", "Data Source Wizard (Includes Analysis model)" ),
-                    resBundle.getString( "importDialog.DIALOG_METADATA_RADIO", "Metadata model" ),
-                    new AsyncCallback<Boolean>() {
-                      @Override
-                      public void onSuccess( Boolean result ) {
-                        new XmiImporterRequest( (Boolean) result ? METADATA_IMPORT_DSW_URL : METADATA_IMPORT_XMI_URL,
-                            jsonResponse ).doImport( false );
-                      }
+                  resBundle.getString( "importDialog.CONFIRMATION_LOAD_DSW" ),
+                  resBundle
+                    .getString( "importDialog.DIALOG_DSW_RADIO", "Data Source Wizard (Includes Analysis model)" ),
+                  resBundle.getString( "importDialog.DIALOG_METADATA_RADIO", "Metadata model" ),
+                  new AsyncCallback<Boolean>() {
+                    @Override
+                    public void onSuccess( Boolean result ) {
+                      new XmiImporterRequest( (Boolean) result ? METADATA_IMPORT_DSW_URL : METADATA_IMPORT_XMI_URL,
+                        jsonResponse ).doImport( false );
+                    }
 
-                      @Override
-                      public void onFailure( Throwable caught ) {
-                        onImportError( caught.getMessage() );
-                      }
-                    } );
+                    @Override
+                    public void onFailure( Throwable caught ) {
+                      onImportError( caught.getMessage() );
+                    }
+                  } );
               } else if ( Boolean.FALSE.toString().equals( response.getText() ) ) {
                 new XmiImporterRequest( METADATA_IMPORT_XMI_URL, jsonResponse ).doImport( false );
               } else {
@@ -253,6 +255,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
   public interface ImportCompleteCallback {
     public void onImportSuccess();
+
     public void onImportCancel();
   }
 
@@ -269,8 +272,8 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     public void doImport( boolean overwrite ) {
       RequestBuilder requestBuilder = new RequestBuilder( RequestBuilder.POST, url );
       requestBuilder.setRequestData( "domainId=" + URL.encode( importDialogModel.getDomainId() )
-          + "&jsonFileList=" + URL.encode( jsonFileList.toString() )
-          + "&overwrite=" + Boolean.toString( overwrite ) );
+        + "&jsonFileList=" + URL.encode( jsonFileList.toString() )
+        + "&overwrite=" + Boolean.toString( overwrite ) );
 
       requestBuilder.setHeader( "Content-Type", "application/x-www-form-urlencoded" );
       requestBuilder.setCallback( this );
@@ -292,23 +295,23 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
           messages.getString( "Metadata.OVERWRITE_EXISTING_SCHEMA" ),
           resBundle.getString( "importDialog.DIALOG_OK", "Ok" ),
           resBundle.getString( "importDialog.DIALOG_CANCEL", "Cancel" ),
-            new AsyncCallback<Boolean>() {
-              @Override
-              public void onSuccess( Boolean result ) {
-                //one more attempt with overwrite=true
-                if ( result ) {
-                  doImport( true );
-                } else {
-                  allowToHide = true;
-                  hideDialog();
-                }
+          new AsyncCallback<Boolean>() {
+            @Override
+            public void onSuccess( Boolean result ) {
+              //one more attempt with overwrite=true
+              if ( result ) {
+                doImport( true );
+              } else {
+                allowToHide = true;
+                hideDialog();
               }
+            }
 
-              @Override
-              public void onFailure( Throwable caught ) {
-                onImportError( caught.getMessage() );
-              }
-            } );
+            @Override
+            public void onFailure( Throwable caught ) {
+              onImportError( caught.getMessage() );
+            }
+          } );
       } else {
         onImportError( "[server data error]" + "\nwrong code: " + response.getStatusCode()
                 + "\nresponse text: " + response.getText() );
@@ -406,13 +409,14 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
   }
 
   private void onImportSuccess() {
-    showMessagebox( resBundle.getString( "importDialog.IMPORT_METADATA" ), resBundle.getString( "importDialog.SUCCESS_METADATA_IMPORT" ) );
+    showMessagebox( resBundle.getString( "importDialog.IMPORT_METADATA" ),
+      resBundle.getString( "importDialog.SUCCESS_METADATA_IMPORT" ) );
     super.hideDialog();
   }
 
   private void onImportError( String message ) {
     showMessagebox( resBundle.getString( "importDialog.IMPORT_METADATA" ),
-        resBundle.getString( "importDialog.ERROR_IMPORTING_METADATA" ) + ": " + message );
+      resBundle.getString( "importDialog.ERROR_IMPORTING_METADATA" ) + ": " + message );
     super.hideDialog();
   }
 
@@ -535,16 +539,26 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
 
   /**
    * Shows a confirmation dialog
-   * 
+   *
    * @param title
    * @param message
    * @param okButtonLabel
    * @param cancelButtonLabel
    * @param onResulthandler
    */
-  private void confirm( final String title, final String message, final String okButtonLabel, final String cancelButtonLabel,
-      final AsyncCallback<Boolean> onResulthandler ) {
-    XulConfirmBox confirm = new GwtConfirmBox();
+  private void confirm( final String title, final String message, final String okButtonLabel,
+                        final String cancelButtonLabel,
+                        final AsyncCallback<Boolean> onResulthandler ) {
+    XulConfirmBox confirm = new GwtConfirmBox() {
+      @Override public Panel getDialogContents() {
+        VerticalPanel vp = new VerticalPanel();
+        Label lbl = new Label( this.getMessage() );
+        vp.add( lbl );
+        vp.setCellHorizontalAlignment( lbl, VerticalPanel.ALIGN_LEFT );
+        vp.setCellVerticalAlignment( lbl, VerticalPanel.ALIGN_MIDDLE );
+        return vp;
+      }
+    };
     confirm.setTitle( title );
     confirm.setMessage( message );
     confirm.setAcceptLabel( okButtonLabel );
@@ -556,6 +570,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
         }
 
       }
+
       public void onError( XulComponent component, Throwable err ) {
         onResulthandler.onFailure( err );
         return;

@@ -192,30 +192,23 @@ public class MetadataResource {
                                                   List<FormDataContentDisposition> localeFilesInfo,
                                                   @FormDataParam( DATASOURCE_ACL )
                                                   RepositoryFileAclDto acl ) {
-    try {
-      boolean overWriteInRepository = "true".equalsIgnoreCase( overwrite ) ? true : false;
-      service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
-        localeFilesInfo, acl );
-      return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
-    } catch ( PentahoAccessControlException e ) {
-      return buildServerErrorResponse( e );
-    } catch ( PlatformImportException e ) {
-      if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
-        FileResource fr = createFileResource();
-        return buildServerError003Response( domainId, fr );
-      } else {
-        String msg = e.getMessage();
-        logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
-        Throwable throwable = e.getCause();
-        if ( throwable != null ) {
-          msg = throwable.getMessage();
-          logger.error( "Root cause: " + msg );
-        }
-        return buildOkResponse( String.valueOf( e.getErrorStatus() ) );
+    return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo,
+      acl );
+  }
+
+  private Response catchPlatformImportException( String domainId, PlatformImportException e ) {
+    if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
+      FileResource fr = createFileResource();
+      return buildServerError003Response( domainId, fr );
+    } else {
+      String msg = e.getMessage();
+      logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
+      Throwable throwable = e.getCause();
+      if ( throwable != null ) {
+        msg = throwable.getMessage();
+        logger.error( "Root cause: " + msg );
       }
-    } catch ( Exception e ) {
-      logger.error( e );
-      return buildServerError001Response();
+      return buildOkResponse( String.valueOf( e.getErrorStatus() ) );
     }
   }
 
@@ -289,19 +282,7 @@ public class MetadataResource {
       if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
         throw new ResourceUtil.PublishProhibitedException( e.getMessage() );
       } else {
-        String msg = e.getMessage();
-        logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
-        Throwable throwable = e.getCause();
-        if ( throwable != null ) {
-          msg = throwable.getMessage();
-          logger.error( "Root cause: " + msg );
-        }
-        int status = e.getErrorStatus();
-        if ( status == 8 ) {
-          throw new ResourceUtil.ContentAlreadyExistsException( msg );
-        } else {
-          throw new ResourceUtil.ImportFailedException( msg );
-        }
+        throw catchNotImportException( e );
       }
     } catch ( Exception e ) {
       logger.error( e );
@@ -337,19 +318,7 @@ public class MetadataResource {
     } catch ( PentahoAccessControlException e ) {
       return buildServerErrorResponse( e );
     } catch ( PlatformImportException e ) {
-      if ( e.getErrorStatus() == PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR ) {
-        FileResource fr = createFileResource();
-        return buildServerError003Response( domainId, fr );
-      } else {
-        String msg = e.getMessage();
-        logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
-        Throwable throwable = e.getCause();
-        if ( throwable != null ) {
-          msg = throwable.getMessage();
-          logger.error( "Root cause: " + msg );
-        }
-        return buildOkResponse( String.valueOf( e.getErrorStatus() ) );
-      }
+      return catchPlatformImportException( domainId, e );
     } catch ( Exception e ) {
       logger.error( e );
       return buildServerError001Response();
@@ -539,23 +508,27 @@ public class MetadataResource {
         FileResource fr = createFileResource();
         return buildServerError003Response( domainId, fr );
       } else {
-        String msg = e.getMessage();
-        logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
-        Throwable throwable = e.getCause();
-        if ( throwable != null ) {
-          msg = throwable.getMessage();
-          logger.error( "Root cause: " + msg );
-        }
-        int status = e.getErrorStatus();
-        if ( status == 8 ) {
-          throw new ResourceUtil.ContentAlreadyExistsException( msg );
-        } else {
-          throw new ResourceUtil.ImportFailedException( msg );
-        }
+        throw catchNotImportException( e );
       }
     } catch ( Exception e ) {
       logger.error( e );
       return buildServerError001Response();
+    }
+  }
+
+  private WebApplicationException catchNotImportException( PlatformImportException e ) {
+    String msg = e.getMessage();
+    logger.error( "Error import metadata: " + msg + " status = " + e.getErrorStatus() );
+    Throwable throwable = e.getCause();
+    if ( throwable != null ) {
+      msg = throwable.getMessage();
+      logger.error( "Root cause: " + msg );
+    }
+    int status = e.getErrorStatus();
+    if ( status == 8 ) {
+      return new ResourceUtil.ContentAlreadyExistsException( msg );
+    } else {
+      return new ResourceUtil.ImportFailedException( msg );
     }
   }
 
