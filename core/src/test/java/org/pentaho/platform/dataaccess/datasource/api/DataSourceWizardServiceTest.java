@@ -17,29 +17,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,6 +50,28 @@ import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogR
 import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DataSourceWizardServiceTest {
 
@@ -326,7 +325,7 @@ public class DataSourceWizardServiceTest {
     doReturn( true ).when( dataSourceWizardService ).hasManageAccessCheck();
     doReturn( true ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
     doReturn( mockXmiParser ).when( dataSourceWizardService ).createXmiParser();
-    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile );
+    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile, true );
     doReturn( mockInputStream ).when( dataSourceWizardService ).toInputStreamWrapper( mockDomain, mockXmiParser );
     doReturn( mockMetadataBundle ).when( dataSourceWizardService ).createMetadataDswBundle( mockDomain, mockInputStream,
         overwrite, aclDto );
@@ -361,7 +360,7 @@ public class DataSourceWizardServiceTest {
     doReturn( true ).when( dataSourceWizardService ).hasManageAccessCheck();
     doReturn( true ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
     doReturn( mockXmiParser ).when( dataSourceWizardService ).createXmiParser();
-    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile );
+    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile, true );
     doReturn( mockInputStream ).when( dataSourceWizardService ).toInputStreamWrapper( mockDomain, mockXmiParser );
     doReturn( mockMetadataBundle ).when( dataSourceWizardService ).createMetadataDswBundle( mockDomain, mockInputStream,
         overwrite, aclDto );
