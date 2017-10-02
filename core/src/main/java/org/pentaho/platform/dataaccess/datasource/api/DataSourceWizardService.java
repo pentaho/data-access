@@ -346,6 +346,7 @@ public class DataSourceWizardService extends DatasourceService {
 
     public DswPublishValidationException( Type type, String msg ) {
       super( msg );
+      this.type = type;
     }
     public Type getType() {
       return type;
