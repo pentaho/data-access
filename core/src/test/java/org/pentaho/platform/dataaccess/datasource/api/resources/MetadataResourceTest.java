@@ -358,10 +358,10 @@ public class MetadataResourceTest {
 
     doReturn(metaDto).when( metadataResource.service ).uploadMetadataFilesToTempDir( metadataFile, localeFiles );
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "3" );
-    MetadataTempFilesListDto res = metadataResource.uploadMetadataFilesToTempDir( metadataFile, localeFiles );
+    String res = metadataResource.uploadMetadataFilesToTempDir( metadataFile, localeFiles );
 
     verify( metadataResource, times( 1 ) ).uploadMetadataFilesToTempDir( metadataFile, localeFiles );
-    assertEquals( metaDto, res );
+    assertEquals( metaDto.toJSONString(), res );
   }
 }
 
