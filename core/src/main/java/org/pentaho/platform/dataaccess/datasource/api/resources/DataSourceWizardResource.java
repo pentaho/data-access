@@ -280,7 +280,14 @@ public class DataSourceWizardResource {
     } catch ( IllegalArgumentException e ) {
       return buildBadRequestResponse( e.getMessage() );
     } catch ( DataSourceWizardService.DswPublishValidationException e ) {
-      return buildConfilictResponse( e.getMessage() );
+      switch ( e.getType() ) {
+        case OVERWRITE_CONFLICT: {
+          return buildConfilictResponse( e.getMessage() );
+        }
+        default: {
+          return buildBadRequestResponse( e.getMessage() );
+        }
+      }
     } catch ( Exception e ) {
       return buildServerErrorResponse();
     }
