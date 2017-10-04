@@ -219,7 +219,7 @@ public class DataSourceWizardService extends DatasourceService {
     XmiParser xmiParser = createXmiParser();
     Domain domain = null;
     try {
-      domain = xmiParser.parseXmi( metadataFile, true );
+      domain = xmiParser.parseXmi( metadataFile );
     } catch ( Exception e ) {
       throw new DswPublishValidationException( DswPublishValidationException.Type.INVALID_XMI, e.getMessage() );
     }
