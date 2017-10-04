@@ -313,8 +313,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
             }
           } );
       } else {
-        onImportError( "[server data error]" + "\nwrong code: " + response.getStatusCode()
-                + "\nresponse text: " + response.getText() );
+        onImportError( "[server data error] , wrong code: " + response.getStatusCode() );
       }
     }
 
