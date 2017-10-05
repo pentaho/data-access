@@ -325,7 +325,7 @@ public class DataSourceWizardServiceTest {
     doReturn( true ).when( dataSourceWizardService ).hasManageAccessCheck();
     doReturn( true ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
     doReturn( mockXmiParser ).when( dataSourceWizardService ).createXmiParser();
-    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile, true );
+    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile );
     doReturn( mockInputStream ).when( dataSourceWizardService ).toInputStreamWrapper( mockDomain, mockXmiParser );
     doReturn( mockMetadataBundle ).when( dataSourceWizardService ).createMetadataDswBundle( mockDomain, mockInputStream,
         overwrite, aclDto );
@@ -360,7 +360,7 @@ public class DataSourceWizardServiceTest {
     doReturn( true ).when( dataSourceWizardService ).hasManageAccessCheck();
     doReturn( true ).when( dataSourceWizardService ).endsWith( anyString(), anyString() );
     doReturn( mockXmiParser ).when( dataSourceWizardService ).createXmiParser();
-    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile, true );
+    doReturn( mockDomain ).when( mockXmiParser ).parseXmi( metadataFile );
     doReturn( mockInputStream ).when( dataSourceWizardService ).toInputStreamWrapper( mockDomain, mockXmiParser );
     doReturn( mockMetadataBundle ).when( dataSourceWizardService ).createMetadataDswBundle( mockDomain, mockInputStream,
         overwrite, aclDto );
