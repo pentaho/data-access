@@ -17,6 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
+import com.google.gwt.http.client.URL;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.ui.xul.binding.BindingConvertor;
@@ -91,7 +92,7 @@ public class FileImportController extends AbstractXulEventHandler {
       fileName = extractFilename( fileName );
     }
 
-    fileUpload.addParameter( "file_name", fileName == null ? "" : fileName ); //$NON-NLS-1$ //$NON-NLS-2$
+    fileUpload.addParameter( "file_name", fileName == null ? "" : URL.encodeQueryString( fileName ) ); //$NON-NLS-1$ //$NON-NLS-2$
     fileUpload.addParameter( "mark_temporary", "true" ); //$NON-NLS-1$ //$NON-NLS-2$
     // specify that we want any compressed files to be unpacked
     fileUpload.addParameter( "unzip", "true" ); //$NON-NLS-1$ //$NON-NLS-2$
