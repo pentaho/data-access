@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -659,6 +660,13 @@ public abstract class StagingTransformGenerator extends PentahoBase {
     try {
       db.connect( null );
       try {
+        try {
+          if ( db.getConnection().getAutoCommit() == false ) {
+            db.setCommit( 0 );
+          }
+        } catch ( SQLException e ) {
+          // do nothing
+        }
         return db.checkTableExists( tableName );
       } catch ( KettleDatabaseException dbe ) {
         error( "Error executing DDL", dbe );
