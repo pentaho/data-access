@@ -24,6 +24,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
+import java.sql.Connection;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -39,6 +40,8 @@ public class StagingTransformGeneratorTest {
 
   private Database database;
 
+  private Connection connection;
+
   private DatabaseMeta databaseMeta;
 
   @BeforeClass
@@ -51,6 +54,7 @@ public class StagingTransformGeneratorTest {
   public void setUp() {
     database = mock( Database.class );
     databaseMeta = mock( DatabaseMeta.class );
+    connection = mock( Connection.class );
     stagingTransformGenerator = new CsvTransformGenerator( mock( ModelInfo.class ), databaseMeta ) {
       @Override Database getDatabase( DatabaseMeta databaseMeta ) {
         return database;
@@ -67,12 +71,15 @@ public class StagingTransformGeneratorTest {
   @Test
   public void shouldDropTableIfExists() throws Exception {
     String existingTable = "existingTable";
+    when( connection.getAutoCommit() ).thenReturn( false );
+    when( database.getConnection() ).thenReturn( connection );
     when( database.checkTableExists( existingTable ) ).thenReturn( true );
     when( databaseMeta.getQuotedSchemaTableCombination( (String) isNull(), eq( existingTable ) ) )
       .thenReturn( existingTable );
 
     stagingTransformGenerator.dropTable( existingTable );
 
+    verify( database ).setCommit( 0 );
     verify( database ).execStatement( "DROP TABLE existingTable" );
   }
 
@@ -85,6 +92,8 @@ public class StagingTransformGeneratorTest {
   @Test
   public void shouldNotDropTableIfNotExists() throws Exception {
     String nonExistingTable = "nonExistingTable";
+    when( connection.getAutoCommit() ).thenReturn( false );
+    when( database.getConnection() ).thenReturn( connection );
     when( database.checkTableExists( nonExistingTable ) ).thenReturn( false );
     when( databaseMeta.getQuotedSchemaTableCombination( (String) isNull(), eq( nonExistingTable ) ) )
       .thenReturn( nonExistingTable );
