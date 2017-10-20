@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -456,7 +456,7 @@ public class MetadataResource {
   @Path( "/iscontainsmodel" )
   @Produces( MediaType.TEXT_PLAIN )
   @StatusCodes( {
-      @ResponseCode( code = 200, condition = "File succesfully checked." ),
+      @ResponseCode( code = 200, condition = "File successfully checked." ),
       @ResponseCode( code = 401, condition = "User is not authorized" )
     } )
   public Response isContainsModel( @QueryParam ( "tempFileName" ) String tempFileName ) {
