@@ -263,7 +263,7 @@ public class DataSourceWizardResource {
   @Consumes( MediaType.APPLICATION_FORM_URLENCODED )
   @Produces( MediaType.TEXT_PLAIN )
   @StatusCodes( {
-      @ResponseCode( code = 200, condition = "File succesfully imported." ),
+      @ResponseCode( code = 200, condition = "File successfully imported." ),
       @ResponseCode( code = 401, condition = "User is not authorized" )
     } )
   public Response publishDswFromTemp( @FormParam( "domainId" ) String domainId,
