@@ -287,6 +287,8 @@ public class ColumnInfo extends XulEventSourceAdapter implements Serializable {
 
     } else if ( dataType == DataType.DATE ) {
       formatStrings.addAll( DATE_FORMATS );
+    } else if ( dataType == DataType.TIMESTAMP ) {
+      formatStrings.add( "yyyy-MM-dd HH:mm:ss.S" );
     }
     return formatStrings;
   }
