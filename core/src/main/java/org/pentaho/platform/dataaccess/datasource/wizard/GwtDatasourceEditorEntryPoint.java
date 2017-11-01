@@ -683,24 +683,15 @@ public class GwtDatasourceEditorEntryPoint implements EntryPoint {
             metaDataFormPanel.removeFromParent();
             RootPanel.get().add( metaDataFormPanel );
 
-            metaDataFormPanel.addSubmitCompleteHandler( new SubmitCompleteHandler() {
-
-              @Override public void onSubmitComplete( SubmitCompleteEvent event ) {
-                String results = event.getResults();
-                String message = controller.convertToNLSMessage( results, controller.getFileName() );
-
-                if ( SUCCESS_3.equals( results ) ) {
-                  metaDataFormPanel.removeFromParent();
-                  listener.onDialogAccept( null );
-                } else {
-                  if ( OVERWRITE_8.equals( results ) ) {
-                    overwriteFileDialog( metaDataFormPanel, message, controller );
-                  } else {
-                    listener.onDialogError( message );
-                  }
-                }
+            controller.setImportCompleteCallback( new MetadataImportDialogController.ImportCompleteCallback() {
+              @Override
+              public void onImportSuccess() {
+                listener.onDialogAccept( null );
               }
 
+              @Override public void onImportCancel() {
+                listener.onDialogCancel();
+              }
             } );
             metaDataFormPanel.submit();
           }

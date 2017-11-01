@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -72,7 +72,7 @@ public class MetadataResourceTest {
 
     doReturn( true ).when( metadataResource ).canAdminister();
     doReturn( true ).when( metadataResource )
-        .isInstanceOfIPentahoMetadataDomainRepositoryExporter( metadataResource.metadataDomainRepository );
+      .isInstanceOfIPentahoMetadataDomainRepositoryExporter( metadataResource.metadataDomainRepository );
     doReturn( mockFileData ).when( metadataResource ).getDomainFilesData( "metadataId" );
     doReturn( mockResponse ).when( metadataResource ).createAttachment( mockFileData, "metadataId" );
 
@@ -166,17 +166,17 @@ public class MetadataResourceTest {
     List<FormDataContentDisposition> localeFilesInfo = mock( List.class );
 
     doNothing().when( metadataResource.service )
-        .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
-            localeFilesInfo, null );
+      .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
+        localeFilesInfo, null );
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "3" );
 
     Response response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo,
-        overwrite, localeFiles,
-        localeFilesInfo, null );
+      overwrite, localeFiles,
+      localeFilesInfo, null );
 
     verify( metadataResource, times( 1 ) ).importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo,
-        overwrite, localeFiles,
-        localeFilesInfo, null );
+      overwrite, localeFiles,
+      localeFilesInfo, null );
     assertEquals( mockResponse.getStatus(), response.getStatus() );
   }
 
@@ -195,67 +195,69 @@ public class MetadataResourceTest {
     //Test 1
     PentahoAccessControlException mockPentahoAccessControlException = mock( PentahoAccessControlException.class );
     doThrow( mockPentahoAccessControlException ).when( metadataResource.service )
-        .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, false, localeFiles,
-            localeFilesInfo, null );
+      .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, false, localeFiles,
+        localeFilesInfo, null );
     doReturn( mockResponse ).when( metadataResource ).buildServerErrorResponse( mockPentahoAccessControlException );
 
     Response response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo,
-        overwrite, localeFiles,
-        localeFilesInfo, null );
+      overwrite, localeFiles,
+      localeFilesInfo, null );
     assertEquals( mockResponse, response );
 
     //Test 2
     PlatformImportException mockPlatformImportException = mock( PlatformImportException.class );
     doThrow( mockPlatformImportException ).when( metadataResource.service )
-        .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
-            localeFilesInfo, null );
+      .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
+        localeFilesInfo, null );
     doReturn( 10 ).when( mockPlatformImportException ).getErrorStatus();
     doReturn( mockFileResource ).when( metadataResource ).createFileResource();
     doReturn( mockResponse ).when( metadataResource ).buildServerError003Response( domainId, mockFileResource );
 
     response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo, overwrite,
-        localeFiles,
-        localeFilesInfo, null );
+      localeFiles,
+      localeFilesInfo, null );
     assertEquals( mockResponse, response );
 
     //Test 3
     RuntimeException mockException = mock( RuntimeException.class );
     doThrow( mockPlatformImportException ).when( metadataResource.service )
-        .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
-            localeFilesInfo, null );
+      .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
+        localeFilesInfo, null );
     doReturn( 1 ).when( mockPlatformImportException ).getErrorStatus();
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "1" );
     doReturn( mockException ).when( mockPlatformImportException ).getCause();
 
     response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo, overwrite,
-        localeFiles,
-        localeFilesInfo, null );
+      localeFiles,
+      localeFilesInfo, null );
     assertEquals( mockResponse, response );
 
     //Test
     doThrow( mockException ).when( metadataResource.service )
-        .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
-            localeFilesInfo, null );
+      .importMetadataDatasource( domainId, metadataFile, metadataFileInfo, true, localeFiles,
+        localeFilesInfo, null );
     doReturn( mockResponse ).when( metadataResource ).buildServerError001Response();
 
     response = metadataResource.importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo, overwrite,
-        localeFiles,
-        localeFilesInfo, null );
+      localeFiles,
+      localeFilesInfo, null );
     assertEquals( mockResponse, response );
 
     verify( metadataResource, times( 4 ) ).importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo,
-        overwrite, localeFiles,
-        localeFilesInfo, null );
+      overwrite, localeFiles,
+      localeFilesInfo, null );
   }
 
   @Test
   public void doGetMetadataAcl() throws Exception {
     String domainId = "domainId";
 
-    doReturn( new HashMap<String, InputStream>() { {
+    doReturn( new HashMap<String, InputStream>() {
+      {
         put( "test", null );
-      } } ).when( metadataResource )
-        .getDomainFilesData( domainId );
+      }
+    } ).when( metadataResource )
+      .getDomainFilesData( domainId );
 
     doReturn( new RepositoryFileAclDto() ).when( metadataResource.service ).getMetadataAcl( domainId );
 
@@ -286,10 +288,12 @@ public class MetadataResourceTest {
   public void doSetMetadataAcl() throws Exception {
     String domainId = "domainId";
 
-    doReturn( new HashMap<String, InputStream>() { {
+    doReturn( new HashMap<String, InputStream>() {
+      {
         put( "test", null );
-      } } ).when( metadataResource )
-        .getDomainFilesData( domainId );
+      }
+    } ).when( metadataResource )
+      .getDomainFilesData( domainId );
 
     Response response = metadataResource.doSetMetadataAcl( domainId, null );
     assertEquals( Response.Status.OK.getStatusCode(), response.getStatus() );
@@ -305,6 +309,59 @@ public class MetadataResourceTest {
 
     response = metadataResource.doSetMetadataAcl( domainId, null );
     assertEquals( Response.Status.CONFLICT.getStatusCode(), response.getStatus() );
+  }
+
+  @Test
+  public void importMetadataFromTemp() throws Exception {
+    Response mockResponse = Response.ok().status( new Integer( 200 ) ).type( MediaType.TEXT_PLAIN ).build();
+
+    String domainId = "domainId";
+    Boolean overwrite = true;
+    String localeFiles = "{xmiFileName : filename }";
+    MetadataTempFilesListDto metaDto = new MetadataTempFilesListDto( );
+    metaDto.setXmiFileName( "fileName" );
+    System.out.println(metaDto);
+
+    doNothing().when( metadataResource.service ).importMetadataFromTemp(
+      domainId, new MetadataTempFilesListDto( localeFiles ), overwrite, null );
+    doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "200" );
+
+    Response response = metadataResource.importMetadataFromTemp( domainId, localeFiles, overwrite, null );
+
+    verify( metadataResource, times( 1 ) ).importMetadataFromTemp( domainId, localeFiles, overwrite, null );
+    assertEquals( mockResponse.getStatus(), response.getStatus() );
+  }
+
+  @Test
+  public void isContainsModel() throws Exception {
+    Response mockResponse = Response.ok().status( new Integer( 200 ) ).type( MediaType.TEXT_PLAIN ).build();
+
+    String tempFileName = "overwrite";
+
+    doReturn(true).when( metadataResource.service ).isContainsModel( tempFileName );
+    doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "200" );
+
+    Response response = metadataResource.isContainsModel( tempFileName );
+
+    verify( metadataResource, times( 1 ) ).isContainsModel( tempFileName );
+    assertEquals( mockResponse.getStatus(), response.getStatus() );
+  }
+
+  @Test
+  public void uploadMetadataFilesToTempDir() throws Exception {
+    Response mockResponse = Response.ok().status( new Integer( 3 ) ).type( MediaType.TEXT_PLAIN ).build();
+    MetadataTempFilesListDto metaDto = new MetadataTempFilesListDto( );
+
+    InputStream metadataFile = mock( InputStream.class );
+    List<FormDataBodyPart> localeFiles = mock( List.class );
+    List<FormDataContentDisposition> localeFilesInfo = mock( List.class );
+
+    doReturn(metaDto).when( metadataResource.service ).uploadMetadataFilesToTempDir( metadataFile, localeFiles );
+    doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "3" );
+    MetadataTempFilesListDto res = metadataResource.uploadMetadataFilesToTempDir( metadataFile, localeFiles );
+
+    verify( metadataResource, times( 1 ) ).uploadMetadataFilesToTempDir( metadataFile, localeFiles );
+    assertEquals( metaDto, res );
   }
 }
 
