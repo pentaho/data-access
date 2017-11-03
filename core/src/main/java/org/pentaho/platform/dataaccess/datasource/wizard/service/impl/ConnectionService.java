@@ -72,7 +72,7 @@ public class ConnectionService {
   public ConnectionService() {
     connectionService = new ConnectionServiceImpl();
     this.dialectService = new DatabaseDialectService( true );
-    sanitizer = new UtilHtmlSanitizer();
+    sanitizer = UtilHtmlSanitizer.getInstance();
   }
 
   /**

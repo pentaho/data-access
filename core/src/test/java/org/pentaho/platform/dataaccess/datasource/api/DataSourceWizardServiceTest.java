@@ -25,6 +25,7 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.services.IModelerService;
+import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
@@ -42,6 +43,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IAclAwareMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServiceException;
@@ -100,6 +102,7 @@ public class DataSourceWizardServiceTest {
     dataSourceWizardService.modelerService = mock( IModelerService.class );
     dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter = mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
     dataSourceWizardService.aclAwareMondrianCatalogService = mock( IAclAwareMondrianCatalogService.class );
+    dataSourceWizardService.sanitizer = mock( UtilHtmlSanitizer.class );
   }
 
   @After
@@ -337,6 +340,17 @@ public class DataSourceWizardServiceTest {
 
     verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection, aclDto );
     assertEquals( domainId, response );
+
+    checkConnection = true;
+    String testName = "クイズ";
+    doReturn( testName ).when( dataSourceWizardService ).getMondrianDatasourceWrapper( mockDomain );
+    doReturn( mock( IDatabaseConnection.class ) ).when( dataSourceWizardService.datasourceMgmtSvc ).getDatasourceByName( anyString() );
+
+    dataSourceWizardService.publishDsw( domainId, metadataFile, overwrite, checkConnection, aclDto );
+
+    verify( dataSourceWizardService.sanitizer ).escape( testName );
+
+    verify( dataSourceWizardService, times( 1 ) ).publishDsw( domainId, metadataFile, overwrite, checkConnection, aclDto );
   }
 
   @Test
@@ -371,7 +385,7 @@ public class DataSourceWizardServiceTest {
 
     MetadataTempFilesListDto fileList = new MetadataTempFilesListDto();
     fileList.setXmiFileName( XMI_TEMP_FILE_NAME );
-    String list = "{\"xmiFileName\":\"" + XMI_TEMP_FILE_NAME+ "\"}";
+    String list = "{\"xmiFileName\":\"" + XMI_TEMP_FILE_NAME + "\"}";
 
     String response = dataSourceWizardService.publishDswFromTemp( DOMAIN_ID, fileList, overwrite, checkConnection, aclDto );
 

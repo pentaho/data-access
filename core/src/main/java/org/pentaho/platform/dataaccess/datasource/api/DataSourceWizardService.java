@@ -56,6 +56,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.metadata.MetadataPublisher;
@@ -78,6 +79,8 @@ public class DataSourceWizardService extends DatasourceService {
   protected IAclAwarePentahoMetadataDomainRepositoryImporter aclAwarePentahoMetadataDomainRepositoryImporter;
   protected IAclAwareMondrianCatalogService aclAwareMondrianCatalogService;
 
+  protected UtilHtmlSanitizer sanitizer;
+
   private static final Log logger = LogFactory.getLog( DataSourceWizardService.class );
 
   private static final String MONDRIAN_CATALOG_REF = "MondrianCatalogRef"; //$NON-NLS-1$
@@ -94,6 +97,7 @@ public class DataSourceWizardService extends DatasourceService {
   public DataSourceWizardService() {
     dswService = getDswDatasourceService();
     modelerService = new ModelerService();
+    sanitizer = UtilHtmlSanitizer.getInstance();
     datasourceMgmtSvc = PentahoSystem.get( IDatasourceMgmtService.class, PentahoSessionHolder.getSession() );
     if ( metadataDomainRepository instanceof IAclAwarePentahoMetadataDomainRepositoryImporter ) {
       aclAwarePentahoMetadataDomainRepositoryImporter = (IAclAwarePentahoMetadataDomainRepositoryImporter) metadataDomainRepository;
@@ -226,7 +230,9 @@ public class DataSourceWizardService extends DatasourceService {
     domain.setId( domainId );
     if ( checkConnection ) {
       final String connectionId = getMondrianDatasourceWrapper( domain );
-      if ( datasourceMgmtSvc.getDatasourceByName( connectionId ) == null ) {
+      //Left second check with non-escaped name for backward compatibility
+      if ( datasourceMgmtSvc.getDatasourceByName( sanitizer.escape( connectionId ) ) == null
+        && datasourceMgmtSvc.getDatasourceByName( connectionId ) == null ) {
         final String msg = "connection not found: '" + connectionId + "'";
         throw new DswPublishValidationException( Type.MISSING_CONNECTION, msg );
       }
