@@ -33,7 +33,7 @@ public class UtilHtmlSanitizerTest {
 
   @Before
   public void setUp() {
-    sanitizer = new UtilHtmlSanitizer();
+    sanitizer = UtilHtmlSanitizer.getInstance();
   }
 
   @Test
