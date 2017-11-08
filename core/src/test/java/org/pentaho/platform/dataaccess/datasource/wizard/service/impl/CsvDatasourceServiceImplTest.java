@@ -18,7 +18,9 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.platform.api.engine.IApplicationContext;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
@@ -34,18 +36,28 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class CsvDatasourceServiceImplTest {
 
-  private static final String TMP_DIR = System.getProperty( "java.io.tmpdir" );
+  private static String TMP_DIR;
+  private static Path tempDirPath;
 
   private IApplicationContext mockContext;
   private IApplicationContext existingContext;
@@ -60,6 +72,17 @@ public class CsvDatasourceServiceImplTest {
       return null;
     }
   };
+
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    tempDirPath = Files.createTempDirectory( "CsvDatasourceServiceImplTest" );
+    TMP_DIR = tempDirPath.toAbsolutePath().toString();
+  }
+
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    Files.deleteIfExists( tempDirPath );
+  }
 
   @Before
   public void setUp() throws Exception {

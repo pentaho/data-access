@@ -56,6 +56,7 @@ import org.pentaho.platform.engine.core.system.PathBasedSystemSettings;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.core.system.TenantUtils;
+import org.pentaho.platform.engine.core.system.objfac.StandaloneSpringPentahoObjectFactory;
 import org.pentaho.platform.engine.security.acls.voter.PentahoAllowAllAclVoter;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
@@ -70,8 +71,10 @@ import org.pentaho.platform.web.http.api.resources.JaxbList;
 import org.pentaho.platform.web.http.filters.PentahoRequestContextFilter;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -98,9 +101,11 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/repository.spring.xml",
+    "classpath:/jackrabbit-test-repo.xml",
     "classpath:/solutionACL/system/repository-test-override.spring.xml",
     "classpath:/solutionACL/system/importExport.xml", "classpath:/solutionACL/system/pentahoObjects.spring.xml" } )
 public class DataSourcePublishIT extends JerseyTest implements ApplicationContextAware {
+
   private static final String USERNAME_SUZY = "suzy";
   private static final String USERNAME_TIFFANY = "tiffany";
   private static final String PASSWORD = "password";
@@ -111,8 +116,8 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
 
   private static WebAppDescriptor webAppDescriptor = new WebAppDescriptor.Builder(
       new String[] {
-          "org.pentaho.platform.dataaccess.datasource.api.resources",
-          "org.pentaho.platform.dataaccess.datasource.wizard.service.impl"
+        "org.pentaho.platform.dataaccess.datasource.api.resources",
+        "org.pentaho.platform.dataaccess.datasource.wizard.service.impl"
       } ).contextPath( "plugin" ).addFilter(
       PentahoRequestContextFilter.class, "pentahoRequestContextFilter" ).build();
 
@@ -140,7 +145,6 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
       }
     };
   }
-
   @Override
   protected AppDescriptor configure() {
     return webAppDescriptor;
@@ -153,14 +157,30 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    // folder cannot be deleted at teardown shutdown hooks have not yet necessarily completed
+    // parent folder must match jcrRepository.homeDir bean property in repository-test-override.spring.xml
+    FileUtils.deleteDirectory( new File( "/tmp/repository-future/jackrabbit-test-TRUNK" ) );
+    PentahoSessionHolder.setStrategyName( PentahoSessionHolder.MODE_GLOBAL );
+
+    // register repository spring context for correct work of <pen:list>
+    final StandaloneSpringPentahoObjectFactory pentahoObjectFactory = new StandaloneSpringPentahoObjectFactory();
+    GenericApplicationContext appCtx = new GenericApplicationContext();
+    XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader( appCtx );
+    xmlReader.loadBeanDefinitions( "classpath:/repository.spring.xml" );
+    xmlReader.loadBeanDefinitions( "classpath:/solutionACL/system/repository-test-override.spring.xml" );
+    xmlReader.loadBeanDefinitions( "classpath:/solutionACL/system/importExport.xml" );
+    xmlReader.loadBeanDefinitions( "classpath:/solutionACL/system/pentahoObjects.spring.xml" );
+    xmlReader.loadBeanDefinitions( "classpath:/jackrabbit-test-repo.xml" );
+    pentahoObjectFactory.init( null, appCtx );
+    PentahoSystem.registerObjectFactory( pentahoObjectFactory );
+
     PentahoSystem.setSystemSettingsService( new PathBasedSystemSettings() );
-    DefaultUnifiedRepositoryBase.setUpClass();
     FileUtils.deleteDirectory( new File( "/tmp/data-access/jackrabbit-test-TRUNK" ) );
   }
 
   @AfterClass
   public static void tearDownClass() throws Exception {
-    DefaultUnifiedRepositoryBase.tearDownClass();
+    PentahoSessionHolder.setStrategyName( PentahoSessionHolder.MODE_INHERITABLETHREADLOCAL );
   }
 
   @Before
