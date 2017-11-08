@@ -192,7 +192,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   public boolean addConnection( IDatabaseConnection connection ) throws ConnectionServiceException {
     ensureDataAccessPermission();
     try {
-      if ( connection.getAccessType().equals( DatabaseAccessType.JNDI ) ) {
+      if ( connection.getAccessType() != null && connection.getAccessType().equals( DatabaseAccessType.JNDI ) ) {
         IPentahoConnection pentahoConnection = null;
         pentahoConnection = PentahoConnectionFactory
           .getConnection( IPentahoConnection.SQL_DATASOURCE, connection.getDatabaseName(), null, this );

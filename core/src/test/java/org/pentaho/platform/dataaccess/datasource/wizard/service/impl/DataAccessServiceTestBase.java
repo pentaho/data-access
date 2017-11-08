@@ -17,6 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import org.junit.After;
 import org.junit.Before;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
@@ -74,9 +75,11 @@ public class DataAccessServiceTestBase {
   protected static IUserRoleListService userRoleListService;
   protected static final RepositoryFileAclDto acl = new RepositoryFileAclDto();
 
+  private MicroPlatform platform;
+
   @Before
   public void setUp() throws Exception {
-    MicroPlatform platform = new MicroPlatform();
+    platform = new MicroPlatform();
 
     metadataRepository = mock( IMetadataDomainRepository.class );
     platform.defineInstance( IMetadataDomainRepository.class, metadataRepository );
@@ -119,6 +122,11 @@ public class DataAccessServiceTestBase {
     modelerService.setDatasourceService( datasourceService );
 
     domain = getDomain();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    platform.stop();
   }
 
   /**
