@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.WILDCARD;
+import static javax.ws.rs.core.MediaType.TEXT_HTML;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -432,16 +433,16 @@ public class MetadataResource {
   @POST
   @Path( "/uploadxmi" )
   @Consumes( MediaType.MULTIPART_FORM_DATA )
-  @Produces( APPLICATION_JSON )
+  @Produces( TEXT_HTML )
   @StatusCodes( {
     @ResponseCode( code = 403, condition = "Access Control Forbidden" ),
     @ResponseCode( code = 200, condition = "Indicates successful upload" )
     } )
-  public MetadataTempFilesListDto uploadMetadataFilesToTempDir(
+  public String uploadMetadataFilesToTempDir(
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles ) throws Exception {
 
-    return service.uploadMetadataFilesToTempDir( metadataFile, localeFiles );
+    return service.uploadMetadataFilesToTempDir( metadataFile, localeFiles ).toJSONString();
 
   }
 

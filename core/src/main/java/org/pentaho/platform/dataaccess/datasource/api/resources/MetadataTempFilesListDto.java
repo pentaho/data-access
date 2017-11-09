@@ -57,7 +57,7 @@ public class MetadataTempFilesListDto implements Serializable {
       }
 
       if ( jsonBundles != null ) {
-        for ( int i = 0; i <= jsonBundles.length(); i++ ) {
+        for ( int i = 0; i < jsonBundles.length(); i++ ) {
           bundles.add( new MetadataTempFilesListBundleDto( (String) jsonBundles.get( i ), xmiFileName ) );
         }
       }
@@ -71,6 +71,28 @@ public class MetadataTempFilesListDto implements Serializable {
   @Override
   public String toString() {
     return "MetadataTempFilesListDto [id=" + id + ", xmiFileName=" + xmiFileName + ", bundles=" + bundles + "]";
+  }
+
+  public String toJSONString() {
+    JSONObject obj = new JSONObject();
+    try {
+      if ( xmiFileName != null ) {
+        obj.put( "xmiFileName", xmiFileName );
+      }
+
+      JSONArray list = new JSONArray();
+      for ( int i = 0; i < bundles.size(); i++ ) {
+        MetadataTempFilesListBundleDto bundleDto = bundles.get( i );
+        list.put( bundleDto.getTempFileName() );
+      }
+
+      if ( list.length() > 0 ) {
+        obj.put( "bundles", list );
+      }
+    } catch ( JSONException e ) {
+      // ignored
+    }
+    return obj.toString();
   }
 
   public String getId() {
