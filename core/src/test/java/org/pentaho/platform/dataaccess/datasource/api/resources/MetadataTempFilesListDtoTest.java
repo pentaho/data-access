@@ -20,22 +20,43 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;
-
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Dmitriy Stepanov on 15/06/17.
  */
 public class MetadataTempFilesListDtoTest {
 
+  private String list = "{\"xmiFileName\":\"admin-4424584292793114069.tmp\"}";
+  private String list2 =
+      "{\"xmiFileName\":\"filename.tmp\",\"bundles\":[\"bundle-1-name.tmp\",\"bundle-N-name.tmp\"]}";
+
   @Test
   public void constructorParse() {
     try {
-      String list = "{\"xmiFileName\":\"admin-4424584292793114069.tmp\"}";
-      String list2 =
-        "{\"xmiFileName\":\"filename.tmp\",\"bundles\":[\"bundle-1-name.tmp\",\"bundle-N-name.tmp\"]}";
-
       MetadataTempFilesListDto dto = new MetadataTempFilesListDto( list );
       dto = new MetadataTempFilesListDto( list2 );
+    } catch ( Exception e ) {
+      fail();
+    }
+  }
+
+  @Test
+  public void testToJSONString() {
+    try {
+      MetadataTempFilesListDto dto = new MetadataTempFilesListDto( list );
+      assertEquals( "admin-4424584292793114069.tmp", dto.getXmiFileName() );
+      assertEquals( 0, dto.getBundles().size() );
+      assertEquals( list, dto.toJSONString() );
+
+      dto = new MetadataTempFilesListDto( list2 );
+      assertEquals( "filename.tmp", dto.getXmiFileName() );
+      assertEquals( 2, dto.getBundles().size() );
+      assertEquals( "filename.tmp", dto.getBundles().get(0).getOriginalFileName() );
+      assertEquals( "bundle-1-name.tmp", dto.getBundles().get(0).getTempFileName() );
+      assertEquals( "filename.tmp", dto.getBundles().get(1).getOriginalFileName() );
+      assertEquals( "bundle-N-name.tmp", dto.getBundles().get(1).getTempFileName() );
+      assertEquals( list2, dto.toJSONString() );
     } catch ( Exception e ) {
       fail();
     }
