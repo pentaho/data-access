@@ -169,6 +169,12 @@ aggregation-dialog-checkbox-label {
   padding-bottom: 10px;
 }
 
+#step_grid td>div.xul-label {
+    word-wrap: break-word !important;
+    white-space: normal !important;
+    padding-right: 10px !important;
+}
+
 .roundedbutton-label {
   white-space: nowrap;
 }
