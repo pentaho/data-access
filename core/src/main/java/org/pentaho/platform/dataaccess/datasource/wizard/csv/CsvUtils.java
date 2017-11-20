@@ -466,8 +466,6 @@ public class CsvUtils extends PentahoBase {
         return DataType.DATE;
       case 4:
         return DataType.BOOLEAN;
-      case 9:
-        return DataType.TIMESTAMP;
       default:
         return DataType.STRING;
     }
