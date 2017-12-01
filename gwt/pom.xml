@@ -127,7 +127,7 @@
     <dependency>
       <groupId>org.pentaho.reporting.library</groupId>
       <artifactId>libbase</artifactId>
-      <version>${libbase.version}</version>
+      <version>${pentaho-reporting.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
