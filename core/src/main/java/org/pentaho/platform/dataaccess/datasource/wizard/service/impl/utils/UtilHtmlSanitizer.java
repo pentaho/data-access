@@ -25,6 +25,18 @@ import org.pentaho.database.model.IDatabaseConnection;
  */
 public class UtilHtmlSanitizer {
 
+  private UtilHtmlSanitizer() {
+  }
+
+  private static UtilHtmlSanitizer sanitizerInstance;
+
+  public static synchronized UtilHtmlSanitizer getInstance() {
+    if ( sanitizerInstance == null ) {
+      sanitizerInstance = new UtilHtmlSanitizer();
+    }
+    return sanitizerInstance;
+  }
+
   public void sanitizeConnectionParameters( IDatabaseConnection connection ) {
     String safeName = safeEscapeHtml( connection.getName() );
     connection.setName( safeName );
@@ -67,6 +79,10 @@ public class UtilHtmlSanitizer {
 
   public String safeEscapeHtml( String html ) {
     return StringEscapeUtils.escapeHtml( StringEscapeUtils.unescapeHtml( html ) );
+  }
+
+  public String escape( String stringToEscape ) {
+    return StringEscapeUtils.escapeHtml( stringToEscape );
   }
 
 }

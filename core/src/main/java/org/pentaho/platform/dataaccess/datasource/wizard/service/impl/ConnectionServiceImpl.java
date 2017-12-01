@@ -70,7 +70,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
 
   private static final Log logger = LogFactory.getLog( ConnectionServiceImpl.class );
 
-  private UtilHtmlSanitizer sanitizer = new UtilHtmlSanitizer();
+  private UtilHtmlSanitizer sanitizer = UtilHtmlSanitizer.getInstance();
 
   public Log getLogger() {
     return logger;
