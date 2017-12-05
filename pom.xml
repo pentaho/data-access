@@ -45,7 +45,7 @@
     <xmlpull.version>1.1.3.1</xmlpull.version>
     <dependency.org.springframework.security.spring-security-config.version>4.1.3.RELEASE</dependency.org.springframework.security.spring-security-config.version>
     <jsr311-api.version>1.1.1</jsr311-api.version>
-    <pentaho-gwt-widgets.version>8.1.0.0-SNAPSHOT</pentaho-gwt-widgets.version>
+    <commons-gwt.version>8.1.0.0-SNAPSHOT</commons-gwt.version>
     <saxon.version>9.1.0.8</saxon.version>
     <dependency.com.google.gwt.gwt-servlet.version>2.5.1</dependency.com.google.gwt.gwt-servlet.version>
     <jaxen.version>1.1.1</jaxen.version>
@@ -1411,9 +1411,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-gwt-widgets</artifactId>
-        <version>${pentaho-gwt-widgets.version}</version>
+        <groupId>org.pentaho</groupId>
+        <artifactId>commons-gwt-widgets</artifactId>
+        <version>${commons-gwt.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
