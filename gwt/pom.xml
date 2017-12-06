@@ -71,8 +71,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-gwt-widgets</artifactId>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-gwt-widgets</artifactId>
       <version>${pentaho-xul.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
