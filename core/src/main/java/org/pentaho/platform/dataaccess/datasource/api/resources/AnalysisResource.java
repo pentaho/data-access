@@ -24,6 +24,7 @@ import org.codehaus.enunciate.Facet;
 import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository.RepositoryException;
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
@@ -47,9 +48,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-
-import static javax.ws.rs.core.MediaType.*;
-import static javax.ws.rs.core.Response.Status.*;
 
 /**
  * This service allows for listing, download, upload, and removal of Analysis files or Mondrian schemas in the BA
@@ -128,7 +126,7 @@ public class AnalysisResource {
    */
   @GET
   @Path( "/catalog/{catalogId : .+}" )
-  @Produces( WILDCARD )
+  @Produces( MediaType.WILDCARD )
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully downloaded the analysis file" ),
       @ResponseCode( code = 401, condition = "Unauthorized" ),
@@ -140,6 +138,8 @@ public class AnalysisResource {
       return createAttachment( fileData, catalog );
     } catch ( PentahoAccessControlException e ) {
       throw new WebApplicationException( Response.Status.UNAUTHORIZED );
+    } catch ( RepositoryException e ) {
+      throw new WebApplicationException( Response.Status.BAD_REQUEST );
     }
   }
 
@@ -160,7 +160,7 @@ public class AnalysisResource {
    */
   @DELETE
   @Path( "/catalog/{catalogId : .+}" )
-  @Produces( WILDCARD )
+  @Produces( MediaType.WILDCARD )
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully removed the analysis data" ),
       @ResponseCode( code = 401, condition = "User is not authorized to delete the analysis datasource" ),
@@ -206,7 +206,7 @@ public class AnalysisResource {
    */
   @GET
   @Path( "/catalog" )
-  @Produces( { APPLICATION_XML, APPLICATION_JSON } )
+  @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON } )
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully retrieved the list of analysis IDs" )
   } )
@@ -324,7 +324,7 @@ public class AnalysisResource {
     try {
       service.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalog, origCatalogName, datasourceName, overwrite,
           xmlaEnabledFlag, parameters, acl );
-      Response response = Response.status( CREATED ).build();
+      Response response = Response.status( Response.Status.CREATED ).build();
       logger.debug( "putMondrianSchema Response " + response );
       return response;
     } catch ( PentahoAccessControlException pac ) {
@@ -371,8 +371,8 @@ public class AnalysisResource {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
     try {
-      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
-      boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;
+      boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite );
+      boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag );
       service.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
           overWriteInRepository, xmlaEnabled, parameters, acl );
       statusCode = SUCCESS;
@@ -409,7 +409,7 @@ public class AnalysisResource {
   }
 
   protected Response buildUnauthorizedResponse() {
-    return Response.status( UNAUTHORIZED ).build();
+    return Response.status( Response.Status.UNAUTHORIZED ).build();
   }
 
   protected Response buildServerErrorResponse() {
@@ -423,7 +423,7 @@ public class AnalysisResource {
    */
   @GET
   @Path( "/ids" )
-  @Produces( { APPLICATION_XML, APPLICATION_JSON } )
+  @Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
   public JaxbList<String> getAnalysisDatasourceIds() {
     return getSchemaIds();
@@ -431,7 +431,7 @@ public class AnalysisResource {
 
   @GET
   @Path( "/{catalog : .+}/download" )
-  @Produces( WILDCARD )
+  @Produces( MediaType.WILDCARD )
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully downloaded the analysis file" ),
       @ResponseCode( code = 401, condition = "Unauthorized" ),
@@ -470,7 +470,7 @@ public class AnalysisResource {
 
   @POST
   @Path( "/{catalog : .+}/remove" )
-  @Produces( WILDCARD )
+  @Produces( MediaType.WILDCARD )
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully removed the analysis data" ),
       @ResponseCode( code = 401, condition = "User is not authorized to delete the analysis datasource" ),
@@ -494,7 +494,7 @@ public class AnalysisResource {
    */
   @GET
   @Path( "/{catalog : .+}/acl" )
-  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @Produces ( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON } )
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully got the ACL" ),
       @ResponseCode( code = 401, condition = "Unauthorized" ),
@@ -509,13 +509,13 @@ public class AnalysisResource {
     try {
       final RepositoryFileAclDto acl = service.getAnalysisDatasourceAcl( catalog );
       if ( acl == null ) {
-        throw new WebApplicationException( NOT_FOUND );
+        throw new WebApplicationException( Response.Status.NOT_FOUND );
       }
       return acl;
     } catch ( FileNotFoundException e ) {
-      throw new WebApplicationException( CONFLICT );
+      throw new WebApplicationException( Response.Status.CONFLICT );
     } catch ( PentahoAccessControlException e ) {
-      throw new WebApplicationException( UNAUTHORIZED );
+      throw new WebApplicationException( Response.Status.UNAUTHORIZED );
     }
   }
 
@@ -529,7 +529,7 @@ public class AnalysisResource {
    */
   @PUT
   @Path( "/{catalog : .+}/acl" )
-  @Produces ( { APPLICATION_XML, APPLICATION_JSON } )
+  @Produces ( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON } )
   @StatusCodes( {
       @ResponseCode( code = 200, condition = "Successfully updated the ACL" ),
       @ResponseCode( code = 401, condition = "Unauthorized" ),
@@ -537,14 +537,14 @@ public class AnalysisResource {
       @ResponseCode( code = 500, condition = "Failed to save acls due to another error." )
       } )
       public Response doSetAnalysisDatasourceAcl( @PathParam( "catalog" ) String catalog, RepositoryFileAclDto acl )
-      throws PentahoAccessControlException {
+        throws PentahoAccessControlException {
     try {
       service.setAnalysisDatasourceAcl( catalog, acl );
       return buildOkResponse();
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
     } catch ( FileNotFoundException e ) {
-      return Response.status( CONFLICT ).build();
+      return Response.status( Response.Status.CONFLICT ).build();
     } catch ( Exception e ) {
       return buildServerErrorResponse();
     }
