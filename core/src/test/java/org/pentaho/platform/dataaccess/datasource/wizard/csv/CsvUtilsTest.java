@@ -324,6 +324,15 @@ public class CsvUtilsTest {
     testAssumeColumnDetails_Dates( asList( "2015/11/10 11:57:33" ), "yyyy/MM/dd HH:mm:ss" );
   }
 
+  @Test
+  public void testTimestampFormat() {
+    List<String> samples = asList( "2015-11-10 11:57:33.0" );
+    String dateFormat = "yyyy-MM-dd HH:mm:ss.S";
+    utils.assumeColumnDetails( columnInfo, samples );
+    assertEquals( DataType.TIMESTAMP, columnInfo.getDataType() );
+    assertEquals( dateFormat, columnInfo.getFormat() );
+  }
+
   private void testAssumeColumnDetails_Dates( List<String> samples, String dateFormat ) {
     utils.assumeColumnDetails( columnInfo, samples );
     assertEquals( DataType.DATE, columnInfo.getDataType() );
