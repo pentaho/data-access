@@ -253,7 +253,7 @@ public class MetadataService extends DatasourceService {
   }
 
   protected  boolean isContainsModel( Domain domain ) throws Exception {
-    return !DatasourceService.isMetadataDatasource( domain );
+    return !DatasourceService.isMetadataDatasource( domain ) && domain.getLogicalModels().size() > 1;
   }
 
   public void importMetadataFromTemp( String domainId, MetadataTempFilesListDto fileList,
