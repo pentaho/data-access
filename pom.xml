@@ -33,7 +33,6 @@
     <slf4j-api.version>1.7.3</slf4j-api.version>
     <commons-codec.version>1.9</commons-codec.version>
     <aspectjrt.version>1.6.6</aspectjrt.version>
-    <pentaho-reporting-engine-classic-core.version>8.1-SNAPSHOT</pentaho-reporting-engine-classic-core.version>
     <mockito-all.version>1.9.5</mockito-all.version>
     <dependency.org.springframework.spring-test.version>4.3.2.RELEASE</dependency.org.springframework.spring-test.version>
     <dependency.org.codehaus.jettison.jettison.version>1.2</dependency.org.codehaus.jettison.jettison.version>
@@ -1468,7 +1467,7 @@
       <dependency>
         <groupId>org.pentaho.reporting.engine</groupId>
         <artifactId>classic-core</artifactId>
-        <version>${pentaho-reporting-engine-classic-core.version}</version>
+        <version>${pentaho-reporting.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
