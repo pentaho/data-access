@@ -32,6 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository.RepositoryException;
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
@@ -74,12 +75,10 @@ public class AnalysisResourceTest {
 
   @Test
   public void testDoGetAnalysisFilesAsDownloadError() throws Exception {
-    Response mockResponse = mock( Response.class );
-
     //Test 1
     PentahoAccessControlException mockException = mock( PentahoAccessControlException.class );
-    doThrow( mockException ).when( analysisResource.service ).doGetAnalysisFilesAsDownload( "analysisId" );
-
+    RepositoryException repositoryException = mock( RepositoryException.class );
+    doThrow( mockException ).doThrow( repositoryException ).when( analysisResource.service ).doGetAnalysisFilesAsDownload( "analysisId" );
 
     try {
       Response response = analysisResource.downloadSchema( "analysisId" );
@@ -88,7 +87,14 @@ public class AnalysisResourceTest {
       // Good
     }
 
-    verify( analysisResource, times( 1 ) ).downloadSchema( "analysisId" );
+    try {
+      Response response = analysisResource.downloadSchema( "analysisId" );
+      fail( "Should have gotten a WebApplicationException" );
+    } catch ( WebApplicationException e ) {
+      // Good
+    }
+
+    verify( analysisResource, times( 2 ) ).downloadSchema( "analysisId" );
   }
 
   @Test
