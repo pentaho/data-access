@@ -97,7 +97,7 @@
     <commons-collections.version>3.2.2</commons-collections.version>
     <junit-dep.version>4.4</junit-dep.version>
     <jaxb-api.version>2.2.2</jaxb-api.version>
-    <dependency.com.thoughtworks.xstream.xstream.version>1.4.9</dependency.com.thoughtworks.xstream.xstream.version>
+    <dependency.com.thoughtworks.xstream.xstream.version>1.4.10</dependency.com.thoughtworks.xstream.xstream.version>
     <mimepull.version>1.9.3</mimepull.version>
     <dependency.com.google.gwt.gwt-incubator.version>2.1.0</dependency.com.google.gwt.gwt-incubator.version>
     <jaxb-xjc.version>2.1.2</jaxb-xjc.version>
