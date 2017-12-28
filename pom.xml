@@ -34,7 +34,7 @@
     <dependency.com.google.gwt.gwt-incubator.version>2.1.0</dependency.com.google.gwt.gwt-incubator.version>
     <dependency.com.google.gwt.gwt-servlet.version>2.5.1</dependency.com.google.gwt.gwt-servlet.version>
     <dependency.com.google.gwt.gwt-user.version>2.5.1</dependency.com.google.gwt.gwt-user.version>
-    <dependency.com.thoughtworks.xstream.xstream.version>1.4.9</dependency.com.thoughtworks.xstream.xstream.version>
+    <dependency.com.thoughtworks.xstream.xstream.version>1.4.10</dependency.com.thoughtworks.xstream.xstream.version>
     <dependency.org.codehaus.jettison.jettison.version>1.2</dependency.org.codehaus.jettison.jettison.version>
     <dependency.org.springframework.se-jcr.version>0.9</dependency.org.springframework.se-jcr.version>
     <dependency.org.springframework.security.spring-security-config.version>4.1.3.RELEASE</dependency.org.springframework.security.spring-security-config.version>
