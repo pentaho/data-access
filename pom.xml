@@ -90,7 +90,7 @@
     <jaxws-spring.version>1.8</jaxws-spring.version>
     <ehcache-core.version>2.5.1</ehcache-core.version>
     <jackrabbit-core.version>2.14.2</jackrabbit-core.version>
-    <pentaho-xul.version>8.1.0.0-SNAPSHOT</pentaho-xul.version>
+    <commons-xul.version>8.1.0.0-SNAPSHOT</commons-xul.version>
     <lucene-core.version>3.6.0</lucene-core.version>
     <dependency.org.springframework.spring-webmvc.version>4.3.2.RELEASE</dependency.org.springframework.spring-webmvc.version>
     <commons-collections.version>3.2.2</commons-collections.version>
@@ -1240,9 +1240,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-xul-swing</artifactId>
-        <version>${pentaho-xul.version}</version>
+        <groupId>org.pentaho</groupId>
+        <artifactId>commons-xul-swing</artifactId>
+        <version>${commons-xul.version}</version>
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
@@ -1388,9 +1388,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-xul-core</artifactId>
-        <version>${pentaho-xul.version}</version>
+        <groupId>org.pentaho</groupId>
+        <artifactId>commons-xul-core</artifactId>
+        <version>${commons-xul.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1399,9 +1399,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-xul-gwt</artifactId>
-        <version>${pentaho-xul.version}</version>
+        <groupId>org.pentaho</groupId>
+        <artifactId>commons-xul-gwt-impl</artifactId>
+        <version>${commons-xul.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
