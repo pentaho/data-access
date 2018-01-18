@@ -57,23 +57,23 @@
       <version>${GWT-FX.version}</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-core</artifactId>
-      <version>${pentaho-xul.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-core</artifactId>
+      <version>${commons-xul.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-gwt</artifactId>
-      <version>${pentaho-xul.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-gwt-impl</artifactId>
+      <version>${commons-xul.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>commons-gwt-widgets</artifactId>
-      <version>${pentaho-xul.version}</version>
+      <version>${commons-gwt.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
