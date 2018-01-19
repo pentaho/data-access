@@ -75,7 +75,7 @@
       <artifactId>pentaho-connections</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
+      <groupId>org.pentaho</groupId>
       <artifactId>pentaho-metadata</artifactId>
     </dependency>
     <dependency>
