@@ -91,16 +91,16 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-database-gwt</artifactId>
-      <version>${pentaho-database.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-database-gwt</artifactId>
+      <version>${commons-database.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-database-model</artifactId>
-      <version>${pentaho-database-model.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-database-model</artifactId>
+      <version>${commons-database.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>

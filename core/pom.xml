@@ -55,8 +55,8 @@
       <artifactId>pentaho-platform-extensions</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-database-model</artifactId>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-database-model</artifactId>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -67,8 +67,8 @@
       <artifactId>pentaho-modeler-gwt</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-database-gwt</artifactId>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-database-gwt</artifactId>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>

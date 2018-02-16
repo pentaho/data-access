@@ -18,8 +18,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-database-gwt</artifactId>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-database-gwt</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>

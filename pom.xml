@@ -58,7 +58,7 @@
     <h2.version>1.0.78</h2.version>
     <pentaho-actionsequence-dom.version>8.1.0.0-SNAPSHOT</pentaho-actionsequence-dom.version>
     <commons-math.version>1.1</commons-math.version>
-    <pentaho-database.version>8.1.0.0-SNAPSHOT</pentaho-database.version>
+    <commons-database.version>8.1.0.0-SNAPSHOT</commons-database.version>
     <org.json.version>3.1.1</org.json.version>
     <wstx-asl.version>3.2.4</wstx-asl.version>
     <commons-lang.version>2.4</commons-lang.version>
@@ -101,7 +101,6 @@
     <dependency.com.google.gwt.gwt-incubator.version>2.1.0</dependency.com.google.gwt.gwt-incubator.version>
     <jaxb-xjc.version>2.1.2</jaxb-xjc.version>
     <pentaho-modeler.version>8.1.0.0-SNAPSHOT</pentaho-modeler.version>
-    <pentaho-database-model.version>8.1.0.0-SNAPSHOT</pentaho-database-model.version>
     <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
     <jersey.version>1.19.1</jersey.version>
     <guava.version>17.0</guava.version>
@@ -1229,9 +1228,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-database-model</artifactId>
-        <version>${pentaho-database-model.version}</version>
+        <groupId>org.pentaho</groupId>
+        <artifactId>commons-database-model</artifactId>
+        <version>${commons-database.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1366,9 +1365,9 @@
         <version>${commons-collections.version}</version>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-database-gwt</artifactId>
-        <version>${pentaho-database.version}</version>
+        <groupId>org.pentaho</groupId>
+        <artifactId>commons-database-gwt</artifactId>
+        <version>${commons-database.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
