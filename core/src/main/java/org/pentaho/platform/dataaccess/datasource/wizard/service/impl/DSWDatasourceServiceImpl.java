@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -68,6 +68,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelp
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.DatasourceServiceHelper;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -259,7 +260,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     return true;
   }
 
-  private IPentahoResultSet executeQuery( String connectionName, String query, String previewLimit )
+  IPentahoResultSet executeQuery( String connectionName, String query, String previewLimit )
     throws QueryValidationException, SqlQueriesNotSupportedException {
     SQLConnection sqlConnection = null;
     try {
@@ -325,6 +326,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     }
     SerializedResultSet returnResultSet;
     try {
+      connectionName = UtilHtmlSanitizer.getInstance().safeEscapeHtml( connectionName );
       executeQuery( connectionName, query, previewLimit );
       returnResultSet = DatasourceServiceHelper.getSerializeableResultSet( connectionName, query,
         Integer.parseInt( previewLimit ), PentahoSessionHolder.getSession() );
@@ -385,6 +387,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     }
     try {
       // Testing whether the query is correct or not
+      connectionName = UtilHtmlSanitizer.getInstance().safeEscapeHtml( connectionName );
       executeQuery( connectionName, query, previewLimit );
       Boolean securityEnabled = ( getPermittedRoleList() != null && getPermittedRoleList().size() > 0 )
         || ( getPermittedUserList() != null && getPermittedUserList().size() > 0 );
@@ -587,7 +590,8 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     modelerWorkspace.setModelName( name );
 
     try {
-      executeQuery( datasourceDTO.getConnectionName(), query, "1" );
+      UtilHtmlSanitizer.getInstance().sanitizeConnectionParameters( connection );
+      executeQuery( UtilHtmlSanitizer.getInstance().safeEscapeHtml( datasourceDTO.getConnectionName() ), query, "1" );
       Boolean securityEnabled = ( getPermittedRoleList() != null && getPermittedRoleList().size() > 0 )
         || ( getPermittedUserList() != null && getPermittedUserList().size() > 0 );
       SerializedResultSet resultSet = DatasourceServiceHelper.getSerializeableResultSet( connection.getName(), query,
