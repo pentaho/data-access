@@ -101,7 +101,7 @@
     <dependency.com.google.gwt.gwt-incubator.version>2.1.0</dependency.com.google.gwt.gwt-incubator.version>
     <jaxb-xjc.version>2.1.2</jaxb-xjc.version>
     <pentaho-modeler.version>8.1.0.0-SNAPSHOT</pentaho-modeler.version>
-    <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
+    <commons-vfs2.version>2.2</commons-vfs2.version>
     <jersey.version>1.19.1</jersey.version>
     <guava.version>17.0</guava.version>
     <org.apache.felix.main.version>4.2.1</org.apache.felix.main.version>
