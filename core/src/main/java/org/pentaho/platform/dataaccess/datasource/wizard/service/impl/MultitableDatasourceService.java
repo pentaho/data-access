@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2018 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,6 +58,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
   private DatabaseMeta databaseMeta;
   private ConnectionServiceImpl connectionServiceImpl;
   private Log logger = LogFactory.getLog( MultitableDatasourceService.class );
+  private static final String DATASERVICES_CONNECTION = "Local Dataservices Connection";
 
   public MultitableDatasourceService() {
     this.connectionServiceImpl = new ConnectionServiceImpl();
@@ -69,6 +71,10 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
   }
 
   protected void init() {
+  }
+
+  private boolean isDataServicesConnection( IDatabaseConnection connection ) {
+    return connection.getName().equals( this.DATASERVICES_CONNECTION );
   }
 
   private DatabaseMeta getDatabaseMeta( IDatabaseConnection connection ) throws ConnectionServiceException {
@@ -95,7 +101,10 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
       DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
       Database database = new Database( null, databaseMeta );
       database.connect();
-      Map<String, Collection<String>> tableMap = database.getTableMap( null );
+
+      Map<String, Collection<String>> tableMap = database.getTableMap( null,
+          this.isDataServicesConnection( connection )
+              ? new HashMap<String, String>() {{ put( "STREAMING", "N" ); }} : null );
 
       //database.getSchemas()
 
@@ -113,12 +122,14 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
   }
 
   public List<String> getDatabaseTables( IDatabaseConnection connection, String schema )
-    throws DatasourceServiceException {
+      throws DatasourceServiceException {
     try {
       DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
       Database database = new Database( null, databaseMeta );
       database.connect();
-      String[] tableNames = database.getTablenames( schema, true );
+      String[] tableNames = database.getTablenames( schema, true,
+          this.isDataServicesConnection( connection )
+              ? new HashMap<String, String>() {{ put( "STREAMING", "N" ); }} : null );
       List<String> tables = new ArrayList<String>();
       tables.addAll( Arrays.asList( tableNames ) );
       tables.addAll( Arrays.asList( database.getViews( schema, true ) ) );
