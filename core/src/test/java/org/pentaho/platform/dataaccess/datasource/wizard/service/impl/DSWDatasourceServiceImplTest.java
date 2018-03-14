@@ -12,11 +12,27 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
 */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.matches;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,7 +43,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertArrayEquals;
 
 import org.junit.After;
 import org.junit.Before;
@@ -78,7 +98,7 @@ import org.junit.Test;
 
 public class DSWDatasourceServiceImplTest {
 
-  private static final String CONNECTION_NAME = "connection";
+  private static final String CONNECTION_NAME = "[connection 接続 <;>!@#$%^&*()_-=+.,]";
   private static final String DB_TYPE = "jdbc";
   private static final String VALID_QUERY = "valid query";
   private static final String QUERY_COLUMN_ALREADY_EXIST = "invalid query";
@@ -194,12 +214,16 @@ public class DSWDatasourceServiceImplTest {
            }
          } );
     PentahoSystem.registerObjectFactory( pentahoObjectFactory );
+    IPentahoSession pentahoSessionMock = mock( IPentahoSession.class );
+    when( pentahoSessionMock.getName() ).thenReturn( "sessionName" );
+    PentahoSessionHolder.setSession( pentahoSessionMock );
   }
 
   @After
   public void tearDown() {
     PentahoSystem.deregisterObjectFactory( pentahoObjectFactory );
     PentahoSystem.clearObjectFactory();
+    PentahoSessionHolder.removeSession();
   }
 
   @Test
@@ -368,6 +392,12 @@ public class DSWDatasourceServiceImplTest {
   public void testGenerateLogicalModel_DoesNotHavePermission() throws DatasourceServiceException {
     doReturn( false ).when( dswService ).hasDataAccessPermission();
     dswService.generateLogicalModel( MODEL_NAME, CONNECTION_NAME, DB_TYPE, VALID_QUERY, PREVIEW_LIMIT );
+    try {
+      verify( dswService ).executeQuery( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]",
+        VALID_QUERY, PREVIEW_LIMIT );
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
   }
 
   @Test
@@ -431,6 +461,12 @@ public class DSWDatasourceServiceImplTest {
     doReturn( userList ).when( dswService ).getPermittedUserList();
     doReturn( 1 ).when( dswService ).getDefaultAcls();
     BusinessData businessData = dswService.generateLogicalModel( modelName, connName, DB_TYPE, query, PREVIEW_LIMIT );
+    try {
+      verify( dswService ).executeQuery( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]",
+        query, PREVIEW_LIMIT );
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
     assertNotNull( businessData );
     assertNotNull( businessData.getDomain() );
     assertNotNull( businessData.getData() );
@@ -440,6 +476,12 @@ public class DSWDatasourceServiceImplTest {
   public void testDoPreview() throws DatasourceServiceException {
     doReturn( true ).when( dswService ).hasDataAccessPermission();
     SerializedResultSet result = dswService.doPreview( CONNECTION_NAME, VALID_QUERY, PREVIEW_LIMIT );
+    try {
+      verify( dswService ).executeQuery( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]",
+        VALID_QUERY, PREVIEW_LIMIT );
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
     assertNotNull( result );
     assertArrayEquals( columns, result.getColumns() );
     assertArrayEquals( columnTypes, result.getColumnTypes() );
@@ -449,18 +491,36 @@ public class DSWDatasourceServiceImplTest {
   public void testDoPreview_DoesNotHavePermission() throws DatasourceServiceException {
     doReturn( false ).when( dswService ).hasDataAccessPermission();
     dswService.doPreview( CONNECTION_NAME, VALID_QUERY, PREVIEW_LIMIT );
+    try {
+      verify( dswService ).executeQuery( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]",
+        VALID_QUERY, PREVIEW_LIMIT );
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
   }
 
   @Test( expected = DatasourceServiceException.class )
   public void testDoPreview_NullConnection() throws DatasourceServiceException {
     doReturn( true ).when( dswService ).hasDataAccessPermission();
     dswService.doPreview( null, VALID_QUERY, PREVIEW_LIMIT );
+    try {
+      verify( dswService ).executeQuery( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]",
+        VALID_QUERY, PREVIEW_LIMIT );
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
   }
 
   @Test( expected = DatasourceServiceException.class )
   public void testDoPreview_NullQuery() throws DatasourceServiceException {
     doReturn( true ).when( dswService ).hasDataAccessPermission();
     SerializedResultSet result = dswService.doPreview( CONNECTION_NAME, null, PREVIEW_LIMIT );
+    try {
+      verify( dswService ).executeQuery( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]",
+        VALID_QUERY, PREVIEW_LIMIT );
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
     assertNotNull( result );
     assertArrayEquals( columns, result.getColumns() );
     assertArrayEquals( columnTypes, result.getColumnTypes() );
@@ -539,9 +599,14 @@ public class DSWDatasourceServiceImplTest {
     datasourceDTO.setDatasourceName( CONNECTION_NAME );
     datasourceDTO.setCsvModelInfo( modelInfo );
 
-    DatabaseConnection connection = new DatabaseConnection();
-    connection.setName( CONNECTION_NAME );
-    connection.setDatabaseType( mock( IDatabaseType.class ) );
+    DatabaseConnection connectionSpy = spy( new DatabaseConnection() );
+    connectionSpy.setName( CONNECTION_NAME );
+    connectionSpy.setDatabaseName( "[database name 接続 <;>!@#$%^&*()_-=+.,]" );
+    connectionSpy.setDatabasePort( "123456" );
+    connectionSpy.setHostname( "[hostname 接続 <;>!@#$%^&*()_-=+.,]" );
+    connectionSpy.setPassword( "[password 接続 <;>!@#$%^&*()_-=+.,]" );
+    connectionSpy.setUsername( "[username 接続 <;>!@#$%^&*()_-=+.,]" );
+    connectionSpy.setDatabaseType( mock( IDatabaseType.class ) );
 
     doReturn( modelerService ).when( dswService ).createModelerService();
     doReturn( true ).when( dswService ).hasDataAccessPermission();
@@ -549,7 +614,19 @@ public class DSWDatasourceServiceImplTest {
     doReturn( userList ).when( dswService ).getPermittedUserList();
     doReturn( null ).when( dswService ).getGeoContext();
     doReturn( 1 ).when( dswService ).getDefaultAcls();
-    QueryDatasourceSummary summary = dswService.generateQueryDomain( modelName, query, connection, datasourceDTO );
+    QueryDatasourceSummary summary = dswService.generateQueryDomain( modelName, query, connectionSpy, datasourceDTO );
+    try {
+      verify( dswService ).executeQuery( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]",
+        query, "1" );
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
+    verify( connectionSpy ).setName( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]" );
+    verify( connectionSpy ).setDatabaseName( "[database name &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]" );
+    verify( connectionSpy, times( 2 ) ).setDatabasePort( "123456" );
+    verify( connectionSpy ).setHostname( "[hostname &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]" );
+    verify( connectionSpy ).setPassword( "[password &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]" );
+    verify( connectionSpy ).setUsername( "[username &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]" );
     assertNotNull( summary );
     assertNotNull( summary.getDomain() );
     assertEquals( CONNECTION_NAME, summary.getDomain().getId() );
