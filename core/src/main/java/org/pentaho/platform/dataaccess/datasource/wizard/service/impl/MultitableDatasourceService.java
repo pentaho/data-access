@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
+import org.pentaho.database.dialect.PDIDialect;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.di.core.database.Database;
@@ -58,7 +59,6 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
   private DatabaseMeta databaseMeta;
   private ConnectionServiceImpl connectionServiceImpl;
   private Log logger = LogFactory.getLog( MultitableDatasourceService.class );
-  private static final String DATASERVICES_CONNECTION = "Local Dataservices Connection";
 
   public MultitableDatasourceService() {
     this.connectionServiceImpl = new ConnectionServiceImpl();
@@ -74,7 +74,7 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
   }
 
   private boolean isDataServicesConnection( IDatabaseConnection connection ) {
-    return connection.getName().equals( this.DATASERVICES_CONNECTION );
+    return connection.getDatabaseType().getName().equals( new PDIDialect().getDatabaseType().getName() );
   }
 
   private DatabaseMeta getDatabaseMeta( IDatabaseConnection connection ) throws ConnectionServiceException {
