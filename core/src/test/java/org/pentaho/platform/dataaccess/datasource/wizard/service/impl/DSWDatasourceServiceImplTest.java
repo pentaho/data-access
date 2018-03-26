@@ -746,7 +746,8 @@ public class DSWDatasourceServiceImplTest {
   public void testDeSerializeModelStateValidString() throws Exception {
     PentahoSystem.registerObjectFactory( new TestObjectFactory() );
 
-    DatasourceModel datasourceModel = new DatasourceModel();
+    DatasourceModel datasourceModel = spy( new DatasourceModel() );
+    doReturn( "testdatasource" ).when( datasourceModel ).generateTableName();
     datasourceModel.setDatasourceName( "testDatasource" );
     datasourceModel.setDatasourceType( DatasourceType.CSV );
 
