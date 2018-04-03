@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+* Copyright (c) 2002-2018 Hitachi Vantara. All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -277,15 +277,23 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       logger.error( e.getLocalizedMessage() );
       throw e;
     } catch ( SQLException e ) {
+
       String error = "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED";
+
       if ( e.getSQLState().equals( "S0021" ) ) { // Column already exists
         error = "DatasourceServiceImpl.ERROR_0021_DUPLICATE_COLUMN_NAMES";
       }
-      logger.error( Messages.getErrorString( error ) );
-      throw new QueryValidationException( Messages.getString( error ) );
+
+      logger.error(
+        Messages.getErrorString( error, e.getLocalizedMessage() ) );
+
+      throw new QueryValidationException(
+        Messages.getString( error, e.getLocalizedMessage() ) );
+
     } catch ( Exception e ) {
       logger.error( Messages.getErrorString(
-        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED", e.getLocalizedMessage() ), e ); //$NON-NLS-1$
+        "DatasourceServiceImpl.ERROR_0009_QUERY_VALIDATION_FAILED",
+        e.getLocalizedMessage() ), e ); //$NON-NLS-1$
       throw new QueryValidationException( e.getLocalizedMessage(), e );
     } finally {
       if ( sqlConnection != null ) {
