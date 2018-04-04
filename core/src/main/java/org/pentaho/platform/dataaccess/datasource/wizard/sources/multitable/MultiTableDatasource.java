@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2018 Hitachi Vantara. All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.multitable;
@@ -186,15 +186,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
       String dsName = this.wizardModel.getDatasourceName();
       MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO( dsName );
       dto.setSelectedConnection( this.connection );
-      joinSelectionServiceGwtImpl.serializeJoins( dto, this.connection, new XulServiceCallback<IDatasourceSummary>() {
-        public void error( String message, Throwable error ) {
-          error.printStackTrace();
-        }
-
-        public void success( IDatasourceSummary value ) {
-          callback.success( value );
-        }
-      } );
+      joinSelectionServiceGwtImpl.serializeJoins( dto, this.connection, callback );
     } else {
       MessageHandler.getInstance().closeWaitingDialog();
       XulDialog wizardDialog = (XulDialog) document.getElementById( "main_wizard_window" );
