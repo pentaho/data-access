@@ -186,7 +186,21 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
       String dsName = this.wizardModel.getDatasourceName();
       MultiTableDatasourceDTO dto = this.joinGuiModel.createMultiTableDatasourceDTO( dsName );
       dto.setSelectedConnection( this.connection );
-      joinSelectionServiceGwtImpl.serializeJoins( dto, this.connection, callback );
+      joinSelectionServiceGwtImpl.serializeJoins(
+        dto,
+        this.connection,
+        new XulServiceCallback<IDatasourceSummary>() {
+          public void success( IDatasourceSummary retVal ) {
+            callback.success( retVal );
+          }
+          public void error( String message, Throwable error ) {
+            MessageHandler.getInstance().closeWaitingDialog();
+            MessageHandler.getInstance().showErrorDetailsDialog(
+              MessageHandler.getString( "ERROR" ),
+              MessageHandler.getString( "multitable.ERROR_SAVING_MODEL" ),
+              error.getLocalizedMessage() );
+          }
+        } );
     } else {
       MessageHandler.getInstance().closeWaitingDialog();
       XulDialog wizardDialog = (XulDialog) document.getElementById( "main_wizard_window" );
