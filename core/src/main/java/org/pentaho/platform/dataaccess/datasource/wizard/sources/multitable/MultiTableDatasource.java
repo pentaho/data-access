@@ -196,7 +196,7 @@ public class MultiTableDatasource extends AbstractXulEventHandler implements IWi
           public void error( String message, Throwable error ) {
             MessageHandler.getInstance().closeWaitingDialog();
             MessageHandler.getInstance().showErrorDetailsDialog(
-              MessageHandler.getString( "ERROR" ),
+              MessageHandler.getString( "multitable.ERROR_SAVING_MODEL_TITLE" ),
               MessageHandler.getString( "multitable.ERROR_SAVING_MODEL" ),
               error.getLocalizedMessage() );
           }
