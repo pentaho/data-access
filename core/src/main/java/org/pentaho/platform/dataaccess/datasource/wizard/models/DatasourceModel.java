@@ -307,7 +307,7 @@ public class DatasourceModel extends XulEventSourceAdapter
     }
     // this regexp is not working on the Java side, but it works on the JS side
     // see http://www.gwtproject.org/javadoc/latest/com/google/gwt/regexp/shared/RegExp.html
-    return RegExp.compile( "[^\\p{L}\\p{N}_-]", "gu" ).replace( datasourceName.trim().replace( " ", "_" ), "" )
+    return RegExp.compile( "[^p{L}p{N}_-]", "gu" ).replace( datasourceName.trim().replace( " ", "_" ), "" )
       .toLowerCase();       // change to lower to handle case sensitivity of quoted table names in postgresql (which
       // defaults all tables to lowercase)... BISERVER-5231
   }
