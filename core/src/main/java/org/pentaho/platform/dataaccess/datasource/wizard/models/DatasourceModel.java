@@ -17,7 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
-import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.http.client.URL;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
@@ -305,9 +305,8 @@ public class DatasourceModel extends XulEventSourceAdapter
       throw new IllegalStateException(
         "DatasourceName must not be null, cannot generate a valid table name" ); //$NON-NLS-1$
     }
-    // this regexp is not working on the Java side, but it works on the JS side
-    // see http://www.gwtproject.org/javadoc/latest/com/google/gwt/regexp/shared/RegExp.html
-    return RegExp.compile( "[^\\p{L}\\p{N}_-]", "gu" ).replace( datasourceName.trim().replace( " ", "_" ), "" )
+    return URL.encode( datasourceName.trim().replace( " ", "_" ) )  //$NON-NLS-1$ //$NON-NLS-2$
+      .replaceAll( "[^A-Za-z0-9_-]", "" )          //$NON-NLS-1$ //$NON-NLS-2$
       .toLowerCase();       // change to lower to handle case sensitivity of quoted table names in postgresql (which
       // defaults all tables to lowercase)... BISERVER-5231
   }
