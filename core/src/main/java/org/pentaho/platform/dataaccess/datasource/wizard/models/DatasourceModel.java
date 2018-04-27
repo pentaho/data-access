@@ -12,11 +12,12 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
+import com.google.gwt.http.client.URL;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
@@ -304,7 +305,7 @@ public class DatasourceModel extends XulEventSourceAdapter
       throw new IllegalStateException(
         "DatasourceName must not be null, cannot generate a valid table name" ); //$NON-NLS-1$
     }
-    return datasourceName.trim().replace( " ", "_" )  //$NON-NLS-1$ //$NON-NLS-2$
+    return URL.encode( datasourceName.trim().replace( " ", "_" ) )  //$NON-NLS-1$ //$NON-NLS-2$
       .replaceAll( "[^A-Za-z0-9_-]", "" )          //$NON-NLS-1$ //$NON-NLS-2$
       .toLowerCase();       // change to lower to handle case sensitivity of quoted table names in postgresql (which
       // defaults all tables to lowercase)... BISERVER-5231
