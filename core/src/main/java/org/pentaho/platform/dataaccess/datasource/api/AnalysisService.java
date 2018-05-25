@@ -1,18 +1,13 @@
-/*!
- * This program is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- * Foundation.
+/*
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License, version 2 as published by the Free Software Foundation.
  *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- * or from the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * You should have received a copy of the GNU General Public License along with this program; if not, you can obtain a copy at http://www.gnu.org/licenses/gpl-2.0.html or from the Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright 2006 - 2018 Hitachi Vantara.  All rights reserved.
+ *
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -53,6 +48,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import  org.pentaho.platform.api.repository2.unified.RepositoryFile;
@@ -94,11 +92,16 @@ public class AnalysisService extends DatasourceService {
       throw new PentahoAccessControlException();
     }
 
-    MondrianCatalogRepositoryHelper helper = createNewMondrianCatalogRepositoryHelper();
+    lock.lockRead();
+    Map<String, InputStream> fileData;
+    try {
+      MondrianCatalogRepositoryHelper helper = createNewMondrianCatalogRepositoryHelper();
 
-    Map<String, InputStream> fileData = helper.getModrianSchemaFiles( analysisId );
-    super.parseMondrianSchemaName( analysisId, fileData );
-
+      fileData = helper.getModrianSchemaFiles( analysisId );
+      super.parseMondrianSchemaName( analysisId, fileData );
+    } finally {
+      lock.unlockRead();
+    }
     return fileData;
   }
 
@@ -108,13 +111,25 @@ public class AnalysisService extends DatasourceService {
     } catch ( ConnectionServiceException e ) {
       throw new PentahoAccessControlException();
     }
-    mondrianCatalogService.removeCatalog( fixEncodedSlashParam( analysisId ), getSession() );
+    lock.lockWrite();
+    try {
+      mondrianCatalogService.removeCatalog( fixEncodedSlashParam( analysisId ), getSession() );
+    } finally {
+      lock.unlockWrite();
+    }
   }
 
   public List<String> getAnalysisDatasourceIds() {
     List<String> analysisIds = new ArrayList<String>();
-    List<MondrianCatalog> mockMondrianCatalogList = mondrianCatalogService.listCatalogs( getSession(), false );
-    Set<String> ids = metadataDomainRepository.getDomainIds();
+    lock.lockRead();
+    List<MondrianCatalog> mockMondrianCatalogList;
+    Set<String> ids;
+    try {
+      mockMondrianCatalogList = mondrianCatalogService.listCatalogs( getSession(), false );
+      ids = metadataDomainRepository.getDomainIds();
+    } finally {
+      lock.unlockRead();
+    }
     for ( MondrianCatalog mondrianCatalog : mockMondrianCatalogList ) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
       if ( !ids.contains( domainId ) ) {
@@ -160,6 +175,7 @@ public class AnalysisService extends DatasourceService {
       }
     }
     try {
+      lock.lockWrite();
       processMondrianImport(
         dataInputStream, catalogName, origCatalogName, overwrite, xmlaEnabledFlag, parameters, fileName, acl );
       if ( annotations != null ) {
@@ -176,6 +192,7 @@ public class AnalysisService extends DatasourceService {
         annots.close();
       }
     } finally {
+      lock.unlockWrite();
       if ( zis != null ) {
         zis.close();
       }
@@ -193,7 +210,13 @@ public class AnalysisService extends DatasourceService {
     checkAnalysisExists( analysisId );
 
     if ( aclAwareMondrianCatalogService != null ) {
-      final RepositoryFileAcl acl = aclAwareMondrianCatalogService.getAclFor( analysisId );
+      lock.lockRead();
+      final RepositoryFileAcl acl;
+      try {
+        acl = aclAwareMondrianCatalogService.getAclFor( analysisId );
+      } finally {
+        lock.unlockRead();
+      }
       return acl == null ? null : repositoryFileAclAdapter.marshal( acl );
     }
     return null;
@@ -205,7 +228,12 @@ public class AnalysisService extends DatasourceService {
 
     final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
     if ( aclAwareMondrianCatalogService != null ) {
-      aclAwareMondrianCatalogService.setAclFor( analysisId, acl );
+      lock.lockWrite();
+      try {
+        aclAwareMondrianCatalogService.setAclFor( analysisId, acl );
+      } finally {
+        lock.unlockWrite();
+      }
     }
     flushDataSources();
   }
@@ -214,7 +242,14 @@ public class AnalysisService extends DatasourceService {
     if ( !canManageACL() ) {
       throw new PentahoAccessControlException();
     }
-    if ( mondrianCatalogService.getCatalog( analysisId, PentahoSessionHolder.getSession() ) == null ) {
+    lock.lockRead();
+    MondrianCatalog catalog;
+    try {
+      catalog = mondrianCatalogService.getCatalog( analysisId, PentahoSessionHolder.getSession() );
+    } finally {
+      lock.unlockRead();
+    }
+    if ( catalog == null ) {
       throw new FileNotFoundException( analysisId + " doesn't exist" );
     }
   }

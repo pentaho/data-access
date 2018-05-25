@@ -46,6 +46,7 @@ import org.pentaho.metadata.model.thin.Column;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.dataaccess.datasource.api.IDatasourceLock;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
@@ -71,10 +72,12 @@ public class ModelerService extends PentahoBase implements IModelerService {
     File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar;
   private SimpleDataAccessPermissionHandler dataAccessPermHandler;
   private DSWDatasourceServiceImpl datasourceService;
+  protected static IDatasourceLock lock;
 
   public ModelerService() {
     super();
     dataAccessPermHandler = new SimpleDataAccessPermissionHandler();
+    lock = PentahoSystem.get( IDatasourceLock.class, PentahoSessionHolder.getSession() );
   }
 
   public Log getLogger() {
@@ -229,11 +232,22 @@ public class ModelerService extends PentahoBase implements IModelerService {
                     PentahoSystem.get( IMondrianCatalogService.class, "IMondrianCatalogService", session ); //$NON-NLS-1$
 
                 // try to get the current catalog
-                MondrianCatalog currentCatalog = mondrianCatalogService.getCatalog( catName, session );
+                lock.lockRead();
+                MondrianCatalog currentCatalog;
+                try {
+                  currentCatalog = mondrianCatalogService.getCatalog( catName, session );
+                } finally {
+                  lock.unlockRead();
+                }
 
                 // if current catalog exists, remove it
                 if ( currentCatalog != null ) {
-                  mondrianCatalogService.removeCatalog( catName, session );
+                  try {
+                    lock.lockWrite();
+                    mondrianCatalogService.removeCatalog( catName, session );
+                  } finally {
+                    lock.unlockWrite();
+                  }
                 }
 
                 session.setAttribute( "MONDRIAN_SCHEMA_XML_CONTENT", mondrianSchema );
@@ -275,7 +289,12 @@ public class ModelerService extends PentahoBase implements IModelerService {
       new MondrianSchema( catName, new ArrayList<MondrianCube>() )
     );
 
-    mondrianCatalogService.addCatalog( cat, true, session );
+    try {
+      lock.lockWrite();
+      mondrianCatalogService.addCatalog( cat, true, session );
+    } finally {
+      lock.unlockWrite();
+    }
   }
 
   public Domain loadDomain( String id ) throws Exception {

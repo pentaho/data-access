@@ -96,13 +96,18 @@ public class MetadataService extends DatasourceService {
     } catch ( ConnectionServiceException e ) {
       throw new PentahoAccessControlException();
     }
-    metadataDomainRepository.removeDomain( metadataId );
+    lock.lockWrite();
+    try {
+      metadataDomainRepository.removeDomain( metadataId );
+    } finally {
+      lock.unlockWrite();
+    }
   }
 
   public List<String> getMetadataDatasourceIds() {
     List<String> metadataIds = new ArrayList<String>();
     try {
-      sleep( 100 );
+      sleep( 100 );//TODO check if lock required
       for ( String id : metadataDomainRepository.getDomainIds() ) {
         if ( isMetadataDatasource( id ) ) {
           metadataIds.add( id );
@@ -316,8 +321,14 @@ public class MetadataService extends DatasourceService {
       throw new PentahoAccessControlException();
     }
     if ( metadataDomainRepository instanceof IPentahoMetadataDomainRepositoryExporter ) {
-      Map<String, InputStream> domainFilesData =
+      lock.lockRead();
+      Map<String, InputStream> domainFilesData;
+      try {
+        domainFilesData =
           ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
+      } finally {
+        lock.unlockRead();
+      }
       if ( domainFilesData == null || domainFilesData.isEmpty() ) {
         throw new FileNotFoundException();
       }

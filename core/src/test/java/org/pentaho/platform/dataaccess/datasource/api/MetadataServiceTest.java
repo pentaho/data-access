@@ -96,6 +96,7 @@ public class MetadataServiceTest {
     metadataService.aclAwarePentahoMetadataDomainRepositoryImporter =
       mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
     metadataService.mondrianCatalogService = mock( IMondrianCatalogService.class );
+    metadataService.lock = new DatasourceLock();
   }
 
   @After

@@ -16,7 +16,8 @@
   
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.PlatformStagingDatabaseResource"/>
-  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceResource"/>  
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceResource"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.api.DatasourceLock" scope="singleton"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.AnalysisDatasourceService"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceService"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionService"/>
