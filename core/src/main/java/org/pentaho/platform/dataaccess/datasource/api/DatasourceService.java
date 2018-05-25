@@ -20,6 +20,8 @@ package org.pentaho.platform.dataaccess.datasource.api;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -43,10 +45,12 @@ public class DatasourceService {
   protected IMetadataDomainRepository metadataDomainRepository;
   protected IMondrianCatalogService mondrianCatalogService;
   protected RepositoryFileAclAdapter repositoryFileAclAdapter;
+  protected static IDatasourceLock lock;
 
   public DatasourceService() {
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
     mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
+    lock = PentahoSystem.get( IDatasourceLock.class, PentahoSessionHolder.getSession() );
     repositoryFileAclAdapter = new RepositoryFileAclAdapter();
   }
 
@@ -90,12 +94,15 @@ public class DatasourceService {
   public boolean isMetadataDatasource( String id ) {
     Domain domain;
     try {
+      lock.lockRead();
       domain = metadataDomainRepository.getDomain( id );
       if ( domain == null ) {
         return false;
       }
     } catch ( Exception e ) { // If we can't load the domain then we MUST return false
       return false;
+    } finally {
+      lock.unlockRead();
     }
 
     return isMetadataDatasource( domain );

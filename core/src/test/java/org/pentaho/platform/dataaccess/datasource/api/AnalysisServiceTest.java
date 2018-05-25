@@ -91,6 +91,7 @@ public class AnalysisServiceTest {
     platform.defineInstance( IMondrianCatalogService.class, catalogService );
     permissionHandler = mock( IDataAccessPermissionHandler.class );
     platform.defineInstance( IDataAccessPermissionHandler.class, permissionHandler );
+    platform.defineInstance( IDatasourceLock.class, new DatasourceLock() );
     final IUnifiedRepository unifiedRepository = new FileSystemBackedUnifiedRepository( "target/test-classes/solution1" );
     platform.defineInstance( IUnifiedRepository.class, unifiedRepository );
     platform.start();

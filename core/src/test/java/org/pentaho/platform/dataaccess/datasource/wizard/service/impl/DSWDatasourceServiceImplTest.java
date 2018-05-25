@@ -76,6 +76,7 @@ import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
+import org.pentaho.platform.dataaccess.datasource.api.DatasourceLock;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
@@ -179,6 +180,7 @@ public class DSWDatasourceServiceImplTest {
     dswService = spy( new DSWDatasourceServiceImpl( mock( ConnectionServiceImpl.class ) ) );
     doNothing().when( dswService ).checkSqlQueriesSupported( anyString() );
     dswService.setMetadataDomainRepository( domainRepository );
+    dswService.lock = new DatasourceLock();
 
     Object[][] coumnHeaders = new Object[][]{ columns };
     SQLMetaData metadata = mock( SQLMetaData.class );

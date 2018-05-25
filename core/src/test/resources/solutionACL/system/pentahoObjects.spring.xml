@@ -53,6 +53,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       <ref bean="unifiedRepository"/>
     </constructor-arg>
   </bean>
+
+  <bean class="org.pentaho.platform.dataaccess.datasource.api.DatasourceLock" scope="singleton"/>
+
+
   <!-- Wrap the concrete IMetadataDomainRepository implementation with one that caches domains per session -->
   <bean id="IMetadataDomainRepository"
         class="org.pentaho.platform.plugin.services.metadata.SessionCachingMetadataDomainRepository" scope="singleton">

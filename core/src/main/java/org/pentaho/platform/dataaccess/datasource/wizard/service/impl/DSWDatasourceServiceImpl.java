@@ -51,6 +51,7 @@ import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
 import org.pentaho.platform.api.engine.IPentahoUrlFactory;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
+import org.pentaho.platform.dataaccess.datasource.api.IDatasourceLock;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
@@ -125,12 +126,15 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   private ConnectionServiceImpl connService;
 
+  protected static IDatasourceLock lock;
+
   public DSWDatasourceServiceImpl() {
     this( new ConnectionServiceImpl() );
   }
 
   public DSWDatasourceServiceImpl( ConnectionServiceImpl connService ) {
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, null );
+    lock = PentahoSystem.get( IDatasourceLock.class, PentahoSessionHolder.getSession() );
     this.connService = connService;
   }
 
@@ -487,40 +491,46 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
         .getErrorString( "DatasourceServiceImpl.ERROR_0001_PERMISSION_DENIED" ) ); //$NON-NLS-1$
     }
     List<LogicalModelSummary> logicalModelSummaries = new ArrayList<LogicalModelSummary>();
-    for ( String domainId : getMetadataDomainRepository().getDomainIds() ) {
-      Domain domain;
-      try {
-        domain = getMetadataDomainRepository().getDomain( domainId );
-      } catch ( Exception e ) {
-        logger.error(
-          Messages.getErrorString( "DatasourceServiceImpl.ERROR_0022_UNABLE_TO_PROCESS_LOGICAL_MODEL", domainId ), e );
-        continue;
-      }
 
-      String locale = LocaleHelper.getLocale().toString();
-      String[] locales = new String[ domain.getLocales().size() ];
-      for ( int i = 0; i < domain.getLocales().size(); i++ ) {
-        locales[ i ] = domain.getLocales().get( i ).getCode();
-      }
-      locale = LocaleHelper.getClosestLocale( locale, locales );
+    try {
+      lock.lockRead();
+      for ( String domainId : getMetadataDomainRepository().getDomainIds() ) {
+        Domain domain;
+        try {
+          domain = getMetadataDomainRepository().getDomain( domainId );
+        } catch ( Exception e ) {
+          logger.error(
+            Messages.getErrorString( "DatasourceServiceImpl.ERROR_0022_UNABLE_TO_PROCESS_LOGICAL_MODEL", domainId ), e );
+          continue;
+        }
 
-      for ( LogicalModel model : domain.getLogicalModels() ) {
-        String vis = (String) model.getProperty( LM_PROP_VISIBLE );
-        if ( vis != null ) {
-          String[] visibleContexts = vis.split( "," );
-          boolean visibleToContext = false;
-          for ( String c : visibleContexts ) {
-            if ( StringUtils.isNotEmpty( c.trim() ) && c.trim().equals( context ) ) {
-              visibleToContext = true;
-              break;
+        String locale = LocaleHelper.getLocale().toString();
+        String[] locales = new String[ domain.getLocales().size() ];
+        for ( int i = 0; i < domain.getLocales().size(); i++ ) {
+          locales[ i ] = domain.getLocales().get( i ).getCode();
+        }
+        locale = LocaleHelper.getClosestLocale( locale, locales );
+
+        for ( LogicalModel model : domain.getLogicalModels() ) {
+          String vis = (String) model.getProperty( LM_PROP_VISIBLE );
+          if ( vis != null ) {
+            String[] visibleContexts = vis.split( "," );
+            boolean visibleToContext = false;
+            for ( String c : visibleContexts ) {
+              if ( StringUtils.isNotEmpty( c.trim() ) && c.trim().equals( context ) ) {
+                visibleToContext = true;
+                break;
+              }
+            }
+            if ( !visibleToContext ) {
+              continue;
             }
           }
-          if ( !visibleToContext ) {
-            continue;
-          }
+          logicalModelSummaries.add( new LogicalModelSummary( domainId, model.getId(), model.getName( locale ) ) );
         }
-        logicalModelSummaries.add( new LogicalModelSummary( domainId, model.getId(), model.getName( locale ) ) );
       }
+    } finally {
+      lock.unlockRead();
     }
     return logicalModelSummaries;
   }

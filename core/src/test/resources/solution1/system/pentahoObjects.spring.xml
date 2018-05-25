@@ -32,6 +32,8 @@ not directly from the PentahoObjectFactory. -->
 
   <bean id="IMondrianCatalogService" class="org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper"
         scope="singleton"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.api.DatasourceLock" scope="singleton"/>
+
 
   <!--
     IDBDatasourceService - options are: 

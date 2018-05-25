@@ -1,18 +1,13 @@
-/*!
- * This program is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- * Foundation.
+/*
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License, version 2 as published by the Free Software Foundation.
  *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- * or from the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * You should have received a copy of the GNU General Public License along with this program; if not, you can obtain a copy at http://www.gnu.org/licenses/gpl-2.0.html or from the Free Software Foundation, Inc.,  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright 2006 - 2018 Hitachi Vantara.  All rights reserved.
+ *
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -115,12 +110,19 @@ public class DataSourceWizardService extends DatasourceService {
     if ( !canManageACL() ) {
       throw new PentahoAccessControlException();
     }
-    // First get the metadata files;
-    Map<String, InputStream> fileData = getMetadataFiles( dswId );
 
+    lock.lockRead();
+    Map<String, InputStream> fileData;
+    Domain domain;
+    try {
+      // First get the metadata files;
+      fileData = getMetadataFiles( dswId );
 
-    // Then get the corresponding mondrian files
-    Domain domain = metadataDomainRepository.getDomain( dswId );
+      // Then get the corresponding mondrian files
+      domain = metadataDomainRepository.getDomain( dswId );
+    } finally {
+      lock.unlockRead();
+    }
     ModelerWorkspace model = createModelerWorkspace();
     model.setDomain( domain );
     LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
@@ -130,8 +132,13 @@ public class DataSourceWizardService extends DatasourceService {
     if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
       MondrianCatalogRepositoryHelper helper = createMondrianCatalogRepositoryHelper();
       String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
-      fileData.putAll( helper.getModrianSchemaFiles( catalogRef ) );
-      parseMondrianSchemaNameWrapper( dswId, fileData );
+      lock.lockWrite();
+      try {
+        fileData.putAll( helper.getModrianSchemaFiles( catalogRef ) );
+        parseMondrianSchemaNameWrapper( dswId, fileData );
+      } finally {
+        lock.unlockWrite();
+      }
     }
 
     return fileData;
@@ -143,33 +150,39 @@ public class DataSourceWizardService extends DatasourceService {
     } catch ( ConnectionServiceException e ) {
       throw new PentahoAccessControlException();
     }
-    Domain domain = metadataDomainRepository.getDomain( dswId );
-    ModelerWorkspace model = createModelerWorkspace();
-    model.setDomain( domain );
-    LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    if ( logicalModel == null ) {
-      logicalModel = model.getLogicalModel( ModelerPerspective.REPORTING );
-    }
-    if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
-      String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
-      try {
-        mondrianCatalogService.removeCatalog( catalogRef, getSession() );
-      } catch ( MondrianCatalogServiceException e ) {
-        logger.warn( "Failed to remove mondrian catalog", e );
-      }
-    }
+    lock.lockWrite();
     try {
-      dswService.deleteLogicalModel( domain.getId(), logicalModel.getId() );
-    } catch ( DatasourceServiceException ex ) {
-      logger.warn( "Failed to remove logical model", ex );
+      Domain domain = metadataDomainRepository.getDomain( dswId );
+      ModelerWorkspace model = createModelerWorkspace();
+      model.setDomain( domain );
+      LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+      if ( logicalModel == null ) {
+        logicalModel = model.getLogicalModel( ModelerPerspective.REPORTING );
+      }
+      if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
+        String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
+        try {
+          mondrianCatalogService.removeCatalog( catalogRef, getSession() );
+        } catch ( MondrianCatalogServiceException e ) {
+          logger.warn( "Failed to remove mondrian catalog", e );
+        }
+      }
+      try {
+        dswService.deleteLogicalModel( domain.getId(), logicalModel.getId() );
+      } catch ( DatasourceServiceException ex ) {
+        logger.warn( "Failed to remove logical model", ex );
+      }
+      metadataDomainRepository.removeDomain( dswId );
+    } finally {
+      lock.unlockWrite();
     }
-    metadataDomainRepository.removeDomain( dswId );
   }
 
   public List<String> getDSWDatasourceIds() {
     List<String> datasourceList = new ArrayList<String>();
     try {
-    nextModel:
+      lock.lockRead();
+      nextModel:
       for ( LogicalModelSummary summary : dswService.getLogicalModels( null ) ) {
         Domain domain = modelerService.loadDomain( summary.getDomainId() );
         List<LogicalModel> logicalModelList = domain.getLogicalModels();
@@ -185,6 +198,8 @@ public class DataSourceWizardService extends DatasourceService {
       }
     } catch ( Throwable e ) {
       return null;
+    } finally {
+      lock.unlockRead();
     }
     return datasourceList;
   }
@@ -219,49 +234,56 @@ public class DataSourceWizardService extends DatasourceService {
         throw new DswPublishValidationException( DswPublishValidationException.Type.OVERWRITE_CONFLICT, domainIds );
       }
     }
-
-    XmiParser xmiParser = createXmiParser();
-    Domain domain = null;
     try {
-      domain = xmiParser.parseXmi( metadataFile );
-    } catch ( Exception e ) {
-      throw new DswPublishValidationException( DswPublishValidationException.Type.INVALID_XMI, e.getMessage() );
-    }
-    domain.setId( domainId );
-    if ( checkConnection ) {
-      final String connectionId = getMondrianDatasourceWrapper( domain );
-      //Left second check with non-escaped name for backward compatibility
-      if ( datasourceMgmtSvc.getDatasourceByName( sanitizer.escape( connectionId ) ) == null
-        && datasourceMgmtSvc.getDatasourceByName( connectionId ) == null ) {
-        final String msg = "connection not found: '" + connectionId + "'";
-        throw new DswPublishValidationException( Type.MISSING_CONNECTION, msg );
+      lock.lockWrite();
+      XmiParser xmiParser = createXmiParser();
+      Domain domain = null;
+      try {
+        domain = xmiParser.parseXmi( metadataFile );
+      } catch ( Exception e ) {
+        lock.unlockWrite();
+        throw new DswPublishValidationException( Type.INVALID_XMI, e.getMessage() );
       }
-    }
-    // build bundles
-    IPlatformImportBundle mondrianBundle = createMondrianDswBundle( domain, acl );
-    InputStream metadataIn = toInputStreamWrapper( domain, xmiParser );
-    IPlatformImportBundle metadataBundle = createMetadataDswBundle( domain, metadataIn, overwrite, acl );
 
-    //add localization bundles
-    if ( localizeFiles != null ) {
-      for ( int i = 0; i < localizeFiles.size(); i++ ) {
-        IPlatformImportBundle localizationBundle =  MetadataService.createNewRepositoryFileImportBundle( localizeFiles.get( i ), localizeFileNames.get( i ), domainId );
-        metadataBundle.getChildBundles().add( localizationBundle );
-        logger.info( "created language file" );
+      domain.setId( domainId );
+      if ( checkConnection ) {
+        final String connectionId = getMondrianDatasourceWrapper( domain );
+        //Left second check with non-escaped name for backward compatibility
+        if ( datasourceMgmtSvc.getDatasourceByName( sanitizer.escape( connectionId ) ) == null
+          && datasourceMgmtSvc.getDatasourceByName( connectionId ) == null ) {
+          final String msg = "connection not found: '" + connectionId + "'";
+          lock.unlockWrite();
+          throw new DswPublishValidationException( Type.MISSING_CONNECTION, msg );
+        }
       }
-    }
+      // build bundles
+      IPlatformImportBundle mondrianBundle = createMondrianDswBundle( domain, acl );
+      InputStream metadataIn = toInputStreamWrapper( domain, xmiParser );
+      IPlatformImportBundle metadataBundle = createMetadataDswBundle( domain, metadataIn, overwrite, acl );
 
-    // do import
-    IPlatformImporter importer = getIPlatformImporter();
-    importer.importFile( metadataBundle );
-    logger.debug( "imported metadata xmi" );
-    importer.importFile( mondrianBundle );
-    logger.debug( "imported mondrian schema" );
-    // trigger refreshes
-    IPentahoSession session = getSession();
-    PentahoSystem.publish( session, METADATA_PUBLISHER );
-    PentahoSystem.publish( session, MONDRIAN_PUBLISHER );
-    logger.info( "publishDsw: Published DSW with domainId='" + domainId + "'." );
+      //add localization bundles
+      if ( localizeFiles != null ) {
+        for ( int i = 0; i < localizeFiles.size(); i++ ) {
+          IPlatformImportBundle localizationBundle =  MetadataService.createNewRepositoryFileImportBundle( localizeFiles.get( i ), localizeFileNames.get( i ), domainId );
+          metadataBundle.getChildBundles().add( localizationBundle );
+          logger.info( "created language file" );
+        }
+      }
+
+      // do import
+      IPlatformImporter importer = getIPlatformImporter();
+      importer.importFile( metadataBundle );
+      logger.debug( "imported metadata xmi" );
+      importer.importFile( mondrianBundle );
+      logger.debug( "imported mondrian schema" );
+      // trigger refreshes
+      IPentahoSession session = getSession();
+      PentahoSystem.publish( session, METADATA_PUBLISHER );
+      PentahoSystem.publish( session, MONDRIAN_PUBLISHER );
+      logger.info( "publishDsw: Published DSW with domainId='" + domainId + "'." );
+    } finally {
+      lock.unlockWrite();
+    }
     return domainId;
   }
 
@@ -361,12 +383,17 @@ public class DataSourceWizardService extends DatasourceService {
 
   protected List<String> getOverwrittenDomains( String dswId ) {
     List<String> domainIds = new ArrayList<String>( 2 );
-    if ( metadataDomainRepository.getDomainIds().contains( dswId ) ) {
-      domainIds.add( "dsw/" + dswId );
-    }
-    final String catalogName = toAnalysisDomainId( dswId );
-    if ( mondrianCatalogService.getCatalog( catalogName, PentahoSessionHolder.getSession() ) != null ) {
-      domainIds.add( "mondrian/" + catalogName );
+    try {
+      lock.lockRead();
+      if ( metadataDomainRepository.getDomainIds().contains( dswId ) ) {
+        domainIds.add( "dsw/" + dswId );
+      }
+      final String catalogName = toAnalysisDomainId( dswId );
+      if ( mondrianCatalogService.getCatalog( catalogName, PentahoSessionHolder.getSession() ) != null ) {
+        domainIds.add( "mondrian/" + catalogName );
+      }
+    } finally {
+      lock.unlockRead();
     }
     return domainIds;
   }

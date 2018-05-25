@@ -103,6 +103,7 @@ public class DataSourceWizardServiceTest {
     dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter = mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
     dataSourceWizardService.aclAwareMondrianCatalogService = mock( IAclAwareMondrianCatalogService.class );
     dataSourceWizardService.sanitizer = mock( UtilHtmlSanitizer.class );
+    dataSourceWizardService.lock = new DatasourceLock();
   }
 
   @After
