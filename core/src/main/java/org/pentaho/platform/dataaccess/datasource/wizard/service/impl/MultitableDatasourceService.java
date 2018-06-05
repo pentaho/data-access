@@ -36,6 +36,8 @@ import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.Concept;
@@ -198,17 +200,22 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
     try {
       DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
       Database database = new Database( null, databaseMeta );
-      database.connect();
 
-      String query = databaseMeta.getSQLQueryFields( table );
-      // Setting the query limit to 1 before executing the query
-      database.setQueryLimit( 1 );
-      database.getRows( query, 1 );
-      String[] tableFields = database.getReturnRowMeta().getFieldNames();
+      try {
+        database.connect();
 
-      List<String> fields = Arrays.asList( tableFields );
-      database.disconnect();
-      return fields;
+        RowMetaInterface fieldsMeta = database.getTableFields( table );
+
+        List<String> fields = new ArrayList<>();
+        for ( int i = fieldsMeta.size() - 1; i >= 0; i-- ) {
+          ValueMetaInterface field = fieldsMeta.getValueMeta( i );
+          fields.add( field.getName() );
+        }
+
+        return fields;
+      } finally {
+        database.disconnect();
+      }
     } catch ( KettleDatabaseException e ) {
       logger.error( e );
       throw new DatasourceServiceException( e );
