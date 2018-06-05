@@ -36,6 +36,8 @@ import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.Concept;
@@ -194,21 +196,55 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
     }
   }
 
+  private static String[] getSchemaTablePair( DatabaseMeta db, String table ) {
+    // This is clunky, but it's better than rewriting all
+    // of the pojos and interfaces. Unfortunately, the schema
+    // name is scotched to the table pretty quick in the process.
+    // Fortunately, since we built this serialized form, we know
+    // how to undo it.
+    if ( table.indexOf( "." ) < 0 ) {
+      return new String[] { "", table };
+    }
+    String[] pair = new String[ 2 ];
+    String[] parts = table.split( "\\." );
+    pair[ 0 ] = parts[ 0 ];
+
+    String tableName = "";
+    for ( int i = 1; i < parts.length; i++ ) {
+      tableName = tableName + "." + parts[ i ];
+    }
+    pair[ 1 ] = tableName.substring( 1 );
+
+    pair[ 0 ] = pair[ 0 ].replaceAll( db.getStartQuote(), "" );
+    pair[ 0 ] = pair[ 0 ].replaceAll( db.getEndQuote(), "" );
+
+    pair[ 1 ] = pair[ 1 ].replaceAll( db.getStartQuote(), "" );
+    pair[ 1 ] = pair[ 1 ].replaceAll( db.getEndQuote(), "" );
+
+    return pair;
+  }
+
   public List<String> getTableFields( String table, IDatabaseConnection connection ) throws DatasourceServiceException {
     try {
       DatabaseMeta databaseMeta = this.getDatabaseMeta( connection );
       Database database = new Database( null, databaseMeta );
-      database.connect();
 
-      String query = databaseMeta.getSQLQueryFields( table );
-      // Setting the query limit to 1 before executing the query
-      database.setQueryLimit( 1 );
-      database.getRows( query, 1 );
-      String[] tableFields = database.getReturnRowMeta().getFieldNames();
+      try {
+        database.connect();
 
-      List<String> fields = Arrays.asList( tableFields );
-      database.disconnect();
-      return fields;
+        String[] schemaTablePair = getSchemaTablePair( databaseMeta, table );
+        RowMetaInterface fieldsMeta = database.getTableFieldsMeta( schemaTablePair[0], schemaTablePair[1] );
+
+        List<String> fields = new ArrayList<>();
+        for ( int i = fieldsMeta.size() - 1; i >= 0; i-- ) {
+          ValueMetaInterface field = fieldsMeta.getValueMeta( i );
+          fields.add( field.getName() );
+        }
+
+        return fields;
+      } finally {
+        database.disconnect();
+      }
     } catch ( KettleDatabaseException e ) {
       logger.error( e );
       throw new DatasourceServiceException( e );
