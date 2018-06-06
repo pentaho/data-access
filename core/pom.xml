@@ -13,7 +13,7 @@
   <properties>
     <wadl.package>org.pentaho.platform.dataaccess</wadl.package>
     <wadl.path>${project.build.directory}/${wadl.file.name}</wadl.path>
-    <wadl.outupt.directory>${project.build.outputDirectory}/META-INF/wadl</wadl.outupt.directory>
+    <wadl.output.directory>${project.build.outputDirectory}/META-INF/wadl</wadl.output.directory>
     <wadl.file.name>wadlExtension.xml</wadl.file.name>
   </properties>
   <dependencies>
@@ -693,7 +693,7 @@
                   <goal>copy-resources</goal>
                 </goals>
                 <configuration>
-                  <outputDirectory>${wadl.outupt.directory}</outputDirectory>
+                  <outputDirectory>${wadl.output.directory}</outputDirectory>
                   <resources>
                     <resource>
                       <directory>${project.build.directory}</directory>
