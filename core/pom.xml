@@ -5,47 +5,39 @@
   <parent>
     <groupId>pentaho</groupId>
     <artifactId>pentaho-data-access-parent</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.15-157</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-bi-platform-data-access</artifactId>
-  <version>7.1-SNAPSHOT</version>
-
+  <version>7.1.0.15-157</version>
   <properties>
-    <wadl.file.name>wadlExtension.xml</wadl.file.name>
-    <wadl.path>${project.build.directory}/${wadl.file.name}</wadl.path>
     <wadl.package>org.pentaho.platform.dataaccess</wadl.package>
+    <wadl.path>${project.build.directory}/${wadl.file.name}</wadl.path>
     <wadl.outupt.directory>${project.build.outputDirectory}/META-INF/wadl</wadl.outupt.directory>
+    <wadl.file.name>wadlExtension.xml</wadl.file.name>
   </properties>
-
   <dependencies>
-
-    <!-- Need this to provide the proper impl of XmlInputFactory for our tests (WstxInputFactory) -->
     <dependency>
       <groupId>org.codehaus.woodstox</groupId>
       <artifactId>wstx-asl</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-repository</artifactId>
-      <scope>test</scope>
       <classifier>tests</classifier>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <scope>test</scope>
       <classifier>tests</classifier>
+      <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-
-    <!-- Pentaho dependencies -->
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
@@ -70,9 +62,6 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-modeler</artifactId>
     </dependency>
-
-
-    <!-- needed for gwt i think -->
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-modeler-gwt</artifactId>
@@ -166,8 +155,6 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
     </dependency>
-
-    <!-- 3rd party dependencies -->
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
@@ -236,8 +223,6 @@
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
     </dependency>
-
-    <!-- Test dependencies -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
@@ -259,9 +244,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <scope>test</scope>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
@@ -283,7 +268,6 @@
       <artifactId>commons-collections</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon</artifactId>
@@ -609,7 +593,6 @@
       <artifactId>mimepull</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId>
@@ -630,14 +613,12 @@
       <artifactId>jackson-xc</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>com.sun.xml.stream</groupId>
-        <artifactId>sjsxp</artifactId>
+      <artifactId>sjsxp</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <testResources>
       <testResource>
@@ -647,8 +628,8 @@
         </excludes>
       </testResource>
       <testResource>
-        <directory>src/test/resources</directory>
         <filtering>true</filtering>
+        <directory>src/test/resources</directory>
         <includes>
           <include>**/jdbc.properties</include>
         </includes>
@@ -662,8 +643,8 @@
       </testResource>
       <testResource>
         <targetPath>${project.build.directory}/it-classes</targetPath>
-        <directory>src/test/resources</directory>
         <filtering>true</filtering>
+        <directory>src/test/resources</directory>
         <includes>
           <include>**/jdbc.properties</include>
         </includes>
@@ -686,29 +667,25 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
-
   <profiles>
     <profile>
       <id>wadl-generation</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
             <version>2.10.4</version>
             <executions>
               <execution>
+                <phase>compile</phase>
                 <goals>
                   <goal>javadoc</goal>
                 </goals>
-                <phase>compile</phase>
               </execution>
             </executions>
             <configuration>
@@ -741,15 +718,10 @@
                   <version>${xercesImpl.version}</version>
                 </docletArtifact>
               </docletArtifacts>
-              <!-- the following option is required as a work around for
-                   version 2.5 of the javadoc plugin which will be used
-                   by a maven version > 2.0.9 -->
               <useStandardDocletOptions>false</useStandardDocletOptions>
               <additionalparam>-output ${wadl.path}</additionalparam>
             </configuration>
           </plugin>
-
-          <!--copy the generated wadl to the META-INF/wadl folder for the jar-->
           <plugin>
             <artifactId>maven-resources-plugin</artifactId>
             <version>2.5</version>
@@ -779,5 +751,4 @@
       </build>
     </profile>
   </profiles>
-
 </project>
