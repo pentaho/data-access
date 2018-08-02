@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -28,7 +28,13 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.*;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.PUT;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.POST;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -39,6 +45,7 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataResource;
+import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.CsvUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -48,17 +55,15 @@ import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainReposi
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
-import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclDto;
 
 @Path( "/data-access/api/metadata" )
 public class MetadataDatasourceService {
-  
+
   private static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final String DATASOURCE_ACL = "acl";
   private static final String LANG = "[a-z]{2}";
   private static final String LANG_CC = LANG + "_[A-Z]{2}";
   private static final String LANG_CC_EXT = LANG_CC + "_[^/]+";
-  
   private static final List<String> ENCODINGS = Arrays.asList( "", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-32BE",
       "UTF-32LE", "Shift_JIS", "ISO-2022-JP", "ISO-2022-CN", "ISO-2022-KR", "GB18030", "Big5", "EUC-JP", "EUC-KR",
       "ISO-8859-1", "ISO-8859-2", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "windows-1251",
@@ -103,7 +108,6 @@ public class MetadataDatasourceService {
           Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
     }
   }
-  
   /**
    * @param metadataFile
    *          Input stream for the metadata.xmi
@@ -135,7 +139,7 @@ public class MetadataDatasourceService {
           Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
     }
   }
-  
+
   /**
    * @param localizeBundleEntries
    * @param domainId
@@ -219,7 +223,7 @@ public class MetadataDatasourceService {
           Messages.getString( "MetadataDatasourceService.ERROR_001_METADATA_DATASOURCE_ERROR" ) ).build();
     }
   }
-  
+
   /**
    * @param domainId
    *          Unique identifier for the metadata datasource
