@@ -101,16 +101,12 @@ public class MetadataService extends DatasourceService {
 
   public List<String> getMetadataDatasourceIds() {
     List<String> metadataIds = new ArrayList<String>();
-    try {
-      sleep( 100 );
-      for ( String id : metadataDomainRepository.getDomainIds() ) {
-        if ( isMetadataDatasource( id ) ) {
-          metadataIds.add( id );
-        }
+    for ( String id : metadataDomainRepository.getDomainIds() ) {
+      if ( isMetadataDatasource( id ) ) {
+        metadataIds.add( id );
       }
-    } catch ( InterruptedException e ) {
-      e.printStackTrace();
     }
+
     return metadataIds;
   }
 
