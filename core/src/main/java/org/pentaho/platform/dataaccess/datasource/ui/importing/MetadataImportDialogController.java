@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
+* Copyright (c) 2002-2018 Hitachi Vantara Corporation..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
@@ -425,6 +425,7 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
     fileLabel.setValue( resBundle.getString( "importDialog.XMI_FILE", "XMI File" ) + ":" );
     super.showDialog();
     createWorkingForm();
+    getDialog().center();
   }
 
   public void reShowDialog() {
