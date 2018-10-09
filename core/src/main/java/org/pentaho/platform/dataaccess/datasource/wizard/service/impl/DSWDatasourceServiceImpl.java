@@ -89,8 +89,6 @@ import org.pentaho.platform.util.web.SimpleUrlFactory;
 
 import com.thoughtworks.xstream.XStream;
 
-import static java.util.stream.Collectors.toList;
-
 public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   private static final Log logger = LogFactory.getLog( DSWDatasourceServiceImpl.class );
@@ -582,7 +580,11 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       component.setAction( PMDUIComponent.ACTION_LIST_MODELS );
       Document document = component.getXmlContent();
 
-      return ( (List<Node>) document.selectNodes( "//model_name" ) ).stream().map( x -> x.getText() ).collect( toList() );
+      ArrayList<String> datasourceNames = new ArrayList<>();
+      for ( Node node : document.selectNodes( "//model_name" ) ) {
+        datasourceNames.add( node.getText() );
+      }
+      return datasourceNames;
     }
   }
 
