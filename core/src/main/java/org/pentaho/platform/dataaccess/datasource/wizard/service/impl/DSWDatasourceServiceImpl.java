@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
-import org.dom4j.tree.DefaultElement;
+import org.dom4j.Node;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -571,11 +571,11 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
       component.validate( PentahoSessionHolder.getSession(), null );
       component.setAction( PMDUIComponent.ACTION_LIST_MODELS );
       Document document = component.getXmlContent();
-      List<DefaultElement> modelElements = document.selectNodes( "//model_name" ); //$NON-NLS-1$
 
-      ArrayList<String> datasourceNames = new ArrayList<String>();
-      for ( DefaultElement element : modelElements ) {
-        datasourceNames.add( element.getText() );
+      ArrayList<String> datasourceNames = new ArrayList<>();
+      List<Node> nodes = document.selectNodes( "//model_name" );
+      for ( Node node : nodes ) {
+        datasourceNames.add( node.getText() );
       }
       return datasourceNames;
     }
