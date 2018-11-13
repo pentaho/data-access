@@ -12,16 +12,14 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2018 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
+import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -46,13 +44,15 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
+import java.util.List;
+
 /**
  * This service provides methods for listing, creating, downloading, uploading, and removal of JDBC data sources.
  */
 @Path( "/data-access/api/datasource/jdbc/connection" )
 public class JDBCDatasourceResource {
 
-  protected ConnectionServiceImpl service;
+  private ConnectionServiceImpl service;
   private static final Log logger = LogFactory.getLog( JDBCDatasourceResource.class );
 
   public JDBCDatasourceResource() {
@@ -68,7 +68,7 @@ public class JDBCDatasourceResource {
    *
    * @param name The name of the JDBC datasource to remove
    *
-   * @return A 200 response code representing the successful removal of the JDBC datasource.
+   * @return A 204 response code representing the successful removal of the JDBC datasource.
    *
    * <p><b>Example Response:</b></p>
    *    <pre function="syntax.xml">
@@ -78,23 +78,17 @@ public class JDBCDatasourceResource {
   @DELETE
   @Path( "/{name : .+}" )
   @StatusCodes( {
-    @ResponseCode( code = 200, condition = "JDBC datasource removed successfully." ),
+    @ResponseCode( code = 204, condition = "JDBC datasource removed successfully." ),
     @ResponseCode( code = 304,
       condition = "User is not authorized to remove the JDBC datasource or the connection does not exist." ),
-    @ResponseCode( code = 500, condition = "An unexected error occurred while deleting the JDBC datasource." )
+    @ResponseCode( code = 500, condition = "An unexpected error occurred while deleting the JDBC datasource." )
   } )
   public Response deleteConnection( @PathParam( "name" ) String name ) {
     try {
-      boolean success = service.deleteConnection( name );
-      if ( success ) {
-        return buildOkResponse();
-      } else {
-        return buildNotModifiedResponse();
-      }
+      return service.deleteConnection( name ) ? Response.noContent().build() : Response.notModified().build();
     } catch ( Throwable t ) {
-      return buildServerErrorResponse();
+      return Response.serverError().build();
     }
-
   }
 
   /**
@@ -154,19 +148,17 @@ public class JDBCDatasourceResource {
     @ResponseCode( code = 500, condition = "Internal error retrieving JDBC datasource IDs" )
   } )
   public JaxbList<String> getConnectionIDs() {
-    List<String> connStrList = new ArrayList<String>();
+    List<String> connectionNames;
+
     try {
-      List<IDatabaseConnection> conns = service.getConnections();
-      for ( IDatabaseConnection conn : conns ) {
-        conn.setPassword( null );
-        connStrList.add( conn.getName() );
-      }
+      connectionNames = service.getConnections().stream()
+        .map( connection -> connection.getName() )
+        .collect( toList() );
     } catch ( ConnectionServiceException e ) {
       logger.error( "Error " + e.getMessage() );
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
-    JaxbList<String> connections = new JaxbList<String>( connStrList );
-    return connections;
+    return new JaxbList<>( connectionNames );
   }
 
   /**
@@ -230,10 +222,13 @@ public class JDBCDatasourceResource {
   } )
   public Response getConnection( @PathParam( "name" ) String name ) {
     try {
-      return buildOkResponse( service.getConnectionByName( name ) );
+      IDatabaseConnection connection = service.getConnectionByName( name );
+      connection.setPassword( null ); // don't return the password back to the user
+
+      return Response.ok( connection ).build();
     } catch ( ConnectionServiceException e ) {
       logger.error( "Error " + e.getMessage() );
-      return buildServerErrorResponse();
+      return Response.serverError().build();
     }
   }
 
@@ -287,68 +282,38 @@ public class JDBCDatasourceResource {
   @Path( "/{connectionId : .+}" )
   @Consumes( { APPLICATION_JSON } )
   @StatusCodes( {
-    @ResponseCode( code = 200, condition = "JDBC datasource added successfully." ),
-    @ResponseCode( code = 403, condition = "User is not authorized to add JDBC datasources." ),
+    @ResponseCode( code = 204, condition = "JDBC datasource added successfully." ),
+    @ResponseCode( code = 401, condition = "User is not authorized to add JDBC datasources." ),
     @ResponseCode( code = 304, condition = "Datasource was not modified" ),
-    @ResponseCode( code = 500, condition = "An unexected error occurred while adding the JDBC datasource." )
+    @ResponseCode( code = 500, condition = "An unexpected error occurred while adding the JDBC datasource." )
   } )
   public Response addOrUpdate( @PathParam( "connectionId" ) String connectionName, DatabaseConnection connection ) {
     try {
-      validateAccess();
+      DatasourceService.validateAccess();
       // Prefer the path name over the one in the DTO object
       connection.setId( connectionName );
-      IDatabaseConnection savedConn = null;
+
       try {
-        savedConn = service.getConnectionByName( connectionName );
-      } catch ( ConnectionServiceException e ){
-        // unfortunatley getConnectionById throws an exception not returning null when the conneciton is not present.
+        IDatabaseConnection old = service.getConnectionByName( connectionName );
 
-      } catch ( NullPointerException e){
-        // unfortunatley getConnectionById throws an exception not returning null when the conneciton is not present.
-
-      }
-      boolean success = false;
-      if( savedConn != null ) {
         if ( StringUtils.isBlank( connection.getPassword() ) ) {
-          connection.setPassword( savedConn.getPassword() );
+          connection.setPassword( old.getPassword() );
         }
-        connection.setId( savedConn.getId() );
-        success = service.updateConnection( connection );
-      } else {
-        success = service.addConnection( connection );
+        connection.setId( old.getId() );
+
+        return service.updateConnection( connection ) ? Response.noContent().build() : Response.notModified().build();
+      } catch ( ConnectionServiceException e ) {
+        // unfortunately getConnectionById throws an exception not returning null when the connection is not present.
+      } catch ( NullPointerException e ) {
+        // unfortunately getConnectionById throws an exception not returning null when the connection is not present.
       }
 
-
-      if ( success ) {
-        return buildOkResponse();
-      } else {
-        return buildNotModifiedResponse();
-      }
+      return service.addConnection( connection ) ? Response.noContent().build() : Response.notModified().build();
     } catch ( PentahoAccessControlException t ) {
-      throw new WebApplicationException( Response.Status.UNAUTHORIZED );
-    } catch ( Throwable t ){
+      return Response.status( Response.Status.UNAUTHORIZED ).build();
+    } catch ( Throwable t ) {
       logger.error( "Error " + t.getMessage() );
-      return buildServerErrorResponse();
+      return Response.serverError().build();
     }
-  }
-
-  protected Response buildOkResponse() {
-    return Response.ok().build();
-  }
-
-  protected Response buildOkResponse( IDatabaseConnection connection ) {
-    return Response.ok( connection ).build();
-  }
-
-  protected Response buildNotModifiedResponse() {
-    return Response.notModified().build();
-  }
-
-  protected Response buildServerErrorResponse() {
-    return Response.serverError().build();
-  }
-
-  protected void validateAccess() throws PentahoAccessControlException {
-    DatasourceService.validateAccess();
   }
 }
