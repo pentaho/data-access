@@ -143,7 +143,7 @@ public class MessageHandler extends AbstractXulEventHandler {
   }
 
   public static native void showBusyIndicator( String title, String message )/*-{
-    $wnd.pen.require([
+    $wnd.require([
           "common-ui/util/BusyIndicator"
         ],
 
@@ -154,7 +154,7 @@ public class MessageHandler extends AbstractXulEventHandler {
   }-*/;
 
   public static native void hideBusyIndicator()/*-{
-    $wnd.pen.require([
+    $wnd.require([
           "common-ui/util/BusyIndicator"
         ],
 
