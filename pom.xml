@@ -28,12 +28,15 @@
     <gwtx.version>1.5.2</gwtx.version>
     <pentaho-reporting.version>8.2.0.0-SNAPSHOT</pentaho-reporting.version>
     <hibernate-core.version>3.6.9.Final</hibernate-core.version>
-    <gwtmockito.version>1.1.6</gwtmockito.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <slf4j-api.version>1.7.3</slf4j-api.version>
     <commons-codec.version>1.9</commons-codec.version>
     <aspectjrt.version>1.6.6</aspectjrt.version>
-    <mockito-all.version>1.9.5</mockito-all.version>
+    <mockito.version>1.10.19</mockito.version>
+    <gwtmockito.version>1.1.6</gwtmockito.version>
+    <jmock-junit4.version>2.5.1</jmock-junit4.version>
+    <powermock.version>1.7.3</powermock.version>
+    <hamcrest.version>2.0.0.0</hamcrest.version>
     <dependency.org.springframework.spring-test.version>4.3.2.RELEASE</dependency.org.springframework.spring-test.version>
     <dependency.org.codehaus.jettison.jettison.version>1.2</dependency.org.codehaus.jettison.jettison.version>
     <dependency.com.google.gwt.gwt-codeserver.version>2.5.1</dependency.com.google.gwt.gwt-codeserver.version>
@@ -84,7 +87,6 @@
     <jta.version>1.1</jta.version>
     <dependency.org.springframework.spring-context-support.version>4.3.2.RELEASE</dependency.org.springframework.spring-context-support.version>
     <jcr.version>2.0</jcr.version>
-    <jmock-junit4.version>2.5.1</jmock-junit4.version>
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
     <jaxws-spring.version>1.8</jaxws-spring.version>
     <ehcache-core.version>2.5.1</ehcache-core.version>
@@ -777,12 +779,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.jmock</groupId>
-        <artifactId>jmock-junit4</artifactId>
-        <version>${jmock-junit4.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>${dependency.org.springframework.spring-webmvc.version}</version>
@@ -941,7 +937,7 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
-        <version>${mockito-all.version}</version>
+        <version>${mockito.version}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -949,6 +945,24 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock-junit4</artifactId>
+        <version>${jmock-junit4.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-module-junit4</artifactId>
+        <version>${powermock.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-mockito</artifactId>
+        <version>${powermock.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.aspectj</groupId>
