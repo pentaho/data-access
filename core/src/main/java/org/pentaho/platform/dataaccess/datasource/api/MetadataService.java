@@ -96,7 +96,8 @@ public class MetadataService extends DatasourceService {
     } catch ( ConnectionServiceException e ) {
       throw new PentahoAccessControlException();
     }
-    metadataDomainRepository.removeDomain( metadataId );
+
+    metadataDomainRepository.removeDomain( forceXmiSuffix( metadataId ) );
   }
 
   public List<String> getMetadataDatasourceIds() {
@@ -399,10 +400,6 @@ public class MetadataService extends DatasourceService {
   }
 
   private static String forceXmiSuffix( String domainId ) {
-    if ( domainId.endsWith( XMI_EXTENSION ) ) {
-      return domainId;
-    } else {
-      return domainId + XMI_EXTENSION;
-    }
+    return domainId.toLowerCase().endsWith( XMI_EXTENSION ) ? domainId : domainId + XMI_EXTENSION;
   }
 }
