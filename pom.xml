@@ -131,7 +131,7 @@
     <axiom-dom.version>1.2.7</axiom-dom.version>
     <mondrian.version>8.3.0.0-SNAPSHOT</mondrian.version>
     <log4j.version>1.2.17</log4j.version>
-    <dependency.pentaho.simple-jndi.version>1.0.0</dependency.pentaho.simple-jndi.version>
+    <dependency.pentaho.simple-jndi.version>1.0.2</dependency.pentaho.simple-jndi.version>
     <xml-apis.version>1.3.04</xml-apis.version>
     <pentaho-metadata.version>8.3.0.0-SNAPSHOT</pentaho-metadata.version>
     <org.eclipse.swt.gtk.linux.x86_64.version>4.6</org.eclipse.swt.gtk.linux.x86_64.version>
