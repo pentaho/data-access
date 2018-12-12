@@ -5,55 +5,18 @@
   <parent>
     <groupId>pentaho</groupId>
     <artifactId>pentaho-data-access-parent</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.19-174</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-data-access-gwt</artifactId>
-  <version>7.1-SNAPSHOT</version>
-
+  <version>7.1.0.19-174</version>
   <properties>
-    <!-- style options are: PRETTY, DETAILED, OBFUSCATED -->
-    <gwt.style>OBFUSCATED</gwt.style>
-
-    <!-- log level options: ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL -->
-    <gwt.loglevel>ERROR</gwt.loglevel>
-
-    <gwt.module>org.pentaho.platform.dataaccess.datasource.DatasourceEditor</gwt.module>
-
-    <!-- By default, build for our supported browsers -->
     <gwt.user.agent>safari,ie9,ie8,gecko1_8</gwt.user.agent>
+    <gwt.module>org.pentaho.platform.dataaccess.datasource.DatasourceEditor</gwt.module>
+    <gwt.style>OBFUSCATED</gwt.style>
+    <gwt.loglevel>ERROR</gwt.loglevel>
   </properties>
-
-  <profiles>
-    <profile>
-      <id>gwt-pretty</id>
-      <activation>
-        <property>
-          <name>!release</name>
-        </property>
-      </activation>
-      <properties>
-        <gwt.style>PRETTY</gwt.style>
-        <gwt.loglevel>WARN</gwt.loglevel>
-      </properties>
-    </profile>
-
-    <!-- to speed up dev builds, only build for safari (chrome) -->
-    <profile>
-      <id>chrome-only</id>
-      <activation>
-        <property>
-          <name>chrome</name>
-        </property>
-      </activation>
-      <properties>
-        <gwt.user.agent>safari</gwt.user.agent>
-      </properties>
-    </profile>
-  </profiles>
-
   <dependencies>
-    <!-- Pentaho dependencies -->
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-bi-platform-data-access</artifactId>
@@ -62,12 +25,11 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-impl</artifactId>
+          <groupId>com.sun.xml.bind</groupId>
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-incubator</artifactId>
@@ -85,9 +47,9 @@
       <artifactId>gwt-dev</artifactId>
     </dependency>
     <dependency>
-        <groupId>com.google.code.gwtx</groupId>
-        <artifactId>gwtx</artifactId>
-        <version>${gwtx.version}</version>
+      <groupId>com.google.code.gwtx</groupId>
+      <artifactId>gwtx</artifactId>
+      <version>${gwtx.version}</version>
     </dependency>
     <dependency>
       <groupId>GWT-FX</groupId>
@@ -123,8 +85,8 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-impl</artifactId>
+          <groupId>com.sun.xml.bind</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -150,8 +112,8 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-impl</artifactId>
+          <groupId>com.sun.xml.bind</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -169,20 +131,17 @@
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
-
   </dependencies>
-
   <build>
     <resources>
-        <resource>
-            <directory>${basedir}/src/main/java</directory>
-        </resource>
-        <resource>
-            <directory>${basedir}/src/main/resources</directory>
-            <filtering>true</filtering>
-        </resource>
+      <resource>
+        <directory>${basedir}/src/main/java</directory>
+      </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>${basedir}/src/main/resources</directory>
+      </resource>
     </resources>
-
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -190,17 +149,41 @@
         <version>${gwt-maven-plugin.version}</version>
         <executions>
           <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
             <configuration>
               <style>${gwt.style}</style>
               <module>${gwt.module}</module>
             </configuration>
-            <goals>
-              <goal>compile</goal>
-            </goals>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
-
+  <profiles>
+    <profile>
+      <id>gwt-pretty</id>
+      <activation>
+        <property>
+          <name>!release</name>
+        </property>
+      </activation>
+      <properties>
+        <gwt.style>PRETTY</gwt.style>
+        <gwt.loglevel>WARN</gwt.loglevel>
+      </properties>
+    </profile>
+    <profile>
+      <id>chrome-only</id>
+      <activation>
+        <property>
+          <name>chrome</name>
+        </property>
+      </activation>
+      <properties>
+        <gwt.user.agent>safari</gwt.user.agent>
+      </properties>
+    </profile>
+  </profiles>
 </project>
