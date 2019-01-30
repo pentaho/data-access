@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2019 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -77,6 +77,7 @@ public class MetadataResource {
   protected static final String OVERWRITE_IN_REPOS = "overwrite";
   private static final String SUCCESS = "3";
   private static final String DATASOURCE_ACL = "acl";
+  private static final String XMI_EXTENSION = ".xmi";
 
   protected MetadataService service;
   protected IMetadataDomainRepository metadataDomainRepository;
@@ -370,6 +371,7 @@ public class MetadataResource {
   }
 
   protected Map<String, InputStream> getDomainFilesData( String domainId ) {
+    domainId = domainId.toLowerCase().endsWith( XMI_EXTENSION ) ? domainId : domainId + XMI_EXTENSION;
     return ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
   }
 
