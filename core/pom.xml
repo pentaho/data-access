@@ -239,7 +239,7 @@
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- Needed for testing -->
+    <!-- region - Needed for testing -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
@@ -250,7 +250,7 @@
       <artifactId>spring-jdbc</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- -->
+    <!-- endregion -->
 
     <dependency>
       <groupId>com.google.guava</groupId>
