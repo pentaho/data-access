@@ -104,7 +104,6 @@
     <commons-vfs2.version>2.2</commons-vfs2.version>
     <jersey.version>1.19.1</jersey.version>
     <guava.version>17.0</guava.version>
-    <org.apache.felix.main.version>4.2.1</org.apache.felix.main.version>
     <jempbox.version>0.2.0</jempbox.version>
     <jaxb-impl.version>2.2.3</jaxb-impl.version>
     <commons-digester.version>1.8</commons-digester.version>
@@ -1107,12 +1106,6 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>org.apache.felix.main</artifactId>
-        <version>${org.apache.felix.main.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
