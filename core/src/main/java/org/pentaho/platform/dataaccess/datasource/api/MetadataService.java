@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2019 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -96,7 +96,7 @@ public class MetadataService extends DatasourceService {
     } catch ( ConnectionServiceException e ) {
       throw new PentahoAccessControlException();
     }
-    metadataDomainRepository.removeDomain( metadataId );
+    metadataDomainRepository.removeDomain( forceXmiSuffix( metadataId ) );
   }
 
   public List<String> getMetadataDatasourceIds() {
@@ -399,10 +399,6 @@ public class MetadataService extends DatasourceService {
   }
 
   private static String forceXmiSuffix( String domainId ) {
-    if ( domainId.endsWith( XMI_EXTENSION ) ) {
-      return domainId;
-    } else {
-      return domainId + XMI_EXTENSION;
-    }
+    return domainId.toLowerCase().endsWith( XMI_EXTENSION ) ? domainId : domainId + XMI_EXTENSION;
   }
 }
