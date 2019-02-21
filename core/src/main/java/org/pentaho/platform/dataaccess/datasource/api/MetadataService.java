@@ -96,7 +96,7 @@ public class MetadataService extends DatasourceService {
     } catch ( ConnectionServiceException e ) {
       throw new PentahoAccessControlException();
     }
-    metadataId = metadataId.endsWith( ".xmi" ) ? metadataId : metadataId + ".xmi";
+    metadataDomainRepository.removeDomain( forceXmiSuffix( metadataId ) );
   }
 
   public List<String> getMetadataDatasourceIds() {
