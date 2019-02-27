@@ -12,7 +12,7 @@
 			<column name="INST_ID" length="200" index="IDX_AUD_INSTID" />
 		</property>
 		<property name="objId" type="string">
-			<column name="OBJ_ID" length="200" index="IDX_AUD_OID" />
+			<column name="OBJ_ID" length="1024" index="IDX_AUD_OID" />
 		</property>
 		<property name="objType" column="OBJ_TYPE" length="200"
 			type="string" />
