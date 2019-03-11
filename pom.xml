@@ -5,19 +5,12 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.22-192</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-data-access-parent</artifactId>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.1.0.22-192</version>
   <packaging>pom</packaging>
-
-  <modules>
-    <module>core</module>
-    <module>gwt</module>
-    <module>assemblies</module>
-  </modules>
-
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -26,146 +19,144 @@
       <comments>A business-friendly OSS license</comments>
     </license>
   </licenses>
-
+  <modules>
+    <module>core</module>
+    <module>gwt</module>
+    <module>assemblies</module>
+  </modules>
   <properties>
-    <dependency.com.allen_sauer.gwt-dnd.version>3.1.2</dependency.com.allen_sauer.gwt-dnd.version>
-    <dependency.com.google.gwt.gwt-codeserver.version>2.5.1</dependency.com.google.gwt.gwt-codeserver.version>
-    <dependency.com.google.gwt.gwt-dev.version>2.5.1</dependency.com.google.gwt.gwt-dev.version>
-    <dependency.com.google.gwt.gwt-incubator.version>2.1.0</dependency.com.google.gwt.gwt-incubator.version>
-    <dependency.com.google.gwt.gwt-servlet.version>2.5.1</dependency.com.google.gwt.gwt-servlet.version>
-    <dependency.com.google.gwt.gwt-user.version>2.5.1</dependency.com.google.gwt.gwt-user.version>
-    <dependency.com.thoughtworks.xstream.xstream.version>1.4.10</dependency.com.thoughtworks.xstream.xstream.version>
-    <dependency.org.codehaus.jettison.jettison.version>1.2</dependency.org.codehaus.jettison.jettison.version>
-    <dependency.org.springframework.se-jcr.version>0.9</dependency.org.springframework.se-jcr.version>
-    <dependency.org.springframework.security.spring-security-config.version>4.1.3.RELEASE</dependency.org.springframework.security.spring-security-config.version>
-    <dependency.org.springframework.security.spring-security-core.version>4.1.3.RELEASE</dependency.org.springframework.security.spring-security-core.version>
-    <dependency.org.springframework.spring-aop.version>4.3.2.RELEASE</dependency.org.springframework.spring-aop.version>
-    <dependency.org.springframework.spring-beans.version>4.3.2.RELEASE</dependency.org.springframework.spring-beans.version>
-    <dependency.org.springframework.spring-context-support.version>4.3.2.RELEASE</dependency.org.springframework.spring-context-support.version>
-    <dependency.org.springframework.spring-context.version>4.3.2.RELEASE</dependency.org.springframework.spring-context.version>
-    <dependency.org.springframework.spring-core.version>4.3.2.RELEASE</dependency.org.springframework.spring-core.version>
-    <dependency.org.springframework.spring-expression.version>4.3.2.RELEASE</dependency.org.springframework.spring-expression.version>
-    <dependency.org.springframework.spring-test.version>4.3.2.RELEASE</dependency.org.springframework.spring-test.version>
-    <dependency.org.springframework.spring-tx.version>4.3.2.RELEASE</dependency.org.springframework.spring-tx.version>
-    <dependency.org.springframework.spring-web.version>4.3.2.RELEASE</dependency.org.springframework.spring-web.version>
-    <dependency.org.springframework.spring-webmvc.version>4.3.2.RELEASE</dependency.org.springframework.spring-webmvc.version>
-    <kettle.version>7.1-SNAPSHOT</kettle.version>
-    <libbase.version>7.1-SNAPSHOT</libbase.version>
-    <libformula.version>7.1-SNAPSHOT</libformula.version>
-    <mondrian.version>3.14-SNAPSHOT</mondrian.version>
-    <pentaho-actionsequence-dom.version>7.1-SNAPSHOT</pentaho-actionsequence-dom.version>
-    <pentaho-connections.version>7.1-SNAPSHOT</pentaho-connections.version>
-    <pentaho-cwm.version>1.5.4</pentaho-cwm.version>
-    <pentaho-database.version>7.1-SNAPSHOT</pentaho-database.version>
-    <pentaho-database-model.version>7.1-SNAPSHOT</pentaho-database-model.version>
-    <pentaho-gwt-widgets.version>7.1-SNAPSHOT</pentaho-gwt-widgets.version>
-    <pentaho-metadata.version>7.1-SNAPSHOT</pentaho-metadata.version>
-    <pentaho-modeler.version>7.1-SNAPSHOT</pentaho-modeler.version>
-    <pentaho-platform.version>7.1-SNAPSHOT</pentaho-platform.version>
-    <pentaho-xul.version>7.1-SNAPSHOT</pentaho-xul.version>
-    <dependency.pentaho.simple-jndi.version>1.0.0</dependency.pentaho.simple-jndi.version>
-    <dependency.reporting-library.group>pentaho-library</dependency.reporting-library.group>
-
-    <!-- both unit tests and IT's are not cool with reusing forks unfortunately. -->
-    <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
-    <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
-
-    <encoder.version>1.2</encoder.version>
-    <metastore.version>7.1-SNAPSHOT</metastore.version>
-    <jsr311-api.version>1.1.1</jsr311-api.version>
-    <eigenbase-xom.version>1.3.1</eigenbase-xom.version>
-    <eigenbase-properties.version>1.1.2</eigenbase-properties.version>
-    <eigenbase-resgen.version>1.3.1</eigenbase-resgen.version>
-    <jug-lgpl.version>2.0.0</jug-lgpl.version>
-    <spring-ldap-core.version>2.1.0.RELEASE</spring-ldap-core.version>
-    <commons-httpclient.version>3.0.1</commons-httpclient.version>
-    <commons-pool.version>1.5.7</commons-pool.version>
-    <commons-digester.version>1.8</commons-digester.version>
-    <commons-io.version>2.2</commons-io.version>
-    <commons-lang.version>2.4</commons-lang.version>
-    <joda-time.version>1.6</joda-time.version>
-    <commons-math.version>1.1</commons-math.version>
-    <axiom-api.version>1.2.7</axiom-api.version>
-    <axiom-dom.version>1.2.7</axiom-dom.version>
-    <axiom-impl.version>1.2.7</axiom-impl.version>
-    <axis2.version>1.5</axis2.version>
-    <ognl.version>2.6.9</ognl.version>
-    <log4j.version>1.2.17</log4j.version>
-    <jcommon.version>1.0.14</jcommon.version>
-    <icu4j.version>4_4_1_1</icu4j.version>
-    <icu4j-charsets.version>4_4_1_1</icu4j-charsets.version>
-    <flexjson.version>2.1</flexjson.version>
-    <org.json.version>3.1.1</org.json.version>
-    <xmlpull.version>1.1.3.1</xmlpull.version>
-    <xpp3_min.version>1.1.4c</xpp3_min.version>
-    <stax.version>1.2.0</stax.version>
-    <hsqldb.version>2.3.2</hsqldb.version>
-    <h2.version>1.0.78</h2.version>
-    <slf4j-api.version>1.7.3</slf4j-api.version>
-    <org.eclipse.swt.gtk.linux.x86_64.version>4.6</org.eclipse.swt.gtk.linux.x86_64.version>
-    <saxon.version>9.1.0.8</saxon.version>
-    <junit.version>4.12</junit.version>
-    <junit-dep.version>4.4</junit-dep.version>
-    <gwtmockito.version>1.1.6</gwtmockito.version>
-    <jmock-junit4.version>2.5.1</jmock-junit4.version>
-    <geronimo-spec-jta.version>1.0.1B-rc4</geronimo-spec-jta.version>
-    <geronimo-spec-j2ee-connector.version>1.5-rc4</geronimo-spec-j2ee-connector.version>
-    <jta.version>1.1</jta.version>
-    <aopalliance.version>1.0</aopalliance.version>
-    <concurrent.version>1.3.4</concurrent.version>
-    <derby.version>10.2.1.6</derby.version>
-    <fontbox.version>0.1.0</fontbox.version>
-    <jempbox.version>0.2.0</jempbox.version>
-    <nekohtml.version>1.9.7</nekohtml.version>
-    <pdfbox.version>0.7.3</pdfbox.version>
-    <xercesImpl.version>2.9.1</xercesImpl.version>
-    <mockito-all.version>1.9.5</mockito-all.version>
-    <aspectjrt.version>1.6.6</aspectjrt.version>
-    <jersey.version>1.19.1</jersey.version>
-    <grizzly-framework.version>1.9.45</grizzly-framework.version>
-    <commons-codec.version>1.9</commons-codec.version>
-    <org.apache.felix.main.version>4.2.1</org.apache.felix.main.version>
-    <spring-binding.version>2.4.1.RELEASE</spring-binding.version>
-    <commons-dbcp.version>1.4</commons-dbcp.version>
-    <jaxws-spring.version>1.8</jaxws-spring.version>
-    <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
-    <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
-    <mimepull.version>1.9.3</mimepull.version>
-    <commons-logging.version>1.2</commons-logging.version>
-    <commons-collections.version>3.2.2</commons-collections.version>
-    <pentaho-reporting-engine-classic-core.version>7.1-SNAPSHOT</pentaho-reporting-engine-classic-core.version>
-    <guava.version>17.0</guava.version>
-    <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
-    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-    <olap4j.version>1.2.0</olap4j.version>
-    <xml-apis.version>1.3.04</xml-apis.version>
-    <wstx-asl.version>3.2.4</wstx-asl.version>
-    <jcr.version>2.0</jcr.version>
-    <jackrabbit-core.version>2.10.0</jackrabbit-core.version>
-    <lucene-core.version>3.6.0</lucene-core.version>
-    <snakeyaml.version>1.7</snakeyaml.version>
-    <hibernate-core.version>3.6.9.Final</hibernate-core.version>
-    <ehcache-core.version>2.5.1</ehcache-core.version>
-    <jackson.version>1.9.3</jackson.version>
-    <jaxb-api.version>2.2.2</jaxb-api.version>
-    <jaxb-impl.version>2.2.3</jaxb-impl.version>
-    <jaxb-xjc.version>2.1.2</jaxb-xjc.version>
-    <webservices.version>2.3.1</webservices.version>
-    <gwt-maven-plugin.version>2.5.1</gwt-maven-plugin.version>
-    <GWT-FX.version>0.5.0</GWT-FX.version>
     <gwtx.version>1.5.2</gwtx.version>
+    <libformula.version>7.1.0.22-192</libformula.version>
+    <hibernate-core.version>3.6.9.Final</hibernate-core.version>
+    <gwtmockito.version>1.1.6</gwtmockito.version>
+    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+    <slf4j-api.version>1.7.3</slf4j-api.version>
+    <commons-codec.version>1.9</commons-codec.version>
+    <aspectjrt.version>1.6.6</aspectjrt.version>
+    <pentaho-reporting-engine-classic-core.version>7.1.0.22-192</pentaho-reporting-engine-classic-core.version>
+    <mockito-all.version>1.9.5</mockito-all.version>
+    <dependency.org.springframework.spring-test.version>4.3.2.RELEASE</dependency.org.springframework.spring-test.version>
     <sjsxp.version>1.0</sjsxp.version>
+    <dependency.org.codehaus.jettison.jettison.version>1.2</dependency.org.codehaus.jettison.jettison.version>
+    <dependency.com.google.gwt.gwt-codeserver.version>2.5.1</dependency.com.google.gwt.gwt-codeserver.version>
+    <dependency.com.allen_sauer.gwt-dnd.version>3.1.2</dependency.com.allen_sauer.gwt-dnd.version>
+    <commons-httpclient.version>3.0.1</commons-httpclient.version>
+    <fontbox.version>0.1.0</fontbox.version>
+    <xpp3_min.version>1.1.4c</xpp3_min.version>
+    <xmlpull.version>1.1.3.1</xmlpull.version>
+    <dependency.org.springframework.security.spring-security-config.version>4.1.3.RELEASE</dependency.org.springframework.security.spring-security-config.version>
+    <jsr311-api.version>1.1.1</jsr311-api.version>
+    <pentaho-gwt-widgets.version>7.1.0.22-192</pentaho-gwt-widgets.version>
+    <saxon.version>9.1.0.8</saxon.version>
+    <dependency.com.google.gwt.gwt-servlet.version>2.5.1</dependency.com.google.gwt.gwt-servlet.version>
+    <dependency.org.springframework.spring-web.version>4.3.2.RELEASE</dependency.org.springframework.spring-web.version>
+    <spring-ldap-core.version>2.1.0.RELEASE</spring-ldap-core.version>
+    <commons-dbcp.version>1.4</commons-dbcp.version>
+    <eigenbase-resgen.version>1.3.1</eigenbase-resgen.version>
+    <icu4j.version>4_4_1_1</icu4j.version>
+    <axiom-api.version>1.2.7</axiom-api.version>
+    <geronimo-spec-jta.version>1.0.1B-rc4</geronimo-spec-jta.version>
+    <pentaho-actionsequence-dom.version>7.1.0.22-192</pentaho-actionsequence-dom.version>
+    <h2.version>1.0.78</h2.version>
+    <commons-math.version>1.1</commons-math.version>
+    <pentaho-database.version>7.1.0.22-192</pentaho-database.version>
+    <org.json.version>3.1.1</org.json.version>
+    <wstx-asl.version>3.2.4</wstx-asl.version>
+    <commons-lang.version>2.4</commons-lang.version>
+    <dependency.org.springframework.spring-aop.version>4.3.2.RELEASE</dependency.org.springframework.spring-aop.version>
+    <eigenbase-xom.version>1.3.1</eigenbase-xom.version>
+    <snakeyaml.version>1.7</snakeyaml.version>
+    <pdfbox.version>0.7.3</pdfbox.version>
+    <dependency.org.springframework.spring-beans.version>4.3.2.RELEASE</dependency.org.springframework.spring-beans.version>
+    <icu4j-charsets.version>4_4_1_1</icu4j-charsets.version>
+    <GWT-FX.version>0.5.0</GWT-FX.version>
+    <geronimo-spec-j2ee-connector.version>1.5-rc4</geronimo-spec-j2ee-connector.version>
+    <axiom-impl.version>1.2.7</axiom-impl.version>
+    <hsqldb.version>2.3.2</hsqldb.version>
+    <axis2.version>1.5</axis2.version>
+    <gwt-maven-plugin.version>2.5.1</gwt-maven-plugin.version>
+    <spring-binding.version>2.4.1.RELEASE</spring-binding.version>
+    <joda-time.version>1.6</joda-time.version>
+    <dependency.com.google.gwt.gwt-dev.version>2.5.1</dependency.com.google.gwt.gwt-dev.version>
+    <olap4j.version>1.2.0</olap4j.version>
+    <dependency.org.springframework.spring-core.version>4.3.2.RELEASE</dependency.org.springframework.spring-core.version>
+    <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
+    <jta.version>1.1</jta.version>
+    <dependency.org.springframework.spring-context-support.version>4.3.2.RELEASE</dependency.org.springframework.spring-context-support.version>
+    <jcr.version>2.0</jcr.version>
+    <jmock-junit4.version>2.5.1</jmock-junit4.version>
+    <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
+    <jaxws-spring.version>1.8</jaxws-spring.version>
+    <ehcache-core.version>2.5.1</ehcache-core.version>
+    <jackrabbit-core.version>2.10.0</jackrabbit-core.version>
+    <pentaho-xul.version>7.1.0.22-192</pentaho-xul.version>
+    <lucene-core.version>3.6.0</lucene-core.version>
+    <dependency.org.springframework.spring-webmvc.version>4.3.2.RELEASE</dependency.org.springframework.spring-webmvc.version>
+    <commons-collections.version>3.2.2</commons-collections.version>
+    <junit-dep.version>4.4</junit-dep.version>
+    <jaxb-api.version>2.2.2</jaxb-api.version>
+    <dependency.com.thoughtworks.xstream.xstream.version>1.4.10</dependency.com.thoughtworks.xstream.xstream.version>
+    <mimepull.version>1.9.3</mimepull.version>
+    <dependency.com.google.gwt.gwt-incubator.version>2.1.0</dependency.com.google.gwt.gwt-incubator.version>
+    <jaxb-xjc.version>2.1.2</jaxb-xjc.version>
+    <pentaho-modeler.version>7.1.0.22-192</pentaho-modeler.version>
+    <pentaho-database-model.version>7.1.0.22-192</pentaho-database-model.version>
+    <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
+    <jersey.version>1.19.1</jersey.version>
+    <guava.version>17.0</guava.version>
+    <org.apache.felix.main.version>4.2.1</org.apache.felix.main.version>
+    <jempbox.version>0.2.0</jempbox.version>
+    <jaxb-impl.version>2.2.3</jaxb-impl.version>
+    <commons-digester.version>1.8</commons-digester.version>
+    <jug-lgpl.version>2.0.0</jug-lgpl.version>
+    <kettle.version>7.1.0.22-192</kettle.version>
+    <jcommon.version>1.0.14</jcommon.version>
+    <stax.version>1.2.0</stax.version>
+    <dependency.org.springframework.se-jcr.version>0.9</dependency.org.springframework.se-jcr.version>
+    <commons-pool.version>1.5.7</commons-pool.version>
+    <dependency.org.springframework.spring-expression.version>4.3.2.RELEASE</dependency.org.springframework.spring-expression.version>
+    <flexjson.version>2.1</flexjson.version>
+    <ognl.version>2.6.9</ognl.version>
+    <commons-io.version>2.2</commons-io.version>
+    <encoder.version>1.2</encoder.version>
+    <commons-logging.version>1.2</commons-logging.version>
+    <webservices.version>2.3.1</webservices.version>
+    <libbase.version>7.1.0.22-192</libbase.version>
+    <pentaho-cwm.version>1.5.4</pentaho-cwm.version>
+    <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
+    <eigenbase-properties.version>1.1.2</eigenbase-properties.version>
+    <aopalliance.version>1.0</aopalliance.version>
+    <pentaho-platform.version>7.1.0.22-192</pentaho-platform.version>
+    <metastore.version>7.1.0.22-192</metastore.version>
+    <axiom-dom.version>1.2.7</axiom-dom.version>
+    <mondrian.version>3.14.0.22-192</mondrian.version>
+    <log4j.version>1.2.17</log4j.version>
+    <dependency.pentaho.simple-jndi.version>1.0.0</dependency.pentaho.simple-jndi.version>
+    <xml-apis.version>1.3.04</xml-apis.version>
+    <pentaho-metadata.version>7.1.0.22-192</pentaho-metadata.version>
+    <org.eclipse.swt.gtk.linux.x86_64.version>4.6</org.eclipse.swt.gtk.linux.x86_64.version>
+    <derby.version>10.2.1.6</derby.version>
+    <dependency.org.springframework.spring-context.version>4.3.2.RELEASE</dependency.org.springframework.spring-context.version>
+    <dependency.com.google.gwt.gwt-user.version>2.5.1</dependency.com.google.gwt.gwt-user.version>
+    <jackson.version>1.9.3</jackson.version>
+    <dependency.org.springframework.security.spring-security-core.version>4.1.3.RELEASE</dependency.org.springframework.security.spring-security-core.version>
+    <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
+    <grizzly-framework.version>1.9.45</grizzly-framework.version>
+    <nekohtml.version>1.9.7</nekohtml.version>
+    <concurrent.version>1.3.4</concurrent.version>
+    <dependency.reporting-library.group>pentaho-library</dependency.reporting-library.group>
+    <pentaho-connections.version>7.1.0.22-192</pentaho-connections.version>
+    <xercesImpl.version>2.9.1</xercesImpl.version>
+    <dependency.org.springframework.spring-tx.version>4.3.2.RELEASE</dependency.org.springframework.spring-tx.version>
+    <junit.version>4.12</junit.version>
   </properties>
-
   <dependencyManagement>
-
     <dependencies>
       <dependency>
         <groupId>javax.ws.rs</groupId>
         <artifactId>jsr311-api</artifactId>
         <version>${jsr311-api.version}</version>
       </dependency>
-
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>mondrian</artifactId>
@@ -210,7 +201,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
       <dependency>
         <groupId>org.safehaus.jug</groupId>
         <artifactId>jug-lgpl</artifactId>
@@ -333,7 +323,6 @@
         <version>${dependency.org.springframework.spring-core.version}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
@@ -726,8 +715,8 @@
         <groupId>pentaho</groupId>
         <artifactId>pentaho-platform-core</artifactId>
         <version>${pentaho-platform.version}</version>
-        <scope>test</scope>
         <classifier>tests</classifier>
+        <scope>test</scope>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -739,8 +728,8 @@
         <groupId>pentaho</groupId>
         <artifactId>pentaho-platform-repository</artifactId>
         <version>${pentaho-platform.version}</version>
-        <scope>test</scope>
         <classifier>tests</classifier>
+        <scope>test</scope>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1397,7 +1386,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>pentaho-gwt-widgets</artifactId>
@@ -1453,7 +1441,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-       <dependency>
+      <dependency>
         <groupId>org.pentaho.reporting.engine</groupId>
         <artifactId>classic-core</artifactId>
         <version>${pentaho-reporting-engine-classic-core.version}</version>
@@ -1513,7 +1501,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
         <artifactId>wstx-asl</artifactId>
@@ -1526,7 +1513,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
@@ -1539,7 +1525,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
       <dependency>
         <groupId>org.owasp.encoder</groupId>
         <artifactId>encoder</artifactId>
@@ -1552,7 +1537,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-
       <dependency>
         <groupId>javax.jcr</groupId>
         <artifactId>jcr</artifactId>
@@ -1671,11 +1655,10 @@
         <groupId>com.sun.xml.stream</groupId>
         <artifactId>sjsxp</artifactId>
         <version>${sjsxp.version}</version>
-        <scope>test</scope>		
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
-
   <profiles>
     <profile>
       <id>aggregate-reporting</id>
@@ -1738,5 +1721,4 @@
       </reporting>
     </profile>
   </profiles>
-
 </project>
