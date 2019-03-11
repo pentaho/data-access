@@ -37,20 +37,16 @@
     <jmock-junit4.version>2.5.1</jmock-junit4.version>
     <powermock.version>1.7.3</powermock.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
-    <dependency.org.springframework.spring-test.version>4.3.2.RELEASE</dependency.org.springframework.spring-test.version>
     <dependency.org.codehaus.jettison.jettison.version>1.2</dependency.org.codehaus.jettison.jettison.version>
     <dependency.com.google.gwt.gwt-codeserver.version>2.5.1</dependency.com.google.gwt.gwt-codeserver.version>
     <dependency.com.allen_sauer.gwt-dnd.version>3.1.2</dependency.com.allen_sauer.gwt-dnd.version>
     <fontbox.version>0.1.0</fontbox.version>
     <xpp3_min.version>1.1.4c</xpp3_min.version>
     <xmlpull.version>1.1.3.1</xmlpull.version>
-    <dependency.org.springframework.security.spring-security-config.version>4.1.3.RELEASE</dependency.org.springframework.security.spring-security-config.version>
     <jsr311-api.version>1.1.1</jsr311-api.version>
     <commons-gwt.version>8.3.0.0-SNAPSHOT</commons-gwt.version>
     <saxon.version>9.1.0.8</saxon.version>
     <dependency.com.google.gwt.gwt-servlet.version>2.5.1</dependency.com.google.gwt.gwt-servlet.version>
-    <dependency.org.springframework.spring-web.version>4.3.2.RELEASE</dependency.org.springframework.spring-web.version>
-    <spring-ldap-core.version>2.1.0.RELEASE</spring-ldap-core.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <eigenbase-resgen.version>1.3.1</eigenbase-resgen.version>
     <icu4j.version>4_4_1_1</icu4j.version>
@@ -63,11 +59,9 @@
     <org.json.version>3.1.1</org.json.version>
     <wstx-asl.version>3.2.4</wstx-asl.version>
     <commons-lang.version>2.4</commons-lang.version>
-    <dependency.org.springframework.spring-aop.version>4.3.2.RELEASE</dependency.org.springframework.spring-aop.version>
     <eigenbase-xom.version>1.3.1</eigenbase-xom.version>
     <snakeyaml.version>1.7</snakeyaml.version>
     <pdfbox.version>0.7.3</pdfbox.version>
-    <dependency.org.springframework.spring-beans.version>4.3.2.RELEASE</dependency.org.springframework.spring-beans.version>
     <icu4j-charsets.version>4_4_1_1</icu4j-charsets.version>
     <GWT-FX.version>0.5.0</GWT-FX.version>
     <geronimo-spec-j2ee-connector.version>1.5-rc4</geronimo-spec-j2ee-connector.version>
@@ -75,24 +69,19 @@
     <hsqldb.version>2.3.2</hsqldb.version>
     <axis2.version>1.5</axis2.version>
     <gwt-maven-plugin.version>2.5.1</gwt-maven-plugin.version>
-    <spring-binding.version>2.4.1.RELEASE</spring-binding.version>
     <joda-time.version>1.6</joda-time.version>
     <dependency.com.google.gwt.gwt-dev.version>2.5.1</dependency.com.google.gwt.gwt-dev.version>
     <olap4j.version>1.2.0</olap4j.version>
-    <dependency.org.springframework.spring-core.version>4.3.2.RELEASE</dependency.org.springframework.spring-core.version>
     <webservices.version>2.3.1</webservices.version>
     <sjsxp.version>1.0</sjsxp.version>
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <jta.version>1.1</jta.version>
-    <dependency.org.springframework.spring-context-support.version>4.3.2.RELEASE</dependency.org.springframework.spring-context-support.version>
     <jcr.version>2.0</jcr.version>
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
-    <jaxws-spring.version>1.8</jaxws-spring.version>
     <ehcache-core.version>2.5.1</ehcache-core.version>
     <jackrabbit-core.version>2.14.2</jackrabbit-core.version>
     <commons-xul.version>8.3.0.0-SNAPSHOT</commons-xul.version>
     <lucene-core.version>3.6.0</lucene-core.version>
-    <dependency.org.springframework.spring-webmvc.version>4.3.2.RELEASE</dependency.org.springframework.spring-webmvc.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <junit-dep.version>4.4</junit-dep.version>
     <jaxb-api.version>2.2.2</jaxb-api.version>
@@ -111,9 +100,7 @@
     <pdi.version>8.3.0.0-SNAPSHOT</pdi.version>
     <jcommon.version>1.0.14</jcommon.version>
     <stax.version>1.2.0</stax.version>
-    <dependency.org.springframework.se-jcr.version>0.9</dependency.org.springframework.se-jcr.version>
     <commons-pool.version>1.5.7</commons-pool.version>
-    <dependency.org.springframework.spring-expression.version>4.3.2.RELEASE</dependency.org.springframework.spring-expression.version>
     <flexjson.version>2.1</flexjson.version>
     <ognl.version>2.6.9</ognl.version>
     <commons-io.version>2.2</commons-io.version>
@@ -134,9 +121,7 @@
     <pentaho-metadata.version>8.3.0.0-SNAPSHOT</pentaho-metadata.version>
     <org.eclipse.swt.gtk.linux.x86_64.version>4.6</org.eclipse.swt.gtk.linux.x86_64.version>
     <derby.version>10.2.1.6</derby.version>
-    <dependency.org.springframework.spring-context.version>4.3.2.RELEASE</dependency.org.springframework.spring-context.version>
     <dependency.com.google.gwt.gwt-user.version>2.5.1</dependency.com.google.gwt.gwt-user.version>
-    <dependency.org.springframework.security.spring-security-core.version>4.1.3.RELEASE</dependency.org.springframework.security.spring-security-core.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
     <grizzly-framework.version>1.9.45</grizzly-framework.version>
     <nekohtml.version>1.9.7</nekohtml.version>
@@ -144,7 +129,6 @@
     <dependency.reporting-library.group>pentaho-library</dependency.reporting-library.group>
     <pentaho-connections.version>8.3.0.0-SNAPSHOT</pentaho-connections.version>
     <xercesImpl.version>2.9.1</xercesImpl.version>
-    <dependency.org.springframework.spring-tx.version>4.3.2.RELEASE</dependency.org.springframework.spring-tx.version>
     <junit.version>4.12</junit.version>
   </properties>
   <dependencyManagement>
@@ -208,117 +192,6 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-beans</artifactId>
-        <version>${dependency.org.springframework.spring-beans.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>${dependency.org.springframework.spring-context.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context-support</artifactId>
-        <version>${dependency.org.springframework.spring-context-support.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-tx</artifactId>
-        <version>${dependency.org.springframework.spring-tx.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
-        <version>${dependency.org.springframework.spring-core.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-core</artifactId>
-        <version>${dependency.org.springframework.security.spring-security-core.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-acl</artifactId>
-        <version>${dependency.org.springframework.security.spring-security-core.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-config</artifactId>
-        <version>${dependency.org.springframework.security.spring-security-core.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-ldap</artifactId>
-        <version>${dependency.org.springframework.security.spring-security-core.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.ldap</groupId>
-        <artifactId>spring-ldap-core</artifactId>
-        <version>${spring-ldap-core.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jdbc</artifactId>
-        <version>${dependency.org.springframework.spring-core.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>commons-pool</groupId>
@@ -766,30 +639,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>${dependency.org.springframework.spring-webmvc.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-web</artifactId>
-        <version>${dependency.org.springframework.spring-webmvc.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>geronimo-spec</groupId>
         <artifactId>geronimo-spec-jta</artifactId>
         <version>${geronimo-spec-jta.version}</version>
@@ -1096,48 +945,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-test</artifactId>
-        <version>${dependency.org.springframework.spring-test.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-expression</artifactId>
-        <version>${dependency.org.springframework.spring-expression.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-aop</artifactId>
-        <version>${dependency.org.springframework.spring-aop.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.webflow</groupId>
-        <artifactId>spring-binding</artifactId>
-        <version>${spring-binding.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
         <version>${commons-dbcp.version}</version>
@@ -1152,17 +959,6 @@
         <groupId>org.jvnet.jax-ws-commons.spring</groupId>
         <artifactId>jaxws-spring</artifactId>
         <version>${jaxws-spring.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>se-jcr</artifactId>
-        <version>${dependency.org.springframework.se-jcr.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1625,6 +1421,7 @@
         <version>${sjsxp.version}</version>
         <scope>test</scope>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
   <profiles>
