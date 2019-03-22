@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
@@ -41,11 +41,11 @@ public class DatabaseConnectionConverterTest {
     DatabaseConnection dbConnection = new DatabaseConnection();
     dbConnection.setId( "my id" );
     dbConnection.setAccessType( DatabaseAccessType.NATIVE );
-    List<DatabaseAccessType> accessTypes = new LinkedList<DatabaseAccessType>();
+    List<DatabaseAccessType> accessTypes = new LinkedList<>();
     accessTypes.add( DatabaseAccessType.NATIVE );
     DatabaseType dbType = new DatabaseType( "name", "short name", accessTypes, 100500, "helpUri" );
     dbConnection.setDatabaseType( dbType );
-    Map<String, String> extraOptions = new HashMap<String, String>();
+    Map<String, String> extraOptions = new HashMap<>();
     extraOptions.put( "opt", "value" );
     dbConnection.setExtraOptions( extraOptions );
     dbConnection.setName( "Best name" );
@@ -60,8 +60,9 @@ public class DatabaseConnectionConverterTest {
     dbConnection.setSQLServerInstance( "INSTANCE_0" );
     dbConnection.setUsingDoubleDecimalAsSchemaTableSeparator( true );
     dbConnection.setInformixServername( "INFORM_1" );
+    dbConnection.setWarehouse( "WAREHOUSE_1" );
     dbConnection.addExtraOption( "100", "option", "value" );
-    Map<String, String> attributes = new HashMap<String, String>();
+    Map<String, String> attributes = new HashMap<>();
     attributes.put( "attr1", "value" );
     dbConnection.setAttributes( attributes );
     dbConnection.setChanged( true );
@@ -73,18 +74,18 @@ public class DatabaseConnectionConverterTest {
     dbConnection.setInitialPoolSize( 3 );
     dbConnection.setMaximumPoolSize( 9 );
     dbConnection.setPartitioned( true );
-    Map<String, String> connectionPoolingProperties = new HashMap<String, String>();
+    Map<String, String> connectionPoolingProperties = new HashMap<>();
     connectionPoolingProperties.put( "pool", "abc" );
     dbConnection.setConnectionPoolingProperties( connectionPoolingProperties );
-    List<PartitionDatabaseMeta> partitioningInformation = new LinkedList<PartitionDatabaseMeta>();
+    List<PartitionDatabaseMeta> partitioningInformation = new LinkedList<>();
     PartitionDatabaseMeta pdm = new PartitionDatabaseMeta();
     partitioningInformation.add( pdm );
     dbConnection.setPartitioningInformation( partitioningInformation );
 
-    List<IDatabaseType> databaseTypes = new LinkedList<IDatabaseType>();
+    List<IDatabaseType> databaseTypes = new LinkedList<>();
     databaseTypes.add( dbType );
     DatabaseTypeHelper dbh = new DatabaseTypeHelper( databaseTypes );
     DatabaseConnectionConverter dbcc = new DatabaseConnectionConverter( dbh );
-    String xmlCOnnection = dbcc.convertToXml( dbConnection );
+    dbcc.convertToXml( dbConnection );
   }
 }

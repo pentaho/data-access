@@ -1,5 +1,5 @@
 /*
-* Copyright 2002 - 2017 Hitachi Vantara.  All rights reserved.
+* Copyright 2002 - 2019 Hitachi Vantara.  All rights reserved.
 * 
 * This software was developed by Hitachi Vantara and is provided under the terms
 * of the Mozilla Public License, Version 1.1, or any later version. You may not use
@@ -53,6 +53,7 @@ public class AutobeanUtilities {
     connectionImpl.setId( connectionBean.getId() );
     connectionImpl.setIndexTablespace( connectionBean.getIndexTablespace() );
     connectionImpl.setInformixServername( connectionBean.getInformixServername() );
+    connectionImpl.setWarehouse( connectionBean.getWarehouse() );
     connectionImpl.setInitialPoolSize( connectionBean.getInitialPoolSize() );
     connectionImpl.setMaximumPoolSize( connectionBean.getMaximumPoolSize() );
     connectionImpl.setName( connectionBean.getName() );

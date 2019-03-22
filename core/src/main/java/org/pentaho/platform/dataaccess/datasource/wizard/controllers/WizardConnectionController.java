@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
@@ -52,7 +52,9 @@ import com.google.web.bindery.autobean.shared.AutoBeanUtils;
 
 public class WizardConnectionController extends AbstractXulEventHandler {
 
-  //  private IXulAsyncConnectionService connectionService;
+  public static final String CONTENT_TYPE = "Content-Type";
+  public static final String JSON = "application/json";
+  public static final String ERROR = "ERROR";
 
   private List<ConnectionDialogListener> listeners = new ArrayList<ConnectionDialogListener>();
 
@@ -78,8 +80,6 @@ public class WizardConnectionController extends AbstractXulEventHandler {
 
   private XulLabel successLabel = null;
 
-  //  GwtXulAsyncDatabaseConnectionService connService = new GwtXulAsyncDatabaseConnectionService();
-
   GwtXulAsyncDatabaseDialectService dialectService = new GwtXulAsyncDatabaseDialectService();
 
   GwtDatabaseDialog databaseDialog;
@@ -92,7 +92,8 @@ public class WizardConnectionController extends AbstractXulEventHandler {
 
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
 
-  protected String previousConnectionName, existingConnectionName;
+  protected String previousConnectionName;
+  protected String existingConnectionName;
 
   public WizardConnectionController( Document document ) {
     this.document = document;
@@ -117,7 +118,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
     target.setIndexTablespace( source.getIndexTablespace() );
     target.setUsingDoubleDecimalAsSchemaTableSeparator( source.isUsingDoubleDecimalAsSchemaTableSeparator() );
     target.setInformixServername( source.getInformixServername() );
-    //target.addExtraOption(String databaseTypeCode, String option, String value);
+    target.setWarehouse( source.getWarehouse() );
     target.setAttributes( source.getAttributes() );
     target.setChanged( source.getChanged() );
     target.setQuoteAllFields( source.isQuoteAllFields() );
@@ -138,7 +139,6 @@ public class WizardConnectionController extends AbstractXulEventHandler {
     IDatabaseConnection connectionBean = bean.as();
     copyDatabaseConnectionProperties( connection, connectionBean );
     return AutoBeanUtils.getAutoBean( connectionBean );
-    //return connectionBean;
   }
 
   @Bindable
@@ -231,6 +231,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
     return this.datasourceModel;
   }
 
+  @Override
   public String getName() {
     return "wizardConnectionController"; //$NON-NLS-1$
   }
@@ -247,9 +248,8 @@ public class WizardConnectionController extends AbstractXulEventHandler {
     //first, test the connection
     RequestBuilder testConnectionBuilder =
       new RequestBuilder( RequestBuilder.PUT, ConnectionController.getServiceURL( "test" ) );
-    testConnectionBuilder.setHeader( "Content-Type", "application/json" );
+    testConnectionBuilder.setHeader( CONTENT_TYPE, JSON );
     try {
-      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
       AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
       testConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
@@ -311,7 +311,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       RequestBuilder getConnectionBuilder =
         new RequestBuilder( RequestBuilder.GET, ConnectionController.getServiceURL( "get",
           new String[][] { { "name", currentConnection.getName() }, { "ts", cacheBuster } } ) );
-      getConnectionBuilder.setHeader( "Content-Type", "application/json" );
+      getConnectionBuilder.setHeader( CONTENT_TYPE, JSON );
       try {
         AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
         getConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
@@ -345,9 +345,8 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   public void updateConnection() {
     RequestBuilder updateConnectionBuilder =
       new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "update" ) );
-    updateConnectionBuilder.setHeader( "Content-Type", "application/json" );
+    updateConnectionBuilder.setHeader( CONTENT_TYPE, JSON );
     try {
-      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection); 
       AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
       updateConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
@@ -391,7 +390,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
                         }
                         addConnection();
                       } else {
-                        openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
+                        openErrorDialog( MessageHandler.getString( ERROR ), MessageHandler//$NON-NLS-1$
                           .getString( "ConnectionController.ERROR_0002_UNABLE_TO_DELETE_CONNECTION" ) ); //$NON-NLS-1$
                       }
 
@@ -404,7 +403,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
                 displayErrorMessage( e );
               }
             } else {
-              openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
+              openErrorDialog( MessageHandler.getString( ERROR ), MessageHandler//$NON-NLS-1$
                 .getString( "ConnectionController.ERROR_0004_UNABLE_TO_UPDATE_CONNECTION" ) ); //$NON-NLS-1$
             }
           } catch ( Exception e ) {
@@ -422,9 +421,8 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   public void addConnection() {
     RequestBuilder addConnectionBuilder =
       new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "add" ) );
-    addConnectionBuilder.setHeader( "Content-Type", "application/json" );
+    addConnectionBuilder.setHeader( CONTENT_TYPE, JSON );
     try {
-      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection); 
       AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
       addConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
@@ -441,7 +439,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
               datasourceModel.getGuiStateModel().addConnection( conn );
               datasourceModel.setSelectedRelationalConnection( conn );
             } else {
-              openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
+              openErrorDialog( MessageHandler.getString( ERROR ), MessageHandler//$NON-NLS-1$
                 .getString( "ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION" ) ); //$NON-NLS-1$
             }
           } catch ( Exception e ) {
@@ -493,9 +491,8 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   public void testConnection() {
     RequestBuilder testConnectionBuilder =
       new RequestBuilder( RequestBuilder.PUT, ConnectionController.getServiceURL( "test" ) );
-    testConnectionBuilder.setHeader( "Content-Type", "application/json" );
+    testConnectionBuilder.setHeader( CONTENT_TYPE, JSON );
     try {
-      //AutoBean<IDatabaseConnection> bean = AutoBeanUtils.getAutoBean(currentConnection);
       AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
       testConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
@@ -512,7 +509,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
               openSuccesDialog( MessageHandler.getString( "SUCCESS" ), MessageHandler//$NON-NLS-1$
                 .getString( "ConnectionController.CONNECTION_TEST_SUCCESS" ) ); //$NON-NLS-1$
             } else {
-              openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
+              openErrorDialog( MessageHandler.getString( ERROR ), MessageHandler//$NON-NLS-1$
                 .getString( "ConnectionController.ERROR_0003_CONNECTION_TEST_FAILED" ) ); //$NON-NLS-1$
             }
           } catch ( Exception e ) {
@@ -556,7 +553,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
               }
 
             } else {
-              openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
+              openErrorDialog( MessageHandler.getString( ERROR ), MessageHandler//$NON-NLS-1$
                 .getString( "ConnectionController.ERROR_0002_UNABLE_TO_DELETE_CONNECTION" ) ); //$NON-NLS-1$
             }
 
@@ -571,7 +568,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   }
 
   public void addConnectionDialogListener( ConnectionDialogListener listener ) {
-    if ( listeners.contains( listener ) == false ) {
+    if ( !listeners.contains( listener ) ) {
       listeners.add( listener );
     }
   }

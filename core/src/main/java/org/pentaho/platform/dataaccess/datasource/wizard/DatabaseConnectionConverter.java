@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard;
@@ -43,6 +43,7 @@ public class DatabaseConnectionConverter {
   private static final String PASSWORD = "password";
   private static final String NAME = "name";
   private static final String SERVER_NAME = "serverName";
+  private static final String WAREHOUSE = "warehouse";
   private static final String DATA_TABLESPACE = "dataTablespace";
   private static final String INDEX_TABLESPACE = "indexTablespace";
   private static final String HOSTNAME = "hostname";
@@ -92,6 +93,11 @@ public class DatabaseConnectionConverter {
       informixServername.appendChild( informixServernameText );
       databaseConnection.appendChild( informixServername );
 
+      Element warehouse = document.createElement( WAREHOUSE );
+      Text warehouseText = document.createTextNode( dbConn.getWarehouse() );
+      warehouse.appendChild( warehouseText );
+      databaseConnection.appendChild( warehouse );
+
       Element name = document.createElement( NAME );
       Text nameText = document.createTextNode( dbConn.getName() );
       name.appendChild( nameText );
@@ -120,13 +126,12 @@ public class DatabaseConnectionConverter {
       Element attrributes = document.createElement( ATTRIBUTES );
       databaseConnection.appendChild( attrributes );
       Map<String, String> attributeMap = dbConn.getAttributes();
-      for ( String key : attributeMap.keySet() ) {
-        Element attribute = document.createElement( key );
-        Text attributeText = document.createTextNode( attributeMap.get( key ) );
+      for ( Map.Entry<String, String> entry : attributeMap.entrySet() ) {
+        Element attribute = document.createElement( entry.getKey() );
+        Text attributeText = document.createTextNode( entry.getValue() );
         attribute.appendChild( attributeText );
         attrributes.appendChild( attribute );
       }
-
       return document.toString();
     } catch ( Exception e ) {
       return null;
@@ -151,6 +156,7 @@ public class DatabaseConnectionConverter {
       (DatabaseType) databaseTypeHelper.getDatabaseTypeByShortName( getNodeValueByTagName( element, DATABASE_TYPE ) ) );
     databaseConnection.setPassword( getNodeValueByTagName( element, PASSWORD ) );
     databaseConnection.setInformixServername( getNodeValueByTagName( element, SERVER_NAME ) );
+    databaseConnection.setWarehouse( getNodeValueByTagName( element, WAREHOUSE ) );
     for ( Node node : getNodesByTagName( element, ATTRIBUTES ) ) {
       databaseConnection.getAttributes().put( node.getNodeName(), node.getNodeValue() );
     }

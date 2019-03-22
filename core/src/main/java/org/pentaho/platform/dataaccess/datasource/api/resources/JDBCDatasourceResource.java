@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -200,6 +200,7 @@ public class JDBCDatasourceResource {
    *        "id": "00ac4db3-7567-4019-8917-1b6f512ee162",
    *        "indexTablespace": "",
    *        "informixServername": "",
+   *        "warehouse": "",
    *        "initialPoolSize": 0,
    *        "maximumPoolSize": 0,
    *        "name": "TestDataSourceResource",
@@ -302,9 +303,7 @@ public class JDBCDatasourceResource {
         connection.setId( old.getId() );
 
         return service.updateConnection( connection ) ? Response.noContent().build() : Response.notModified().build();
-      } catch ( ConnectionServiceException e ) {
-        // unfortunately getConnectionById throws an exception not returning null when the connection is not present.
-      } catch ( NullPointerException e ) {
+      } catch ( ConnectionServiceException | NullPointerException e ) {
         // unfortunately getConnectionById throws an exception not returning null when the connection is not present.
       }
 

@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
@@ -77,6 +77,7 @@ public class GuiStateModel extends XulEventSourceAdapter {
     conn.setHostname( connection.getHostname() );
     conn.setIndexTablespace( connection.getIndexTablespace() );
     conn.setInformixServername( connection.getInformixServername() );
+    conn.setWarehouse( connection.getWarehouse() );
     conn.setInitialPoolSize( connection.getInitialPoolSize() );
     conn.setMaximumPoolSize( connection.getMaximumPoolSize() );
     conn.setPartitioned( connection.isPartitioned() );

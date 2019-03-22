@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
@@ -55,6 +55,9 @@ public class UtilHtmlSanitizer {
 
     String safeUsername = safeEscapeHtml( connection.getUsername() );
     connection.setUsername( safeUsername );
+
+    String safeWarehouse = safeEscapeHtml( connection.getWarehouse() );
+    connection.setWarehouse( safeWarehouse );
   }
 
   public void unsanitizeConnectionParameters( IDatabaseConnection connection ) {
@@ -75,6 +78,9 @@ public class UtilHtmlSanitizer {
 
     String safeUsername = StringEscapeUtils.unescapeHtml( connection.getUsername() );
     connection.setUsername( safeUsername );
+
+    String safeWarehouse = StringEscapeUtils.unescapeHtml( connection.getWarehouse() );
+    connection.setWarehouse( safeWarehouse );
   }
 
   public String safeEscapeHtml( String html ) {
