@@ -29,7 +29,6 @@
     <pentaho-reporting.version>8.3.0.0-SNAPSHOT</pentaho-reporting.version>
     <hibernate-core.version>3.6.9.Final</hibernate-core.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-    <slf4j-api.version>1.7.3</slf4j-api.version>
     <commons-codec.version>1.9</commons-codec.version>
     <aspectjrt.version>1.6.6</aspectjrt.version>
     <mockito.version>1.10.19</mockito.version>
@@ -472,11 +471,6 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${slf4j-api.version}</version>
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
