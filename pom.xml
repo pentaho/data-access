@@ -131,7 +131,6 @@
     <mondrian.version>8.2.0.0-SNAPSHOT</mondrian.version>
     <log4j.version>1.2.17</log4j.version>
     <dependency.pentaho.simple-jndi.version>1.0.0</dependency.pentaho.simple-jndi.version>
-    <xml-apis.version>1.3.04</xml-apis.version>
     <pentaho-metadata.version>8.2.0.0-SNAPSHOT</pentaho-metadata.version>
     <org.eclipse.swt.gtk.linux.x86_64.version>4.6</org.eclipse.swt.gtk.linux.x86_64.version>
     <derby.version>10.2.1.6</derby.version>
@@ -144,7 +143,6 @@
     <concurrent.version>1.3.4</concurrent.version>
     <dependency.reporting-library.group>pentaho-library</dependency.reporting-library.group>
     <pentaho-connections.version>8.2.0.0-SNAPSHOT</pentaho-connections.version>
-    <xercesImpl.version>2.9.1</xercesImpl.version>
     <dependency.org.springframework.spring-tx.version>4.3.2.RELEASE</dependency.org.springframework.spring-tx.version>
     <junit.version>4.12</junit.version>
   </properties>
@@ -911,18 +909,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xercesImpl</artifactId>
-        <version>${xercesImpl.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
         <version>${mockito.version}</version>
@@ -1491,7 +1477,6 @@
       <dependency>
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis</artifactId>
-        <version>${xml-apis.version}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
