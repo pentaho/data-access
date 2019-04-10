@@ -119,6 +119,7 @@
     <xml-apis.version>1.3.04</xml-apis.version>
     <pentaho-metadata.version>8.3.0.0-SNAPSHOT</pentaho-metadata.version>
     <org.eclipse.swt.gtk.linux.x86_64.version>4.6</org.eclipse.swt.gtk.linux.x86_64.version>
+    <derby.version>10.2.1.6</derby.version>
     <dependency.com.google.gwt.gwt-user.version>2.5.1</dependency.com.google.gwt.gwt-user.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
     <grizzly-framework.version>1.9.45</grizzly-framework.version>
