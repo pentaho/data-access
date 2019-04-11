@@ -357,6 +357,12 @@
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.aspectj</groupId>
