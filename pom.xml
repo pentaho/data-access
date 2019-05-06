@@ -113,7 +113,6 @@
     <jta.version>1.1</jta.version>
     <aopalliance.version>1.0</aopalliance.version>
     <concurrent.version>1.3.4</concurrent.version>
-    <derby.version>10.2.1.6</derby.version>
     <fontbox.version>0.1.0</fontbox.version>
     <jempbox.version>0.2.0</jempbox.version>
     <nekohtml.version>1.9.7</nekohtml.version>
