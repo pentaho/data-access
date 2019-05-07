@@ -12,20 +12,23 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2019 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -169,23 +172,42 @@ public class DataSourceWizardService extends DatasourceService {
   public List<String> getDSWDatasourceIds() {
     List<String> datasourceList = new ArrayList<String>();
     try {
-    nextModel:
+      nextModel:
       for ( LogicalModelSummary summary : dswService.getLogicalModels( null ) ) {
-        Domain domain = modelerService.loadDomain( summary.getDomainId() );
-        List<LogicalModel> logicalModelList = domain.getLogicalModels();
-        if ( logicalModelList != null && logicalModelList.size() >= 1 ) {
-          for ( LogicalModel logicalModel : logicalModelList ) {
-            Object property = logicalModel.getProperty( "AGILE_BI_GENERATED_SCHEMA" ); //$NON-NLS-1$
-            if ( property != null ) {
-              datasourceList.add( summary.getDomainId() );
-              continue nextModel;
-            }
+
+        // BACKLOG-27907 - Get datasource as repo file for performance considerations when large numbers of
+        // data sources are present
+        Map<String, InputStream> domainFilesData = ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository )
+          .getDomainFilesData( summary.getDomainId() );
+
+        for ( String fileName : domainFilesData.keySet() ) {
+          InputStream inputStream = domainFilesData.get( fileName );
+          if ( inputStream == null ) {
+            logger.info( "Unable to access " + fileName + " when searching for DSW datasource IDs" );
+            continue;
           }
+
+          // Build a string from the datasource xmi input stream
+          String result = new BufferedReader( new InputStreamReader( inputStream ) )
+            .lines().collect( Collectors.joining( "\n" ) );
+
+          if ( result == null ) {
+            logger.info( "Unable to read " + fileName + " when searching for DSW datasourceIDs" );
+            continue;
+          }
+
+          // Look for Agile BI generated datasource property
+          if ( result.contains( "AGILE_BI_GENERATED_SCHEMA" ) ) {
+            datasourceList.add( summary.getDomainId() );
+          }
+
+          inputStream.close();
         }
       }
     } catch ( Throwable e ) {
       return null;
     }
+
     return datasourceList;
   }
 
