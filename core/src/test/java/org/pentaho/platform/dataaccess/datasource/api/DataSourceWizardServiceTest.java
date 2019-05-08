@@ -12,11 +12,12 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2019 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import org.apache.tika.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,6 @@ import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
@@ -51,6 +51,8 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServic
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
+import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
+import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 
 import java.io.InputStream;
@@ -59,9 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
@@ -96,7 +96,7 @@ public class DataSourceWizardServiceTest {
   @Before
   public void setUp() {
     dataSourceWizardService = spy( new DataSourceWizardServiceMock() );
-    dataSourceWizardService.metadataDomainRepository = mock( IMetadataDomainRepository.class );
+    dataSourceWizardService.metadataDomainRepository = mock( PentahoMetadataDomainRepository.class );
     dataSourceWizardService.mondrianCatalogService = mock( IMondrianCatalogService.class );
     dataSourceWizardService.datasourceMgmtSvc = mock( IDatasourceMgmtService.class );
     dataSourceWizardService.modelerService = mock( IModelerService.class );
@@ -265,43 +265,58 @@ public class DataSourceWizardServiceTest {
 
   @Test
   public void testGetDSWDatasourceIds() throws Exception {
-    Domain mockDomain = mock( Domain.class );
+    final String TEST_DOMAIN_ID = "mock";
+
     LogicalModelSummary mockLogicalModelSummary  = mock( LogicalModelSummary.class );
+    doReturn(TEST_DOMAIN_ID).when(mockLogicalModelSummary).getDomainId();
     List<LogicalModelSummary> mockLogicalModelSummaryList = new ArrayList<LogicalModelSummary>();
     mockLogicalModelSummaryList.add( mockLogicalModelSummary );
-    List<LogicalModel> mockLogicalModelList = new ArrayList<LogicalModel>();
-    LogicalModel mockLogicalModel = mock( LogicalModel.class );
-    mockLogicalModelList.add( mockLogicalModel );
-    Object mockObject = mock( Object.class );
 
     List<String> datasourceList = new ArrayList<String>();
     datasourceList.add( mockLogicalModelSummary.getDomainId() );
 
     doReturn( mockLogicalModelSummaryList ).when( dataSourceWizardService.dswService ).getLogicalModels( null );
-    doReturn( mockDomain ).when( dataSourceWizardService.modelerService ).loadDomain( anyString() );
-    doReturn( mockLogicalModelList ).when( mockDomain ).getLogicalModels();
-    doReturn( mockObject ).when( mockLogicalModel ).getProperty( "AGILE_BI_GENERATED_SCHEMA" );
 
-    List<String> response = dataSourceWizardService.getDSWDatasourceIds();
-    assertEquals( datasourceList, response );
+    Map<String,InputStream> mockDomainFilesData = new HashMap<String,InputStream>();
 
+    mockDomainFilesData.put(TEST_DOMAIN_ID, IOUtils.toInputStream("AGILE_BI_GENERATED_SCHEMA"));
+    doReturn(mockDomainFilesData).when((IPentahoMetadataDomainRepositoryExporter)dataSourceWizardService.metadataDomainRepository).getDomainFilesData(anyString());
+
+    List<String> datasourceIds = dataSourceWizardService.getDSWDatasourceIds();
     verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
+    assert( datasourceIds.contains(TEST_DOMAIN_ID));
   }
 
   @Test
   public void testGetDSWDatasourceIdsError() throws Exception {
+    doReturn( null ).when( dataSourceWizardService.dswService ).getLogicalModels( null );
+    List<String> datasourceIds = dataSourceWizardService.getDSWDatasourceIds();
+    verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
+    assertNull( datasourceIds );
+  }
+
+  @Test
+  public void testGetDSWDatasourceIdsNullInput() throws Exception {
+    final String TEST_DOMAIN_ID = "mock";
+
     LogicalModelSummary mockLogicalModelSummary  = mock( LogicalModelSummary.class );
+    doReturn(TEST_DOMAIN_ID).when(mockLogicalModelSummary).getDomainId();
     List<LogicalModelSummary> mockLogicalModelSummaryList = new ArrayList<LogicalModelSummary>();
     mockLogicalModelSummaryList.add( mockLogicalModelSummary );
 
+    List<String> datasourceList = new ArrayList<String>();
+    datasourceList.add( mockLogicalModelSummary.getDomainId() );
+
     doReturn( mockLogicalModelSummaryList ).when( dataSourceWizardService.dswService ).getLogicalModels( null );
-    RuntimeException mockException = mock( RuntimeException.class );
-    doThrow( mockException ).when( dataSourceWizardService.modelerService ).loadDomain( anyString() );
 
-    List<String> response = dataSourceWizardService.getDSWDatasourceIds();
-    assertEquals( null, response );
+    Map<String,InputStream> mockDomainFilesData = new HashMap<String,InputStream>();
 
+    mockDomainFilesData.put(TEST_DOMAIN_ID, null);
+    doReturn(mockDomainFilesData).when((IPentahoMetadataDomainRepositoryExporter)dataSourceWizardService.metadataDomainRepository).getDomainFilesData(anyString());
+
+    List<String> datasourceIds = dataSourceWizardService.getDSWDatasourceIds();
     verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
+    assert( datasourceIds.isEmpty());
   }
 
   @Test
