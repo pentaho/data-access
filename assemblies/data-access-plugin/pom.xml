@@ -5,12 +5,34 @@
   <parent>
     <groupId>pentaho</groupId>
     <artifactId>pentaho-data-access-assemblies</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.24-200</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>data-access-plugin</artifactId>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.1.0.24-200</version>
   <packaging>pom</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>net.sf.flexjson</groupId>
+      <artifactId>flexjson</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-database-gwt</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-modeler</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-modeler-gwt</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
   <build>
     <resources>
       <resource>
@@ -38,27 +60,4 @@
       </plugin>
     </plugins>
   </build>
-  <dependencies>
-    <dependency>
-      <groupId>net.sf.flexjson</groupId>
-      <artifactId>flexjson</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-database-gwt</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-modeler</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-modeler-gwt</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-  </dependencies>
-
 </project>
