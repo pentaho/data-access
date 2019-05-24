@@ -12,53 +12,63 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
+import com.google.common.collect.ImmutableMap;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 
-import static org.junit.Assert.fail;
+import java.util.Arrays;
+import java.util.Objects;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Dmitriy Stepanov on 15/06/17.
  */
 public class MetadataTempFilesListDtoTest {
 
-  private String list = "{\"xmiFileName\":\"admin-4424584292793114069.tmp\"}";
-  private String list2 =
-      "{\"xmiFileName\":\"filename.tmp\",\"bundles\":[\"bundle-1-name.tmp\",\"bundle-N-name.tmp\"]}";
 
-  @Test
-  public void constructorParse() {
-    try {
-      MetadataTempFilesListDto dto = new MetadataTempFilesListDto( list );
-      dto = new MetadataTempFilesListDto( list2 );
-    } catch ( Exception e ) {
-      fail();
-    }
+  @Test public void testRoundTrip() throws JSONException {
+    JSONArray bundles = new JSONArray( Arrays.asList(
+      new MetadataTempFilesListBundleDto(
+        "messages_ja.properties", "sometempname.tmp" ).toJson(),
+      new MetadataTempFilesListBundleDto(
+        "messages_en.properties", "sometempname2.tmp" ).toJson() ) );
+    JSONObject fileListJson = new JSONObject( ImmutableMap.of( "xmiFileName", "theXmiFileName",
+      "bundles", bundles ) );
+
+    MetadataTempFilesListDto fileList = new MetadataTempFilesListDto( fileListJson.toString() );
+
+    JSONObject jsonFromFilesList = new JSONObject( fileList.toJSONString() );
+    assertEquals( jsonFromFilesList.get( "xmiFileName" ), fileListJson.get( "xmiFileName" ) );
+
+    MetadataTempFilesListDto rehydrated = new MetadataTempFilesListDto( fileList.toJSONString() );
+
+    assertTrue( eq( fileList, rehydrated ) );
+    assertEquals( "messages_ja.properties", fileList.getBundles().get( 0 ).getOriginalFileName() );
+    assertEquals( "sometempname.tmp", fileList.getBundles().get( 0 ).getTempFileName() );
+
+    assertEquals( "messages_en.properties", fileList.getBundles().get( 1 ).getOriginalFileName() );
+    assertEquals( "sometempname2.tmp", fileList.getBundles().get( 1 ).getTempFileName() );
   }
 
-  @Test
-  public void testToJSONString() {
-    try {
-      MetadataTempFilesListDto dto = new MetadataTempFilesListDto( list );
-      assertEquals( "admin-4424584292793114069.tmp", dto.getXmiFileName() );
-      assertEquals( 0, dto.getBundles().size() );
-      assertEquals( list, dto.toJSONString() );
-
-      dto = new MetadataTempFilesListDto( list2 );
-      assertEquals( "filename.tmp", dto.getXmiFileName() );
-      assertEquals( 2, dto.getBundles().size() );
-      assertEquals( "filename.tmp", dto.getBundles().get(0).getOriginalFileName() );
-      assertEquals( "bundle-1-name.tmp", dto.getBundles().get(0).getTempFileName() );
-      assertEquals( "filename.tmp", dto.getBundles().get(1).getOriginalFileName() );
-      assertEquals( "bundle-N-name.tmp", dto.getBundles().get(1).getTempFileName() );
-      assertEquals( list2, dto.toJSONString() );
-    } catch ( Exception e ) {
-      fail();
-    }
+  @Test public void testBundleRoundTrip() {
+    MetadataTempFilesListBundleDto bundle = new MetadataTempFilesListBundleDto(
+      "localeName", "fileName" );
+    assertEquals( MetadataTempFilesListBundleDto.fromJson( bundle.toJson() ), bundle );
   }
+
+
+  private boolean eq( MetadataTempFilesListDto thiz, MetadataTempFilesListDto that ) {
+    return Objects.equals( thiz.xmiFileName, that.xmiFileName )
+      && Objects.equals( thiz.getBundles(), that.getBundles() );
+  }
+
 }

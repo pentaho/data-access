@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Dmitriy Stepanov on 12/06/17.
@@ -33,44 +34,37 @@ import java.util.List;
 @XmlRootElement
 public class MetadataTempFilesListDto implements Serializable {
   private static final long serialVersionUID = 595741423349391476L;
+  private static final String BUNDLES_KEY = "bundles";
   String xmiFileName;
-  List<MetadataTempFilesListBundleDto> bundles = new ArrayList<MetadataTempFilesListBundleDto>( 0 );
+  private List<MetadataTempFilesListBundleDto> bundles = new ArrayList<>( 0 );
   String id;
 
   public MetadataTempFilesListDto() {
     super();
   }
 
-  public MetadataTempFilesListDto( String fileList ) {
+
+  public MetadataTempFilesListDto( String fileListJson ) {
     this();
-    JSONObject jsonResponse = null;
     try {
-      jsonResponse = new JSONObject( fileList );
-
-
+      JSONObject jsonResponse = new JSONObject( fileListJson );
       xmiFileName = jsonResponse.getString( "xmiFileName" );
-      JSONArray jsonBundles = null;
-      try {
-        jsonBundles = jsonResponse.getJSONArray( "bundles" );
-      } catch ( JSONException e ) {
-        // ignored
-      }
 
-      if ( jsonBundles != null ) {
+      if ( jsonResponse.has( BUNDLES_KEY ) ) {
+        JSONArray jsonBundles = jsonResponse.getJSONArray( BUNDLES_KEY );
         for ( int i = 0; i < jsonBundles.length(); i++ ) {
-          bundles.add( new MetadataTempFilesListBundleDto( (String) jsonBundles.get( i ), xmiFileName ) );
+          bundles.add( MetadataTempFilesListBundleDto.fromJson( (JSONObject) jsonBundles.get( i ) ) );
         }
       }
     } catch ( JSONException e ) {
-      e.printStackTrace();
+      throw new IllegalStateException( e );
     }
 
   }
 
-  @SuppressWarnings( "nls" )
   @Override
   public String toString() {
-    return "MetadataTempFilesListDto [id=" + id + ", xmiFileName=" + xmiFileName + ", bundles=" + bundles + "]";
+    return toJSONString();
   }
 
   public String toJSONString() {
@@ -79,18 +73,14 @@ public class MetadataTempFilesListDto implements Serializable {
       if ( xmiFileName != null ) {
         obj.put( "xmiFileName", xmiFileName );
       }
-
-      JSONArray list = new JSONArray();
-      for ( int i = 0; i < bundles.size(); i++ ) {
-        MetadataTempFilesListBundleDto bundleDto = bundles.get( i );
-        list.put( bundleDto.getTempFileName() );
-      }
-
-      if ( list.length() > 0 ) {
-        obj.put( "bundles", list );
+      if ( !bundles.isEmpty() ) {
+        obj.put( BUNDLES_KEY, new JSONArray(
+          bundles.stream()
+            .map( MetadataTempFilesListBundleDto::toJson )
+            .collect( Collectors.toList() ) ) );
       }
     } catch ( JSONException e ) {
-      // ignored
+      throw new IllegalStateException( e );
     }
     return obj.toString();
   }
@@ -118,4 +108,5 @@ public class MetadataTempFilesListDto implements Serializable {
   public List<MetadataTempFilesListBundleDto> getBundles() {
     return bundles;
   }
+
 }
