@@ -372,6 +372,11 @@ public class MetadataResource {
 
   protected Map<String, InputStream> getDomainFilesData( String domainId ) {
     domainId = domainId.toLowerCase().endsWith( XMI_EXTENSION ) ? domainId : domainId + XMI_EXTENSION;
+
+    int a = 0;
+    int b = 1;
+    a = b;
+
     return ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
   }
 
