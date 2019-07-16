@@ -371,8 +371,14 @@ public class MetadataResource {
   }
 
   protected Map<String, InputStream> getDomainFilesData( String domainId ) {
-    domainId = domainId.toLowerCase().endsWith( XMI_EXTENSION ) ? domainId : domainId + XMI_EXTENSION;
-    return ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
+    Map<String, InputStream> data = ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
+
+    if ( data.size() == 0 ) {
+      domainId = domainId.toLowerCase().endsWith( XMI_EXTENSION ) ? domainId : domainId + XMI_EXTENSION;
+      data = ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
+    }
+
+    return data;
   }
 
   protected boolean isInstanceOfIPentahoMetadataDomainRepositoryExporter( IMetadataDomainRepository obj ) {
