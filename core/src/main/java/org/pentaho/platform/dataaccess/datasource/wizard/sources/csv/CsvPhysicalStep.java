@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import org.pentaho.platform.dataaccess.datasource.Delimiter;
 import org.pentaho.platform.dataaccess.datasource.Enclosure;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
@@ -387,7 +388,7 @@ public class CsvPhysicalStep extends AbstractWizardStep {
   public void refreshPreview() throws Exception {
     csvTextPreview.setValue( "" ); //$NON-NLS-1$
     CsvFileInfo fileInfo = datasourceModel.getModelInfo().getFileInfo();
-    csvTextPreview.setValue( fileInfo.formatSampleContents() );
+    csvTextPreview.setValue( SafeHtmlUtils.htmlEscape( fileInfo.formatSampleContents() ) );
   }
 
   @Override

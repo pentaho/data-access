@@ -17,6 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
@@ -197,7 +198,7 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
 
   @Bindable
   public void showPreviewDialog() throws Exception {
-    previewLabel.setValue( datasourceModel.getModelInfo().getFileInfo().formatSampleContents() );
+    previewLabel.setValue( SafeHtmlUtils.htmlEscape( datasourceModel.getModelInfo().getFileInfo().formatSampleContents() ) );
     previewDialog.show();
   }
 
