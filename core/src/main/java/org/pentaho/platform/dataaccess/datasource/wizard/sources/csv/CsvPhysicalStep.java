@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import org.pentaho.platform.dataaccess.datasource.Delimiter;
 import org.pentaho.platform.dataaccess.datasource.Enclosure;
 import org.pentaho.platform.dataaccess.datasource.wizard.AbstractWizardStep;
@@ -387,7 +388,7 @@ public class CsvPhysicalStep extends AbstractWizardStep {
   public void refreshPreview() throws Exception {
     csvTextPreview.setValue( "" ); //$NON-NLS-1$
     CsvFileInfo fileInfo = datasourceModel.getModelInfo().getFileInfo();
-    csvTextPreview.setValue( fileInfo.formatSampleContents() );
+    csvTextPreview.setValue( SafeHtmlUtils.htmlEscape( fileInfo.formatSampleContents() ) );
   }
 
   @Override

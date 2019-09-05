@@ -12,11 +12,12 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
 
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.platform.dataaccess.datasource.wizard.controllers.MessageHandler;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
@@ -197,7 +198,7 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
 
   @Bindable
   public void showPreviewDialog() throws Exception {
-    previewLabel.setValue( datasourceModel.getModelInfo().getFileInfo().formatSampleContents() );
+    previewLabel.setValue( SafeHtmlUtils.htmlEscape( datasourceModel.getModelInfo().getFileInfo().formatSampleContents() ) );
     previewDialog.show();
   }
 
