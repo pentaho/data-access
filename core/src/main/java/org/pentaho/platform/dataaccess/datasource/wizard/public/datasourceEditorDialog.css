@@ -256,8 +256,12 @@ aggregation-dialog-checkbox-label {
   width: 260px !important;
 }
 
-#database-options-box .vbox {
+#database-options-box.vbox {
   height: 325px !important;
+}
+
+#database-options-box.xul-fieldset {
+  overflow-y: scroll;
 }
 
 #generic_message_label {
