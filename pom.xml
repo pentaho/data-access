@@ -104,7 +104,6 @@
     <ognl.version>2.6.9</ognl.version>
     <commons-io.version>2.2</commons-io.version>
     <encoder.version>1.2</encoder.version>
-    <commons-logging.version>1.2</commons-logging.version>
     <pentaho-reporting.version>9.0.0.0-SNAPSHOT</pentaho-reporting.version>
     <pentaho-cwm.version>1.5.4</pentaho-cwm.version>
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
@@ -1093,11 +1092,6 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>${commons-logging.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
