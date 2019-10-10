@@ -379,15 +379,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>xmlpull</groupId>
-      <artifactId>xmlpull</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xpp3</groupId>
-      <artifactId>xpp3_min</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.sun.grizzly</groupId>
       <artifactId>grizzly-framework</artifactId>
       <scope>test</scope>
