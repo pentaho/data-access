@@ -76,7 +76,6 @@
     <jcr.version>2.0</jcr.version>
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
     <ehcache-core.version>2.5.1</ehcache-core.version>
-    <jackrabbit-core.version>2.14.2</jackrabbit-core.version>
     <commons-xul.version>9.0.0.0-SNAPSHOT</commons-xul.version>
     <lucene-core.version>3.6.0</lucene-core.version>
     <commons-collections.version>3.2.2</commons-collections.version>
@@ -1261,12 +1260,6 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-core</artifactId>
-        <version>${jackrabbit-core.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
