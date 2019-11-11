@@ -12,18 +12,20 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002 - 2019 Hitachi Vantara..  All rights reserved.
  */
-
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
 import org.pentaho.gwt.widgets.client.utils.NameUtils;
+import org.pentaho.mantle.client.csrf.CsrfUtil;
+import org.pentaho.mantle.client.csrf.JsCsrfToken;
 import org.pentaho.platform.dataaccess.datasource.beans.AutobeanUtilities;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
@@ -364,41 +366,56 @@ public class ConnectionController extends AbstractXulEventHandler {
 
   @Bindable
   public void addConnection() {
-    RequestBuilder addConnectionBuilder =
-        new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "add" ) );
-    addConnectionBuilder.setHeader( "Content-Type", "application/json" );
-    try {
-      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
-      addConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
+    final String url = ConnectionController.getServiceURL( "add" );
 
-        @Override
-        public void onError( Request request, Throwable exception ) {
-          displayErrorMessage( exception );
+    CsrfUtil.getCsrfToken( url, new AsyncCallback<JsCsrfToken>() {
+      public void onFailure( Throwable caught ) {
+        displayErrorMessage( caught );
+      }
+
+      public void onSuccess( final JsCsrfToken token ) {
+        RequestBuilder addConnectionBuilder = new RequestBuilder( RequestBuilder.POST, url );
+        addConnectionBuilder.setHeader( "Content-Type", "application/json" );
+
+        if ( token != null ) {
+          addConnectionBuilder.setHeader( token.getHeader(), token.getToken() );
         }
 
-        @Override
-        public void onResponseReceived( Request request, Response response ) {
-          try {
-            if ( response.getStatusCode() == Response.SC_OK ) {
-              datasourceModel.getGuiStateModel().addConnection( currentConnection );
-              datasourceModel.setSelectedRelationalConnection( currentConnection );
-              DialogListener dialogListener = connectionSetter.getOuterListener();
-              if ( dialogListener != null ) {
-                dialogListener.onDialogAccept( currentConnection );
-              }
-            } else {
-              openErrorDialog( MessageHandler.getString( "ERROR" ), MessageHandler//$NON-NLS-1$
-                  .getString( "ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION" ) ); //$NON-NLS-1$
+        try {
+          AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
+
+          addConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
+            @Override
+            public void onError( Request request, Throwable exception ) {
+              displayErrorMessage( exception );
             }
-          } catch ( Exception e ) {
-            displayErrorMessage( e );
-          }
-        }
 
-      } );
-    } catch ( RequestException e ) {
-      displayErrorMessage( e );
-    }
+            @Override
+            public void onResponseReceived( Request request, Response response ) {
+              try {
+                if ( response.getStatusCode() == Response.SC_OK ) {
+                  datasourceModel.getGuiStateModel().addConnection( currentConnection );
+                  datasourceModel.setSelectedRelationalConnection( currentConnection );
+
+                  DialogListener dialogListener = connectionSetter.getOuterListener();
+                  if ( dialogListener != null ) {
+                    dialogListener.onDialogAccept( currentConnection );
+                  }
+                } else {
+                  openErrorDialog( MessageHandler.getString( "ERROR" ),
+                    MessageHandler.getString( "ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION" ) );
+                }
+              } catch ( Exception e ) {
+                displayErrorMessage( e );
+              }
+            }
+
+          } );
+        } catch ( RequestException e ) {
+          displayErrorMessage( e );
+        }
+      }
+    } );
   }
 
   @Bindable
@@ -773,7 +790,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.pentaho.ui.database.event.DatabaseDialogListener#onDialogAccept(org.pentaho.database.model.IDatabaseConnection
      * )
@@ -785,7 +802,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogCancel()
      */
     public void onDialogCancel() {
@@ -794,7 +811,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogReady()
      */
     public void onDialogReady() {

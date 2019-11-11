@@ -3,12 +3,12 @@
 <plugin title="Pentaho Data Access" loader="OVERRIDING" name="data-access">
 
    <lifecycle-listener class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DataAccessLifecycleListener"/>
-   
+
    <static-paths>
      <!-- this translates to /pentaho/content/data-access-plugin/resources/* -->
      <static-path url="/data-access/resources" localFolder="resources"/>
    </static-paths>
-   
+
    <overlays>
         <overlay id="launch" resourcebundle="api/repos/data-access/resources/messages/messages" priority="10010">
             <button id="datasource" label="${newDatasourceEllipsis}" command="window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback)"/>
@@ -18,7 +18,7 @@
 			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="pho.showDatasourceManageDialog(window.parent.datasourceEditorCallback)" />
 			</menubar>
 			<menubar id="newmenu">
-				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="pho.openDatasourceEditor(window.parent.datasourceEditorCallback)" />				
+				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="pho.openDatasourceEditor(window.parent.datasourceEditorCallback)" />
 			</menubar>
 	    </overlay>
 	</overlays>
@@ -30,12 +30,12 @@
 
    <bean id="csvDatasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
 
-     
+
   <webservice
     id="DatasourceService"
     type="xml,gwt"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
-    
+
   <webservice
     id="joinSelectionService"
     type="xml,gwt"
@@ -69,7 +69,7 @@
     title="Database Dialect Service"
     description="This service is used with the database connection dialog"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.DataAccessDatabaseDialectService"/>
-    
+
    <webservice
     id="CsvDatasourceService"
     type="xml,gwt"
@@ -93,6 +93,7 @@
     <file context="global">content/data-access/resources/gwt/datasourceEditorDialog.css</file>
     <file context="global">content/data-access/resources/gwt/datasourceAdminDialog.css</file>
   </external-resources>
+
   <!-- ## CSRF (Cross-Site Request Forgery) protected endpoints ##
       To enable/disable this plugin's CSRF protection,
       set the `csrf-protection-enabled` setting in `settings.xml`.
@@ -102,5 +103,10 @@
       POST /plugin/data-access/api/datasource/analysis/{id}/remove
     -->
     <request-matcher type="regex" pattern="^/plugin/data-access/api/datasource/analysis/[^/]*/remove\b.*" methods="POST" />
+
+    <!--
+      POST /plugin/data-access/api/connection/add
+    -->
+    <request-matcher type="regex" pattern="^/plugin/data-access/api/connection/add\b.*" methods="POST" />
   </csrf-protection>
 </plugin>
