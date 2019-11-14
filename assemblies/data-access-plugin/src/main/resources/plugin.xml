@@ -108,5 +108,10 @@
       POST /plugin/data-access/api/connection/add
     -->
     <request-matcher type="regex" pattern="^/plugin/data-access/api/connection/add\b.*" methods="POST" />
+
+    <!--
+      POST /plugin/data-access/api/mondrian/postAnalysis
+    -->
+    <request-matcher type="regex" pattern="^/plugin/data-access/api/mondrian/postAnalysis\b.*" methods="POST" />
   </csrf-protection>
 </plugin>
