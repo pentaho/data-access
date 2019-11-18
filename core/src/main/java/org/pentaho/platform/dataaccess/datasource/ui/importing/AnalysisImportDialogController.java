@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
@@ -24,10 +24,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.gwt.http.client.URL;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
+import org.pentaho.mantle.client.csrf.CsrfUtil;
+import org.pentaho.mantle.client.csrf.JsCsrfToken;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.utils.DataSourceInfoUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.DatasourceMessages;
@@ -239,12 +243,37 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     return moduleUrl + "plugin/data-access/api/connection/";
   }
 
+  /**
+   *  Adds action URL to a form panel having in account if CSRF token is required
+   *
+   * @param panel
+   * @param url
+   */
+  private void setFormAction( final FormPanel panel, final String url ) {
+    CsrfUtil.getCsrfToken( url, new AsyncCallback<JsCsrfToken>() {
+      public void onFailure( Throwable caught ) {
+        // in case of something went wrong on csrf token request, at least, base url is always guaranteed
+        panel.setAction( url );
+      }
+
+      public void onSuccess( JsCsrfToken token ) {
+        StringBuilder urlBuilder = new StringBuilder( url );
+        if ( token != null ) {
+          urlBuilder.append( "?" + token.getParameter() + "=" + URL.encode( token.getToken() ) );
+        }
+
+        panel.setAction( urlBuilder.toString() );
+      }
+    } );
+  }
+
   private void createWorkingForm() {
     if ( formPanel == null ) {
       formPanel = new FormPanel();
       formPanel.setMethod( FormPanel.METHOD_POST );
       formPanel.setEncoding( FormPanel.ENCODING_MULTIPART );
-      formPanel.setAction( MONDRIAN_POSTANALYSIS_URL );
+      setFormAction( formPanel, MONDRIAN_POSTANALYSIS_URL );
+
       formPanel.getElement().getStyle().setProperty( "position", "absolute" );
       formPanel.getElement().getStyle().setProperty( "visibility", "hidden" );
       formPanel.getElement().getStyle().setProperty( "overflow", "hidden" );
