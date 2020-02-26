@@ -85,7 +85,6 @@
     <dependency.com.google.gwt.gwt-incubator.version>2.1.0</dependency.com.google.gwt.gwt-incubator.version>
     <jaxb-xjc.version>2.1.2</jaxb-xjc.version>
     <pentaho-modeler.version>9.0.0.0-SNAPSHOT</pentaho-modeler.version>
-    <commons-vfs2.version>2.2</commons-vfs2.version>
     <jersey.version>1.19.1</jersey.version>
     <guava.version>17.0</guava.version>
     <jempbox.version>0.2.0</jempbox.version>
@@ -1169,11 +1168,6 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-vfs2</artifactId>
-        <version>${commons-vfs2.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
