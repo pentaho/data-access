@@ -99,6 +99,10 @@
       <artifactId>kettle-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pentaho-encryption-support</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.pentaho.reporting.library</groupId>
       <artifactId>libbase</artifactId>
     </dependency>

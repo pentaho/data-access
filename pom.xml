@@ -119,6 +119,7 @@
     <dependency.reporting-library.group>pentaho-library</dependency.reporting-library.group>
     <pentaho-connections.version>9.1.0.0-SNAPSHOT</pentaho-connections.version>
     <junit.version>4.12</junit.version>
+    <encryption-support.version>9.1.0.0-SNAPSHOT</encryption-support.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -395,6 +396,12 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.pentaho</groupId>
+        <artifactId>pentaho-encryption-support</artifactId>
+        <version>${encryption-support.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>stax</groupId>
@@ -1320,7 +1327,6 @@
         <version>${sjsxp.version}</version>
         <scope>test</scope>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
   <profiles>
