@@ -5,11 +5,11 @@
   <parent>
     <groupId>pentaho</groupId>
     <artifactId>pentaho-data-access-parent</artifactId>
-    <version>9.2.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-101</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-data-access-gwt</artifactId>
-  <version>9.2.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-101</version>
   <properties>
     <gwt.user.agent>safari,ie9,ie8,gecko1_8</gwt.user.agent>
     <gwt.module>org.pentaho.platform.dataaccess.datasource.DatasourceEditor</gwt.module>
