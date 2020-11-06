@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2020 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -27,6 +27,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -244,16 +246,34 @@ public class AnalysisServiceTest {
 
   @Test
   public void testGetAnalysisDatasourceIds() throws Exception {
+    // Has xmi but it is not a DSW
     final MondrianCatalog foodmartCatalog = new MondrianCatalog( "foodmart", "info", "file:///place",
         new MondrianSchema( "foodmart", Collections.emptyList() ) );
+    // Has xmi and it is a DSW
     final MondrianCatalog foodmartCatalog2 = new MondrianCatalog( "foodmart2", "info", "file:///place",
         new MondrianSchema( "foodmart2", Collections.emptyList() ) );
-    final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2 );
+    // Does not have an xmi
+    final MondrianCatalog foodmartCatalog3 = new MondrianCatalog( "foodmart3", "info", "file:///place",
+      new MondrianSchema( "foodmart3", Collections.emptyList() ) );
+    final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2, foodmartCatalog3 );
     doReturn( catalogs ).when( catalogService ).listCatalogs( any( IPentahoSession.class ), eq( false ) );
-    final HashSet<String> domainIds = Sets.newHashSet( "foodmart.xmi", "sample.xmi" );
+    final HashSet<String> domainIds = Sets.newHashSet( "foodmart.xmi", "foodmart2.xmi", "sample.xmi" );
     doReturn( domainIds ).when( metadataRepository ).getDomainIds();
+
+    Domain mockDomain = mock( Domain.class );
+    when( metadataRepository.getDomain( "foodmart.xmi") ).thenReturn( mockDomain );
+    LogicalModel mockLogicalModel = mock( LogicalModel.class );
+    when( mockLogicalModel.getProperty( "AGILE_BI_GENERATED_SCHEMA" ) ).thenReturn( null );
+    when( mockDomain.getLogicalModels() ).thenReturn( Arrays.asList( mockLogicalModel ) );
+
+    Domain mockDomain2 = mock( Domain.class );
+    when( metadataRepository.getDomain( "foodmart2.xmi") ).thenReturn( mockDomain2 );
+    LogicalModel mockLogicalModel2 = mock( LogicalModel.class );
+    when( mockLogicalModel2.getProperty( "AGILE_BI_GENERATED_SCHEMA" ) ).thenReturn( true );
+    when( mockDomain2.getLogicalModels() ).thenReturn( Arrays.asList( mockLogicalModel2 ) );
+
     final List<String> response = analysisService.getAnalysisDatasourceIds();
-    assertEquals( Collections.singletonList( "foodmart2" ), response );
+    assertEquals( Arrays.asList( "foodmart", "foodmart3" ), response );
   }
 
   @Test
