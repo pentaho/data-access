@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2017-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2017-2020 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -152,6 +152,32 @@ public class DatasourceServiceTest {
     assertFalse( DatasourceService.isMetadataDatasource( domain ) );
 
   }
+
+  @Test
+  public void isDSWDatasourceTest() throws ObjectFactoryException {
+    // given
+    Domain domain = mock( Domain.class );
+    List<LogicalModel> logicalModelList = new ArrayList<>();
+    LogicalModel model = new LogicalModel();
+    LogicalModel model2 = new LogicalModel();
+    // when
+    assertFalse( DatasourceService.isDSWDatasource( (Domain) null ) );
+    assertFalse( DatasourceService.isDSWDatasource( domain ) );
+
+    logicalModelList.add( model );
+    when( domain.getLogicalModels() ).thenReturn( logicalModelList );
+    assertFalse( DatasourceService.isDSWDatasource( domain ) );
+
+    model.setProperty( "AGILE_BI_GENERATED_SCHEMA", true );
+    assertTrue( DatasourceService.isDSWDatasource( domain ) );
+
+    model2.setProperty( "WIZARD_GENERATED_SCHEMA", true );
+    logicalModelList.clear();
+    logicalModelList.add( model2 );
+    assertTrue( DatasourceService.isDSWDatasource( domain ) );
+
+  }
+
 
   private static Class<?> anyClass() {
     return argThat( new AnyClassMatcher() );

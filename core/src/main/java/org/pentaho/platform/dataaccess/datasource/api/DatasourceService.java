@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2020 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -146,5 +146,12 @@ public class DatasourceService {
   public void ensureDataAccessPermission() throws ConnectionServiceException {
     ConnectionServiceImpl connectionService = new ConnectionServiceImpl();
     connectionService.ensureDataAccessPermission();
+  }
+
+  public static boolean isDSWDatasource( Domain domain ) {
+    if ( domain == null ) {
+      return false; //If we can't find it, then it can't be a DSW
+    }
+    return !isMetadataDatasource( domain );
   }
 }

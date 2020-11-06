@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2020 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
@@ -117,7 +118,7 @@ public class AnalysisService extends DatasourceService {
     Set<String> ids = metadataDomainRepository.getDomainIds();
     for ( MondrianCatalog mondrianCatalog : mockMondrianCatalogList ) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
-      if ( !ids.contains( domainId ) ) {
+      if ( !ids.contains( domainId ) || !isDSWDatasource( domainId ) ) {
         analysisIds.add( mondrianCatalog.getName() );
       }
     }
@@ -460,5 +461,10 @@ public class AnalysisService extends DatasourceService {
       throw new PlatformImportException( Messages.getString( "AnalysisService.ERROR_002_ANALYSIS_DATASOURCE_ERROR" ),
           PlatformImportException.PUBLISH_GENERAL_ERROR );
     }
+  }
+
+  private boolean isDSWDatasource( String domainId ) {
+    Domain domain = metadataDomainRepository.getDomain( domainId );
+    return DatasourceService.isDSWDatasource( domain );
   }
 }
