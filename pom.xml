@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>9.2.0.0-SNAPSHOT</version>
+    <version>9.2.0.0-122</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-data-access-parent</artifactId>
-  <version>9.2.0.0-SNAPSHOT</version>
+  <version>9.2.0.0-122</version>
   <packaging>pom</packaging>
   <licenses>
     <license>
@@ -26,7 +26,7 @@
   </modules>
   <properties>
     <gwtx.version>1.5.2</gwtx.version>
-    <pentaho-reporting.version>9.2.0.0-SNAPSHOT</pentaho-reporting.version>
+    <pentaho-reporting.version>9.2.0.0-122</pentaho-reporting.version>
     <hibernate-core.version>3.6.9.Final</hibernate-core.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <aspectjrt.version>1.6.6</aspectjrt.version>
@@ -40,7 +40,7 @@
     <dependency.com.allen_sauer.gwt-dnd.version>3.1.2</dependency.com.allen_sauer.gwt-dnd.version>
     <fontbox.version>0.1.0</fontbox.version>
     <jsr311-api.version>1.1.1</jsr311-api.version>
-    <commons-gwt.version>9.2.0.0-SNAPSHOT</commons-gwt.version>
+    <commons-gwt.version>9.2.0.0-122</commons-gwt.version>
     <saxon.version>9.1.0.8</saxon.version>
     <dependency.com.google.gwt.gwt-servlet.version>2.5.1</dependency.com.google.gwt.gwt-servlet.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
@@ -49,9 +49,9 @@
     <axiom-api.version>1.2.7</axiom-api.version>
     <geronimo-spec-jta.version>1.0.1B-rc4</geronimo-spec-jta.version>
     <h2.version>1.0.78</h2.version>
-    <pentaho-actionsequence-dom.version>9.2.0.0-SNAPSHOT</pentaho-actionsequence-dom.version>
+    <pentaho-actionsequence-dom.version>9.2.0.0-122</pentaho-actionsequence-dom.version>
     <commons-math.version>1.1</commons-math.version>
-    <commons-database.version>9.2.0.0-SNAPSHOT</commons-database.version>
+    <commons-database.version>9.2.0.0-122</commons-database.version>
     <org.json.version>3.1.1</org.json.version>
     <wstx-asl.version>3.2.4</wstx-asl.version>
     <commons-lang.version>2.4</commons-lang.version>
@@ -75,7 +75,7 @@
     <jcr.version>2.0</jcr.version>
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
     <ehcache-core.version>2.5.1</ehcache-core.version>
-    <commons-xul.version>9.2.0.0-SNAPSHOT</commons-xul.version>
+    <commons-xul.version>9.2.0.0-122</commons-xul.version>
     <lucene-core.version>3.6.0</lucene-core.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <junit-dep.version>4.4</junit-dep.version>
@@ -83,14 +83,14 @@
     <mimepull.version>1.9.3</mimepull.version>
     <dependency.com.google.gwt.gwt-incubator.version>2.1.0</dependency.com.google.gwt.gwt-incubator.version>
     <jaxb-xjc.version>2.1.2</jaxb-xjc.version>
-    <pentaho-modeler.version>9.2.0.0-SNAPSHOT</pentaho-modeler.version>
+    <pentaho-modeler.version>9.2.0.0-122</pentaho-modeler.version>
     <jersey.version>1.19.1</jersey.version>
     <guava.version>17.0</guava.version>
     <jempbox.version>0.2.0</jempbox.version>
     <jaxb-impl.version>2.2.3</jaxb-impl.version>
     <commons-digester.version>1.8</commons-digester.version>
     <jug-lgpl.version>2.0.0</jug-lgpl.version>
-    <pdi.version>9.2.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>9.2.0.0-122</pdi.version>
     <jcommon.version>1.0.14</jcommon.version>
     <stax.version>1.2.0</stax.version>
     <commons-pool.version>1.5.7</commons-pool.version>
@@ -98,18 +98,18 @@
     <ognl.version>2.6.9</ognl.version>
     <commons-io.version>2.2</commons-io.version>
     <encoder.version>1.2</encoder.version>
-    <pentaho-reporting.version>9.2.0.0-SNAPSHOT</pentaho-reporting.version>
+    <pentaho-reporting.version>9.2.0.0-122</pentaho-reporting.version>
     <pentaho-cwm.version>1.5.4</pentaho-cwm.version>
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
     <eigenbase-properties.version>1.1.2</eigenbase-properties.version>
     <aopalliance.version>1.0</aopalliance.version>
-    <platform.version>9.2.0.0-SNAPSHOT</platform.version>
-    <metastore.version>9.2.0.0-SNAPSHOT</metastore.version>
+    <platform.version>9.2.0.0-122</platform.version>
+    <metastore.version>9.2.0.0-122</metastore.version>
     <axiom-dom.version>1.2.7</axiom-dom.version>
-    <mondrian.version>9.2.0.0-SNAPSHOT</mondrian.version>
+    <mondrian.version>9.2.0.0-122</mondrian.version>
     <log4j.version>1.2.17</log4j.version>
     <dependency.pentaho.simple-jndi.version>1.0.3</dependency.pentaho.simple-jndi.version>
-    <pentaho-metadata.version>9.2.0.0-SNAPSHOT</pentaho-metadata.version>
+    <pentaho-metadata.version>9.2.0.0-122</pentaho-metadata.version>
     <org.eclipse.swt.gtk.linux.x86_64.version>4.6</org.eclipse.swt.gtk.linux.x86_64.version>
     <dependency.com.google.gwt.gwt-user.version>2.5.1</dependency.com.google.gwt.gwt-user.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
@@ -117,9 +117,9 @@
     <nekohtml.version>1.9.7</nekohtml.version>
     <concurrent.version>1.3.4</concurrent.version>
     <dependency.reporting-library.group>pentaho-library</dependency.reporting-library.group>
-    <pentaho-connections.version>9.2.0.0-SNAPSHOT</pentaho-connections.version>
+    <pentaho-connections.version>9.2.0.0-122</pentaho-connections.version>
     <junit.version>4.12</junit.version>
-    <encryption-support.version>9.2.0.0-SNAPSHOT</encryption-support.version>
+    <encryption-support.version>9.2.0.0-122</encryption-support.version>
   </properties>
   <dependencyManagement>
     <dependencies>
