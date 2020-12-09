@@ -248,12 +248,9 @@ public class AnalysisService extends DatasourceService {
     if ( isOverwriteAnnotations( parameters, overWriteInRepository ) ) {
       IMondrianCatalogService catalogService =
           PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
-      List<MondrianCatalog> catalogs = catalogService.listCatalogs( PentahoSessionHolder.getSession(), false );
-      for ( MondrianCatalog catalog : catalogs ) {
-        if ( catalog.getName().equals( bundle.getName() ) ) {
-          catalogService.removeCatalog( bundle.getName(), PentahoSessionHolder.getSession() );
-          break;
-        }
+      MondrianCatalog catalog = catalogService.getCatalog( bundle.getName(), PentahoSessionHolder.getSession() );
+      if ( catalog != null ) {
+        catalogService.removeCatalog( bundle.getName(), PentahoSessionHolder.getSession() );
       }
     }
     importer.importFile( bundle );

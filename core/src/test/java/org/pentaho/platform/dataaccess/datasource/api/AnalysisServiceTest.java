@@ -127,8 +127,7 @@ public class AnalysisServiceTest {
   public void testImportingSchemaRemovesExistingAnnotationsByDefault() throws Exception {
     MondrianCatalog otherCatalog = new MondrianCatalog( "other", "", "", null );
     MondrianCatalog salesCatalog = new MondrianCatalog( "sales", "", "", null );
-    when( catalogService.listCatalogs( any( IPentahoSession.class ), eq( false ) ) )
-        .thenReturn( Arrays.asList( otherCatalog, salesCatalog ) );
+    when( catalogService.getCatalog( eq( "sales" ), any( IPentahoSession.class ) ) ).thenReturn( salesCatalog );
     putMondrianSchemaWithSchemaFileName( "stubFileName", "overwrite=true" );
     verify( importer ).importFile( argThat( matchBundle( true, acl ) ) );
     verify( catalogService ).removeCatalog( eq( "sales" ), any( IPentahoSession.class ) );
