@@ -75,21 +75,6 @@
     </longitude>
   </geo>
 
-    <!-- Settings for the PUC "new" toolbar dropdown: priority, label, tabName, action-url, check if enabled url -->
-    <new-toolbar-button>9,newDataAccess,dataaccess,javascript:window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback),plugin/data-access/api/permissions/hasDataAccess</new-toolbar-button>
-  <!--
-      Enables CSRF (Cross-Site Request Forgery) protection for this plugin,
-      if CSRF protection is also enabled for the server.
-
-      Default value: true (safe).
-
-      *ATTENTION*:
-        Setting this option to false opens the plugin to known security flaws,
-        which can allow an attacker to perform CSRF attacks.
-
-        Do NOT set this option to false
-        except in cases where CSRF protection must be enabled for the server but not for this plugin,
-        possibly because external code still exists which depends on the unprotected and deprecated APIs.
-    -->
-  <csrf-protection-enabled>true</csrf-protection-enabled>
+  <!-- Settings for the PUC "new" toolbar dropdown: priority, label, tabName, action-url, check if enabled url -->
+  <new-toolbar-button>9,newDataAccess,dataaccess,javascript:window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback),plugin/data-access/api/permissions/hasDataAccess</new-toolbar-button>
 </settings>

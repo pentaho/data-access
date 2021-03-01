@@ -119,6 +119,7 @@
     <pentaho-connections.version>9.3.0.0-SNAPSHOT</pentaho-connections.version>
     <junit.version>4.12</junit.version>
     <encryption-support.version>9.3.0.0-SNAPSHOT</encryption-support.version>
+    <hv-security-web.version>0.3.0</hv-security-web.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -1326,6 +1327,32 @@
         <version>${sjsxp.version}</version>
         <scope>test</scope>
       </dependency>
+      <!-- region HV Web Security -->
+      <dependency>
+        <groupId>com.hitachivantara.security.web</groupId>
+        <artifactId>security-web-server-api</artifactId>
+        <version>${hv-security-web.version}</version>
+        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.hitachivantara.security.web</groupId>
+        <artifactId>security-web-server-model-impl</artifactId>
+        <version>${hv-security-web.version}</version>
+        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- endregion HV Web Security -->
     </dependencies>
   </dependencyManagement>
   <profiles>

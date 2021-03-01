@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ws="http://jax-ws.dev.java.net/spring/core" xmlns:wss="http://jax-ws.dev.java.net/spring/servlet"
-  xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
-  xmlns:util="http://www.springframework.org/schema/util"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
-                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
-                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
-                           http://jax-ws.dev.java.net/spring/core http://jax-ws.dev.java.net/spring/core.xsd
-                           http://jax-ws.dev.java.net/spring/servlet http://jax-ws.dev.java.net/spring/servlet.xsd
-						   http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd"
-                           default-lazy-init="true">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
+       xmlns:swm="http://www.hitachivantara.com/schema/security/web/model/spring"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+          http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd
+          http://www.hitachivantara.com/schema/security/web/model/spring http://www.hitachivantara.com/schema/security/web/model/spring/hv-swm-spring.xsd"
+       default-lazy-init="true">
 
   <context:annotation-config />
-  
+
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.PlatformStagingDatabaseResource"/>
-  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceResource"/>  
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatasourceResource"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.AnalysisDatasourceService"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MetadataDatasourceService"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionService"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.api.resources.DataSourceWizardResource"/>
-  <bean class="org.pentaho.platform.dataaccess.datasource.api.resources.AnalysisResource"/>  
+  <bean class="org.pentaho.platform.dataaccess.datasource.api.resources.AnalysisResource"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.api.resources.MetadataResource"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.api.resources.JDBCDatasourceResource"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseDialectService"/>
@@ -29,249 +31,249 @@
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DataAccessPermissionResource" />
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionReaderWriter" scope="singleton"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseConnectionListReaderWriter" scope="singleton"/>
- <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypeReaderWriter" scope="singleton"/>
+  <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypeReaderWriter" scope="singleton"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypesListReaderWriter" scope="singleton"/>
- <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" scope="singleton"/>
- <bean class="org.pentaho.platform.web.servlet.PentahoSerializationPolicy">
-   <property name="whiteList">
-     <util:list>
-       <value>com.allen_sauer.gwt.dnd.client.DragHandlerCollection</value>
-       <value>com.allen_sauer.gwt.dnd.client.VetoDragException</value>
-       <value>com.google.gwt.event.shared.UmbrellaException</value>
-       <value>com.google.gwt.gen2.logging.handler.client.RemoteLogHandler$RemoteThrowable</value>
-       <value>com.google.gwt.gen2.logging.handler.shared.ListLogHandler</value>
-       <value>com.google.gwt.http.client.RequestException</value>
-       <value>com.google.gwt.json.client.JSONException</value>
-       <value>com.google.gwt.jsonp.client.TimeoutException</value>
-       <value>com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException</value>
-       <value>com.google.gwt.user.client.rpc.RpcTokenException</value>
-       <value>com.google.gwt.user.client.rpc.SerializableException</value>
-       <value>com.google.gwt.user.client.rpc.SerializationException</value>
-       <value>com.google.gwt.user.client.rpc.SerializedTypeViolationException</value>
-       <value>com.google.gwt.user.client.rpc.ServiceDefTarget$NoServiceEntryPointSpecifiedException</value>
-       <value>com.google.gwt.user.client.rpc.XsrfToken</value>
-       <value>com.google.gwt.user.client.ui.ChangeListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.ClickListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.FocusListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.FormHandlerCollection</value>
-       <value>com.google.gwt.user.client.ui.KeyboardListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.LoadListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.MouseListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.MouseWheelListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.PopupListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.ScrollListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.TabListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.TableListenerCollection</value>
-       <value>com.google.gwt.user.client.ui.TreeListenerCollection</value>
-       <value>com.google.gwt.widgetideas.table.client.RowPagingListenerCollection</value>
-       <value>com.google.gwt.widgetideas.table.client.SortableColumnsListenerCollection</value>
-       <value>com.google.gwt.widgetideas.table.client.TableModelListenerCollection</value>
-       <value>com.google.gwt.widgetideas.table.client.TableSelectionListenerCollection</value>
-       <value>com.google.gwt.xml.client.impl.DOMParseException</value>
-       <value>com.google.web.bindery.event.shared.UmbrellaException</value>
-       <value>java.io.IOException</value>
-       <value>java.io.UnsupportedEncodingException</value>
-       <value>java.lang.ArithmeticException</value>
-       <value>java.lang.ArrayIndexOutOfBoundsException</value>
-       <value>java.lang.ArrayStoreException</value>
-       <value>java.lang.AssertionError</value>
-       <value>java.lang.Boolean</value>
-       <value>java.lang.ClassCastException</value>
-       <value>java.lang.Error</value>
-       <value>java.lang.Exception</value>
-       <value>java.lang.IllegalArgumentException</value>
-       <value>java.lang.IllegalStateException</value>
-       <value>java.lang.IndexOutOfBoundsException</value>
-       <value>java.lang.Integer</value>
-       <value>java.lang.NegativeArraySizeException</value>
-       <value>java.lang.NoSuchMethodException</value>
-       <value>java.lang.NullPointerException</value>
-       <value>java.lang.Number</value>
-       <value>java.lang.NumberFormatException</value>
-       <value>java.lang.RuntimeException</value>
-       <value>java.lang.String</value>
-       <value>java.lang.StringIndexOutOfBoundsException</value>
-       <value>[Ljava.lang.String;</value>
-       <value>java.lang.Throwable</value>
-       <value>java.lang.UnsupportedOperationException</value>
-       <value>java.lang.annotation.AnnotationFormatError</value>
-       <value>java.lang.annotation.AnnotationTypeMismatchException</value>
-       <value>java.lang.reflect.InvocationTargetException</value>
-       <value>java.security.DigestException</value>
-       <value>java.security.GeneralSecurityException</value>
-       <value>java.security.NoSuchAlgorithmException</value>
-       <value>java.util.ArrayList</value>
-       <value>java.util.Arrays$ArrayList</value>
-       <value>java.util.Collections$EmptyList</value>
-       <value>java.util.Collections$EmptyMap</value>
-       <value>java.util.Collections$EmptySet</value>
-       <value>java.util.Collections$SingletonList</value>
-       <value>java.util.ConcurrentModificationException</value>
-       <value>java.util.EmptyStackException</value>
-       <value>java.util.HashMap</value>
-       <value>java.util.HashSet</value>
-       <value>java.util.IdentityHashMap</value>
-       <value>java.util.LinkedHashMap</value>
-       <value>java.util.LinkedHashSet</value>
-       <value>java.util.LinkedList</value>
-       <value>java.util.NoSuchElementException</value>
-       <value>java.util.Stack</value>
-       <value>java.util.TooManyListenersException</value>
-       <value>java.util.TreeMap</value>
-       <value>java.util.TreeSet</value>
-       <value>java.util.Vector</value>
-       <value>org.adamtacy.client.ui.effects.NEffectCollection</value>
-       <value>org.adamtacy.client.ui.effects.exception.NEffectNotInterruptableException</value>
-       <value>org.adamtacy.client.ui.effects.transitionsphysics.TransitionCollection</value>
-       <value>org.pentaho.agilebi.modeler.IncompatibleModelerException</value>
-       <value>org.pentaho.agilebi.modeler.ModelerException</value>
-       <value>org.pentaho.agilebi.modeler.geo.GeoContext</value>
-       <value>org.pentaho.agilebi.modeler.geo.GeoRole</value>
-       <value>[Lorg.pentaho.agilebi.modeler.geo.GeoRole;</value>
-       <value>org.pentaho.agilebi.modeler.geo.LatLngRole</value>
-       <value>[Lorg.pentaho.agilebi.modeler.geo.LatLngRole;</value>
-       <value>org.pentaho.agilebi.modeler.geo.LocationRole</value>
-       <value>[Lorg.pentaho.agilebi.modeler.geo.LocationRole;</value>
-       <value>org.pentaho.agilebi.modeler.gwt.BogoPojo</value>
-       <value>org.pentaho.agilebi.modeler.models.JoinFieldModel</value>
-       <value>[Lorg.pentaho.agilebi.modeler.models.JoinFieldModel;</value>
-       <value>org.pentaho.agilebi.modeler.models.JoinRelationshipModel</value>
-       <value>org.pentaho.agilebi.modeler.models.JoinTableModel</value>
-       <value>org.pentaho.agilebi.modeler.nodes.AbstractAvailableItem</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.AbstractAvailableItem;</value>
-       <value>org.pentaho.agilebi.modeler.nodes.AvailableField</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.AvailableField;</value>
-       <value>org.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData</value>
-       <value>org.pentaho.agilebi.modeler.nodes.CategoryMetaData</value>
-       <value>org.pentaho.agilebi.modeler.nodes.CategoryMetaDataCollection</value>
-       <value>org.pentaho.agilebi.modeler.nodes.DimensionMetaData</value>
-       <value>org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection</value>
-       <value>org.pentaho.agilebi.modeler.nodes.HierarchyMetaData</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.IAvailableItem;</value>
-       <value>org.pentaho.agilebi.modeler.nodes.LevelMetaData</value>
-       <value>org.pentaho.agilebi.modeler.nodes.MeasuresCollection</value>
-       <value>org.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData</value>
-       <value>org.pentaho.database.DatabaseDialectException</value>
-       <value>org.pentaho.gwt.widgets.client.text.ValidationTextBoxKeyUpHandlerCollection</value>
-       <value>org.pentaho.gwt.widgets.client.text.ValidationTextBoxListenerCollection</value>
-       <value>org.pentaho.gwt.widgets.client.wizards.WizardPanelListenerCollection</value>
-       <value>org.pentaho.gwt.widgets.login.client.AuthenticationCanceledException</value>
-       <value>org.pentaho.gwt.widgets.login.client.AuthenticationFailedException</value>
+  <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" scope="singleton"/>
+  <bean class="org.pentaho.platform.web.servlet.PentahoSerializationPolicy">
+    <property name="whiteList">
+      <util:list>
+        <value>com.allen_sauer.gwt.dnd.client.DragHandlerCollection</value>
+        <value>com.allen_sauer.gwt.dnd.client.VetoDragException</value>
+        <value>com.google.gwt.event.shared.UmbrellaException</value>
+        <value>com.google.gwt.gen2.logging.handler.client.RemoteLogHandler$RemoteThrowable</value>
+        <value>com.google.gwt.gen2.logging.handler.shared.ListLogHandler</value>
+        <value>com.google.gwt.http.client.RequestException</value>
+        <value>com.google.gwt.json.client.JSONException</value>
+        <value>com.google.gwt.jsonp.client.TimeoutException</value>
+        <value>com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException</value>
+        <value>com.google.gwt.user.client.rpc.RpcTokenException</value>
+        <value>com.google.gwt.user.client.rpc.SerializableException</value>
+        <value>com.google.gwt.user.client.rpc.SerializationException</value>
+        <value>com.google.gwt.user.client.rpc.SerializedTypeViolationException</value>
+        <value>com.google.gwt.user.client.rpc.ServiceDefTarget$NoServiceEntryPointSpecifiedException</value>
+        <value>com.google.gwt.user.client.rpc.XsrfToken</value>
+        <value>com.google.gwt.user.client.ui.ChangeListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.ClickListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.FocusListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.FormHandlerCollection</value>
+        <value>com.google.gwt.user.client.ui.KeyboardListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.LoadListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.MouseListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.MouseWheelListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.PopupListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.ScrollListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.TabListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.TableListenerCollection</value>
+        <value>com.google.gwt.user.client.ui.TreeListenerCollection</value>
+        <value>com.google.gwt.widgetideas.table.client.RowPagingListenerCollection</value>
+        <value>com.google.gwt.widgetideas.table.client.SortableColumnsListenerCollection</value>
+        <value>com.google.gwt.widgetideas.table.client.TableModelListenerCollection</value>
+        <value>com.google.gwt.widgetideas.table.client.TableSelectionListenerCollection</value>
+        <value>com.google.gwt.xml.client.impl.DOMParseException</value>
+        <value>com.google.web.bindery.event.shared.UmbrellaException</value>
+        <value>java.io.IOException</value>
+        <value>java.io.UnsupportedEncodingException</value>
+        <value>java.lang.ArithmeticException</value>
+        <value>java.lang.ArrayIndexOutOfBoundsException</value>
+        <value>java.lang.ArrayStoreException</value>
+        <value>java.lang.AssertionError</value>
+        <value>java.lang.Boolean</value>
+        <value>java.lang.ClassCastException</value>
+        <value>java.lang.Error</value>
+        <value>java.lang.Exception</value>
+        <value>java.lang.IllegalArgumentException</value>
+        <value>java.lang.IllegalStateException</value>
+        <value>java.lang.IndexOutOfBoundsException</value>
+        <value>java.lang.Integer</value>
+        <value>java.lang.NegativeArraySizeException</value>
+        <value>java.lang.NoSuchMethodException</value>
+        <value>java.lang.NullPointerException</value>
+        <value>java.lang.Number</value>
+        <value>java.lang.NumberFormatException</value>
+        <value>java.lang.RuntimeException</value>
+        <value>java.lang.String</value>
+        <value>java.lang.StringIndexOutOfBoundsException</value>
+        <value>[Ljava.lang.String;</value>
+        <value>java.lang.Throwable</value>
+        <value>java.lang.UnsupportedOperationException</value>
+        <value>java.lang.annotation.AnnotationFormatError</value>
+        <value>java.lang.annotation.AnnotationTypeMismatchException</value>
+        <value>java.lang.reflect.InvocationTargetException</value>
+        <value>java.security.DigestException</value>
+        <value>java.security.GeneralSecurityException</value>
+        <value>java.security.NoSuchAlgorithmException</value>
+        <value>java.util.ArrayList</value>
+        <value>java.util.Arrays$ArrayList</value>
+        <value>java.util.Collections$EmptyList</value>
+        <value>java.util.Collections$EmptyMap</value>
+        <value>java.util.Collections$EmptySet</value>
+        <value>java.util.Collections$SingletonList</value>
+        <value>java.util.ConcurrentModificationException</value>
+        <value>java.util.EmptyStackException</value>
+        <value>java.util.HashMap</value>
+        <value>java.util.HashSet</value>
+        <value>java.util.IdentityHashMap</value>
+        <value>java.util.LinkedHashMap</value>
+        <value>java.util.LinkedHashSet</value>
+        <value>java.util.LinkedList</value>
+        <value>java.util.NoSuchElementException</value>
+        <value>java.util.Stack</value>
+        <value>java.util.TooManyListenersException</value>
+        <value>java.util.TreeMap</value>
+        <value>java.util.TreeSet</value>
+        <value>java.util.Vector</value>
+        <value>org.adamtacy.client.ui.effects.NEffectCollection</value>
+        <value>org.adamtacy.client.ui.effects.exception.NEffectNotInterruptableException</value>
+        <value>org.adamtacy.client.ui.effects.transitionsphysics.TransitionCollection</value>
+        <value>org.pentaho.agilebi.modeler.IncompatibleModelerException</value>
+        <value>org.pentaho.agilebi.modeler.ModelerException</value>
+        <value>org.pentaho.agilebi.modeler.geo.GeoContext</value>
+        <value>org.pentaho.agilebi.modeler.geo.GeoRole</value>
+        <value>[Lorg.pentaho.agilebi.modeler.geo.GeoRole;</value>
+        <value>org.pentaho.agilebi.modeler.geo.LatLngRole</value>
+        <value>[Lorg.pentaho.agilebi.modeler.geo.LatLngRole;</value>
+        <value>org.pentaho.agilebi.modeler.geo.LocationRole</value>
+        <value>[Lorg.pentaho.agilebi.modeler.geo.LocationRole;</value>
+        <value>org.pentaho.agilebi.modeler.gwt.BogoPojo</value>
+        <value>org.pentaho.agilebi.modeler.models.JoinFieldModel</value>
+        <value>[Lorg.pentaho.agilebi.modeler.models.JoinFieldModel;</value>
+        <value>org.pentaho.agilebi.modeler.models.JoinRelationshipModel</value>
+        <value>org.pentaho.agilebi.modeler.models.JoinTableModel</value>
+        <value>org.pentaho.agilebi.modeler.nodes.AbstractAvailableItem</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.AbstractAvailableItem;</value>
+        <value>org.pentaho.agilebi.modeler.nodes.AvailableField</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.AvailableField;</value>
+        <value>org.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData</value>
+        <value>org.pentaho.agilebi.modeler.nodes.CategoryMetaData</value>
+        <value>org.pentaho.agilebi.modeler.nodes.CategoryMetaDataCollection</value>
+        <value>org.pentaho.agilebi.modeler.nodes.DimensionMetaData</value>
+        <value>org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection</value>
+        <value>org.pentaho.agilebi.modeler.nodes.HierarchyMetaData</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.IAvailableItem;</value>
+        <value>org.pentaho.agilebi.modeler.nodes.LevelMetaData</value>
+        <value>org.pentaho.agilebi.modeler.nodes.MeasuresCollection</value>
+        <value>org.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData</value>
+        <value>org.pentaho.database.DatabaseDialectException</value>
+        <value>org.pentaho.gwt.widgets.client.text.ValidationTextBoxKeyUpHandlerCollection</value>
+        <value>org.pentaho.gwt.widgets.client.text.ValidationTextBoxListenerCollection</value>
+        <value>org.pentaho.gwt.widgets.client.wizards.WizardPanelListenerCollection</value>
+        <value>org.pentaho.gwt.widgets.login.client.AuthenticationCanceledException</value>
+        <value>org.pentaho.gwt.widgets.login.client.AuthenticationFailedException</value>
 
 <!--
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.CategoryMetaData;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.DimensionMetaData;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.HierarchyMetaData;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.LevelMetaData;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.CategoryMetaData;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.DimensionMetaData;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.HierarchyMetaData;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.LevelMetaData;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData;</value>
 
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.AvailableItemCollection;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.MeasuresCollection;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;</value>
-       <value>[Lorg.pentaho.agilebi.modeler.nodes.CategoryMetaDataCollection;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.AvailableItemCollection;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.MeasuresCollection;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;</value>
+        <value>[Lorg.pentaho.agilebi.modeler.nodes.CategoryMetaDataCollection;</value>
 
-       <value>org.pentaho.metadata.model.AbstractPhysicalColumn</value>
-       <value>[Lorg.pentaho.metadata.model.AbstractPhysicalColumn;</value>
-       <value>org.pentaho.metadata.model.AbstractPhysicalModel</value>
-       <value>[Lorg.pentaho.metadata.model.AbstractPhysicalModel;</value>
+        <value>org.pentaho.metadata.model.AbstractPhysicalColumn</value>
+        <value>[Lorg.pentaho.metadata.model.AbstractPhysicalColumn;</value>
+        <value>org.pentaho.metadata.model.AbstractPhysicalModel</value>
+        <value>[Lorg.pentaho.metadata.model.AbstractPhysicalModel;</value>
 -->
-       <value>org.pentaho.metadata.model.Category</value>
-       <value>[Lorg.pentaho.metadata.model.Category;</value>
-       <value>org.pentaho.metadata.model.Domain</value>
-       <value>[Lorg.pentaho.metadata.model.Domain;</value>
-       <value>[Lorg.pentaho.metadata.model.IPhysicalColumn;</value>
-       <value>[Lorg.pentaho.metadata.model.IPhysicalModel;</value>
-       <value>[Lorg.pentaho.metadata.model.IPhysicalTable;</value>
-       <value>org.pentaho.metadata.model.InlineEtlPhysicalColumn</value>
-       <value>[Lorg.pentaho.metadata.model.InlineEtlPhysicalColumn;</value>
-       <value>org.pentaho.metadata.model.InlineEtlPhysicalModel</value>
-       <value>[Lorg.pentaho.metadata.model.InlineEtlPhysicalModel;</value>
-       <value>org.pentaho.metadata.model.InlineEtlPhysicalTable</value>
-       <value>[Lorg.pentaho.metadata.model.InlineEtlPhysicalTable;</value>
-       <value>org.pentaho.metadata.model.LogicalColumn</value>
-       <value>[Lorg.pentaho.metadata.model.LogicalColumn;</value>
-       <value>org.pentaho.metadata.model.LogicalModel</value>
-       <value>[Lorg.pentaho.metadata.model.LogicalModel;</value>
-       <value>org.pentaho.metadata.model.LogicalRelationship</value>
-       <value>[Lorg.pentaho.metadata.model.LogicalRelationship;</value>
-       <value>org.pentaho.metadata.model.LogicalTable</value>
-       <value>[Lorg.pentaho.metadata.model.LogicalTable;</value>
-       <value>org.pentaho.metadata.model.SqlDataSource</value>
-       <value>org.pentaho.metadata.model.SqlDataSource$DataSourceType</value>
-       <value>org.pentaho.metadata.model.SqlPhysicalColumn</value>
-       <value>[Lorg.pentaho.metadata.model.SqlPhysicalColumn;</value>
-       <value>org.pentaho.metadata.model.SqlPhysicalModel</value>
-       <value>[Lorg.pentaho.metadata.model.SqlPhysicalModel;</value>
-       <value>org.pentaho.metadata.model.SqlPhysicalTable</value>
-       <value>[Lorg.pentaho.metadata.model.SqlPhysicalTable;</value>
-       <value>org.pentaho.metadata.model.concept.Concept</value>
-       <value>[Lorg.pentaho.metadata.model.concept.Concept;</value>
-       <value>[Lorg.pentaho.metadata.model.concept.IConcept;</value>
-       <value>org.pentaho.metadata.model.concept.security.RowLevelSecurity</value>
-       <value>org.pentaho.metadata.model.concept.security.RowLevelSecurity$Type</value>
-       <value>org.pentaho.metadata.model.concept.security.Security</value>
-       <value>org.pentaho.metadata.model.concept.security.SecurityOwner</value>
-       <value>org.pentaho.metadata.model.concept.security.SecurityOwner$OwnerType</value>
-       <value>org.pentaho.metadata.model.concept.types.AggregationType</value>
-       <value>[Lorg.pentaho.metadata.model.concept.types.AggregationType;</value>
-       <value>org.pentaho.metadata.model.concept.types.Alignment</value>
-       <value>org.pentaho.metadata.model.concept.types.Color</value>
-       <value>org.pentaho.metadata.model.concept.types.ColumnWidth</value>
-       <value>org.pentaho.metadata.model.concept.types.ColumnWidth$WidthType</value>
-       <value>org.pentaho.metadata.model.concept.types.DataType</value>
-       <value>org.pentaho.metadata.model.concept.types.FieldType</value>
-       <value>org.pentaho.metadata.model.concept.types.Font</value>
-       <value>org.pentaho.metadata.model.concept.types.JoinType</value>
-       <value>org.pentaho.metadata.model.concept.types.LocaleType</value>
-       <value>org.pentaho.metadata.model.concept.types.LocalizedString</value>
-       <value>org.pentaho.metadata.model.concept.types.RelationshipType</value>
-       <value>org.pentaho.metadata.model.concept.types.TableType</value>
-       <value>org.pentaho.metadata.model.concept.types.TargetColumnType</value>
-       <value>org.pentaho.metadata.model.concept.types.TargetTableType</value>
-       <value>org.pentaho.metadata.model.olap.OlapAnnotation</value>
-       <value>[Lorg.pentaho.metadata.model.olap.OlapAnnotation;</value>
-       <value>org.pentaho.metadata.model.olap.OlapCube</value>
-       <value>org.pentaho.metadata.model.olap.OlapDimension</value>
-       <value>org.pentaho.metadata.model.olap.OlapDimensionUsage</value>
-       <value>[Lorg.pentaho.metadata.model.olap.OlapDimensionUsage;</value>
-       <value>org.pentaho.metadata.model.olap.OlapHierarchy</value>
-       <value>org.pentaho.metadata.model.olap.OlapHierarchyLevel</value>
-       <value>[Lorg.pentaho.metadata.model.olap.OlapHierarchyLevel;</value>
-       <value>[Lorg.pentaho.metadata.model.olap.OlapHierarchy;</value>
-       <value>org.pentaho.metadata.model.olap.OlapMeasure</value>
-       <value>[Lorg.pentaho.metadata.model.olap.OlapMeasure;</value>
-       <value>org.pentaho.platform.dataaccess.datasource.DatasourceType</value>
-       <value>org.pentaho.platform.dataaccess.datasource.beans.BogoPojo</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo</value>
-       <value>[Lorg.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.models.CsvParseException</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo</value>
-       <value>[Lorg.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfoValidationListenerCollection</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.models.RelationalModelValidationListenerCollection</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidationException</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats</value>
-       <value>org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary</value>
-       <value>org.pentaho.ui.xul.XulDomException</value>
-       <value>org.pentaho.ui.xul.XulException</value>
-       <value>org.pentaho.ui.xul.util.AbstractModelList</value>
-       <value>org.pentaho.ui.xul.util.AbstractModelNode</value>
-     </util:list>
-   </property>
-	<pen:publish as-type="CLASSES">
-	  <pen:attributes>
-		<pen:attr key="plugin" value="data-access"/>
-	  </pen:attributes>
-	</pen:publish>
+        <value>org.pentaho.metadata.model.Category</value>
+        <value>[Lorg.pentaho.metadata.model.Category;</value>
+        <value>org.pentaho.metadata.model.Domain</value>
+        <value>[Lorg.pentaho.metadata.model.Domain;</value>
+        <value>[Lorg.pentaho.metadata.model.IPhysicalColumn;</value>
+        <value>[Lorg.pentaho.metadata.model.IPhysicalModel;</value>
+        <value>[Lorg.pentaho.metadata.model.IPhysicalTable;</value>
+        <value>org.pentaho.metadata.model.InlineEtlPhysicalColumn</value>
+        <value>[Lorg.pentaho.metadata.model.InlineEtlPhysicalColumn;</value>
+        <value>org.pentaho.metadata.model.InlineEtlPhysicalModel</value>
+        <value>[Lorg.pentaho.metadata.model.InlineEtlPhysicalModel;</value>
+        <value>org.pentaho.metadata.model.InlineEtlPhysicalTable</value>
+        <value>[Lorg.pentaho.metadata.model.InlineEtlPhysicalTable;</value>
+        <value>org.pentaho.metadata.model.LogicalColumn</value>
+        <value>[Lorg.pentaho.metadata.model.LogicalColumn;</value>
+        <value>org.pentaho.metadata.model.LogicalModel</value>
+        <value>[Lorg.pentaho.metadata.model.LogicalModel;</value>
+        <value>org.pentaho.metadata.model.LogicalRelationship</value>
+        <value>[Lorg.pentaho.metadata.model.LogicalRelationship;</value>
+        <value>org.pentaho.metadata.model.LogicalTable</value>
+        <value>[Lorg.pentaho.metadata.model.LogicalTable;</value>
+        <value>org.pentaho.metadata.model.SqlDataSource</value>
+        <value>org.pentaho.metadata.model.SqlDataSource$DataSourceType</value>
+        <value>org.pentaho.metadata.model.SqlPhysicalColumn</value>
+        <value>[Lorg.pentaho.metadata.model.SqlPhysicalColumn;</value>
+        <value>org.pentaho.metadata.model.SqlPhysicalModel</value>
+        <value>[Lorg.pentaho.metadata.model.SqlPhysicalModel;</value>
+        <value>org.pentaho.metadata.model.SqlPhysicalTable</value>
+        <value>[Lorg.pentaho.metadata.model.SqlPhysicalTable;</value>
+        <value>org.pentaho.metadata.model.concept.Concept</value>
+        <value>[Lorg.pentaho.metadata.model.concept.Concept;</value>
+        <value>[Lorg.pentaho.metadata.model.concept.IConcept;</value>
+        <value>org.pentaho.metadata.model.concept.security.RowLevelSecurity</value>
+        <value>org.pentaho.metadata.model.concept.security.RowLevelSecurity$Type</value>
+        <value>org.pentaho.metadata.model.concept.security.Security</value>
+        <value>org.pentaho.metadata.model.concept.security.SecurityOwner</value>
+        <value>org.pentaho.metadata.model.concept.security.SecurityOwner$OwnerType</value>
+        <value>org.pentaho.metadata.model.concept.types.AggregationType</value>
+        <value>[Lorg.pentaho.metadata.model.concept.types.AggregationType;</value>
+        <value>org.pentaho.metadata.model.concept.types.Alignment</value>
+        <value>org.pentaho.metadata.model.concept.types.Color</value>
+        <value>org.pentaho.metadata.model.concept.types.ColumnWidth</value>
+        <value>org.pentaho.metadata.model.concept.types.ColumnWidth$WidthType</value>
+        <value>org.pentaho.metadata.model.concept.types.DataType</value>
+        <value>org.pentaho.metadata.model.concept.types.FieldType</value>
+        <value>org.pentaho.metadata.model.concept.types.Font</value>
+        <value>org.pentaho.metadata.model.concept.types.JoinType</value>
+        <value>org.pentaho.metadata.model.concept.types.LocaleType</value>
+        <value>org.pentaho.metadata.model.concept.types.LocalizedString</value>
+        <value>org.pentaho.metadata.model.concept.types.RelationshipType</value>
+        <value>org.pentaho.metadata.model.concept.types.TableType</value>
+        <value>org.pentaho.metadata.model.concept.types.TargetColumnType</value>
+        <value>org.pentaho.metadata.model.concept.types.TargetTableType</value>
+        <value>org.pentaho.metadata.model.olap.OlapAnnotation</value>
+        <value>[Lorg.pentaho.metadata.model.olap.OlapAnnotation;</value>
+        <value>org.pentaho.metadata.model.olap.OlapCube</value>
+        <value>org.pentaho.metadata.model.olap.OlapDimension</value>
+        <value>org.pentaho.metadata.model.olap.OlapDimensionUsage</value>
+        <value>[Lorg.pentaho.metadata.model.olap.OlapDimensionUsage;</value>
+        <value>org.pentaho.metadata.model.olap.OlapHierarchy</value>
+        <value>org.pentaho.metadata.model.olap.OlapHierarchyLevel</value>
+        <value>[Lorg.pentaho.metadata.model.olap.OlapHierarchyLevel;</value>
+        <value>[Lorg.pentaho.metadata.model.olap.OlapHierarchy;</value>
+        <value>org.pentaho.metadata.model.olap.OlapMeasure</value>
+        <value>[Lorg.pentaho.metadata.model.olap.OlapMeasure;</value>
+        <value>org.pentaho.platform.dataaccess.datasource.DatasourceType</value>
+        <value>org.pentaho.platform.dataaccess.datasource.beans.BogoPojo</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo</value>
+        <value>[Lorg.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.models.CsvParseException</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo</value>
+        <value>[Lorg.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfoValidationListenerCollection</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.models.RelationalModelValidationListenerCollection</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.service.QueryValidationException</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.sources.query.QueryDatasourceSummary</value>
+        <value>org.pentaho.ui.xul.XulDomException</value>
+        <value>org.pentaho.ui.xul.XulException</value>
+        <value>org.pentaho.ui.xul.util.AbstractModelList</value>
+        <value>org.pentaho.ui.xul.util.AbstractModelNode</value>
+      </util:list>
+    </property>
+    <pen:publish as-type="CLASSES">
+	    <pen:attributes>
+        <pen:attr key="plugin" value="data-access"/>
+	    </pen:attributes>
+	  </pen:publish>
   </bean>
   <bean class="org.pentaho.platform.dataaccess.security.policy.rolebased.actions.DatasourceManageAction">
   	<pen:publish as-type="INTERFACES">
@@ -280,7 +282,7 @@
 	    </pen:attributes>
   	</pen:publish>
   </bean>
-  
+
   <bean id="dataAccessViewPermissionHandler" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.SimpleDataAccessViewPermissionHandler">
   	<pen:publish as-type="INTERFACES" />
   </bean>
@@ -295,7 +297,7 @@
 	    </pen:attributes>
   	</pen:publish>
   </bean>
-  
+
   <bean class="org.pentaho.platform.web.servlet.DefaultSpringWadlResourceDocument">
     <constructor-arg value="classpath:META-INF/wadl/wadlResource.xml"/>
     <pen:publish as-type="INTERFACES"/>
@@ -303,5 +305,28 @@
 
   <bean id="inlineModeling" class="org.pentaho.agilebi.modeler.models.annotations.ModelingSchemaAnnotator"/>
 
+  <!-- CSRF protection. To disable, comment out the bean. -->
+  <bean class="com.hitachivantara.security.web.impl.model.csrf.CsrfRequestSetConfigurationPojo">
+    <pen:publish as-type="INTERFACES" />
+
+    <constructor-arg>
+      <swm:or-request-matcher>
+        <!--
+          POST /plugin/data-access/api/datasource/analysis/{id}/remove
+        -->
+        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/analysis/[^/]*/remove\b.*" methods="POST" />
+
+        <!--
+          POST /plugin/data-access/api/connection/add
+        -->
+        <swm:regex-request-matcher pattern="^/plugin/data-access/api/connection/add\b.*" methods="POST" />
+
+        <!--
+          POST /plugin/data-access/api/mondrian/postAnalysis
+        -->
+        <swm:regex-request-matcher pattern="^/plugin/data-access/api/mondrian/postAnalysis\b.*" methods="POST" />
+      </swm:or-request-matcher>
+    </constructor-arg>
+  </bean>
 </beans>
 
