@@ -32,11 +32,9 @@ public class Base64PasswordUtils {
     }
   }
 
-/*
   public static String encodePassword( String password ) {
     return Base64Utils.encodeToString(
       password.getBytes( StandardCharsets.UTF_8 ) );
   }
-*/
 
 }
