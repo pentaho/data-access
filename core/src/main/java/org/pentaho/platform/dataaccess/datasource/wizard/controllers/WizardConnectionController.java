@@ -349,7 +349,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "update" ) );
     updateConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
-      if( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
+      if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
         currentConnection.setPassword( "ENC:" + Base64ClientUtils.encode( currentConnection.getPassword() ) );
       }
       AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
@@ -428,7 +428,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
       new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "add" ) );
     addConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
-      if( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
+      if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
         currentConnection.setPassword( "ENC:" + Base64ClientUtils.encode( currentConnection.getPassword() ) );
       }
       AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );

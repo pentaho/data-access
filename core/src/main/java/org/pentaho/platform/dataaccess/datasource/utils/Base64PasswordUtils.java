@@ -24,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 
 public class Base64PasswordUtils {
 
+  private Base64PasswordUtils() { }
+
   public static String decodePassword( String encodedPassword ) {
     if ( !StringUtils.isEmpty( encodedPassword ) && encodedPassword.startsWith( "ENC:" ) ) {
       return new String( Base64Utils.decodeFromString( encodedPassword.substring( 4 ) ), StandardCharsets.UTF_8 );
