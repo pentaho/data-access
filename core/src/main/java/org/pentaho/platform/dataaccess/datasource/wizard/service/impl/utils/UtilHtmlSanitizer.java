@@ -12,13 +12,14 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2021 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.platform.dataaccess.datasource.utils.Base64PasswordUtils;
 
 /**
  * Created by Yury_Bakhmutski on 8/11/2016.
@@ -50,7 +51,7 @@ public class UtilHtmlSanitizer {
     String safeHostname = safeEscapeHtml( connection.getHostname() );
     connection.setHostname( safeHostname );
 
-    String safePassword = safeEscapeHtml( connection.getPassword() );
+    String safePassword = safeEscapeHtml( Base64PasswordUtils.decodePassword( connection.getPassword() ) );
     connection.setPassword( safePassword );
 
     String safeUsername = safeEscapeHtml( connection.getUsername() );
