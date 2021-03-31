@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002 - 2021 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
@@ -24,6 +24,7 @@ import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
 import org.pentaho.gwt.widgets.client.utils.NameUtils;
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.platform.dataaccess.datasource.beans.AutobeanUtilities;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
@@ -31,6 +32,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
 import org.pentaho.ui.database.event.DatabaseDialogListener;
 import org.pentaho.ui.database.event.IConnectionAutoBeanFactory;
 import org.pentaho.ui.database.event.IDatabaseConnectionList;
+import org.pentaho.ui.database.gwt.Base64ClientUtils;
 import org.pentaho.ui.database.gwt.GwtDatabaseDialog;
 import org.pentaho.ui.database.gwt.GwtXulAsyncDatabaseDialectService;
 import org.pentaho.ui.xul.XulServiceCallback;
@@ -329,6 +331,9 @@ public class ConnectionController extends AbstractXulEventHandler {
         new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "update" ) );
     updateConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
+      if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
+        currentConnection.setPassword( "ENC:" + Base64ClientUtils.encode( currentConnection.getPassword() ) );
+      }
       AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
       updateConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
@@ -368,6 +373,9 @@ public class ConnectionController extends AbstractXulEventHandler {
         new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "add" ) );
     addConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
+      if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
+        currentConnection.setPassword( "ENC:" + Base64ClientUtils.encode( currentConnection.getPassword() ) );
+      }
       AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
       addConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
@@ -773,7 +781,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.pentaho.ui.database.event.DatabaseDialogListener#onDialogAccept(org.pentaho.database.model.IDatabaseConnection
      * )
@@ -785,7 +793,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogCancel()
      */
     public void onDialogCancel() {
@@ -794,7 +802,7 @@ public class ConnectionController extends AbstractXulEventHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.pentaho.ui.database.event.DatabaseDialogListener#onDialogReady()
      */
     public void onDialogReady() {
