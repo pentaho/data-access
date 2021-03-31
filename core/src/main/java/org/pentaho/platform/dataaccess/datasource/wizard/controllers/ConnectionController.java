@@ -373,9 +373,9 @@ public class ConnectionController extends AbstractXulEventHandler {
         new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "add" ) );
     addConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
-          if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
-            currentConnection.setPassword( "ENC:" + Base64ClientUtils.encode( currentConnection.getPassword() ) );
-          }
+      if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
+        currentConnection.setPassword( "ENC:" + Base64ClientUtils.encode( currentConnection.getPassword() ) );
+      }
       AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
       addConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
 
