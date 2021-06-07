@@ -35,10 +35,6 @@
     <!-- region HV Web Security -->
     <dependency>
       <groupId>com.hitachivantara.security.web</groupId>
-      <artifactId>security-web-server-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.hitachivantara.security.web</groupId>
       <artifactId>security-web-server-model-impl</artifactId>
     </dependency>
     <!-- endregion HV Web Security -->
