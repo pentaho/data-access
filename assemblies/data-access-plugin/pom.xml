@@ -32,6 +32,13 @@
       <artifactId>pentaho-modeler-gwt</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <!-- region HV Web Security -->
+    <dependency>
+      <groupId>com.hitachivantara.security.web</groupId>
+      <artifactId>security-web-server-model-impl</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- endregion HV Web Security -->
   </dependencies>
   <build>
     <resources>

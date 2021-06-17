@@ -93,25 +93,4 @@
     <file context="global">content/data-access/resources/gwt/datasourceEditorDialog.css</file>
     <file context="global">content/data-access/resources/gwt/datasourceAdminDialog.css</file>
   </external-resources>
-
-  <!-- ## CSRF (Cross-Site Request Forgery) protected endpoints ##
-      To enable/disable this plugin's CSRF protection,
-      set the `csrf-protection-enabled` setting in `settings.xml`.
-      -->
-  <csrf-protection>
-    <!--
-      POST /plugin/data-access/api/datasource/analysis/{id}/remove
-    -->
-    <request-matcher type="regex" pattern="^/plugin/data-access/api/datasource/analysis/[^/]*/remove\b.*" methods="POST" />
-
-    <!--
-      POST /plugin/data-access/api/connection/add
-    -->
-    <request-matcher type="regex" pattern="^/plugin/data-access/api/connection/add\b.*" methods="POST" />
-
-    <!--
-      POST /plugin/data-access/api/mondrian/postAnalysis
-    -->
-    <request-matcher type="regex" pattern="^/plugin/data-access/api/mondrian/postAnalysis\b.*" methods="POST" />
-  </csrf-protection>
 </plugin>
