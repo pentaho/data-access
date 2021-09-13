@@ -4,6 +4,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
        xmlns:swm="http://www.hitachivantara.com/schema/security/web/model/spring"
+       xmlns:pen-gpc="http://www.pentaho.com/schema/pentaho-gwt-rpc-spring"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
@@ -11,6 +12,7 @@
           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
           http://www.pentaho.com/schema/pentaho-system http://www.pentaho.com/schema/pentaho-system.xsd
+          http://www.pentaho.com/schema/pentaho-gwt-rpc-spring http://www.pentaho.com/schema/pentaho-gwt-rpc-spring.xsd
           http://www.hitachivantara.com/schema/security/web/model/spring http://www.hitachivantara.com/schema/security/web/model/spring/hv-swm-spring.xsd"
        default-lazy-init="true">
 
@@ -311,19 +313,32 @@
 
     <constructor-arg>
       <swm:or-request-matcher>
-        <!--
-          POST /plugin/data-access/api/datasource/analysis/{id}/remove
-        -->
+        <!-- GWT-RPC /gwtrpc/* -->
+
+        <!-- POST /gwtrpc/modelerService (and body contains `serializeModels` method call) -->
+        <pen-gpc:plugin-gwt-rpc-request-matcher pattern="^/gwtrpc/modelerService\b.*" methods="serializeModels" />
+
+        <!-- POST /gwtrpc/connectionService (and body contains `addConnection`, ... method call) -->
+        <pen-gpc:plugin-gwt-rpc-request-matcher pattern="^/gwtrpc/connectionService\b.*"
+                                                methods="addConnection updateConnection deleteConnection" />
+
+        <!-- POST /gwtrpc/DatasourceService (and body contains `generateQueryDomain`, ... method call) -->
+        <pen-gpc:plugin-gwt-rpc-request-matcher pattern="^/gwtrpc/DatasourceService\b.*"
+                                                methods="generateQueryDomain deleteLogicalModel saveLogicalModel" />
+
+        <!-- POST /gwtrpc/CsvDatasourceService (and body contains `generateDomain` method call) -->
+        <pen-gpc:plugin-gwt-rpc-request-matcher pattern="^/gwtrpc/CsvDatasourceService\b.*" methods="generateDomain" />
+
+
+        <!-- REST /plugin/data-access/api/* -->
+
+        <!-- POST /plugin/data-access/api/datasource/analysis/{id}/remove -->
         <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/analysis/[^/]*/remove\b.*" methods="POST" />
 
-        <!--
-          POST /plugin/data-access/api/connection/add
-        -->
+        <!-- POST /plugin/data-access/api/connection/add -->
         <swm:regex-request-matcher pattern="^/plugin/data-access/api/connection/add\b.*" methods="POST" />
 
-        <!--
-          POST /plugin/data-access/api/mondrian/postAnalysis
-        -->
+        <!-- POST /plugin/data-access/api/mondrian/postAnalysis -->
         <swm:regex-request-matcher pattern="^/plugin/data-access/api/mondrian/postAnalysis\b.*" methods="POST" />
       </swm:or-request-matcher>
     </constructor-arg>

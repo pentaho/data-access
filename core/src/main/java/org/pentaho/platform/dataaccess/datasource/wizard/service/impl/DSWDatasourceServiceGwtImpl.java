@@ -1,28 +1,31 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2021 Hitachi Vantara..  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.util.List;
-
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
+import org.pentaho.mantle.client.csrf.CsrfUtil;
+import org.pentaho.mantle.client.csrf.IConsumer;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
@@ -33,9 +36,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncDSWDat
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IGwtDSWDatasourceServiceAsync;
 import org.pentaho.ui.xul.XulServiceCallback;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import java.util.List;
 
 public class DSWDatasourceServiceGwtImpl implements IXulAsyncDSWDatasourceService {
   static final String ERROR = "ERROR:";
@@ -129,10 +130,16 @@ public class DSWDatasourceServiceGwtImpl implements IXulAsyncDSWDatasourceServic
 
   public void saveLogicalModel( final Domain domain, final boolean overwrite,
                                 final XulServiceCallback<Boolean> xulCallback ) {
-    AuthenticatedGwtServiceUtil.invokeCommand( new IAuthenticatedGwtCommand() {
-      public void execute( AsyncCallback callback ) {
 
-        SERVICE.saveLogicalModel( domain, overwrite, callback );
+    AuthenticatedGwtServiceUtil.invokeCommand( new IAuthenticatedGwtCommand() {
+      public void execute( final AsyncCallback callback ) {
+        // Lambda expressions are only supported from GWT 2.8 onwards.
+        CsrfUtil.callProtected( SERVICE, new IConsumer<IGwtDSWDatasourceServiceAsync>() {
+          @Override
+          public void accept( IGwtDSWDatasourceServiceAsync service ) {
+            service.saveLogicalModel( domain, overwrite, callback );
+          }
+        } );
       }
     }, new AsyncCallback<Boolean>() {
       public void onFailure( Throwable arg0 ) {
@@ -142,9 +149,7 @@ public class DSWDatasourceServiceGwtImpl implements IXulAsyncDSWDatasourceServic
       public void onSuccess( Boolean arg0 ) {
         xulCallback.success( arg0 );
       }
-
     } );
-
   }
 
   public void hasPermission( final XulServiceCallback<Boolean> xulCallback ) {
@@ -169,9 +174,14 @@ public class DSWDatasourceServiceGwtImpl implements IXulAsyncDSWDatasourceServic
   public void deleteLogicalModel( final String domainId, final String modelName,
                                   final XulServiceCallback<Boolean> xulCallback ) {
     AuthenticatedGwtServiceUtil.invokeCommand( new IAuthenticatedGwtCommand() {
-      public void execute( AsyncCallback callback ) {
-
-        SERVICE.deleteLogicalModel( domainId, modelName, callback );
+      public void execute( final AsyncCallback callback ) {
+        // Lambda expressions are only supported from GWT 2.8 onwards.
+        CsrfUtil.callProtected( SERVICE, new IConsumer<IGwtDSWDatasourceServiceAsync>() {
+          @Override
+          public void accept( IGwtDSWDatasourceServiceAsync service ) {
+            service.deleteLogicalModel( domainId, modelName, callback );
+          }
+        } );
       }
     }, new AsyncCallback<Boolean>() {
 
@@ -279,8 +289,14 @@ public class DSWDatasourceServiceGwtImpl implements IXulAsyncDSWDatasourceServic
                                    final DatasourceDTO datasourceDTO,
                                    final XulServiceCallback<IDatasourceSummary> callback ) {
     AuthenticatedGwtServiceUtil.invokeCommand( new IAuthenticatedGwtCommand() {
-      public void execute( AsyncCallback callback ) {
-        SERVICE.generateQueryDomain( name, query, connection, datasourceDTO, callback );
+      public void execute( final AsyncCallback callback ) {
+        // Lambda expressions are only supported from GWT 2.8 onwards.
+        CsrfUtil.callProtected( SERVICE, new IConsumer<IGwtDSWDatasourceServiceAsync>() {
+          @Override
+          public void accept( IGwtDSWDatasourceServiceAsync service ) {
+            service.generateQueryDomain( name, query, connection, datasourceDTO, callback );
+          }
+        } );
       }
     }, new AsyncCallback<IDatasourceSummary>() {
       public void onFailure( Throwable arg0 ) {

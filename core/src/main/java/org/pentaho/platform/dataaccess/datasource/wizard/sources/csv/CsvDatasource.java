@@ -1,25 +1,27 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2021 Hitachi Vantara..  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import org.pentaho.mantle.client.csrf.CsrfUtil;
+import org.pentaho.mantle.client.csrf.IConsumer;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
@@ -40,9 +42,8 @@ import org.pentaho.ui.xul.XulServiceCallback;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: nbaker Date: 3/22/11
@@ -154,27 +155,35 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
     }
 
     datasourceModel.getModelInfo().setDatasourceName( datasourceModel.getDatasourceName() );
-    csvDatasourceService
-      .generateDomain( DatasourceDTOUtil.generateDTO( datasourceModel ), new AsyncCallback<IDatasourceSummary>() {
-        public void onFailure( Throwable th ) {
-          MessageHandler.getInstance().closeWaitingDialog();
-          if ( th instanceof CsvTransformGeneratorException ) {
-            MessageHandler.getInstance().showErrorDetailsDialog( MessageHandler.getString( "ERROR" ), th.getLocalizedMessage(),
-              ( (CsvTransformGeneratorException) th ).getCauseMessage() + ( (CsvTransformGeneratorException) th )
-                .getCauseStackTrace() );
-          } else {
-            MessageHandler.getInstance().showErrorDialog( MessageHandler.getString( "ERROR" ), th.getMessage() );
-          }
-          th.printStackTrace();
-        }
 
-        public void onSuccess( IDatasourceSummary stats ) {
-          CsvDatasource.this.stats = (FileTransformStats) stats;
+    // Lambda expressions are only supported from GWT 2.8 onwards.
+    CsrfUtil.callProtected( csvDatasourceService, new IConsumer<ICsvDatasourceServiceAsync>() {
+      @Override
+      public void accept( ICsvDatasourceServiceAsync service ) {
+        service
+          .generateDomain( DatasourceDTOUtil.generateDTO( datasourceModel ), new AsyncCallback<IDatasourceSummary>() {
+            public void onFailure( Throwable th ) {
+              MessageHandler.getInstance().closeWaitingDialog();
+              if ( th instanceof CsvTransformGeneratorException ) {
+                MessageHandler.getInstance()
+                  .showErrorDetailsDialog( MessageHandler.getString( "ERROR" ), th.getLocalizedMessage(),
+                    ( (CsvTransformGeneratorException) th ).getCauseMessage() + ( (CsvTransformGeneratorException) th )
+                      .getCauseStackTrace() );
+              } else {
+                MessageHandler.getInstance().showErrorDialog( MessageHandler.getString( "ERROR" ), th.getMessage() );
+              }
+              th.printStackTrace();
+            }
 
-          MessageHandler.getInstance().closeWaitingDialog();
-          callback.success( stats );
-        }
-      } );
+            public void onSuccess( IDatasourceSummary stats ) {
+              CsvDatasource.this.stats = (FileTransformStats) stats;
+
+              MessageHandler.getInstance().closeWaitingDialog();
+              callback.success( stats );
+            }
+          } );
+      }
+    } );
   }
 
   private void setColumnIdsToColumnNamesIfNecessary() {
@@ -184,7 +193,6 @@ public class CsvDatasource extends AbstractXulEventHandler implements IWizardDat
       }
     }
   }
-
 
   @Override
   public String getId() {
