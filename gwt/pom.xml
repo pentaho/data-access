@@ -35,7 +35,7 @@
       <artifactId>gwt-incubator</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.allen_sauer</groupId>
+      <groupId>com.allen-sauer.gwt.dnd</groupId>
       <artifactId>gwt-dnd</artifactId>
     </dependency>
     <dependency>
@@ -54,7 +54,6 @@
     <dependency>
       <groupId>GWT-FX</groupId>
       <artifactId>GWT-FX</artifactId>
-      <version>${GWT-FX.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
@@ -131,6 +130,25 @@
       <classifier>sources</classifier>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>${ant.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>colt</groupId>
+      <artifactId>colt</artifactId>
+      <version>${colt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.jsinterop</groupId>
+      <artifactId>jsinterop-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tapestry</groupId>
+      <artifactId>tapestry-framework</artifactId>
+      <version>${tapestry-framework.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <resources>
@@ -146,13 +164,14 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwt-maven-plugin.version}</version>
+        <version>${gwt.version}</version>
         <executions>
           <execution>
             <goals>
               <goal>compile</goal>
             </goals>
             <configuration>
+              <extraJvmArgs>-Xms512m -Xmx1024m</extraJvmArgs>
               <style>${gwt.style}</style>
               <module>${gwt.module}</module>
             </configuration>
