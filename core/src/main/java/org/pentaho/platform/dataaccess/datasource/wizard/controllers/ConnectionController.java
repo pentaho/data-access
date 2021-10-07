@@ -19,14 +19,12 @@ package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
 import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
-import org.pentaho.mantle.client.csrf.CsrfUtil;
-import org.pentaho.mantle.client.csrf.JsCsrfToken;
+import org.pentaho.mantle.client.csrf.CsrfRequestBuilder;
 import org.pentaho.platform.dataaccess.datasource.beans.AutobeanUtilities;
 import org.pentaho.platform.dataaccess.datasource.utils.ExceptionParser;
 import org.pentaho.platform.dataaccess.datasource.wizard.ConnectionDialogListener;
@@ -372,58 +370,45 @@ public class ConnectionController extends AbstractXulEventHandler {
   @Bindable
   public void addConnection() {
     final String url = ConnectionController.getServiceURL( "add" );
+    RequestBuilder addConnectionBuilder = new CsrfRequestBuilder( RequestBuilder.POST, url );
+    addConnectionBuilder.setHeader( "Content-Type", "application/json" );
 
-    CsrfUtil.getCsrfToken( url, new AsyncCallback<JsCsrfToken>() {
-      public void onFailure( Throwable caught ) {
-        displayErrorMessage( caught );
+    try {
+      if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
+        currentConnection.setPassword( "ENC:" + Base64ClientUtils.encode( currentConnection.getPassword() ) );
       }
+      AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
 
-      public void onSuccess( final JsCsrfToken token ) {
-        RequestBuilder addConnectionBuilder = new RequestBuilder( RequestBuilder.POST, url );
-        addConnectionBuilder.setHeader( "Content-Type", "application/json" );
-
-        if ( token != null ) {
-          addConnectionBuilder.setHeader( token.getHeader(), token.getToken() );
+      addConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
+        @Override
+        public void onError( Request request, Throwable exception ) {
+          displayErrorMessage( exception );
         }
 
-        try {
-          if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
-            currentConnection.setPassword( "ENC:" + Base64ClientUtils.encode( currentConnection.getPassword() ) );
-          }
-          AutoBean<IDatabaseConnection> bean = createIDatabaseConnectionBean( currentConnection );
+        @Override
+        public void onResponseReceived( Request request, Response response ) {
+          try {
+            if ( response.getStatusCode() == Response.SC_OK ) {
+              datasourceModel.getGuiStateModel().addConnection( currentConnection );
+              datasourceModel.setSelectedRelationalConnection( currentConnection );
 
-          addConnectionBuilder.sendRequest( AutoBeanCodex.encode( bean ).getPayload(), new RequestCallback() {
-            @Override
-            public void onError( Request request, Throwable exception ) {
-              displayErrorMessage( exception );
-            }
-
-            @Override
-            public void onResponseReceived( Request request, Response response ) {
-              try {
-                if ( response.getStatusCode() == Response.SC_OK ) {
-                  datasourceModel.getGuiStateModel().addConnection( currentConnection );
-                  datasourceModel.setSelectedRelationalConnection( currentConnection );
-
-                  DialogListener dialogListener = connectionSetter.getOuterListener();
-                  if ( dialogListener != null ) {
-                    dialogListener.onDialogAccept( currentConnection );
-                  }
-                } else {
-                  openErrorDialog( MessageHandler.getString( "ERROR" ),
-                    MessageHandler.getString( "ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION" ) );
-                }
-              } catch ( Exception e ) {
-                displayErrorMessage( e );
+              DialogListener dialogListener = connectionSetter.getOuterListener();
+              if ( dialogListener != null ) {
+                dialogListener.onDialogAccept( currentConnection );
               }
+            } else {
+              openErrorDialog( MessageHandler.getString( "ERROR" ),
+                MessageHandler.getString( "ConnectionController.ERROR_0001_UNABLE_TO_ADD_CONNECTION" ) );
             }
-
-          } );
-        } catch ( RequestException e ) {
-          displayErrorMessage( e );
+          } catch ( Exception e ) {
+            displayErrorMessage( e );
+          }
         }
-      }
-    } );
+
+      } );
+    } catch ( RequestException e ) {
+      displayErrorMessage( e );
+    }
   }
 
   @Bindable

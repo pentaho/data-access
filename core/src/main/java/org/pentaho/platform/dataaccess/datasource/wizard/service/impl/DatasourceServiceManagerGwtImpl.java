@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2021 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -23,8 +23,7 @@ import java.util.List;
 import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.login.client.AuthenticatedGwtServiceUtil;
 import org.pentaho.gwt.widgets.login.client.IAuthenticatedGwtCommand;
-import org.pentaho.mantle.client.csrf.CsrfUtil;
-import org.pentaho.mantle.client.csrf.JsCsrfToken;
+import org.pentaho.mantle.client.csrf.CsrfRequestBuilder;
 import org.pentaho.platform.dataaccess.datasource.IDatasourceInfo;
 import org.pentaho.platform.dataaccess.datasource.ui.service.DSWUIDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.ui.service.MetadataUIDatasourceService;
@@ -284,47 +283,38 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
       removeURL = null;
     }
 
-    CsrfUtil.getCsrfToken( removeURL, new AsyncCallback<JsCsrfToken>() {
-      public void onFailure( Throwable caught ) { }
+    AuthenticatedGwtServiceUtil.invokeCommand( new IAuthenticatedGwtCommand<Boolean>() {
+      public void execute( final AsyncCallback<Boolean> callback ) {
+        RequestBuilder requestBuilder = new CsrfRequestBuilder( RequestBuilder.POST, removeURL );
+        try {
 
-      public void onSuccess( final JsCsrfToken token ) {
-        AuthenticatedGwtServiceUtil.invokeCommand( new IAuthenticatedGwtCommand<Boolean>() {
-          public void execute( final AsyncCallback<Boolean> callback ) {
-            RequestBuilder requestBuilder = new RequestBuilder( RequestBuilder.POST, removeURL );
-            try {
-              if ( token != null ) {
-                requestBuilder.setHeader( token.getHeader(), token.getToken() );
-              }
-
-              requestBuilder.sendRequest( null, new RequestCallback() {
-                @Override
-                public void onError( Request request, Throwable exception ) {
-                  callback.onFailure( exception );
-                }
-
-                @Override
-                public void onResponseReceived( Request request, Response response ) {
-                  callback.onSuccess( response.getStatusCode() == Response.SC_OK );
-                }
-
-              } );
-            } catch ( RequestException e ) {
-              XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>) xulCallback;
-              responseCallback.error( e.getLocalizedMessage(), e );
+          requestBuilder.sendRequest( null, new RequestCallback() {
+            @Override
+            public void onError( Request request, Throwable exception ) {
+              callback.onFailure( exception );
             }
-          }
-        }, new AsyncCallback<Boolean>() {
 
-          public void onFailure( Throwable e ) {
-            XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>) xulCallback;
-            responseCallback.error( e.getLocalizedMessage(), e );
-          }
+            @Override
+            public void onResponseReceived( Request request, Response response ) {
+              callback.onSuccess( response.getStatusCode() == Response.SC_OK );
+            }
 
-          public void onSuccess( Boolean arg ) {
-            XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>) xulCallback;
-            responseCallback.success( arg );
-          }
-        } );
+          } );
+        } catch ( RequestException e ) {
+          XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>) xulCallback;
+          responseCallback.error( e.getLocalizedMessage(), e );
+        }
+      }
+    }, new AsyncCallback<Boolean>() {
+
+      public void onFailure( Throwable e ) {
+        XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>) xulCallback;
+        responseCallback.error( e.getLocalizedMessage(), e );
+      }
+
+      public void onSuccess( Boolean arg ) {
+        XulServiceCallback<Boolean> responseCallback = (XulServiceCallback<Boolean>) xulCallback;
+        responseCallback.success( arg );
       }
     } );
   }
