@@ -166,6 +166,7 @@ public class CsvUtilsTest {
     }
   }
 
+  //TODO: test fails under Java 11 - see spike BACKLOG-35348
   @Test
   public void testAssumeColumnDetails_Numeric() {
     List<String> samples = asList( "100.00", "100.00", "100.08", "100.00", "100.12", "100.11" );
@@ -181,6 +182,7 @@ public class CsvUtilsTest {
     assertEquals( 4, columnInfo.getPrecision() );
   }
 
+  //TODO: test fails under Java 11 - see spike BACKLOG-35348
   @Test
   public void testAssumeColumnDetails_Currency() {
     List<String> samples = asList( "$101.04", "$100.3", "$100.3000", "$100.1", "$11100.32", "$7,100.433", "($500.00)" );

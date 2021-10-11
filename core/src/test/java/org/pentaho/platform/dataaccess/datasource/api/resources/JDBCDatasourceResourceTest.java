@@ -30,6 +30,7 @@ import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -52,6 +53,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
+@PowerMockIgnore( "jdk.internal.reflect.*" )
 @RunWith( PowerMockRunner.class )
 @PrepareForTest( { JDBCDatasourceResource.class, DatasourceService.class, LogFactory.class } )
 public class JDBCDatasourceResourceTest {
