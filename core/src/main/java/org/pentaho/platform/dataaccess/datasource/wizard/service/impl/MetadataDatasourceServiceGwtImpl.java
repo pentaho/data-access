@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2021 Hitachi Vantara. All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -28,12 +28,13 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import static org.pentaho.mantle.client.environment.EnvironmentHelper.getFullyQualifiedURL;
+
 @SuppressWarnings( "all" )
 public class MetadataDatasourceServiceGwtImpl {
 
-  String datasourceUrl = getWebAppRoot()
+  String datasourceUrl = getFullyQualifiedURL()
     + "plugin/data-access/api/metadata/import?domainId={domainId}&metadataFile={metadataFile}&overwrite=false";
-    //$NON-NLS-1$
 
   public void importMetadataDatasource( final String domainId, final String metadataFile,
                                         final String localizeBundleEntries,
@@ -81,12 +82,4 @@ public class MetadataDatasourceServiceGwtImpl {
 
     } );
   }
-
-  public native String getWebAppRoot()/*-{
-    if ($wnd.CONTEXT_PATH) {
-      return $wnd.CONTEXT_PATH;
-    }
-    return "";
-  }-*/;
-
 }

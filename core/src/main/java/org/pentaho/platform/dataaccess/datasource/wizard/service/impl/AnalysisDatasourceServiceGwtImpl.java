@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2021 Hitachi Vantara. All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -30,11 +30,13 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import static org.pentaho.mantle.client.environment.EnvironmentHelper.getFullyQualifiedURL;
+
 @SuppressWarnings( "all" )
 
 public class AnalysisDatasourceServiceGwtImpl {
 
-  String datasourceUrl = getWebAppRoot()
+  String datasourceUrl = getFullyQualifiedURL()
     + "plugin/data-access/api/mondrian/putSchema?analysisFile={analysisFile}&databaseConnection={databaseConnection}";
   //$NON-NLS-1$
 
@@ -84,13 +86,6 @@ public class AnalysisDatasourceServiceGwtImpl {
 
     } );
   }
-
-  public native String getWebAppRoot()/*-{
-    if ($wnd.CONTEXT_PATH) {
-      return $wnd.CONTEXT_PATH;
-    }
-    return "";
-  }-*/;
 
   public void importAnalysisDatasource( final String uploadedFile, final String name, final String parameters,
                                         final GwtImportDialog importDialog,
