@@ -1,31 +1,43 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2021 Hitachi Vantara..  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBeanCodex;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
@@ -58,29 +70,12 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FileUpload;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.Hidden;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.autobean.shared.AutoBean;
-import com.google.web.bindery.autobean.shared.AutoBeanCodex;
-
-//import org.pentaho.platform.dataaccess.datasource.wizard.service.IXulAsyncConnectionService;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressWarnings( "all" )
 public class AnalysisImportDialogController extends AbstractXulDialogController<AnalysisImportDialogModel> implements
@@ -89,6 +84,18 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   private static final String MONDRIAN_POSTANALYSIS_URL = "plugin/data-access/api/mondrian/postAnalysis";
 
   public static final String ATTRIBUTE_STANDARD_CONNECTION = "STANDARD_CONNECTION"; //$NON-NLS-1$
+
+  /**
+   * The name of the CSRF token field to use when CSRF protection is disabled.
+   * <p>
+   * An arbitrary name, yet different from the name it can have when CSRF protection enabled.
+   * This avoids not having to dynamically adding and removing the field from the form depending
+   * on whether CSRF protection is enabled or not.
+   * <p>
+   * When CSRF protection is enabled,
+   * the actual name of the field is set before each submit.
+   */
+  private static final String DISABLED_CSRF_TOKEN_PARAMETER = "csrf_token_disabled";
 
   private static Logger logger = Logger.getLogger( AnalysisImportDialogController.class.getName() );
 
@@ -156,6 +163,17 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private XulButton uploadAnalysisButton;
 
+  /**
+   * The CSRF token field/parameter.
+   * Its name and value are set to the expected values before each submit,
+   * to match the obtained {@link JsCsrfToken}.
+   * <p>
+   * The Tomcat's context must have the `allowCasualMultipartParsing` attribute set
+   * so that the `CsrfGateFilter` is able to transparently read this parameter
+   * in a multi-part encoding form, as is the case of `form`.
+   */
+  private Hidden csrfTokenParameter;
+
   private IDatasourceInfo datasourceInfo;
 
   protected IConnectionAutoBeanFactory connectionAutoBeanFactory;
@@ -166,6 +184,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       resBundle = (ResourceBundle) super.getXulDomContainer().getResourceBundles().get( 0 );
       //      connectionService = new ConnectionServiceGwtImpl();
       importDialogModel = new AnalysisImportDialogModel();
+      csrfTokenParameter = new Hidden( DISABLED_CSRF_TOKEN_PARAMETER );
       connectionList = (XulMenuList) document.getElementById( "connectionList" );
       analysisParametersTree = (XulTree) document.getElementById( "analysisParametersTree" );
       importDialog = (XulDialog) document.getElementById( "importDialog" );
@@ -229,42 +248,18 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   }
 
   public static String getBaseURL() {
-    String moduleUrl = GWT.getModuleBaseURL();
-    //
-    //Set the base url appropriately based on the context in which we are running this client
-    //
-    if ( moduleUrl.indexOf( "content" ) > -1 ) {
-      //we are running the client in the context of a BI Server plugin, so 
-      //point the request to the GWT rpc proxy servlet
-      String baseUrl = moduleUrl.substring( 0, moduleUrl.indexOf( "content" ) );
-      return baseUrl + "plugin/data-access/api/connection/";
-    }
-
-    return moduleUrl + "plugin/data-access/api/connection/";
+    return getContextBaseURL() + "plugin/data-access/api/connection/";
   }
 
-  /**
-   *  Adds action URL to a form panel having in account if CSRF token is required
-   *
-   * @param panel
-   * @param url
-   */
-  private void setFormAction( final FormPanel panel, final String url ) {
-    CsrfUtil.getCsrfToken( url, new AsyncCallback<JsCsrfToken>() {
-      public void onFailure( Throwable caught ) {
-        // in case of something went wrong on csrf token request, at least, base url is always guaranteed
-        panel.setAction( url );
-      }
+  private static String getContextBaseURL() {
+    String moduleUrl = GWT.getModuleBaseURL();
 
-      public void onSuccess( JsCsrfToken token ) {
-        StringBuilder urlBuilder = new StringBuilder( url );
-        if ( token != null ) {
-          urlBuilder.append( "?" + token.getParameter() + "=" + URL.encode( token.getToken() ) );
-        }
+    // Determine the base url appropriately based on the context in which we are running this client.
+    if ( moduleUrl.indexOf( "content" ) > -1 ) {
+      return moduleUrl.substring( 0, moduleUrl.indexOf( "content" ) );
+    }
 
-        panel.setAction( urlBuilder.toString() );
-      }
-    } );
+    return moduleUrl;
   }
 
   private void createWorkingForm() {
@@ -272,14 +267,15 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       formPanel = new FormPanel();
       formPanel.setMethod( FormPanel.METHOD_POST );
       formPanel.setEncoding( FormPanel.ENCODING_MULTIPART );
-      setFormAction( formPanel, MONDRIAN_POSTANALYSIS_URL );
+      formPanel.setAction( getContextBaseURL() + MONDRIAN_POSTANALYSIS_URL );
 
       formPanel.getElement().getStyle().setProperty( "position", "absolute" );
       formPanel.getElement().getStyle().setProperty( "visibility", "hidden" );
       formPanel.getElement().getStyle().setProperty( "overflow", "hidden" );
       formPanel.getElement().getStyle().setProperty( "clip", "rect(0px,0px,0px,0px)" );
+
       mainFormPanel = new FlowPanel();
-      formPanel.add( mainFormPanel );
+
       analysisFileUpload = new FileUpload();
       analysisFileUpload.setName( "uploadAnalysis" );
       analysisFileUpload.getElement().setId( "analysisFileUpload" );
@@ -294,9 +290,40 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
       mainFormPanel.add( analysisFileUpload );
 
+      mainFormPanel.add( csrfTokenParameter );
+
+      formPanel.add( mainFormPanel );
+
       VerticalPanel vp = (VerticalPanel) hiddenArea.getManagedObject();
       vp.add( formPanel );
       //addSubmitHandler(); moved to GwtDataSourceEditorEntryPoint
+    }
+  }
+
+  @Override @Bindable
+  public void onDialogAccept() {
+    hideDialog();
+
+    setupCsrfToken();
+
+    super.onDialogAccept();
+  }
+
+  /**
+   * Obtains a CSRF token for the form's current URL and
+   * fills it in the form's token parameter hidden field.
+   */
+  private void setupCsrfToken() {
+    assert formPanel != null;
+
+    JsCsrfToken token = CsrfUtil.getCsrfTokenSync( formPanel.getAction() );
+    if ( token != null ) {
+      csrfTokenParameter.setName( token.getParameter() );
+      csrfTokenParameter.setValue( token.getToken() );
+    } else {
+      // Reset the field.
+      csrfTokenParameter.setName( DISABLED_CSRF_TOKEN_PARAMETER );
+      csrfTokenParameter.setValue( "" );
     }
   }
 
@@ -369,6 +396,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     availableRadio.setSelected( true );
     acceptButton.setDisabled( true );
     schemaNameLabel.setValue( "" );
+    csrfTokenParameter.setValue( "" );
     setPreference( DATASOURCE_MODE );
     overwrite = false;
     removeHiddenPanels();
@@ -393,11 +421,13 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
     if ( mainFormPanel != null ) {
       int widgetCount = mainFormPanel.getWidgetCount();
       for ( int i = 0; i < widgetCount; i++ ) {
-        if ( mainFormPanel.getWidget( i ).getClass().equals( Hidden.class ) ) {
+        Widget widget = mainFormPanel.getWidget( i );
+        if ( widget.getClass().equals( Hidden.class ) && widget != csrfTokenParameter ) {
           hiddenPanels.add( mainFormPanel.getWidget( i ) );
         }
       }
     }
+
     return hiddenPanels;
   }
 
@@ -428,7 +458,8 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
           for ( IDatabaseConnection databaseConnection : databaseConnections ) {
             if ( ( databaseConnection.getAttributes() == null )
               || ( databaseConnection.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == null )
-              || ( databaseConnection.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION ) == Boolean.TRUE.toString() ) ) {
+              || ( databaseConnection.getAttributes().get( ATTRIBUTE_STANDARD_CONNECTION )
+              == Boolean.TRUE.toString() ) ) {
               standardDatabaseConnections.add( databaseConnection );
             }
 
