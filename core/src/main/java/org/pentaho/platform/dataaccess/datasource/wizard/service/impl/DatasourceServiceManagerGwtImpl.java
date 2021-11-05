@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2021 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2021 Hitachi Vantara. All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -43,14 +43,14 @@ import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.XMLParser;
 
+import static org.pentaho.mantle.client.environment.EnvironmentHelper.getFullyQualifiedURL;
+
 public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServiceManager {
 
-
-  String getAnalysisDatasourceIdsURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/ids"; //$NON-NLS-1$
-  String getMetadataDatasourceIdsURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/ids"; //$NON-NLS-1$
-  String getDSWDatasourceIdsURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/ids"; //$NON-NLS-1$
-
-  String isAdminURL = getWebAppRoot() + "api/repo/files/canAdminister"; //$NON-NLS-1$
+  String getAnalysisDatasourceIdsURL = getFullyQualifiedURL() + "plugin/data-access/api/datasource/analysis/ids";
+  String getMetadataDatasourceIdsURL = getFullyQualifiedURL() + "plugin/data-access/api/datasource/metadata/ids";
+  String getDSWDatasourceIdsURL = getFullyQualifiedURL() + "plugin/data-access/api/datasource/dsw/ids";
+  String isAdminURL = getFullyQualifiedURL() + "api/repo/files/canAdminister";
 
   @Override
   public void getAnalysisDatasourceIds( final XulServiceCallback<List<String>> xulCallback ) {
@@ -168,13 +168,6 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
     } );
   }
 
-  public native String getWebAppRoot()/*-{
-    if ($wnd.CONTEXT_PATH) {
-      return $wnd.CONTEXT_PATH;
-    }
-    return "";
-  }-*/;
-
   private List<String> convertReponseToList( Response response ) {
     List<String> dataList = new ArrayList<String>();
     Document document = (Document) XMLParser.parse( response.getText() );
@@ -256,11 +249,11 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
     String datasourceId = NameUtils.URLEncode( dsInfo.getId() );
 
     if ( dsInfo.getType() == MetadataUIDatasourceService.TYPE ) {
-      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + datasourceId + "/download";
+      exportURL = getFullyQualifiedURL() + "plugin/data-access/api/datasource/metadata/" + datasourceId + "/download";
     } else if ( dsInfo.getType() == MondrianUIDatasourceService.TYPE ) {
-      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + datasourceId + "/download";
+      exportURL = getFullyQualifiedURL() + "plugin/data-access/api/datasource/analysis/" + datasourceId + "/download";
     } else if ( dsInfo.getType() == DSWUIDatasourceService.TYPE ) {
-      exportURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + datasourceId + "/download";
+      exportURL = getFullyQualifiedURL() + "plugin/data-access/api/datasource/dsw/" + datasourceId + "/download";
     }
     Window.open( exportURL, "_new", "" );
   }
@@ -274,11 +267,11 @@ public class DatasourceServiceManagerGwtImpl implements IXulAsyncDatasourceServi
     final String removeURL;
     String datasourceId = NameUtils.URLEncode( dsInfo.getId() );
     if ( dsInfo.getType() == MetadataUIDatasourceService.TYPE ) {
-      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/metadata/" + datasourceId + "/remove";
+      removeURL = getFullyQualifiedURL() + "plugin/data-access/api/datasource/metadata/" + datasourceId + "/remove";
     } else if ( dsInfo.getType() == MondrianUIDatasourceService.TYPE ) {
-      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/analysis/" + datasourceId + "/remove";
+      removeURL = getFullyQualifiedURL() + "plugin/data-access/api/datasource/analysis/" + datasourceId + "/remove";
     } else if ( dsInfo.getType() == DSWUIDatasourceService.TYPE ) {
-      removeURL = getWebAppRoot() + "plugin/data-access/api/datasource/dsw/" + datasourceId + "/remove";
+      removeURL = getFullyQualifiedURL() + "plugin/data-access/api/datasource/dsw/" + datasourceId + "/remove";
     } else {
       removeURL = null;
     }
