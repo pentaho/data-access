@@ -582,6 +582,18 @@
     </testResources>
     <plugins>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <user.language>en</user.language>
+            <user.region>US</user.region>
+            <user.timezone>UTC</user.timezone>
+            <file.encoding>UTF-8</file.encoding>
+            <java.locale.providers>COMPAT,SPI</java.locale.providers>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-source-plugin</artifactId>
         <version>${maven-source-plugin.version}</version>
         <executions>
