@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2011-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2011-2021 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
@@ -166,7 +166,6 @@ public class CsvUtilsTest {
     }
   }
 
-  //TODO: test fails under Java 11 - see spike BACKLOG-35348
   @Test
   public void testAssumeColumnDetails_Numeric() {
     List<String> samples = asList( "100.00", "100.00", "100.08", "100.00", "100.12", "100.11" );
@@ -182,7 +181,6 @@ public class CsvUtilsTest {
     assertEquals( 4, columnInfo.getPrecision() );
   }
 
-  //TODO: test fails under Java 11 - see spike BACKLOG-35348
   @Test
   public void testAssumeColumnDetails_Currency() {
     List<String> samples = asList( "$101.04", "$100.3", "$100.3000", "$100.1", "$11100.32", "$7,100.433", "($500.00)" );
