@@ -43,7 +43,7 @@
     <icu4j.version>4_4_1_1</icu4j.version>
     <axiom-api.version>1.2.7</axiom-api.version>
     <geronimo-spec-jta.version>1.0.1B-rc4</geronimo-spec-jta.version>
-    <h2.version>1.0.78</h2.version>
+    <h2.version>2.1.210</h2.version>
     <pentaho-actionsequence-dom.version>9.3.0.0-SNAPSHOT</pentaho-actionsequence-dom.version>
     <commons-math.version>1.1</commons-math.version>
     <commons-database.version>9.3.0.0-SNAPSHOT</commons-database.version>
