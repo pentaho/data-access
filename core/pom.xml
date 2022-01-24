@@ -217,6 +217,12 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>se-jcr</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
