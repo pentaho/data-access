@@ -328,7 +328,7 @@ public class ConnectionController extends AbstractXulEventHandler {
   @Bindable
   public void updateConnection() {
     RequestBuilder updateConnectionBuilder =
-        new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "update" ) );
+        new CsrfRequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "update" ) );
     updateConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
       if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
