@@ -335,8 +335,11 @@
         <!-- POST /plugin/data-access/api/datasource/analysis/{id}/remove -->
         <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/analysis/[^/]*/remove\b.*" methods="POST" />
 
-        <!-- POST /plugin/data-access/api/connection/add -->
-        <swm:regex-request-matcher pattern="^/plugin/data-access/api/connection/add\b.*" methods="POST" />
+        <!--
+          POST /plugin/data-access/api/connection/add
+          POST /plugin/data-access/api/connection/update
+        -->
+        <swm:regex-request-matcher pattern="^/plugin/data-access/api/connection/(add|update)\b.*" methods="POST" />
 
         <!-- POST /plugin/data-access/api/mondrian/postAnalysis -->
         <swm:regex-request-matcher pattern="^/plugin/data-access/api/mondrian/postAnalysis\b.*" methods="POST" />
