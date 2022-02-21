@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002 - 2021 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002 - 2022 Hitachi Vantara..  All rights reserved.
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.controllers;
 
@@ -328,7 +328,7 @@ public class ConnectionController extends AbstractXulEventHandler {
   @Bindable
   public void updateConnection() {
     RequestBuilder updateConnectionBuilder =
-        new RequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "update" ) );
+        new CsrfRequestBuilder( RequestBuilder.POST, ConnectionController.getServiceURL( "update" ) );
     updateConnectionBuilder.setHeader( "Content-Type", "application/json" );
     try {
       if ( !StringUtils.isEmpty( currentConnection.getPassword() ) ) {
