@@ -343,6 +343,13 @@
 
         <!-- POST /plugin/data-access/api/mondrian/postAnalysis -->
         <swm:regex-request-matcher pattern="^/plugin/data-access/api/mondrian/postAnalysis\b.*" methods="POST" />
+
+        <!-- POST /plugin/data-access/api/datasource/metadata/{domainId}/remove -->
+        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/metadata/[^/]*/remove\b.*" methods="POST" />
+
+        <!-- POST /plugin/data-access/api/datasource/dsw/{dswId}/remove -->
+        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/dsw/[^/]*/remove\b.*" methods="POST" />
+
       </swm:or-request-matcher>
     </constructor-arg>
   </bean>
