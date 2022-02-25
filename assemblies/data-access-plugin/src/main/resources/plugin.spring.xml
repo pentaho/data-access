@@ -350,6 +350,15 @@
         <!-- POST /plugin/data-access/api/datasource/dsw/{dswId}/remove -->
         <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/dsw/[^/]*/remove\b.*" methods="POST" />
 
+        <!-- POST /plugin/data-access/api/datasource/metadata/uploadxmi  -->
+        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/metadata/uploadxmi\b.*" methods="POST" />
+
+        <!-- POST /plugin/data-access/api/datasource/metadata/import/uploaded -->
+        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/metadata/import/uploaded\b.*" methods="POST" />
+
+        <!-- POST /plugin/data-access/api/datasource/dsw/import/uploaded -->
+        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/dsw/import/uploaded\b.*" methods="POST" />
+
       </swm:or-request-matcher>
     </constructor-arg>
   </bean>
