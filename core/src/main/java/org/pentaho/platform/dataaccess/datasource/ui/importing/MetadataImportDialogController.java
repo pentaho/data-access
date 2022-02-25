@@ -129,10 +129,6 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
    * The CSRF token field/parameter.
    * Its name and value are set to the expected values before each submit,
    * to match the obtained
-   * <p>
-   * The Tomcat's context must have the `allowCasualMultipartParsing` attribute set
-   * so that the `CsrfGateFilter` is able to transparently read this parameter
-   * in a multi-part encoding form, as is the case of `form`.
    */
   private Hidden csrfTokenParameter;
 
@@ -229,8 +225,8 @@ public class MetadataImportDialogController extends AbstractXulDialogController<
         }
 
         String tempFileName = jsonResponse.get( "xmiFileName" ).isString().stringValue();
-        RequestBuilder checkFileRequest = new CsrfRequestBuilder( RequestBuilder.GET,
-                GWT.getHostPageBaseURL() + METADATA_CHECK_URL + "?tempFileName=" + URL.encode( tempFileName ) );
+        RequestBuilder checkFileRequest = new RequestBuilder( RequestBuilder.GET,
+          METADATA_CHECK_URL + "?tempFileName=" + URL.encode( tempFileName ) );
 
         checkFileRequest.setCallback( new RequestCallback() {
           @Override
