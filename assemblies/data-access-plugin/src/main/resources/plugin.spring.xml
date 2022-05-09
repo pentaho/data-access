@@ -308,7 +308,7 @@
   <bean id="inlineModeling" class="org.pentaho.agilebi.modeler.models.annotations.ModelingSchemaAnnotator"/>
 
   <!-- CSRF protection. To disable, comment out the bean. -->
-  <bean class="com.hitachivantara.security.web.impl.model.csrf.CsrfRequestSetConfigurationPojo">
+  <bean class="com.hitachivantara.security.web.impl.model.csrf.PartialCsrfConfigurationPojo">
     <pen:publish as-type="INTERFACES" />
 
     <constructor-arg>
@@ -363,4 +363,3 @@
     </constructor-arg>
   </bean>
 </beans>
-
