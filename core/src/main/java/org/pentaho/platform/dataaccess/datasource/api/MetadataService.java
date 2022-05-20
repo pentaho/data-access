@@ -25,10 +25,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import com.google.gwt.thirdparty.guava.common.annotations.VisibleForTesting;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -56,6 +63,7 @@ import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 import org.pentaho.platform.web.servlet.UploadFileUtils;
 
+import com.google.gwt.thirdparty.guava.common.annotations.VisibleForTesting;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -102,15 +110,24 @@ public class MetadataService extends DatasourceService {
 
   public List<String> getMetadataDatasourceIds() {
     List<String> metadataIds = new ArrayList<String>();
-    try {
-      sleep( 100 );
-      for ( String id : metadataDomainRepository.getDomainIds() ) {
-        if ( isMetadataDatasource( id ) ) {
-          metadataIds.add( id );
-        }
+    Set<String> domainIds = metadataDomainRepository.getDomainIds();
+    if ( CollectionUtils.isNotEmpty( domainIds ) ) {
+      ExecutorService executor = Executors.newFixedThreadPool( noOfThreads() );
+      Set<Callable<String>> callables = new HashSet<>();
+      for ( String id : domainIds ) {
+        callables.add( () -> isMetaDataSource( id ) );
       }
-    } catch ( InterruptedException e ) {
-      e.printStackTrace();
+      try {
+        List<Future<String>> futures = executor.invokeAll( callables );
+        for ( Future<String> future : futures ) {
+          if ( future.get() != null ) {
+            metadataIds.add( future.get() );
+          }
+        }
+      } catch ( InterruptedException | ExecutionException ie ) {
+        ie.printStackTrace();
+      }
+      executor.shutdown();
     }
     return metadataIds;
   }

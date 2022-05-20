@@ -17,6 +17,21 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
@@ -29,22 +44,11 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class DatasourceServiceTest {
 
@@ -140,7 +144,7 @@ public class DatasourceServiceTest {
     assertTrue( DatasourceService.isMetadataDatasource( domain ) );
 
     logicalModelList.add( model );
-    when(domain.getLogicalModels()).thenReturn( logicalModelList );
+    when( domain.getLogicalModels() ).thenReturn( logicalModelList );
     assertTrue( DatasourceService.isMetadataDatasource( domain ) );
 
     model.setProperty( "AGILE_BI_GENERATED_SCHEMA", true );
@@ -188,5 +192,35 @@ public class DatasourceServiceTest {
     public boolean matches( final Object arg ) {
       return true;
     }
+  }
+
+  @Test
+  public void validateMetadataDatasourceTest() {
+    DatasourceService datasourceService = spy( new DatasourceService() );
+    datasourceService.metadataDomainRepository = mock( PentahoMetadataDomainRepository.class );
+    String id = "testDomainId";
+    Domain domain = new Domain();
+    domain.setId( id );
+    doReturn( domain ).when( datasourceService.metadataDomainRepository ).getDomain( id );
+    String resultId = datasourceService.isMetaDataSource( id );
+    assertEquals( resultId, id );
+  }
+
+  @Test
+  public void validateDSWDatasourceTest() {
+    DatasourceService datasourceService = spy( new DatasourceService() );
+    datasourceService.metadataDomainRepository = mock( PentahoMetadataDomainRepository.class );
+    String id = "testDomainId";
+    Domain domain = new Domain();
+    domain.setId( id );
+    List<LogicalModel> logicalModelList = new ArrayList<>();
+    LogicalModel model = new LogicalModel();
+    model.setProperty( "AGILE_BI_GENERATED_SCHEMA", true );
+    model.setProperty( "WIZARD_GENERATED_SCHEMA", true );
+    logicalModelList.add( model );
+    domain.setLogicalModels( logicalModelList );
+    doReturn( domain ).when( datasourceService.metadataDomainRepository ).getDomain( id );
+    String resultId = datasourceService.isDSWDataSource( id );
+    assertEquals( resultId, id );
   }
 }

@@ -17,7 +17,11 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
@@ -34,7 +38,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -136,9 +139,9 @@ public class MetadataServiceTest {
     mockSet.add( "domainId1" );
     mockMetadataIdsList.add( "domainId1" );
 
-    doReturn( true ).when( metadataService ).isMetadataDatasource( "domainId1" );
+    doReturn( 1 ).when( metadataService ).noOfThreads();
+    doReturn( "domainId1" ).when( metadataService ).isMetaDataSource( "domainId1" );
     doReturn( mockSet ).when( metadataService.metadataDomainRepository ).getDomainIds();
-
     List<String> response = metadataService.getMetadataDatasourceIds();
 
     verify( metadataService, times( 1 ) ).getMetadataDatasourceIds();
@@ -147,12 +150,11 @@ public class MetadataServiceTest {
 
   @Test
   public void testGetMetadataDatasourceIdsError() throws Exception {
-    InterruptedException mockInterruptedException = mock( InterruptedException.class );
-    doThrow( mockInterruptedException ).when( metadataService ).sleep( 100 );
-
-    metadataService.getMetadataDatasourceIds();
-
+    doReturn( null ).when( metadataService.metadataDomainRepository ).getDomainIds();
+    doReturn( 1 ).when( metadataService ).noOfThreads();
+    List<String> datasourceIds = metadataService.getMetadataDatasourceIds();
     verify( metadataService, times( 1 ) ).getMetadataDatasourceIds();
+    assertTrue( datasourceIds.isEmpty() );
   }
 
   @Test( expected = PlatformImportException.class )

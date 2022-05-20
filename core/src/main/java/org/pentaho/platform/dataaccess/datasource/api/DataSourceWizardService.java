@@ -17,19 +17,24 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -53,7 +58,6 @@ import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAc
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService.DswPublishValidationException.Type;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataTempFilesListBundleDto;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataTempFilesListDto;
-import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
@@ -171,43 +175,25 @@ public class DataSourceWizardService extends DatasourceService {
 
   public List<String> getDSWDatasourceIds() {
     List<String> datasourceList = new ArrayList<String>();
-    try {
-      nextModel:
-      for ( LogicalModelSummary summary : dswService.getLogicalModels( null ) ) {
-
-        // BACKLOG-27907 - Get datasource as repo file for performance considerations when large numbers of
-        // data sources are present
-        Map<String, InputStream> domainFilesData = ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository )
-          .getDomainFilesData( summary.getDomainId() );
-
-        for ( String fileName : domainFilesData.keySet() ) {
-          InputStream inputStream = domainFilesData.get( fileName );
-          if ( inputStream == null ) {
-            logger.info( "Unable to access " + fileName + " when searching for DSW datasource IDs" );
-            continue;
-          }
-
-          // Build a string from the datasource xmi input stream
-          String result = new BufferedReader( new InputStreamReader( inputStream ) )
-            .lines().collect( Collectors.joining( "\n" ) );
-
-          if ( result == null ) {
-            logger.info( "Unable to read " + fileName + " when searching for DSW datasourceIDs" );
-            continue;
-          }
-
-          // Look for Agile BI generated datasource property
-          if ( result.contains( "AGILE_BI_GENERATED_SCHEMA" ) ) {
-            datasourceList.add( summary.getDomainId() );
-          }
-
-          inputStream.close();
-        }
+    Set<String> domainIds = metadataDomainRepository.getDomainIds();
+    ExecutorService executor = Executors.newFixedThreadPool( noOfThreads() );
+    Set<Callable<String>> callables = new HashSet<>();
+    if ( CollectionUtils.isNotEmpty( domainIds ) ) {
+      for ( String id : domainIds ) {
+        callables.add( () -> isDSWDataSource( id ) );
       }
-    } catch ( Throwable e ) {
-      return null;
+      try {
+        List<Future<String>> futures = executor.invokeAll( callables );
+        for ( Future<String> future : futures ) {
+          if ( future.get() != null ) {
+            datasourceList.add( future.get() );
+          }
+        }
+      } catch ( InterruptedException | ExecutionException ie ) {
+        ie.printStackTrace();
+      }
+      executor.shutdown();
     }
-
     return datasourceList;
   }
 

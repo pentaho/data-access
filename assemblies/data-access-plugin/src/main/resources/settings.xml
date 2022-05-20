@@ -19,6 +19,10 @@
   <!-- default view acls for user or role -->
   <data-access-default-view-acls>31</data-access-default-view-acls>
 
+  <!-- Uncomment and set the number of threads to load the datasources in Manage Data sources Default number of threads
+    will be number of cores in the system -->
+  <!-- <threads-for-user-session-cache>{no of threads to load the datasources}</threads-for-user-session-cache> -->
+
   <!-- settings for Agile Data Access -->
   <data-access-staging-jndi>Hibernate</data-access-staging-jndi>
 

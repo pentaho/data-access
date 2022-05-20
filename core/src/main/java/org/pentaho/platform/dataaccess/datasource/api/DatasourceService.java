@@ -21,10 +21,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
@@ -153,5 +155,49 @@ public class DatasourceService {
       return false; //If we can't find it, then it can't be a DSW
     }
     return !isMetadataDatasource( domain );
+  }
+
+  protected String isMetaDataSource( String id ) {
+    Domain domain;
+    try {
+      domain = metadataDomainRepository.getDomain( id );
+      if ( domain == null ) {
+        return null;
+      }
+    } catch ( Exception e ) { // If we can't load the domain then we MUST return false
+      return null;
+    }
+    return isMetadataDatasource( domain ) ? id : null;
+  }
+
+  protected int noOfThreads() {
+    IPluginResourceLoader resLoader = PentahoSystem.get( IPluginResourceLoader.class, null );
+    String noOfThreadsAsString = null;
+    int noOfThreads = 1;
+    try {
+      noOfThreadsAsString =
+              resLoader.getPluginSetting( getClass(), "settings/threads-for-user-session-cache" ); //$NON-NLS-1$
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
+    if ( StringUtils.isNotBlank( noOfThreadsAsString ) ) {
+      noOfThreads = Integer.parseInt( noOfThreadsAsString );
+    } else {
+      noOfThreads = Runtime.getRuntime().availableProcessors();
+    }
+    return noOfThreads;
+  }
+
+  protected String isDSWDataSource( String id ) {
+    Domain domain;
+    try {
+      domain = metadataDomainRepository.getDomain( id );
+      if ( domain == null ) {
+        return null;
+      }
+    } catch ( Exception e ) { // If we can't load the domain then we MUST return false
+      return null;
+    }
+    return !isMetadataDatasource( domain ) ? id : null;
   }
 }

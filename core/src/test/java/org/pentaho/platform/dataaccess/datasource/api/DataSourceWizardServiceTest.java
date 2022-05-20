@@ -17,7 +17,31 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import org.apache.tika.io.IOUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,26 +78,6 @@ import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDom
 import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class DataSourceWizardServiceTest {
 
@@ -264,43 +268,34 @@ public class DataSourceWizardServiceTest {
   }
 
   @Test
-  public void testGetDSWDatasourceIds() throws Exception {
-    final String TEST_DOMAIN_ID = "mock";
+  public void testGetDSWDatasourceIds() {
+    List<String> mockMetadataIdsList = new ArrayList<String>();
+    Set<String> mockSet = new HashSet<String>();
+    mockSet.add( "domainId1" );
+    mockMetadataIdsList.add( "domainId1" );
+    doReturn( 1 ).when( dataSourceWizardService ).noOfThreads();
+    doReturn( "domainId1" ).when( dataSourceWizardService ).isDSWDataSource( "domainId1" );
+    doReturn( mockSet ).when( dataSourceWizardService.metadataDomainRepository ).getDomainIds();
 
-    LogicalModelSummary mockLogicalModelSummary  = mock( LogicalModelSummary.class );
-    doReturn(TEST_DOMAIN_ID).when(mockLogicalModelSummary).getDomainId();
-    List<LogicalModelSummary> mockLogicalModelSummaryList = new ArrayList<LogicalModelSummary>();
-    mockLogicalModelSummaryList.add( mockLogicalModelSummary );
-
-    List<String> datasourceList = new ArrayList<String>();
-    datasourceList.add( mockLogicalModelSummary.getDomainId() );
-
-    doReturn( mockLogicalModelSummaryList ).when( dataSourceWizardService.dswService ).getLogicalModels( null );
-
-    Map<String,InputStream> mockDomainFilesData = new HashMap<String,InputStream>();
-
-    mockDomainFilesData.put(TEST_DOMAIN_ID, IOUtils.toInputStream("AGILE_BI_GENERATED_SCHEMA"));
-    doReturn(mockDomainFilesData).when((IPentahoMetadataDomainRepositoryExporter)dataSourceWizardService.metadataDomainRepository).getDomainFilesData(anyString());
-
-    List<String> datasourceIds = dataSourceWizardService.getDSWDatasourceIds();
-    verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
-    assert( datasourceIds.contains(TEST_DOMAIN_ID));
+    List<String> response = dataSourceWizardService.getDSWDatasourceIds();
+    assertEquals( mockMetadataIdsList, response );
   }
 
   @Test
   public void testGetDSWDatasourceIdsError() throws Exception {
-    doReturn( null ).when( dataSourceWizardService.dswService ).getLogicalModels( null );
+    doReturn( null ).when( dataSourceWizardService.metadataDomainRepository ).getDomainIds();
+    doReturn( 1 ).when( dataSourceWizardService ).noOfThreads();
     List<String> datasourceIds = dataSourceWizardService.getDSWDatasourceIds();
     verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
-    assertNull( datasourceIds );
+    assertTrue( datasourceIds.isEmpty() );
   }
 
   @Test
   public void testGetDSWDatasourceIdsNullInput() throws Exception {
     final String TEST_DOMAIN_ID = "mock";
 
-    LogicalModelSummary mockLogicalModelSummary  = mock( LogicalModelSummary.class );
-    doReturn(TEST_DOMAIN_ID).when(mockLogicalModelSummary).getDomainId();
+    LogicalModelSummary mockLogicalModelSummary = mock( LogicalModelSummary.class );
+    doReturn( TEST_DOMAIN_ID ).when( mockLogicalModelSummary ).getDomainId();
     List<LogicalModelSummary> mockLogicalModelSummaryList = new ArrayList<LogicalModelSummary>();
     mockLogicalModelSummaryList.add( mockLogicalModelSummary );
 
@@ -309,14 +304,16 @@ public class DataSourceWizardServiceTest {
 
     doReturn( mockLogicalModelSummaryList ).when( dataSourceWizardService.dswService ).getLogicalModels( null );
 
-    Map<String,InputStream> mockDomainFilesData = new HashMap<String,InputStream>();
+    Map<String, InputStream> mockDomainFilesData = new HashMap<String, InputStream>();
 
-    mockDomainFilesData.put(TEST_DOMAIN_ID, null);
-    doReturn(mockDomainFilesData).when((IPentahoMetadataDomainRepositoryExporter)dataSourceWizardService.metadataDomainRepository).getDomainFilesData(anyString());
-
+    mockDomainFilesData.put( TEST_DOMAIN_ID, null );
+    doReturn( mockDomainFilesData )
+        .when( (IPentahoMetadataDomainRepositoryExporter) dataSourceWizardService.metadataDomainRepository )
+        .getDomainFilesData( anyString() );
+    doReturn( 1 ).when( dataSourceWizardService ).noOfThreads();
     List<String> datasourceIds = dataSourceWizardService.getDSWDatasourceIds();
     verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
-    assert( datasourceIds.isEmpty());
+    assert ( datasourceIds.isEmpty() );
   }
 
   @Test
