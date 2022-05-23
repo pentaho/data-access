@@ -124,8 +124,11 @@ public class MetadataService extends DatasourceService {
             metadataIds.add( future.get() );
           }
         }
-      } catch ( InterruptedException | ExecutionException ie ) {
-        ie.printStackTrace();
+      }  catch ( InterruptedException ie ) {
+        logger.error( "InterruptedException: " + ie.getMessage(), ie );
+        Thread.currentThread().interrupt();
+      } catch ( ExecutionException ee ) {
+        logger.error( "ExecutionException: " + ee.getMessage(), ee );
       }
       executor.shutdown();
     }

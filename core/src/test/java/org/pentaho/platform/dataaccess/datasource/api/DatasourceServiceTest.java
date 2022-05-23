@@ -220,7 +220,7 @@ public class DatasourceServiceTest {
     logicalModelList.add( model );
     domain.setLogicalModels( logicalModelList );
     doReturn( domain ).when( datasourceService.metadataDomainRepository ).getDomain( id );
-    String resultId = datasourceService.isDSWDataSource( id );
+    String resultId = datasourceService.isDataSourceWizard( id );
     assertEquals( resultId, id );
   }
 }

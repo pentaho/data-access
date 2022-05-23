@@ -188,7 +188,7 @@ public class DatasourceService {
     return noOfThreads;
   }
 
-  protected String isDSWDataSource( String id ) {
+  protected String isDataSourceWizard( String id ) {
     Domain domain;
     try {
       domain = metadataDomainRepository.getDomain( id );

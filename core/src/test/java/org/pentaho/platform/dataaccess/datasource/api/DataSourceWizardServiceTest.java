@@ -274,7 +274,7 @@ public class DataSourceWizardServiceTest {
     mockSet.add( "domainId1" );
     mockMetadataIdsList.add( "domainId1" );
     doReturn( 1 ).when( dataSourceWizardService ).noOfThreads();
-    doReturn( "domainId1" ).when( dataSourceWizardService ).isDSWDataSource( "domainId1" );
+    doReturn( "domainId1" ).when( dataSourceWizardService ).isDataSourceWizard( "domainId1" );
     doReturn( mockSet ).when( dataSourceWizardService.metadataDomainRepository ).getDomainIds();
 
     List<String> response = dataSourceWizardService.getDSWDatasourceIds();
