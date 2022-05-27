@@ -18,10 +18,21 @@
 package org.pentaho.platform.dataaccess.datasource.api;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
@@ -31,6 +42,7 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -45,11 +57,14 @@ public class DatasourceService {
   protected IMetadataDomainRepository metadataDomainRepository;
   protected IMondrianCatalogService mondrianCatalogService;
   protected RepositoryFileAclAdapter repositoryFileAclAdapter;
+  protected IPluginResourceLoader pluginResourceLoader;
+  private static final Log LOGGER = LogFactory.getLog( DatasourceService.class );
 
   public DatasourceService() {
     metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
     mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
     repositoryFileAclAdapter = new RepositoryFileAclAdapter();
+    pluginResourceLoader = PentahoSystem.get( IPluginResourceLoader.class, PentahoSessionHolder.getSession() );
   }
 
   protected IUnifiedRepository getRepository() {
@@ -157,47 +172,53 @@ public class DatasourceService {
     return !isMetadataDatasource( domain );
   }
 
-  protected String isMetaDataSource( String id ) {
-    Domain domain;
-    try {
-      domain = metadataDomainRepository.getDomain( id );
-      if ( domain == null ) {
-        return null;
-      }
-    } catch ( Exception e ) { // If we can't load the domain then we MUST return false
-      return null;
-    }
-    return isMetadataDatasource( domain ) ? id : null;
+  public boolean isDSWDatasource( String domainId ) {
+    return !isMetadataDatasource( domainId );
   }
 
-  protected int noOfThreads() {
-    IPluginResourceLoader resLoader = PentahoSystem.get( IPluginResourceLoader.class, null );
-    String noOfThreadsAsString = null;
-    int noOfThreads = 1;
-    try {
-      noOfThreadsAsString =
-              resLoader.getPluginSetting( getClass(), "settings/threads-for-user-session-cache" ); //$NON-NLS-1$
-    } catch ( Exception e ) {
-      e.printStackTrace();
+  protected int getDatasourceLoadThreadCount() throws DatasourceServiceException {
+    int threadCount = Runtime.getRuntime().availableProcessors();
+    String threadCountAsString =
+        pluginResourceLoader.getPluginSetting( getClass(), "settings/data-access-datasource-load-threads" );
+    if ( StringUtils.isNotBlank( threadCountAsString ) ) {
+      threadCount = Integer.parseInt( threadCountAsString );
+      if ( threadCount <= 0 ) {
+        throw new DatasourceServiceException( "Data access datasource load threads are negative or Zero" );
+      }
     }
-    if ( StringUtils.isNotBlank( noOfThreadsAsString ) ) {
-      noOfThreads = Integer.parseInt( noOfThreadsAsString );
-    } else {
-      noOfThreads = Runtime.getRuntime().availableProcessors();
-    }
-    return noOfThreads;
+    LOGGER.debug( "Data access datasource load threads: " + threadCount );
+    return threadCount;
   }
 
-  protected String isDataSourceWizard( String id ) {
-    Domain domain;
+  protected List<String> getDatasourceIds( Predicate<String> isDatasourceType ) {
+    List<String> datasourceList = new ArrayList<>();
+    Set<String> domainIds = metadataDomainRepository.getDomainIds();
+    Set<Callable<String>> callables = new HashSet<>();
+    int threadCount;
     try {
-      domain = metadataDomainRepository.getDomain( id );
-      if ( domain == null ) {
-        return null;
-      }
-    } catch ( Exception e ) { // If we can't load the domain then we MUST return false
-      return null;
+      threadCount = getDatasourceLoadThreadCount();
+    } catch ( DatasourceServiceException e ) {
+      LOGGER.error( e.getMessage(), e );
+      return datasourceList;
     }
-    return !isMetadataDatasource( domain ) ? id : null;
+    ExecutorService executor = Executors.newFixedThreadPool( threadCount );
+    for ( String domainId : domainIds ) {
+      callables.add( () -> isDatasourceType.test( domainId ) ? domainId : null );
+    }
+    try {
+      List<Future<String>> futures = executor.invokeAll( callables );
+      for ( Future<String> future : futures ) {
+        if ( future.get() != null ) {
+          datasourceList.add( future.get() );
+        }
+      }
+    } catch ( InterruptedException ie ) {
+      LOGGER.error( ie.getMessage(), ie );
+      Thread.currentThread().interrupt();
+    } catch ( ExecutionException ee ) {
+      LOGGER.error( ee.getMessage(), ee );
+    }
+    executor.shutdown();
+    return datasourceList;
   }
 }

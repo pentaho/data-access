@@ -23,18 +23,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -174,30 +166,7 @@ public class DataSourceWizardService extends DatasourceService {
   }
 
   public List<String> getDSWDatasourceIds() {
-    List<String> datasourceList = new ArrayList<String>();
-    Set<String> domainIds = metadataDomainRepository.getDomainIds();
-    ExecutorService executor = Executors.newFixedThreadPool( noOfThreads() );
-    Set<Callable<String>> callables = new HashSet<>();
-    if ( CollectionUtils.isNotEmpty( domainIds ) ) {
-      for ( String id : domainIds ) {
-        callables.add( () -> isDataSourceWizard( id ) );
-      }
-      try {
-        List<Future<String>> futures = executor.invokeAll( callables );
-        for ( Future<String> future : futures ) {
-          if ( future.get() != null ) {
-            datasourceList.add( future.get() );
-          }
-        }
-      } catch ( InterruptedException ie ) {
-        logger.error( "InterruptedException: " + ie.getMessage(), ie );
-        Thread.currentThread().interrupt();
-      } catch ( ExecutionException ee ) {
-        logger.error( "ExecutionException: " + ee.getMessage(), ee );
-      }
-      executor.shutdown();
-    }
-    return datasourceList;
+    return getDatasourceIds( this::isDSWDatasource );
   }
 
   public String publishDsw( String domainId, InputStream metadataFile, boolean overwrite, boolean checkConnection,
