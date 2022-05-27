@@ -96,7 +96,7 @@ public class MetadataServiceTest {
   }
 
   @Before
-  public void setUp() throws ObjectFactoryException {
+  public void setUp() {
     metadataService = spy( new MetadataServiceMock() );
     metadataService.metadataDomainRepository = mock( PentahoMetadataDomainRepository.class );
     metadataService.aclAwarePentahoMetadataDomainRepositoryImporter =
