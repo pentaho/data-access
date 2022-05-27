@@ -43,7 +43,6 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
@@ -197,7 +196,7 @@ public class DatasourceServiceTest {
   }
 
   @Test
-  public void testGetDatasourceLoadThreadCount() throws Exception {
+  public void testGetDatasourceLoadThreadCount() throws IllegalArgumentException {
     String threadCountAsString = "4";
     when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
         .thenReturn( threadCountAsString );
@@ -205,16 +204,16 @@ public class DatasourceServiceTest {
     assertEquals( Integer.parseInt( threadCountAsString ), response );
   }
 
-  @Test( expected = DatasourceServiceException.class )
-  public void testGetDatasourceLoadThreadCountError() throws DatasourceServiceException {
+  @Test( expected = IllegalArgumentException.class )
+  public void testGetDatasourceLoadThreadCountError() throws IllegalArgumentException {
     String threadCountAsString = "-4";
     when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
         .thenReturn( threadCountAsString );
     datasourceService.getDatasourceLoadThreadCount();
   }
 
-  @Test( expected = NumberFormatException.class )
-  public void testGetDatasourceLoadThreadCountInvalidInput() throws DatasourceServiceException {
+  @Test( expected = IllegalArgumentException.class )
+  public void testGetDatasourceLoadThreadCountInvalidInput() throws IllegalArgumentException {
     String threadCountAsString = "t";
     when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
         .thenReturn( threadCountAsString );

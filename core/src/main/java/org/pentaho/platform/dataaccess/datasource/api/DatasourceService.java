@@ -42,7 +42,6 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
-import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -176,14 +175,14 @@ public class DatasourceService {
     return !isMetadataDatasource( domainId );
   }
 
-  protected int getDatasourceLoadThreadCount() throws DatasourceServiceException {
+  protected int getDatasourceLoadThreadCount() throws IllegalArgumentException {
     int threadCount = Runtime.getRuntime().availableProcessors();
     String threadCountAsString =
         pluginResourceLoader.getPluginSetting( getClass(), "settings/data-access-datasource-load-threads" );
     if ( StringUtils.isNotBlank( threadCountAsString ) ) {
       threadCount = Integer.parseInt( threadCountAsString );
       if ( threadCount <= 0 ) {
-        throw new DatasourceServiceException( "Data access datasource load threads are negative or Zero" );
+        throw new NumberFormatException( "Data access datasource load threads are negative or zero" );
       }
     }
     LOGGER.debug( "Data access datasource load threads: " + threadCount );
@@ -197,7 +196,7 @@ public class DatasourceService {
     int threadCount;
     try {
       threadCount = getDatasourceLoadThreadCount();
-    } catch ( DatasourceServiceException e ) {
+    } catch ( IllegalArgumentException e ) {
       LOGGER.error( e.getMessage(), e );
       return datasourceList;
     }
