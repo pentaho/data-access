@@ -24,7 +24,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -41,10 +40,10 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
@@ -53,9 +52,12 @@ import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadActi
 public class DatasourceServiceTest {
 
   private static IAuthorizationPolicy authorizationPolicy;
+  private static DatasourceService datasourceService;
 
   @BeforeClass
   public static void setUpClass() throws ObjectFactoryException {
+    datasourceService = spy( new DatasourceService() );
+    datasourceService.pluginResourceLoader = mock( IPluginResourceLoader.class );
     authorizationPolicy = mock( IAuthorizationPolicy.class );
     when( authorizationPolicy.isAllowed( RepositoryReadAction.NAME ) ).thenReturn( true );
     when( authorizationPolicy.isAllowed( RepositoryCreateAction.NAME ) ).thenReturn( true );
@@ -182,8 +184,7 @@ public class DatasourceServiceTest {
 
   }
 
-
-  private static Class<?> anyClass() {
+  protected static Class<?> anyClass() {
     return argThat( new AnyClassMatcher() );
   }
 
@@ -195,32 +196,27 @@ public class DatasourceServiceTest {
   }
 
   @Test
-  public void validateMetadataDatasourceTest() {
-    DatasourceService datasourceService = spy( new DatasourceService() );
-    datasourceService.metadataDomainRepository = mock( PentahoMetadataDomainRepository.class );
-    String id = "testDomainId";
-    Domain domain = new Domain();
-    domain.setId( id );
-    doReturn( domain ).when( datasourceService.metadataDomainRepository ).getDomain( id );
-    String resultId = datasourceService.isMetaDataSource( id );
-    assertEquals( resultId, id );
+  public void testGetDatasourceLoadThreadCount() throws Exception {
+    String threadCountAsString = "4";
+    when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+        .thenReturn( threadCountAsString );
+    int response = datasourceService.getDatasourceLoadThreadCount();
+    assertEquals( Integer.parseInt( threadCountAsString ), response );
   }
 
-  @Test
-  public void validateDSWDatasourceTest() {
-    DatasourceService datasourceService = spy( new DatasourceService() );
-    datasourceService.metadataDomainRepository = mock( PentahoMetadataDomainRepository.class );
-    String id = "testDomainId";
-    Domain domain = new Domain();
-    domain.setId( id );
-    List<LogicalModel> logicalModelList = new ArrayList<>();
-    LogicalModel model = new LogicalModel();
-    model.setProperty( "AGILE_BI_GENERATED_SCHEMA", true );
-    model.setProperty( "WIZARD_GENERATED_SCHEMA", true );
-    logicalModelList.add( model );
-    domain.setLogicalModels( logicalModelList );
-    doReturn( domain ).when( datasourceService.metadataDomainRepository ).getDomain( id );
-    String resultId = datasourceService.isDataSourceWizard( id );
-    assertEquals( resultId, id );
+  @Test( expected = Exception.class )
+  public void testGetDatasourceLoadThreadCountError() throws Exception {
+    String threadCountAsString = "-4";
+    when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+        .thenReturn( threadCountAsString );
+    datasourceService.getDatasourceLoadThreadCount();
+  }
+
+  @Test( expected = NumberFormatException.class )
+  public void testGetDatasourceLoadThreadCountInvalidInput() throws Exception {
+    String threadCountAsString = "t";
+    when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+        .thenReturn( threadCountAsString );
+    datasourceService.getDatasourceLoadThreadCount();
   }
 }
