@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gwt.thirdparty.guava.common.annotations.VisibleForTesting;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -56,6 +55,7 @@ import org.pentaho.platform.util.UUIDUtil;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 import org.pentaho.platform.web.servlet.UploadFileUtils;
 
+import com.google.gwt.thirdparty.guava.common.annotations.VisibleForTesting;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -101,18 +101,7 @@ public class MetadataService extends DatasourceService {
   }
 
   public List<String> getMetadataDatasourceIds() {
-    List<String> metadataIds = new ArrayList<String>();
-    try {
-      sleep( 100 );
-      for ( String id : metadataDomainRepository.getDomainIds() ) {
-        if ( isMetadataDatasource( id ) ) {
-          metadataIds.add( id );
-        }
-      }
-    } catch ( InterruptedException e ) {
-      e.printStackTrace();
-    }
-    return metadataIds;
+    return getDatasourceIds( this::isMetadataDatasource );
   }
 
   public MetadataTempFilesListDto uploadMetadataFilesToTempDir( InputStream metadataFile,

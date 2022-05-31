@@ -17,6 +17,20 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
@@ -26,6 +40,7 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -34,24 +49,15 @@ import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public class DatasourceServiceTest {
 
   private static IAuthorizationPolicy authorizationPolicy;
+  private static DatasourceService datasourceService;
 
   @BeforeClass
   public static void setUpClass() throws ObjectFactoryException {
+    datasourceService = spy( new DatasourceService() );
+    datasourceService.pluginResourceLoader = mock( IPluginResourceLoader.class );
     authorizationPolicy = mock( IAuthorizationPolicy.class );
     when( authorizationPolicy.isAllowed( RepositoryReadAction.NAME ) ).thenReturn( true );
     when( authorizationPolicy.isAllowed( RepositoryCreateAction.NAME ) ).thenReturn( true );
@@ -140,7 +146,7 @@ public class DatasourceServiceTest {
     assertTrue( DatasourceService.isMetadataDatasource( domain ) );
 
     logicalModelList.add( model );
-    when(domain.getLogicalModels()).thenReturn( logicalModelList );
+    when( domain.getLogicalModels() ).thenReturn( logicalModelList );
     assertTrue( DatasourceService.isMetadataDatasource( domain ) );
 
     model.setProperty( "AGILE_BI_GENERATED_SCHEMA", true );
@@ -178,8 +184,7 @@ public class DatasourceServiceTest {
 
   }
 
-
-  private static Class<?> anyClass() {
+  protected static Class<?> anyClass() {
     return argThat( new AnyClassMatcher() );
   }
 
@@ -188,5 +193,30 @@ public class DatasourceServiceTest {
     public boolean matches( final Object arg ) {
       return true;
     }
+  }
+
+  @Test
+  public void testGetDatasourceLoadThreadCount() throws IllegalArgumentException {
+    String threadCountAsString = "4";
+    when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+        .thenReturn( threadCountAsString );
+    int response = datasourceService.getDatasourceLoadThreadCount();
+    assertEquals( Integer.parseInt( threadCountAsString ), response );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void testGetDatasourceLoadThreadCountError() throws IllegalArgumentException {
+    String threadCountAsString = "-4";
+    when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+        .thenReturn( threadCountAsString );
+    datasourceService.getDatasourceLoadThreadCount();
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void testGetDatasourceLoadThreadCountInvalidInput() throws IllegalArgumentException {
+    String threadCountAsString = "t";
+    when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+        .thenReturn( threadCountAsString );
+    datasourceService.getDatasourceLoadThreadCount();
   }
 }

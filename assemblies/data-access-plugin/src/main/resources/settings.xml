@@ -19,6 +19,14 @@
   <!-- default view acls for user or role -->
   <data-access-default-view-acls>31</data-access-default-view-acls>
 
+  <!-- The number of threads used for preloading a user's available data sources, 
+     a process which is started upon login.
+     Available data sources are displayed in the "Manage Data sources" dialog and in 
+     applications such as Analyzer and Interactive Reporting. When the preloading 
+     process is not complete, the user has to wait when accessing these.
+     The default number of threads is the number of CPU cores in the system -->
+  <!-- <data-access-datasource-load-threads>4</data-access-datasource-load-threads> -->
+
   <!-- settings for Agile Data Access -->
   <data-access-staging-jndi>Hibernate</data-access-staging-jndi>
 

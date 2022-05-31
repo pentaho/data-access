@@ -459,9 +459,4 @@ public class AnalysisService extends DatasourceService {
           PlatformImportException.PUBLISH_GENERAL_ERROR );
     }
   }
-
-  private boolean isDSWDatasource( String domainId ) {
-    Domain domain = metadataDomainRepository.getDomain( domainId );
-    return DatasourceService.isDSWDatasource( domain );
-  }
 }

@@ -17,7 +17,10 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
@@ -32,9 +35,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pentaho.platform.dataaccess.datasource.api.DatasourceServiceTest.anyClass;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -52,7 +55,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
+import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -96,6 +102,7 @@ public class MetadataServiceTest {
     metadataService.aclAwarePentahoMetadataDomainRepositoryImporter =
       mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
     metadataService.mondrianCatalogService = mock( IMondrianCatalogService.class );
+    metadataService.pluginResourceLoader = mock( IPluginResourceLoader.class );
   }
 
   @After
@@ -130,29 +137,25 @@ public class MetadataServiceTest {
   }
 
   @Test
-  public void testGetMetadataDatasourceIds() throws Exception {
+  public void testGetMetadataDatasourceIds() {
+    String id = "domainId";
+    String threadCountAsString = "1";
     List<String> mockMetadataIdsList = new ArrayList<String>();
     Set<String> mockSet = new HashSet<String>();
-    mockSet.add( "domainId1" );
-    mockMetadataIdsList.add( "domainId1" );
-
-    doReturn( true ).when( metadataService ).isMetadataDatasource( "domainId1" );
-    doReturn( mockSet ).when( metadataService.metadataDomainRepository ).getDomainIds();
-
+    mockSet.add( id );
+    mockMetadataIdsList.add( id );
+    Domain domain = new Domain();
+    domain.setId( id );
+    List<LogicalModel> logicalModelList = new ArrayList<>();
+    LogicalModel model = new LogicalModel();
+    logicalModelList.add( model );
+    domain.setLogicalModels( logicalModelList );
+    when( metadataService.metadataDomainRepository.getDomainIds() ).thenReturn( mockSet );
+    when( metadataService.metadataDomainRepository.getDomain( id ) ).thenReturn( domain );
+    when( metadataService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+        .thenReturn( threadCountAsString );
     List<String> response = metadataService.getMetadataDatasourceIds();
-
-    verify( metadataService, times( 1 ) ).getMetadataDatasourceIds();
     assertEquals( mockMetadataIdsList, response );
-  }
-
-  @Test
-  public void testGetMetadataDatasourceIdsError() throws Exception {
-    InterruptedException mockInterruptedException = mock( InterruptedException.class );
-    doThrow( mockInterruptedException ).when( metadataService ).sleep( 100 );
-
-    metadataService.getMetadataDatasourceIds();
-
-    verify( metadataService, times( 1 ) ).getMetadataDatasourceIds();
   }
 
   @Test( expected = PlatformImportException.class )
@@ -607,7 +610,6 @@ public class MetadataServiceTest {
     stream = metadataService.createNewByteArrayInputStream( buffer );
     assertNotNull( stream );
   }
-
 
 }
 

@@ -17,7 +17,31 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import org.apache.tika.io.IOUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.pentaho.platform.dataaccess.datasource.api.DatasourceServiceTest.anyClass;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +55,7 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.platform.api.engine.IPentahoSession;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
@@ -40,7 +65,6 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileSid;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataTempFilesListDto;
-import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.DatasourceServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.IDSWDatasourceService;
@@ -51,29 +75,8 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServic
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importexport.legacy.MondrianCatalogRepositoryHelper;
 import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
-import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class DataSourceWizardServiceTest {
 
@@ -103,6 +106,7 @@ public class DataSourceWizardServiceTest {
     dataSourceWizardService.aclAwarePentahoMetadataDomainRepositoryImporter = mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
     dataSourceWizardService.aclAwareMondrianCatalogService = mock( IAclAwareMondrianCatalogService.class );
     dataSourceWizardService.sanitizer = mock( UtilHtmlSanitizer.class );
+    dataSourceWizardService.pluginResourceLoader = mock( IPluginResourceLoader.class );
   }
 
   @After
@@ -264,59 +268,27 @@ public class DataSourceWizardServiceTest {
   }
 
   @Test
-  public void testGetDSWDatasourceIds() throws Exception {
-    final String TEST_DOMAIN_ID = "mock";
-
-    LogicalModelSummary mockLogicalModelSummary  = mock( LogicalModelSummary.class );
-    doReturn(TEST_DOMAIN_ID).when(mockLogicalModelSummary).getDomainId();
-    List<LogicalModelSummary> mockLogicalModelSummaryList = new ArrayList<LogicalModelSummary>();
-    mockLogicalModelSummaryList.add( mockLogicalModelSummary );
-
-    List<String> datasourceList = new ArrayList<String>();
-    datasourceList.add( mockLogicalModelSummary.getDomainId() );
-
-    doReturn( mockLogicalModelSummaryList ).when( dataSourceWizardService.dswService ).getLogicalModels( null );
-
-    Map<String,InputStream> mockDomainFilesData = new HashMap<String,InputStream>();
-
-    mockDomainFilesData.put(TEST_DOMAIN_ID, IOUtils.toInputStream("AGILE_BI_GENERATED_SCHEMA"));
-    doReturn(mockDomainFilesData).when((IPentahoMetadataDomainRepositoryExporter)dataSourceWizardService.metadataDomainRepository).getDomainFilesData(anyString());
-
-    List<String> datasourceIds = dataSourceWizardService.getDSWDatasourceIds();
-    verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
-    assert( datasourceIds.contains(TEST_DOMAIN_ID));
-  }
-
-  @Test
-  public void testGetDSWDatasourceIdsError() throws Exception {
-    doReturn( null ).when( dataSourceWizardService.dswService ).getLogicalModels( null );
-    List<String> datasourceIds = dataSourceWizardService.getDSWDatasourceIds();
-    verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
-    assertNull( datasourceIds );
-  }
-
-  @Test
-  public void testGetDSWDatasourceIdsNullInput() throws Exception {
-    final String TEST_DOMAIN_ID = "mock";
-
-    LogicalModelSummary mockLogicalModelSummary  = mock( LogicalModelSummary.class );
-    doReturn(TEST_DOMAIN_ID).when(mockLogicalModelSummary).getDomainId();
-    List<LogicalModelSummary> mockLogicalModelSummaryList = new ArrayList<LogicalModelSummary>();
-    mockLogicalModelSummaryList.add( mockLogicalModelSummary );
-
-    List<String> datasourceList = new ArrayList<String>();
-    datasourceList.add( mockLogicalModelSummary.getDomainId() );
-
-    doReturn( mockLogicalModelSummaryList ).when( dataSourceWizardService.dswService ).getLogicalModels( null );
-
-    Map<String,InputStream> mockDomainFilesData = new HashMap<String,InputStream>();
-
-    mockDomainFilesData.put(TEST_DOMAIN_ID, null);
-    doReturn(mockDomainFilesData).when((IPentahoMetadataDomainRepositoryExporter)dataSourceWizardService.metadataDomainRepository).getDomainFilesData(anyString());
-
-    List<String> datasourceIds = dataSourceWizardService.getDSWDatasourceIds();
-    verify( dataSourceWizardService, times( 1 ) ).getDSWDatasourceIds();
-    assert( datasourceIds.isEmpty());
+  public void testGetDSWDatasourceIds() {
+    String id = "domainId";
+    String threadCountAsString = "1";
+    List<String> mockMetadataIdsList = new ArrayList<String>();
+    Set<String> mockSet = new HashSet<String>();
+    mockSet.add( id );
+    mockMetadataIdsList.add( id );
+    Domain domain = new Domain();
+    domain.setId( id );
+    List<LogicalModel> logicalModelList = new ArrayList<>();
+    LogicalModel model = new LogicalModel();
+    model.setProperty( "AGILE_BI_GENERATED_SCHEMA", true );
+    model.setProperty( "WIZARD_GENERATED_SCHEMA", true );
+    logicalModelList.add( model );
+    domain.setLogicalModels( logicalModelList );
+    when( dataSourceWizardService.metadataDomainRepository.getDomainIds() ).thenReturn( mockSet );
+    when( dataSourceWizardService.metadataDomainRepository.getDomain( id ) ).thenReturn( domain );
+    when( dataSourceWizardService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+        .thenReturn( threadCountAsString );
+    List<String> response = dataSourceWizardService.getDSWDatasourceIds();
+    assertEquals( mockMetadataIdsList, response );
   }
 
   @Test
