@@ -60,10 +60,19 @@ public class DatasourceService {
   private static final Log LOGGER = LogFactory.getLog( DatasourceService.class );
 
   public DatasourceService() {
-    metadataDomainRepository = PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() );
-    mondrianCatalogService = PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
-    repositoryFileAclAdapter = new RepositoryFileAclAdapter();
-    pluginResourceLoader = PentahoSystem.get( IPluginResourceLoader.class, PentahoSessionHolder.getSession() );
+    this( PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() ),
+        PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() ),
+        new RepositoryFileAclAdapter(),
+        PentahoSystem.get( IPluginResourceLoader.class, PentahoSessionHolder.getSession() ) );
+  }
+
+  public DatasourceService( IMetadataDomainRepository metadataDomainRepository,
+      IMondrianCatalogService mondrianCatalogService, RepositoryFileAclAdapter repositoryFileAclAdapter,
+      IPluginResourceLoader pluginResourceLoader ) {
+    this.metadataDomainRepository = metadataDomainRepository;
+    this.mondrianCatalogService = mondrianCatalogService;
+    this.repositoryFileAclAdapter = repositoryFileAclAdapter;
+    this.pluginResourceLoader = pluginResourceLoader;
   }
 
   protected IUnifiedRepository getRepository() {
