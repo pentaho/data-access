@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2022 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -45,6 +45,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.hitachivantara.security.web.model.servop.annotation.MutationOperation;
+import com.hitachivantara.security.web.model.servop.annotation.ServiceId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.enunciate.Facet;
@@ -71,6 +73,7 @@ import com.sun.jersey.multipart.FormDataParam;
  * This service allows for listing, download, and removal of Metadata data sources in the BA Platform.
  */
 @Path( "/data-access/api/datasource/metadata" )
+@ServiceId
 public class MetadataResource {
 
   private static final Log logger = LogFactory.getLog( MetadataResource.class );
@@ -415,6 +418,7 @@ public class MetadataResource {
       @ResponseCode( code = 200, condition = "Metadata datasource removed." ),
       @ResponseCode( code = 401, condition = "User is not authorized to delete the Metadata datasource." )
     } )
+  @MutationOperation
   public Response doRemoveMetadata( @PathParam( "domainId" ) String domainId ) {
     return deleteMetadata( domainId );
   }
@@ -440,6 +444,7 @@ public class MetadataResource {
     @ResponseCode( code = 403, condition = "Access Control Forbidden" ),
     @ResponseCode( code = 200, condition = "Indicates successful upload" )
     } )
+  @MutationOperation
   public String uploadMetadataFilesToTempDir(
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles ) throws Exception {
@@ -496,6 +501,7 @@ public class MetadataResource {
     @ResponseCode( code = 403, condition = "Access Control Forbidden" ),
     @ResponseCode( code = 201, condition = "Indicates successful import" )
     } )
+  @MutationOperation
   public Response importMetadataFromTemp( @FormParam( "domainId" ) String domainId,
                                         @FormParam ( "jsonFileList" ) String fileList,
                                         @FormParam( OVERWRITE_IN_REPOS ) boolean overwrite,

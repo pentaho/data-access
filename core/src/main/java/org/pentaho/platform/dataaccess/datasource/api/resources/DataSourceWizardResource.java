@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2022 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -43,6 +43,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.hitachivantara.security.web.model.servop.annotation.MutationOperation;
+import com.hitachivantara.security.web.model.servop.annotation.ServiceId;
 import org.codehaus.enunciate.Facet;
 import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
@@ -57,6 +59,7 @@ import com.sun.jersey.multipart.FormDataParam;
  * This service allows for listing, download, and removal of DSW data sources in the BA Platform.
  */
 @Path( "/data-access/api/datasource/dsw" )
+@ServiceId
 public class DataSourceWizardResource {
   private static final String DATASOURCE_ACL = "acl";
 
@@ -266,6 +269,7 @@ public class DataSourceWizardResource {
       @ResponseCode( code = 200, condition = "File successfully imported." ),
       @ResponseCode( code = 401, condition = "User is not authorized" )
     } )
+  @MutationOperation
   public Response publishDswFromTemp( @FormParam( "domainId" ) String domainId,
                                         @FormParam ( "jsonFileList" ) String fileList,
                                         @FormParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
@@ -351,6 +355,7 @@ public class DataSourceWizardResource {
       @ResponseCode( code = 401, condition = "User is not authorized to remove DSW datasource." ),
     } )
   @Facet( name = "Unsupported" )
+  @MutationOperation
   public Response doRemoveMetadata( @PathParam( "dswId" ) String metadataId ) {
     return remove( metadataId );
   }

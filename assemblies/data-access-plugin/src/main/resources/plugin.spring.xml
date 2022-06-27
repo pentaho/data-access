@@ -307,11 +307,17 @@
 
   <bean id="inlineModeling" class="org.pentaho.agilebi.modeler.models.annotations.ModelingSchemaAnnotator"/>
 
-  <!-- CSRF protection. To disable, comment out the bean. -->
+  <!-- CSRF protection -->
   <bean class="com.hitachivantara.security.web.impl.model.csrf.PartialCsrfConfigurationPojo">
     <pen:publish as-type="INTERFACES" />
 
-    <constructor-arg>
+    <!--
+        ENABLED ENDPOINTS
+        The Request Matchers for endpoints for which Upfront CSRF Validation is **ENABLED** (done by CsrfGateFilter).
+
+        **Comment** individual request matchers to disable CSRF validation for the corresponding endpoints.
+      -->
+    <property name="upfrontValidationRequestMatcher">
       <swm:or-request-matcher>
         <!-- GWT-RPC /gwtrpc/* -->
 
@@ -328,38 +334,33 @@
 
         <!-- POST /gwtrpc/CsvDatasourceService (and body contains `generateDomain` method call) -->
         <pen-gpc:plugin-gwt-rpc-request-matcher pattern="^/gwtrpc/CsvDatasourceService\b.*" methods="generateDomain" />
-
-
-        <!-- REST /plugin/data-access/api/* -->
-
-        <!-- POST /plugin/data-access/api/datasource/analysis/{id}/remove -->
-        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/analysis/[^/]*/remove\b.*" methods="POST" />
-
-        <!--
-          POST /plugin/data-access/api/connection/add
-          POST /plugin/data-access/api/connection/update
-        -->
-        <swm:regex-request-matcher pattern="^/plugin/data-access/api/connection/(add|update)\b.*" methods="POST" />
-
-        <!-- POST /plugin/data-access/api/mondrian/postAnalysis -->
-        <swm:regex-request-matcher pattern="^/plugin/data-access/api/mondrian/postAnalysis\b.*" methods="POST" />
-
-        <!-- POST /plugin/data-access/api/datasource/metadata/{domainId}/remove -->
-        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/metadata/[^/]*/remove\b.*" methods="POST" />
-
-        <!-- POST /plugin/data-access/api/datasource/dsw/{dswId}/remove -->
-        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/dsw/[^/]*/remove\b.*" methods="POST" />
-
-        <!-- POST /plugin/data-access/api/datasource/metadata/uploadxmi  -->
-        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/metadata/uploadxmi\b.*" methods="POST" />
-
-        <!-- POST /plugin/data-access/api/datasource/metadata/import/uploaded -->
-        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/metadata/import/uploaded\b.*" methods="POST" />
-
-        <!-- POST /plugin/data-access/api/datasource/dsw/import/uploaded -->
-        <swm:regex-request-matcher pattern="^/plugin/data-access/api/datasource/dsw/import/uploaded\b.*" methods="POST" />
-
       </swm:or-request-matcher>
-    </constructor-arg>
+    </property>
+
+    <!--
+      DISABLED SERVICE OPERATIONS
+      The Service Operation identifiers for which CSRF Validation is **DISABLED**.
+
+      These correspond to operations which are accessible by more than one URL, or for which what determines
+      whether to protect or not against CSRF is in the request body, or is otherwise determined dynamically.
+
+      To disable CSRF protection for all or some service operations,
+      uncomment the following property and include only the identifiers of the unprotected operations.
+    -->
+    <!--
+    <property name="disabledValidationOperationIds">
+      <util:set>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.service.impl.AnalysisDatasourceService#postAnalysis</value>
+        <value>org.pentaho.platform.dataaccess.datasource.api.resources.AnalysisResource#doRemoveAnalysis</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionService#updateConnection</value>
+        <value>org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionService#addConnection</value>
+        <value>org.pentaho.platform.dataaccess.datasource.api.resources.MetadataResource#doRemoveMetadata</value>
+        <value>org.pentaho.platform.dataaccess.datasource.api.resources.MetadataResource#uploadMetadataFilesToTempDir</value>
+        <value>org.pentaho.platform.dataaccess.datasource.api.resources.MetadataResource#importMetadataFromTemp</value>
+        <value>org.pentaho.platform.dataaccess.datasource.api.resources.DataSourceWizardResource#publishDswFromTemp</value>
+        <value>org.pentaho.platform.dataaccess.datasource.api.resources.DataSourceWizardResource#doRemoveMetadata</value>
+      </util:set>
+    </property>
+    -->
   </bean>
 </beans>

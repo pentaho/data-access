@@ -1,23 +1,33 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2022 Hitachi Vantara.  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.io.InputStream;
+import com.hitachivantara.security.web.model.servop.annotation.MutationOperation;
+import com.hitachivantara.security.web.model.servop.annotation.ServiceId;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.enunciate.Facet;
+import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
+import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
+import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -27,19 +37,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.codehaus.enunciate.Facet;
-import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
-import org.pentaho.platform.plugin.services.importer.PlatformImportException;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
-import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
+import java.io.InputStream;
 
 @Path( "/data-access/api/mondrian" )
+@ServiceId
 public class AnalysisDatasourceService {
 
   private static final Log logger = LogFactory.getLog( AnalysisDatasourceService.class );
@@ -56,7 +57,7 @@ public class AnalysisDatasourceService {
 
   /**
    * This is used by PUC to use a Jersey put to import a Mondrian Schema XML into PUR
-   * 
+   *
    * @param dataInputStream
    * @param schemaFileInfo
    * @param catalogName
@@ -64,7 +65,7 @@ public class AnalysisDatasourceService {
    * @param overwrite
    * @param xmlaEnabledFlag
    * @param parameters
-   * @param acl acl information for the data source. This parameter is optional.
+   * @param acl             acl information for the data source. This parameter is optional.
    * @return this method returns a response of "3" for success, 8 if exists, etc.
    * @throws PentahoAccessControlException
    */
@@ -74,14 +75,14 @@ public class AnalysisDatasourceService {
   @Produces( "text/plain" )
   @Facet( name = "Unsupported" )
   public Response putMondrianSchema(
-      @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
-      @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
-      @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
-      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
-      @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
-      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
+    @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
+    @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
+    @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
+    @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
+    @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
+    @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+    @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
+    @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
     throws PentahoAccessControlException {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
@@ -90,7 +91,7 @@ public class AnalysisDatasourceService {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
       boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;
       service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-          overWriteInRepository, xmlaEnabled, parameters, acl );
+        overWriteInRepository, xmlaEnabled, parameters, acl );
       statusCode = SUCCESS;
     } catch ( PentahoAccessControlException pac ) {
       logger.error( pac.getMessage() );
@@ -110,7 +111,7 @@ public class AnalysisDatasourceService {
 
   /**
    * This is used by PUC to use a form post to import a Mondrian Schema XML into PUR
-   * 
+   *
    * @param dataInputStream
    * @param schemaFileInfo
    * @param catalogName
@@ -118,7 +119,7 @@ public class AnalysisDatasourceService {
    * @param overwrite
    * @param xmlaEnabledFlag
    * @param parameters
-   * @param acl acl information for the data source. This parameter is optional.
+   * @param acl             acl information for the data source. This parameter is optional.
    * @return this method returns a response of "SUCCESS" for success, 8 if exists, 2 for general error,etc.
    * @throws PentahoAccessControlException
    */
@@ -127,21 +128,22 @@ public class AnalysisDatasourceService {
   @Consumes( MediaType.MULTIPART_FORM_DATA )
   @Produces( { "text/plain", "text/html" } )
   @Facet( name = "Unsupported" )
-  public Response postMondrainSchema(
-      @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
-      @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
-      @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
-      @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
-      @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
-      @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
-      @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
+  @MutationOperation
+  public Response postAnalysis(
+    @FormDataParam( UPLOAD_ANALYSIS ) InputStream dataInputStream,
+    @FormDataParam( UPLOAD_ANALYSIS ) FormDataContentDisposition schemaFileInfo,
+    @FormDataParam( CATALOG_NAME ) String catalogName, // Optional
+    @FormDataParam( ORIG_CATALOG_NAME ) String origCatalogName, // Optional
+    @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
+    @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
+    @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
+    @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
     throws PentahoAccessControlException {
     // use existing Jersey post method - but translate into text/html for PUC Client
     ResponseBuilder responseBuilder;
     Response response =
-        this.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-            overwrite, xmlaEnabledFlag, parameters, acl );
+      this.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
+        overwrite, xmlaEnabledFlag, parameters, acl );
     responseBuilder = Response.ok();
     responseBuilder.entity( String.valueOf( response.getStatus() ) );
     responseBuilder.status( 200 );

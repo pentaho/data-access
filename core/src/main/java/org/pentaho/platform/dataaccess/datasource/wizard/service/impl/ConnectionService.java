@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2022 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -33,6 +33,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import com.hitachivantara.security.web.model.servop.annotation.MutationOperation;
+import com.hitachivantara.security.web.model.servop.annotation.ServiceId;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,6 +63,7 @@ import org.pentaho.ui.database.event.IDatabaseConnectionList;
 import org.pentaho.ui.database.event.IDatabaseConnectionPoolParameterList;
 
 @Path( "/data-access/api/connection" )
+@ServiceId
 public class ConnectionService {
 
   private ConnectionServiceImpl connectionService;
@@ -262,6 +265,7 @@ public class ConnectionService {
   @Path( "/update" )
   @Consumes( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
+  @MutationOperation
   public Response updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     sanitizer.sanitizeConnectionParameters( connection );
     try {
@@ -367,6 +371,7 @@ public class ConnectionService {
   @Path( "/add" )
   @Consumes( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
+  @MutationOperation
   public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
     sanitizer.sanitizeConnectionParameters( connection );
     try {

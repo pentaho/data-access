@@ -12,11 +12,13 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2022 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
+import com.hitachivantara.security.web.model.servop.annotation.MutationOperation;
+import com.hitachivantara.security.web.model.servop.annotation.ServiceId;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
@@ -54,6 +56,7 @@ import java.util.Map;
  * Platform.
  */
 @Path( "/data-access/api/datasource/analysis" )
+@ServiceId
 public class AnalysisResource {
 
   protected static final String UPLOAD_ANALYSIS = "uploadInput";
@@ -476,6 +479,7 @@ public class AnalysisResource {
       @ResponseCode( code = 401, condition = "User is not authorized to delete the analysis datasource" ),
       @ResponseCode( code = 500, condition = "Unable to remove the analysis data." )
   } )
+  @MutationOperation
   public Response doRemoveAnalysis( @PathParam( "catalog" ) String catalog ) {
     try {
       service.removeAnalysis( catalog );
