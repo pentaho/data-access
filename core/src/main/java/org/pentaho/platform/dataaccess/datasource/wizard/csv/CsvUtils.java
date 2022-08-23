@@ -43,6 +43,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvParseExceptio
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DataRow;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
+import org.pentaho.platform.dataaccess.metadata.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.logging.Logger;
@@ -81,14 +82,19 @@ public class CsvUtils extends PentahoBase {
       path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
     }
 
-    String fileLocation = path + name;
+    //PPP-4762 - prevent directory traversal attack
+    File filePath = new File(path);
+    File fileLocation = new File(path, name);
+    if ( !fileLocation.getCanonicalPath().startsWith( filePath.getCanonicalPath() ) ) {
+      throw new SecurityException( Messages.getErrorString( "CsvDatasourceServiceImpl.ERROR_0010_DIRECTORY_TRANSVERSAL_ATTACK" ) );
+    }
 
     ModelInfo result = new ModelInfo();
     CsvFileInfo fileInfo = new CsvFileInfo();
     fileInfo.setTmpFilename( name );
     result.setFileInfo( fileInfo );
 
-    fileInfo.setContents( getLinesList( fileLocation, rows, encoding ) );
+    fileInfo.setContents( getLinesList( fileLocation.getCanonicalPath(), rows, encoding ) );
     fileInfo.setDelimiter( delimiter );
     fileInfo.setEnclosure( enclosure );
     fileInfo.setHeaderRows( 0 );
