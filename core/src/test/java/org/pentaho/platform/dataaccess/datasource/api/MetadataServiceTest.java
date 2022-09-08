@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+* Copyright (c) 2002-2022 Hitachi Vantara.  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -20,6 +20,7 @@ package org.pentaho.platform.dataaccess.datasource.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -41,6 +42,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -52,13 +54,15 @@ import javax.ws.rs.core.Response;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
-import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
@@ -68,17 +72,21 @@ import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAc
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataTempFilesListDto;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IAclAwareMondrianCatalogService;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.services.importer.IPlatformImporter;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.plugin.services.importer.RepositoryFileImportBundle;
 import org.pentaho.platform.plugin.services.metadata.IAclAwarePentahoMetadataDomainRepositoryImporter;
+import org.pentaho.platform.plugin.services.metadata.IDataSourceAwareMetadataDomainRepository;
 import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainRepository;
+import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.web.http.api.resources.FileResource;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
+import org.pentaho.test.platform.engine.core.MicroPlatform;
 
 public class MetadataServiceTest {
 
@@ -88,11 +96,41 @@ public class MetadataServiceTest {
   private static final String DOMAIN_ID = "home\\admin/resource/";
   private static MetadataService metadataService;
 
+  private static final RepositoryFileAclDto acl = new RepositoryFileAclDto();
+
   private class MetadataServiceMock extends MetadataService {
 
     @Override protected IUnifiedRepository getRepository() {
       return mock( IUnifiedRepository.class );
     }
+  }
+
+  /** wire {@link PentahoSystem} so PentahoSystem.get(...) returns our mocks.
+   * Similar logic to {@link AnalysisServiceTest#initPlatform()}
+   * */
+  @BeforeClass
+  public static void initPlatform() throws Exception {
+
+    MicroPlatform platform = new MicroPlatform();
+
+    IDataSourceAwareMetadataDomainRepository dataSourceAwareMetadataDomainRepository = mock( IDataSourceAwareMetadataDomainRepository.class );
+    platform.defineInstance( IMetadataDomainRepository.class, dataSourceAwareMetadataDomainRepository );
+
+    IMondrianCatalogService mondrianCatalogService = mock( IAclAwareMondrianCatalogService.class );
+    platform.defineInstance( IMondrianCatalogService.class, mondrianCatalogService );
+
+    IPluginResourceLoader pluginResourceLoader = mock( IPluginResourceLoader.class );
+    platform.defineInstance( IPluginResourceLoader.class, pluginResourceLoader );
+
+    IAuthorizationPolicy authorizationPolicy = mock( IAuthorizationPolicy.class );
+    platform.defineInstance( IAuthorizationPolicy.class, authorizationPolicy );
+
+    // path to test resources
+    final IUnifiedRepository unifiedRepository = new FileSystemBackedUnifiedRepository( "target/test-classes/solution1" );
+    platform.defineInstance( IUnifiedRepository.class, unifiedRepository );
+    platform.start();
+    acl.setOwner( "owner" );
+    acl.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
   }
 
   @Before
@@ -103,6 +141,7 @@ public class MetadataServiceTest {
       mock( IAclAwarePentahoMetadataDomainRepositoryImporter.class );
     metadataService.mondrianCatalogService = mock( IMondrianCatalogService.class );
     metadataService.pluginResourceLoader = mock( IPluginResourceLoader.class );
+
   }
 
   @After
@@ -138,6 +177,7 @@ public class MetadataServiceTest {
 
   @Test
   public void testGetMetadataDatasourceIds() {
+    // SETUP
     String id = "domainId";
     String threadCountAsString = "1";
     List<String> mockMetadataIdsList = new ArrayList<String>();
@@ -150,12 +190,39 @@ public class MetadataServiceTest {
     LogicalModel model = new LogicalModel();
     logicalModelList.add( model );
     domain.setLogicalModels( logicalModelList );
+
+    /** simulate parent {@link DatasourceService} default constructor */
+    metadataService.dataSourceAwareMetadataDomainRepository = null;
     when( metadataService.metadataDomainRepository.getDomainIds() ).thenReturn( mockSet );
     when( metadataService.metadataDomainRepository.getDomain( id ) ).thenReturn( domain );
     when( metadataService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
         .thenReturn( threadCountAsString );
+
+    // EXECUTE
     List<String> response = metadataService.getMetadataDatasourceIds();
+
+    // VERIFY
     assertEquals( mockMetadataIdsList, response );
+  }
+
+  @Test
+  public void testGetMetadataDatasourceIds_instanceOf() {
+    // SETUP
+    MetadataService testInstance = new MetadataService();
+    Set<String> domainIds = new HashSet<>( Arrays.asList(
+            "testDomainId-1", "testDomainId-2", "testDomainId-3", "testDomainId-4", "testDomainId-5" ) );
+
+    // sanity check
+    assertNotNull( testInstance.dataSourceAwareMetadataDomainRepository );
+    when( testInstance.dataSourceAwareMetadataDomainRepository.getMetadataDomainIds() )
+            .thenReturn( new HashSet<>( domainIds ) );
+
+    // EXECUTE
+    List<String> actualDomainIds = testInstance.getMetadataDatasourceIds();
+
+    // VERIFY
+    domainIds.stream().forEach( domainId -> assertTrue( "Expected id:" + domainId,
+            actualDomainIds.contains( domainId ) ) );
   }
 
   @Test( expected = PlatformImportException.class )

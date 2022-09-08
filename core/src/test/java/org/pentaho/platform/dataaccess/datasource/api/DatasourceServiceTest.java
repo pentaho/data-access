@@ -12,13 +12,14 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2017-2020 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2017-2022 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -44,6 +45,9 @@ import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.plugin.services.metadata.IDataSourceAwareMetadataDomainRepository;
+import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
@@ -75,7 +79,21 @@ public class DatasourceServiceTest {
   }
 
   @Test
-  public void shouldAllowAccessForAdminWithAllPermissions() throws ObjectFactoryException {
+  public void testConstructor_setsDataSourceAwareMetadataDomainRepository() {
+    IDataSourceAwareMetadataDomainRepository dataSourceAwareMetadataDomainRepository =
+            mock( IDataSourceAwareMetadataDomainRepository.class );
+    IMondrianCatalogService mondrianCatalogService = mock( IMondrianCatalogService.class );
+    RepositoryFileAclAdapter repositoryFileAclAdapter = mock( RepositoryFileAclAdapter.class );
+    IPluginResourceLoader pluginResourceLoader = mock( IPluginResourceLoader.class );
+
+    DatasourceService testInstance = new DatasourceService( dataSourceAwareMetadataDomainRepository,
+            mondrianCatalogService, repositoryFileAclAdapter, pluginResourceLoader );
+
+    assertNotNull( testInstance.dataSourceAwareMetadataDomainRepository );
+  }
+
+  @Test
+  public void shouldAllowAccessForAdminWithAllPermissions() throws Exception {
     // given
     when( authorizationPolicy.isAllowed( AdministerSecurityAction.NAME ) ).thenReturn( true );
     when( authorizationPolicy.isAllowed( PublishAction.NAME ) ).thenReturn( true );
@@ -90,7 +108,7 @@ public class DatasourceServiceTest {
   }
 
   @Test
-  public void shouldNotAllowAccessForAdminWithoutPublishPermission() throws ObjectFactoryException {
+  public void shouldNotAllowAccessForAdminWithoutPublishPermission() throws Exception {
     // given
     when( authorizationPolicy.isAllowed( AdministerSecurityAction.NAME ) ).thenReturn( true );
     when( authorizationPolicy.isAllowed( PublishAction.NAME ) ).thenReturn( false );
@@ -105,7 +123,7 @@ public class DatasourceServiceTest {
   }
 
   @Test
-  public void shouldAllowAccessForNonAdminWithPublishPermission() throws ObjectFactoryException {
+  public void shouldAllowAccessForNonAdminWithPublishPermission() throws Exception {
     // given
     when( authorizationPolicy.isAllowed( AdministerSecurityAction.NAME ) ).thenReturn( false );
     when( authorizationPolicy.isAllowed( PublishAction.NAME ) ).thenReturn( true );
@@ -120,7 +138,7 @@ public class DatasourceServiceTest {
   }
 
   @Test
-  public void shouldNotAllowAccessForNonAdminWithoutPublishPermission() throws ObjectFactoryException {
+  public void shouldNotAllowAccessForNonAdminWithoutPublishPermission() throws Exception {
     // given
     when( authorizationPolicy.isAllowed( AdministerSecurityAction.NAME ) ).thenReturn( false );
     when( authorizationPolicy.isAllowed( PublishAction.NAME ) ).thenReturn( false );
@@ -135,7 +153,7 @@ public class DatasourceServiceTest {
   }
 
   @Test
-  public void isMetadataDomainTest() throws ObjectFactoryException {
+  public void isMetadataDomainTest() throws Exception {
     // given
     Domain domain = mock( Domain.class );
     List<LogicalModel> logicalModelList = new ArrayList<>(  );
@@ -160,7 +178,7 @@ public class DatasourceServiceTest {
   }
 
   @Test
-  public void isDSWDatasourceTest() throws ObjectFactoryException {
+  public void isDSWDatasourceTest() throws Exception {
     // given
     Domain domain = mock( Domain.class );
     List<LogicalModel> logicalModelList = new ArrayList<>();

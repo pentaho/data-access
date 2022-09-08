@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2020 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2022 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -46,6 +46,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.Connection
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.plugin.services.metadata.IDataSourceAwareMetadataDomainRepository;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
@@ -57,6 +58,8 @@ public class DatasourceService {
   protected IMondrianCatalogService mondrianCatalogService;
   protected RepositoryFileAclAdapter repositoryFileAclAdapter;
   protected IPluginResourceLoader pluginResourceLoader;
+  protected IDataSourceAwareMetadataDomainRepository dataSourceAwareMetadataDomainRepository;
+
   private static final Log LOGGER = LogFactory.getLog( DatasourceService.class );
 
   public DatasourceService() {
@@ -73,6 +76,9 @@ public class DatasourceService {
     this.mondrianCatalogService = mondrianCatalogService;
     this.repositoryFileAclAdapter = repositoryFileAclAdapter;
     this.pluginResourceLoader = pluginResourceLoader;
+    if ( metadataDomainRepository instanceof IDataSourceAwareMetadataDomainRepository ) {
+      dataSourceAwareMetadataDomainRepository = (IDataSourceAwareMetadataDomainRepository) metadataDomainRepository;
+    }
   }
 
   protected IUnifiedRepository getRepository() {
