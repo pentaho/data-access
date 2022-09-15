@@ -50,7 +50,7 @@
     <wstx-asl.version>3.2.4</wstx-asl.version>
     <commons-lang.version>2.6</commons-lang.version>
     <eigenbase-xom.version>1.3.1</eigenbase-xom.version>
-    <snakeyaml.version>1.7</snakeyaml.version>
+    <snakeyaml.version>1.31</snakeyaml.version>
     <pdfbox.version>0.7.3</pdfbox.version>
     <icu4j-charsets.version>4_4_1_1</icu4j-charsets.version>
     <icu4j.version>63.1</icu4j.version>
