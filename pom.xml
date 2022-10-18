@@ -33,7 +33,7 @@
     <jmock-junit4.version>2.5.1</jmock-junit4.version>
     <powermock.version>1.7.3</powermock.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
-    <dependency.org.codehaus.jettison.jettison.version>1.2</dependency.org.codehaus.jettison.jettison.version>
+    <dependency.org.codehaus.jettison.jettison.version>1.5.1</dependency.org.codehaus.jettison.jettison.version>
     <fontbox.version>0.1.0</fontbox.version>
     <jsr311-api.version>1.1.1</jsr311-api.version>
     <commons-gwt.version>9.4.0.0-SNAPSHOT</commons-gwt.version>
