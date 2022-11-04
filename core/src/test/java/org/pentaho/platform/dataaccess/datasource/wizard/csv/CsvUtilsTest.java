@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2011-2021 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2011-2022 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
@@ -177,7 +177,7 @@ public class CsvUtilsTest {
     samples = asList( "12.009", "988,000.3", "9877.9991", "999", "888.11" );
     utils.assumeColumnDetails( columnInfo, samples );
     assertEquals( DataType.NUMERIC, columnInfo.getDataType() );
-    assertEquals( "#,##0.###", columnInfo.getFormat() );
+    assertEquals( "#,##0.####", columnInfo.getFormat() );
     assertEquals( 4, columnInfo.getPrecision() );
   }
 
@@ -186,11 +186,11 @@ public class CsvUtilsTest {
     List<String> samples = asList( "$101.04", "$100.3", "$100.3000", "$100.1", "$11100.32", "$7,100.433", "($500.00)" );
     utils.assumeColumnDetails( columnInfo, samples );
     assertEquals( DataType.NUMERIC, columnInfo.getDataType() );
-    assertEquals( 2, columnInfo.getPrecision() );
+    assertEquals( 4, columnInfo.getPrecision() );
 
     String format = columnInfo.getFormat();
     assertNotNull( format );
-    assertEquals( "$#,##0.00;($#,##0.00)", format );
+    assertEquals( "$#,##0.0000;($#,##0.0000)", format );
 
     samples = asList( "$101.04", "$100.3", "$100.3000", "$100.1", "not currency" );
     utils.assumeColumnDetails( columnInfo, samples );
