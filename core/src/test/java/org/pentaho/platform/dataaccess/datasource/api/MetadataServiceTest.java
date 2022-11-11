@@ -627,12 +627,13 @@ public class MetadataServiceTest {
   public void testUploadMetadataFilesToTempDir() throws Exception {
 
     InputStream metadataFile = mock( InputStream.class );
+    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
 
     fillServiceMock( DOMAIN_ID, metadataFile );
     doReturn( new StringInputStream( "" ) ).when( metadataService ).createInputStreamFromFile( any( String.class ) );
     doReturn( XMI_TEMP_FILE_NAME ).when( metadataService ).uploadFile( any( InputStream.class ) );
 
-    MetadataTempFilesListDto res = metadataService.uploadMetadataFilesToTempDir( metadataFile, null, null );
+    MetadataTempFilesListDto res = metadataService.uploadMetadataFilesToTempDir( metadataFile, schemaFileInfo, null, null );
 
     assertEquals( res.getXmiFileName(), XMI_TEMP_FILE_NAME );
 

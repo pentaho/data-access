@@ -442,9 +442,10 @@ public class MetadataResource {
     } )
   public String uploadMetadataFilesToTempDir(
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
+      @FormDataParam( "metadataFile" ) FormDataContentDisposition schemaFileInfo,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles ) throws Exception {
 
-    return service.uploadMetadataFilesToTempDir( metadataFile, localeFiles ).toJSONString();
+    return service.uploadMetadataFilesToTempDir( metadataFile, schemaFileInfo, localeFiles ).toJSONString();
 
   }
 

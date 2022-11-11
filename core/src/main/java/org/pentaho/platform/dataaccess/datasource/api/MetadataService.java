@@ -24,9 +24,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -108,7 +111,24 @@ public class MetadataService extends DatasourceService {
   }
 
   public MetadataTempFilesListDto uploadMetadataFilesToTempDir( InputStream metadataFile,
-      List<InputStream> localeFileStreams, List<String> localeFileNames ) throws Exception {
+     FormDataContentDisposition schemaFileInfo, List<InputStream> localeFileStreams, List<String> localeFileNames ) throws Exception {
+
+    String fileNameMain = schemaFileInfo.getFileName();
+    ZipInputStream zis = null;
+    ByteArrayOutputStream xmi = null;
+    if ( fileNameMain.endsWith( ".zip" ) ) {
+      zis = new ZipInputStream( metadataFile );
+      ZipEntry ze;
+      while ( ( ze = zis.getNextEntry() ) != null ) {
+        if ( ze.getName().endsWith( ".xmi" ) ) {
+          IOUtils.copy( zis, xmi = new ByteArrayOutputStream() );
+        }
+        zis.closeEntry();
+      }
+      if ( xmi != null ) {
+        metadataFile = new ByteArrayInputStream( xmi.toByteArray() );
+      }
+    }
 
     String fileName = uploadFile( metadataFile );
     MetadataTempFilesListDto dto = new MetadataTempFilesListDto();
@@ -149,7 +169,7 @@ public class MetadataService extends DatasourceService {
 
   }
 
-  public MetadataTempFilesListDto uploadMetadataFilesToTempDir( InputStream metadataFile,
+  public MetadataTempFilesListDto uploadMetadataFilesToTempDir( InputStream metadataFile, FormDataContentDisposition schemaFileInfo,
       List<FormDataBodyPart> localeFiles ) throws Exception {
 
 
@@ -166,7 +186,7 @@ public class MetadataService extends DatasourceService {
       }
     }
 
-    return uploadMetadataFilesToTempDir( metadataFile, bundles, fileNames );
+    return uploadMetadataFilesToTempDir( metadataFile, schemaFileInfo, bundles, fileNames );
   }
 
   public void importMetadataDatasource( String domainId, InputStream metadataFile,
