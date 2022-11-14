@@ -361,6 +361,7 @@ public class AnalysisService extends DatasourceService {
       XMLInputFactory factory = getXMLInputFactory();
       factory.setProperty( XMLInputFactory.IS_REPLACING_ENTITY_REFERENCES, false );
       factory.setProperty( XMLInputFactory.IS_COALESCING, Boolean.TRUE );
+      factory.setProperty( XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE );
       if ( StringUtils.isEmpty( encoding ) ) {
         reader = factory.createXMLStreamReader( inputStream );
       } else {
