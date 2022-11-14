@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2022 Hitachi Vantara..  All rights reserved.
+ */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
@@ -78,7 +78,7 @@ public class CsvUtils extends PentahoBase {
       path = PentahoSystem.getApplicationContext().getSolutionPath( TMP_FILE_PATH );
     } else {
       String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
-        String.valueOf( DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) );  //$NON-NLS-1$
+              String.valueOf( DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) );  //$NON-NLS-1$
       path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
     }
 
@@ -105,14 +105,14 @@ public class CsvUtils extends PentahoBase {
 
   public ModelInfo generateFields( String project, String filename, int rowLimit, String delimiter, String enclosure,
                                    int headerRows, boolean doData, boolean doColumns, String encoding )
-    throws Exception {
+          throws Exception {
 
     String path;
     if ( filename.endsWith( ".tmp" ) ) { //$NON-NLS-1$
       path = PentahoSystem.getApplicationContext().getSolutionPath( TMP_FILE_PATH );
     } else {
       String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
-        String.valueOf( DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) );  //$NON-NLS-1$
+              String.valueOf( DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) );  //$NON-NLS-1$
       path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
     }
 
@@ -126,7 +126,7 @@ public class CsvUtils extends PentahoBase {
   ModelInfo generateFields( String project, String fileLocation, String filename, int rowLimit, String delimiter,
                             String enclosure,
                             int headerRows, boolean doData, boolean doColumns, String encoding )
-    throws Exception {
+          throws Exception {
     ModelInfo result = new ModelInfo();
     CsvFileInfo fileInfo = new CsvFileInfo();
     result.setFileInfo( fileInfo );
@@ -386,34 +386,26 @@ public class CsvUtils extends PentahoBase {
     return result;
   }
 
-
   protected void assumeColumnDetails( ColumnInfo profile, List<String> samples ) {
     StringEvaluator eval = new StringEvaluator( false, NUMBER_FORMATS, ColumnInfo.DATE_FORMATS );
+    assumeColumnDetails( profile, samples, eval );
+  }
+
+  protected void assumeColumnDetails( ColumnInfo profile, List<String> samples, StringEvaluator stringEvaluator ) {
     for ( String sample : samples ) {
-      eval.evaluateString( sample );
+      stringEvaluator.evaluateString( sample );
     }
-    StringEvaluationResult result = eval.getAdvicedResult();
+    StringEvaluationResult result = stringEvaluator.getAdvicedResult();
     ValueMetaInterface meta = result.getConversionMeta();
 
-    int type = meta.getType();
-    String mask = meta.getConversionMask();
-    int size;
-    int precision = meta.getPrecision();
+    assumeColumnDetails( profile, meta );
+  }
 
-    profile.setFormat( mask );
-    profile.setPrecision( precision > 0 ? precision : 0 );
-    profile.setDataType( convertDataType( type ) );
-
-    if ( meta.isString() ) {
-      // pad the string lengths
-      size = meta.getLength() + ( meta.getLength() / 2 );
-    } else if ( meta.isInteger() ) {
-      size = meta.getLength();
-    } else {
-      size = precision > 0 ? meta.getLength() : 0;
-    }
-
-    profile.setLength( size );
+  protected void assumeColumnDetails( ColumnInfo profile, ValueMetaInterface meta ) {
+    profile.setFormat( meta.getConversionMask() );
+    profile.setPrecision( convertPrecision( meta ) );
+    profile.setDataType( convertDataType( meta ) );
+    profile.setLength( convertLength( meta ) );
   }
 
   @Override
@@ -429,7 +421,7 @@ public class CsvUtils extends PentahoBase {
       path = PentahoSystem.getApplicationContext().getSolutionPath( TMP_FILE_PATH );
     } else {
       String relativePath = PentahoSystem.getSystemSetting( "file-upload-defaults/relative-path",
-        String.valueOf( DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) );  //$NON-NLS-1$
+              String.valueOf( DEFAULT_RELATIVE_UPLOAD_FILE_PATH ) );  //$NON-NLS-1$
       path = PentahoSystem.getApplicationContext().getSolutionPath( relativePath );
     }
     String fileLocation = path + fileName;
@@ -462,19 +454,40 @@ public class CsvUtils extends PentahoBase {
     return (ModelInfo) xstream.fromXML( fis );
   }
 
-  private DataType convertDataType( int type ) {
+  protected int convertPrecision(  ValueMetaInterface meta  ) {
+    return meta.getPrecision() > 0 ? meta.getPrecision() : 0;
+  }
+
+  protected DataType convertDataType(  ValueMetaInterface meta  ) {
+    return convertDataType( meta.getType() );
+  }
+
+  protected DataType convertDataType( int type ) {
     switch ( type ) {
-      case 1:
-      case 5:
-      case 6:
+      case ValueMetaInterface.TYPE_NUMBER:
+      case ValueMetaInterface.TYPE_INTEGER:
+      case ValueMetaInterface.TYPE_BIGNUMBER:
         return DataType.NUMERIC;
-      case 3:
+      case ValueMetaInterface.TYPE_DATE:
         return DataType.DATE;
-      case 4:
+      case ValueMetaInterface.TYPE_BOOLEAN:
         return DataType.BOOLEAN;
       default:
         return DataType.STRING;
     }
+  }
+
+  protected int convertLength( ValueMetaInterface meta ) {
+    int size;
+    if ( meta.isString() ) {
+      // pad the string lengths
+      size = meta.getLength() + ( meta.getLength() / 2 );
+    } else if ( meta.isInteger() ) {
+      size = meta.getLength();
+    } else {
+      size = meta.getPrecision() > 0 ? meta.getLength() : 0;
+    }
+    return size;
   }
 
   private static class DataProfile {
