@@ -24,9 +24,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -62,6 +65,8 @@ import com.sun.jersey.multipart.FormDataBodyPart;
 public class MetadataService extends DatasourceService {
 
   private static final String XMI_EXTENSION = ".xmi";
+
+  private static final String ZIP_EXTENSION = ".zip";
 
   protected IAclAwarePentahoMetadataDomainRepositoryImporter aclAwarePentahoMetadataDomainRepositoryImporter;
 
@@ -108,7 +113,7 @@ public class MetadataService extends DatasourceService {
   }
 
   public MetadataTempFilesListDto uploadMetadataFilesToTempDir( InputStream metadataFile,
-      List<InputStream> localeFileStreams, List<String> localeFileNames ) throws Exception {
+     List<InputStream> localeFileStreams, List<String> localeFileNames ) throws Exception {
 
     String fileName = uploadFile( metadataFile );
     MetadataTempFilesListDto dto = new MetadataTempFilesListDto();
@@ -136,6 +141,31 @@ public class MetadataService extends DatasourceService {
     return dto;
   }
 
+  protected InputStream extractXmiFile( InputStream metadataFile, FormDataContentDisposition schemaFileInfo ) throws IOException {
+    String fileNameMain = schemaFileInfo.getFileName();
+    ZipInputStream zis = null;
+    ByteArrayOutputStream xmi = null;
+    if ( fileNameMain != null && fileNameMain.endsWith( ZIP_EXTENSION ) ) {
+      zis = new ZipInputStream( metadataFile );
+      ZipEntry ze;
+      while ( ( ze = zis.getNextEntry() ) != null ) {
+        if ( ze.getName().endsWith( XMI_EXTENSION ) ) {
+          xmi = new ByteArrayOutputStream();
+          IOUtils.copy( zis, xmi );
+          zis.closeEntry();
+          break;
+        }
+        zis.closeEntry();
+      }
+      if ( xmi != null ) {
+        return new ByteArrayInputStream( xmi.toByteArray() );
+      } else {
+        return null;
+      }
+    }
+    return null;
+  }
+
   protected String uploadFile( InputStream is ) throws Exception {
     StringWriter fileNameWriter = new StringWriter();
     UploadFileUtils utils = new UploadFileUtils( PentahoSessionHolder.getSession() );
@@ -149,7 +179,7 @@ public class MetadataService extends DatasourceService {
 
   }
 
-  public MetadataTempFilesListDto uploadMetadataFilesToTempDir( InputStream metadataFile,
+  public MetadataTempFilesListDto uploadMetadataFilesToTempDir( InputStream metadataFile, FormDataContentDisposition schemaFileInfo,
       List<FormDataBodyPart> localeFiles ) throws Exception {
 
 
@@ -165,8 +195,11 @@ public class MetadataService extends DatasourceService {
         fileNames.add( localeFile.getFormDataContentDisposition().getFileName() );
       }
     }
-
-    return uploadMetadataFilesToTempDir( metadataFile, bundles, fileNames );
+    InputStream xmiFromZip = null;
+    if ( schemaFileInfo != null ) {
+      xmiFromZip = extractXmiFile( metadataFile, schemaFileInfo );
+    }
+    return uploadMetadataFilesToTempDir( ( xmiFromZip != null ? xmiFromZip : metadataFile ), bundles, fileNames );
   }
 
   public void importMetadataDatasource( String domainId, InputStream metadataFile,

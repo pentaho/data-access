@@ -41,6 +41,8 @@ import static org.pentaho.platform.dataaccess.datasource.api.DatasourceServiceTe
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -627,12 +629,12 @@ public class MetadataServiceTest {
   public void testUploadMetadataFilesToTempDir() throws Exception {
 
     InputStream metadataFile = mock( InputStream.class );
-
     fillServiceMock( DOMAIN_ID, metadataFile );
+    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
     doReturn( new StringInputStream( "" ) ).when( metadataService ).createInputStreamFromFile( any( String.class ) );
     doReturn( XMI_TEMP_FILE_NAME ).when( metadataService ).uploadFile( any( InputStream.class ) );
 
-    MetadataTempFilesListDto res = metadataService.uploadMetadataFilesToTempDir( metadataFile, null, null );
+    MetadataTempFilesListDto res = metadataService.uploadMetadataFilesToTempDir( metadataFile, schemaFileInfo, null );
 
     assertEquals( res.getXmiFileName(), XMI_TEMP_FILE_NAME );
 
@@ -678,5 +680,32 @@ public class MetadataServiceTest {
     assertNotNull( stream );
   }
 
+  @Test
+  public void testExtractXmiFromZip() throws Exception {
+    String path = getClass().getResource( "import_metadata.zip" ).getPath();
+    File f = new File( path );
+    FileInputStream metadataFile = new FileInputStream( f );
+    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
+    when( schemaFileInfo.getFileName() ).thenReturn( f.getName() );
+    InputStream is = metadataService.extractXmiFile(  metadataFile, schemaFileInfo );
+    assertNotNull( is );
+
+    //Test 2
+    path = getClass().getResource( "schema.xml" ).getPath();
+    f = new File( path );
+    metadataFile = new FileInputStream( f );
+    when( schemaFileInfo.getFileName() ).thenReturn( f.getName() );
+    is = metadataService.extractXmiFile(  metadataFile, schemaFileInfo );
+    assertNull( is );
+
+    //Test 3
+    path = getClass().getResource( "import_metadata_no_xmi.zip" ).getPath();
+    f = new File( path );
+    metadataFile = new FileInputStream( f );
+    when( schemaFileInfo.getFileName() ).thenReturn( f.getName() );
+    is = metadataService.extractXmiFile(  metadataFile, schemaFileInfo );
+    assertNull( is );
+
+  }
 }
 
