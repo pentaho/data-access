@@ -422,6 +422,7 @@ public class MetadataResource {
   /**
    * Uploads metadata file and localization bundle files to "tmp" dir
    * @param metadataFile
+   * @param schemaFileInfo  User selected name for the file.
    * @param localeFiles
    * @return String: uploaded file names in json structure like this:<br/>
    *<ul><li>if there are locale files (localeFiles != null):
@@ -442,9 +443,10 @@ public class MetadataResource {
     } )
   public String uploadMetadataFilesToTempDir(
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
+      @FormDataParam( "metadataFile" ) FormDataContentDisposition schemaFileInfo,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles ) throws Exception {
 
-    return service.uploadMetadataFilesToTempDir( metadataFile, localeFiles ).toJSONString();
+    return service.uploadMetadataFilesToTempDir( metadataFile, schemaFileInfo, localeFiles ).toJSONString();
 
   }
 

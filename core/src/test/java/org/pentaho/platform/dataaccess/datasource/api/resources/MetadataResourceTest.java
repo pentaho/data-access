@@ -353,14 +353,15 @@ public class MetadataResourceTest {
     MetadataTempFilesListDto metaDto = new MetadataTempFilesListDto( );
 
     InputStream metadataFile = mock( InputStream.class );
+    FormDataContentDisposition schemaFileInfo = mock( FormDataContentDisposition.class );
     List<FormDataBodyPart> localeFiles = mock( List.class );
     List<FormDataContentDisposition> localeFilesInfo = mock( List.class );
 
-    doReturn(metaDto).when( metadataResource.service ).uploadMetadataFilesToTempDir( metadataFile, localeFiles );
+    doReturn(metaDto).when( metadataResource.service ).uploadMetadataFilesToTempDir( metadataFile, schemaFileInfo, localeFiles );
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "3" );
-    String res = metadataResource.uploadMetadataFilesToTempDir( metadataFile, localeFiles );
+    String res = metadataResource.uploadMetadataFilesToTempDir( metadataFile, schemaFileInfo, localeFiles );
 
-    verify( metadataResource, times( 1 ) ).uploadMetadataFilesToTempDir( metadataFile, localeFiles );
+    verify( metadataResource, times( 1 ) ).uploadMetadataFilesToTempDir( metadataFile, schemaFileInfo, localeFiles );
     assertEquals( metaDto.toJSONString(), res );
   }
 }
