@@ -22,6 +22,7 @@ public enum Delimiter {
   TAB( "Delimiter.USER_TAB_DESC", "\t" ), //$NON-NLS-1$ //$NON-NLS-2$
   SEMICOLON( "Delimiter.USER_SEMI_COLON_DESC", ";" ), //$NON-NLS-1$ //$NON-NLS-2$
   SPACE( "Delimiter.USER_SPACE_DESC", " " ), //$NON-NLS-1$ //$NON-NLS-2$
+  DONOTMERGE("something", "something"), // TEST WINGMAN DO NOT MERGE
   OTHER( "Delimiter.OTHER", "" ); //$NON-NLS-1$ //$NON-NLS-2$
 
   private String name;
