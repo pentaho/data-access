@@ -36,6 +36,7 @@ import org.pentaho.di.core.util.StringEvaluationResult;
 import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInput;
 import org.pentaho.metadata.model.concept.types.DataType;
+import org.pentaho.metadata.util.SerializationService;
 import org.pentaho.metadata.util.Util;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
@@ -444,7 +445,7 @@ public class CsvUtils extends PentahoBase {
   }
 
   public ModelInfo getModelInfo( String project, String filename ) throws FileNotFoundException {
-    XStream xstream = new XStream( new DomDriver( "UTF-8" ) ); //$NON-NLS-1$
+    XStream xstream = SerializationService.createXStreamWithAllowedTypes( new DomDriver("UTF-8"), ModelInfo.class );
     xstream.alias( "modelInfo", ModelInfo.class ); //$NON-NLS-1$
     xstream.alias( "columnInfo", ColumnInfo.class ); //$NON-NLS-1$
     String filepath = AgileHelper.getFolderPath( project ) + "/" + filename + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
