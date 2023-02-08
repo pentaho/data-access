@@ -25,6 +25,7 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.util.SerializationService;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
@@ -40,12 +41,21 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelp
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.CsvTransformGenerator;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.gwt.ICsvDatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.sources.csv.FileTransformStats;
+import org.pentaho.platform.dataaccess.metadata.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.plugin.action.kettle.KettleSystemListener;
 import org.pentaho.reporting.libraries.base.util.StringUtils;
-import org.pentaho.platform.dataaccess.metadata.messages.Messages;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.Aggregation;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfoCollection;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DataRow;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.GuiStateModel;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfoValidationListenerCollection;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.RelationalModelValidationListenerCollection;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.WizardModel;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -179,7 +189,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
         modelerWorkspace.getWorkspaceHelper().populateDomain( modelerWorkspace );
         Domain workspaceDomain = modelerWorkspace.getDomain();
 
-        XStream xstream = new XStream();
+        XStream xstream = SerializationService.createXStreamWithAllowedTypes(null, null);
         String serializedDto = xstream.toXML( datasourceDto );
         workspaceDomain.getLogicalModels().get( 0 ).setProperty( "datasourceModel", serializedDto );
         workspaceDomain.getLogicalModels().get( 0 ).setProperty( "DatasourceType", "CSV" );
@@ -219,7 +229,12 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
 
     if ( modelState != null ) {
 
-      XStream xs = new XStream();
+      XStream xs = SerializationService.createXStreamWithAllowedTypes( null, DatasourceDTO.class, DatasourceModel.class,
+        Aggregation.class,
+        ColumnInfo.class, ColumnInfoCollection.class, CsvFileInfo.class, DataRow.class, FileInfo.class,
+        GuiStateModel.class,
+        ModelInfo.class, ModelInfoValidationListenerCollection.class, RelationalModelValidationListenerCollection.class,
+        WizardModel.class );
       DatasourceDTO datasource = (DatasourceDTO) xs.fromXML( modelState );
       CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
       String tmpFileName = csvFileInfo.getTmpFilename();
