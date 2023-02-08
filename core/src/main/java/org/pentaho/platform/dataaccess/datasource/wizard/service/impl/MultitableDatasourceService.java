@@ -43,6 +43,7 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.Concept;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
+import org.pentaho.metadata.util.SerializationService;
 import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.IDatasourceSummary;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
@@ -181,13 +182,13 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
   }
 
   private String serializeModelState( MultiTableDatasourceDTO dto ) throws DatasourceServiceException {
-    XStream xs = new XStream();
+    XStream xs = SerializationService.createXStreamWithAllowedTypes( null, null );
     return xs.toXML( dto );
   }
 
   public MultiTableDatasourceDTO deSerializeModelState( String dtoStr ) throws DatasourceServiceException {
     try {
-      XStream xs = new XStream();
+      XStream xs = SerializationService.createXStreamWithAllowedTypes( null, MultiTableDatasourceDTO.class );
       xs.registerConverter( new LegacyDatasourceConverter() );
       return (MultiTableDatasourceDTO) xs.fromXML( dtoStr );
     } catch ( Exception e ) {
