@@ -100,7 +100,6 @@
     <org.eclipse.swt.gtk.linux.x86_64.version>4.6</org.eclipse.swt.gtk.linux.x86_64.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
     <grizzly-framework.version>1.9.45</grizzly-framework.version>
-    <nekohtml.version>1.9.7</nekohtml.version>
     <concurrent.version>1.3.4</concurrent.version>
     <dependency.reporting-library.group>pentaho-library</dependency.reporting-library.group>
     <pentaho-connections.version>9.5.0.0-SNAPSHOT</pentaho-connections.version>
@@ -669,18 +668,6 @@
         <groupId>org.jempbox</groupId>
         <artifactId>jempbox</artifactId>
         <version>${jempbox.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>net.sourceforge.nekohtml</groupId>
-        <artifactId>nekohtml</artifactId>
-        <version>${nekohtml.version}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
