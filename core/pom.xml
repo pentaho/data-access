@@ -383,11 +383,6 @@
     </dependency>
 
     <dependency>
-      <groupId>net.sourceforge.nekohtml</groupId>
-      <artifactId>nekohtml</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
       <scope>test</scope>
