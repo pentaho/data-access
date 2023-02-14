@@ -47,6 +47,7 @@ import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.repository.InMemoryMetadataDomainRepository;
 import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
+import org.pentaho.metadata.util.SerializationService;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
@@ -317,13 +318,13 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
 
   public String serializeModelState( DatasourceDTO dto ) throws DatasourceServiceException {
-    XStream xs = new XStream();
+    XStream xs = SerializationService.createXStreamWithAllowedTypes( null, null );
     return xs.toXML( dto );
   }
 
   public DatasourceDTO deSerializeModelState( String dtoStr ) throws DatasourceServiceException {
     try {
-      XStream xs = new XStream();
+      XStream xs = SerializationService.createXStreamWithAllowedTypes( null, DatasourceDTO.class );
       return (DatasourceDTO) xs.fromXML( dtoStr );
     } catch ( Exception e ) {
       e.printStackTrace();
