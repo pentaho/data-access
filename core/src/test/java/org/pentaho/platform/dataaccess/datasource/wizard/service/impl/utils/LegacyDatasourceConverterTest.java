@@ -22,6 +22,11 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.models.JoinFieldModel;
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.JoinTableModel;
+import org.pentaho.agilebi.modeler.models.SchemaModel;
+import org.pentaho.metadata.util.SerializationService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultiTableDatasourceDTO;
 
 import java.io.File;
@@ -82,7 +87,7 @@ public class LegacyDatasourceConverterTest {
       ex.printStackTrace();
     }
 
-    XStream xs = new XStream();
+    XStream xs = SerializationService.createXStreamWithAllowedTypes(null, MultiTableDatasourceDTO.class, SchemaModel.class, JoinFieldModel.class, JoinTableModel.class, JoinRelationshipModel.class);
     xs.registerConverter(new LegacyDatasourceConverter());
     MultiTableDatasourceDTO resultDTO = (MultiTableDatasourceDTO) xs.fromXML(dtoStr);
 
