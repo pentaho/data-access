@@ -49,6 +49,7 @@ import org.pentaho.metadata.repository.DomainStorageException;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
+import org.pentaho.metadata.util.SerializationService;
 import org.pentaho.platform.api.engine.IPentahoUrlFactory;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
@@ -554,12 +555,12 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
 
   public String serializeModelState( DatasourceDTO dto ) throws DatasourceServiceException {
-    XStream xstream = new XStream();
+    XStream xstream = SerializationService.createXStreamWithAllowedTypes( null, null );
     return xstream.toXML( dto );
   }
 
   public DatasourceDTO deSerializeModelState( String dtoStr ) throws DatasourceServiceException {
-    XStream xs = new XStream();
+    XStream xs = SerializationService.createXStreamWithAllowedTypes(null, DatasourceDTO.class );
     xs.setClassLoader( DatasourceDTO.class.getClassLoader() );
     if ( dtoStr.startsWith( "<org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO>" )
       && dtoStr.endsWith( "</org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO>" ) ) {
@@ -671,8 +672,9 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
     String modelState = (String) logicalModel.getProperty( "datasourceModel" );
 
     if ( modelState != null ) {
-      XStream xs = new XStream();
-      DatasourceDTO datasource = (DatasourceDTO) xs.fromXML( modelState );
+
+      XStream xstream = createXStreamWithAllowedDatasourceDTO( );
+      DatasourceDTO datasource = (DatasourceDTO) xstream.fromXML( modelState );
       CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
       String csvFileName = csvFileInfo.getFilename();
 
@@ -702,9 +704,14 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
         }
       }
       // Update datasourceModel with the new modelState
-      modelState = xs.toXML( datasource );
+      modelState = xstream.toXML( datasource );
       logicalModel.setProperty( "datasourceModel", modelState );
     }
+  }
+
+  public XStream createXStreamWithAllowedDatasourceDTO( ) {
+    XStream xstream = SerializationService.createXStreamWithAllowedTypes(null, DatasourceDTO.class );
+    return xstream;
   }
 
   public String getDatasourceIllegalCharacters() throws DatasourceServiceException {

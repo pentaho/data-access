@@ -16,41 +16,11 @@
 */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.matches;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertArrayEquals;
-
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.security.AnyTypePermission;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -73,6 +43,7 @@ import org.pentaho.metadata.repository.DomainAlreadyExistsException;
 import org.pentaho.metadata.repository.DomainIdNullException;
 import org.pentaho.metadata.repository.DomainStorageException;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
+import org.pentaho.metadata.util.SerializationService;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.dataaccess.datasource.DatasourceType;
@@ -94,7 +65,38 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogServiceException;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 import org.pentaho.platform.plugin.services.connections.sql.SQLMetaData;
-import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.matches;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DSWDatasourceServiceImplTest {
 
@@ -614,6 +616,9 @@ public class DSWDatasourceServiceImplTest {
     doReturn( userList ).when( dswService ).getPermittedUserList();
     doReturn( null ).when( dswService ).getGeoContext();
     doReturn( 1 ).when( dswService ).getDefaultAcls();
+    XStream testXstream = new XStream();
+    testXstream.addPermission( AnyTypePermission.ANY );
+    doReturn( testXstream ).when( dswService).createXStreamWithAllowedDatasourceDTO( ) ;
     QueryDatasourceSummary summary = dswService.generateQueryDomain( modelName, query, connectionSpy, datasourceDTO );
     try {
       verify( dswService ).executeQuery( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]",
@@ -783,6 +788,35 @@ public class DSWDatasourceServiceImplTest {
       + "  <version>2.0</version>\n"
       + "</com.malicious.DatasourceDTO>";
     dswService.deSerializeModelState( notSafeString );
+  }
+
+  @Test
+  public void testXstreamDatasourceDtoFromXml() throws Exception {
+    XStream xs = SerializationService.createXStreamWithAllowedTypes( null, DatasourceDTO.class );
+    String modelStateStr = "<org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO>\n"
+            + "  <datasourceName>testDatasource</datasourceName>\n"
+            + "  <datasourceType>CSV</datasourceType>\n"
+            + "  <csvModelInfo>\n"
+            + "    <fileInfo>\n"
+            + "      <delimiter>,</delimiter>\n"
+            + "      <enclosure>&quot;</enclosure>\n"
+            + "      <headerRows>1</headerRows>\n"
+            + "      <currencySymbol></currencySymbol>\n"
+            + "      <decimalSymbol>.</decimalSymbol>\n"
+            + "      <groupSymbol>,</groupSymbol>\n"
+            + "      <ifNull>---</ifNull>\n"
+            + "      <nullStr></nullStr>\n"
+            + "    </fileInfo>\n"
+            + "    <stageTableName>testdatasource</stageTableName>\n"
+            + "    <validated>false</validated>\n"
+            + "    <csvInputErrors/>\n"
+            + "    <tableOutputErrors/>\n"
+            + "  </csvModelInfo>\n"
+            + "  <connectionName>SampleData</connectionName>\n"
+            + "  <version>2.0</version>\n"
+            + "</org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO>";
+      DatasourceDTO datasource = (DatasourceDTO) xs.fromXML( modelStateStr );
+
   }
 
   private Class<?> anyClass() {
