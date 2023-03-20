@@ -267,7 +267,12 @@ public class DatasourceAdminDialogController extends AbstractXulDialogController
 
       @Override
       public void success( List<IDatasourceInfo> infoList ) {
-        DatasourceAdminDialogController.super.showDialog();
+        // Because refreshDatasourceList() is called within the dialog and
+        // show dialog rebuilds the dialog, always calling it would impede
+        // the ability to restore focus to an element of the dialog
+        if ( getDialog().isHidden() ) {
+          DatasourceAdminDialogController.super.showDialog();
+        }
         datasourceAdminDialogModel.setDatasourcesList( infoList );
         getDatasourceTypes();
         exportDatasourceMenuItem.setDisabled( true );
