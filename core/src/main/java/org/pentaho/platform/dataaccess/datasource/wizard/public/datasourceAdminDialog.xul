@@ -22,7 +22,8 @@
 
       <spacer flex="1"/>
 
-      <button id="datasourceDropdownButton" image="images/spacer.gif" pen:classname="pentaho-optionsdatasourcebutton">
+      <button id="datasourceDropdownButton" image="images/spacer.gif" pen:classname="pentaho-optionsdatasourcebutton"
+              pen:imagealttext="${datasourceAdminDialog.DROP_DOWN}">
         <menupopup id="datasourceTypeMenuPopup">
           <menuitem id="editDatasourceMenuItem" label="${datasourceAdminDialog.EDIT}"
                     command="datasourceAdminDialogController.edit()" disabled="true"/>
