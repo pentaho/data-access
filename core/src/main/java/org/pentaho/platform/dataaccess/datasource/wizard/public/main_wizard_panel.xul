@@ -232,11 +232,13 @@
             <vbox>
               <spacer height="150"/>
 
-              <button id="addButton" image="images/spacer.gif" pen:disabledimage="images/spacer.gif" tooltiptext=""
+              <button id="addButton" image="images/spacer.gif" pen:disabledimage="images/spacer.gif"
+                      tooltiptext="${multitable.MOVE_ARROW}"
                       onclick="joinSelectionStepController.addSelectedTable()" disabled="false"
                       pen:classname="pentaho-movearrowbutton"/>
 
-              <button id="removeButton" image="images/spacer.gif" pen:disabledimage="images/spacer.gif" tooltiptext=""
+              <button id="removeButton" image="images/spacer.gif" pen:disabledimage="images/spacer.gif"
+                      tooltiptext="${multitable.MOVE_ARROW_BACK}"
                       onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"
                       pen:classname="pentaho-movearrowbackbutton"/>
               <spacer flex="1"/>

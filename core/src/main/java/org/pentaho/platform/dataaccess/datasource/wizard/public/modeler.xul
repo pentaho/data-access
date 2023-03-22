@@ -212,7 +212,8 @@
               <hbox flex="1">
                 <label id="measure_column_name" value="" flex="1"/>
                 <button id="edit-measure-btn" image="images/spacer.gif"
-                        onclick="modeler.changeColumn()" pen:classname="penatho-smalleditbutton"/>
+                        onclick="modeler.changeColumn()" pen:classname="penatho-smalleditbutton"
+                        pen:imagealttext="${modeler.change_column}"/> 
 
               </hbox>
             </groupbox>
@@ -420,7 +421,7 @@
               <hbox flex="1">
                 <label id="level_source_col" value="" flex="1"/>
                 <button id="edit-level-btn" image="images/spacer.gif" onclick="modeler.changeColumn()"
-                        pen:classname="penatho-smalleditbutton"/>
+                        pen:classname="penatho-smalleditbutton" pen:imagealttext="${modeler.change_column}"/> 
 
               </hbox>
             </groupbox>
@@ -444,11 +445,13 @@
                 </vbox>
                 <vbox>
                   <button id="edit-ordinal-btn" image="images/spacer.gif" onclick="modeler.changeOrdinalColumn()"
-                          pen:classname="penatho-smalleditbutton"/>
+                          pen:classname="penatho-smalleditbutton"
+                          pen:imagealttext="${modeler.change_ordinal_column}"/>
                 </vbox>
                 <vbox>
                   <button id="clear_ordinal_column" image="images/spacer.gif" onclick="modeler.clearOrdinalColumn()"
-                          pen:classname="pentaho-smallremovebutton"/>
+                          pen:classname="pentaho-smallremovebutton"
+                          pen:imagealttext="${modeler.clear_ordinal_column}" />
                 </vbox>
               </hbox>
 
@@ -517,7 +520,7 @@
               <hbox flex="1">
                 <label id="memberprops_source_col" value="" flex="1"/>
                 <button id="edit-member-props-btn" image="images/spacer.gif" onclick="modeler.changeColumn()"
-                        pen:classname="penatho-smalleditbutton"/>
+                        pen:classname="penatho-smalleditbutton" pen:imagealttext="${modeler.change_column}"/>
 
               </hbox>
             </groupbox>
@@ -628,7 +631,7 @@
               <hbox flex="1">
                 <label id="field_column_name" value="" flex="1"/>
                 <button id="edit-change-btn" image="images/spacer.gif" onclick="modeler.changeColumn()"
-                        pen:classname="penatho-smalleditbutton"/>
+                        pen:classname="penatho-smalleditbutton" pen:imagealttext="${modeler.change_column}"/>
 
               </hbox>
             </groupbox>
