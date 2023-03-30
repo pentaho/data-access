@@ -172,7 +172,9 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
       deck.setSelectedIndex( index );
       selectDataSourceMenuList( activatingWizardStep, index );
       activatingWizardStep.refresh();
-
+      if ( wizardDialog.isVisible() ) {
+        wizardDialog.center();
+      }
       if ( activeStep > oldActiveStep ) {
         activatingWizardStep.stepActivatingForward();
       } else {

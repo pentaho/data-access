@@ -612,11 +612,11 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   @Bindable
   public void closeParametersDialog() {
+    analysisParametersDialog.hide();
     paramNameTextBox.setValue( "" );
     paramValueTextBox.setValue( "" );
     importDialogModel.setSelectedAnalysisParameter( -1 );
     analysisParametersTree.clearSelection();
-    analysisParametersDialog.hide();
   }
 
   @Bindable
