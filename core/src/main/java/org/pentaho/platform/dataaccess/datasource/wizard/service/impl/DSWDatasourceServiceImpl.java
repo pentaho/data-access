@@ -58,6 +58,7 @@ import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
 import org.pentaho.platform.dataaccess.datasource.beans.SerializedResultSet;
 import org.pentaho.platform.dataaccess.datasource.utils.DataAccessPermissionUtil;
 import org.pentaho.platform.dataaccess.datasource.wizard.csv.FileUtils;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.CsvTransformGeneratorException;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO;
@@ -560,7 +561,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
 
   public DatasourceDTO deSerializeModelState( String dtoStr ) throws DatasourceServiceException {
-    XStream xs = SerializationService.createXStreamWithAllowedTypes(null, DatasourceDTO.class );
+    XStream xs = SerializationService.createXStreamWithAllowedTypes(null, DatasourceDTO.class, ColumnInfo.class , CsvFileInfo.class);
     xs.setClassLoader( DatasourceDTO.class.getClassLoader() );
     if ( dtoStr.startsWith( "<org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO>" )
       && dtoStr.endsWith( "</org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO>" ) ) {
@@ -710,7 +711,7 @@ public class DSWDatasourceServiceImpl implements IDSWDatasourceService {
   }
 
   public XStream createXStreamWithAllowedDatasourceDTO( ) {
-    XStream xstream = SerializationService.createXStreamWithAllowedTypes(null, DatasourceDTO.class );
+    XStream xstream = SerializationService.createXStreamWithAllowedTypes(null, DatasourceDTO.class , ColumnInfo.class, CsvFileInfo.class);
     return xstream;
   }
 
