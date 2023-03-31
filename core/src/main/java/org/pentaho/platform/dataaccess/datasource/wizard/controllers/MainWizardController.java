@@ -414,6 +414,9 @@ public class MainWizardController extends AbstractXulEventHandler implements IWi
   @Bindable
   public void overwriteDialogCancel() {
     warningDialog.hide();
+    if ( wizardDialog.isVisible() ) {
+      wizardDialog.center();
+    }
   }
 
   private void setFinished() {
