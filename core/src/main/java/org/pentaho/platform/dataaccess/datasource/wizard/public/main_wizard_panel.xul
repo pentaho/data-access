@@ -377,7 +377,7 @@
           buttonlabelcancel="${dialog.CANCEL}" buttons="accept, cancel"
           ondialogcancel="wizardConnectionController.closeRemoveConfirmationDialog()"
           ondialogaccept="wizardConnectionController.deleteConnection()" buttonalign="right"
-          title="${removeConfirmationDialog.title}" height="150" width="200"
+          title="${removeConfirmationDialog.title}" pen:aria-role="alertdialog" height="150" width="200"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pentaho.org/2008/xul ">
     <vbox>
       <label value="${removeConfirmationDialog.confirmMessage}"/>
@@ -393,7 +393,7 @@
           buttonlabelcancel="${dialog.CANCEL}" buttons="accept, cancel"
           ondialogcancel="connectionController.closeRemoveConfirmationDialog()"
           ondialogaccept="connectionController.deleteConnection()" buttonalign="right"
-          title="${removeConfirmationDialog.title}" height="150" width="200"
+          title="${removeConfirmationDialog.title}" pen:aria-role="alertdialog" height="150" width="200"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pentaho.org/2008/xul ">
     <vbox>
       <label value="${removeConfirmationDialog.confirmMessage}"/>
@@ -408,6 +408,7 @@
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul"
           id="saveConnectionConfirmationDialog"
           title="${saveConnectionConfirmationDialog.title}"
+          pen:aria-role="alertdialog"
           buttons="accept,cancel" buttonalign="right"
           buttonlabelaccept="${dialog.OK}" ondialogaccept="wizardConnectionController.renameCheck()"
           buttonlabelcancel="${dialog.CANCEL}"
@@ -426,6 +427,7 @@
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul"
           id="saveConnectionConfirmationDialogConnectionController"
           title="${saveConnectionConfirmationDialog.title}"
+          pen:aria-role="alertdialog"
           buttons="accept,cancel" buttonalign="right"
           buttonlabelaccept="${dialog.OK}" ondialogaccept="connectionController.renameCheck()"
           buttonlabelcancel="${dialog.CANCEL}"
@@ -444,6 +446,7 @@
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul"
           id="renameConnectionConfirmationDialog"
           title="${renameConnectionConfirmationDialog.title}"
+          pen:aria-role="alertdialog"
           buttons="accept,cancel" buttonalign="right"
           buttonlabelaccept="${dialog.OK}" ondialogaccept="wizardConnectionController.overwriteCheck()"
           buttonlabelcancel="${dialog.CANCEL}"
@@ -462,6 +465,7 @@
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul"
           id="renameConnectionConfirmationDialogConnectionController"
           title="${renameConnectionConfirmationDialog.title}"
+          pen:aria-role="alertdialog"
           buttons="accept,cancel" buttonalign="right"
           buttonlabelaccept="${dialog.OK}" ondialogaccept="connectionController.overwriteCheck()"
           buttonlabelcancel="${dialog.CANCEL}"
@@ -480,6 +484,7 @@
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul"
           id="overwriteConnectionConfirmationDialog"
           title="${overwriteConnectionConfirmationDialog.title}"
+          pen:aria-role="alertdialog"
           buttons="accept,cancel" buttonalign="right"
           buttonlabelaccept="${dialog.OK}" ondialogaccept="wizardConnectionController.overwriteConnection()"
           buttonlabelcancel="${dialog.CANCEL}"
@@ -498,6 +503,7 @@
   <dialog xmlns:pen="http://www.pentaho.org/2008/xul"
           id="overwriteConnectionConfirmationDialogConnectionController"
           title="${overwriteConnectionConfirmationDialog.title}"
+          pen:aria-role="alertdialog"
           buttons="accept,cancel" buttonalign="right"
           buttonlabelaccept="${dialog.OK}" ondialogaccept="connectionController.overwriteConnection()"
           buttonlabelcancel="${dialog.CANCEL}"
@@ -512,7 +518,7 @@
   <!--  ###############################################################################   -->
   <!--     ERROR DIALOG: Dialog to display error text                                     -->
   <!--  ###############################################################################   -->
-  <dialog id="errorDialog" title="${errorDialog.errorOccurred}" buttonlabelaccept="${errorDialog.CLOSE}"
+  <dialog id="errorDialog" title="${errorDialog.errorOccurred}" pen:aria-role="alertdialog" buttonlabelaccept="${errorDialog.CLOSE}"
           buttons="accept" ondialogaccept="messageHandler.closeErrorDialog()" width="400" height="100"
           buttonalign="right">
     <vbox id="errorDialogContainer">
@@ -522,7 +528,7 @@
   <!--  ###############################################################################   -->
   <!--     ERROR DIALOG: Dialog to display error text + details                           -->
   <!--  ###############################################################################   -->
-  <dialog id="errorDetailsDialog" title="${errorDialog.errorOccurred}" buttonlabelaccept="${errorDialog.CLOSE}"
+  <dialog id="errorDetailsDialog" title="${errorDialog.errorOccurred}" pen:aria-role="alertdialog" buttonlabelaccept="${errorDialog.CLOSE}"
           buttons="accept" ondialogaccept="messageHandler.closeErrorDetailsDialog()" width="400" height="100"
           buttonalign="right">
     <vbox id="errorDetailsDialogContainer">
@@ -535,7 +541,7 @@
   <!--  ###############################################################################   -->
   <!--     SUCCESS DIALOG: Dialog to display success text                                 -->
   <!--  ###############################################################################   -->
-  <dialog id="successDialog" title="${successDialog.successTitle}" buttonlabelaccept="${successDialog.CLOSE}"
+  <dialog id="successDialog" title="${successDialog.successTitle}" pen:aria-role="alertdialog" buttonlabelaccept="${successDialog.CLOSE}"
           buttons="accept" ondialogaccept="wizardConnectionController.closeSuccessDialog()" width="300" height="100"
           buttonalign="right">
     <vbox>
@@ -545,7 +551,7 @@
   <!--  ###############################################################################   -->
   <!--     SUCCESS DIALOG: Dialog to display success text                                 -->
   <!--  ###############################################################################   -->
-  <dialog id="successDialogConnectionController" title="${successDialog.successTitle}"
+  <dialog id="successDialogConnectionController" title="${successDialog.successTitle}" pen:aria-role="alertdialog"
           buttonlabelaccept="${successDialog.CLOSE}" buttons="accept"
           ondialogaccept="connectionController.closeSuccessDialog()" width="300" height="100" buttonalign="right">
     <vbox>
@@ -627,7 +633,7 @@
           buttonlabelcancel="${dialog.CANCEL}" buttons="accept, cancel"
           ondialogcancel="relationalDatasourceController.closeApplyQueryConfirmationDialog()"
           ondialogaccept="relationalDatasourceController.generateModel()" buttonalign="right"
-          title="${applyQueryConfirmationDialog.title}" height="120" width="240">
+          title="${applyQueryConfirmationDialog.title}" pen:aria-role="alertdialog" height="120" width="240">
     <vbox>
       <label value="${applyQueryConfirmationDialog.confirmMessage}"/>
     </vbox>
@@ -704,7 +710,7 @@
   <dialog id="overwriteDialog" buttonlabelaccept="${dialog.OK}" buttonlabelcancel="${dialog.CANCEL}"
           ondialogaccept="wizardController.overwriteDialogAccept()"
           ondialogcancel="wizardController.overwriteDialogCancel()" buttons="accept, cancel" buttonalign="right"
-          title="${overwrite.title}" height="120" width="300">
+          title="${overwrite.title}" pen:aria-role="alertdialog" height="120" width="300">
     <vbox>
       <label value="${overwriteDialog.warningMessage}"/>
     </vbox>

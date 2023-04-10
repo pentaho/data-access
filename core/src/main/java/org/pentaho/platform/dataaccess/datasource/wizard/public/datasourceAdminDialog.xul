@@ -59,7 +59,7 @@
   <!--     ERROR DIALOG: Dialog to display error text                                     -->
   <!--  ###############################################################################   -->
   <dialog id="datasourceAdminErrorDialog" title="${datasourceAdminErrorDialog.errorOccurred}"
-          buttonlabelaccept="${datasourceAdminErrorDialog.CLOSE}" buttons="accept"
+          pen:aria-role="alertdialog" buttonlabelaccept="${datasourceAdminErrorDialog.CLOSE}" buttons="accept"
           ondialogaccept="datasourceAdminDialogController.closeErrorDialog()" width="400" height="100"
           buttonalign="right">
     <vbox id="datasourceAdminErrorDialogContainer">
@@ -74,7 +74,7 @@
           buttonlabelcancel="${removeDatasourceConfirmationDialog.cancel}" buttons="accept, cancel"
           ondialogcancel="datasourceAdminDialogController.removeDatasourceCancel()"
           ondialogaccept="datasourceAdminDialogController.removeDatasourceAccept()"
-          buttonalign="right" title="${removeDatasourceConfirmationDialog.title}" width="300">
+          buttonalign="right" title="${removeDatasourceConfirmationDialog.title}" pen:aria-role="alertdialog" width="300">
     <vbox>
       <label id="removeDatasourceConfirmationDialogLabel" value="${removeDatasourceConfirmationDialog.message}"/>
     </vbox>
