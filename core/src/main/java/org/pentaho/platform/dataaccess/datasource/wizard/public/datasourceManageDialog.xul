@@ -40,7 +40,7 @@
           buttonlabelcancel="${removeDatasourceConfirmationDialog.cancel}" buttons="accept, cancel"
           ondialogcancel="datasourceSelectionDialogController.removeDatasourceCancel()"
           ondialogaccept="datasourceSelectionDialogController.removeDatasourceAccept()"
-          buttonalign="right" title="${removeDatasourceConfirmationDialog.title}" height="200" width="300">
+          buttonalign="right" title="${removeDatasourceConfirmationDialog.title}" pen:aria-role="alertdialog" height="200" width="300">
     <vbox>
       <label id="removeDatasourceConfirmationDialogLabel" value="${removeDatasourceConfirmationDialog.message}"/>
     </vbox>

@@ -680,7 +680,7 @@
     </hbox>
   </dialog>
 
-  <dialog id="errorDialog" title="${errorDialog.errorOccurred}" buttonlabelaccept="${errorDialog.OK}" buttons="accept"
+  <dialog id="errorDialog" title="${errorDialog.errorOccurred}" pen:aria-role="alertdialog" buttonlabelaccept="${errorDialog.OK}" buttons="accept"
           ondialogaccept="modelerDialogController.closeErrorDialog()" width="300" height="100" buttonalign="center">
     <label id="errorLabel" value="${errorDialog.errorOccurred}"/>
   </dialog>
