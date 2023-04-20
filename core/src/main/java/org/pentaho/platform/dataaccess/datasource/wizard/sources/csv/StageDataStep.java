@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.sources.csv;
@@ -58,6 +58,8 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
 
   private static final String MSG_STAGING_FILE = "physicalDatasourceDialog.STAGING_FILE"; //$NON-NLS-1$
 
+  private XulDialog wizardDialog;
+
   private XulDialog errorDialog = null;
 
   private XulLabel errorLabel = null;
@@ -93,7 +95,7 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
   @Override
   public void init( IWizardModel wizardModel ) throws XulException {
     super.init( wizardModel );
-
+    wizardDialog = (XulDialog) document.getElementById( "main_wizard_window" );
     errorDialog = (XulDialog) document.getElementById( "errorDialog" ); //$NON-NLS-1$
     errorLabel = (XulLabel) document.getElementById( "errorLabel" ); //$NON-NLS-1$
     successDialog = (XulDialog) document.getElementById( "successDialog" ); //$NON-NLS-1$
@@ -289,6 +291,9 @@ public class StageDataStep extends AbstractWizardStep implements IModelInfoValid
       tree.setSelectedRows( new int[] { 0 } );
     }
     tree.update();
+
+    // to focus first tab-able element
+    wizardDialog.doAutoFocus();
   }
 
   @Bindable
