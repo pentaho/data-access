@@ -55,7 +55,6 @@
     <icu4j.version>63.1</icu4j.version>
     <geronimo-spec-j2ee-connector.version>1.5-rc4</geronimo-spec-j2ee-connector.version>
     <axiom-impl.version>1.2.7</axiom-impl.version>
-    <hsqldb.version>2.3.2</hsqldb.version>
     <axis2.version>1.5</axis2.version>
     <joda-time.version>1.6</joda-time.version>
     <olap4j.version>1.2.0</olap4j.version>
