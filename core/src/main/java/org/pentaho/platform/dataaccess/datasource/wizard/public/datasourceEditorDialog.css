@@ -131,12 +131,12 @@ aggregation-dialog-checkbox-label {
 .dialog-content,
 #main_box,
 #stepsPanel table,
-#datasourceInfoBox,
+#datasourceNameBox,
+#datatypeBox,
 #csvPropertiesContent table,
 #csvColumnsContent table,
 #csvDeckPanel,
 #propertiesBox,
-#otherRadioHbox table,
 #configOptionsBox,
 #csvSourceInputBox,
 #filesListBox,
@@ -208,10 +208,6 @@ aggregation-dialog-checkbox-label {
 
 #configOptionsBox > tbody > tr > td > div > fieldset > div {
   padding: 0px !important;
-}
-
-#otherRadioHbox {
-  width: 100%;
 }
 
 #sourcestep,
