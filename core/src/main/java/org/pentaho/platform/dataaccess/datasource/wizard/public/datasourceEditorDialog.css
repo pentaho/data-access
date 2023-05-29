@@ -37,12 +37,7 @@ aggregation-dialog-checkbox-label {
   /* Transparency for IE */
   background-image: expression('url(wait-background.gif)');
   background-color: expression('transparent');
-  /*
-  opacity: 0.20;
-  position: expression('absolute');
-  height: expression(document.documentElement.scrollHeight+'px');
-  width: expression(document.documentElement.scrollWidth+'px');
-  */
+
   cursor: wait;
 }
 
@@ -296,12 +291,67 @@ aggregation-dialog-checkbox-label {
   white-space: normal;
 }
 
+/* region modeler.xul */
+#modeler_dialog, #resolveColumnsDialog {
+  --panel-height: 465px;
+}
+#modeler_dialog {
+  --edit-panel-title-height: calc(1em * 28/var(--typ-body-font-size-px));
+  --model-tab-height: calc(1em * 35/var(--typ-body-font-size-px));
+}
 #metadatastep {
   border-collapse: separate;
 }
 
+:where(.responsive#modeler_dialog) .toolbar > * > * > * > .flex-row {
+  padding: var(--focus-ring-padding);
+
+  flex: auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+#modeler_dialog .toolbar-button-disabled {
+  opacity: 0.4;
+}
+
+:where(.responsive#modeler_dialog) :is(.xul-editPanel, #modelDeck) {
+  height: var(--panel-height) !important;
+  box-sizing: border-box;
+}
+
+:where(.responsive#modeler_dialog) .xul-editPanel-title {
+  display: flex;
+  align-items: center;
+
+  height: var(--edit-panel-title-height);
+  padding: 0 4px;
+  box-sizing: border-box;
+}
+:where(.responsive#modeler_dialog) .xul-editPanel-content {
+  height: calc(var(--panel-height) - var(--edit-panel-title-height) - 3px) !important;
+
+  gap: 0;
+  overflow: auto;
+}
+
+:where(.responsive#modeler_dialog) .custom-list {
+  min-height: var(--input-outer-height);
+  height: auto;
+
+  padding-top: var(--input-padding-v);
+  padding-bottom: var(--input-padding-v);
+}
+
 #metadatastep .scroll-panel {
   overflow-x: hidden !important;
+}
+:where(.responsive:is(#modeler_dialog, #resolveColumnsDialog)) .tree-panel {
+  display: contents;
+  flex: inherit;
+}
+:where(.responsive:is(#modeler_dialog, #resolveColumnsDialog)) .tree-scroll-panel {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 #metadatastep .gwt-Tree {
@@ -310,7 +360,7 @@ aggregation-dialog-checkbox-label {
 
 #metadatastep .gwt-Tree div {
   width: auto !important;
-  padding: 0px;
+  padding: 0;
 }
 
 #metadatastep #fieldList {
@@ -325,8 +375,43 @@ aggregation-dialog-checkbox-label {
   height: 463px !important;
 }
 
+:where(.responsive#modeler_dialog) .model-deck-panel {
+  height: 100% !important;
+}
+
+:where(.responsive#modeler_dialog) .pentaho-tabBar {
+  background-size: contain;
+}
+:where(.responsive#modeler_dialog) :is(.pentaho-tabBar, .pentaho-tabBar .pentaho-tabWidget) {
+  height: var(--model-tab-height) !important;
+}
+:where(.responsive#modeler_dialog .pentaho-tabBar) .gwt-TabBarFirst {
+  display: none;
+}
+
+:where(.responsive#modeler_dialog) .gwt-TabPanelBottom {
+  height: calc(var(--panel-height) - var(--model-tab-height)) !important;
+}
+
+:where(.responsive) #propertiesPanel .deck-panel {
+  padding: var(--focus-ring-padding);
+}
+
+:where(.responsive#modeler_dialog) .has-unique-members-label {
+  white-space: break-spaces !important;
+}
+
 #propertiesPanel .xul-textbox {
   width: 202px !important;
+}
+:where(.responsive) #propertiesPanel .xul-textbox {
+  width: 100% !important;
+}
+
+:where(.responsive) #propertiesPanel .pentaho-button {
+  flex: 0 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #messages2label {
@@ -334,6 +419,15 @@ aggregation-dialog-checkbox-label {
   width: 188px;
   white-space: normal !important;
 }
+:where(.responsive) #messages2label {
+  height: auto;
+}
+
+:where(.responsive)#resolveColumnsDialog .xul-fieldset {
+  height: var(--panel-height) !important;
+  box-sizing: border-box;
+}
+/* endregion modeler.xul */
 
 #joinDefinitionWindow,
 #joinSelectionWindow {
