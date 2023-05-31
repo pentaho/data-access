@@ -345,10 +345,6 @@ aggregation-dialog-checkbox-label {
 #metadatastep .scroll-panel {
   overflow-x: hidden !important;
 }
-:where(.responsive:is(#modeler_dialog, #resolveColumnsDialog)) .tree-panel {
-  display: contents;
-  flex: inherit;
-}
 :where(.responsive:is(#modeler_dialog, #resolveColumnsDialog)) .tree-scroll-panel {
   width: 100% !important;
   height: 100% !important;
@@ -375,7 +371,7 @@ aggregation-dialog-checkbox-label {
   height: 463px !important;
 }
 
-:where(.responsive#modeler_dialog) .model-deck-panel {
+:where(.responsive)#modeler_dialog .model-deck-panel {
   height: 100% !important;
 }
 

@@ -36,7 +36,7 @@
 
         <tree id="fieldList" height="410" width="258" flex="1" editable="false" hiddenrootnode="true"
               preserveselection="true" pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy"
-              pen:dropiconsvisible="false" pen:classname="flex-column with-scroll-child">
+              pen:dropiconsvisible="false" pen:classname="with-scroll-child">
           <treecols>
             <treecol flex="1" label="" primary="true"
                      pen:binding="name" pen:childrenbinding="children"
@@ -68,7 +68,7 @@
             <tabpanel id="analysisTabPanel" height="409">
               <vbox id="analyzerModelPanel" height="411" flex="1"
                     spacing="0" padding="0" pen:classname="model-deck-panel">
-                <toolbar id="schema-toolbar" mode="icons">
+                <toolbar id="schema-toolbar" mode="icons" flex="0">
                   <toolbarbutton id="expand-all" image="images/spacer.gif" onclick="modeler.expandAll()"
                                  disabled="false" tooltiptext="${expand_all}"
                                  pen:classname="pentaho-expandallbutton icon-zoomable"/>
@@ -109,7 +109,8 @@
                       pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move"
                       pen:dropvetoer="modeler.checkDropLocation()"
                       pen:ondrop="modeler.onModelTreeDrop()" hiddenrootnode="false" preserveselection="true"
-                      pen:dropiconsvisible="false">
+                      pen:dropiconsvisible="false"
+                      pen:classname="with-scroll-child">
                   <treecols>
                     <treecol width="405" label="" primary="true"
                              pen:binding="displayName" pen:childrenbinding="children"
@@ -130,10 +131,10 @@
                 </tree>
               </vbox>
             </tabpanel>
-            <tabpanel id="reportingTabPanel" height="409">
+            <tabpanel id="reportingTabPanel" height="409" spacing="0">
               <vbox id="reportingModelPanel" height="409" flex="1"
                     spacing="0" padding="0" pen:classname="model-deck-panel">
-                <toolbar id="categories-toolbar" mode="icons">
+                <toolbar id="categories-toolbar" mode="icons" flex="0">
                   <toolbarbutton id="reporting-expand-all-btn" image="images/spacer.gif"
                                  onclick="modeler.expandRelationalAll()" disabled="false" tooltiptext="${expand_all}"
                                  pen:classname="pentaho-expandallbutton icon-zoomable"/>
@@ -165,7 +166,8 @@
                       preserveselection="true"
                       pen:ondrag="modeler.onModelTreeDrag()" pen:drageffect="move"
                       pen:dropvetoer="modeler.checkDropLocation()"
-                      pen:ondrop="modeler.onModelTreeDrop()" pen:dropiconsvisible="false">
+                      pen:ondrop="modeler.onModelTreeDrop()" pen:dropiconsvisible="false"
+                      pen:classname="with-scroll-child">
                   <treecols>
                     <treecol width="405" label="" primary="true"
                              pen:binding="displayName" pen:childrenbinding="children"
