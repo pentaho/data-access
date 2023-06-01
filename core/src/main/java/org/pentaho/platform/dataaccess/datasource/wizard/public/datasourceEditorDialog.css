@@ -248,6 +248,14 @@ aggregation-dialog-checkbox-label {
   height: 350px !important;
 }
 
+#database-options-box input {
+  width: 260px !important;
+}
+
+:where(.responsive) #database-options-box input {
+  width: auto !important;
+}
+
 #database-options-box.vbox {
   height: 325px !important;
 }
