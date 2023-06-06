@@ -61,15 +61,15 @@
               <!-- Empty panel for select Database type menu item. -->
             </hbox>
 
-            <hbox flex="1" height="100%" id="queryDeckPanel">
+            <hbox flex="1" height="100%" spacing="10" id="queryDeckPanel" pen:classname="flex-wrap">
               <!--  ###############################################################################  -->
               <!--     SQL datasource step 1 -->
               <!--  ###############################################################################  -->
-              <vbox height="500">
-                <vbox id="connectionsLbl">
-                  <label value="${multitable.CONNECTIONS_LBL}"/>
+              <vbox id ="connectionColumn" flex="1" height="500">
+                <vbox id="connectionsLbl" flex="0">
+                  <label id="connectionLabel" value="${multitable.CONNECTIONS_LBL}"/>
                 </vbox>
-                <hbox>
+                <hbox id="connectionToolbar" flex="0" spacing="3">
                   <label value="${datasourceDialog.Connection}" tooltiptext="${datasourceDialog.ConnectionToolTip}"/>
                   <spacer flex="1"/>
 
@@ -89,8 +89,8 @@
                           onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true"
                           pen:classname="pentaho-deletebutton"/>
                 </hbox>
-                <listbox id="connectionList" pen:binding="modelName" disabled="true" height="475" width="280"/>
-                <vbox id="metadata" flex="1" height="80">
+                <listbox id="connectionList" pen:binding="modelName" flex="1" disabled="true" height="475" width="280"/>
+                <vbox id="metadata" flex="0" height="80">
                   <label value="${multitable.REPORTING_METADATA_GROUP_LABEL}" tooltiptext=""/>
                   <radiogroup id="metadataRadioGrup" padding="0">
                     <radio id="reporting" checked="true" value="${multitable.REPORTING_METADATA}"
@@ -100,13 +100,10 @@
                   </radiogroup>
                 </vbox>
               </vbox>
-              <spacer width="10" height="500"/>
-              <vbox id="queryBox" height="500" flex="1">
-                <hbox>
-                  <label value="${datasourceDialog.Query}" tooltiptext="${datasourceDialog.QueryToolTip}" flex="1"/>
-                </hbox>
+              <vbox id="queryBox" height="500" flex="10">
+                <label value="${datasourceDialog.Query}" tooltiptext="${datasourceDialog.QueryToolTip}" />
                 <textbox height="432" id="query" multiline="true" disabled="false"/>
-                <hbox>
+                <hbox flex="0">
                   <spacer flex="1"/>
                   <label value="${datasourceDialog.limit}"/>
                   <textbox id="previewLimit" value="10" width="22"/>
