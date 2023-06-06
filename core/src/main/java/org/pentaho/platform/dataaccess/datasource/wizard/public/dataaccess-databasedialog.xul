@@ -18,12 +18,12 @@
   <groupbox id="pooling-group" removeelement="false"/>
   <groupbox id="place-holder-box-2" removeelement="false"/>
 
-  <listbox id="connection-type-list" flex="0" width="250" height="175"/>
-  <listbox id="access-type-list" flex="0" width="250" height="85"/>
+  <listbox id="connection-type-list" flex="1" width="250" height="175"/>
+  <listbox id="access-type-list" flex="1" width="250" height="85"/>
 
   <hbox id="all-box" height="400" flex="0" width="650"/>
   <hbox id="connection-access-list-box" height="350" flex="0" width="535"/>
-  <vbox id="type-box" height="350" flex="0" width="258"/>
+  <vbox id="type-box" height="350" flex="1" width="258"/>
   <groupbox id="database-options-box" height="350" flex="0" width="268"/>
   <textbox id="connection-name-text" width="545"/>
   <vbox flex="0" id="main-container" height="400"/>
