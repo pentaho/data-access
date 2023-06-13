@@ -65,7 +65,7 @@
               <!--  ###############################################################################  -->
               <!--     SQL datasource step 1 -->
               <!--  ###############################################################################  -->
-              <vbox id ="connectionColumn" flex="1" height="500">
+              <vbox id ="connectionColumn" flex="1" height="500" pen:classname="with-scroll-h-child">
                 <vbox id="connectionsLbl" flex="0">
                   <label id="connectionLabel" value="${multitable.CONNECTIONS_LBL}"/>
                 </vbox>
@@ -100,7 +100,7 @@
                   </radiogroup>
                 </vbox>
               </vbox>
-              <vbox id="queryBox" height="500" flex="10">
+              <vbox id="queryBox" height="500" flex="10" pen:classname="with-scroll-h-child">
                 <label value="${datasourceDialog.Query}" tooltiptext="${datasourceDialog.QueryToolTip}" />
                 <textbox height="432" id="query" multiline="true" disabled="false"/>
                 <hbox flex="0">
@@ -215,13 +215,11 @@
           <!--  ###############################################################################  -->
           <!--     Multitable datasource step 2 -->
           <!--  ###############################################################################  -->
-          <hbox>
-            <vbox>
-              <label value="${multitable.SELECT_JOIN_TABLES}" tooltiptext="" multiline="true"/>
-            </vbox>
+          <hbox flex ="0">
+            <label value="${multitable.SELECT_JOIN_TABLES}" tooltiptext="" multiline="true"/>
           </hbox>
-          <hbox>
-            <vbox id="schemaTableVbox">
+          <hbox flex="0">
+            <vbox id="schemaTableVbox" pen:classname="with-scroll-h-child">
               <label value="${multitable.SCHEMA}" tooltiptext=""/>
               <menulist id="schemas" width="350">
                 <menupopup>
@@ -230,14 +228,14 @@
               </menulist>
             </vbox>
           </hbox>
-          <hbox>
-            <vbox>
-              <label value="${multitable.AVAILABLE_TABLES}" tooltiptext=""/>
+          <hbox flex="1" pen:classname="flex-column-sm">
+            <vbox id="availableTablesBox" flex="1" pen:classname="with-scroll-h-child">
+              <label value="${multitable.AVAILABLE_TABLES}" multiline="false" tooltiptext=""/>
               <listbox id="availableTables" pen:binding="name" disabled="false" height="410" width="350"
                        seltype="multi"/>
             </vbox>
-            <vbox>
-              <spacer height="150"/>
+            <vbox id="selectionButtonPanel" flex="0" spacing="0" pen:classname="picklistPanel flex-center">
+              <spacer id="selectionButtonPanelSpacer" height="150"/>
 
               <button id="addButton" image="images/spacer.gif" pen:disabledimage="images/spacer.gif"
                       tooltiptext="${multitable.MOVE_ARROW}"
@@ -248,17 +246,16 @@
                       tooltiptext="${multitable.MOVE_ARROW_BACK}"
                       onclick="joinSelectionStepController.removeSelectedTable()" disabled="false"
                       pen:classname="pentaho-movearrowbackbutton"/>
-              <spacer flex="1"/>
             </vbox>
-            <vbox>
-              <label value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
+            <vbox id="selectedTablesBox" flex="1" pen:classname="with-scroll-h-child">
+              <label id="selectedTablesLabel" multiline="false" value="${multitable.SELECTED_TABLES}" tooltiptext=""/>
               <listbox id="selectedTables" pen:binding="name" disabled="false" height="410" width="350"
                        seltype="multi"/>
             </vbox>
           </hbox>
-          <hbox>
-            <spacer width="382"/>
-            <vbox id="factTableVbox">
+          <hbox id="factTableHbox" flex="0">
+            <spacer id="factTableSpacer" width="382"/>
+            <vbox id="factTableVbox" flex="0" pen:classname="with-scroll-h-child">
               <label value="${multitable.FACT_TABLE}" tooltiptext=""/>
               <menulist id="factTables" pen:binding="name" width="350">
                 <menupopup>
@@ -323,8 +320,8 @@
               <label value="${multitable.DEFINE_JOIN_TABLES}" tooltiptext="" multiline="true"/>
             </vbox>
           </hbox>
-          <hbox>
-            <vbox>
+          <hbox pen:classname="flex-wrap">
+            <vbox id="leftTablesBox" pen:classname="with-scroll-h-child">
               <label value="${multitable.LEFT_TABLE}" tooltiptext=""/>
               <menulist id="leftTables" pen:binding="name" editable="false" width="300">
                 <menupopup/>
@@ -332,7 +329,7 @@
               <label value="${multitable.KEY_FIELD}" tooltiptext=""/>
               <listbox id="leftKeyField" pen:binding="name" disabled="false" height="150" width="300"/>
             </vbox>
-            <vbox>
+            <vbox id="rightTablesBox" pen:classname="with-scroll-h-child">
               <label value="${multitable.RIGHT_TABLE}" tooltiptext=""/>
               <menulist id="rightTables" pen:binding="name" editable="false" width="300">
                 <menupopup/>
@@ -346,7 +343,7 @@
                     onclick="joinDefinitionStepController.createJoin()" disabled="false"/>
           </hbox>
           <hbox>
-            <vbox>
+            <vbox id="joinsBox" pen:classname="with-scroll-h-child">
               <label value="${multitable.JOINS}" tooltiptext=""/>
               <listbox id="joins" pen:binding="name" disabled="false" height="100" width="610"/>
             </vbox>
