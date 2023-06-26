@@ -310,6 +310,9 @@ aggregation-dialog-checkbox-label {
   padding-top: var(--input-padding-v);
   padding-bottom: var(--input-padding-v);
 }
+:where(.responsive#modeler_dialog) #time_level_format .custom-list {
+  padding: 0;
+}
 
 :where(.responsive):is(#modeler_dialog, #resolveColumnsDialog) :is(.xul-editPanel, #modelDeck) {
   height: var(--panel-height) !important;
@@ -330,6 +333,14 @@ aggregation-dialog-checkbox-label {
 #metadatastep .gwt-Tree div {
   width: auto !important;
   padding: 0;
+}
+
+:where(.responsive#modeler_dialog) .tree-item-node > table td:first-of-type > img {
+  width: calc(1em * 16/var(--typ-body-font-size-px)) !important;
+  height: calc(1em * 16/var(--typ-body-font-size-px)) !important;
+
+  background-size: contain !important;
+  background-position: center !important;
 }
 
 #metadatastep #fieldList {
