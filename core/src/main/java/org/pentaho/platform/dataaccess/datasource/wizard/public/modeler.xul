@@ -9,6 +9,7 @@
           buttons="accept,cancel"
           pen:responsive="true"
           pen:sizingmode="fillviewportwidth"
+          pen:minimumHeightCategory="content"
           pen:widthcategory="large"
           ondialogaccept="modelerDialogController.onAccept()"
           ondialogcancel='modelerDialogController.onCancel()'
@@ -729,6 +730,7 @@
           onload="colResolver.init()"
           pen:responsive="true"
           pen:sizingmode="fillviewportwidth"
+          pen:minimumHeightCategory="content"
           pen:widthcategory="extrasmall"
           buttons="accept, cancel"
           buttonalign="right"
