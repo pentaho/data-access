@@ -18,7 +18,7 @@
           buttonlabelcancel="${CANCEL}"
           buttonlabelextra1="${BACK}"
           buttonlabelextra2="${NEXT}"
-          pen:responsive ="true"
+          pen:responsive="true"
           pen:sizingmode="fillviewport"
           pen:widthcategory="medium"
   >
@@ -365,7 +365,10 @@
   <dialog id="previewResultsDialog" buttonlabelaccept="${dialog.CLOSE}"
           pen:buttonlabelaccepttooltiptext="${previewResultsDialog.closeToolTip}" buttons="accept"
           ondialogaccept="relationalDatasourceController.closePreviewResultsDialog()" buttonalign="right"
-          title="${previewResultsDialog.title}" width="530" height="320">
+          title="${previewResultsDialog.title}" width="530" height="320"
+          pen:responsive="true"
+          pen:sizingmode="fillviewportwidth"
+          pen:widthcategory="small">
     <tree id="previewResultsTable" seltype="single" width="525" height="270">
       <treecols>
         <treecol label="Preview" flex="1"/>
@@ -382,7 +385,10 @@
           ondialogcancel="wizardConnectionController.closeRemoveConfirmationDialog()"
           ondialogaccept="wizardConnectionController.deleteConnection()" buttonalign="right"
           title="${removeConfirmationDialog.title}" pen:aria-role="alertdialog" height="150" width="200"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pentaho.org/2008/xul ">
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.pentaho.org/2008/xul"
+          pen:responsive="true"
+          pen:widthcategory="text"
+          pen:minimumheightcategory="content">
     <vbox>
       <label value="${removeConfirmationDialog.confirmMessage}"/>
     </vbox>
@@ -418,6 +424,9 @@
           buttonlabelcancel="${dialog.CANCEL}"
           ondialogcancel="wizardConnectionController.closeSaveConnectionConfirmationDialog()"
           height="120" width="220"
+          pen:responsive="true"
+          pen:widthcategory="text"
+          pen:minimumheightcategory="content"
       >
     <vbox>
       <label value="${saveConnectionConfirmationDialog.confirmMessage}"/>
@@ -456,6 +465,9 @@
           buttonlabelcancel="${dialog.CANCEL}"
           ondialogcancel="wizardConnectionController.closeRenameConnectionConfirmationDialog()"
           height="120" width="220"
+          pen:responsive="true"
+          pen:widthcategory="text"
+          pen:minimumheightcategory="content"
       >
     <vbox>
       <label value="${renameConnectionConfirmationDialog.confirmMessage}"/>
@@ -494,6 +506,9 @@
           buttonlabelcancel="${dialog.CANCEL}"
           ondialogcancel="wizardConnectionController.closeOverwriteConnectionConfirmationDialog()"
           height="120" width="220"
+          pen:responsive="true"
+          pen:widthcategory="text"
+          pen:minimumheightcategory="content"
       >
     <vbox>
       <label value="${overwriteConnectionConfirmationDialog.confirmMessage}"/>
@@ -524,7 +539,10 @@
   <!--  ###############################################################################   -->
   <dialog id="errorDialog" title="${errorDialog.errorOccurred}" pen:aria-role="alertdialog" buttonlabelaccept="${errorDialog.CLOSE}"
           buttons="accept" ondialogaccept="messageHandler.closeErrorDialog()" width="400" height="100"
-          buttonalign="right">
+          buttonalign="right"
+          pen:responsive="true"
+          pen:widthcategory="text"
+          pen:minimumheightcategory="content">
     <vbox id="errorDialogContainer">
       <label id="errorLabel" value="${errorDialog.errorOccurred}"/>
     </vbox>
@@ -600,7 +618,9 @@
   <!--  ###############################################################################   -->
   <dialog id="summaryDialog" title="${summaryDialog.title}"
           buttonlabelaccept="${summaryDialog.OK}" ondialogaccept="summaryDialog.closeSummaryDialog()"
-          buttons="accept" buttonalign="right" width="475" height="150">
+          buttons="accept" buttonalign="right" width="475" height="150"
+          pen:responsive="true"
+          pen:widthcategory="extrasmall">
     <vbox id="summaryDialogContainer" height="150">
       <vbox id="csvSummaryContainer" height="20">
         <label id="summaryDialogRowsLoaded" value="[X] of [Y] rows where loaded from CSV file successfully"/>
@@ -723,11 +743,17 @@
   <dialog id="csvPreviewDialog" title="${physicalDatasourceDialog.PREVIEW}"
           buttonlabelaccept="${physicalDatasourceDialog.CLOSE}" buttons="accept"
           ondialogaccept="stageDataController.closePreviewDialog()" width="630" height="270" buttonalign="right"
-          resizable="true">
+          resizable="true"
+          pen:responsive="true"
+          pen:sizingmode="fillviewportwidth"
+          pen:widthcategory="small">
     <label multiline="true" id="csvTextPreviewLabel" height="325" width="730" pre="true"/>
   </dialog>
   <dialog id="fileImportEditorWindow" title="${fileImportDialog.TITLE}"
-          orient="vertical" height="140" width="325">
+          orient="vertical" height="140" width="325"
+          pen:responsive="true"
+          pen:sizingmode="fillviewportwidth"
+          pen:widthcategory="small">
 
     <vbox id="mainBox">
       <hbox>
@@ -738,7 +764,7 @@
                           onuploadfailure="fileImportController.uploadFailure()" flex="1"
                           height="26" width="480" size="160"/>
         </vbox>
-        <spacer flex="1"/>
+        <spacer flex="0"/>
       </hbox>
 
       <hbox id="controller_panel">
