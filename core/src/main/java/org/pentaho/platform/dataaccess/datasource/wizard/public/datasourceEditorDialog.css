@@ -255,10 +255,6 @@ aggregation-dialog-checkbox-label {
   height: 325px !important;
 }
 
-#database-options-box.xul-fieldset {
-  overflow-y: scroll;
-}
-
 #generic_message_label {
   white-space: normal;
 }
@@ -453,4 +449,8 @@ aggregation-dialog-checkbox-label {
   #puc_options-parameter-tree .gwt-ScrollTable .dataWrapper {
     height: 100% !important;
   }
+}
+
+#deck-options-list {
+  max-width: 100px;
 }
