@@ -35,6 +35,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.components.XulTreeCell;
 import org.pentaho.ui.xul.components.XulTreeCol;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -81,9 +82,9 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
 
   XulTextbox previewLimit = null;
 
-  XulButton editConnectionButton = null;
+  XulToolbarbutton editConnectionButton = null;
 
-  XulButton removeConnectionButton = null;
+  XulToolbarbutton removeConnectionButton = null;
 
   XulButton editQueryButton = null;
 
@@ -131,8 +132,8 @@ public class WizardRelationalDatasourceController extends AbstractXulEventHandle
     previewResultsTable = (XulTree) document.getElementById( "previewResultsTable" ); //$NON-NLS-1$
     previewResultsTreeCols = (XulTreeCols) document.getElementById( "previewResultsTreeCols" ); //$NON-NLS-1$
     previewLimit = (XulTextbox) document.getElementById( "previewLimit" ); //$NON-NLS-1$
-    editConnectionButton = (XulButton) document.getElementById( "editConnection" ); //$NON-NLS-1$
-    removeConnectionButton = (XulButton) document.getElementById( "removeConnection" ); //$NON-NLS-1$
+    editConnectionButton = (XulToolbarbutton) document.getElementById( "editConnection" ); //$NON-NLS-1$
+    removeConnectionButton = (XulToolbarbutton) document.getElementById( "removeConnection" ); //$NON-NLS-1$
     editQueryButton = (XulButton) document.getElementById( "editQuery" ); //$NON-NLS-1$
     previewButton = (XulButton) document.getElementById( "preview" ); //$NON-NLS-1$
 
