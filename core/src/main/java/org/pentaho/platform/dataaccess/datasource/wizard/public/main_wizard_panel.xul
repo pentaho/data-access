@@ -69,26 +69,26 @@
                 <vbox id="connectionsLbl" flex="0">
                   <label id="connectionLabel" value="${multitable.CONNECTIONS_LBL}"/>
                 </vbox>
-                <hbox id="connectionToolbar" flex="0" spacing="3">
+                <toolbar id="connectionToolbar" flex="0" spacing="3">
                   <label value="${datasourceDialog.Connection}" tooltiptext="${datasourceDialog.ConnectionToolTip}"/>
-                  <spacer flex="1"/>
+                  <toolbarspacer flex="1"/>
 
-                  <button id="editConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif"
+                  <toolbarbutton id="editConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif"
                           tooltiptext="${datasourceDialog.editConnectionImageToolTip}"
                           onclick="wizardConnectionController.showEditConnectionDialog()" disabled="true"
                           pen:classname="pentaho-updatebutton"/>
 
-                  <button id="addConnection" image="images/spacer.gif"
+                  <toolbarbutton id="addConnection" image="images/spacer.gif"
                           tooltiptext="${datasourceDialog.addConnectionImageToolTip}"
                           pen:disabledimage="images/spacer.gif"
                           onclick="wizardConnectionController.showAddConnectionDialog()" disabled="false"
                           pen:classname="pentaho-addbutton"/>
 
-                  <button id="removeConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif"
+                  <toolbarbutton id="removeConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif"
                           tooltiptext="${datasourceDialog.removeConnectionImageToolTip}"
                           onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true"
                           pen:classname="pentaho-deletebutton"/>
-                </hbox>
+                </toolbar>
                 <listbox id="connectionList" pen:binding="modelName" flex="1" disabled="true" height="475" width="280"/>
                 <vbox id="metadata" flex="0" height="80">
                   <label value="${multitable.REPORTING_METADATA_GROUP_LABEL}" tooltiptext=""/>
