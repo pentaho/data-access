@@ -83,7 +83,6 @@
     <pdi.version>10.1.0.0-SNAPSHOT</pdi.version>
     <jcommon.version>1.0.14</jcommon.version>
     <stax.version>1.2.0</stax.version>
-    <commons-pool.version>1.5.7</commons-pool.version>
     <flexjson.version>2.1</flexjson.version>
     <ognl.version>2.6.9</ognl.version>
     <encoder.version>1.2</encoder.version>
@@ -172,9 +171,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
-        <version>${commons-pool.version}</version>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-pool2</artifactId>
+        <version>${commons-pool2.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
