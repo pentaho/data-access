@@ -17,7 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import org.apache.tika.io.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
