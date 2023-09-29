@@ -73,18 +73,17 @@
                   <label value="${datasourceDialog.Connection}" tooltiptext="${datasourceDialog.ConnectionToolTip}"/>
                   <toolbarspacer flex="1"/>
 
-                  <toolbarbutton id="editConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif"
+                  <toolbarbutton id="editConnection" image="images/spacer.gif"
                           tooltiptext="${datasourceDialog.editConnectionImageToolTip}"
                           onclick="wizardConnectionController.showEditConnectionDialog()" disabled="true"
                           pen:classname="pentaho-updatebutton"/>
 
                   <toolbarbutton id="addConnection" image="images/spacer.gif"
                           tooltiptext="${datasourceDialog.addConnectionImageToolTip}"
-                          pen:disabledimage="images/spacer.gif"
                           onclick="wizardConnectionController.showAddConnectionDialog()" disabled="false"
                           pen:classname="pentaho-addbutton"/>
 
-                  <toolbarbutton id="removeConnection" image="images/spacer.gif" pen:disabledimage="images/spacer.gif"
+                  <toolbarbutton id="removeConnection" image="images/spacer.gif"
                           tooltiptext="${datasourceDialog.removeConnectionImageToolTip}"
                           onclick="wizardConnectionController.showRemoveConnectionDialog()" disabled="true"
                           pen:classname="pentaho-deletebutton"/>
