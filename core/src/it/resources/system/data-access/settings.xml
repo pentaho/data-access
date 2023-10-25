@@ -5,7 +5,12 @@
   <!-- how far ahead to set the browser's cache -->
   <max-age>2628001</max-age>
   <cache>true</cache>
-    
+
+  <!-- Nullify password on jdbc get connection endpoint -->
+  <nullify-password>true</nullify-password>
+  <!-- If nullify-password is set to false then we can enable password encryption on jdbc get connection endpoint -->
+  <encrypt-password>true</encrypt-password>
+
   <!-- roles with data access permissions -->
   <data-access-roles>Administrator</data-access-roles>
   <!-- users with data access permissions -->
