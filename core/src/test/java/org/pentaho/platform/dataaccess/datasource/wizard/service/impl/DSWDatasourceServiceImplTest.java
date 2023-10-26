@@ -792,7 +792,7 @@ public class DSWDatasourceServiceImplTest {
 
   @Test
   public void testXstreamDatasourceDtoFromXml() throws Exception {
-    XStream xs = SerializationService.createXStreamWithAllowedTypes( null, DatasourceDTO.class );
+    XStream xs = SerializationService.createXStreamWithAllowedTypes( null, DatasourceDTO.class, DatasourceType.class);
     String modelStateStr = "<org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO>\n"
             + "  <datasourceName>testDatasource</datasourceName>\n"
             + "  <datasourceType>CSV</datasourceType>\n"
