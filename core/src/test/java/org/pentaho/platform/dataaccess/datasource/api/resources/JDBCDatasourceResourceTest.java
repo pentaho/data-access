@@ -25,10 +25,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -55,13 +58,14 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @PowerMockIgnore( "jdk.internal.reflect.*" )
 @RunWith( PowerMockRunner.class )
-@PrepareForTest( { JDBCDatasourceResource.class, DatasourceService.class, LogFactory.class } )
+@PrepareForTest( { JDBCDatasourceResource.class, DatasourceService.class, LogFactory.class, PentahoSystem.class } )
 public class JDBCDatasourceResourceTest {
 
   private JDBCDatasourceResource resource;
   private ConnectionServiceImpl service;
   private IDatabaseConnection connection;
   private static Log logger = mock( Log.class );
+  private IPluginResourceLoader pluginResourceLoader = mock( IPluginResourceLoader.class );
 
   @BeforeClass
   public static void once() {
@@ -81,6 +85,9 @@ public class JDBCDatasourceResourceTest {
     connection = new DatabaseConnection();
     connection.setName( "Name" );
     connection.setPassword( "Password!" );
+
+    mockStatic( PentahoSystem.class );
+    when( PentahoSystem.get( IPluginResourceLoader.class, null ) ).thenReturn( pluginResourceLoader );
   }
 
   @Test
@@ -123,12 +130,21 @@ public class JDBCDatasourceResourceTest {
 
   @Test
   public void testGetConnection() throws Exception {
+
+    doReturn( "true" )
+      .when( pluginResourceLoader )
+      .getPluginSetting( JDBCDatasourceResource.class, "settings/nullify-password", "true" );
+
+    doReturn( "true" )
+      .when( pluginResourceLoader )
+      .getPluginSetting( JDBCDatasourceResource.class, "settings/encrypt-password", "true" );
+
     doReturn( connection ).when( service ).getConnectionByName( "Name" );
 
     Response response = resource.getConnection( "Name" );
 
     assertEquals( "Name", ( (IDatabaseConnection) response.getEntity() ).getName() );
-    assertNull( ( (IDatabaseConnection) response.getEntity() ).getPassword() ); // confirm that the password is never returned
+    assertNull( ( (IDatabaseConnection) response.getEntity() ).getPassword() );
     assertEquals( Response.Status.OK.getStatusCode(), response.getStatus() );
     verify( service, times( 1 ) ).getConnectionByName( "Name" );
   }
