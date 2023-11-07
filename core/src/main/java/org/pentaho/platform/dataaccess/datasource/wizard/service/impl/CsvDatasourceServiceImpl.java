@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
+import org.pentaho.database.model.DatabaseType;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
@@ -234,7 +235,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
         ColumnInfo.class, ColumnInfoCollection.class, CsvFileInfo.class, DataRow.class, FileInfo.class,
         GuiStateModel.class,
         ModelInfo.class, ModelInfoValidationListenerCollection.class, RelationalModelValidationListenerCollection.class,
-        WizardModel.class );
+        WizardModel.class, DatabaseType.class, Domain.class, LogicalModel.class );
       DatasourceDTO datasource = (DatasourceDTO) xs.fromXML( modelState );
       CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
       String tmpFileName = csvFileInfo.getTmpFilename();

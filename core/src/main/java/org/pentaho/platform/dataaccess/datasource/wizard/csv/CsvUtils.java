@@ -453,7 +453,10 @@ public class CsvUtils extends PentahoBase {
   }
 
   public ModelInfo getModelInfo( String project, String filename ) throws FileNotFoundException {
-    XStream xstream = SerializationService.createXStreamWithAllowedTypes( new DomDriver("UTF-8"), ModelInfo.class );
+    XStream xstream =
+      SerializationService.createXStreamWithAllowedTypes( new DomDriver( "UTF-8" ), ModelInfo.class, ColumnInfo.class,
+        CsvFileInfo.class, CsvParseException.class,
+        DataRow.class );
     xstream.alias( "modelInfo", ModelInfo.class ); //$NON-NLS-1$
     xstream.alias( "columnInfo", ColumnInfo.class ); //$NON-NLS-1$
     String filepath = AgileHelper.getFolderPath( project ) + "/" + filename + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
