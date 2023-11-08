@@ -38,10 +38,13 @@ import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 import java.util.List;
@@ -223,7 +226,21 @@ public class JDBCDatasourceResource {
   public Response getConnection( @PathParam( "name" ) String name ) {
     try {
       IDatabaseConnection connection = service.getConnectionByName( name );
-      connection.setPassword( null ); // don't return the password back to the user
+      boolean nullifyPassword = Boolean.parseBoolean(
+          PentahoSystem.get( IPluginResourceLoader.class, null )
+        .getPluginSetting( JDBCDatasourceResource.class, "settings/nullify-password", "true" )
+        );
+
+      boolean encryptPassword = Boolean.parseBoolean(
+        PentahoSystem.get( IPluginResourceLoader.class, null )
+          .getPluginSetting( JDBCDatasourceResource.class, "settings/encrypt-password", "true" )
+      );
+
+      if ( nullifyPassword ) {
+        connection.setPassword( null ); // don't return the password back to the user
+      } else if ( encryptPassword ) {
+        connection.setPassword( Encr.PASSWORD_ENCRYPTED_PREFIX + Encr.encryptPassword( connection.getPassword() ) );
+      }
 
       return Response.ok( connection ).build();
     } catch ( ConnectionServiceException e ) {
