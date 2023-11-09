@@ -6,7 +6,8 @@
 
   <dialog id="importDialog" width="395" title="" buttonlabelaccept="${importDialog.IMPORT}"
           buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel"
-          ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()">
+          ondialogaccept="importDialogController.acceptDialog()" ondialogcancel="importDialogController.closeDialog()"
+          pen:responsive="true" pen:sizingmode="fillviewportwidth" pen:widthcategory="extrasmall">
     <vbox>
       <deck id="importDeck">
 
@@ -16,9 +17,9 @@
             <hbox>
               <label id="fileLabel" value=""/>
             </hbox>
-            <hbox>
-              <label id="uploadFileLabel" value="${importDialog.SELECT_METAFILE_LABEL}"/>
-              <button id="uploadMetaButton" label="..." onclick="metadataImportDialogController.setMetadataFile()"/>
+            <hbox spacing="6">
+              <label id="uploadFileLabel" flex="1" value="${importDialog.SELECT_METAFILE_LABEL}"/>
+              <button id="uploadMetaButton" flex="0" label="..." onclick="metadataImportDialogController.setMetadataFile()"/>
             </hbox>
           </vbox>
 
@@ -30,7 +31,7 @@
           </hbox>
           <hbox>
             <label id="localizationBundlesLabel" value="${importDialog.LOC_BUNDLES}"/>
-            <spacer width="246"/>
+            <spacer width="246" flex="1"/>
             <!-- <pen:fileupload id="concreteFileUpload" action="../../../../../UploadService" image="images/add.png" disabledimage="images/add_disabled.png" onuploadsuccess="importDialogController.concreteUploadSuccess()" onuploadfailure="importDialogController.uploadFailure()" height="10" width="10" /> -->
             <button id="addButton" image="images/spacer.gif" disabledimage="images/spacer.gif"
                     onclick="metadataImportDialogController.addLocalizedBundle()" pen:classname="pentaho-addbutton"
@@ -57,9 +58,9 @@
             <hbox>
               <label id="analysisFileLabel" value="Mondrian File:"/>
             </hbox>
-            <hbox>
+            <hbox spacing="6">
               <label id="schemaNameLabel" flex="1" value=""/>
-              <button id="uploadAnalysisButton" label="..." onclick="analysisImportDialogController.setAnalysisFile()"/>
+              <button id="uploadAnalysisButton" flex="0" label="..." onclick="analysisImportDialogController.setAnalysisFile()"/>
             </hbox>
           </vbox>
           <radiogroup id="analysisPreferencesRadioGroup" padding="0">
@@ -85,7 +86,7 @@
             <vbox>
               <hbox>
                 <label id="localizationBundlesLabel" value="${importDialog.PARAMETERS}"/>
-                <spacer width="270"/>
+                <spacer width="270" flex="1"/>
                 <button id="editutton" image="images/spacer.gif" disabledimage="images/spacer.gif"
                         onclick="analysisImportDialogController.editParameter()" pen:classname="pentaho-editbutton"
                         pen:imagealttext="${importDialog.EDIT_PARAMETER}"/>
@@ -121,7 +122,8 @@
   <dialog id="analysisParametersDialog" width="320" height="180" title="${importDialog.PARAMETERS}"
           buttonlabelaccept="${importDialog.OK}" buttonlabelcancel="${importDialog.CLOSE}" buttons="accept,cancel"
           ondialogaccept="analysisImportDialogController.addParameter()"
-          ondialogcancel="analysisImportDialogController.closeParametersDialog()">
+          ondialogcancel="analysisImportDialogController.closeParametersDialog()"
+          pen:responsive="true" pen:sizingmode="fillviewportwidth" pen:widthcategory="extrasmall">
     <vbox>
       <label id="nameLabel" value="${importDialog.NAME}:"/>
       <textbox id="paramNameTextBox" value="" width="300"/>

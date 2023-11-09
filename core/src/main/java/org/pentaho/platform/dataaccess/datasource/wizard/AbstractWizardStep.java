@@ -134,6 +134,7 @@ public abstract class AbstractWizardStep extends AbstractXulEventHandler impleme
     stepLabel = (XulLabel) document.createElement( XUL_LABEL_TYPE );
     stepLabel.setValue( this.getStepName() );
     stepLabel.setFlex( 1 );
+    stepLabel.setTooltiptext( this.getStepName() );
     stepRow.addChild( stepLabel );
 
     stepGrid.update();
