@@ -23,6 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.models.JoinFieldModel;
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.database.model.DatabaseType;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -235,7 +238,7 @@ public class CsvDatasourceServiceImpl extends PentahoBase implements ICsvDatasou
         ColumnInfo.class, ColumnInfoCollection.class, CsvFileInfo.class, DataRow.class, FileInfo.class,
         GuiStateModel.class,
         ModelInfo.class, ModelInfoValidationListenerCollection.class, RelationalModelValidationListenerCollection.class,
-        WizardModel.class, DatabaseType.class, Domain.class, LogicalModel.class );
+        WizardModel.class, DatabaseType.class, Domain.class, LogicalModel.class, JoinFieldModel.class, JoinRelationshipModel.class, JoinTableModel.class );
       DatasourceDTO datasource = (DatasourceDTO) xs.fromXML( modelState );
       CsvFileInfo csvFileInfo = datasource.getCsvModelInfo().getFileInfo();
       String tmpFileName = csvFileInfo.getTmpFilename();
