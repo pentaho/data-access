@@ -34,6 +34,9 @@ import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.gwt.GwtModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.models.JoinFieldModel;
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.metadata.model.Domain;
@@ -48,6 +51,7 @@ import org.pentaho.metadata.repository.InMemoryMetadataDomainRepository;
 import org.pentaho.metadata.util.SQLModelGenerator;
 import org.pentaho.metadata.util.SQLModelGeneratorException;
 import org.pentaho.metadata.util.SerializationService;
+import org.pentaho.platform.dataaccess.datasource.DatasourceType;
 import org.pentaho.platform.dataaccess.datasource.beans.BogoPojo;
 import org.pentaho.platform.dataaccess.datasource.beans.BusinessData;
 import org.pentaho.platform.dataaccess.datasource.beans.LogicalModelSummary;
@@ -324,7 +328,8 @@ public class InMemoryDSWDatasourceServiceImpl implements IDSWDatasourceService {
 
   public DatasourceDTO deSerializeModelState( String dtoStr ) throws DatasourceServiceException {
     try {
-      XStream xs = SerializationService.createXStreamWithAllowedTypes( null, DatasourceDTO.class );
+      XStream xs = SerializationService.createXStreamWithAllowedTypes( null, DatasourceDTO.class, DatasourceType.class,
+        JoinFieldModel.class, JoinRelationshipModel.class, JoinTableModel.class );
       return (DatasourceDTO) xs.fromXML( dtoStr );
     } catch ( Exception e ) {
       e.printStackTrace();

@@ -66,6 +66,7 @@ import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.containers.XulVbox;
+import org.pentaho.ui.xul.gwt.tags.GwtTree;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractXulDialogController;
 import org.pentaho.ui.xul.util.XulDialogCallback;
@@ -103,7 +104,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   private XulMenuList connectionList;
 
-  private XulTree analysisParametersTree;
+  private GwtTree analysisParametersTree;
 
   private XulDialog importDialog;
 
@@ -186,7 +187,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
       importDialogModel = new AnalysisImportDialogModel();
       csrfTokenParameter = new Hidden( DISABLED_CSRF_TOKEN_PARAMETER );
       connectionList = (XulMenuList) document.getElementById( "connectionList" );
-      analysisParametersTree = (XulTree) document.getElementById( "analysisParametersTree" );
+      analysisParametersTree = (GwtTree) document.getElementById( "analysisParametersTree" );
       importDialog = (XulDialog) document.getElementById( "importDialog" );
       analysisParametersDialog = (XulDialog) document.getElementById( "analysisParametersDialog" );
       paramNameTextBox = (XulTextbox) document.getElementById( "paramNameTextBox" );
@@ -404,7 +405,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
 
   public void removeHiddenPanels() {
     // Remove all previous hidden form parameters otherwise parameters
-    // from a previous import would get included in current form submit         
+    // from a previous import would get included in current form submit
     List<Widget> hiddenPanels = findHiddenPanels();
     for ( Widget hiddenPanel : hiddenPanels ) {
       mainFormPanel.remove( hiddenPanel );
@@ -586,6 +587,11 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
   @Bindable
   public void setPreference( Integer preference ) {
     analysisPreferencesDeck.setSelectedIndex( preference );
+    if ( preference == PARAMETER_MODE ) {
+      // Make sure UI is updated after becoming visible.
+      analysisParametersTree.updateUI();
+    }
+
     importDialogModel.setParameterMode( preference == PARAMETER_MODE );
     acceptButton.setDisabled( !isValid() );
   }
@@ -779,7 +785,7 @@ public class AnalysisImportDialogController extends AbstractXulDialogController<
           connectionFound = true;
         }
       }
-      //always add the Datasource so if the toggle is selected it displays - 
+      //always add the Datasource so if the toggle is selected it displays -
       // it may be JNDI and not in DSW
       importDialogModel.addParameter( paramName, paramValue );
       hasParameters = !connectionFound;

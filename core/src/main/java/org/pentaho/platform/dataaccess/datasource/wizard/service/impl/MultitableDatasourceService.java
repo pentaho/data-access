@@ -29,8 +29,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
+import org.pentaho.agilebi.modeler.models.JoinFieldModel;
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.JoinTableModel;
+import org.pentaho.agilebi.modeler.models.SchemaModel;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
 import org.pentaho.database.dialect.PDIDialect;
+import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.di.core.database.Database;
@@ -188,7 +193,8 @@ public class MultitableDatasourceService extends PentahoBase implements IGwtJoin
 
   public MultiTableDatasourceDTO deSerializeModelState( String dtoStr ) throws DatasourceServiceException {
     try {
-      XStream xs = SerializationService.createXStreamWithAllowedTypes( null, MultiTableDatasourceDTO.class );
+      XStream xs = SerializationService.createXStreamWithAllowedTypes( null, MultiTableDatasourceDTO.class, SchemaModel.class,
+        DatabaseType.class, JoinFieldModel.class, JoinRelationshipModel.class, JoinTableModel.class );
       xs.registerConverter( new LegacyDatasourceConverter() );
       return (MultiTableDatasourceDTO) xs.fromXML( dtoStr );
     } catch ( Exception e ) {
