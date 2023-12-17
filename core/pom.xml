@@ -531,7 +531,7 @@
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
-      <artifactId>pentaho-platform-scheduler</artifactId>
+      <artifactId>pentaho-scheduler-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
