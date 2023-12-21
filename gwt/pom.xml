@@ -65,13 +65,6 @@
       <artifactId>GWT-FX</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-scheduler-ui</artifactId>
-      <version>${platform.version}</version>
-      <classifier>sources</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>commons-xul-core</artifactId>
       <version>${commons-xul.version}</version>
