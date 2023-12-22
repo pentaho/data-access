@@ -488,17 +488,6 @@
         <version>${platform.version}</version>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-scheduler-core</artifactId>
-        <version>${platform.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.pentaho</groupId>
         <artifactId>actionsequence-dom</artifactId>
         <version>${pentaho-actionsequence-dom.version}</version>
