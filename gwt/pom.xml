@@ -15,6 +15,7 @@
     <gwt.module>org.pentaho.platform.dataaccess.datasource.DatasourceEditor</gwt.module>
     <gwt.style>OBFUSCATED</gwt.style>
     <gwt.loglevel>ERROR</gwt.loglevel>
+    <com.github.spotbugs.annotations.version>4.2.3</com.github.spotbugs.annotations.version>
   </properties>
   <dependencies>
     <dependency>
@@ -29,6 +30,14 @@
           <artifactId>jaxb-impl</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <!-- @Null, @Nullable annotations -->
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+      <version>${com.github.spotbugs.annotations.version}</version>
+      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
