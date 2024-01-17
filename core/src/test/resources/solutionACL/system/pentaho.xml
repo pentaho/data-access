@@ -2,7 +2,7 @@
 <!--===========================================================================
 HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
 
-Copyright 2002 - 2017 Hitachi Vantara. All rights reserved.
+Copyright 2002 - 2024 Hitachi Vantara. All rights reserved.
 
 NOTICE: All information including source code contained herein is, and
 remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -72,7 +72,7 @@ explicitly covering such access.
 	-->
 
         <cache-provider>
-          <class>net.sf.ehcache.hibernate.SingletonEhCacheProvider</class>
+          <class>org.pentaho.platform.plugin.services.cache.HvCacheRegionFactory</class>
           <region>pentahoCache</region>
           <!--
           Uncomment this block to specify some parameters for your cache provider. EHCache has no parameters 
