@@ -66,6 +66,7 @@
     <jcr.version>2.0</jcr.version>
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
     <commons-xul.version>10.1.0.0-SNAPSHOT</commons-xul.version>
+    <ehcache-core.version>2.5.1</ehcache-core.version>
     <lucene-core.version>3.6.0</lucene-core.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <junit-dep.version>4.4</junit-dep.version>
@@ -1239,6 +1240,18 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate-core.version}</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache-core</artifactId>
+        <version>${ehcache-core.version}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
