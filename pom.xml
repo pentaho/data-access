@@ -1225,16 +1225,10 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.yaml</groupId>
-        <artifactId>snakeyaml</artifactId>
-        <version>${snakeyaml.version}</version>
+        <groupId>org.hitachivantara</groupId>
+        <artifactId>safeyaml</artifactId>
+        <version>${safeyaml.version}</version>
         <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
