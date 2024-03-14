@@ -83,7 +83,7 @@
     <jcommon.version>1.0.14</jcommon.version>
     <stax.version>1.2.0</stax.version>
     <flexjson.version>2.1</flexjson.version>
-    <ognl.version>2.6.9</ognl.version>
+    <ognl.version>3.0.12</ognl.version>
     <encoder.version>1.2</encoder.version>
     <pentaho-cwm.version>1.5.4</pentaho-cwm.version>
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
