@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -45,11 +45,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
@@ -91,7 +91,7 @@ public class CsvDatasourceServiceImplTest {
     existingContext = PentahoSystem.getApplicationContext();
 
     mockContext = mock( IApplicationContext.class );
-    when( mockContext.getSolutionPath( anyString() ) ).thenReturn( TMP_DIR + '/' );
+    when( mockContext.getSolutionPath( any() ) ).thenReturn( TMP_DIR + '/' );
     PentahoSystem.setApplicationContext( mockContext );
 
     service = new CsvDatasourceServiceImpl();

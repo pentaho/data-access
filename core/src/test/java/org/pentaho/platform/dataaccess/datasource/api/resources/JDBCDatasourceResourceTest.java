@@ -12,34 +12,27 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.IPluginResourceLoader;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
@@ -48,46 +41,41 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
-@PowerMockIgnore( "jdk.internal.reflect.*" )
-@RunWith( PowerMockRunner.class )
-@PrepareForTest( { JDBCDatasourceResource.class, DatasourceService.class, LogFactory.class, PentahoSystem.class } )
+
 public class JDBCDatasourceResourceTest {
 
   private JDBCDatasourceResource resource;
   private ConnectionServiceImpl service;
   private IDatabaseConnection connection;
-  private static Log logger = mock( Log.class );
   private IPluginResourceLoader pluginResourceLoader = mock( IPluginResourceLoader.class );
-
-  @BeforeClass
-  public static void once() {
-    mockStatic( LogFactory.class );
-    when( LogFactory.getLog( JDBCDatasourceResource.class ) ).thenReturn( logger );
-  }
+  private MockedStatic<PentahoSystem> mockedPentahoSystem;
 
   @Before
   public void setup() throws Exception {
-    mockStatic( DatasourceService.class );
-
-    service = mock( ConnectionServiceImpl.class );
-    whenNew( ConnectionServiceImpl.class ).withAnyArguments().thenReturn( service );
-
-    resource = spy( new JDBCDatasourceResource() );
+    mockedPentahoSystem = mockStatic( PentahoSystem.class );
+    service = mock(ConnectionServiceImpl.class);
+    resource = spy( new JDBCDatasourceResource( service ) );
 
     connection = new DatabaseConnection();
     connection.setName( "Name" );
     connection.setPassword( "Password!" );
 
-    mockStatic( PentahoSystem.class );
-    when( PentahoSystem.get( IPluginResourceLoader.class, null ) ).thenReturn( pluginResourceLoader );
+    IAuthorizationPolicy policy = mock( IAuthorizationPolicy.class );
+    when(policy.isAllowed( any() )).thenReturn( true );
+    mockedPentahoSystem.when( () -> PentahoSystem.get( IAuthorizationPolicy.class ) ).thenReturn( policy );
+    mockedPentahoSystem.when( () -> PentahoSystem.get( IPluginResourceLoader.class, null ) ).thenReturn( pluginResourceLoader );
+  }
+
+  @After
+  public void cleanup() {
+    mockedPentahoSystem.close();
   }
 
   @Test
@@ -229,12 +217,12 @@ public class JDBCDatasourceResourceTest {
 
   @Test
   public void testAddOrUpdateNoPublishPermission() throws Exception {
-    PowerMockito.doThrow( new PentahoAccessControlException() ).when( DatasourceService.class, "validateAccess" );
-
-    Response response = resource.addOrUpdate( "Name", (DatabaseConnection) connection );
-
-    assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus() );
-    verify( service, never() ).addConnection( any() );
-    verify( service, never() ).updateConnection( any() );
+    try ( MockedStatic<DatasourceService> mockedDataSource = mockStatic( DatasourceService.class ) ) {
+      mockedDataSource.when( DatasourceService::validateAccess ).thenThrow( new PentahoAccessControlException() );
+      Response response = resource.addOrUpdate( "Name", (DatabaseConnection) connection );
+      assertEquals( Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus() );
+      verify( service, never() ).addConnection( any() );
+      verify( service, never() ).updateConnection( any() );
+    }
   }
 }

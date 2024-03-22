@@ -12,14 +12,14 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.commons.connection.IPentahoConnection;
@@ -53,7 +53,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ConnectionServiceImplTest {
 
@@ -85,10 +94,10 @@ public class ConnectionServiceImplTest {
   public void setUp() throws ConnectionServiceException, ObjectFactoryException, DBDatasourceServiceException, java.sql.SQLException {
     doReturn( dmd ).when( nativeConnection ).getMetaData();
     doReturn( nativeConnection ).when( sqlConnection ).getNativeConnection();
-    doReturn( SimpleDataAccessPermissionHandler.class.getName() ).when( loader ).getPluginSetting( this.anyClass(), anyString(), anyString() );
+    doReturn( SimpleDataAccessPermissionHandler.class.getName() ).when( loader ).getPluginSetting( Mockito.<ClassLoader>any(), anyString(), anyString() );
 
     when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
-    when( pentahoObjectFactory.get( this.anyClass(), anyString(), any( IPentahoSession.class ) ) ).thenAnswer(
+    when( pentahoObjectFactory.get( any(), anyString(), Mockito.<IPentahoSession>any() ) ).thenAnswer(
         new Answer<Object>() {
           @Override
           public Object answer( InvocationOnMock invocation ) throws Throwable {
@@ -305,7 +314,7 @@ public class ConnectionServiceImplTest {
     assertTrue( connectionServiceImpl.addConnection( mockDBConnection ) );
     doReturn( DatabaseAccessType.JNDI ).when( mockDBConnection ).getAccessType();
     assertTrue( connectionServiceImpl.addConnection( mockDBConnection ) );
-    verify( mockDBConnection ).setUsername( anyString() );
+    verify( mockDBConnection ).setUsername( any() );
   }
 
   @Test
@@ -332,7 +341,7 @@ public class ConnectionServiceImplTest {
   @Test
   public void testUpdateConnection() throws Exception {
     doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-    doReturn( "" ).when( connectionServiceImpl ).getConnectionPassword( anyString(), anyString() );
+    doReturn( "" ).when( connectionServiceImpl ).getConnectionPassword( any(), any() );
 
     assertTrue( connectionServiceImpl.updateConnection( mockDBConnection ) );
 
@@ -390,7 +399,7 @@ public class ConnectionServiceImplTest {
 
   private void testTestConnection( DatabaseAccessType accessType, IDatabaseConnection connection, String database, boolean isPool ) throws Exception {
     doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
-    doReturn( "connectionPassword" ).when( connectionServiceImpl ).getConnectionPassword( anyString(), anyString() );
+    doReturn( "connectionPassword" ).when( connectionServiceImpl ).getConnectionPassword( any(), any() );
 
     IDatabaseDialect dialect = mock( IDatabaseDialect.class );
     doReturn( "NativeDriver" ).when( dialect ).getNativeDriver();
@@ -427,17 +436,5 @@ public class ConnectionServiceImplTest {
     doNothing().when( connectionServiceImpl ).ensureDataAccessPermission();
     doThrow( mock( DatasourceMgmtServiceException.class ) ).when( connectionServiceImpl.datasourceMgmtSvc ).getDatasourceByName( CONN_NAME );
     assertTrue( connectionServiceImpl.isConnectionExist( CONN_NAME ) );
-  }
-
-  private Class<?> anyClass() {
-    return argThat( new AnyClassMatcher() );
-  }
-
-  private class AnyClassMatcher extends ArgumentMatcher<Class<?>> {
-
-    @Override
-    public boolean matches( final Object arg ) {
-      return true;
-    }
   }
 }

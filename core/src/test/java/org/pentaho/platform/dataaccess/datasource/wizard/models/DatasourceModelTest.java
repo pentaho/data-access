@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara.  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.models;
@@ -208,8 +208,8 @@ public class DatasourceModelTest {
 
   @Test
   public void testDatasourceDTOSerialization() throws Exception {
-
-    PentahoSystem.registerObjectFactory( new TestObjectFactory() );
+    TestObjectFactory factory = new TestObjectFactory();
+    PentahoSystem.registerObjectFactory( factory );
 
     DatasourceModel datasourceModel = spy( new DatasourceModel() );
     doReturn( "testdatasource" ).when( datasourceModel ).generateTableName();
@@ -228,5 +228,7 @@ public class DatasourceModelTest {
     DatasourceDTO dto2 = service.deSerializeModelState( dtoString );
 
     assertEquals( dto, dto2 );
+
+    PentahoSystem.deregisterObjectFactory( factory );
   }
 }
