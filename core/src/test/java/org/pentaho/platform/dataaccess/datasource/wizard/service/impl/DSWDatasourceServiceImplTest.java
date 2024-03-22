@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara.  All rights reserved.
 */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
@@ -21,8 +21,9 @@ import com.thoughtworks.xstream.security.AnyTypePermission;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
+import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
@@ -83,7 +84,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
@@ -98,6 +98,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith( MockitoJUnitRunner.class )
 public class DSWDatasourceServiceImplTest {
 
   private static final String CONNECTION_NAME = "[connection 接続 <;>!@#$%^&*()_-=+.,]";
@@ -179,7 +180,7 @@ public class DSWDatasourceServiceImplTest {
     when( workspace2Models.getLogicalModel( ModelerPerspective.REPORTING ) ).thenReturn( reportingModel );
 
     dswService = spy( new DSWDatasourceServiceImpl( mock( ConnectionServiceImpl.class ) ) );
-    doNothing().when( dswService ).checkSqlQueriesSupported( anyString() );
+    doNothing().when( dswService ).checkSqlQueriesSupported( any() );
     dswService.setMetadataDomainRepository( domainRepository );
 
     Object[][] coumnHeaders = new Object[][]{ columns };
@@ -199,7 +200,7 @@ public class DSWDatasourceServiceImplTest {
 
     pentahoObjectFactory = mock( IPentahoObjectFactory.class );
     when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
-    when( pentahoObjectFactory.get( this.anyClass(), anyString(), any( IPentahoSession.class ) ) )
+    when( pentahoObjectFactory.get( any(), anyString(), any( IPentahoSession.class ) ) )
        .thenAnswer( new Answer<Object>() {
            @Override
            public Object answer( InvocationOnMock invocation ) throws Throwable {
@@ -278,7 +279,6 @@ public class DSWDatasourceServiceImplTest {
   @Test
   public void testDeleteLogicalModel_DoNotDeleteAnyWithoutPermissions() throws Exception {
     doReturn( false ).when( dswService ).hasDataAccessPermission();
-    doReturn( workspace2Models ).when( dswService ).createModelerWorkspace();
     assertFalse( dswService.deleteLogicalModel( DOMAIN_ID_2MODELS, MODEL_NAME ) );
 
     List<LogicalModel> logicalModels = domain2Models.getLogicalModels();
@@ -325,7 +325,7 @@ public class DSWDatasourceServiceImplTest {
   private void testDeleteLogicalModel_Exception( Class<? extends Throwable> clazz ) throws Exception {
     doReturn( true ).when( dswService ).hasDataAccessPermission();
     doReturn( workspace2Models ).when( dswService ).createModelerWorkspace();
-    doThrow( clazz ).when( domainRepository ).removeModel( anyString(), anyString() );
+    doThrow( clazz ).when( domainRepository ).removeModel( any(), any() );
     dswService.deleteLogicalModel( null, MODEL_NAME );
   }
 
@@ -611,14 +611,14 @@ public class DSWDatasourceServiceImplTest {
     connectionSpy.setDatabaseType( mock( IDatabaseType.class ) );
 
     doReturn( modelerService ).when( dswService ).createModelerService();
-    doReturn( true ).when( dswService ).hasDataAccessPermission();
     doReturn( roleList ).when( dswService ).getPermittedRoleList();
     doReturn( userList ).when( dswService ).getPermittedUserList();
     doReturn( null ).when( dswService ).getGeoContext();
     doReturn( 1 ).when( dswService ).getDefaultAcls();
-    XStream testXstream = new XStream();
+    XStream testXstream = mock( XStream.class );
     testXstream.addPermission( AnyTypePermission.ANY );
     doReturn( testXstream ).when( dswService).createXStreamWithAllowedDatasourceDTO( ) ;
+    doReturn( datasourceDTO ).when( testXstream ).fromXML( anyString() );
     QueryDatasourceSummary summary = dswService.generateQueryDomain( modelName, query, connectionSpy, datasourceDTO );
     try {
       verify( dswService ).executeQuery( "[connection &#25509;&#32154; &lt;;&gt;!@#$%^&amp;*()_-=+.,]",
@@ -639,7 +639,6 @@ public class DSWDatasourceServiceImplTest {
 
   @Test( expected = DatasourceServiceException.class )
   public void testGetLogicalModels_DoesNotHavePermissionViewPermission() throws DatasourceServiceException {
-    doReturn( true ).when( dswService ).hasDataAccessPermission();
     doReturn( false ).when( dswService ).hasDataAccessViewPermission();
     dswService.getLogicalModels( LOGICAL_MODEL_CONTEXTNAME );
   }
@@ -665,7 +664,6 @@ public class DSWDatasourceServiceImplTest {
   }
 
   private void testGetLogicalModels_NullContext( String context ) throws DatasourceServiceException {
-    doReturn( true ).when( dswService ).hasDataAccessPermission();
     doReturn( true ).when( dswService ).hasDataAccessViewPermission();
     List<LogicalModelSummary> models = dswService.getLogicalModels( context );
     assertNotNull( models );
@@ -749,7 +747,8 @@ public class DSWDatasourceServiceImplTest {
 
   @Test
   public void testDeSerializeModelStateValidString() throws Exception {
-    PentahoSystem.registerObjectFactory( new TestObjectFactory() );
+    TestObjectFactory factory = new TestObjectFactory();
+    PentahoSystem.registerObjectFactory( factory );
 
     DatasourceModel datasourceModel = spy( new DatasourceModel() );
     doReturn( "testdatasource" ).when( datasourceModel ).generateTableName();
@@ -761,6 +760,8 @@ public class DSWDatasourceServiceImplTest {
 
     String serializedDTO = dswService.serializeModelState( dto );
     dswService.deSerializeModelState( serializedDTO );
+
+    PentahoSystem.deregisterObjectFactory( factory );
   }
 
   @Test( expected = DatasourceServiceException.class )
@@ -817,17 +818,5 @@ public class DSWDatasourceServiceImplTest {
             + "</org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO>";
       DatasourceDTO datasource = (DatasourceDTO) xs.fromXML( modelStateStr );
 
-  }
-
-  private Class<?> anyClass() {
-    return argThat( new AnyClassMatcher() );
-  }
-
-  private class AnyClassMatcher extends ArgumentMatcher<Class<?>> {
-
-    @Override
-    public boolean matches( final Object arg ) {
-      return true;
-    }
   }
 }

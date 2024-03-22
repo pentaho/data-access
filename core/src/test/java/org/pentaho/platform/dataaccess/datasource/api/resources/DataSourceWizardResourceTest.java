@@ -12,21 +12,21 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
-import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
+import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -34,8 +34,14 @@ import java.util.Map;
 
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class DataSourceWizardResourceTest {
 
@@ -155,7 +161,7 @@ public class DataSourceWizardResourceTest {
     boolean overwrite = false;
     boolean checkConnection = false;
     Response mockResponse = mock( Response.class );
-    doReturn( "dswId" ).when( dataSourceWizardResource.service ).publishDswFromTemp( eq(domainId), anyObject(), eq(overwrite), eq(checkConnection), eq(null ) );
+    doReturn( "dswId" ).when( dataSourceWizardResource.service ).publishDswFromTemp( eq(domainId), any(), eq(overwrite), eq(checkConnection), eq(null ) );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildOkResponse( "dswId" );
 
     Response response = dataSourceWizardResource.publishDswFromTemp( domainId, fileList, overwrite, checkConnection, null );
@@ -183,7 +189,7 @@ public class DataSourceWizardResourceTest {
     //Test 2
     IllegalArgumentException mockIllegalArgumentException = mock( IllegalArgumentException.class );
     doThrow( mockIllegalArgumentException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
-    doReturn( mockResponse ).when( dataSourceWizardResource ).buildBadRequestResponse( anyString() );
+    doReturn( mockResponse ).when( dataSourceWizardResource ).buildBadRequestResponse( any() );
 
     response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     assertEquals( mockResponse, response );
@@ -191,7 +197,7 @@ public class DataSourceWizardResourceTest {
     //Test 3
     DataSourceWizardService.DswPublishValidationException mockDataSourceWizardServiceDswPublishValidationException = mock( DataSourceWizardService.DswPublishValidationException.class );
     doThrow( mockDataSourceWizardServiceDswPublishValidationException ).when( dataSourceWizardResource.service ).publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
-    doReturn( mockResponse ).when( dataSourceWizardResource ).buildConfilictResponse( anyString() );
+    doReturn( mockResponse ).when( dataSourceWizardResource ).buildConfilictResponse( any() );
 
     response = dataSourceWizardResource.publishDsw( domainId, metadataFile, overwrite, checkConnection, null );
     assertEquals( mockResponse, response );

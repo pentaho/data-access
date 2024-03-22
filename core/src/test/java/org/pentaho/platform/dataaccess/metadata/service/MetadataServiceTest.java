@@ -12,27 +12,22 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
+import org.mockito.Mockito;
 import org.pentaho.commons.connection.IPentahoMetaData;
 import org.pentaho.commons.connection.IPentahoResultSet;
 import org.pentaho.commons.connection.marshal.MarshallableColumnNames;
 import org.pentaho.commons.connection.marshal.MarshallableResultSet;
 import org.pentaho.commons.connection.marshal.MarshallableRow;
+import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.LogicalColumn;
@@ -43,7 +38,6 @@ import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.query.model.CombinationType;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
-import org.pentaho.metadata.model.Category;
 import org.pentaho.platform.dataaccess.metadata.model.impl.Column;
 import org.pentaho.platform.dataaccess.metadata.model.impl.Condition;
 import org.pentaho.platform.dataaccess.metadata.model.impl.Model;
@@ -56,6 +50,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class MetadataServiceTest {
@@ -94,7 +98,7 @@ public class MetadataServiceTest {
 
     logicalModel = mock( LogicalModel.class );
     when( logicalModel.getId() ).thenReturn( LOGICAL_MODEL_ID );
-    when( logicalModel.getName( anyString() ) ).thenReturn( LOGICAL_MODEL_NAME );
+    when( logicalModel.getName( any() ) ).thenReturn( LOGICAL_MODEL_NAME );
     when( logicalModel.getCategories() ).thenReturn( categoryList );
     when( logicalModel.findLogicalColumn( anyString() ) ).thenReturn( logicalColumn );
     when( logicalModel.getProperty( anyString() ) ).thenReturn( null );
@@ -119,7 +123,7 @@ public class MetadataServiceTest {
 
     metadataServiceUtil = mock( MetadataServiceUtil.class );
     when( metadataServiceUtil.getMetadataRepository() ).thenReturn( iMetadataDomainRepository );
-    when( metadataServiceUtil.createThinModel( any( LogicalModel.class ), anyString() ) ).thenCallRealMethod();
+    when( metadataServiceUtil.createThinModel( Mockito.<LogicalModel>any(), anyString() ) ).thenCallRealMethod();
     when( metadataService.getMetadataServiceUtil() ).thenReturn( metadataServiceUtil );
   }
 
@@ -157,7 +161,7 @@ public class MetadataServiceTest {
   public void testListBusinessModels() {
 
     try {
-      when( metadataService.listBusinessModels( anyString() ) ).thenCallRealMethod();
+      when( metadataService.listBusinessModels( any() ) ).thenCallRealMethod();
 
       ModelInfo[] businessModels = metadataService.listBusinessModels( DOMAIN_ID );
       //Test business models array length

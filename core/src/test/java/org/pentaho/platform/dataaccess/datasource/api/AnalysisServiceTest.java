@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2020 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
@@ -20,12 +20,11 @@ package org.pentaho.platform.dataaccess.datasource.api;
 import com.google.common.collect.Sets;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -62,12 +61,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class AnalysisServiceTest {
 
@@ -111,12 +117,12 @@ public class AnalysisServiceTest {
   }
 
   private void policyAccess() {
-    when( policy.isAllowed( any( String.class ) ) ).thenReturn( true );
+    when( policy.isAllowed( any() ) ).thenReturn( true );
   }
 
   private void allAccess() {
     policyAccess();
-    when( permissionHandler.hasDataAccessPermission( any( IPentahoSession.class ) ) ).thenReturn( true );
+    when( permissionHandler.hasDataAccessPermission( any() ) ).thenReturn( true );
   }
 
   private InputStream getSchemaAsStream() {
@@ -127,10 +133,10 @@ public class AnalysisServiceTest {
   public void testImportingSchemaRemovesExistingAnnotationsByDefault() throws Exception {
     MondrianCatalog otherCatalog = new MondrianCatalog( "other", "", "", null );
     MondrianCatalog salesCatalog = new MondrianCatalog( "sales", "", "", null );
-    when( catalogService.getCatalog( eq( "sales" ), any( IPentahoSession.class ) ) ).thenReturn( salesCatalog );
+    when( catalogService.getCatalog( eq( "sales" ), Mockito.<IPentahoSession>any() ) ).thenReturn( salesCatalog );
     putMondrianSchemaWithSchemaFileName( "stubFileName", "overwrite=true" );
     verify( importer ).importFile( argThat( matchBundle( true, acl ) ) );
-    verify( catalogService ).removeCatalog( eq( "sales" ), any( IPentahoSession.class ) );
+    verify( catalogService ).removeCatalog( eq( "sales" ), Mockito.<IPentahoSession>any() );
   }
 
   @Test
@@ -176,14 +182,10 @@ public class AnalysisServiceTest {
     verify( catalogService, never() ).removeCatalog( anyString(), any( IPentahoSession.class ) );
   }
 
-  private BaseMatcher<IPlatformImportBundle> matchBundle( final boolean overwrite, final RepositoryFileAclDto acl ) {
-    return new BaseMatcher<IPlatformImportBundle>() {
+  private ArgumentMatcher<IPlatformImportBundle> matchBundle( final boolean overwrite, final RepositoryFileAclDto acl ) {
+    return new ArgumentMatcher<IPlatformImportBundle>() {
       @Override
-      public void describeTo( final Description description ) {
-      }
-
-      @Override
-      public boolean matches( final Object item ) {
+      public boolean matches( IPlatformImportBundle item ) {
         RepositoryFileImportBundle bundle = (RepositoryFileImportBundle) item;
         return bundle.getName().equals( "sales" ) && bundle.isOverwriteInRepository() == overwrite && bundle.getAcl()
             .equals( new RepositoryFileAclAdapter().unmarshal( acl ) );
@@ -229,7 +231,7 @@ public class AnalysisServiceTest {
     try {
       analysisService.removeAnalysis( "analysisId" );
       if ( hasRead && hasCreate && hasAdmin ) {
-        verify( catalogService ).removeCatalog( eq( "analysisId" ), any( IPentahoSession.class ) );
+        verify( catalogService ).removeCatalog( eq( "analysisId" ), Mockito.<IPentahoSession>any() );
       } else {
         fail( "should have got exception" );
       }
@@ -237,7 +239,7 @@ public class AnalysisServiceTest {
       if ( hasRead && hasCreate && hasAdmin ) {
         fail( "should not have got exception" );
       } else {
-        verify( catalogService, never() ).removeCatalog( any( String.class ), any( IPentahoSession.class ) );
+        verify( catalogService, never() ).removeCatalog( any( String.class ), Mockito.<IPentahoSession>any() );
       }
     }
     Mockito.reset( policy, catalogService );
@@ -255,7 +257,7 @@ public class AnalysisServiceTest {
     final MondrianCatalog foodmartCatalog3 = new MondrianCatalog( "foodmart3", "info", "file:///place",
       new MondrianSchema( "foodmart3", Collections.emptyList() ) );
     final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2, foodmartCatalog3 );
-    doReturn( catalogs ).when( catalogService ).listCatalogs( any( IPentahoSession.class ), eq( false ) );
+    doReturn( catalogs ).when( catalogService ).listCatalogs( Mockito.<IPentahoSession>any(), eq( false ) );
     final HashSet<String> domainIds = Sets.newHashSet( "foodmart.xmi", "foodmart2.xmi", "sample.xmi" );
     doReturn( domainIds ).when( metadataRepository ).getDomainIds();
 
@@ -282,7 +284,7 @@ public class AnalysisServiceTest {
     final RepositoryFileAcl expectedAcl = new RepositoryFileAcl.Builder( "owner" ).build();
     when( catalogService.getAclFor( catalogName ) ).thenReturn( expectedAcl );
     final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
-    when( catalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn( mondrianCatalog );
+    when( catalogService.getCatalog( eq( catalogName ), Mockito.<IPentahoSession>any() ) ).thenReturn( mondrianCatalog );
     final RepositoryFileAclDto actualAcl = analysisService.getAnalysisDatasourceAcl( catalogName );
     assertEquals( expectedAcl, new RepositoryFileAclAdapter().unmarshal( actualAcl ) );
   }
@@ -292,7 +294,7 @@ public class AnalysisServiceTest {
     allAccess();
     final String catalogName = "catalogName";
     final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
-    when( catalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn( mondrianCatalog );
+    when( catalogService.getCatalog( eq( catalogName ), Mockito.<IPentahoSession>any() ) ).thenReturn( mondrianCatalog );
     when( catalogService.getAclFor( catalogName ) ).thenReturn( null );
     final RepositoryFileAclDto aclDto = analysisService.getAnalysisDatasourceAcl( catalogName );
     assertNull( aclDto );
@@ -306,7 +308,7 @@ public class AnalysisServiceTest {
     aclDto.setOwner( "owner" );
     aclDto.setOwnerType( RepositoryFileSid.Type.USER.ordinal() );
     final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
-    when( catalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn( mondrianCatalog );
+    when( catalogService.getCatalog( eq( catalogName ), Mockito.<IPentahoSession>any() ) ).thenReturn( mondrianCatalog );
     analysisService.setAnalysisDatasourceAcl( catalogName, aclDto );
     verify( catalogService ).setAclFor( eq( catalogName ), eq( new RepositoryFileAclAdapter().unmarshal( aclDto ) ) );
   }
@@ -316,7 +318,7 @@ public class AnalysisServiceTest {
     allAccess();
     String catalogName = "catalogName";
     final MondrianCatalog mondrianCatalog = mock( MondrianCatalog.class );
-    when( catalogService.getCatalog( eq( catalogName ), any( IPentahoSession.class ) ) ).thenReturn( mondrianCatalog );
+    when( catalogService.getCatalog( eq( catalogName ), Mockito.<IPentahoSession>any() ) ).thenReturn( mondrianCatalog );
     analysisService.setAnalysisDatasourceAcl( catalogName, null );
     verify( catalogService ).setAclFor( eq( catalogName ), (RepositoryFileAcl) isNull() );
   }

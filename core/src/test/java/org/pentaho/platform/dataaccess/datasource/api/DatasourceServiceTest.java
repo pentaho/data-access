@@ -12,29 +12,15 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2017-2022 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2017-2024 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -53,22 +39,38 @@ import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 public class DatasourceServiceTest {
 
-  private static IAuthorizationPolicy authorizationPolicy;
-  private static DatasourceService datasourceService;
+  private IAuthorizationPolicy authorizationPolicy;
+  private DatasourceService datasourceService;
 
-  @BeforeClass
-  public static void setUpClass() throws ObjectFactoryException {
+  private IPentahoObjectFactory pentahoObjectFactory;
+
+  @Before
+  public void setUpClass() throws ObjectFactoryException {
     datasourceService = spy( new DatasourceService() );
     datasourceService.pluginResourceLoader = mock( IPluginResourceLoader.class );
     authorizationPolicy = mock( IAuthorizationPolicy.class );
     when( authorizationPolicy.isAllowed( RepositoryReadAction.NAME ) ).thenReturn( true );
     when( authorizationPolicy.isAllowed( RepositoryCreateAction.NAME ) ).thenReturn( true );
 
-    IPentahoObjectFactory pentahoObjectFactory = mock( IPentahoObjectFactory.class );
+    pentahoObjectFactory = mock( IPentahoObjectFactory.class );
     when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
-    when( pentahoObjectFactory.get( anyClass(), anyString(), any( IPentahoSession.class ) ) )
+    when( pentahoObjectFactory.get( any(), anyString(), Mockito.<IPentahoSession>any() ) )
       .thenAnswer( (Answer<Object>) invocation -> {
         if ( invocation.getArguments()[ 0 ].equals( IAuthorizationPolicy.class ) ) {
           return authorizationPolicy;
@@ -76,6 +78,12 @@ public class DatasourceServiceTest {
         return null;
       } );
     PentahoSystem.registerObjectFactory( pentahoObjectFactory );
+  }
+
+  @After
+  public void cleanup() {
+    PentahoSystem.deregisterObjectFactory( pentahoObjectFactory );
+    PentahoSystem.clearObjectFactory();
   }
 
   @Test
@@ -202,21 +210,10 @@ public class DatasourceServiceTest {
 
   }
 
-  protected static Class<?> anyClass() {
-    return argThat( new AnyClassMatcher() );
-  }
-
-  private static class AnyClassMatcher extends ArgumentMatcher<Class<?>> {
-    @Override
-    public boolean matches( final Object arg ) {
-      return true;
-    }
-  }
-
   @Test
   public void testGetDatasourceLoadThreadCount() throws IllegalArgumentException {
     String threadCountAsString = "4";
-    when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+    when( datasourceService.pluginResourceLoader.getPluginSetting( any(), anyString() ) )
         .thenReturn( threadCountAsString );
     int response = datasourceService.getDatasourceLoadThreadCount();
     assertEquals( Integer.parseInt( threadCountAsString ), response );
@@ -225,7 +222,7 @@ public class DatasourceServiceTest {
   @Test( expected = IllegalArgumentException.class )
   public void testGetDatasourceLoadThreadCountError() throws IllegalArgumentException {
     String threadCountAsString = "-4";
-    when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+    when( datasourceService.pluginResourceLoader.getPluginSetting( any(), anyString() ) )
         .thenReturn( threadCountAsString );
     datasourceService.getDatasourceLoadThreadCount();
   }
@@ -233,7 +230,7 @@ public class DatasourceServiceTest {
   @Test( expected = IllegalArgumentException.class )
   public void testGetDatasourceLoadThreadCountInvalidInput() throws IllegalArgumentException {
     String threadCountAsString = "t";
-    when( datasourceService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+    when( datasourceService.pluginResourceLoader.getPluginSetting( any(), anyString() ) )
         .thenReturn( threadCountAsString );
     datasourceService.getDatasourceLoadThreadCount();
   }

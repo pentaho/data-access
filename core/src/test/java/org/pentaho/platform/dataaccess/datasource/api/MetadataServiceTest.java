@@ -12,53 +12,20 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2022 Hitachi Vantara.  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara.  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.pentaho.platform.dataaccess.datasource.api.DatasourceServiceTest.anyClass;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.ws.rs.core.Response;
-
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
@@ -85,10 +52,41 @@ import org.pentaho.platform.plugin.services.metadata.PentahoMetadataDomainReposi
 import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository;
 import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAdapter;
 import org.pentaho.platform.web.http.api.resources.FileResource;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
+
+import javax.ws.rs.core.Response;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MetadataServiceTest {
 
@@ -197,7 +195,7 @@ public class MetadataServiceTest {
     metadataService.dataSourceAwareMetadataDomainRepository = null;
     when( metadataService.metadataDomainRepository.getDomainIds() ).thenReturn( mockSet );
     when( metadataService.metadataDomainRepository.getDomain( id ) ).thenReturn( domain );
-    when( metadataService.pluginResourceLoader.getPluginSetting( anyClass(), anyString() ) )
+    when( metadataService.pluginResourceLoader.getPluginSetting( any(), anyString() ) )
         .thenReturn( threadCountAsString );
 
     // EXECUTE
@@ -284,7 +282,7 @@ public class MetadataServiceTest {
       .createNewRepositoryFileImportBundleBuilder(
         metadataFile, false, domainId, null );
     doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
-    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any( byte[].class ) );
+    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( Mockito.<byte[]>any() );
     //    doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
     //        mockByteArrayInputStream, "fileName", domainId );
     doReturn( mockRepositoryFileImportBundle ).when( mockRepositoryFileImportBundleBuilder ).build();
@@ -377,7 +375,7 @@ public class MetadataServiceTest {
       .createNewRepositoryFileImportBundleBuilder(
         metadataFile, false, domainId, null );
     doReturn( "fileName" ).when( mockFormDataContentDisposition ).getFileName();
-    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( any( byte[].class ) );
+    doReturn( mockByteArrayInputStream ).when( metadataService ).createNewByteArrayInputStream( Mockito.<byte[]>any() );
     //    doReturn( mockRepositoryFileImportBundle ).when( metadataService ).createNewRepositoryFileImportBundle(
     //        mockByteArrayInputStream, "fileName", domainId );
     doReturn( mockRepositoryFileImportBundle ).when( mockRepositoryFileImportBundleBuilder ).build();
@@ -398,9 +396,8 @@ public class MetadataServiceTest {
       localeFiles, localeFilesInfo, acl );
 
     verify( metadataService.getImporter() ).importFile( argThat( new ArgumentMatcher<IPlatformImportBundle>() {
-      @Override public boolean matches( Object argument ) {
-        IPlatformImportBundle bundle = (IPlatformImportBundle) argument;
-        return new RepositoryFileAclAdapter().unmarshal( acl ).equals( bundle.getAcl() );
+      @Override public boolean matches( IPlatformImportBundle argument ) {
+        return new RepositoryFileAclAdapter().unmarshal( acl ).equals( argument.getAcl() );
       }
     } ) );
   }
@@ -455,9 +452,8 @@ public class MetadataServiceTest {
       localeFiles, localeFilesInfo, acl );
 
     verify( metadataService.getImporter() ).importFile( argThat( new ArgumentMatcher<IPlatformImportBundle>() {
-      @Override public boolean matches( Object argument ) {
-        IPlatformImportBundle bundle = (IPlatformImportBundle) argument;
-        return new RepositoryFileAclAdapter().unmarshal( acl ).equals( bundle.getAcl() );
+      @Override public boolean matches( IPlatformImportBundle argument ) {
+        return new RepositoryFileAclAdapter().unmarshal( acl ).equals( argument.getAcl() );
       }
     } ) );
   }
