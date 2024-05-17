@@ -12,14 +12,14 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,7 +52,7 @@ public class ConditionTest {
     when( icondition.getCategory() ).thenReturn( categoryName );
     when( icondition.getColumn() ).thenReturn( columnName );
     when( icondition.getValue() ).thenReturn( values );
-    when( icondition.getCondition( anyString(), anyString() ) ).thenCallRealMethod();
+    when( icondition.getCondition( any(), any() ) ).thenCallRealMethod();
 
     condition = mock( Condition.class );
   }

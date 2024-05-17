@@ -12,25 +12,30 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.pentaho.platform.dataaccess.datasource.wizard.models.FileInfo;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FileUtilsTest {
 
   @Test
   public void testListFiles() {
-    FileUtils fu = new FileUtils();
+    FileUtils fu = mock( FileUtils.class );
+    // Workaround related to the static initializer in FileUtils
+    when( fu.getRelativeSolutionPath() ).thenReturn( "target/test-classes/solution1/system/metadata/csvfiles/" );
+    when( fu.listFiles() ).thenCallRealMethod();
     FileInfo [] files = fu.listFiles();
     assertTrue( files != null && files.length > 0 );
   }

@@ -12,21 +12,13 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.platform.api.data.DBDatasourceServiceException;
@@ -37,6 +29,19 @@ import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.ISystemSettings;
 import org.pentaho.platform.api.engine.ObjectFactoryException;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AgileHelperTest {
 
@@ -54,7 +59,7 @@ public class AgileHelperTest {
 
     pentahoObjectFactory = mock( IPentahoObjectFactory.class );
     when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
-    when( pentahoObjectFactory.get( this.anyClass(), anyString(), any( IPentahoSession.class ) ) ).thenAnswer(
+    when( pentahoObjectFactory.get( any(), anyString(), Mockito.<IPentahoSession>any() ) ).thenAnswer(
         new Answer<Object>() {
           @Override
           public Object answer( InvocationOnMock invocation ) throws Throwable {
@@ -90,7 +95,7 @@ public class AgileHelperTest {
     assertEquals( defaultRowSize, AgileHelper.getCsvSampleRowSize() );
 
     ISystemSettings systemSettings = mock( ISystemSettings.class );
-    when( systemSettings.getSystemSetting( anyString(), anyString(), anyString() ) ).thenReturn( null ).thenReturn(
+    when( systemSettings.getSystemSetting( anyString(), anyString(), any() ) ).thenReturn( null ).thenReturn(
         String.valueOf( expected ) );
     PentahoSystem.setSystemSettingsService( systemSettings );
     assertEquals( defaultRowSize, AgileHelper.getCsvSampleRowSize() );
@@ -127,7 +132,7 @@ public class AgileHelperTest {
     String sampleProject = AgileHelper.PLUGIN_NAME;
     String sampleFolderPath = "/etc/";
     ISystemSettings systemSettings = mock( ISystemSettings.class );
-    when( systemSettings.getSystemSetting( anyString(), anyString(), anyString() ) ).thenReturn( null ).thenReturn(
+    when( systemSettings.getSystemSetting( anyString(), anyString(), any() ) ).thenReturn( null ).thenReturn(
         sampleFolderPath );
     PentahoSystem.setSystemSettingsService( systemSettings );
 
@@ -143,7 +148,7 @@ public class AgileHelperTest {
     String sampleProject = AgileHelper.PLUGIN_NAME;
     String sampleFolderPath = "/etc/";
     ISystemSettings systemSettings = mock( ISystemSettings.class );
-    when( systemSettings.getSystemSetting( anyString(), anyString(), anyString() ) )
+    when( systemSettings.getSystemSetting( anyString(), anyString(), any() ) )
       .thenReturn( null )
       .thenReturn( sampleFolderPath );
     PentahoSystem.setSystemSettingsService( systemSettings );
@@ -157,16 +162,5 @@ public class AgileHelperTest {
     String jndiName = "HSQL";
     Connection connection =  AgileHelper.getConnection( jndiName );
     assertNotNull( connection );
-  }
-
-  private Class<?> anyClass() {
-    return argThat( new AnyClassMatcher() );
-  }
-
-  private class AnyClassMatcher extends ArgumentMatcher<Class<?>> {
-    @Override
-    public boolean matches( final Object arg ) {
-      return true;
-    }
   }
 }

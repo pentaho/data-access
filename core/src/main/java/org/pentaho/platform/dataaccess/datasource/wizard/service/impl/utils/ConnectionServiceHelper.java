@@ -12,10 +12,11 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
+import com.google.gwt.thirdparty.guava.common.annotations.VisibleForTesting;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.database.model.IDatabaseConnection;
@@ -28,7 +29,8 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class ConnectionServiceHelper {
   private static final Log logger = LogFactory.getLog( ConnectionServiceHelper.class );
-  private static IDatasourceMgmtService datasourceMgmtSvc;
+  @VisibleForTesting
+  protected static IDatasourceMgmtService datasourceMgmtSvc;
   private static char PASSWORD_REPLACE_CHAR = '*';
 
   static {
