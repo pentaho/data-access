@@ -34,7 +34,7 @@ public class FileUtilsTest {
   public void testListFiles() {
     FileUtils fu = mock( FileUtils.class );
     // Workaround related to the static initializer in FileUtils
-    when( fu.getRelativeSolutionPath() ).thenReturn( "target/test-classes/solution1/\\/system/metadata/csvfiles/" );
+    when( fu.getRelativeSolutionPath() ).thenReturn( "target/test-classes/solution1/system/metadata/csvfiles/" );
     when( fu.listFiles() ).thenCallRealMethod();
     FileInfo [] files = fu.listFiles();
     assertTrue( files != null && files.length > 0 );
