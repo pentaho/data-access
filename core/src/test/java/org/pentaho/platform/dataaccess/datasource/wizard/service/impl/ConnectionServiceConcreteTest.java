@@ -12,16 +12,16 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
  */
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 import org.pentaho.commons.connection.IPentahoConnection;
@@ -36,11 +36,10 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.services.connection.datasource.dbcp.PooledDatasourceHelper;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,9 +69,9 @@ public class ConnectionServiceConcreteTest {
 
   @Before
   public void setUp() throws ObjectFactoryException {
-    doReturn( SimpleDataAccessPermissionHandler.class.getName() ).when( loader ).getPluginSetting( this.anyClass(), anyString(), anyString() );
+    doReturn( SimpleDataAccessPermissionHandler.class.getName() ).when( loader ).getPluginSetting( Mockito.<ClassLoader>any(), anyString(), anyString() );
     when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
-    when( pentahoObjectFactory.get( this.anyClass(), anyString(), any( IPentahoSession.class ) ) ).thenAnswer(
+    when( pentahoObjectFactory.get( any(), anyString(), any( IPentahoSession.class ) ) ).thenAnswer(
             (Answer<Object>) invocation -> {
               if ( invocation.getArguments()[0].equals( IPluginResourceLoader.class ) ) {
                 return loader;
@@ -112,17 +111,5 @@ public class ConnectionServiceConcreteTest {
     concrete.updateConnection( connection );
 
     verify( connection ).setPassword( eq( pass ) );
-  }
-
-  private Class<?> anyClass() {
-    return argThat( new ConnectionServiceConcreteTest.AnyClassMatcher() );
-  }
-
-  private class AnyClassMatcher extends ArgumentMatcher<Class<?>> {
-
-    @Override
-    public boolean matches( final Object arg ) {
-      return true;
-    }
   }
 }

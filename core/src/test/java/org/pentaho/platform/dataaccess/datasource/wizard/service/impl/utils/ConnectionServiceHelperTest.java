@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,23 +21,22 @@
  ******************************************************************************/
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatcher;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.platform.api.engine.IPentahoObjectFactory;
-import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.repository.datasource.DatasourceMgmtServiceException;
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ConnectionServiceHelperTest {
 
@@ -46,8 +45,6 @@ public class ConnectionServiceHelperTest {
   private static final String INVALID_CONNECTION = "invalidConnection";
 
   private static final String EXCEPTION_CONNECTION = "exceptionConnection";
-
-  private IPentahoObjectFactory pentahoObjectFactory;
 
   private IDatabaseConnection connection = mock( IDatabaseConnection.class );
 
@@ -68,25 +65,7 @@ public class ConnectionServiceHelperTest {
         throw new DatasourceMgmtServiceException();
       }
     } );
-    pentahoObjectFactory = mock( IPentahoObjectFactory.class );
-    when( pentahoObjectFactory.objectDefined( anyString() ) ).thenReturn( true );
-    when( pentahoObjectFactory.get( this.anyClass(), anyString(), any( IPentahoSession.class ) ) )
-       .thenAnswer( new Answer<Object>() {
-           @Override
-           public Object answer( InvocationOnMock invocation ) throws Throwable {
-             if ( invocation.getArguments()[0].equals( IDatasourceMgmtService.class ) ) {
-               return service;
-             }
-             return null;
-           }
-         } );
-    PentahoSystem.registerObjectFactory( pentahoObjectFactory );
-  }
-
-  @After
-  public void tearDown() {
-    PentahoSystem.deregisterObjectFactory( pentahoObjectFactory );
-    PentahoSystem.clearObjectFactory();
+    ConnectionServiceHelper.datasourceMgmtSvc = service;
   }
 
   @Test
@@ -149,16 +128,5 @@ public class ConnectionServiceHelperTest {
   @Test( expected = ConnectionServiceException.class )
   public void testGetConnectionPassword_getErrorFromService() throws Exception {
     ConnectionServiceHelper.getConnectionPassword( EXCEPTION_CONNECTION, "password" );
-  }
-
-  private Class<?> anyClass() {
-    return argThat( new AnyClassMatcher() );
-  }
-
-  private class AnyClassMatcher extends ArgumentMatcher<Class<?>> {
-    @Override
-    public boolean matches( final Object arg ) {
-      return true;
-    }
   }
 }
