@@ -22,7 +22,7 @@
 pentaho.pda.MqlHandler = function mqlHandler(sandbox) {
 	pentaho.pda.Handler.call(this, sandbox);
     this.type = pentaho.pda.SOURCE_TYPE_MQL;
-    this.METADATA_SERVICE_URL = '../../../../content/ws-run/metadataService'; 
+    this.METADATA_SERVICE_URL = '../../../../plugin/data-access/api/metadataDA';
 }
 
 inheritPrototype(pentaho.pda.MqlHandler, pentaho.pda.Handler); //borrow the parent's methods
@@ -61,7 +61,7 @@ pentaho.pda.MqlHandler.prototype.getSources = function(filter, callback) {
 
             // parse the XML
             var xml = parseXML( result ), 
-            nodes = xml.getElementsByTagName('return');
+            nodes = xml.getElementsByTagName('modelInfo');
             for( var idx=0; idx<nodes.length; idx++ ) {
                 each = this.addModelInfoFromNode( nodes[idx] ) || {};
 				each.addCapability(pentaho.pda.CAPABILITIES.HAS_DOWN_AXIS);
@@ -207,7 +207,7 @@ pentaho.pda.model.mql.prototype.discoverModelDetail = function() {
 	// parse the XML
 	var xml = parseXML( result );
     
-	var nodes = xml.getElementsByTagName('return');
+	var nodes = xml.getElementsByTagName('model');
 	if( nodes && nodes.length> 0 ) {
 		//return this.getDetailFromNode( nodes[0], modelAccess, datasourceConfig );
         // get the categories
@@ -305,10 +305,7 @@ pentaho.pda.model.mql.prototype.submitQuery = function( queryObject, rowLimit, c
             rowLimit = -1;
         }
     
-        var handleResultCallback = dojo.hitch(this, function(resultXml) {
-          var result = parseXML( resultXml );
-          var nodes = result.getElementsByTagName('return');
-          resultJson = this.getText( nodes[0] );
+        var handleResultCallback = dojo.hitch(this, function(resultJson) {
 //          alert(resultJson);
           var result = JSON.parse(resultJson);
           if (callback) {
@@ -348,10 +345,7 @@ pentaho.pda.model.mql.prototype.submitXmlQuery = function( queryObject, rowLimit
             var url = this.handler.METADATA_SERVICE_URL+'/doXmlQueryToCdaJson';
             var query = 'xml='+escape(xml)+'&rowLimit='+rowLimit;
 
-            var resultXml = pentahoGet( url, query );
-            var result = parseXML( resultXml );
-            var nodes = result.getElementsByTagName('return');
-            resultJson = this.getText( nodes[0] );
+            resultJson =  pentahoGet( url, query );
 //            alert(resultJson);
             var result = JSON.parse(resultJson);
             return result;

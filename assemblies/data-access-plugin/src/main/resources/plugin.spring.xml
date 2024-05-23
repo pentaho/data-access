@@ -36,6 +36,7 @@
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypeReaderWriter" scope="singleton"/>
   <bean class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DatabaseTypesListReaderWriter" scope="singleton"/>
   <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer" scope="singleton"/>
+  <bean class="org.pentaho.platform.dataaccess.metadata.service.MetadataService"/>
   <bean class="org.pentaho.platform.web.servlet.PentahoSerializationPolicy">
     <property name="whiteList">
       <util:list>
