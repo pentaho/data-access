@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
@@ -351,7 +352,7 @@ public class AnalysisService extends DatasourceService {
 
   // for unit test
   XMLInputFactory getXMLInputFactory() {
-    return XMLInputFactory.newInstance();
+    return XMLParserFactoryProducer.createSecureXMLInputFactory();
   }
 
   String getSchemaName( String encoding, InputStream inputStream ) throws XMLStreamException, IOException {
