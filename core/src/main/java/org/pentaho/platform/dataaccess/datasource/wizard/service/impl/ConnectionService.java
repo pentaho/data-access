@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -45,6 +46,7 @@ import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnectionPoolParameter;
 import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.database.util.DatabaseUtil;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
@@ -430,9 +432,15 @@ public class ConnectionService {
   @Path( "/get" )
   @Produces( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
-  public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
+  public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name,
+                                                  @DefaultValue( "false" ) @QueryParam( "mask" ) Boolean mask )
+    throws ConnectionServiceException {
     IDatabaseConnection conn = connectionService.getConnectionByName( name );
-    hidePassword( conn );
+    if ( mask ) {
+      encryptPassword( conn );
+    } else {
+      hidePassword( conn );
+    }
     return conn;
   }
 
@@ -491,5 +499,9 @@ public class ConnectionService {
    */
   private void hidePassword( IDatabaseConnection conn ) {
     conn.setPassword( null );
+  }
+
+  private void encryptPassword( IDatabaseConnection conn ) {
+    conn.setPassword( Encr.encryptPasswordIfNotUsingVariables( conn.getPassword() ) );
   }
 }
