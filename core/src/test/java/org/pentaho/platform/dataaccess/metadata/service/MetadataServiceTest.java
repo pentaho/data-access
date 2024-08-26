@@ -53,6 +53,7 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
@@ -161,16 +162,16 @@ public class MetadataServiceTest {
   public void testListBusinessModels() {
 
     try {
-      when( metadataService.listBusinessModels( any() ) ).thenCallRealMethod();
+      when( metadataService.listBusinessModels( any(), any() ) ).thenCallRealMethod();
 
-      ModelInfo[] businessModels = metadataService.listBusinessModels( DOMAIN_ID );
+      ModelInfo[] businessModels = metadataService.listBusinessModels( DOMAIN_ID, "" );
       //Test business models array length
       Assert.assertTrue( businessModels.length == 2 );
       //Test business models array sort
       Assert.assertTrue( businessModels[0].getModelName() == LOGICAL_MODEL_NAME );
       Assert.assertTrue( businessModels[1].getModelName() == LOGICAL_MODEL_2_NAME );
 
-      businessModels = metadataService.listBusinessModels( null );
+      businessModels = metadataService.listBusinessModels( null, null );
       //Test business models array length
       Assert.assertTrue( businessModels.length == 2 );
       //Test business models array sort
@@ -192,10 +193,10 @@ public class MetadataServiceTest {
       + "\"modelName\":\"" + LOGICAL_MODEL_2_NAME + "\"}]";
 
     try {
-      when( metadataService.listBusinessModels( anyString() ) ).thenCallRealMethod();
-      when( metadataService.listBusinessModelsJson( anyString() ) ).thenCallRealMethod();
+      when( metadataService.listBusinessModels( anyString(), nullable( String.class ) ) ).thenCallRealMethod();
+      when( metadataService.listBusinessModelsJson( anyString(), nullable( String.class ) ) ).thenCallRealMethod();
 
-      String businessModelsJson = metadataService.listBusinessModelsJson( DOMAIN_ID );
+      String businessModelsJson = metadataService.listBusinessModelsJson( DOMAIN_ID, "" );
 
       Assert.assertEquals( expectedBusinessModelsJson, businessModelsJson );
 
