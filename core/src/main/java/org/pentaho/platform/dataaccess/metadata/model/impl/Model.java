@@ -12,18 +12,21 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
 
 import org.pentaho.platform.dataaccess.metadata.model.IModel;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Concrete, lightweight, serializable implementation of an {@see IModel} object
  *
  * @author jamesdixon
  */
+@XmlRootElement
 public class Model implements IModel {
 
   private static final long serialVersionUID = 6865069259179116876L;
