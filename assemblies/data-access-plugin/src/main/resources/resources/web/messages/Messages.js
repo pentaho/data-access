@@ -49,7 +49,7 @@ Messages.entityDecoder=document.createElement('textarea');
 Messages.html_entity_decode = function(str)
 {
     try{
-        Messages.entityDecoder.innerHTML = str; 
+        Messages.entityDecoder.textContent = str;
         var value = Messages.entityDecoder.value;
         value = unescape(value);
         return value;
@@ -117,7 +117,7 @@ var cnt = 0;
 		element = elementOrId;
 	}
 	if (element) {
-		element.innerHTML = Messages.getString(msgKey);
+		element.textContent= Messages.getString(msgKey);
 	}
 };
 /* static init */
