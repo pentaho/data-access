@@ -445,6 +445,31 @@ public class ConnectionService {
   }
 
   /**
+   * Returns the database connection details
+   *
+   * @param id
+   *          String representing the name of the database to return
+   * @return Database connection by name
+   *
+   * @throws ConnectionServiceException
+   */
+  @GET
+  @Path( "/get-by-id" )
+  @Produces( { APPLICATION_JSON } )
+  @Facet( name = "Unsupported" )
+  public IDatabaseConnection getConnectionById( @QueryParam( "id" ) String id,
+                                                  @DefaultValue( "false" ) @QueryParam( "mask" ) Boolean mask )
+      throws ConnectionServiceException {
+    IDatabaseConnection conn = connectionService.getConnectionById( id );
+    if ( mask ) {
+      encryptPassword( conn );
+    } else {
+      hidePassword( conn );
+    }
+    return conn;
+  }
+
+  /**
    * Returns a response based on the existence of a database connection
    *
    * @param name
