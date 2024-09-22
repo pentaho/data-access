@@ -31,8 +31,8 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
 
 @Path( "/data-access/api/mondrian" )
