@@ -13,7 +13,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
