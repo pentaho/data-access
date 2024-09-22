@@ -47,7 +47,7 @@ import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAc
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * This service allows for listing, download, and removal of DSW data sources in the BA Platform.
@@ -262,11 +262,11 @@ public class DataSourceWizardResource {
       @ResponseCode( code = 200, condition = "File successfully imported." ),
       @ResponseCode( code = 401, condition = "User is not authorized" )
     } )
-  public Response publishDswFromTemp( @FormParam( "domainId" ) String domainId,
-                                        @FormParam ( "jsonFileList" ) String fileList,
-                                        @FormParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
-                                        @FormParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
-                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+  public Response publishDswFromTemp( @FormDataParam( "domainId" ) String domainId,
+                                        @FormDataParam ( "jsonFileList" ) String fileList,
+                                        @FormDataParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
+                                        @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
+                                        @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
     try {
       String dswId = service.publishDswFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, checkConnection, acl );
 
