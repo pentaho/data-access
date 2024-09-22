@@ -149,7 +149,6 @@ public class JDBCDatasourceResource {
    *    </pre>
    */
   @GET
-  @Path( "/" )
   @Produces( { APPLICATION_JSON, APPLICATION_XML } )
   @StatusCodes( {
     @ResponseCode( code = 200, condition = "Successfully retrieved the list of JDBC datasource IDs" ),

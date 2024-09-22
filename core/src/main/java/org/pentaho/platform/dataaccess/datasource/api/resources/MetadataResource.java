@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2018 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
@@ -63,9 +63,9 @@ import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAc
 import org.pentaho.platform.web.http.api.resources.FileResource;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * This service allows for listing, download, and removal of Metadata data sources in the BA Platform.
@@ -498,10 +498,10 @@ public class MetadataResource {
     @ResponseCode( code = 403, condition = "Access Control Forbidden" ),
     @ResponseCode( code = 201, condition = "Indicates successful import" )
     } )
-  public Response importMetadataFromTemp( @FormParam( "domainId" ) String domainId,
-                                        @FormParam ( "jsonFileList" ) String fileList,
-                                        @FormParam( OVERWRITE_IN_REPOS ) boolean overwrite,
-                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+  public Response importMetadataFromTemp( @FormDataParam( "domainId" ) String domainId,
+                                        @FormDataParam ( "jsonFileList" ) String fileList,
+                                        @FormDataParam( OVERWRITE_IN_REPOS ) boolean overwrite,
+                                        @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
 
     try {
       service.importMetadataFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, acl );
