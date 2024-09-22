@@ -12,12 +12,12 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2020 Hitachi Vantara.  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara.  All rights reserved.
  */
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
