@@ -14,7 +14,7 @@
 package org.pentaho.platform.dataaccess.datasource.api;
 
 import com.google.common.collect.Sets;
-import com.sun.jersey.core.header.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;

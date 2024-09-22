@@ -33,7 +33,7 @@ import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 public class AnalysisResourceTest {
 
