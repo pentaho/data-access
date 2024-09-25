@@ -1,5 +1,5 @@
 /*
-* Copyright 2002 - 2017 Hitachi Vantara.  All rights reserved.
+* Copyright 2002 - 2024 Hitachi Vantara.  All rights reserved.
 * 
 * This software was developed by Hitachi Vantara and is provided under the terms
 * of the Mozilla Public License, Version 1.1, or any later version. You may not use
@@ -13,12 +13,25 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
+import org.codehaus.enunciate.jaxrs.ResponseCode;
+import org.codehaus.enunciate.jaxrs.StatusCodes;
+
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 
 /**
  * @author wseyler
  */
 @Path( "/data-access/api/dbconnection" )
 public class DatabaseConnectionService {
-
+    /**
+     * The class should have at least one method with JAX-RS annotations.
+     * In this case, the getDatabaseConnection method is annotated with @GET,
+     * indicating it responds to HTTP GET requests.
+     */
+    @GET
+    public Response getDatabaseConnection() {
+        return Response.ok( "No implementation" ).build();
+    }
 }

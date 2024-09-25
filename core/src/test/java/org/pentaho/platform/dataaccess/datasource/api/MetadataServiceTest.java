@@ -17,8 +17,8 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.After;
 import org.junit.Before;
