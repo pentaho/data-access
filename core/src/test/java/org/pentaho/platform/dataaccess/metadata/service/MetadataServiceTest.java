@@ -145,16 +145,16 @@ public class MetadataServiceTest {
 
     //Test view permissions
     when( metadataService.hasViewAccess() ).thenReturn( true );
-    Assert.assertThat( metadataService.getDatasourcePermissions(), is( "VIEW" ) );
+    Assert.assertThat( metadataService.getDatasourcePermissions(), is( "\"VIEW\"" ) );
 
     //Test edit permissions
     when( metadataService.hasManageAccess() ).thenReturn( true );
-    Assert.assertThat( metadataService.getDatasourcePermissions(), is( "EDIT" ) );
+    Assert.assertThat( metadataService.getDatasourcePermissions(), is( "\"EDIT\"" ) );
 
     //No permissions test
     when( metadataService.hasViewAccess() ).thenReturn( false );
     when( metadataService.hasManageAccess() ).thenReturn( false );
-    Assert.assertThat( metadataService.getDatasourcePermissions(), is( "NONE" ) );
+    Assert.assertThat( metadataService.getDatasourcePermissions(), is( "\"NONE\"" ) );
 
   }
 
