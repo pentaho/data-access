@@ -13,17 +13,8 @@
 
 package org.pentaho.platform.dataaccess.metadata.service;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
+import flexjson.JSONSerializer;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
@@ -47,7 +38,17 @@ import org.pentaho.platform.plugin.action.pentahometadata.MetadataQueryComponent
 import org.pentaho.platform.util.messages.LocaleHelper;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 
-import flexjson.JSONSerializer;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 
 /**
  * An object that makes lightweight, serializable metadata models available to callers, and allow queries to be
@@ -78,13 +79,14 @@ public class MetadataService extends PentahoBase {
   public String getDatasourcePermissions() {
     boolean canEdit = hasManageAccess();
     boolean canView = hasViewAccess();
+    String response = "NONE"; //$NON-NLS-1$
 
     if ( canEdit ) {
-      return "EDIT"; //$NON-NLS-1$
+      response = "EDIT"; //$NON-NLS-1$
     } else if ( canView ) {
-      return "VIEW"; //$NON-NLS-1$
+      response = "VIEW"; //$NON-NLS-1$
     }
-    return "NONE"; //$NON-NLS-1$
+    return response;
   }
 
   /**
