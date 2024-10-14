@@ -13,9 +13,6 @@
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.platform.dataaccess.metadata.model.IColumn;
 
 /**
@@ -28,7 +25,7 @@ public class Column implements IColumn {
   private static final long serialVersionUID = 3751750093446278893L;
   private String id, name, description;
   private String type;
-  private List<String> aggTypes = new ArrayList<String>();
+  private String[] aggTypes = new String[ 0 ];
   private String defaultAggType;
   private String selectedAggType;
   private String fieldType;
@@ -107,10 +104,10 @@ public class Column implements IColumn {
 
   @Override
   public String[] getAggTypes() {
-    return aggTypes.toArray( new String[ aggTypes.size() ] );
+    return aggTypes;
   }
 
-  public void setAggTypes( List<String> aggTypes ) {
+  public void setAggTypes( String[] aggTypes ) {
     this.aggTypes = aggTypes;
   }
 
