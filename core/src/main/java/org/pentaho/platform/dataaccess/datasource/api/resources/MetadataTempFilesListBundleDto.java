@@ -16,7 +16,7 @@ package org.pentaho.platform.dataaccess.datasource.api.resources;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
