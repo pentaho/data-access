@@ -13,7 +13,7 @@
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
