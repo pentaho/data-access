@@ -13,7 +13,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author wseyler
