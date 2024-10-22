@@ -1,5 +1,5 @@
 /*
-* Copyright 2002 - 2017 Hitachi Vantara.  All rights reserved.
+* Copyright 2002 - 2024 Hitachi Vantara.  All rights reserved.
 * 
 * This software was developed by Hitachi Vantara and is provided under the terms
 * of the Mozilla Public License, Version 1.1, or any later version. You may not use
@@ -13,7 +13,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author wseyler

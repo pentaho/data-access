@@ -17,7 +17,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,15 +29,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.POST;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 
 import org.codehaus.enunciate.Facet;
 import org.pentaho.metadata.repository.IMetadataDomainRepository;
