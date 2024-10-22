@@ -50,7 +50,7 @@ import org.pentaho.platform.repository2.unified.webservices.RepositoryFileAclAda
 import org.pentaho.platform.web.http.api.resources.FileResource;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
