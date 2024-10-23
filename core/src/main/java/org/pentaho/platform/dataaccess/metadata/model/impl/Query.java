@@ -12,11 +12,14 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.pentaho.platform.dataaccess.metadata.model.IQuery;
@@ -25,9 +28,11 @@ public class Query implements IQuery {
 
   private static final long serialVersionUID = 8616769258583080677L;
 
-  private Column[] columns = new Column[ 0 ];
+  public static final List<Class> CLASS_LIST = new ArrayList<Class>( Arrays.asList( Query.class, Column.class, Order.class, Parameter.class,
+          Condition.class ) );
+  private Column[] columns = new Column[0];
 
-  private Condition[] conditions = new Condition[ 0 ];
+  private Condition[] conditions = new Condition[0];
 
   private Order[] orders = new Order[ 0 ];
 

@@ -27,15 +27,16 @@ import org.pentaho.platform.dataaccess.metadata.model.IColumn;
 public class Column implements IColumn {
 
   private static final long serialVersionUID = 3751750093446278893L;
-  private String id, name;
+  private String id, name, description;
   private String type;
-  private String[] aggTypes = new String[0];
+  private String[] aggTypes = new String[ 0 ];
   private String defaultAggType;
   private String selectedAggType;
   private String fieldType;
   private String category;
   private String getHorizontalAlignment;
   private String formatMask;
+  private boolean hiddenForUser;
 
   @Override
   public String getHorizontalAlignment() {
@@ -127,5 +128,20 @@ public class Column implements IColumn {
     return this.selectedAggType;
   }
 
+  public void setDescription( String description ) {
+    this.description = description;
+  }
 
+  public String getDescription() {
+    return description;
+  }
+
+  public void setHiddenForUser( boolean hiddenForUser ) {
+    this.hiddenForUser = hiddenForUser;
+  }
+
+  @Override
+  public boolean isHiddenForUser() {
+    return hiddenForUser;
+  }
 }

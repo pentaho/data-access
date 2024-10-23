@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.model;
@@ -81,9 +81,9 @@ public interface ICondition extends Serializable {
    *
    * @return true if value denotes parameter name rather than a literal value
    */
-  //  public boolean isParameterized();
+  public boolean isParameterized();
 
-  //  public String getDefaultValue();
+  // public String getDefaultValue();
 
-  //  public String getSelectedAggType();
+  public String getSelectedAggType();
 }

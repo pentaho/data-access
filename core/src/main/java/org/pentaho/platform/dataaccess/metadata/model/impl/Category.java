@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
@@ -29,7 +29,7 @@ import org.pentaho.platform.dataaccess.metadata.model.ICategory;
 public class Category implements ICategory, Serializable {
 
   private static final long serialVersionUID = -454688567483551796L;
-  private String id, name;
+  private String id, name, description;
   private Column[] columns = new Column[ 0 ];
 
   /**
@@ -37,6 +37,9 @@ public class Category implements ICategory, Serializable {
    */
   @Override
   public String getId() {
+    if ( this.id != null ) {
+      return this.id.replaceAll( "<", "&lt;" ).replaceAll( ">", "&gt;" );
+    }
     return this.id;
   }
 
@@ -45,7 +48,11 @@ public class Category implements ICategory, Serializable {
    */
   @Override
   public String getName() {
-    return this.name;
+    if ( this.name != null ) {
+      return this.name.replaceAll( "<", "&lt;" ).replaceAll( ">", "&gt;" );
+    } else {
+      return this.name;
+    }
   }
 
   /**
@@ -83,5 +90,12 @@ public class Category implements ICategory, Serializable {
     this.columns = columns;
   }
 
+  public void setDescription( String description ) {
+    this.description = description;
+  }
+
+  public String getDescription() {
+    return description;
+  }
 
 }
