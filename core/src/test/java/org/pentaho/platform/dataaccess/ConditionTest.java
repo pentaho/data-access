@@ -103,6 +103,7 @@ public class ConditionTest {
   public void testGetConditionWithParametersForAllDataTypes() {
 
     Operator[] operatorsType1Array = { Operator.GREATER_THAN, Operator.LESS_THAN, Operator.EQUAL, Operator.GREATOR_OR_EQUAL, Operator.LESS_OR_EQUAL };
+    when( icondition.isParameterized() ).thenReturn( true );
 
     for ( Operator operator : operatorsType1Array ) {
 
@@ -192,6 +193,7 @@ public class ConditionTest {
   public void testGetConditionWithoutParametersForAllDataTypes() {
 
     Operator[] operatorsType1Array = { Operator.GREATER_THAN, Operator.LESS_THAN, Operator.EQUAL, Operator.GREATOR_OR_EQUAL, Operator.LESS_OR_EQUAL };
+    when( icondition.isParameterized() ).thenReturn( false );
 
     for ( Operator operator: operatorsType1Array ) {
 
@@ -223,7 +225,7 @@ public class ConditionTest {
 
       if ( dataType.getName().equals( DataType.DATE.getName() ) ) {
         Assert.assertThat( icondition.getCondition( dataType.getName(), paramName ),
-          is( "[" + categoryName + "." + columnName + "] = \"DATEVALUE([param:" + values[ 0 ] + "])\"" ) );
+          is( "[" + categoryName + "." + columnName + "] = \"DATEVALUE(\"" + values[ 0 ] + "\")\"" ) );
       } else {
         Assert.assertThat( icondition.getCondition( dataType.getName(), null ),
           is( "[" + categoryName + "." + columnName + "] = \"" + values[ 0 ] + "\"" ) );
@@ -233,7 +235,7 @@ public class ConditionTest {
 
       if ( dataType.getName().equals( DataType.DATE.getName() ) ) {
         Assert.assertThat( icondition.getCondition( dataType.getName(), paramName ),
-          is( "CONTAINS([" + categoryName + "." + columnName + "];\"DATEVALUE([param:" + values[ 0 ] + "])\")" ) );
+          is( "CONTAINS([" + categoryName + "." + columnName + "];\"DATEVALUE(\"" + values[ 0 ] + "\")\")" ) );
       } else {
         Assert.assertThat( icondition.getCondition( dataType.getName(), null ),
           is( "CONTAINS([" + categoryName + "." + columnName + "];\"" + values[ 0 ] + "\")" ) );
@@ -243,7 +245,7 @@ public class ConditionTest {
 
       if ( dataType.getName().equals( DataType.DATE.getName() ) ) {
         Assert.assertThat( icondition.getCondition( dataType.getName(), paramName ),
-          is( "NOT(CONTAINS([" + categoryName + "." + columnName + "];\"DATEVALUE([param:" + values[ 0 ] + "])\"))" ) );
+          is( "NOT(CONTAINS([" + categoryName + "." + columnName + "];\"DATEVALUE(\"" + values[ 0 ] + "\")\"))" ) );
       } else {
         Assert.assertThat( icondition.getCondition( dataType.getName(), null ),
           is( "NOT(CONTAINS([" + categoryName + "." + columnName + "];\"" + values[ 0 ] + "\"))" ) );
@@ -253,7 +255,7 @@ public class ConditionTest {
 
       if ( dataType.getName().equals( DataType.DATE.getName() ) ) {
         Assert.assertThat( icondition.getCondition( dataType.getName(), paramName ),
-          is( "BEGINSWITH([" + categoryName + "." + columnName + "];\"DATEVALUE([param:" + values[ 0 ] + "])\")" ) );
+          is( "BEGINSWITH([" + categoryName + "." + columnName + "];\"DATEVALUE(\"" + values[ 0 ] + "\")\")" ) );
       } else {
         Assert.assertThat( icondition.getCondition( dataType.getName(), null ),
           is( "BEGINSWITH([" + categoryName + "." + columnName + "];\"" + values[ 0 ] + "\")" ) );
@@ -263,7 +265,7 @@ public class ConditionTest {
 
       if ( dataType.getName().equals( DataType.DATE.getName() ) ) {
         Assert.assertThat( icondition.getCondition( dataType.getName(), paramName ),
-          is( "ENDSWITH([" + categoryName + "." + columnName + "];\"DATEVALUE([param:" + values[ 0 ] + "])\")" ) );
+          is( "ENDSWITH([" + categoryName + "." + columnName + "];\"DATEVALUE(\"" + values[ 0 ] + "\")\")" ) );
       } else {
         Assert.assertThat( icondition.getCondition( dataType.getName(), null ),
           is( "ENDSWITH([" + categoryName + "." + columnName + "];\"" + values[ 0 ] + "\")" ) );

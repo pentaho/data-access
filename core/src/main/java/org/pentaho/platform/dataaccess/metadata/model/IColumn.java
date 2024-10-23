@@ -42,6 +42,13 @@ public interface IColumn extends Serializable {
   public String getName();
 
   /**
+   * Returns the description of the column
+   *
+   * @return
+   */
+  public String getDescription();
+
+  /**
    * Returns the category of the column
    *
    * @return
@@ -89,4 +96,11 @@ public interface IColumn extends Serializable {
    * @return
    */
   public String getFormatMask();
+
+  /**
+   * Returns hidden for user flag
+   *
+   * @return
+   */
+  public boolean isHiddenForUser();
 }

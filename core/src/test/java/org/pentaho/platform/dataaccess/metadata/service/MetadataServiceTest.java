@@ -214,7 +214,7 @@ public class MetadataServiceTest {
   public void testLoadModelJson() {
 
     final String expectedModelJson = "{\"categories\":[{\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl"
-      + ".Category\",\"columns\":[],\"id\":\"" + CATEGORY_ID + "\",\"name\":null}],\"class\":\"org.pentaho.platform"
+      + ".Category\",\"columns\":[],\"description\":null,\"id\":\"" + CATEGORY_ID + "\",\"name\":null}],\"class\":\"org.pentaho.platform"
       + ".dataaccess.metadata.model.impl.Model\",\"description\":null,\"domainId\":\"" + DOMAIN_ID + "\",\"id\":\"" + LOGICAL_MODEL_ID
       + "\",\"name\":\"" + LOGICAL_MODEL_NAME + "\"}";
 
