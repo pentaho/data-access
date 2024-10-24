@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.service;
@@ -188,7 +188,7 @@ public class MetadataServiceUtil extends PentahoBase {
     if ( !aggTypes.contains( defaultAggType ) ) {
       aggTypes.add( defaultAggType.name() );
     }
-    col.setAggTypes( aggTypes );
+    col.setAggTypes( aggTypes.toArray( new String[ aggTypes.size() ] ) );
     col.setDefaultAggType( defaultAggType.name() );
     col.setSelectedAggType( defaultAggType.name() );
 
