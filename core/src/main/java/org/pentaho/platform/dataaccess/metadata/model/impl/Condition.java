@@ -12,11 +12,12 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.query.model.CombinationType;
 import org.pentaho.platform.dataaccess.metadata.model.ICondition;
@@ -30,9 +31,9 @@ public class Condition implements ICondition {
   private String operator = Operator.EQUAL.name();
   private String[] value;
   private String comboType = CombinationType.AND.name();
-  //  private boolean parameterized;
-  //  private String defaultValue;
-  //  private String selectedAggType;
+  private boolean parameterized;
+  // private String defaultValue;
+  private String selectedAggType;
 
   public Condition() {
 
@@ -75,36 +76,36 @@ public class Condition implements ICondition {
   }
 
   public String getCondition( String type ) {
-    return getCondition( type, column );
+    return getCondition( type, isParameterized() ? value[0] : null );
   }
 
   public String getCondition( String type, String paramName ) {
     String[] val = getValue().clone();
-/*
-    if(val == null && defaultValue != null) {
-      val = defaultValue;
-    }
-*/
+    /*
+     * if(val == null && defaultValue != null) { val = defaultValue; }
+     */
     Operator theOperator = Operator.parse( getOperator() );
     if ( type.equalsIgnoreCase( DataType.STRING.getName() ) && theOperator == Operator.EQUAL ) {
       theOperator = Operator.EXACTLY_MATCHES;
     }
 
-    if ( type.equalsIgnoreCase( DataType.STRING.getName() ) ) {
+    boolean enforceParameters = isParameterized() && paramName != null;
+
+    if ( !enforceParameters && type.equalsIgnoreCase( DataType.STRING.getName() ) ) {
       for ( int idx = 0; idx < val.length; idx++ ) {
-        val[ idx ] = "\"" + val[ idx ] + "\"";         //$NON-NLS-1$ //$NON-NLS-2$
+        val[ idx ] = "\"" + val[ idx ] + "\""; //$NON-NLS-1$ //$NON-NLS-2$
       }
     }
-    boolean enforceParameters = paramName != null;
-    String columnName = "[" + getCategory() + "." + getColumn() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$;
+
+    String columnName =
+        "[" + getCategory() + "." + getColumn() + ( StringUtils.isEmpty( selectedAggType ) ? "" : "." + selectedAggType ) + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$;
     // Date is a special case where we craft a formula function.
     if ( type.equals( DataType.DATE.getName() ) ) {
       if ( enforceParameters ) {
         // Due to the fact that the value of a Date is a forumula function, the tokenizing of
         // the value needs to happen here instead of letting the Operator class handle it.
         for ( int idx = 0; idx < val.length; idx++ ) {
-          val[ idx ] = "DATEVALUE(" + "[param:" + getValue()[ idx ].replaceAll( "[\\{\\}]", "" ) + "]"
-            + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+          val[ idx ] = "DATEVALUE(" + "[param:" + getValue()[idx].replaceAll( "[\\{\\}]", "" ) + "]" + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
         return theOperator.formatCondition( columnName, paramName, val, false );
       } else {
@@ -116,31 +117,27 @@ public class Condition implements ICondition {
     return theOperator.formatCondition( columnName, paramName, val, enforceParameters );
   }
 
+  public boolean isParameterized() {
+    return parameterized;
+  }
+
+  public void setParameterized( boolean parameterized ) {
+    this.parameterized = parameterized;
+  }
+
   /*
-    public boolean isParameterized() {
-      return parameterized;
-    }
+   * public void setDefaultValue(String val){ this.defaultValue = val; }
+   *
+   * public String getDefaultValue(){ return this.defaultValue; }
+   */
+  public void setSelectedAggType( String aggType ) {
+    this.selectedAggType = aggType;
+  }
 
-    public void setParameterized(boolean parameterized) {
-     this.parameterized = parameterized;
-    }
-  /
-    public void setDefaultValue(String val){
-      this.defaultValue = val;
-    }
+  public String getSelectedAggType() {
+    return this.selectedAggType;
+  }
 
-    public String getDefaultValue(){
-      return this.defaultValue;
-    }
-
-    public void setSelectedAggType(String aggType){
-      this.selectedAggType = aggType;
-    }
-
-    public String getSelectedAggType(){
-      return this.selectedAggType;
-    }
-  */
   public String getCategory() {
     return category;
   }

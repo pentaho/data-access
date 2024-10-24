@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.model.impl;
@@ -24,12 +24,10 @@ import java.util.Comparator;
  *
  * @author jamesdixon
  */
-public class ModelInfoComparator implements Comparator {
+public class ModelInfoComparator implements Comparator<ModelInfo> {
 
   @Override
-  public int compare( Object obj1, Object obj2 ) {
-    ModelInfo model1 = (ModelInfo) obj1;
-    ModelInfo model2 = (ModelInfo) obj2;
+  public int compare( ModelInfo model1, ModelInfo model2 ) {
     return model1.getModelName().compareTo( model2.getModelName() );
   }
 

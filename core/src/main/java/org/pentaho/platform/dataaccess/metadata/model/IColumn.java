@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.platform.dataaccess.metadata.model;
@@ -44,6 +44,13 @@ public interface IColumn extends Serializable {
    * @return
    */
   public String getName();
+
+  /**
+   * Returns the description of the column
+   *
+   * @return
+   */
+  public String getDescription();
 
   /**
    * Returns the category of the column
@@ -93,4 +100,11 @@ public interface IColumn extends Serializable {
    * @return
    */
   public String getFormatMask();
+
+  /**
+   * Returns hidden for user flag
+   *
+   * @return
+   */
+  public boolean isHiddenForUser();
 }
