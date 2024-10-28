@@ -12,9 +12,10 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
 */
 
+define(["common-ui/util/xss"], function(xssUtil) {
 Messages = function()
 {
 };
@@ -49,7 +50,7 @@ Messages.entityDecoder=document.createElement('textarea');
 Messages.html_entity_decode = function(str)
 {
     try{
-        Messages.entityDecoder.innerHTML = str; 
+        xssutil.setHtml(Messages.entityDecoder, str)
         var value = Messages.entityDecoder.value;
         value = unescape(value);
         return value;
@@ -117,8 +118,9 @@ var cnt = 0;
 		element = elementOrId;
 	}
 	if (element) {
-		element.innerHTML = Messages.getString(msgKey);
+		xssutil.setHtml(element, Messages.getString(msgKey));
 	}
 };
 /* static init */
 Messages.init();
+});
