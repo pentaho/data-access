@@ -63,15 +63,17 @@ public class DatasourceService {
   private static final Log LOGGER = LogFactory.getLog( DatasourceService.class );
 
   public DatasourceService() {
-    this( PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() ),
-        PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() ),
-        new RepositoryFileAclAdapter(),
-        PentahoSystem.get( IPluginResourceLoader.class, PentahoSessionHolder.getSession() ) );
+    this(
+      PentahoSystem.get( IMetadataDomainRepository.class, PentahoSessionHolder.getSession() ),
+      PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() ),
+      new RepositoryFileAclAdapter(),
+      PentahoSystem.get( IPluginResourceLoader.class, PentahoSessionHolder.getSession() )
+    );
   }
 
   public DatasourceService( IMetadataDomainRepository metadataDomainRepository,
-      IMondrianCatalogService mondrianCatalogService, RepositoryFileAclAdapter repositoryFileAclAdapter,
-      IPluginResourceLoader pluginResourceLoader ) {
+                            IMondrianCatalogService mondrianCatalogService, RepositoryFileAclAdapter repositoryFileAclAdapter,
+                            IPluginResourceLoader pluginResourceLoader ) {
     this.metadataDomainRepository = metadataDomainRepository;
     this.mondrianCatalogService = mondrianCatalogService;
     this.repositoryFileAclAdapter = repositoryFileAclAdapter;
@@ -94,7 +96,7 @@ public class DatasourceService {
   public static void validateAccess() throws PentahoAccessControlException {
     IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
     boolean isAdmin =
-        policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
+      policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
         && policy.isAllowed( PublishAction.NAME );
     if ( !isAdmin ) {
       throw new PentahoAccessControlException( "Access Denied" );
@@ -152,6 +154,11 @@ public class DatasourceService {
         if ( property != null ) {
           return false;
         }
+        // SME generated models
+        property = logicalModel.getProperty( "SME_GENERATED_SCHEMA" ); //$NON-NLS-1$
+        if ( property != null ) {
+          return false;
+        }
       }
       return true;
     } else {
@@ -163,8 +170,10 @@ public class DatasourceService {
     final String keySchema = "schema.xml"; //$NON-NLS-1$
     if ( fileData.containsKey( keySchema ) ) {
       final int xmiIndex = dswId.lastIndexOf( ".xmi" ); //$NON-NLS-1$
-      fileData.put( ( xmiIndex > 0 ? dswId.substring( 0, xmiIndex ) : dswId ) + ".mondrian.xml",
-          fileData.get( keySchema ) ); //$NON-NLS-1$
+      fileData.put(
+        ( xmiIndex > 0 ? dswId.substring( 0, xmiIndex ) : dswId ) + ".mondrian.xml",
+        fileData.get( keySchema )
+      ); //$NON-NLS-1$
       fileData.remove( keySchema );
     }
   }
@@ -183,17 +192,51 @@ public class DatasourceService {
     if ( domain == null ) {
       return false; //If we can't find it, then it can't be a DSW
     }
-    return !isMetadataDatasource( domain );
+    return !isMetadataDatasource( domain ) && !isSMEDatasource( domain );
   }
 
   public boolean isDSWDatasource( String domainId ) {
-    return !isMetadataDatasource( domainId );
+    return !isMetadataDatasource( domainId ) && !isSMEDatasource( domainId );
+  }
+
+  public boolean isSMEDatasource( String id ) {
+    Domain domain;
+    try {
+      domain = metadataDomainRepository.getDomain( id );
+      if ( domain == null ) {
+        return false;
+      }
+    } catch ( Exception e ) {
+      return false;
+    }
+
+    return isSMEDatasource( domain );
+  }
+
+  public static boolean isSMEDatasource( Domain domain ) {
+    try {
+      if ( domain == null ) {
+        return false;
+      }
+      List<LogicalModel> logicalModelList = domain.getLogicalModels();
+      if ( logicalModelList != null && !logicalModelList.isEmpty() ) {
+        for ( LogicalModel logicalModel : logicalModelList ) {
+          Object property = logicalModel.getProperty( "SME_GENERATED_SCHEMA" );
+          if ( property != null ) {
+            return true;
+          }
+        }
+      }
+      return false;
+    } catch ( Exception e ) {
+      return false;
+    }
   }
 
   protected int getDatasourceLoadThreadCount() throws IllegalArgumentException {
     int threadCount = Runtime.getRuntime().availableProcessors();
     String threadCountAsString =
-        pluginResourceLoader.getPluginSetting( getClass(), "settings/data-access-datasource-load-threads" );
+      pluginResourceLoader.getPluginSetting( getClass(), "settings/data-access-datasource-load-threads" );
     if ( StringUtils.isNotBlank( threadCountAsString ) ) {
       threadCount = Integer.parseInt( threadCountAsString );
       if ( threadCount <= 0 ) {

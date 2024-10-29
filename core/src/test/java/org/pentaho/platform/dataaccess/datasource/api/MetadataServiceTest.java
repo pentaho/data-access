@@ -179,10 +179,12 @@ public class MetadataServiceTest {
   public void testGetMetadataDatasourceIds() {
     // SETUP
     String id = "domainId";
-    String threadCountAsString = "1";
+    String smeId = "smeDomainId";
+    String threadCountAsString = "2";
     List<String> mockMetadataIdsList = new ArrayList<String>();
     Set<String> mockSet = new HashSet<String>();
     mockSet.add( id );
+    mockSet.add( smeId );
     mockMetadataIdsList.add( id );
     Domain domain = new Domain();
     domain.setId( id );
@@ -190,11 +192,17 @@ public class MetadataServiceTest {
     LogicalModel model = new LogicalModel();
     logicalModelList.add( model );
     domain.setLogicalModels( logicalModelList );
+    Domain smeDomain = new Domain();
+    smeDomain.setId( smeId );
+    LogicalModel smeModel = new LogicalModel();
+    domain.setLogicalModels( List.of(smeModel) );
 
     /** simulate parent {@link DatasourceService} default constructor */
     metadataService.dataSourceAwareMetadataDomainRepository = null;
     when( metadataService.metadataDomainRepository.getDomainIds() ).thenReturn( mockSet );
     when( metadataService.metadataDomainRepository.getDomain( id ) ).thenReturn( domain );
+    when( metadataService.metadataDomainRepository.getDomain( smeId ) ).thenReturn( smeDomain );
+    when( metadataService.isSMEDatasource( smeId ) ).thenReturn( true );
     when( metadataService.pluginResourceLoader.getPluginSetting( any(), anyString() ) )
         .thenReturn( threadCountAsString );
 

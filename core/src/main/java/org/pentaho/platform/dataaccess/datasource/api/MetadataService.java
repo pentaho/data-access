@@ -91,7 +91,8 @@ public class MetadataService extends DatasourceService {
 
   public MetadataService() {
     if ( metadataDomainRepository instanceof IAclAwarePentahoMetadataDomainRepositoryImporter ) {
-      aclAwarePentahoMetadataDomainRepositoryImporter = (IAclAwarePentahoMetadataDomainRepositoryImporter) metadataDomainRepository;
+      aclAwarePentahoMetadataDomainRepositoryImporter =
+        (IAclAwarePentahoMetadataDomainRepositoryImporter) metadataDomainRepository;
     }
   }
 
@@ -106,14 +107,24 @@ public class MetadataService extends DatasourceService {
   }
 
   public List<String> getMetadataDatasourceIds() {
+    List<String> ids;
     if ( dataSourceAwareMetadataDomainRepository != null ) {
-      return new ArrayList<>( dataSourceAwareMetadataDomainRepository.getMetadataDomainIds() );
+      ids = new ArrayList<>( dataSourceAwareMetadataDomainRepository.getMetadataDomainIds() );
+    } else {
+      ids = getDatasourceIds( this::isMetadataDatasource );
     }
-    return getDatasourceIds( this::isMetadataDatasource );
+    var metadataIds = new ArrayList<String>();
+    for ( String id : ids ) {
+      if ( !isSMEDatasource( id ) ) {
+        metadataIds.add( id );
+      }
+    }
+    return metadataIds;
   }
 
   public MetadataTempFilesListDto uploadMetadataFilesToTempDir( InputStream metadataFile,
-     List<InputStream> localeFileStreams, List<String> localeFileNames ) throws Exception {
+                                                                List<InputStream> localeFileStreams, List<String> localeFileNames )
+    throws Exception {
 
     String fileName = uploadFile( metadataFile );
     MetadataTempFilesListDto dto = new MetadataTempFilesListDto();
@@ -128,8 +139,9 @@ public class MetadataService extends DatasourceService {
         fileName = uploadFile( inputStream );
 
         MetadataTempFilesListBundleDto bundle = new MetadataTempFilesListBundleDto(
-            localeFileNames.get( cntr ),
-            fileName );
+          localeFileNames.get( cntr ),
+          fileName
+        );
         bundles.add( bundle );
 
         logger.info( "locale file uploaded: " + fileName );
@@ -141,7 +153,8 @@ public class MetadataService extends DatasourceService {
     return dto;
   }
 
-  protected InputStream extractXmiFile( InputStream metadataFile, FormDataContentDisposition schemaFileInfo ) throws IOException {
+  protected InputStream extractXmiFile( InputStream metadataFile, FormDataContentDisposition schemaFileInfo )
+    throws IOException {
     String fileNameMain = schemaFileInfo.getFileName();
     ZipInputStream zis = null;
     ByteArrayOutputStream xmi = null;
@@ -180,8 +193,7 @@ public class MetadataService extends DatasourceService {
   }
 
   public MetadataTempFilesListDto uploadMetadataFilesToTempDir( InputStream metadataFile, FormDataContentDisposition schemaFileInfo,
-      List<FormDataBodyPart> localeFiles ) throws Exception {
-
+                                                                List<FormDataBodyPart> localeFiles ) throws Exception {
 
     List<InputStream> bundles = null;
     List<String> fileNames = null;
@@ -209,7 +221,8 @@ public class MetadataService extends DatasourceService {
     throws PentahoAccessControlException, PlatformImportException,
     Exception {
     if ( StringUtils.isEmpty( domainId ) ) {
-      throw new PlatformImportException( Messages.getString( "MetadataDatasourceService.ERROR_005_DOMAIN_NAME_EMPTY" ) );
+      throw new PlatformImportException(
+        Messages.getString( "MetadataDatasourceService.ERROR_005_DOMAIN_NAME_EMPTY" ) );
     }
     List<InputStream> localeFileStreams = null;
     List<String> localeFileNames = null;
@@ -231,10 +244,11 @@ public class MetadataService extends DatasourceService {
   }
 
   public void importMetadataDatasource( String domainId, InputStream metadataFile, boolean overwrite,
-      List<InputStream> localeFileStreams, List<String> localeFileNames, RepositoryFileAclDto acl )
+                                        List<InputStream> localeFileStreams, List<String> localeFileNames, RepositoryFileAclDto acl )
     throws PentahoAccessControlException, PlatformImportException, Exception {
     if ( StringUtils.isEmpty( domainId ) ) {
-      throw new PlatformImportException( Messages.getString( "MetadataDatasourceService.ERROR_005_DOMAIN_NAME_EMPTY" ) );
+      throw new PlatformImportException(
+        Messages.getString( "MetadataDatasourceService.ERROR_005_DOMAIN_NAME_EMPTY" ) );
     }
     accessValidation();
 
@@ -242,7 +256,7 @@ public class MetadataService extends DatasourceService {
     Object reservedCharsObject = fr.doGetReservedChars().getEntity();
     String reservedChars = objectToString( reservedCharsObject );
     if ( reservedChars != null
-        && domainId.matches( ".*[" + reservedChars.replaceAll( "/", "" ) + "]+.*" ) ) {
+      && domainId.matches( ".*[" + reservedChars.replaceAll( "/", "" ) + "]+.*" ) ) {
       String msg = prohibitedSymbolMessage( domainId, fr );
       throw new PlatformImportException( msg, PlatformImportException.PUBLISH_PROHIBITED_SYMBOLS_ERROR );
     }
@@ -255,11 +269,15 @@ public class MetadataService extends DatasourceService {
     // it will unlikely contain that suffix, so let's add it forcibly.
     domainId = forceXmiSuffix( domainId );
 
-    RepositoryFileImportBundle.Builder bundleBuilder = createNewRepositoryFileImportBundleBuilder( metadataFile, overwrite, domainId, acl );
+    RepositoryFileImportBundle.Builder
+      bundleBuilder =
+      createNewRepositoryFileImportBundleBuilder( metadataFile, overwrite, domainId, acl );
 
     if ( localeFileStreams != null ) {
       for ( int i = 0; i < localeFileStreams.size(); i++ ) {
-        IPlatformImportBundle localizationBundle =  createNewRepositoryFileImportBundle( localeFileStreams.get( i ), localeFileNames.get( i ), domainId );
+        IPlatformImportBundle
+          localizationBundle =
+          createNewRepositoryFileImportBundle( localeFileStreams.get( i ), localeFileNames.get( i ), domainId );
         bundleBuilder.addChildBundle( localizationBundle );
       }
     }
@@ -273,12 +291,14 @@ public class MetadataService extends DatasourceService {
 
   public boolean isContainsModel( String tempFileName ) throws Exception {
     XmiParser xmiParser = new XmiParser();
-    byte[] is = IOUtils.toByteArray( createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + tempFileName ) );
+    byte[]
+      is =
+      IOUtils.toByteArray( createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + tempFileName ) );
     Domain domain = xmiParser.parseXmi( new java.io.ByteArrayInputStream( is ) );
     return isContainsModel( domain );
   }
 
-  protected  boolean isContainsModel( Domain domain ) throws Exception {
+  protected boolean isContainsModel( Domain domain ) throws Exception {
     return !DatasourceService.isMetadataDatasource( domain ) && domain.getLogicalModels().size() > 1;
   }
 
@@ -286,7 +306,9 @@ public class MetadataService extends DatasourceService {
       boolean overwrite, RepositoryFileAclDto acl ) throws PentahoAccessControlException, PlatformImportException, Exception {
 
     String metadataTempFileName = fileList.getXmiFileName();
-    InputStream metaDataFileInputStream = createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + metadataTempFileName );
+    InputStream
+      metaDataFileInputStream =
+      createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + metadataTempFileName );
     List<MetadataTempFilesListBundleDto> locBundles = fileList.getBundles();
     List<String> localeFileNames = new ArrayList<String>();
     List<InputStream> localeFileStreams = new ArrayList<InputStream>();
@@ -294,7 +316,8 @@ public class MetadataService extends DatasourceService {
     if ( locBundles != null ) {
       for ( MetadataTempFilesListBundleDto bundle : locBundles ) {
         localeFileNames.add( bundle.getOriginalFileName() );
-        localeFileStreams.add( createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + bundle.getTempFileName() ) );
+        localeFileStreams.add(
+          createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + bundle.getTempFileName() ) );
       }
     }
 
@@ -343,7 +366,7 @@ public class MetadataService extends DatasourceService {
     }
     if ( metadataDomainRepository instanceof IPentahoMetadataDomainRepositoryExporter ) {
       Map<String, InputStream> domainFilesData =
-          ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
+        ( (IPentahoMetadataDomainRepositoryExporter) metadataDomainRepository ).getDomainFilesData( domainId );
       if ( domainFilesData == null || domainFilesData.isEmpty() ) {
         throw new FileNotFoundException();
       }
@@ -358,7 +381,8 @@ public class MetadataService extends DatasourceService {
     String illegalCharacterList = (String) fr.doGetReservedCharactersDisplay().getEntity();
     //For metadata \ is a legal character and must be removed from the message list before returning the message list to the user
     illegalCharacterList = illegalCharacterList.replaceAll( "\\,", "" );
-    return Messages.getString( "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, illegalCharacterList );
+    return Messages.getString(
+      "MetadataDatasourceService.ERROR_003_PROHIBITED_SYMBOLS_ERROR", domainId, illegalCharacterList );
   }
 
   protected String objectToString( Object o ) throws InterruptedException {
@@ -366,7 +390,8 @@ public class MetadataService extends DatasourceService {
   }
 
   protected void publish( IPentahoSession pentahoSession ) throws InterruptedException {
-    PentahoSystem.publish( pentahoSession, org.pentaho.platform.engine.services.metadata.MetadataPublisher.class.getName() );
+    PentahoSystem.publish(
+      pentahoSession, org.pentaho.platform.engine.services.metadata.MetadataPublisher.class.getName() );
   }
 
   protected IPentahoSession getSession() throws InterruptedException {
@@ -394,17 +419,16 @@ public class MetadataService extends DatasourceService {
   }
 
   protected RepositoryFileImportBundle.Builder createNewRepositoryFileImportBundleBuilder( InputStream metadataFile,
-      boolean overWriteInRepository, String domainId, RepositoryFileAclDto acl ) {
+                                                                                           boolean overWriteInRepository, String domainId, RepositoryFileAclDto acl ) {
     final RepositoryFileImportBundle.Builder
-        builder =
-        new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
-            .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
+      builder =
+      new RepositoryFileImportBundle.Builder().input( metadataFile ).charSet( "UTF-8" ).hidden( false )
+        .overwriteFile( overWriteInRepository ).mime( "text/xmi+xml" ).withParam( "domain-id", domainId );
     if ( acl != null ) {
       builder.acl( repositoryFileAclAdapter.unmarshal( acl ) ).applyAclSettings( true );
     }
     return builder;
   }
-
 
   protected InputStream createInputStreamFromFile( String fileName ) throws FileNotFoundException {
     return new FileInputStream( fileName );

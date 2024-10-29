@@ -256,9 +256,12 @@ public class AnalysisServiceTest {
     // Does not have an xmi
     final MondrianCatalog foodmartCatalog3 = new MondrianCatalog( "foodmart3", "info", "file:///place",
       new MondrianSchema( "foodmart3", Collections.emptyList() ) );
-    final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2, foodmartCatalog3 );
+    // Has xmi and it is a SME model
+    final MondrianCatalog foodmartCatalog4 = new MondrianCatalog( "foodmart4", "info", "file:///place",
+      new MondrianSchema( "foodmart4", Collections.emptyList() ) );
+    final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2, foodmartCatalog3, foodmartCatalog4 );
     doReturn( catalogs ).when( catalogService ).listCatalogs( Mockito.<IPentahoSession>any(), eq( false ) );
-    final HashSet<String> domainIds = Sets.newHashSet( "foodmart.xmi", "foodmart2.xmi", "sample.xmi" );
+    final HashSet<String> domainIds = Sets.newHashSet( "foodmart.xmi", "foodmart2.xmi", "foodmart4.xmi", "sample.xmi" );
     doReturn( domainIds ).when( metadataRepository ).getDomainIds();
 
     Domain mockDomain = mock( Domain.class );
@@ -272,6 +275,12 @@ public class AnalysisServiceTest {
     LogicalModel mockLogicalModel2 = mock( LogicalModel.class );
     when( mockLogicalModel2.getProperty( "AGILE_BI_GENERATED_SCHEMA" ) ).thenReturn( true );
     when( mockDomain2.getLogicalModels() ).thenReturn( Arrays.asList( mockLogicalModel2 ) );
+
+    Domain mockDomain3 = mock( Domain.class );
+    when( metadataRepository.getDomain( "foodmart4.xmi") ).thenReturn( mockDomain3 );
+    LogicalModel mockLogicalModel3 = mock( LogicalModel.class );
+    when( mockLogicalModel3.getProperty( "SME_GENERATED_SCHEMA" ) ).thenReturn( true );
+    when( mockDomain3.getLogicalModels() ).thenReturn( Arrays.asList( mockLogicalModel3 ) );
 
     final List<String> response = analysisService.getAnalysisDatasourceIds();
     assertEquals( Arrays.asList( "foodmart", "foodmart3" ), response );

@@ -167,6 +167,7 @@ public class DatasourceServiceTest {
     List<LogicalModel> logicalModelList = new ArrayList<>(  );
     LogicalModel model = new LogicalModel();
     LogicalModel model2 = new LogicalModel();
+    LogicalModel model3 = new LogicalModel();
     // when
     assertFalse( DatasourceService.isMetadataDatasource( (Domain) null ) );
     assertTrue( DatasourceService.isMetadataDatasource( domain ) );
@@ -183,6 +184,11 @@ public class DatasourceServiceTest {
     logicalModelList.add( model2 );
     assertFalse( DatasourceService.isMetadataDatasource( domain ) );
 
+    model3.setProperty( "SME_GENERATED_SCHEMA", true );
+    logicalModelList.clear();
+    logicalModelList.add( model3 );
+    assertFalse( DatasourceService.isDSWDatasource( domain ) );
+
   }
 
   @Test
@@ -192,6 +198,7 @@ public class DatasourceServiceTest {
     List<LogicalModel> logicalModelList = new ArrayList<>();
     LogicalModel model = new LogicalModel();
     LogicalModel model2 = new LogicalModel();
+    LogicalModel model3 = new LogicalModel();
     // when
     assertFalse( DatasourceService.isDSWDatasource( (Domain) null ) );
     assertFalse( DatasourceService.isDSWDatasource( domain ) );
@@ -207,6 +214,31 @@ public class DatasourceServiceTest {
     logicalModelList.clear();
     logicalModelList.add( model2 );
     assertTrue( DatasourceService.isDSWDatasource( domain ) );
+
+    model3.setProperty( "SME_GENERATED_SCHEMA", true );
+    logicalModelList.clear();
+    logicalModelList.add( model3 );
+    assertFalse( DatasourceService.isDSWDatasource( domain ) );
+
+  }
+
+  @Test
+  public void isSMEDatasourceTest() throws Exception {
+    // given
+    Domain domain = mock( Domain.class );
+    List<LogicalModel> logicalModelList = new ArrayList<>();
+    LogicalModel model = new LogicalModel();
+    LogicalModel model2 = new LogicalModel();
+    // when
+    assertFalse( DatasourceService.isSMEDatasource( (Domain) null ) );
+    assertFalse( DatasourceService.isSMEDatasource( domain ) );
+
+    logicalModelList.add( model );
+    when( domain.getLogicalModels() ).thenReturn( logicalModelList );
+    assertFalse( DatasourceService.isSMEDatasource( domain ) );
+
+    model.setProperty( "SME_GENERATED_SCHEMA", true );
+    assertTrue( DatasourceService.isSMEDatasource( domain ) );
 
   }
 

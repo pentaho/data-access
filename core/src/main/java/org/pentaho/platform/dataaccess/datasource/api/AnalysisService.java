@@ -57,7 +57,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.plugin.services.metadata.IPentahoMetadataDomainRepositoryExporter;
 
 public class AnalysisService extends DatasourceService {
 
@@ -75,7 +77,7 @@ public class AnalysisService extends DatasourceService {
   private static final String ANNOTATIONS_FILE = "annotations.xml";
   private static final Log logger = LogFactory.getLog( AnalysisService.class );
   private static final String ANNOTATION_FOLDER = RepositoryFile.SEPARATOR + "etc"
-      + RepositoryFile.SEPARATOR + "mondrian" + RepositoryFile.SEPARATOR;
+    + RepositoryFile.SEPARATOR + "mondrian" + RepositoryFile.SEPARATOR;
 
   /*
    * register the handler in the PentahoSpringObjects.xml for MondrianImportHandler
@@ -119,9 +121,10 @@ public class AnalysisService extends DatasourceService {
     Set<String> ids = metadataDomainRepository.getDomainIds();
     for ( MondrianCatalog mondrianCatalog : mockMondrianCatalogList ) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
-      if ( !ids.contains( domainId ) || !isDSWDatasource( domainId ) ) {
-        analysisIds.add( mondrianCatalog.getName() );
-      }
+      if ( (!ids.contains( domainId ) || !isDSWDatasource( domainId )) && !isSMEDatasource( domainId ) ) {
+          analysisIds.add( mondrianCatalog.getName() );
+        }
+
     }
     return analysisIds;
 
@@ -170,9 +173,9 @@ public class AnalysisService extends DatasourceService {
         IPlatformImportBundle mondrianBundle = new RepositoryFileImportBundle.Builder()
           .input( annots ).path( ANNOTATION_FOLDER + catName )
           .name( ANNOTATIONS_FILE ).charSet( "UTF-8" ).overwriteFile( true )
-          .mime( "text/xml" ) .withParam( "domain-id", catName )
+          .mime( "text/xml" ).withParam( "domain-id", catName )
           .build();
-          // do import
+        // do import
         importer.importFile( mondrianBundle );
         logger.debug( "imported mondrian annotations" );
         annots.close();
@@ -191,7 +194,7 @@ public class AnalysisService extends DatasourceService {
   }
 
   public RepositoryFileAclDto getAnalysisDatasourceAcl( String analysisId )
-      throws PentahoAccessControlException, FileNotFoundException {
+    throws PentahoAccessControlException, FileNotFoundException {
     checkAnalysisExists( analysisId );
 
     if ( aclAwareMondrianCatalogService != null ) {
@@ -202,7 +205,7 @@ public class AnalysisService extends DatasourceService {
   }
 
   public void setAnalysisDatasourceAcl( String analysisId, RepositoryFileAclDto aclDto )
-      throws PentahoAccessControlException, FileNotFoundException {
+    throws PentahoAccessControlException, FileNotFoundException {
     checkAnalysisExists( analysisId );
 
     final RepositoryFileAcl acl = aclDto == null ? null : repositoryFileAclAdapter.unmarshal( aclDto );
@@ -239,16 +242,16 @@ public class AnalysisService extends DatasourceService {
     throws PlatformImportException {
     boolean overWriteInRepository = determineOverwriteFlag( parameters, overwrite );
     IPlatformImportBundle bundle =
-        createPlatformBundle(
-          parameters, dataInputStream, catalogName, overWriteInRepository, fileName, xmlaEnabledFlag, acl );
+      createPlatformBundle(
+        parameters, dataInputStream, catalogName, overWriteInRepository, fileName, xmlaEnabledFlag, acl );
     if ( isChangeCatalogName( origCatalogName, bundle ) ) {
       IMondrianCatalogService catalogService =
-          PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
+        PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
       catalogService.removeCatalog( origCatalogName, PentahoSessionHolder.getSession() );
     }
     if ( isOverwriteAnnotations( parameters, overWriteInRepository ) ) {
       IMondrianCatalogService catalogService =
-          PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
+        PentahoSystem.get( IMondrianCatalogService.class, PentahoSessionHolder.getSession() );
       MondrianCatalog catalog = catalogService.getCatalog( bundle.getName(), PentahoSessionHolder.getSession() );
       if ( catalog != null ) {
         catalogService.removeCatalog( bundle.getName(), PentahoSessionHolder.getSession() );
@@ -256,7 +259,6 @@ public class AnalysisService extends DatasourceService {
     }
     importer.importFile( bundle );
   }
-
 
   private boolean isChangeCatalogName( final String origCatalogName, final IPlatformImportBundle bundle ) {
     // MONDRIAN-1731
@@ -306,7 +308,7 @@ public class AnalysisService extends DatasourceService {
       bytes = IOUtils.toByteArray( dataInputStream );
       if ( bytes.length == 0 && catalogName != null ) {
         MondrianCatalogRepositoryHelper helper =
-            new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
+          new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
         Map<String, InputStream> fileData = helper.getModrianSchemaFiles( catalogName );
         dataInputStream = fileData.get( "schema.xml" );
         bytes = IOUtils.toByteArray( dataInputStream );
@@ -317,7 +319,7 @@ public class AnalysisService extends DatasourceService {
 
     String datasource = getValue( parameters, "Datasource" );
     String domainId =
-        this.determineDomainCatalogName( parameters, catalogName, fileName, new ByteArrayInputStream( bytes ) );
+      this.determineDomainCatalogName( parameters, catalogName, fileName, new ByteArrayInputStream( bytes ) );
     String sep = ";";
     if ( StringUtils.isEmpty( parameters ) ) {
       parameters = "Provider=mondrian";
@@ -326,7 +328,7 @@ public class AnalysisService extends DatasourceService {
     }
 
     RepositoryFileImportBundle.Builder bundleBuilder =
-        new RepositoryFileImportBundle.Builder().input( new ByteArrayInputStream( bytes ) ).charSet( UTF_8 ).hidden(
+      new RepositoryFileImportBundle.Builder().input( new ByteArrayInputStream( bytes ) ).charSet( UTF_8 ).hidden(
         false ).name( domainId ).overwriteFile( overWriteInRepository ).mime( MONDRIAN_MIME_TYPE ).withParam(
         PARAMETERS, parameters ).withParam( DOMAIN_ID, domainId );
     if ( acl != null ) {
@@ -371,7 +373,7 @@ public class AnalysisService extends DatasourceService {
 
       while ( reader.next() != XMLStreamReader.END_DOCUMENT ) {
         if ( reader.getEventType() == XMLStreamReader.START_ELEMENT
-            && reader.getLocalName().equalsIgnoreCase( "Schema" ) ) {
+          && reader.getLocalName().equalsIgnoreCase( "Schema" ) ) {
           domainId = reader.getAttributeValue( "", "name" );
           if ( domainId == null ) {
             domainId = reader.getAttributeValue( null, "name" );
@@ -388,6 +390,7 @@ public class AnalysisService extends DatasourceService {
 
     return domainId;
   }
+
   /**
    * helper method to calculate the domain id from the parameters, file name, or pass catalog
    *
@@ -453,12 +456,16 @@ public class AnalysisService extends DatasourceService {
 
   private void fileNameValidation( final String fileName ) throws PlatformImportException {
     if ( fileName == null ) {
-      throw new PlatformImportException( Messages.getString( "AnalysisService.ERROR_001_ANALYSIS_DATASOURCE_ERROR" ),
-          PlatformImportException.PUBLISH_GENERAL_ERROR );
+      throw new PlatformImportException(
+        Messages.getString( "AnalysisService.ERROR_001_ANALYSIS_DATASOURCE_ERROR" ),
+        PlatformImportException.PUBLISH_GENERAL_ERROR
+      );
     }
     if ( fileName.endsWith( METADATA_EXT ) ) {
-      throw new PlatformImportException( Messages.getString( "AnalysisService.ERROR_002_ANALYSIS_DATASOURCE_ERROR" ),
-          PlatformImportException.PUBLISH_GENERAL_ERROR );
+      throw new PlatformImportException(
+        Messages.getString( "AnalysisService.ERROR_002_ANALYSIS_DATASOURCE_ERROR" ),
+        PlatformImportException.PUBLISH_GENERAL_ERROR
+      );
     }
   }
 }
