@@ -27,7 +27,6 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionBindingEvent;
 import jakarta.servlet.http.HttpSessionBindingListener;
-import jakarta.servlet.http.HttpSessionContext;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,7 +49,6 @@ public class FileUploadServiceTest {
   
   public static final String TMP_FILE_PATH = File.separatorChar + "system" + File.separatorChar + File.separatorChar + "tmp" + File.separatorChar; //$NON-NLS-1$ //$NON-NLS-2$
 
-  @Ignore
   @Test
   public void testUpload() throws Exception {
 
@@ -184,10 +182,6 @@ public class FileUploadServiceTest {
 
     public int getMaxInactiveInterval() {
       return this.maxInactiveInterval;
-    }
-
-    public HttpSessionContext getSessionContext() {
-      throw new UnsupportedOperationException("getSessionContext");
     }
 
     public Object getAttribute(String name) {
