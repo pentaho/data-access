@@ -145,7 +145,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
-      <artifactId>commons-fileupload2-jakarta-servlet5</artifactId>
+      <artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
       <version>${commons-fileupload.version}</version>
     </dependency>
     <dependency>
