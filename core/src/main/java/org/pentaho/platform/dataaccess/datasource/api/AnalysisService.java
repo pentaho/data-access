@@ -120,9 +120,7 @@ public class AnalysisService extends DatasourceService {
     Set<String> ids = metadataDomainRepository.getDomainIds();
     for ( MondrianCatalog mondrianCatalog : mockMondrianCatalogList ) {
       String domainId = mondrianCatalog.getName() + METADATA_EXT;
-      String createdWithProperty = mondrianCatalog.getConnectProperties().get( "CreatedWith" );
-      if ( ( !ids.contains( domainId ) || !isDSWDatasource( domainId ) ) &&
-        ( createdWithProperty == null || !createdWithProperty.equalsIgnoreCase( "SME" ) ) ) {
+      if ( ( !ids.contains( domainId ) || !isDSWDatasource( domainId ) ) && shouldListCatalog( mondrianCatalog ) ) {
         analysisIds.add( mondrianCatalog.getName() );
       }
 
@@ -470,5 +468,10 @@ public class AnalysisService extends DatasourceService {
         PlatformImportException.PUBLISH_GENERAL_ERROR
       );
     }
+  }
+
+  private boolean shouldListCatalog( MondrianCatalog catalog ) {
+    String toIgnoreProperty = catalog.getConnectProperties().get( "DataAccessNotListedCatalog" );
+    return toIgnoreProperty == null || !toIgnoreProperty.equalsIgnoreCase( "true" );
   }
 }
