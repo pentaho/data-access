@@ -252,7 +252,10 @@ public class AnalysisServiceTest {
     // Does not have an xmi
     final MondrianCatalog foodmartCatalog3 = new MondrianCatalog( "foodmart3", "info", "file:///place",
       new MondrianSchema( "foodmart3", Collections.emptyList() ) );
-    final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2, foodmartCatalog3 );
+    // Does not have xmi and should not be listed
+    final MondrianCatalog foodmartCatalog4 = new MondrianCatalog( "foodmart4", "DataAccessNotListedCatalog=true", "file:///place",
+      new MondrianSchema( "foodmart4", Collections.emptyList() ) );
+    final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2, foodmartCatalog3, foodmartCatalog4 );
     doReturn( catalogs ).when( catalogService ).listCatalogs( Mockito.<IPentahoSession>any(), eq( false ) );
     final HashSet<String> domainIds = Sets.newHashSet( "foodmart.xmi", "foodmart2.xmi", "sample.xmi" );
     doReturn( domainIds ).when( metadataRepository ).getDomainIds();
