@@ -1,19 +1,15 @@
-/*!
- * This program is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
- * Foundation.
+/*! ******************************************************************************
  *
- * You should have received a copy of the GNU Lesser General Public License along with this
- * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
- * or from the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * Pentaho
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Lesser General Public License for more details.
+ * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
  *
- * Copyright (c) 2002-2024 Hitachi Vantara.  All rights reserved.
- */
+ * Use of this software is governed by the Business Source License included
+ * in the LICENSE.TXT file.
+ *
+ * Change Date: 2029-07-20
+ ******************************************************************************/
+
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
@@ -256,7 +252,10 @@ public class AnalysisServiceTest {
     // Does not have an xmi
     final MondrianCatalog foodmartCatalog3 = new MondrianCatalog( "foodmart3", "info", "file:///place",
       new MondrianSchema( "foodmart3", Collections.emptyList() ) );
-    final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2, foodmartCatalog3 );
+    // Does not have xmi and should not be listed
+    final MondrianCatalog foodmartCatalog4 = new MondrianCatalog( "foodmart4", "DataAccessNotListedCatalog=true", "file:///place",
+      new MondrianSchema( "foodmart4", Collections.emptyList() ) );
+    final List<MondrianCatalog> catalogs = Arrays.asList( foodmartCatalog, foodmartCatalog2, foodmartCatalog3, foodmartCatalog4 );
     doReturn( catalogs ).when( catalogService ).listCatalogs( Mockito.<IPentahoSession>any(), eq( false ) );
     final HashSet<String> domainIds = Sets.newHashSet( "foodmart.xmi", "foodmart2.xmi", "sample.xmi" );
     doReturn( domainIds ).when( metadataRepository ).getDomainIds();
