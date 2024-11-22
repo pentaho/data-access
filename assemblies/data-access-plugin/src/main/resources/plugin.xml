@@ -33,12 +33,12 @@
 
   <webservice
     id="DatasourceService"
-    type="xml,gwt"
+    type="gwt"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
 
   <webservice
     id="joinSelectionService"
-    type="xml,gwt"
+    type="gwt"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.MultitableDatasourceService"/>
 
   <webservice
@@ -47,14 +47,6 @@
     title="%ConnectionService.TITLE%"
     description="%ConnectionService.DESC%"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl"/>
-
-  <webservice
-    id="soapConnectionService"
-    type="xml"
-    title="%ConnectionService.TITLE%"
-    description="%ConnectionService.DESC%"
-    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceConcrete"/>
-
 
   <webservice
     id="databaseConnectionService"
@@ -72,17 +64,17 @@
 
    <webservice
     id="CsvDatasourceService"
-    type="xml,gwt"
+    type="gwt"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
 
    <webservice
     id="modelerService"
-    type="xml,gwt"
+    type="gwt"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService"/>
 
    <webservice
     id="metadataServiceDA"
-    type="xml,gwt"
+    type="gwt"
     class="org.pentaho.platform.dataaccess.metadata.service.MetadataService"/>
 
   <external-resources>

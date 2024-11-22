@@ -184,7 +184,7 @@ public class MetadataServiceUtil extends PentahoBase {
     if ( !aggTypes.contains( defaultAggType ) ) {
       aggTypes.add( defaultAggType.name() );
     }
-    col.setAggTypes( aggTypes );
+    col.setAggTypes( aggTypes.toArray( new String[ aggTypes.size() ] ) );
     col.setDefaultAggType( defaultAggType.name() );
     col.setSelectedAggType( defaultAggType.name() );
 

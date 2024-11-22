@@ -15,11 +15,14 @@ package org.pentaho.platform.dataaccess.metadata.model.impl;
 
 import org.pentaho.platform.dataaccess.metadata.model.IModel;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Concrete, lightweight, serializable implementation of an {@see IModel} object
  *
  * @author jamesdixon
  */
+@XmlRootElement
 public class Model implements IModel {
 
   private static final long serialVersionUID = 6865069259179116876L;

@@ -57,7 +57,6 @@
     <geronimo-spec-j2ee-connector.version>1.5-rc4</geronimo-spec-j2ee-connector.version>
     <axiom-impl.version>1.2.7</axiom-impl.version>
     <hsqldb.version>2.3.2</hsqldb.version>
-    <axis2.version>1.5</axis2.version>
     <joda-time.version>1.6</joda-time.version>
     <olap4j.version>1.2.0</olap4j.version>
     <webservices.version>2.3.1</webservices.version>
@@ -257,28 +256,6 @@
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom-impl</artifactId>
         <version>${axiom-impl.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.axis2</groupId>
-        <artifactId>axis2-adb</artifactId>
-        <version>${axis2.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.pentaho.axis2</groupId>
-        <artifactId>axis2-kernel</artifactId>
-        <version>${axis2.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
