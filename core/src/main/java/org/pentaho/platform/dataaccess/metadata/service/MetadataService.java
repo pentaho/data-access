@@ -92,11 +92,18 @@ public class MetadataService extends PentahoBase {
   /**
    * Returns a list of the available business models
    *
-   * @param domainName optional domain to limit the results
+   * @param domainName
+   *          optional domain to limit the results
+   * @param context
+   *          Area to check for model visibility
    * @return list of ModelInfo objects representing the available models
    * @throws IOException
    */
-  public ModelInfo[] listBusinessModels( String domainName ) throws IOException {
+  @GET
+  @Path( "/listBusinessModels" )
+  @Produces( { APPLICATION_XML } )
+  public ModelInfo[] listBusinessModels( @QueryParam( "domainName" ) String domainName,
+                                         @QueryParam( "context" ) String context ) throws IOException {
 
     List<ModelInfo> models = new ArrayList<ModelInfo>();
 
@@ -108,14 +115,14 @@ public class MetadataService extends PentahoBase {
     }
 
     try {
-      if ( domainName == null ) {
+      if ( StringUtils.isEmpty( domainName ) ) {
         // if no domain has been specified, loop over all of them
-        for ( String domain : getMetadataRepository().getDomainIds() ) {
-          getModelInfos( domain, models );
+        for ( String domain : repo.getDomainIds() ) {
+          getModelInfos( domain, context, models );
         }
       } else {
         // get the models for the specified domain
-        getModelInfos( domainName, models );
+        getModelInfos( domainName, context, models );
       }
     } catch ( Throwable t ) {
       error( Messages.getErrorString( "MetadataService.ERROR_0002_BAD_MODEL_LIST" ), t ); //$NON-NLS-1$
@@ -128,13 +135,16 @@ public class MetadataService extends PentahoBase {
   /**
    * Returns a JSON list of the available business models
    *
-   * @param domainName optional domain to limit the results
+   * @param domainName
+   *          optional domain to limit the results
+   * @param context
+   *          Area to check for model visibility
    * @return JSON string of list of ModelInfo objects representing the available models
    * @throws IOException
    */
-  public String listBusinessModelsJson( String domainName ) throws IOException {
+  public String listBusinessModelsJson( String domainName, String context ) throws IOException {
 
-    ModelInfo[] models = listBusinessModels( domainName );
+    ModelInfo[] models = listBusinessModels( domainName, context );
     JSONSerializer serializer = new JSONSerializer();
     String json = serializer.deepSerialize( models );
     return json;
@@ -145,24 +155,44 @@ public class MetadataService extends PentahoBase {
    * allow a client to provide a list of models to a user so the user can pick which one they want to work with.
    *
    * @param domain
+   * @param context
+   *          Area to check for model visibility
    * @param models
    */
-  private void getModelInfos( final String domain, List<ModelInfo> models ) {
+  private void getModelInfos( final String domain, final String context, List<ModelInfo> models ) {
 
     IMetadataDomainRepository repo = getMetadataRepository();
 
     Domain domainObject = repo.getDomain( domain );
+    if ( domainObject == null ) {
+      // the domain does not exist
+      return;
+    }
 
     // find the best locale
     String locale = LocaleHelper.getClosestLocale( LocaleHelper.getLocale().toString(), domainObject.getLocaleCodes() );
 
     // iterate over all of the models in this domain
     for ( LogicalModel model : domainObject.getLogicalModels() ) {
+      String vis = (String) model.getProperty( "visible" );
+      if ( vis != null ) {
+        String[] visibleContexts = vis.split( "," );
+        boolean visibleToContext = false;
+        for ( String c : visibleContexts ) {
+          if ( StringUtils.isEmpty( context ) || c.equals( context ) ) {
+            visibleToContext = true;
+            break;
+          }
+        }
+        if ( !visibleToContext ) {
+          continue;
+        }
+      }
       // create a new ModelInfo object and give it the envelope information about the model
       ModelInfo modelInfo = new ModelInfo();
       modelInfo.setDomainId( domain );
       modelInfo.setModelId( model.getId() );
-      modelInfo.setModelName( model.getName( locale ) );
+      modelInfo.setModelName( model.getName( locale ).replaceAll( "<", "&lt;" ).replaceAll( ">", "&gt;" )  );
       if ( model.getDescription() != null ) {
         String modelDescription = model.getDescription( locale );
         modelInfo.setModelDescription( modelDescription );
@@ -180,7 +210,11 @@ public class MetadataService extends PentahoBase {
    * @param modelId
    * @return
    */
-  public Model loadModel( String domainId, String modelId ) {
+  @GET
+  @Path( "/loadModel" )
+  @Produces( { APPLICATION_XML } )
+  public Model loadModel( @QueryParam( "domainId" ) String domainId,
+                          @QueryParam( "modelId" ) String modelId ) {
 
     if ( domainId == null ) {
       // we can't do this without a model
@@ -287,7 +321,11 @@ public class MetadataService extends PentahoBase {
    * @param rowLimit
    * @return
    */
-  public String doXmlQueryToCdaJson( String xml, int rowLimit ) {
+  @GET
+  @Path( "/doXmlQueryToCdaJson" )
+  @Produces( { APPLICATION_JSON } )
+  public String doXmlQueryToCdaJson( @QueryParam( "xml" ) String xml,
+                                     @QueryParam( "rowLimit" ) int rowLimit ) {
     IPentahoResultSet resultSet = executeQuery( xml, rowLimit );
     if ( resultSet == null ) {
       return null;
@@ -336,7 +374,11 @@ public class MetadataService extends PentahoBase {
    * @param rowLimit
    * @return
    */
-  public String doJsonQueryToCdaJson( String json, int rowLimit ) {
+  @GET
+  @Path( "/doJsonQueryToCdaJson" )
+  @Produces( { APPLICATION_JSON } )
+  public String doJsonQueryToCdaJson( @QueryParam( "json" ) String json,
+                                      @QueryParam( "rowLimit" ) int rowLimit ) {
     // return the results
     return doXmlQueryToCdaJson( getQueryXmlFromJson( json ), rowLimit );
   }
