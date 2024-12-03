@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 
@@ -350,7 +351,7 @@ public class AnalysisService extends DatasourceService {
 
   // for unit test
   XMLInputFactory getXMLInputFactory() {
-    return XMLInputFactory.newInstance();
+    return XMLParserFactoryProducer.createSecureXMLInputFactory();
   }
 
   String getSchemaName( String encoding, InputStream inputStream ) throws XMLStreamException, IOException {
