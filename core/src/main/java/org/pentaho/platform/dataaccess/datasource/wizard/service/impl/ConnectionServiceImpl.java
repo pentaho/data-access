@@ -314,7 +314,7 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
         } else {
           if ( connection.isUsingConnectionPool() ) {
             Properties props = new Properties();
-            props.put( IPentahoConnection.CONNECTION_NAME, connection.getName() );
+            props.put( IPentahoConnection.CONNECTION_NAME, String.format( "__TEST__%s__TEST__", connection.getName() ) );
             props.put( IPentahoConnection.CONNECTION, connection );
             pentahoConnection = PentahoConnectionFactory.getConnection( IPentahoConnection.SQL_DATASOURCE, props, null, this );
           } else {
