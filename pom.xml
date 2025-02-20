@@ -34,7 +34,6 @@
     <objenesis.version>3.3</objenesis.version>
     <jmock-junit4.version>2.13.1</jmock-junit4.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
-    <dependency.org.codehaus.jettison.jettison.version>1.2</dependency.org.codehaus.jettison.jettison.version>
     <fontbox.version>0.1.0</fontbox.version>
     <jsr311-api.version>1.1.1</jsr311-api.version>
     <commons-gwt.version>10.2.0.0-SNAPSHOT</commons-gwt.version>
@@ -374,7 +373,7 @@
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>${dependency.org.codehaus.jettison.jettison.version}</version>
+        <version>${jettison.version}</version>
       </dependency>
       <dependency>
         <groupId>org.hsqldb</groupId>
