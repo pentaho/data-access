@@ -54,7 +54,6 @@
     <hsqldb.version>2.3.2</hsqldb.version>
     <joda-time.version>1.6</joda-time.version>
     <olap4j.version>1.2.0</olap4j.version>
-    <webservices.version>2.3.1</webservices.version>
     <sjsxp.version>1.0</sjsxp.version>
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <jcr.version>2.0</jcr.version>
