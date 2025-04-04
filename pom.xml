@@ -60,15 +60,11 @@
     <jcr.version>2.0</jcr.version>
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
     <commons-xul.version>10.3.0.0-SNAPSHOT</commons-xul.version>
-    <ehcache-core.version>2.5.1</ehcache-core.version>
     <lucene-core.version>3.6.0</lucene-core.version>
     <commons-collections.version>3.2.2</commons-collections.version>
-    <jaxb-api.version>2.2.2</jaxb-api.version>
     <mimepull.version>1.9.3</mimepull.version>
-    <jaxb-xjc.version>2.1.2</jaxb-xjc.version>
     <pentaho-modeler.version>10.3.0.0-SNAPSHOT</pentaho-modeler.version>
     <jempbox.version>0.2.0</jempbox.version>
-    <jaxb-impl.version>2.2.3</jaxb-impl.version>
     <commons-digester.version>1.8</commons-digester.version>
     <jug-lgpl.version>2.0.0</jug-lgpl.version>
     <pdi.version>10.3.0.0-SNAPSHOT</pdi.version>
@@ -1089,9 +1085,10 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache-core</artifactId>
+        <groupId>org.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
         <version>${ehcache-core.version}</version>
+        <classifier>jakarta</classifier>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -1099,18 +1096,6 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>${jaxb-api.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-xjc</artifactId>
-        <version>${jaxb-xjc.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.glassfish.metro</groupId>
