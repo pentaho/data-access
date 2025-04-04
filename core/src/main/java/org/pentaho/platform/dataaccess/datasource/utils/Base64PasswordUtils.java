@@ -13,7 +13,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.utils;
 
-import org.springframework.util.Base64Utils;
+import java.util.Base64;
 import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -24,14 +24,14 @@ public class Base64PasswordUtils {
 
   public static String decodePassword( String encodedPassword ) {
     if ( !StringUtils.isEmpty( encodedPassword ) && encodedPassword.startsWith( "ENC:" ) ) {
-      return new String( Base64Utils.decodeFromString( encodedPassword.substring( 4 ) ), StandardCharsets.UTF_8 );
+      return new String( Base64.getDecoder().decode( encodedPassword.substring( 4 ) ), StandardCharsets.UTF_8 );
     } else {
       return encodedPassword;
     }
   }
 
   public static String encodePassword( String password ) {
-    return Base64Utils.encodeToString(
+    return Base64.getEncoder().encodeToString(
       password.getBytes( StandardCharsets.UTF_8 ) );
   }
 
