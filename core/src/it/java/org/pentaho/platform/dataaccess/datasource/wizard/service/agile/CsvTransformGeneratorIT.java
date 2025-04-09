@@ -42,30 +42,30 @@ import java.util.Date;
 @SuppressWarnings( { "all" } )
 public class CsvTransformGeneratorIT extends BaseTest {
 
-  private static final String solution = "testsolution"; //$NON-NLS-1$
+  private static final String solution = "testsolution";
 
-  private static final String SOLUTION_PATH = "target/test-classes/solution1/"; //$NON-NLS-1$
+  private static final String SOLUTION_PATH = "target/test-classes/solution1/";
 
-  private static final String ALT_SOLUTION_PATH = "target/test-classes/solution11"; //$NON-NLS-1$
+  private static final String ALT_SOLUTION_PATH = "target/test-classes/solution11";
 
-  private static final String PENTAHO_XML_PATH = "/system/pentaho.xml"; //$NON-NLS-1$
+  private static final String PENTAHO_XML_PATH = "/system/pentaho.xml";
 
-  private static final String SYSTEM_FOLDER = "/system"; //$NON-NLS-1$
+  private static final String SYSTEM_FOLDER = "/system";
 
   public String getSolutionPath() {
     File file = new File( SOLUTION_PATH + PENTAHO_XML_PATH );
     if ( file.exists() ) {
-      System.out.println( "File exist returning " + SOLUTION_PATH ); //$NON-NLS-1$
+      System.out.println( "File exist returning " + SOLUTION_PATH );
       return SOLUTION_PATH;
     } else {
-      System.out.println( "File does not exist returning " + ALT_SOLUTION_PATH ); //$NON-NLS-1$
+      System.out.println( "File does not exist returning " + ALT_SOLUTION_PATH );
       return ALT_SOLUTION_PATH;
     }
   }
 
   private void init() {
     if ( !PentahoSystem.getInitializedOK() ) {
-      IApplicationContext context = new StandaloneApplicationContext( SOLUTION_PATH, "." ); //$NON-NLS-1$
+      IApplicationContext context = new StandaloneApplicationContext( SOLUTION_PATH, "." );
       PentahoSystem.init( context );
     }
   }
@@ -107,9 +107,9 @@ public class CsvTransformGeneratorIT extends BaseTest {
     assertTrue( cells[ 6 ] instanceof Double );
     assertTrue( cells[ 7 ] instanceof Boolean );
     // test the values
-    assertEquals( (long) 3, cells[ 0 ] );
+    assertEquals( 3L, cells[ 0 ] );
     assertEquals( 25677.96525, cells[ 1 ] );
-    assertEquals( (long) 1231, cells[ 2 ] );
+    assertEquals( 1231L, cells[ 2 ] );
     assertEquals( testDate.getYear(), ( (Date) cells[ 3 ] ).getYear() );
     assertEquals( testDate.getMonth(), ( (Date) cells[ 3 ] ).getMonth() );
     assertEquals( testDate.getDate(), ( (Date) cells[ 3 ] ).getDate() );
@@ -120,7 +120,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
     //    assertEquals( testDate, cells[3] );
     assertEquals( "Afghanistan", cells[ 4 ] );
-    assertEquals( (long) 11, cells[ 5 ] );
+    assertEquals( 11L, cells[ 5 ] );
     assertEquals( 111.9090909, cells[ 6 ] );
     assertEquals( false, cells[ 7 ] );
 
@@ -138,15 +138,15 @@ public class CsvTransformGeneratorIT extends BaseTest {
     if ( "Y".equals( KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL ) ) {
       assertTrue( "".equals( cells[ 4 ] ) );
     } else {
-      assertTrue( cells[ 4 ] == null );
+      assertNull( cells[ 4 ] );
     }
     assertTrue( cells[ 5 ] instanceof Long );
     assertTrue( cells[ 6 ] instanceof Double );
     assertTrue( cells[ 7 ] instanceof Boolean );
     // test the values
-    assertEquals( (long) 4, cells[ 0 ] );
+    assertEquals( 4L, cells[ 0 ] );
     assertEquals( 24261.81026, cells[ 1 ] );
-    assertEquals( (long) 1663, cells[ 2 ] );
+    assertEquals( 1663L, cells[ 2 ] );
     assertEquals( testDate.getYear(), ( (Date) cells[ 3 ] ).getYear() );
     assertEquals( testDate.getMonth(), ( (Date) cells[ 3 ] ).getMonth() );
     assertEquals( testDate.getDate(), ( (Date) cells[ 3 ] ).getDate() );
@@ -163,7 +163,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
       assertEquals( null, cells[ 4 ] ); // IfNull value does not seem to work
     }
 
-    assertEquals( (long) 7, cells[ 5 ] );
+    assertEquals( 7L, cells[ 5 ] );
     assertEquals( 237.5714286, cells[ 6 ] );
     assertEquals( true, cells[ 7 ] );
 
@@ -189,7 +189,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
     // check the results
     long rowCount = this.getRowCount( tableName );
-    assertEquals( (long) 0, rowCount );
+    assertEquals( 0L, rowCount );
   }
 
   /**
@@ -218,7 +218,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
     // check the results
     long rowCount = this.getRowCount( tableName );
-    assertEquals( (long) 0, rowCount );
+    assertEquals( 0L, rowCount );
 
     // now make sure I can drop the table as well
     gen.dropTable( tableName );
@@ -228,7 +228,6 @@ public class CsvTransformGeneratorIT extends BaseTest {
     } catch ( Exception e ) {
       // expect the table to not exist
     }
-
   }
 
   /**
@@ -261,7 +260,6 @@ public class CsvTransformGeneratorIT extends BaseTest {
       // no need to forward exception, just fail the test
       fail();
     }
-
   }
 
   public void testSemiColonAfterQuoteIsFound() throws Exception {
@@ -328,7 +326,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
     // check the results
     long rowCount = this.getRowCount( tableName );
-    assertEquals( (long) 235, rowCount );
+    assertEquals( 235L, rowCount );
     DatabaseMeta databaseMeta = getDatabaseMeta();
     assertNotNull( databaseMeta );
     Database database = new Database( databaseMeta );
@@ -360,9 +358,9 @@ public class CsvTransformGeneratorIT extends BaseTest {
       assertTrue( ok );
 
       // test the values
-      assertEquals( (long) 3, sqlResult.getLong( 1 ) );
+      assertEquals( 3L, sqlResult.getLong( 1 ) );
       assertEquals( 25677.96525, sqlResult.getDouble( 2 ) );
-      assertEquals( (long) 1231, sqlResult.getLong( 3 ) );
+      assertEquals( 1231L, sqlResult.getLong( 3 ) );
       assertEquals( testDate.getYear(), sqlResult.getDate( 4 ).getYear() );
       assertEquals( testDate.getMonth(), sqlResult.getDate( 4 ).getMonth() );
       assertEquals( testDate.getDate(), sqlResult.getDate( 4 ).getDate() );
@@ -373,7 +371,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
       //    assertEquals( testDate, cells[3] );
       assertEquals( "Afghanistan", sqlResult.getString( 5 ) );
-      assertEquals( (long) 11, sqlResult.getLong( 6 ) );
+      assertEquals( 11L, sqlResult.getLong( 6 ) );
       assertEquals( 111.9090909, sqlResult.getDouble( 7 ) );
       assertEquals( false, sqlResult.getBoolean( 8 ) );
     } finally {
@@ -381,7 +379,6 @@ public class CsvTransformGeneratorIT extends BaseTest {
       stmt.close();
       connection.close();
     }
-
   }
 
   private CsvTransformGenerator getCleanTransformGen() throws Exception {
@@ -450,11 +447,11 @@ public class CsvTransformGeneratorIT extends BaseTest {
     } catch ( CsvTransformGeneratorException e ) {
       //expected, the column should not be there to select
     }
-
   }
 
   public void testCreateOrModifyTable_NullInput() throws Exception {
     CsvTransformGenerator gen = getCleanTransformGen();
+    fail();
     // generate the database table initially
     try {
       gen.setTableName( null );
@@ -514,21 +511,21 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
     // check the results
     long rowCount = this.getRowCount( tableName );
-    assertEquals( (long) 235, rowCount );
+    assertEquals( 235L, rowCount );
 
     // load again, no truncate
     loadTable( gen, info, false, session );
 
     // check the results
     rowCount = this.getRowCount( tableName );
-    assertEquals( (long) 470, rowCount );
+    assertEquals( 470L, rowCount );
 
     // load again, with truncate
     loadTable( gen, info, true, session );
 
     // check the results
     rowCount = this.getRowCount( tableName );
-    assertEquals( (long) 235, rowCount );
+    assertEquals( 235L, rowCount );
   }
 
   private int loadTable( CsvTransformGenerator gen, ModelInfo info, boolean truncate, IPentahoSession session )
@@ -569,7 +566,7 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
     // check the results
     long rowCount = this.getRowCount( tableName );
-    assertEquals( (long) 235, rowCount );
+    assertEquals( 235L, rowCount );
 
     int indexCount = gen.createIndices( session );
     assertEquals( 5, indexCount );

@@ -13,7 +13,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
-import junit.framework.Assert;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,7 +86,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -124,7 +125,7 @@ public class SerializeServiceIT {
 
     manager = new MockBackingRepositoryLifecycleManager(new MockSecurityHelper());
 
-    System.setProperty("org.osjava.sj.root", "target/test-classes/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
+    System.setProperty("org.osjava.sj.root", "target/test-classes/solution1/system/simple-jndi");
     booter = new MicroPlatform("target/test-classes/solution1");
     
     IAuthorizationPolicy mockAuthorizationPolicy = mock(IAuthorizationPolicy.class);
@@ -145,10 +146,11 @@ public class SerializeServiceIT {
     booter.defineInstance(IMetadataDomainRepository.class, createMetadataDomainRepository());
     booter.define(ISecurityHelper.class, MockSecurityHelper.class);
     booter.define(UserDetailsService.class, MockUserDetailService.class);
-    booter.define("singleTenantAdminUserName", new String("admin"));
+    booter.define("singleTenantAdminUserName", "admin" );
     booter.defineInstance( IAuthorizationPolicy.class, mockAuthorizationPolicy );
 
     booter.defineInstance(IPluginResourceLoader.class, new PluginResourceLoader() {
+      @Override
       protected PluginClassLoader getOverrideClassloader() {
         return new PluginClassLoader(new File(".", "target/test-classes/solution1/system/simple-jndi"), this);
       }
@@ -181,7 +183,7 @@ public class SerializeServiceIT {
 
     String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
     String path = solutionStorage + RepositoryFile.SEPARATOR
-        + "resources" + RepositoryFile.SEPARATOR + "metadata" + RepositoryFile.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
+        + "resources" + RepositoryFile.SEPARATOR + "metadata" + RepositoryFile.SEPARATOR;
 
     String olapPath = null;
 
@@ -189,11 +191,11 @@ public class SerializeServiceIT {
     if (appContext != null) {
       path = PentahoSystem.getApplicationContext().getSolutionPath(path);
       olapPath = PentahoSystem.getApplicationContext().getSolutionPath(
-          "system" + RepositoryFile.SEPARATOR + "olap" + RepositoryFile.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
+          "system" + RepositoryFile.SEPARATOR + "olap" + RepositoryFile.SEPARATOR);
     }
 
-    File olap1 = new File(olapPath + "datasources.xml"); //$NON-NLS-1$
-    File olap2 = new File(olapPath + "tmp_datasources.xml"); //$NON-NLS-1$
+    File olap1 = new File(olapPath + "datasources.xml");
+    File olap2 = new File(olapPath + "tmp_datasources.xml");
 
     FileUtils.copyFile(olap1, olap2);
 
@@ -204,37 +206,31 @@ public class SerializeServiceIT {
     model.setModelName("ORDERS");
     model.setDomain(domain);
     model.getWorkspaceHelper().populateDomain(model);
-    service.serializeModels(domain, "test_file");//$NON-NLS-1$
+    service.serializeModels(domain, "test_file");
 
-    Assert.assertEquals(domain.getLogicalModels().get(1).getProperty("MondrianCatalogRef"), model.getModelName());
+    assertEquals(domain.getLogicalModels().get(1).getProperty("MondrianCatalogRef"), model.getModelName());
   }
 
   private Domain generateModel() {
     Domain domain = null;
     try {
-
       DatabaseMeta database = new DatabaseMeta();
-      //database.setDatabaseInterface(new HypersonicDatabaseMeta());
-      database.setDatabaseType("Hypersonic");//$NON-NLS-1$
-      //database.setUsername("sa");//$NON-NLS-1$
-      //database.setPassword("");//$NON-NLS-1$
+      database.setDatabaseType("Hypersonic");
       database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-      //database.setHostname(".");
-      database.setDBName("SampleData");//$NON-NLS-1$
-      //database.setDBPort("9001");//$NON-NLS-1$
-      database.setName("SampleData");//$NON-NLS-1$
+      database.setDBName("SampleData");
+      database.setName("SampleData");
 
       System.out.println(database.testConnection());
 
-      TableModelerSource source = new TableModelerSource(database, "ORDERS", null);//$NON-NLS-1$
+      TableModelerSource source = new TableModelerSource(database, "ORDERS", null);
       domain = source.generateDomain();
 
-      List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
+      List<OlapDimension> olapDimensions = new ArrayList<>();
       OlapDimension dimension = new OlapDimension();
-      dimension.setName("test");//$NON-NLS-1$
+      dimension.setName("test");
       dimension.setTimeDimension(false);
       olapDimensions.add(dimension);
-      domain.getLogicalModels().get(1).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
+      domain.getLogicalModels().get(1).setProperty("olap_dimensions", olapDimensions);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -248,12 +244,12 @@ public class SerializeServiceIT {
     pentahoSession.setAttribute(IPentahoSession.TENANT_ID_KEY, tenantId);
     final String password = "password";
 
-    List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
+    List<GrantedAuthority> authList = new ArrayList<>();
     authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAuthenticatedAuthorityNamePattern, tenantId)));
     if (tenantAdmin) {
       authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAdminAuthorityNamePattern, tenantId)));
     }
-    //GrantedAuthority[] authorities = authList.toArray(new GrantedAuthority[0]);
+
     UserDetails userDetails = new User(username, password, true, true, true, true, authList);
     Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, password, authList);
     PentahoSessionHolder.setSession(pentahoSession);
@@ -272,7 +268,7 @@ public class SerializeServiceIT {
   private class MockBackingRepositoryLifecycleManager implements IBackingRepositoryLifecycleManager {
     public static final String UNIT_TEST_EXCEPTION_MESSAGE = "Unit Test Exception";
 
-    private ArrayList<MethodTrackingData> methodTrackerHistory = new ArrayList<MethodTrackingData>();
+    private ArrayList<MethodTrackingData> methodTrackerHistory = new ArrayList<>();
 
     private boolean throwException = false;
 
@@ -329,12 +325,10 @@ public class SerializeServiceIT {
     @Override
     public void addMetadataToRepository(String arg0) {
       // TODO Auto-generated method stub
-      
     }
 
     @Override
     public Boolean doesMetadataExists(String arg0) {
-      // TODO Auto-generated method stub
       return null;
     }
   }
@@ -344,15 +338,12 @@ public class SerializeServiceIT {
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException, DataAccessException {
 
-      List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
+      List<GrantedAuthority> authList = new ArrayList<>();
       authList.add( new SimpleGrantedAuthority("Authenticated") );
       authList.add( new SimpleGrantedAuthority("Administrator") );
 
-      UserDetails user = new User(name, "password", true, true, true, true, authList);
-
-      return user;
+      return new User(name, "password", true, true, true, true, authList);
     }
-
   }
 
   public static class TestFileSystemBackedUnifiedRepository extends FileSystemBackedUnifiedRepository {
@@ -365,62 +356,52 @@ public class SerializeServiceIT {
 
     @Override
     public void init(IPentahoSession arg0) {
-
     }
 
     @Override
     public String createDatasource(IDatabaseConnection arg0) throws DuplicateDatasourceException,
         DatasourceMgmtServiceException {
-
       return null;
     }
 
     @Override
     public void deleteDatasourceById(String arg0) throws NonExistingDatasourceException, DatasourceMgmtServiceException {
-
     }
 
     @Override
     public void deleteDatasourceByName(String arg0) throws NonExistingDatasourceException,
         DatasourceMgmtServiceException {
-
     }
 
     @Override
     public IDatabaseConnection getDatasourceById(String arg0) throws DatasourceMgmtServiceException {
-
       return null;
     }
 
     @Override
     public IDatabaseConnection getDatasourceByName(String arg0) throws DatasourceMgmtServiceException {
-
       return null;
     }
 
     @Override
     public List<String> getDatasourceIds() throws DatasourceMgmtServiceException {
-
       return null;
     }
 
     @Override
     public List<IDatabaseConnection> getDatasources() throws DatasourceMgmtServiceException {
-
       return null;
     }
 
     @Override
     public String updateDatasourceById(String arg0, IDatabaseConnection arg1) throws NonExistingDatasourceException,
         DatasourceMgmtServiceException {
-
       return null;
     }
 
     @Override
     public String updateDatasourceByName(String arg0, IDatabaseConnection arg1) throws NonExistingDatasourceException,
         DatasourceMgmtServiceException {
-
       return null;
     }
   }
@@ -429,68 +410,56 @@ public class SerializeServiceIT {
 
     @Override
     public String getEtcFolderName() {
-
       return null;
     }
 
     @Override
     public String getEtcFolderPath() {
-
       return null;
     }
 
     @Override
     public String getHomeFolderName() {
-
       return null;
     }
 
     @Override
     public String getHomeFolderPath() {
-
       return null;
     }
 
     @Override
     public String getPublicFolderName() {
-
       return null;
     }
 
     @Override
     public String getPublicFolderPath() {
-
       return null;
     }
 
     @Override
     public String getRootFolderPath() {
-
       return null;
     }
 
     @Override
     public String getUserHomeFolderName(String arg0) {
-
       return null;
     }
 
     @Override
     public String getUserHomeFolderPath(String arg0) {
-
       return null;
     }
-
   }
 
-  public PentahoMetadataDomainRepository createMetadataDomainRepository() throws Exception {
+  public PentahoMetadataDomainRepository createMetadataDomainRepository() {
     IUnifiedRepository repository = new FileSystemBackedUnifiedRepository("target/test-classes/solution1");
     booter.defineInstance(IUnifiedRepository.class, repository);
-    Assert.assertNotNull(new RepositoryUtils(repository).getFolder("/etc/metadata", true, true, null));
-    Assert.assertNotNull(new RepositoryUtils(repository).getFolder("/etc/mondrian", true, true, null));
-    Assert.assertNotNull(new RepositoryUtils(repository).getFolder("/savetest", true, true, null));
-    PentahoMetadataDomainRepository pentahoMetadataDomainRepository = new PentahoMetadataDomainRepository(repository);
-    return pentahoMetadataDomainRepository;
+    assertNotNull(new RepositoryUtils(repository).getFolder("/etc/metadata", true, true, null));
+    assertNotNull(new RepositoryUtils(repository).getFolder("/etc/mondrian", true, true, null));
+    assertNotNull(new RepositoryUtils(repository).getFolder("/savetest", true, true, null));
+    return new PentahoMetadataDomainRepository(repository);
   }
-
 }

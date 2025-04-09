@@ -48,20 +48,19 @@ public class JoinMetadataIT extends BaseTest {
 	}
 
 	public void testGenerateDomain() {
-		
 		Domain domain = null;
+
 		try {
 			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabaseMeta(), getSchemaModel(), this.getDatabaseMeta().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
 			domain = multiTable.generateDomain();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		assertNotNull(domain);
 
+		assertNotNull(domain);
 	}
   private SchemaModel getSchemaModel() {
-    List<JoinRelationshipModel> joins = new ArrayList<JoinRelationshipModel>();
+    List<JoinRelationshipModel> joins = new ArrayList<>();
 
     JoinTableModel joinTable1 = new JoinTableModel();
     joinTable1.setName("CUSTOMERS");

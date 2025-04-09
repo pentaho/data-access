@@ -17,7 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -291,7 +291,7 @@ public class ConnectionServiceImplIT {
 
   public static class MockDatasourceMgmtService implements IDatasourceMgmtService {
 
-    private List<IDatabaseConnection> connections = new ArrayList<IDatabaseConnection>();
+    private List<IDatabaseConnection> connections = new ArrayList<>();
 
     @Override
     public void init( IPentahoSession arg0 ) {
