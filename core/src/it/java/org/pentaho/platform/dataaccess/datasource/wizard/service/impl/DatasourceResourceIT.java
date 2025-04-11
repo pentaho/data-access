@@ -13,27 +13,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
@@ -77,6 +57,7 @@ import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.dataaccess.datasource.api.resources.DataSourceWizardResource;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.core.system.StandaloneSession;
 import org.pentaho.platform.engine.core.system.SystemSettings;
 import org.pentaho.platform.engine.core.system.boot.PlatformInitializationException;
 import org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService;
@@ -101,6 +82,8 @@ import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedReposi
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.pentaho.test.platform.engine.security.MockSecurityHelper;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -109,10 +92,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DatasourceResourceIT {
   private static MicroPlatform mp;
+  private String tenantAdminAuthorityNamePattern = "{0}_Admin";
+  private String tenantAuthenticatedAuthorityNamePattern = "{0}_Authenticated";
 
   @BeforeClass
   public static void setUp() throws Exception {
@@ -253,8 +257,15 @@ public class DatasourceResourceIT {
             "domain-id", "SalesData" ).build();
     metadataImportHandler.importFile( bundle1 );
 
-    final Response salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( "SalesData" );
-    assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
+    final Response salesData;
+    try {
+      login( "admin", "", true );
+      salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( "SalesData" );
+    } finally {
+      logout();
+    }
+
+    assertEquals( Response.Status.OK.getStatusCode(), salesData.getStatus() );
     assertNotNull( salesData.getMetadata() );
     assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
     assertEquals( String.class, salesData.getMetadata().getFirst( "Content-Disposition" ).getClass() );
@@ -290,15 +301,18 @@ public class DatasourceResourceIT {
       }
     } );
     FileInputStream in = new FileInputStream( new File( new File( "target/test-classes" ), "SampleDataOlap.xmi" ) );
+
+    Response resp;
     try {
-      Response resp = service.publishDsw( "AModel.xmi", in, true, false, null );
-      assertEquals(
-          Response.Status.Family.SUCCESSFUL,
-          Response.Status.fromStatusCode( resp.getStatus() ).getFamily() );
-      mockery.assertIsSatisfied();
+      login( "admin", "", true );
+      resp = service.publishDsw( "AModel.xmi", in, true, false, null );
     } finally {
       IOUtils.closeQuietly( in );
+      logout();
     }
+
+    assertEquals( Response.Status.Family.SUCCESSFUL, Response.Status.fromStatusCode( resp.getStatus() ).getFamily() );
+    mockery.assertIsSatisfied();
   }
 
   private void testImportFile( String filePath, final String expectedSchemaName ) throws Exception {
@@ -565,5 +579,29 @@ public class DatasourceResourceIT {
     public String getUserHomeFolderPath( String arg0 ) {
       return null;
     }
+  }
+
+  protected void login(final String username, final String tenantId, final boolean tenantAdmin) {
+    StandaloneSession pentahoSession = new StandaloneSession(username);
+    pentahoSession.setAuthenticated(username);
+    pentahoSession.setAttribute(IPentahoSession.TENANT_ID_KEY, tenantId);
+    final String password = "password";
+
+    List<GrantedAuthority> authList = new ArrayList<>();
+    authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAuthenticatedAuthorityNamePattern, tenantId)));
+    if (tenantAdmin) {
+      authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAdminAuthorityNamePattern, tenantId)));
+    }
+
+    UserDetails userDetails = new User(username, password, true, true, true, true, authList);
+    Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, password, authList);
+    PentahoSessionHolder.setSession(pentahoSession);
+    // this line necessary for Spring Security's MethodSecurityInterceptor
+    SecurityContextHolder.getContext().setAuthentication(auth);
+  }
+
+  protected void logout() {
+    PentahoSessionHolder.removeSession();
+    SecurityContextHolder.getContext().setAuthentication(null);
   }
 }

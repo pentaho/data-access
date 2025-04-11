@@ -451,7 +451,6 @@ public class CsvTransformGeneratorIT extends BaseTest {
 
   public void testCreateOrModifyTable_NullInput() throws Exception {
     CsvTransformGenerator gen = getCleanTransformGen();
-    fail();
     // generate the database table initially
     try {
       gen.setTableName( null );
