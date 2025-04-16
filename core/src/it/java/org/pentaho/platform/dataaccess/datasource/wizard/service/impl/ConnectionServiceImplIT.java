@@ -83,8 +83,7 @@ public class ConnectionServiceImplIT {
   private static MockDatasourceMgmtService mgmtService = new MockDatasourceMgmtService();
 
   @BeforeClass
-  public static void setUpClass() throws PlatformInitializationException, DuplicateDatasourceException,
-    DatasourceMgmtServiceException {
+  public static void setUpClass() throws PlatformInitializationException {
 
     MockDataSourceService dataSourceService = new MockDataSourceService( false );
 
@@ -280,6 +279,7 @@ public class ConnectionServiceImplIT {
   public void testTestConnection() throws ConnectionServiceException {
     DatabaseConnection connection = new DatabaseConnection();
     connection.setName( NON_EXIST_CONNECTION_NAME );
+    connection.setDatabaseName( "mem:tempdb" );
     connection.setAccessType( DatabaseAccessType.NATIVE );
     connection.setDatabaseType( new DatabaseType( "H2", "H2", List.of( DatabaseAccessType.NATIVE ), 0, null ) );
     assertTrue( connectionServiceImpl.testConnection( connection ) );

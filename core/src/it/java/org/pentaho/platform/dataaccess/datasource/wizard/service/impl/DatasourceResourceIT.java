@@ -94,6 +94,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -184,10 +185,6 @@ public class DatasourceResourceIT {
   }
 
   @Test
-  public void DummyTest() throws Exception {
-
-  }
-  @Test
   public void testMondrianImportExport() throws Exception {
     final String domainName = "SalesData";
     List<IMimeType> mimeTypeList = new ArrayList<>();
@@ -198,7 +195,7 @@ public class DatasourceResourceIT {
     RepositoryFile repoMondrianFile = new RepositoryFile.Builder( mondrian.getName() ).folder( false ).hidden( false )
         .build();
     RepositoryFileImportBundle bundle1 = new RepositoryFileImportBundle.Builder()
-      .file( repoMondrianFile ).charSet( "UTF-8" ).input( new FileInputStream( mondrian ) ).mime( "mondrian.xml" )
+      .file( repoMondrianFile ).charSet( "UTF-8" ).input( getByteArrayInputStream( mondrian ) ).mime( "mondrian.xml" )
         .withParam( "parameters", "Datasource=Pentaho;overwrite=true" ).withParam( "domain-id", "SalesData" ).build();
     MondrianImportHandler mondrianImportHandler = new MondrianImportHandler( mimeTypeList,
         PentahoSystem.get( IMondrianCatalogService.class ) );
@@ -220,8 +217,15 @@ public class DatasourceResourceIT {
 
     new ModelerService().serializeModels( domain, domainName );
 
-    final Response salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( domainName + ".xmi" );
-    assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
+    Response salesData;
+    try {
+      login( "admin", "", true );
+      salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( domainName + ".xmi" );
+    } finally {
+      logout();
+    }
+
+    assertEquals( Response.Status.OK.getStatusCode(), salesData.getStatus() );
     assertNotNull( salesData.getMetadata() );
     assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
     assertEquals( String.class, salesData.getMetadata().getFirst( "Content-Disposition" ).getClass() );
@@ -579,6 +583,18 @@ public class DatasourceResourceIT {
     public String getUserHomeFolderPath( String arg0 ) {
       return null;
     }
+  }
+
+  private static ByteArrayInputStream getByteArrayInputStream( File file ) throws IOException {
+    ByteArrayInputStream byteArrayInputStream = null;
+    try ( FileInputStream fileInputStream = new FileInputStream( file ) ) {
+      // Read the file into a byte array
+      byte[] fileBytes = fileInputStream.readAllBytes();
+
+      // Create a ByteArrayInputStream from the byte array
+      byteArrayInputStream = new ByteArrayInputStream( fileBytes );
+    }
+    return byteArrayInputStream;
   }
 
   protected void login(final String username, final String tenantId, final boolean tenantAdmin) {
