@@ -185,10 +185,6 @@ public class DatasourceResourceIT {
   }
 
   @Test
-  public void DummyTest() throws Exception {
-
-  }
-  @Test
   public void testMondrianImportExport() throws Exception {
     final String domainName = "SalesData";
     List<IMimeType> mimeTypeList = new ArrayList<>();
@@ -589,14 +585,14 @@ public class DatasourceResourceIT {
     }
   }
 
-  private static ByteArrayInputStream getByteArrayInputStream(File file) throws IOException {
+  private static ByteArrayInputStream getByteArrayInputStream( File file ) throws IOException {
     ByteArrayInputStream byteArrayInputStream = null;
-    try (FileInputStream fileInputStream = new FileInputStream(file)) {
-          // Read the file into a byte array
-          byte[] fileBytes = fileInputStream.readAllBytes();
+    try ( FileInputStream fileInputStream = new FileInputStream( file ) ) {
+      // Read the file into a byte array
+      byte[] fileBytes = fileInputStream.readAllBytes();
 
-          // Create a ByteArrayInputStream from the byte array
-      byteArrayInputStream = new ByteArrayInputStream(fileBytes);
+      // Create a ByteArrayInputStream from the byte array
+      byteArrayInputStream = new ByteArrayInputStream( fileBytes );
     }
     return byteArrayInputStream;
   }

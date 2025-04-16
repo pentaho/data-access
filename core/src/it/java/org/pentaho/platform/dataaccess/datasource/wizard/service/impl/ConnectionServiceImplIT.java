@@ -32,6 +32,7 @@ import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
+import org.pentaho.platform.engine.core.system.boot.PlatformInitializationException;
 import org.pentaho.platform.engine.services.MockDataSourceService;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginClassLoader;
@@ -82,7 +83,7 @@ public class ConnectionServiceImplIT {
   private static MockDatasourceMgmtService mgmtService = new MockDatasourceMgmtService();
 
   @BeforeClass
-  public static void setUpClass() throws Exception {
+  public static void setUpClass() throws PlatformInitializationException {
 
     MockDataSourceService dataSourceService = new MockDataSourceService( false );
 
