@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -41,6 +42,7 @@ import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnectionPoolParameter;
 import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.database.util.DatabaseUtil;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
@@ -426,9 +428,40 @@ public class ConnectionService {
   @Path( "/get" )
   @Produces( { APPLICATION_JSON } )
   @Facet( name = "Unsupported" )
-  public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
+  public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name,
+                                                  @DefaultValue( "false" ) @QueryParam( "mask" ) Boolean mask )
+    throws ConnectionServiceException {
     IDatabaseConnection conn = connectionService.getConnectionByName( name );
-    hidePassword( conn );
+    if ( mask ) {
+      encryptPassword( conn );
+    } else {
+      hidePassword( conn );
+    }
+    return conn;
+  }
+
+  /**
+   * Returns the database connection details
+   *
+   * @param id
+   *          String representing the name of the database to return
+   * @return Database connection by name
+   *
+   * @throws ConnectionServiceException
+   */
+  @GET
+  @Path( "/get-by-id" )
+  @Produces( { APPLICATION_JSON } )
+  @Facet( name = "Unsupported" )
+  public IDatabaseConnection getConnectionById( @QueryParam( "id" ) String id,
+                                                  @DefaultValue( "false" ) @QueryParam( "mask" ) Boolean mask )
+      throws ConnectionServiceException {
+    IDatabaseConnection conn = connectionService.getConnectionById( id );
+    if ( mask ) {
+      encryptPassword( conn );
+    } else {
+      hidePassword( conn );
+    }
     return conn;
   }
 
@@ -487,5 +520,9 @@ public class ConnectionService {
    */
   private void hidePassword( IDatabaseConnection conn ) {
     conn.setPassword( null );
+  }
+
+  private void encryptPassword( IDatabaseConnection conn ) {
+    conn.setPassword( Encr.encryptPasswordIfNotUsingVariables( conn.getPassword() ) );
   }
 }
