@@ -16,7 +16,6 @@
     <wadl.path>${project.build.directory}/${wadl.file.name}</wadl.path>
     <wadl.output.directory>${project.build.outputDirectory}/META-INF/wadl</wadl.output.directory>
     <wadl.file.name>wadlExtension.xml</wadl.file.name>
-    <metastore-locator.version>10.3.0.0-SNAPSHOT</metastore-locator.version>
   </properties>
 
   <dependencies>
@@ -108,7 +107,7 @@
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pentaho-metastore-locator-core</artifactId>
-      <version>${metastore-locator.version}</version>
+      <version>${pdi.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
