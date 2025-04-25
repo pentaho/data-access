@@ -34,6 +34,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -261,11 +262,11 @@ public class DataSourceWizardResource {
       @ResponseCode( code = 200, condition = "File successfully imported." ),
       @ResponseCode( code = 401, condition = "User is not authorized" )
     } )
-  public Response publishDswFromTemp( @FormDataParam( "domainId" ) String domainId,
-                                        @FormDataParam ( "jsonFileList" ) String fileList,
-                                        @FormDataParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
-                                        @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
-                                        @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+  public Response publishDswFromTemp( @FormParam( "domainId" ) String domainId,
+                                        @FormParam ( "jsonFileList" ) String fileList,
+                                        @FormParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
+                                        @FormParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
+                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
     try {
       String dswId = service.publishDswFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, checkConnection, acl );
 
