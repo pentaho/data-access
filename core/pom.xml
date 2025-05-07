@@ -5,11 +5,11 @@
   <parent>
     <groupId>pentaho</groupId>
     <artifactId>pentaho-data-access-parent</artifactId>
-    <version>10.3.0.0-SNAPSHOT</version>
+    <version>10.3.0.0-342</version>
   </parent>
 
   <artifactId>pentaho-bi-platform-data-access</artifactId>
-  <version>10.3.0.0-SNAPSHOT</version>
+  <version>10.3.0.0-342</version>
 
   <properties>
     <wadl.package>org.pentaho.platform.dataaccess</wadl.package>
