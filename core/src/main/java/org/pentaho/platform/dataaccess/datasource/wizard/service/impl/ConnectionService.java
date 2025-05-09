@@ -16,6 +16,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -341,7 +343,7 @@ public class ConnectionService {
   @Path( "/deletebyname" )
   public Response deleteConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     try {
-      boolean success = connectionService.deleteConnection( name );
+      boolean success = connectionService.deleteConnection( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
       if ( success ) {
         return Response.ok().build();
       } else {
@@ -431,7 +433,7 @@ public class ConnectionService {
   public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name,
                                                   @DefaultValue( "false" ) @QueryParam( "mask" ) Boolean mask )
     throws ConnectionServiceException {
-    IDatabaseConnection conn = connectionService.getConnectionByName( name );
+    IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
     if ( mask ) {
       encryptPassword( conn );
     } else {
