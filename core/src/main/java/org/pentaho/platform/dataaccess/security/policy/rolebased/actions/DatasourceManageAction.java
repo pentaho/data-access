@@ -27,4 +27,9 @@ public class DatasourceManageAction implements IAuthorizationAction {
   public String getLocalizedDisplayName( String localeString ) {
     return Messages.getInstance().getString( NAME );
   }
+
+  @Override
+  public String getLocalizedDescription( String localeString ) {
+    return Messages.getInstance().getString( NAME + ".description" );
+  }
 }
