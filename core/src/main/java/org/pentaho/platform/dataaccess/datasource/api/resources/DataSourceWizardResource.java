@@ -42,9 +42,11 @@ import jakarta.ws.rs.core.Response;
 import org.codehaus.enunciate.Facet;
 import org.codehaus.enunciate.jaxrs.ResponseCode;
 import org.codehaus.enunciate.jaxrs.StatusCodes;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.dataaccess.datasource.api.DataSourceWizardService;
+import org.pentaho.platform.dataaccess.datasource.utils.ConvertMultipartDataToJavaObject;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -228,9 +230,9 @@ public class DataSourceWizardResource {
       @FormDataParam( "metadataFile" ) InputStream metadataFile,
       @FormDataParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
       @FormDataParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
     try {
-      final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection, acl );
+      final String dswId = service.publishDsw( domainId, metadataFile, overwrite, checkConnection, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
       return buildOkResponse( dswId );
     } catch ( PentahoAccessControlException e ) {
       return buildUnauthorizedResponse();
