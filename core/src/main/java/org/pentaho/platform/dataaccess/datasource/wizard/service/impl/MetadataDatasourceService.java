@@ -253,7 +253,7 @@ public class MetadataDatasourceService {
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
       @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl )
     throws PentahoAccessControlException {
     Response response =
         importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
@@ -295,7 +295,7 @@ public class MetadataDatasourceService {
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
       @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
     return new MetadataResource().importMetadataDatasourceLegacy( domainId, metadataFile, metadataFileInfo, overwrite,
         localeFiles, localeFilesInfo, acl );
   }
