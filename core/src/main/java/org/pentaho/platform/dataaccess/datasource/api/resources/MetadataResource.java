@@ -49,6 +49,7 @@ import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.api.MetadataService;
+import org.pentaho.platform.dataaccess.datasource.utils.ConvertMultipartDataToJavaObject;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -188,7 +189,7 @@ public class MetadataResource {
                                                   @FormDataParam( "localeFiles" )
                                                   List<FormDataContentDisposition> localeFilesInfo,
                                                   @FormDataParam( DATASOURCE_ACL )
-                                                  RepositoryFileAclDto acl ) {
+                                                  FormDataBodyPart acl ) {
     return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo,
       acl );
   }
@@ -268,10 +269,10 @@ public class MetadataResource {
       @FormDataParam( OVERWRITE_IN_REPOS ) Boolean overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
       @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
-          localeFilesInfo, acl );
+          localeFilesInfo, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
       return Response.status( CREATED ).build();
     } catch ( PentahoAccessControlException e ) {
       throw new WebApplicationException( Response.Status.UNAUTHORIZED );
@@ -305,12 +306,11 @@ public class MetadataResource {
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
                                             @FormDataParam( "localeFiles" )
                                             List<FormDataContentDisposition> localeFilesInfo,
-                                            @FormDataParam( DATASOURCE_ACL )
-                                            RepositoryFileAclDto acl ) {
+                                            @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
     try {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
-          localeFilesInfo, acl );
+          localeFilesInfo, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
       return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return buildServerErrorResponse( e );
@@ -496,7 +496,7 @@ public class MetadataResource {
   public Response importMetadataFromTemp( @FormDataParam( "domainId" ) String domainId,
                                         @FormDataParam ( "jsonFileList" ) String fileList,
                                         @FormDataParam( OVERWRITE_IN_REPOS ) boolean overwrite,
-                                        @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+                                        @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
 
     try {
       service.importMetadataFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, acl );
@@ -550,10 +550,8 @@ public class MetadataResource {
                                             @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
                                             @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam( "localeFiles" )
-                                            List<FormDataContentDisposition> localeFilesInfo,
-                                            @FormDataParam( DATASOURCE_ACL )
-                                            RepositoryFileAclDto acl ) {
+                                            @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
+                                            @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
     return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
   }
 
