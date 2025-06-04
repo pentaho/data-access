@@ -42,6 +42,7 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataTempFilesListBundleDto;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataTempFilesListDto;
+import org.pentaho.platform.dataaccess.datasource.utils.ConvertMultipartDataToJavaObject;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -280,7 +281,7 @@ public class MetadataService extends DatasourceService {
   }
 
   public void importMetadataFromTemp( @FormDataParam( "domainId" ) String domainId, @FormDataParam( "jsonFileList" ) MetadataTempFilesListDto fileList,
-      @FormDataParam( "overwrite" ) boolean overwrite, @FormDataParam( "acl" ) RepositoryFileAclDto acl ) throws PentahoAccessControlException, PlatformImportException, Exception {
+      @FormDataParam( "overwrite" ) boolean overwrite, @FormDataParam( "acl" ) FormDataBodyPart acl ) throws PentahoAccessControlException, PlatformImportException, Exception {
 
     String metadataTempFileName = fileList.getXmiFileName();
     InputStream metaDataFileInputStream = createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + metadataTempFileName );
@@ -295,7 +296,7 @@ public class MetadataService extends DatasourceService {
       }
     }
 
-    importMetadataDatasource( domainId, metaDataFileInputStream, overwrite, localeFileStreams, localeFileNames, acl );
+    importMetadataDatasource( domainId, metaDataFileInputStream, overwrite, localeFileStreams, localeFileNames, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
 
   }
 
