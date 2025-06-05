@@ -16,6 +16,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -341,7 +343,11 @@ public class ConnectionService {
   @Path( "/deletebyname" )
   public Response deleteConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
     try {
-      boolean success = connectionService.deleteConnection( name );
+      if ( StringUtils.isBlank( name ) ) {
+        throw new ConnectionServiceException( com.google.gwt.http.client.Response.SC_BAD_REQUEST, Messages.getErrorString(
+                "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", String.valueOf( name ) ) ); //$NON-NLS-1$
+      }
+      boolean success = connectionService.deleteConnection( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
       if ( success ) {
         return Response.ok().build();
       } else {
@@ -431,7 +437,11 @@ public class ConnectionService {
   public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name,
                                                   @DefaultValue( "false" ) @QueryParam( "mask" ) Boolean mask )
     throws ConnectionServiceException {
-    IDatabaseConnection conn = connectionService.getConnectionByName( name );
+    if ( StringUtils.isBlank( name ) ) {
+      throw new ConnectionServiceException( com.google.gwt.http.client.Response.SC_BAD_REQUEST, Messages.getErrorString(
+              "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", String.valueOf( name ) ) ); //$NON-NLS-1$
+    }
+    IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
     if ( mask ) {
       encryptPassword( conn );
     } else {
