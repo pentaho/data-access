@@ -2,19 +2,19 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:sec="http://www.springframework.org/schema/security"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
-                      http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.4.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                      http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
   <!-- Bean definitions in this file override bean definitions in repository.spring.xml. -->
 
+  <sec:authentication-manager alias="authenticationManager">
   <sec:authentication-provider>
     <sec:user-service id="userDetailsService">
       <sec:user password="password" name="joe" authorities="Authenticated, Admin"/>
       <sec:user password="password" name="suzy" authorities="Authenticated"/>
     </sec:user-service>
   </sec:authentication-provider>
-
-  <sec:authentication-manager alias="authenticationManager"/>
+  </sec:authentication-manager>
 
   <bean id="jcrRepository" class="org.springframework.extensions.jcr.jackrabbit.RepositoryFactoryBean">
     <property name="configuration" value="classpath:/jackrabbit-test-repo-ext.xml"/>
