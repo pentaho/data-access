@@ -13,7 +13,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.csv;
 
-import junit.framework.Assert;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,7 +89,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -131,7 +132,7 @@ public class SerializeMultiTableServiceIT {
 
     IUserRoleListService mockUserRoleListService = mock(IUserRoleListService.class);
 
-    System.setProperty("org.osjava.sj.root", "target/test-classes/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
+    System.setProperty("org.osjava.sj.root", "target/test-classes/solution1/system/simple-jndi");
     booter = new MicroPlatform("target/test-classes/solution1");
     
     booter.define(ISolutionEngine.class, SolutionEngine.class, Scope.GLOBAL);
@@ -147,9 +148,10 @@ public class SerializeMultiTableServiceIT {
     booter.defineInstance(IMetadataDomainRepository.class, createMetadataDomainRepository());
     booter.define(ISecurityHelper.class, MockSecurityHelper.class);
     booter.define(UserDetailsService.class, MockUserDetailService.class);
-    booter.define("singleTenantAdminUserName", new String("admin"));
+    booter.define("singleTenantAdminUserName", "admin" );
     booter.defineInstance( IAuthorizationPolicy.class, mockAuthorizationPolicy );
      booter.defineInstance(IPluginResourceLoader.class, new PluginResourceLoader() {
+       @Override
         protected PluginClassLoader getOverrideClassloader() {
           return new PluginClassLoader(new File(".", "target/test-classes/solution1/system/simple-jndi"), this);
         }
@@ -183,7 +185,7 @@ public class SerializeMultiTableServiceIT {
 
     String solutionStorage = AgileHelper.getDatasourceSolutionStorage();
     String path = solutionStorage + RepositoryFile.SEPARATOR
-        + "resources" + RepositoryFile.SEPARATOR + "metadata" + RepositoryFile.SEPARATOR; //$NON-NLS-1$  //$NON-NLS-2$
+        + "resources" + RepositoryFile.SEPARATOR + "metadata" + RepositoryFile.SEPARATOR;
 
     String olapPath = null;
 
@@ -191,11 +193,11 @@ public class SerializeMultiTableServiceIT {
     if (appContext != null) {
       path = PentahoSystem.getApplicationContext().getSolutionPath(path);
       olapPath = PentahoSystem.getApplicationContext().getSolutionPath(
-          "system" + RepositoryFile.SEPARATOR + "olap" + RepositoryFile.SEPARATOR); //$NON-NLS-1$  //$NON-NLS-2$
+          "system" + RepositoryFile.SEPARATOR + "olap" + RepositoryFile.SEPARATOR);
     }
 
-    File olap1 = new File(olapPath + "datasources.xml"); //$NON-NLS-1$
-    File olap2 = new File(olapPath + "tmp_datasources.xml"); //$NON-NLS-1$
+    File olap1 = new File(olapPath + "datasources.xml");
+    File olap2 = new File(olapPath + "tmp_datasources.xml");
 
     FileUtils.copyFile(olap1, olap2);
 
@@ -204,22 +206,21 @@ public class SerializeMultiTableServiceIT {
         Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
     Domain domain = multiTable.generateDomain();
 
-    List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
+    List<OlapDimension> olapDimensions = new ArrayList<>();
     OlapDimension dimension = new OlapDimension();
-    dimension.setName("test");//$NON-NLS-1$
+    dimension.setName("test");
     dimension.setTimeDimension(false);
     olapDimensions.add(dimension);
-    domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);//$NON-NLS-1$
+    domain.getLogicalModels().get(0).setProperty("olap_dimensions", olapDimensions);
 
     ModelerService service = new ModelerService();
-    service.serializeModels(domain, "test_file");//$NON-NLS-1$
+    service.serializeModels(domain, "test_file");
 
-    Assert.assertEquals( ( String) domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef"), "SampleData");
-
+    assertEquals( "SampleData", domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef") );
   }
 
   private SchemaModel getSchema() {
-    List<JoinRelationshipModel> joins = new ArrayList<JoinRelationshipModel>();
+    List<JoinRelationshipModel> joins = new ArrayList<>();
 
     JoinTableModel joinTable1 = new JoinTableModel();
     joinTable1.setName("CUSTOMERS");
@@ -244,19 +245,13 @@ public class SerializeMultiTableServiceIT {
     return model;
   }
 
-
   private DatabaseMeta getDatabaseMeta() {
      DatabaseMeta database = new DatabaseMeta();
      try {
-      //database.setDatabaseInterface(new HypersonicDatabaseMeta());
-      database.setDatabaseType("Hypersonic");//$NON-NLS-1$
-      //database.setUsername("sa");//$NON-NLS-1$
-      //database.setPassword("");//$NON-NLS-1$
+      database.setDatabaseType("Hypersonic");
       database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-      //database.setHostname(".");
-      database.setDBName("SampleData");//$NON-NLS-1$
-      //database.setDBPort("9001");//$NON-NLS-1$
-      database.setName("SampleData");//$NON-NLS-1$
+      database.setDBName("SampleData");
+      database.setName("SampleData");
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -269,12 +264,12 @@ public class SerializeMultiTableServiceIT {
     pentahoSession.setAttribute(IPentahoSession.TENANT_ID_KEY, tenantId);
     final String password = "password";
 
-    List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
+    List<GrantedAuthority> authList = new ArrayList<>();
     authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAuthenticatedAuthorityNamePattern, tenantId)));
     if (tenantAdmin) {
       authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAdminAuthorityNamePattern, tenantId)));
     }
-    //GrantedAuthority[] authorities = authList.toArray(new GrantedAuthority[0]);
+
     UserDetails userDetails = new User(username, password, true, true, true, true, authList);
     Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, password, authList);
     PentahoSessionHolder.setSession(pentahoSession);
@@ -292,7 +287,7 @@ public class SerializeMultiTableServiceIT {
   
   private class MockBackingRepositoryLifecycleManager implements IBackingRepositoryLifecycleManager {
       public static final String UNIT_TEST_EXCEPTION_MESSAGE = "Unit Test Exception";
-      private ArrayList<MethodTrackingData> methodTrackerHistory = new ArrayList<MethodTrackingData>();
+      private ArrayList<MethodTrackingData> methodTrackerHistory = new ArrayList<>();
       private boolean throwException = false;
       private MockSecurityHelper securityHelper;
 
@@ -343,12 +338,10 @@ public class SerializeMultiTableServiceIT {
       @Override
       public void addMetadataToRepository(String arg0) {
         // TODO Auto-generated method stub
-        
       }
 
       @Override
       public Boolean doesMetadataExists(String arg0) {
-        // TODO Auto-generated method stub
         return null;
       }
     }
@@ -358,14 +351,11 @@ public class SerializeMultiTableServiceIT {
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException, DataAccessException {
       
-      //GrantedAuthority[]  auths = new GrantedAuthority[2];
-      List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
+      List<GrantedAuthority> authList = new ArrayList<>();
       authList.add( new SimpleGrantedAuthority("Authenticated") );
       authList.add( new SimpleGrantedAuthority("Administrator") );
-      
-      UserDetails user = new User(name, "password", true, true, true, true, authList);
-      
-      return user;
+
+      return new User(name, "password", true, true, true, true, authList);
     }
     
   }
@@ -375,8 +365,7 @@ public class SerializeMultiTableServiceIT {
       super("bin/test-solutions/solution");
     }
   }
-  
-  
+
   public static class MockDatasourceMgmtService implements IDatasourceMgmtService{
 
     @Override
@@ -481,16 +470,13 @@ public class SerializeMultiTableServiceIT {
     }
     
   }
-  
 
-  public PentahoMetadataDomainRepository createMetadataDomainRepository() throws Exception {
+  public PentahoMetadataDomainRepository createMetadataDomainRepository() {
     IUnifiedRepository repository = new FileSystemBackedUnifiedRepository("target/test-classes/solution1");
     booter.defineInstance(IUnifiedRepository.class, repository);
-    Assert.assertNotNull(new RepositoryUtils(repository).getFolder("/etc/metadata", true, true, null));
-    Assert.assertNotNull(new RepositoryUtils(repository).getFolder("/etc/mondrian", true, true, null));
-    Assert.assertNotNull(new RepositoryUtils(repository).getFolder("/savetest", true, true, null));    
-    PentahoMetadataDomainRepository pentahoMetadataDomainRepository = new PentahoMetadataDomainRepository(repository);
-    return pentahoMetadataDomainRepository;
+    assertNotNull(new RepositoryUtils(repository).getFolder("/etc/metadata", true, true, null));
+    assertNotNull(new RepositoryUtils(repository).getFolder("/etc/mondrian", true, true, null));
+    assertNotNull(new RepositoryUtils(repository).getFolder("/savetest", true, true, null));
+    return new PentahoMetadataDomainRepository(repository);
   }
-
 }

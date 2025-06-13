@@ -19,6 +19,7 @@ import org.pentaho.platform.plugin.services.pluginmgr.PluginClassLoader;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -38,12 +39,11 @@ public class DatasourceServiceIT {
   @Test
   public void testGetDatasourceLoadThreadCountIntegration() {
     PluginClassLoader pluginClassLoader =
-        new PluginClassLoader( new File( DATA_ACCESS_PATH ).getAbsoluteFile(), this.getClass().getClassLoader() );
+      new PluginClassLoader( new File( DATA_ACCESS_PATH ).getAbsoluteFile(), this.getClass().getClassLoader() );
     PluginResourceLoader pluginResourceLoader = new PluginResourceLoader();
     pluginResourceLoader.setOverrideClassloader( pluginClassLoader ); // necessary for testing purposes
     DatasourceService datasourceService = new DatasourceService( null, null, null, pluginResourceLoader );
     int threadCount = datasourceService.getDatasourceLoadThreadCount();
     assertEquals( 10, threadCount );
   }
-
 }

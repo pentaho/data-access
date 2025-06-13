@@ -95,7 +95,7 @@ public class AnalysisService extends DatasourceService {
 
     MondrianCatalogRepositoryHelper helper = createNewMondrianCatalogRepositoryHelper();
 
-    Map<String, InputStream> fileData = helper.getModrianSchemaFiles( analysisId );
+    Map<String, InputStream> fileData = helper.getMondrianSchemaFiles( analysisId );
     super.parseMondrianSchemaName( analysisId, fileData );
 
     return fileData;
@@ -306,7 +306,7 @@ public class AnalysisService extends DatasourceService {
       if ( bytes.length == 0 && catalogName != null ) {
         MondrianCatalogRepositoryHelper helper =
           new MondrianCatalogRepositoryHelper( PentahoSystem.get( IUnifiedRepository.class ) );
-        Map<String, InputStream> fileData = helper.getModrianSchemaFiles( catalogName );
+        Map<String, InputStream> fileData = helper.getMondrianSchemaFiles( catalogName );
         dataInputStream = fileData.get( "schema.xml" );
         bytes = IOUtils.toByteArray( dataInputStream );
       }

@@ -23,10 +23,15 @@ import org.pentaho.platform.dataaccess.datasource.wizard.models.ColumnInfo;
 import org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class ModelerServiceIT extends DataAccessServiceTestBase {
   private final String TEST_CATALOG_NAME = "TEST_CATALOG_NAME";
@@ -34,15 +39,15 @@ public class ModelerServiceIT extends DataAccessServiceTestBase {
   @Test
   public void testRemoveCatalogDuringSerializeModels() throws Exception {
     when( policy.isAllowed( anyString() ) ).thenReturn( Boolean.TRUE );
-    when( pluginResourceLoader.getPluginSetting( (Class) anyObject(), anyString(), anyString() ) )
+    when( pluginResourceLoader.getPluginSetting( any( Class.class ), anyString(), anyString() ) )
         .thenReturn( SimpleDataAccessPermissionHandler.class.getName() );
     MondrianCatalog mockCatalog = mock( MondrianCatalog.class );
-    when( mondrianCatalogService.getCatalog( anyString(), (IPentahoSession) anyObject() ) ).thenReturn( mockCatalog );
+    when( mondrianCatalogService.getCatalog( anyString(), any( IPentahoSession.class ) ) ).thenReturn( mockCatalog );
 
     modelerService.serializeModels( domain, TEST_CATALOG_NAME );
 
     // verify removeCatalog is called
-    verify( mondrianCatalogService, times( 1 ) ).removeCatalog( anyString(), (IPentahoSession) anyObject() );
+    verify( mondrianCatalogService, times( 1 ) ).removeCatalog( anyString(), any( IPentahoSession.class ) );
   }
 
   @Test
@@ -80,7 +85,6 @@ public class ModelerServiceIT extends DataAccessServiceTestBase {
     assertEquals( columnId, column.getId() );
     assertEquals( columnTitle, column.getName() );
   }
-
 
   private ColumnInfo createColumnInfo( String id, String title ) {
     ColumnInfo columnInfo = new ColumnInfo();
