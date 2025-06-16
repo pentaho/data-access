@@ -12,21 +12,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -54,6 +39,20 @@ import org.pentaho.platform.plugin.services.pluginmgr.PluginClassLoader;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ConnectionServiceImplIT {
 
@@ -84,8 +83,7 @@ public class ConnectionServiceImplIT {
   private static MockDatasourceMgmtService mgmtService = new MockDatasourceMgmtService();
 
   @BeforeClass
-  public static void setUpClass() throws PlatformInitializationException, DuplicateDatasourceException,
-    DatasourceMgmtServiceException {
+  public static void setUpClass() throws PlatformInitializationException {
 
     MockDataSourceService dataSourceService = new MockDataSourceService( false );
 
@@ -97,6 +95,7 @@ public class ConnectionServiceImplIT {
     booter.defineInstance( IDBDatasourceService.class, dataSourceService );
     booter.defineInstance( IAuthorizationPolicy.class, mockAuthorizationPolicy );
     booter.defineInstance( IPluginResourceLoader.class, new PluginResourceLoader() {
+      @Override
       protected PluginClassLoader getOverrideClassloader() {
         return new PluginClassLoader( new File( ".", "target/test-classes/solution1/system/simple-jndi" ), this );
       }
@@ -135,13 +134,11 @@ public class ConnectionServiceImplIT {
   @Test
   public void testDeleteConnectionByName() throws Exception {
     assertTrue( connectionServiceImpl.deleteConnection( EXIST_CONNECTION_NAME ) );
-    for ( Iterator<IDatabaseConnection> iterator = connectionServiceImpl.getConnections().iterator(); iterator
-        .hasNext(); ) {
-      if ( iterator.next().getName().equals( EXIST_CONNECTION_NAME ) ) {
+    for ( IDatabaseConnection iDatabaseConnection : connectionServiceImpl.getConnections() ) {
+      if ( EXIST_CONNECTION_NAME.equals( iDatabaseConnection.getName() ) ) {
         fail( "connection should be deleted" );
       }
     }
-    ;
   }
 
   @Test( expected = ConnectionServiceException.class )
@@ -154,20 +151,18 @@ public class ConnectionServiceImplIT {
     connectionServiceImpl.deleteConnection( ERROR_CONNECTION_NAME );
   }
 
-  // we should remove connection if it is have the same name
+  // we should remove connection if it has the same name
   @Test
   public void testDeleteConnection() throws Exception {
     DatabaseConnection connection = new DatabaseConnection();
     connection.setName( EXIST_CONNECTION_NAME );
 
     assertTrue( connectionServiceImpl.deleteConnection( connection ) );
-    for ( Iterator<IDatabaseConnection> iterator = connectionServiceImpl.getConnections().iterator(); iterator
-        .hasNext(); ) {
-      if ( iterator.next().getName().equals( EXIST_CONNECTION_NAME ) ) {
+    for ( IDatabaseConnection iDatabaseConnection : connectionServiceImpl.getConnections() ) {
+      if ( EXIST_CONNECTION_NAME.equals( iDatabaseConnection.getName() ) ) {
         fail( "connection should be deleted" );
       }
     }
-    ;
   }
 
   @Test( expected = ConnectionServiceException.class )
@@ -284,14 +279,15 @@ public class ConnectionServiceImplIT {
   public void testTestConnection() throws ConnectionServiceException {
     DatabaseConnection connection = new DatabaseConnection();
     connection.setName( NON_EXIST_CONNECTION_NAME );
+    connection.setDatabaseName( "mem:tempdb" );
     connection.setAccessType( DatabaseAccessType.NATIVE );
-    connection.setDatabaseType( new DatabaseType( "H2", "H2", Arrays.asList( DatabaseAccessType.NATIVE ), 0, null ) );
+    connection.setDatabaseType( new DatabaseType( "H2", "H2", List.of( DatabaseAccessType.NATIVE ), 0, null ) );
     assertTrue( connectionServiceImpl.testConnection( connection ) );
   }
 
   public static class MockDatasourceMgmtService implements IDatasourceMgmtService {
 
-    private List<IDatabaseConnection> connections = new ArrayList<IDatabaseConnection>();
+    private final List<IDatabaseConnection> connections = new ArrayList<>();
 
     @Override
     public void init( IPentahoSession arg0 ) {
@@ -300,10 +296,10 @@ public class ConnectionServiceImplIT {
     @Override
     public String createDatasource( IDatabaseConnection connection ) throws DuplicateDatasourceException,
       DatasourceMgmtServiceException {
-      if ( connection.getName().equals( ERROR_CONNECTION_NAME ) ) {
+      if ( ERROR_CONNECTION_NAME.equals( connection.getName() ) ) {
         throw new DatasourceMgmtServiceException();
       }
-      if ( connection.getName().equals( DUBLICATE_CONNECTION_NAME ) ) {
+      if ( DUBLICATE_CONNECTION_NAME.equals( connection.getName() ) ) {
         throw new DuplicateDatasourceException();
       }
       connections.add( connection );
@@ -319,11 +315,11 @@ public class ConnectionServiceImplIT {
     public void deleteDatasourceByName( String connectionName ) throws NonExistingDatasourceException,
       DatasourceMgmtServiceException {
       for ( Iterator<IDatabaseConnection> iterator = connections.iterator(); iterator.hasNext(); ) {
-        IDatabaseConnection connection = (IDatabaseConnection) iterator.next();
+        IDatabaseConnection connection = iterator.next();
         if ( connection.getName().equals( connectionName ) ) {
           iterator.remove();
         }
-        ;
+
         if ( connectionName.equals( NON_EXIST_CONNECTION_NAME ) ) {
           throw new NonExistingDatasourceException();
         }
@@ -335,13 +331,12 @@ public class ConnectionServiceImplIT {
 
     @Override
     public IDatabaseConnection getDatasourceById( String connectionID ) throws DatasourceMgmtServiceException {
-      for ( Iterator<IDatabaseConnection> iterator = connections.iterator(); iterator.hasNext(); ) {
-        IDatabaseConnection connection = (IDatabaseConnection) iterator.next();
+      for ( IDatabaseConnection connection : connections ) {
         if ( connection.getId().equals( connectionID ) ) {
           return connection;
         }
-        ;
-        if ( connectionID.equals( ERROR_CONNECTION_ID ) ) {
+
+        if ( ERROR_CONNECTION_ID.equals( connectionID ) ) {
           throw new DatasourceMgmtServiceException();
         }
       }
@@ -350,13 +345,12 @@ public class ConnectionServiceImplIT {
 
     @Override
     public IDatabaseConnection getDatasourceByName( String connectionName ) throws DatasourceMgmtServiceException {
-      for ( Iterator<IDatabaseConnection> iterator = connections.iterator(); iterator.hasNext(); ) {
-        IDatabaseConnection connection = (IDatabaseConnection) iterator.next();
+      for ( IDatabaseConnection connection : connections ) {
         if ( connection.getName().equals( connectionName ) ) {
           return connection;
         }
-        ;
-        if ( connectionName.equals( ERROR_CONNECTION_NAME ) ) {
+
+        if ( ERROR_CONNECTION_NAME.equals( connectionName ) ) {
           throw new DatasourceMgmtServiceException();
         }
       }
@@ -387,11 +381,11 @@ public class ConnectionServiceImplIT {
           connections.remove( conn );
           connections.add( connection );
         }
-        ;
-        if ( connectionName.equals( NON_EXIST_CONNECTION_NAME ) ) {
+
+        if ( NON_EXIST_CONNECTION_NAME.equals( connectionName ) ) {
           throw new NonExistingDatasourceException();
         }
-        if ( connectionName.equals( ERROR_CONNECTION_NAME ) ) {
+        if ( ERROR_CONNECTION_NAME.equals( connectionName ) ) {
           throw new DatasourceMgmtServiceException();
         }
       }

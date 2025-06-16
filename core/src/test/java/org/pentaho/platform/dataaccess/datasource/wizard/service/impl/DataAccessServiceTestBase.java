@@ -185,7 +185,6 @@ public class DataAccessServiceTestBase {
 
     table.getPhysicalColumns().add( column );
 
-    LogicalModel logicalModel = new LogicalModel();
     model.setId( "MODEL" );
     model.setName( new LocalizedString( locale, "My Model" ) );
     model.setDescription( new LocalizedString( locale, "A Description of the Model" ) );
@@ -194,8 +193,10 @@ public class DataAccessServiceTestBase {
     logicalTable.setId( "BT_CUSTOMERS" );
     logicalTable.setPhysicalTable( table );
 
+    LogicalModel logicalModel = new LogicalModel();
     logicalModel.getLogicalTables().add( logicalTable );
     logicalModel.setName( new LocalizedString( locale, "My Model" ) );
+    logicalModel.setId( "LOGICAL_MODEL" );
 
     logicalColumn1 = new LogicalColumn();
     logicalColumn1.setId( "LC_CUSTOMERNAME" );

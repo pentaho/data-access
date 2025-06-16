@@ -7,15 +7,17 @@
     <artifactId>pentaho-data-access-parent</artifactId>
     <version>10.3.0.0-SNAPSHOT</version>
   </parent>
-  <groupId>pentaho</groupId>
+
   <artifactId>pentaho-bi-platform-data-access</artifactId>
   <version>10.3.0.0-SNAPSHOT</version>
+
   <properties>
     <wadl.package>org.pentaho.platform.dataaccess</wadl.package>
     <wadl.path>${project.build.directory}/${wadl.file.name}</wadl.path>
     <wadl.output.directory>${project.build.outputDirectory}/META-INF/wadl</wadl.output.directory>
     <wadl.file.name>wadlExtension.xml</wadl.file.name>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.codehaus.woodstox</groupId>
@@ -101,6 +103,12 @@
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pentaho-encryption-support</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-metastore-locator-core</artifactId>
+      <version>${pdi.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.library</groupId>
@@ -247,10 +255,6 @@
       <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -550,6 +554,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <testResources>
       <testResource>

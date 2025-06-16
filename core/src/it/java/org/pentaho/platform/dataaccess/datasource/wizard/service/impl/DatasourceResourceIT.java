@@ -13,26 +13,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-
-import junit.framework.Assert;
-
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
@@ -76,6 +57,7 @@ import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.dataaccess.datasource.api.resources.DataSourceWizardResource;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.core.system.StandaloneSession;
 import org.pentaho.platform.engine.core.system.SystemSettings;
 import org.pentaho.platform.engine.core.system.boot.PlatformInitializationException;
 import org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService;
@@ -100,6 +82,8 @@ import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedReposi
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.pentaho.test.platform.engine.security.MockSecurityHelper;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -108,14 +92,36 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DatasourceResourceIT {
   private static MicroPlatform mp;
+  private String tenantAdminAuthorityNamePattern = "{0}_Admin";
+  private String tenantAuthenticatedAuthorityNamePattern = "{0}_Authenticated";
 
   @BeforeClass
   public static void setUp() throws Exception {
-    System.setProperty( "org.osjava.sj.root", "target/test-classes/solution1/system/simple-jndi" ); //$NON-NLS-1$ //$NON-NLS-2$
+    System.setProperty( "org.osjava.sj.root", "target/test-classes/solution1/system/simple-jndi" );
     mp = new MicroPlatform( "target/test-classes/solution1" );
 
     IAuthorizationPolicy mockAuthorizationPolicy = mock( IAuthorizationPolicy.class );
@@ -142,6 +148,7 @@ public class DatasourceResourceIT {
     mp.defineInstance( IMetadataDomainRepository.class, createMetadataDomainRepository() );
     mp.defineInstance( IAuthorizationPolicy.class, mockAuthorizationPolicy );
     mp.defineInstance( IPluginResourceLoader.class, new PluginResourceLoader() {
+      @Override
       protected PluginClassLoader getOverrideClassloader() {
         return new PluginClassLoader( new File( ".", "target/test-classes/solution1/system/simple-jndi" ), this );
       }
@@ -178,21 +185,17 @@ public class DatasourceResourceIT {
   }
 
   @Test
-  public void DummyTest() throws Exception {
-
-  }
-  @Test
   public void testMondrianImportExport() throws Exception {
     final String domainName = "SalesData";
-    List<IMimeType> mimeTypeList = new ArrayList<IMimeType>();
+    List<IMimeType> mimeTypeList = new ArrayList<>();
     mimeTypeList.add( new MimeType( "Mondrian", "mondrian.xml" ) );
-    System.setProperty( "org.osjava.sj.root", "target/test-classes/solution1/system/simple-jndi" ); //$NON-NLS-1$ //$NON-NLS-2$
+    System.setProperty( "org.osjava.sj.root", "target/test-classes/solution1/system/simple-jndi" );
 
     File mondrian = new File( "target/test-classes/dsw/testData/SalesData.mondrian.xml" );
     RepositoryFile repoMondrianFile = new RepositoryFile.Builder( mondrian.getName() ).folder( false ).hidden( false )
         .build();
     RepositoryFileImportBundle bundle1 = new RepositoryFileImportBundle.Builder()
-      .file( repoMondrianFile ).charSet( "UTF-8" ).input( new FileInputStream( mondrian ) ).mime( "mondrian.xml" )
+      .file( repoMondrianFile ).charSet( "UTF-8" ).input( getByteArrayInputStream( mondrian ) ).mime( "mondrian.xml" )
         .withParam( "parameters", "Datasource=Pentaho;overwrite=true" ).withParam( "domain-id", "SalesData" ).build();
     MondrianImportHandler mondrianImportHandler = new MondrianImportHandler( mimeTypeList,
         PentahoSystem.get( IMondrianCatalogService.class ) );
@@ -214,12 +217,19 @@ public class DatasourceResourceIT {
 
     new ModelerService().serializeModels( domain, domainName );
 
-    final Response salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( domainName + ".xmi" );
-    Assert.assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
-    Assert.assertNotNull( salesData.getMetadata() );
-    Assert.assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
-    Assert.assertEquals( salesData.getMetadata().getFirst( "Content-Disposition" ).getClass(), String.class );
-    Assert.assertTrue( ( (String) salesData.getMetadata().getFirst( "Content-Disposition" ) ).endsWith( domainName + ".zip\"" ) );
+    Response salesData;
+    try {
+      login( "admin", "", true );
+      salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( domainName + ".xmi" );
+    } finally {
+      logout();
+    }
+
+    assertEquals( Response.Status.OK.getStatusCode(), salesData.getStatus() );
+    assertNotNull( salesData.getMetadata() );
+    assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
+    assertEquals( String.class, salesData.getMetadata().getFirst( "Content-Disposition" ).getClass() );
+    assertTrue( ( (String) salesData.getMetadata().getFirst( "Content-Disposition" ) ).endsWith( domainName + ".zip\"" ) );
 
     File file = File.createTempFile( domainName, ".zip" );
     final FileOutputStream fileOutputStream = new FileOutputStream( file );
@@ -230,7 +240,7 @@ public class DatasourceResourceIT {
     final Enumeration<? extends ZipEntry> entries = zipFile.entries();
     while ( entries.hasMoreElements() ) {
       final ZipEntry zipEntry = entries.nextElement();
-      Assert.assertTrue( zipEntry.getName().equals( domainName + ".xmi" ) || zipEntry.getName().equals( domainName + ".mondrian.xml" ) );
+      assertTrue( zipEntry.getName().equals( domainName + ".xmi" ) || zipEntry.getName().equals( domainName + ".mondrian.xml" ) );
     }
     zipFile.close();
     file.delete();
@@ -238,7 +248,7 @@ public class DatasourceResourceIT {
 
   @Test
   public void testMetadataImportExport() throws PlatformInitializationException, IOException, PlatformImportException {
-    List<IMimeType> mimeTypeList = new ArrayList<IMimeType>();
+    List<IMimeType> mimeTypeList = new ArrayList<>();
     mimeTypeList.add( new MimeType( "Metadata", ".xmi" ) );
 
     File metadata = new File( "target/test-classes/dsw/testData/metadata.xmi" );
@@ -251,14 +261,20 @@ public class DatasourceResourceIT {
             "domain-id", "SalesData" ).build();
     metadataImportHandler.importFile( bundle1 );
 
-    final Response salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( "SalesData" );
-    Assert.assertEquals( salesData.getStatus(), Response.Status.OK.getStatusCode() );
-    Assert.assertNotNull( salesData.getMetadata() );
-    Assert.assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
-    Assert.assertEquals( salesData.getMetadata().getFirst( "Content-Disposition" ).getClass(), String.class );
-    Assert.assertTrue( ( (String) salesData.getMetadata().getFirst( "Content-Disposition" ) ).endsWith( ".xmi\"" ) );
-  }
+    final Response salesData;
+    try {
+      login( "admin", "", true );
+      salesData = new DataSourceWizardResource().doGetDSWFilesAsDownload( "SalesData" );
+    } finally {
+      logout();
+    }
 
+    assertEquals( Response.Status.OK.getStatusCode(), salesData.getStatus() );
+    assertNotNull( salesData.getMetadata() );
+    assertNotNull( salesData.getMetadata().getFirst( "Content-Disposition" ) );
+    assertEquals( String.class, salesData.getMetadata().getFirst( "Content-Disposition" ).getClass() );
+    assertTrue( ( (String) salesData.getMetadata().getFirst( "Content-Disposition" ) ).endsWith( ".xmi\"" ) );
+  }
 
   @Test
   public void testPublishDsw() throws Exception {
@@ -289,15 +305,18 @@ public class DatasourceResourceIT {
       }
     } );
     FileInputStream in = new FileInputStream( new File( new File( "target/test-classes" ), "SampleDataOlap.xmi" ) );
+
+    Response resp;
     try {
-      Response resp = service.publishDsw( "AModel.xmi", in, true, false, null );
-      Assert.assertEquals(
-          Response.Status.Family.SUCCESSFUL,
-          Response.Status.fromStatusCode( resp.getStatus() ).getFamily() );
-      mockery.assertIsSatisfied();
+      login( "admin", "", true );
+      resp = service.publishDsw( "AModel.xmi", in, true, false, null );
     } finally {
       IOUtils.closeQuietly( in );
+      logout();
     }
+
+    assertEquals( Response.Status.Family.SUCCESSFUL, Response.Status.fromStatusCode( resp.getStatus() ).getFamily() );
+    mockery.assertIsSatisfied();
   }
 
   private void testImportFile( String filePath, final String expectedSchemaName ) throws Exception {
@@ -408,36 +427,34 @@ public class DatasourceResourceIT {
     return matcher;
   }
 
-  private static PentahoMetadataDomainRepository createMetadataDomainRepository() throws Exception {
+  private static PentahoMetadataDomainRepository createMetadataDomainRepository() {
     IUnifiedRepository repository = new FileSystemBackedUnifiedRepository( "target/test-classes/dsw" );
     mp.defineInstance( IUnifiedRepository.class, repository );
-    Assert.assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/metadata", true, true, null ) );
-    Assert.assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/mondrian", true, true, null ) );
-    PentahoMetadataDomainRepository pentahoMetadataDomainRepository = new PentahoMetadataDomainRepository( repository );
-    return pentahoMetadataDomainRepository;
+    assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/metadata", true, true, null ) );
+    assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/mondrian", true, true, null ) );
+    return new PentahoMetadataDomainRepository( repository );
   }
 
   private Domain generateModel() {
     Domain domain = null;
     try {
-
       DatabaseMeta database = new DatabaseMeta();
-      database.setDatabaseType( "Hypersonic" ); //$NON-NLS-1$
+      database.setDatabaseType( "Hypersonic" );
       database.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
-      database.setDBName( "SampleData" ); //$NON-NLS-1$
-      database.setName( "SampleData" ); //$NON-NLS-1$
+      database.setDBName( "SampleData" );
+      database.setName( "SampleData" );
 
       System.out.println( database.testConnection() );
 
-      TableModelerSource source = new TableModelerSource( database, "ORDERS", null ); //$NON-NLS-1$
+      TableModelerSource source = new TableModelerSource( database, "ORDERS", null );
       domain = source.generateDomain();
 
-      List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
+      List<OlapDimension> olapDimensions = new ArrayList<>();
       OlapDimension dimension = new OlapDimension();
-      dimension.setName( "test" ); //$NON-NLS-1$
+      dimension.setName( "test" );
       dimension.setTimeDimension( false );
       olapDimensions.add( dimension );
-      domain.getLogicalModels().get( 1 ).setProperty( "olap_dimensions", olapDimensions ); //$NON-NLS-1$
+      domain.getLogicalModels().get( 1 ).setProperty( "olap_dimensions", olapDimensions );
 
     } catch ( Exception e ) {
       e.printStackTrace();
@@ -506,15 +523,12 @@ public class DatasourceResourceIT {
     @Override
     public UserDetails loadUserByUsername( String name ) throws UsernameNotFoundException, DataAccessException {
 
-      List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
+      List<GrantedAuthority> authList = new ArrayList<>();
       authList.add( new SimpleGrantedAuthority( "Authenticated" ) );
       authList.add( new SimpleGrantedAuthority( "Administrator" ) );
 
-      UserDetails user = new User( name, "password", true, true, true, true, authList );
-
-      return user;
+      return new User( name, "password", true, true, true, true, authList );
     }
-
   }
 
   public static class TestFileSystemBackedUnifiedRepository extends FileSystemBackedUnifiedRepository {
@@ -527,57 +541,83 @@ public class DatasourceResourceIT {
 
     @Override
     public String getEtcFolderName() {
-
       return null;
     }
 
     @Override
     public String getEtcFolderPath() {
-
       return null;
     }
 
     @Override
     public String getHomeFolderName() {
-
       return null;
     }
 
     @Override
     public String getHomeFolderPath() {
-
       return null;
     }
 
     @Override
     public String getPublicFolderName() {
-
       return null;
     }
 
     @Override
     public String getPublicFolderPath() {
-
       return null;
     }
 
     @Override
     public String getRootFolderPath() {
-
       return null;
     }
 
     @Override
     public String getUserHomeFolderName( String arg0 ) {
-
       return null;
     }
 
     @Override
     public String getUserHomeFolderPath( String arg0 ) {
-
       return null;
     }
+  }
 
+  private static ByteArrayInputStream getByteArrayInputStream( File file ) throws IOException {
+    ByteArrayInputStream byteArrayInputStream = null;
+    try ( FileInputStream fileInputStream = new FileInputStream( file ) ) {
+      // Read the file into a byte array
+      byte[] fileBytes = fileInputStream.readAllBytes();
+
+      // Create a ByteArrayInputStream from the byte array
+      byteArrayInputStream = new ByteArrayInputStream( fileBytes );
+    }
+    return byteArrayInputStream;
+  }
+
+  protected void login(final String username, final String tenantId, final boolean tenantAdmin) {
+    StandaloneSession pentahoSession = new StandaloneSession(username);
+    pentahoSession.setAuthenticated(username);
+    pentahoSession.setAttribute(IPentahoSession.TENANT_ID_KEY, tenantId);
+    final String password = "password";
+
+    List<GrantedAuthority> authList = new ArrayList<>();
+    authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAuthenticatedAuthorityNamePattern, tenantId)));
+    if (tenantAdmin) {
+      authList.add(new SimpleGrantedAuthority(MessageFormat.format(tenantAdminAuthorityNamePattern, tenantId)));
+    }
+
+    UserDetails userDetails = new User(username, password, true, true, true, true, authList);
+    Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, password, authList);
+    PentahoSessionHolder.setSession(pentahoSession);
+    // this line necessary for Spring Security's MethodSecurityInterceptor
+    SecurityContextHolder.getContext().setAuthentication(auth);
+  }
+
+  protected void logout() {
+    PentahoSessionHolder.removeSession();
+    SecurityContextHolder.getContext().setAuthentication(null);
   }
 }

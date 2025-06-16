@@ -125,7 +125,7 @@ public class DataSourceWizardService extends DatasourceService {
     if ( logicalModel.getProperty( MONDRIAN_CATALOG_REF ) != null ) {
       MondrianCatalogRepositoryHelper helper = createMondrianCatalogRepositoryHelper();
       String catalogRef = (String) logicalModel.getProperty( MONDRIAN_CATALOG_REF );
-      fileData.putAll( helper.getModrianSchemaFiles( catalogRef ) );
+      fileData.putAll( helper.getMondrianSchemaFiles( catalogRef ) );
       parseMondrianSchemaNameWrapper( dswId, fileData );
     }
 

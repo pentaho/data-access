@@ -634,12 +634,12 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     aclDto.setOwner( singleTenantAdminUserName );
     aclDto.setEntriesInheriting( false );
 
-    final ArrayList<RepositoryFileAclAceDto> aces = new ArrayList<RepositoryFileAclAceDto>();
+    final ArrayList<RepositoryFileAclAceDto> aces = new ArrayList<>();
     final RepositoryFileAclAceDto aceDto = new RepositoryFileAclAceDto();
     aceDto.setRecipient( userOrRole );
     aceDto.setRecipientType( type.ordinal() );
 
-    final ArrayList<Integer> permissions = new ArrayList<Integer>();
+    final ArrayList<Integer> permissions = new ArrayList<>();
     permissions.add( RepositoryFilePermission.ALL.ordinal() );
     aceDto.setPermissions( permissions );
     aces.add( aceDto );
