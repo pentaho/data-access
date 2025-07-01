@@ -52,6 +52,7 @@ import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceExcep
 import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.api.util.IPasswordService;
 import org.pentaho.platform.core.mimetype.MimeType;
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
 import org.pentaho.platform.dataaccess.datasource.api.resources.DataSourceWizardResource;
@@ -132,6 +133,8 @@ public class DatasourceResourceIT {
     IDataAccessPermissionHandler mockDataAccessPermHandler = mock( IDataAccessPermissionHandler.class );
     when( mockDataAccessPermHandler.hasDataAccessPermission( any( IPentahoSession.class ) ) ).thenReturn( true );
 
+    IPasswordService mockPasswordService = mock( IPasswordService.class );
+
     mp.define( ISolutionEngine.class, SolutionEngine.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
     mp.define( IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
     mp.define( IMondrianCatalogService.class, MondrianCatalogHelper.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
@@ -155,6 +158,7 @@ public class DatasourceResourceIT {
     } );
     mp.defineInstance( IUserRoleListService.class, mockUserRoleListService );
     mp.defineInstance( IDataAccessPermissionHandler.class, mockDataAccessPermHandler );
+    mp.defineInstance( IPasswordService.class, mockPasswordService);
 
     mp.setSettingsProvider( new SystemSettings() );
     mp.start();

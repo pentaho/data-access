@@ -46,6 +46,7 @@ import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceExcep
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.api.util.IPasswordService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -133,6 +134,8 @@ public class SerializeServiceIT {
 
     IUserRoleListService mockUserRoleListService = mock(IUserRoleListService.class);
 
+    IPasswordService mockPasswordService = mock( IPasswordService.class );
+
     booter.define(ISolutionEngine.class, SolutionEngine.class, Scope.GLOBAL);
     booter.define(IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, Scope.GLOBAL);
     booter.define(IMondrianCatalogService.class, MondrianCatalogHelper.class, Scope.GLOBAL);
@@ -157,6 +160,7 @@ public class SerializeServiceIT {
     });
 
     booter.defineInstance(IUserRoleListService.class, mockUserRoleListService);
+    booter.defineInstance( IPasswordService.class, mockPasswordService );
 
     booter.setSettingsProvider(new SystemSettings());
     booter.start();

@@ -48,6 +48,7 @@ import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceExcep
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.api.util.IPasswordService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -132,6 +133,8 @@ public class SerializeMultiTableServiceIT {
 
     IUserRoleListService mockUserRoleListService = mock(IUserRoleListService.class);
 
+    IPasswordService mockPasswordService = mock( IPasswordService.class );
+
     System.setProperty("org.osjava.sj.root", "target/test-classes/solution1/system/simple-jndi");
     booter = new MicroPlatform("target/test-classes/solution1");
     
@@ -158,6 +161,7 @@ public class SerializeMultiTableServiceIT {
       });
 
     booter.defineInstance(IUserRoleListService.class, mockUserRoleListService);
+    booter.defineInstance( IPasswordService.class, mockPasswordService );
     
     booter.setSettingsProvider(new SystemSettings());
     booter.start();
