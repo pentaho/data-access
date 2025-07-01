@@ -110,6 +110,7 @@ import java.util.zip.ZipFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -134,6 +135,7 @@ public class DatasourceResourceIT {
     when( mockDataAccessPermHandler.hasDataAccessPermission( any( IPentahoSession.class ) ) ).thenReturn( true );
 
     IPasswordService mockPasswordService = mock( IPasswordService.class );
+    when(mockPasswordService.encrypt( anyString() )).then(returnsFirstArg());
 
     mp.define( ISolutionEngine.class, SolutionEngine.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );
     mp.define( IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, IPentahoDefinableObjectFactory.Scope.GLOBAL );

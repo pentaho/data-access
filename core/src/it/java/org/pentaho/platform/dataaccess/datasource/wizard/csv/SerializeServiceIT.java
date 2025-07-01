@@ -89,6 +89,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -135,6 +136,7 @@ public class SerializeServiceIT {
     IUserRoleListService mockUserRoleListService = mock(IUserRoleListService.class);
 
     IPasswordService mockPasswordService = mock( IPasswordService.class );
+    when(mockPasswordService.encrypt( anyString() )).then(returnsFirstArg());
 
     booter.define(ISolutionEngine.class, SolutionEngine.class, Scope.GLOBAL);
     booter.define(IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, Scope.GLOBAL);
