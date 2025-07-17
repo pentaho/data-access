@@ -28,7 +28,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionBindingEvent;
 import jakarta.servlet.http.HttpSessionBindingListener;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.UploadFileDebugServlet;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.PentahoSystemHelper;
