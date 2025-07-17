@@ -25,13 +25,14 @@ import jakarta.ws.rs.core.Response;
  */
 @Path( "/data-access/api/dbconnection" )
 public class DatabaseConnectionService {
-    /**
-     * The class should have at least one method with JAX-RS annotations.
-     * In this case, the getDatabaseConnection method is annotated with @GET,
-     * indicating it responds to HTTP GET requests.
-     */
-    @GET
-    public Response getDatabaseConnection() {
-        return Response.ok( "No implementation" ).build();
-    }
+
+  /**
+   * The class should have at least one method with JAX-RS annotations.
+   * In this case, the getDatabaseConnection method is annotated with @GET,
+   * indicating it responds to HTTP GET requests.
+   */
+  @GET
+  public Response getDatabaseConnection() {
+    return Response.ok( "No implementation" ).build();
+  }
 }

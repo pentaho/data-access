@@ -550,7 +550,8 @@ public class MetadataResource {
                                             @FormDataParam( "metadataFile" ) FormDataContentDisposition metadataFileInfo,
                                             @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
-                                            @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
+                                            @FormDataParam( "localeFiles" )
+                                            List<FormDataContentDisposition> localeFilesInfo,
                                             @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
     return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
   }
