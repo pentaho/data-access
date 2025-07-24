@@ -13,7 +13,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
@@ -93,8 +92,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;

@@ -15,24 +15,26 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import java.io.InputStream;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.enunciate.Facet;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
+import org.pentaho.platform.dataaccess.datasource.utils.ConvertMultipartDataToJavaObject;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
 
 @Path( "/data-access/api/mondrian" )
@@ -77,7 +79,7 @@ public class AnalysisDatasourceService {
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl )
     throws PentahoAccessControlException {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
@@ -86,7 +88,7 @@ public class AnalysisDatasourceService {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
       boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag ) ? true : false;
       service.putMondrianSchema( dataInputStream, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-          overWriteInRepository, xmlaEnabled, parameters, acl );
+          overWriteInRepository, xmlaEnabled, parameters, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
       statusCode = SUCCESS;
     } catch ( PentahoAccessControlException pac ) {
       logger.error( pac.getMessage() );
@@ -131,7 +133,7 @@ public class AnalysisDatasourceService {
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl )
     throws PentahoAccessControlException {
     // use existing Jersey post method - but translate into text/html for PUC Client
     ResponseBuilder responseBuilder;

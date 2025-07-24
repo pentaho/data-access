@@ -13,33 +13,32 @@
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
-import static javax.ws.rs.core.MediaType.WILDCARD;
-import static javax.ws.rs.core.MediaType.TEXT_HTML;
-import static javax.ws.rs.core.Response.Status.CONFLICT;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_XML;
+import static jakarta.ws.rs.core.MediaType.WILDCARD;
+import static jakarta.ws.rs.core.MediaType.TEXT_HTML;
+import static jakarta.ws.rs.core.Response.Status.CONFLICT;
+import static jakarta.ws.rs.core.Response.Status.CREATED;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,6 +49,7 @@ import org.pentaho.metadata.repository.IMetadataDomainRepository;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.api.DatasourceService;
 import org.pentaho.platform.dataaccess.datasource.api.MetadataService;
+import org.pentaho.platform.dataaccess.datasource.utils.ConvertMultipartDataToJavaObject;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -59,9 +59,9 @@ import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAc
 import org.pentaho.platform.web.http.api.resources.FileResource;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  * This service allows for listing, download, and removal of Metadata data sources in the BA Platform.
@@ -189,7 +189,7 @@ public class MetadataResource {
                                                   @FormDataParam( "localeFiles" )
                                                   List<FormDataContentDisposition> localeFilesInfo,
                                                   @FormDataParam( DATASOURCE_ACL )
-                                                  RepositoryFileAclDto acl ) {
+                                                  FormDataBodyPart acl ) {
     return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo,
       acl );
   }
@@ -269,10 +269,10 @@ public class MetadataResource {
       @FormDataParam( OVERWRITE_IN_REPOS ) Boolean overwrite,
       @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
       @FormDataParam( "localeFiles" ) List<FormDataContentDisposition> localeFilesInfo,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
     try {
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles,
-          localeFilesInfo, acl );
+          localeFilesInfo, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
       return Response.status( CREATED ).build();
     } catch ( PentahoAccessControlException e ) {
       throw new WebApplicationException( Response.Status.UNAUTHORIZED );
@@ -306,12 +306,11 @@ public class MetadataResource {
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
                                             @FormDataParam( "localeFiles" )
                                             List<FormDataContentDisposition> localeFilesInfo,
-                                            @FormDataParam( DATASOURCE_ACL )
-                                            RepositoryFileAclDto acl ) {
+                                            @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
     try {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite ) ? true : false;
       service.importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overWriteInRepository, localeFiles,
-          localeFilesInfo, acl );
+          localeFilesInfo, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
       return Response.ok().status( new Integer( SUCCESS ) ).type( MediaType.TEXT_PLAIN ).build();
     } catch ( PentahoAccessControlException e ) {
       return buildServerErrorResponse( e );
@@ -494,10 +493,10 @@ public class MetadataResource {
     @ResponseCode( code = 403, condition = "Access Control Forbidden" ),
     @ResponseCode( code = 201, condition = "Indicates successful import" )
     } )
-  public Response importMetadataFromTemp( @FormParam( "domainId" ) String domainId,
-                                        @FormParam ( "jsonFileList" ) String fileList,
-                                        @FormParam( OVERWRITE_IN_REPOS ) boolean overwrite,
-                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+  public Response importMetadataFromTemp( @FormDataParam( "domainId" ) String domainId,
+                                        @FormDataParam ( "jsonFileList" ) String fileList,
+                                        @FormDataParam( OVERWRITE_IN_REPOS ) boolean overwrite,
+                                        @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
 
     try {
       service.importMetadataFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, acl );
@@ -553,8 +552,7 @@ public class MetadataResource {
                                             @FormDataParam( "localeFiles" ) List<FormDataBodyPart> localeFiles,
                                             @FormDataParam( "localeFiles" )
                                             List<FormDataContentDisposition> localeFilesInfo,
-                                            @FormDataParam( DATASOURCE_ACL )
-                                            RepositoryFileAclDto acl ) {
+                                            @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
     return importMetadataDatasource( domainId, metadataFile, metadataFileInfo, overwrite, localeFiles, localeFilesInfo, acl );
   }
 

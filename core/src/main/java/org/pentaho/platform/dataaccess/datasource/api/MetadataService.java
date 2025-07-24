@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.platform.api.engine.IApplicationContext;
@@ -41,6 +42,7 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataTempFilesListBundleDto;
 import org.pentaho.platform.dataaccess.datasource.api.resources.MetadataTempFilesListDto;
+import org.pentaho.platform.dataaccess.datasource.utils.ConvertMultipartDataToJavaObject;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
@@ -55,8 +57,8 @@ import org.pentaho.platform.web.http.api.resources.FileResource;
 import org.pentaho.platform.web.servlet.UploadFileUtils;
 
 import com.google.gwt.thirdparty.guava.common.annotations.VisibleForTesting;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 
 public class MetadataService extends DatasourceService {
 
@@ -278,8 +280,8 @@ public class MetadataService extends DatasourceService {
     return !DatasourceService.isMetadataDatasource( domain ) && domain.getLogicalModels().size() > 1;
   }
 
-  public void importMetadataFromTemp( String domainId, MetadataTempFilesListDto fileList,
-      boolean overwrite, RepositoryFileAclDto acl ) throws PentahoAccessControlException, PlatformImportException, Exception {
+  public void importMetadataFromTemp( @FormDataParam( "domainId" ) String domainId, @FormDataParam( "jsonFileList" ) MetadataTempFilesListDto fileList,
+      @FormDataParam( "overwrite" ) boolean overwrite, @FormDataParam( "acl" ) FormDataBodyPart acl ) throws PentahoAccessControlException, PlatformImportException, Exception {
 
     String metadataTempFileName = fileList.getXmiFileName();
     InputStream metaDataFileInputStream = createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + metadataTempFileName );
@@ -294,7 +296,7 @@ public class MetadataService extends DatasourceService {
       }
     }
 
-    importMetadataDatasource( domainId, metaDataFileInputStream, overwrite, localeFileStreams, localeFileNames, acl );
+    importMetadataDatasource( domainId, metaDataFileInputStream, overwrite, localeFileStreams, localeFileNames, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
 
   }
 

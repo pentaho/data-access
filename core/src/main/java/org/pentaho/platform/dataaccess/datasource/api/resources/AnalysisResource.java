@@ -13,8 +13,9 @@
 
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import org.codehaus.enunciate.Facet;
 import org.codehaus.enunciate.jaxrs.ResponseCode;
@@ -23,22 +24,23 @@ import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.api.repository.RepositoryException;
 import org.pentaho.platform.api.repository2.unified.webservices.RepositoryFileAclDto;
 import org.pentaho.platform.dataaccess.datasource.api.AnalysisService;
+import org.pentaho.platform.dataaccess.datasource.utils.ConvertMultipartDataToJavaObject;
 import org.pentaho.platform.plugin.services.importer.PlatformImportException;
 import org.pentaho.platform.web.http.api.resources.JaxbList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -315,11 +317,11 @@ public class AnalysisResource {
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) Boolean overwrite,
       @FormDataParam( XMLA_ENABLED_FLAG ) Boolean xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl )
       throws PentahoAccessControlException {
     try {
       service.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalog, origCatalogName, datasourceName, overwrite,
-          xmlaEnabledFlag, parameters, acl );
+          xmlaEnabledFlag, parameters, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
       Response response = Response.status( Response.Status.CREATED ).build();
       logger.debug( "putMondrianSchema Response " + response );
       return response;
@@ -362,7 +364,7 @@ public class AnalysisResource {
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl )
       throws PentahoAccessControlException {
     Response response = null;
     int statusCode = PlatformImportException.PUBLISH_GENERAL_ERROR;
@@ -370,7 +372,7 @@ public class AnalysisResource {
       boolean overWriteInRepository = "True".equalsIgnoreCase( overwrite );
       boolean xmlaEnabled = "True".equalsIgnoreCase( xmlaEnabledFlag );
       service.putMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
-          overWriteInRepository, xmlaEnabled, parameters, acl );
+          overWriteInRepository, xmlaEnabled, parameters, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
       statusCode = SUCCESS;
     } catch ( PentahoAccessControlException pac ) {
       logger.error( pac.getMessage() );
@@ -458,7 +460,7 @@ public class AnalysisResource {
       @FormDataParam( DATASOURCE_NAME ) String datasourceName, // Optional
       @FormDataParam( OVERWRITE_IN_REPOS ) String overwrite,
       @FormDataParam( XMLA_ENABLED_FLAG ) String xmlaEnabledFlag, @FormDataParam( PARAMETERS ) String parameters,
-      @FormDataParam( DATASOURCE_ACL ) RepositoryFileAclDto acl )
+      @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl )
       throws PentahoAccessControlException {
     return importMondrianSchema( uploadAnalysis, schemaFileInfo, catalogName, origCatalogName, datasourceName,
         overwrite, xmlaEnabledFlag, parameters, acl );
