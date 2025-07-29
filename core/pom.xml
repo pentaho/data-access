@@ -324,7 +324,7 @@
     </dependency>
     <dependency>
       <groupId>net.sf.saxon</groupId>
-      <artifactId>Saxon-HE</artifactId>
+      <artifactId>saxon</artifactId>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -343,11 +343,6 @@
           <groupId>*</groupId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.xmlresolver</groupId>
-      <artifactId>xmlresolver</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
