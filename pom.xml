@@ -26,8 +26,6 @@
   </modules>
   <properties>
     <pentaho-reporting.version>11.0.0.0-SNAPSHOT</pentaho-reporting.version>
-    <hibernate-core.version>5.4.24.Final</hibernate-core.version>
-    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <aspectjrt.version>1.6.6</aspectjrt.version>
     <mockito.version>5.10.0</mockito.version>
     <byte-buddy.version>1.14.11</byte-buddy.version>
@@ -35,7 +33,6 @@
     <jmock-junit4.version>2.13.1</jmock-junit4.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
     <fontbox.version>0.1.0</fontbox.version>
-    <jsr311-api.version>1.1.1</jsr311-api.version>
     <commons-gwt.version>11.0.0.0-SNAPSHOT</commons-gwt.version>
     <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
     <eigenbase-resgen.version>1.3.1</eigenbase-resgen.version>
@@ -57,23 +54,16 @@
     <hsqldb.version>2.3.2</hsqldb.version>
     <joda-time.version>1.6</joda-time.version>
     <olap4j.version>1.2.0</olap4j.version>
-    <webservices.version>2.3.1</webservices.version>
     <sjsxp.version>1.0</sjsxp.version>
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
-    <jta.version>1.1</jta.version>
     <jcr.version>2.0</jcr.version>
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
     <commons-xul.version>11.0.0.0-SNAPSHOT</commons-xul.version>
-    <ehcache-core.version>2.5.1</ehcache-core.version>
     <lucene-core.version>3.6.0</lucene-core.version>
     <commons-collections.version>3.2.2</commons-collections.version>
-    <jaxb-api.version>2.2.2</jaxb-api.version>
     <mimepull.version>1.9.3</mimepull.version>
-    <jaxb-xjc.version>2.1.2</jaxb-xjc.version>
     <pentaho-modeler.version>11.0.0.0-SNAPSHOT</pentaho-modeler.version>
-    <jersey.version>1.19.1</jersey.version>
     <jempbox.version>0.2.0</jempbox.version>
-    <jaxb-impl.version>2.2.3</jaxb-impl.version>
     <commons-digester.version>1.8</commons-digester.version>
     <jug-lgpl.version>2.0.0</jug-lgpl.version>
     <pdi.version>11.0.0.0-SNAPSHOT</pdi.version>
@@ -107,9 +97,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>jsr311-api</artifactId>
-        <version>${jsr311-api.version}</version>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${jakarta.ws.rs-api.version}</version>
       </dependency>
       <dependency>
         <groupId>pentaho</groupId>
@@ -536,9 +526,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>javax.transaction</groupId>
-        <artifactId>jta</artifactId>
-        <version>${jta.version}</version>
+        <groupId>jakarta.transaction</groupId>
+        <artifactId>jakarta.transaction-api</artifactId>
+        <version>${jakarta.transaction.version}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -647,30 +637,6 @@
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
         <version>${aspectjrt.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey.jersey-test-framework</groupId>
-        <artifactId>jersey-test-framework-core</artifactId>
-        <version>${jersey.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey.jersey-test-framework</groupId>
-        <artifactId>jersey-test-framework-grizzly</artifactId>
-        <version>${jersey.version}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -798,8 +764,8 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-servlet</artifactId>
+        <groupId>org.gwtproject</groupId>
+        <artifactId>gwt-servlet-jakarta</artifactId>
       </dependency>
       <dependency>
         <groupId>org.codehaus.enunciate</groupId>
@@ -852,97 +818,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.sun.jersey.contribs</groupId>
-        <artifactId>jersey-multipart</artifactId>
-        <version>${jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.jvnet.mimepull</groupId>
         <artifactId>mimepull</artifactId>
         <version>${mimepull.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey.contribs</groupId>
-        <artifactId>jersey-apache-client</artifactId>
-        <version>${jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-core</artifactId>
-        <version>${jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-json</artifactId>
-        <version>${jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey.contribs</groupId>
-        <artifactId>jersey-spring</artifactId>
-        <version>${jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-client</artifactId>
-        <version>${jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-server</artifactId>
-        <version>${jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-servlet</artifactId>
-        <version>${jersey.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1065,9 +943,9 @@
         <version>${guava.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
-        <version>${javax.servlet-api.version}</version>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${jakarta.servlet.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -1182,9 +1060,10 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache-core</artifactId>
+        <groupId>org.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
         <version>${ehcache-core.version}</version>
+        <classifier>jakarta</classifier>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -1192,18 +1071,6 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>${jaxb-api.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-xjc</artifactId>
-        <version>${jaxb-xjc.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.glassfish.metro</groupId>

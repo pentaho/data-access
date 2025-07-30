@@ -13,19 +13,21 @@
 
 package org.pentaho.platform.dataaccess.datasource;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.json.JSONObject;
 import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import jakarta.ws.rs.client.Client;
+
 
 public class TestDataSourceResource {
   private static final String CONNECTION_NAME = "TylerSales";
@@ -62,8 +64,8 @@ public class TestDataSourceResource {
     System.out.println(conn);
     try {
 
-      WebResource resource = client.resource(update_url);
-      Response result = resource.accept(MediaType.APPLICATION_JSON).entity(conn).post(Response.class);
+      WebTarget resource = client.target(update_url);
+      Response result = resource.request(MediaType.APPLICATION_JSON).post(Entity.entity(conn, MediaType.APPLICATION_JSON),Response.class);
       System.out.println(result);
     } catch (Exception ex) {
       System.out.println("Error in update");
@@ -72,7 +74,7 @@ public class TestDataSourceResource {
 
   private static void delete() {
     init();
-    WebResource resource = client.resource(delete_url);
+    WebTarget resource = client.target(delete_url);
     IDatabaseConnection connection = createConnectionObject();
     String conn = (new JSONObject(connection)).toString();
     System.out.println(conn);
@@ -80,9 +82,8 @@ public class TestDataSourceResource {
       Response result = resource
           //.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
           //.accept(MediaType.APPLICATION_JSON_TYPE)
-          .accept(MediaType.APPLICATION_JSON)
-          .entity(conn)
-          .post(Response.class);
+          .request(MediaType.APPLICATION_JSON)
+          .post( Entity.entity( conn,MediaType.APPLICATION_JSON ), Response.class );
       System.out.println(result);
     } catch (Exception ex) {
       System.out.println("Error in Delete");
@@ -90,9 +91,8 @@ public class TestDataSourceResource {
   }
 
   private static void init() {
-    ClientConfig clientConfig = new DefaultClientConfig();
-    client = Client.create(clientConfig);
-    client.addFilter(new HTTPBasicAuthFilter("joe", "password"));
+    Client client = ClientBuilder.newClient();
+    client.register( HttpAuthenticationFeature.basic( "joe", "password" ) );
   }
 
   private static void add() {
@@ -102,8 +102,8 @@ public class TestDataSourceResource {
     System.out.println(conn);
     try {
 
-      WebResource resource = client.resource(add_url);
-      Response result = resource.accept(MediaType.APPLICATION_JSON).entity(conn).post(Response.class);
+      WebTarget resource = client.target(add_url);
+      Response result = resource.request(MediaType.APPLICATION_JSON).post( Entity.entity( conn, MediaType.APPLICATION_JSON ),Response.class);
       System.out.println(result);
     } catch (Exception ex) {
       System.out.println("Error in Add");
@@ -122,14 +122,12 @@ public class TestDataSourceResource {
   }
 
   private static IDatabaseConnection getConnectionByName(String aConnecitonName) {
-    ClientConfig clientConfig = new DefaultClientConfig();
-    Client client = Client.create(clientConfig);
+    Client client= ClientBuilder.newClient( new ClientConfig() );
     IDatabaseConnection connection = null;
-    WebResource resource = client.resource(getURL);
+    WebTarget resource = client.target(getURL);
     try {
-      connection = resource.type(MediaType.APPLICATION_JSON)
-          .type(MediaType.APPLICATION_XML).entity(aConnecitonName)
-          .get(DatabaseConnection.class);
+      connection = resource.request(MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML)
+              .post( Entity.entity( aConnecitonName, MediaType.APPLICATION_XML ), DatabaseConnection.class );
     } catch (Exception ex) {
       ex.printStackTrace();
     }
