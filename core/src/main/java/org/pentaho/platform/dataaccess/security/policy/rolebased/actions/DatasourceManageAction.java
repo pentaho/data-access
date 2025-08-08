@@ -12,10 +12,10 @@
 
 package org.pentaho.platform.dataaccess.security.policy.rolebased.actions;
 
-import org.pentaho.platform.api.engine.IAuthorizationAction;
 import org.pentaho.platform.dataaccess.security.policy.rolebased.actions.messages.Messages;
+import org.pentaho.platform.engine.security.authorization.core.AbstractAuthorizationAction;
 
-public class DatasourceManageAction implements IAuthorizationAction {
+public class DatasourceManageAction extends AbstractAuthorizationAction {
   public static final String NAME = "org.pentaho.platform.dataaccess.datasource.security.manage";
 
   @Override
