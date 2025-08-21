@@ -905,7 +905,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.google.gwt</groupId>
+        <groupId>org.gwtproject</groupId>
         <artifactId>gwt-user</artifactId>
         <version>${gwt.version}</version>
         <exclusions>
@@ -916,7 +916,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>com.google.gwt</groupId>
+        <groupId>org.gwtproject</groupId>
         <artifactId>gwt-dev</artifactId>
         <version>${gwt.version}</version>
         <exclusions>
