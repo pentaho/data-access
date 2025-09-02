@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -268,9 +269,15 @@ public class DataSourceWizardResource {
                                         @FormParam ( "jsonFileList" ) String fileList,
                                         @FormParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
                                         @FormParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
-                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+                                        @FormParam( DATASOURCE_ACL ) String acl ) {
     try {
-      String dswId = service.publishDswFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, checkConnection, acl );
+      RepositoryFileAclDto aclDto = null;
+      if ( acl != null && !acl.isEmpty() ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        aclDto = objectMapper.readValue( acl, RepositoryFileAclDto.class );
+      }
+
+      String dswId = service.publishDswFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, checkConnection, aclDto );
 
       return buildOkResponse( dswId );
     } catch ( PentahoAccessControlException e ) {

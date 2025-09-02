@@ -322,9 +322,10 @@ public class MetadataResourceTest {
       domainId, new MetadataTempFilesListDto( localeFiles ), overwrite, null );
     doReturn( mockResponse ).when( metadataResource ).buildOkResponse( "200" );
 
-    Response response = metadataResource.importMetadataFromTemp( domainId, localeFiles, overwrite, null );
+    String aclJson = "{\"ownerType\":0,\"owner\":\"admin\",\"entriesInheriting\":true,\"aces\":[{\"recipient\":\"admin\",\"tenantPath\":\"/\",\"modifiable\":true,\"recipientType\":0,\"permissions\":[1,2,3]}]}";
+    Response response = metadataResource.importMetadataFromTemp( domainId, localeFiles, overwrite, aclJson );
 
-    verify( metadataResource, times( 1 ) ).importMetadataFromTemp( domainId, localeFiles, overwrite, null );
+    verify( metadataResource, times( 1 ) ).importMetadataFromTemp( domainId, localeFiles, overwrite, aclJson );
     assertEquals( mockResponse.getStatus(), response.getStatus() );
   }
 
