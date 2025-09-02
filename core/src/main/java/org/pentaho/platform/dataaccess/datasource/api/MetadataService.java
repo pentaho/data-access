@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.FormParam;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -280,8 +282,8 @@ public class MetadataService extends DatasourceService {
     return !DatasourceService.isMetadataDatasource( domain ) && domain.getLogicalModels().size() > 1;
   }
 
-  public void importMetadataFromTemp( @FormDataParam( "domainId" ) String domainId, @FormDataParam( "jsonFileList" ) MetadataTempFilesListDto fileList,
-      @FormDataParam( "overwrite" ) boolean overwrite, @FormDataParam( "acl" ) FormDataBodyPart acl ) throws PentahoAccessControlException, PlatformImportException, Exception {
+  public void importMetadataFromTemp(@FormParam( "domainId" ) String domainId, @FormParam( "jsonFileList" ) MetadataTempFilesListDto fileList,
+                                     @FormParam( "overwrite" ) boolean overwrite, @FormParam( "acl" ) String acl ) throws Exception {
 
     String metadataTempFileName = fileList.getXmiFileName();
     InputStream metaDataFileInputStream = createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + metadataTempFileName );
@@ -295,8 +297,12 @@ public class MetadataService extends DatasourceService {
         localeFileStreams.add( createInputStreamFromFile( internalGetUploadDir() + File.separatorChar + bundle.getTempFileName() ) );
       }
     }
-
-    importMetadataDatasource( domainId, metaDataFileInputStream, overwrite, localeFileStreams, localeFileNames, ConvertMultipartDataToJavaObject.jsonMultipartDataToJava( acl, RepositoryFileAclDto.class ) );
+    RepositoryFileAclDto aclDto = null;
+    if ( acl != null && !acl.isEmpty() ) {
+      ObjectMapper objectMapper = new ObjectMapper();
+      aclDto = objectMapper.readValue( acl, RepositoryFileAclDto.class );
+    }
+    importMetadataDatasource( domainId, metaDataFileInputStream, overwrite, localeFileStreams, localeFileNames, aclDto );
 
   }
 

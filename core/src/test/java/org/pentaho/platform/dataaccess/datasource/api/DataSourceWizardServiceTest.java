@@ -13,6 +13,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -71,6 +72,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -437,12 +439,16 @@ public class DataSourceWizardServiceTest {
     doReturn( mockIPlatformImporter ).when( dataSourceWizardService ).getIPlatformImporter();
     doReturn( mockIPentahoSession ).when( dataSourceWizardService ).getSession();
     doReturn( metadataFile ).when( dataSourceWizardService ).createInputStreamFromFile( anyString() );
+    doReturn( DOMAIN_ID + DataSourceWizardService.METADATA_EXT ).when( dataSourceWizardService )
+      .publishDsw( anyString(), any(), any(), any(), anyBoolean(), anyBoolean(), any() );
 
     MetadataTempFilesListDto fileList = new MetadataTempFilesListDto();
     fileList.setXmiFileName( XMI_TEMP_FILE_NAME );
     String list = "{\"xmiFileName\":\"" + XMI_TEMP_FILE_NAME + "\"}";
 
-    String response = dataSourceWizardService.publishDswFromTemp( DOMAIN_ID, fileList, overwrite, checkConnection, aclDto );
+    ObjectMapper mapper = new ObjectMapper();
+    String aclJson = mapper.writeValueAsString( acl );
+    String response = dataSourceWizardService.publishDswFromTemp( DOMAIN_ID, fileList, overwrite, checkConnection,aclJson );
 
     assertEquals( DOMAIN_ID + DataSourceWizardService.METADATA_EXT, response );
   }

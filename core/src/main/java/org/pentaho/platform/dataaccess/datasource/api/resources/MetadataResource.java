@@ -35,6 +35,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
@@ -493,10 +494,10 @@ public class MetadataResource {
     @ResponseCode( code = 403, condition = "Access Control Forbidden" ),
     @ResponseCode( code = 201, condition = "Indicates successful import" )
     } )
-  public Response importMetadataFromTemp( @FormDataParam( "domainId" ) String domainId,
-                                        @FormDataParam ( "jsonFileList" ) String fileList,
-                                        @FormDataParam( OVERWRITE_IN_REPOS ) boolean overwrite,
-                                        @FormDataParam( DATASOURCE_ACL ) FormDataBodyPart acl ) {
+  public Response importMetadataFromTemp( @FormParam( "domainId" ) String domainId,
+                                        @FormParam ( "jsonFileList" ) String fileList,
+                                        @FormParam( OVERWRITE_IN_REPOS ) boolean overwrite,
+                                        @FormParam( DATASOURCE_ACL ) String acl ) {
 
     try {
       service.importMetadataFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, acl );

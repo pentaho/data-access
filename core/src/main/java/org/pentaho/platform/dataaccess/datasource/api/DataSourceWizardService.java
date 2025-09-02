@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -176,7 +177,7 @@ public class DataSourceWizardService extends DatasourceService {
 
   public String publishDsw( String domainId, InputStream metadataFile, List<InputStream> localizeFiles, List<String> localizeFileNames,
       boolean overwrite, boolean checkConnection, RepositoryFileAclDto acl )
-    throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
+    throws Exception {
     if ( !hasManageAccessCheck() ) {
       throw new PentahoAccessControlException();
     }
@@ -248,7 +249,7 @@ public class DataSourceWizardService extends DatasourceService {
       MetadataTempFilesListDto fileList,
       boolean overwrite,
       boolean checkConnection,
-      RepositoryFileAclDto acl ) throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
+      String acl ) throws PentahoAccessControlException, IllegalArgumentException, DswPublishValidationException, Exception {
 
     String metadataTempFileName = fileList.getXmiFileName();
     InputStream metaDataFileInputStream = createInputStreamFromFile( MetadataService.getUploadDir() + File.separatorChar + metadataTempFileName );
@@ -262,9 +263,13 @@ public class DataSourceWizardService extends DatasourceService {
         localeFileStreams.add( new FileInputStream( MetadataService.getUploadDir() + File.separatorChar + bundle.getTempFileName() ) );
       }
     }
-
+    RepositoryFileAclDto aclDto = null;
+    if ( acl != null && !acl.isEmpty() ) {
+      ObjectMapper objectMapper = new ObjectMapper();
+      aclDto = objectMapper.readValue( acl, RepositoryFileAclDto.class );
+    }
     return publishDsw( domainId + DataSourceWizardService.METADATA_EXT, metaDataFileInputStream,
-        localeFileStreams, localeFileNames, overwrite, checkConnection, acl );
+        localeFileStreams, localeFileNames, overwrite, checkConnection, aclDto );
   }
 
   /**

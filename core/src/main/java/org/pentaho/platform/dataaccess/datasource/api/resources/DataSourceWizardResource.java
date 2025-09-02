@@ -268,7 +268,7 @@ public class DataSourceWizardResource {
                                         @FormParam ( "jsonFileList" ) String fileList,
                                         @FormParam( "overwrite" ) @DefaultValue( "false" ) boolean overwrite,
                                         @FormParam( "checkConnection" ) @DefaultValue( "false" ) boolean checkConnection,
-                                        @FormParam( DATASOURCE_ACL ) RepositoryFileAclDto acl ) {
+                                        @FormParam( DATASOURCE_ACL ) String acl ) {
     try {
       String dswId = service.publishDswFromTemp( domainId, new MetadataTempFilesListDto( fileList ), overwrite, checkConnection, acl );
 
