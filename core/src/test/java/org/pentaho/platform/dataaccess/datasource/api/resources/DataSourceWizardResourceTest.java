@@ -157,12 +157,12 @@ public class DataSourceWizardResourceTest {
     boolean overwrite = false;
     boolean checkConnection = false;
     Response mockResponse = mock( Response.class );
-    doReturn( "dswId" ).when( dataSourceWizardResource.service ).publishDswFromTemp( eq(domainId), any(), eq(overwrite), eq(checkConnection), eq(null ) );
+    String aclJson = "{\"ownerType\":0,\"owner\":\"admin\",\"entriesInheriting\":true,\"aces\":[{\"recipient\":\"admin\",\"tenantPath\":\"/\",\"modifiable\":true,\"recipientType\":0,\"permissions\":[1,2,3]}]}";
+    doReturn( "dswId" ).when( dataSourceWizardResource.service ).publishDswFromTemp( eq(domainId), any(), eq(overwrite), eq(checkConnection), any() );
     doReturn( mockResponse ).when( dataSourceWizardResource ).buildOkResponse( "dswId" );
 
-    Response response = dataSourceWizardResource.publishDswFromTemp( domainId, fileList, overwrite, checkConnection, null );
-
-    verify( dataSourceWizardResource, times( 1 ) ).publishDswFromTemp( domainId, fileList, overwrite, checkConnection, null );
+    Response response = dataSourceWizardResource.publishDswFromTemp( domainId, fileList, overwrite, checkConnection, aclJson );
+    verify( dataSourceWizardResource, times( 1 ) ).publishDswFromTemp( domainId, fileList, overwrite, checkConnection, aclJson );
     assertEquals( mockResponse, response );
   }
 
