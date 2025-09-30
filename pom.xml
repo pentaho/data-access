@@ -28,7 +28,6 @@
     <pentaho-reporting.version>11.0.0.0-SNAPSHOT</pentaho-reporting.version>
     <aspectjrt.version>1.6.6</aspectjrt.version>
     <mockito.version>5.10.0</mockito.version>
-    <byte-buddy.version>1.14.11</byte-buddy.version>
     <objenesis.version>3.3</objenesis.version>
     <jmock-junit4.version>2.13.1</jmock-junit4.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
