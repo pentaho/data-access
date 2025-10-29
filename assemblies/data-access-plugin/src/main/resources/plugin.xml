@@ -2,33 +2,40 @@
 
 <plugin title="Pentaho Data Access" loader="OVERRIDING" name="data-access">
 
-   <lifecycle-listener class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DataAccessLifecycleListener"/>
+  <lifecycle-listener
+    class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DataAccessLifecycleListener"/>
 
-   <static-paths>
-     <!-- this translates to /pentaho/content/data-access-plugin/resources/* -->
-     <static-path url="/data-access/resources" localFolder="resources"/>
-   </static-paths>
+  <static-paths>
+    <!-- this translates to /pentaho/content/data-access-plugin/resources/* -->
+    <static-path url="/data-access/resources" localFolder="resources"/>
+  </static-paths>
 
-   <overlays>
-        <overlay id="launch" resourcebundle="api/repos/data-access/resources/messages/messages" priority="10010">
-            <button id="datasource" label="${newDatasourceEllipsis}" command="window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback)"/>
-        </overlay>
-	    <overlay id="dataaccess"  resourcebundle="api/repos/data-access/resources/messages/messages" loadatstart="false">
-			<menubar id="filemenu">
-			    <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}" js-command="pho.showDatasourceManageDialog(window.parent.datasourceEditorCallback)" />
-			</menubar>
-			<menubar id="newmenu">
-				<menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}" js-command="pho.openDatasourceEditor(window.parent.datasourceEditorCallback)" />
-			</menubar>
-	    </overlay>
-	</overlays>
+  <overlays>
+    <overlay id="launch" resourcebundle="api/repos/data-access/resources/messages/messages" priority="10010">
+      <button id="datasource" label="${newDatasourceEllipsis}"
+              command="window.parent.pho.openDatasourceEditor(window.parent.datasourceEditorCallback)"/>
+    </overlay>
+    <overlay id="dataaccess" resourcebundle="api/repos/data-access/resources/messages/messages" loadatstart="false">
+      <menubar id="filemenu">
+        <menuitem id="manageDatasourceItem" insertafter="openMenuItem" label="${manageDatasourceEllipsis}"
+                  js-command="pho.showDatasourceManageDialog(window.parent.datasourceEditorCallback)"/>
+      </menubar>
+      <menubar id="newmenu">
+        <menuitem id="newDatasourceItem" label="${newDatasourceEllipsis}"
+                  js-command="pho.openDatasourceEditor(window.parent.datasourceEditorCallback)"/>
+      </menubar>
+    </overlay>
+  </overlays>
 
-   <!-- this is used by the datasource service -->
-   <bean id="connectionServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl"/>
+  <!-- this is used by the datasource service -->
+  <bean id="connectionServiceImpl"
+        class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ConnectionServiceImpl"/>
 
-   <bean id="datasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
+  <bean id="datasourceServiceImpl"
+        class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.DSWDatasourceServiceImpl"/>
 
-   <bean id="csvDatasourceServiceImpl" class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
+  <bean id="csvDatasourceServiceImpl"
+        class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
 
 
   <webservice
@@ -62,17 +69,17 @@
     description="This service is used with the database connection dialog"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.DataAccessDatabaseDialectService"/>
 
-   <webservice
+  <webservice
     id="CsvDatasourceService"
     type="gwt"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.CsvDatasourceServiceImpl"/>
 
-   <webservice
+  <webservice
     id="modelerService"
     type="gwt"
     class="org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService"/>
 
-   <webservice
+  <webservice
     id="metadataServiceDA"
     type="gwt"
     class="org.pentaho.platform.dataaccess.metadata.service.MetadataService"/>
