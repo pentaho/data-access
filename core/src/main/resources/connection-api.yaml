@@ -1,0 +1,563 @@
+openapi: 3.0.1
+info:
+  title: Pentaho Data Access Connection API
+  description: REST API for managing database connections in Pentaho Data Access.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/pentaho/plugin/
+    description: Pentaho Data Access Connection API Server
+tags:
+  - name: connections
+    description: Database connection management operations
+paths:
+  /data-access/api/connection/getid:
+    get:
+      summary: Get connection ID by name
+      operationId: getConnectionIdByNameWithResponse
+      tags:
+        - connections
+      description: Returns a response with id of a database connection
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: String representing the name of the database to search
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved the connection ID
+          content:
+            application/json:
+              schema:
+                type: string
+        '304':
+          description: Connection not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+  /data-access/api/connection/checkParams:
+    post:
+      summary: Check database connection parameters
+      operationId: checkParameters
+      tags:
+        - connections
+      description: Returns the database meta for the given connection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IDatabaseConnection'
+      responses:
+        '200':
+          description: Successfully retrieved connection parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringArrayWrapper'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+  /data-access/api/connection/createDatabaseConnection:
+    get:
+      summary: Create a database connection
+      operationId: createDatabaseConnection
+      tags:
+        - connections
+      description: Create a database connection based on driver and URL
+      parameters:
+        - name: driver
+          in: query
+          required: true
+          description: String name of the driver to use
+          schema:
+            type: string
+        - name: url
+          in: query
+          required: true
+          description: String name of the url used to create the connection
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully created database connection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDatabaseConnection'
+  /data-access/api/connection/poolingParameters:
+    get:
+      summary: Get pooling parameters
+      operationId: getPoolingParameters
+      tags:
+        - connections
+      description: Returns a list of the database connection pool parameters
+      responses:
+        '200':
+          description: Successfully retrieved pooling parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDatabaseConnectionPoolParameterList'
+  /data-access/api/connection/test:
+    put:
+      summary: Test database connection
+      operationId: testConnection
+      tags:
+        - connections
+      description: Tests the database connection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IDatabaseConnection'
+      responses:
+        '200':
+          description: Connection test succeeded
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "Connection succeeded to mydb"
+        '500':
+          description: Connection test failed
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "Connection failed to mydb"
+  /data-access/api/connection/update:
+    post:
+      summary: Update database connection
+      operationId: updateConnection
+      tags:
+        - connections
+      description: Update an existing database connection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IDatabaseConnection'
+      responses:
+        '200':
+          description: Successfully updated connection
+        '304':
+          description: Connection not modified
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+  /data-access/api/connection/delete:
+    delete:
+      summary: Delete database connection
+      operationId: deleteConnection
+      tags:
+        - connections
+      description: Delete an existing database connection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IDatabaseConnection'
+      responses:
+        '200':
+          description: Successfully deleted connection
+          content:
+            text/plain:
+              schema:
+                type: string
+        '304':
+          description: Connection not deleted
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+  /data-access/api/connection/deletebyname:
+    delete:
+      summary: Delete database connection by name
+      operationId: deleteConnectionByName
+      tags:
+        - connections
+      description: Delete an existing database connection by name
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: String representing the name of the database connection to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted connection
+          content:
+            text/plain:
+              schema:
+                type: string
+        '304':
+          description: Connection not deleted
+        '400':
+          description: Bad request - name is blank
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+  /data-access/api/connection/add:
+    post:
+      summary: Add database connection
+      operationId: addConnection
+      tags:
+        - connections
+      description: Add a database connection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IDatabaseConnection'
+      responses:
+        '200':
+          description: Successfully added connection
+          content:
+            text/plain:
+              schema:
+                type: string
+        '304':
+          description: Connection not added
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+  /data-access/api/connection/list:
+    get:
+      summary: Get all database connections
+      operationId: getConnections
+      tags:
+        - connections
+      description: Returns the list of database connections
+      responses:
+        '200':
+          description: Successfully retrieved connections
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDatabaseConnectionList'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+  /data-access/api/connection/get:
+    get:
+      summary: Get database connection by name
+      operationId: getConnectionByName
+      tags:
+        - connections
+      description: Returns the database connection by name
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: String representing the name of the database to return
+          schema:
+            type: string
+        - name: mask
+          in: query
+          required: false
+          description: Whether to mask the password
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Successfully retrieved connection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDatabaseConnection'
+        '400':
+          description: Bad request - name is blank
+        '404':
+          description: Connection not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+  /data-access/api/connection/get-by-id:
+    get:
+      summary: Get database connection by ID
+      operationId: getConnectionById
+      tags:
+        - connections
+      description: Returns the database connection details by ID
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: String representing the ID of the database to return
+          schema:
+            type: string
+        - name: mask
+          in: query
+          required: false
+          description: Whether to mask the password
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Successfully retrieved connection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDatabaseConnection'
+        '404':
+          description: Connection not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+  /data-access/api/connection/checkexists:
+    get:
+      summary: Check if connection exists
+      operationId: isConnectionExist
+      tags:
+        - connections
+      description: Returns a response based on the existence of a database connection
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: String representing the name of the database to check
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Connection exists
+          content:
+            text/plain:
+              schema:
+                type: string
+        '304':
+          description: Connection does not exist
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+  /data-access/api/connection/getresponse:
+    get:
+      summary: Get connection by name with response
+      operationId: getConnectionByNameWithResponse
+      tags:
+        - connections
+      description: Returns a response object with connection details or error message
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: String representing the name of the database connection
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved connection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IDatabaseConnection'
+        '304':
+          description: Connection not found
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas:
+    IDatabaseConnection:
+      type: object
+      description: Interface for database connection (maps to org.pentaho.database.model.IDatabaseConnection)
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the connection
+          example: "db-connection-001"
+        name:
+          type: string
+          description: Connection name
+          example: "Production Database"
+        accessType:
+          type: string
+          description: Database access type (e.g., NATIVE, ODBC, OCI, POOL)
+          example: "NATIVE"
+        databaseType:
+          type: object
+          description: Database type/driver information
+        hostname:
+          type: string
+          description: Database server hostname
+          example: "localhost"
+        databaseName:
+          type: string
+          description: Database name
+          example: "mydb"
+        databasePort:
+          type: string
+          description: Database server port
+          example: "5432"
+        username:
+          type: string
+          description: Database user name
+          example: "postgres"
+        password:
+          type: string
+          description: Database password (encrypted)
+        streamingResults:
+          type: boolean
+          description: Enable streaming results
+          example: false
+        dataTablespace:
+          type: string
+          description: Data tablespace name
+        indexTablespace:
+          type: string
+          description: Index tablespace name
+        sqlServerInstance:
+          type: string
+          description: SQL Server instance name
+        usingDoubleDecimalAsSchemaTableSeparator:
+          type: boolean
+          description: Use double decimal as schema/table separator
+          example: false
+        informixServername:
+          type: string
+          description: Informix server name
+        extraOptions:
+          type: object
+          description: Extra connection options
+          additionalProperties:
+            type: string
+        extraOptionsOrder:
+          type: object
+          description: Order of extra options
+          additionalProperties:
+            type: string
+        attributes:
+          type: object
+          description: Additional connection attributes
+          additionalProperties:
+            type: string
+        changed:
+          type: boolean
+          description: Flag indicating if connection has been modified
+          example: false
+        quoteAllFields:
+          type: boolean
+          description: Quote all field names in SQL
+          example: false
+        forcingIdentifiersToLowerCase:
+          type: boolean
+          description: Force identifier names to lowercase
+          example: false
+        forcingIdentifiersToUpperCase:
+          type: boolean
+          description: Force identifier names to uppercase
+          example: false
+        connectSql:
+          type: string
+          description: SQL to execute upon connection
+        usingConnectionPool:
+          type: boolean
+          description: Use connection pooling
+          example: true
+        initialPoolSize:
+          type: integer
+          description: Initial connection pool size
+          example: 5
+        maximumPoolSize:
+          type: integer
+          description: Maximum connection pool size
+          example: 20
+        partitioned:
+          type: boolean
+          description: Is this a partitioned connection
+          example: false
+        connectionPoolingProperties:
+          type: object
+          description: Connection pooling properties
+          additionalProperties:
+            type: string
+        partitioningInformation:
+          type: array
+          description: Partitioning information
+          items:
+            type: object
+    IDatabaseConnectionList:
+      type: object
+      description: List of database connections (maps to org.pentaho.ui.database.event.IDatabaseConnectionList)
+      properties:
+        databaseConnections:
+          type: array
+          description: Array of database connections
+          items:
+            $ref: '#/components/schemas/IDatabaseConnection'
+    IDatabaseConnectionPoolParameter:
+      type: object
+      description: Database connection pool parameter
+      properties:
+        name:
+          type: string
+          description: Parameter name
+          example: "maxActive"
+        value:
+          type: string
+          description: Parameter value
+          example: "8"
+        description:
+          type: string
+          description: Parameter description
+          example: "Maximum number of active connections in the pool"
+    IDatabaseConnectionPoolParameterList:
+      type: object
+      description: List of database connection pool parameters (maps to org.pentaho.ui.database.event.IDatabaseConnectionPoolParameterList)
+      properties:
+        databaseConnectionPoolParameters:
+          type: array
+          description: Array of pool parameters
+          items:
+            $ref: '#/components/schemas/IDatabaseConnectionPoolParameter'
+    StringArrayWrapper:
+      type: object
+      description: Wrapper for string array (maps to org.pentaho.platform.dataaccess.datasource.wizard.service.impl.StringArrayWrapper)
+      properties:
+        array:
+          type: array
+          description: Array of strings
+          items:
+            type: string
+          example: ["param1", "param2", "param3"]

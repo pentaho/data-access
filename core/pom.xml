@@ -16,9 +16,15 @@
     <wadl.path>${project.build.directory}/${wadl.file.name}</wadl.path>
     <wadl.output.directory>${project.build.outputDirectory}/META-INF/wadl</wadl.output.directory>
     <wadl.file.name>wadlExtension.xml</wadl.file.name>
+    <swagger-annotations.version>1.6.16</swagger-annotations.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger-annotations.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.woodstox</groupId>
       <artifactId>wstx-asl</artifactId>
@@ -642,6 +648,60 @@
       </testResource>
     </testResources>
     <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-api</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <generatorName>jaxrs-spec</generatorName>
+              <inputSpec>${project.basedir}/src/main/resources/connection-api.yaml</inputSpec>
+              <apiPackage>org.pentaho.platform.dataaccess.datasource.wizard.service.api</apiPackage>
+              <modelPackage>org.pentaho.platform.dataaccess.datasource.wizard.service.model</modelPackage>
+              <importMappings>
+                <importMapping>DatabaseConnection=org.pentaho.database.model.DatabaseConnection</importMapping>
+                <importMapping>IDatabaseConnection=org.pentaho.database.model.IDatabaseConnection</importMapping>
+                <importMapping>IDatabaseConnectionList=org.pentaho.ui.database.event.IDatabaseConnectionList</importMapping>
+                <importMapping>IDatabaseConnectionPoolParameterList=org.pentaho.ui.database.event.IDatabaseConnectionPoolParameterList</importMapping>
+                <importMapping>StringArrayWrapper=org.pentaho.platform.dataaccess.datasource.wizard.service.impl.StringArrayWrapper</importMapping>
+              </importMappings>
+              <configOptions>
+                <interfaceOnly>true</interfaceOnly>
+                <returnResponse>false</returnResponse>
+                <sourceFolder>src/java/main</sourceFolder>
+                <useJakartaEe>true</useJakartaEe>
+                <useTags>true</useTags>
+                <delegatePattern>false</delegatePattern>
+                <skipDefaultInterface>true</skipDefaultInterface>
+                <openApiNullable>false</openApiNullable>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/openapi/src/java/main</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
