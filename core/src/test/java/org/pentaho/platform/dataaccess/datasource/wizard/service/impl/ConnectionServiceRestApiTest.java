@@ -177,12 +177,9 @@ public class ConnectionServiceRestApiTest {
     // Parse back to verify structure
     com.fasterxml.jackson.databind.JsonNode node = objectMapper.readTree( json );
 
-    // Null fields should not be in the JSON or should be null
-    // (depends on ObjectMapper configuration, but important is consistency)
-    if ( node.has( "username" ) ) {
-      assertTrue( "Username node should exist",
-          node.has( "username" ) );
-    }
+    // Verify username is present in JSON and is null
+    assertTrue( "JSON should contain username field", node.has( "username" ) );
+    assertTrue( "Username field should be null", node.get( "username" ).isNull() );
   }
 
   /**
@@ -552,7 +549,7 @@ public class ConnectionServiceRestApiTest {
       connectionService.deleteConnectionByName( "" );
       fail( "Should throw WebApplicationException" );
     } catch ( WebApplicationException e ) {
-      assertEquals( "Should return INTERNAL_SERVER_ERROR", 500, e.getResponse().getStatus() );
+      assertEquals( "Should return BAD_REQUEST", 400, e.getResponse().getStatus() );
     }
   }
 

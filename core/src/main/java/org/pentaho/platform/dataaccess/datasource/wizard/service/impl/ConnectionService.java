@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
-import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.DatabaseConnectionPoolParameter;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnectionPoolParameter;
@@ -84,9 +83,8 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param name
    *          String representing the name of the database to search
-   * @return Response based on the string value of the connection id
+   * @return String based on the string value of the connection id
    *
-   * @throws ConnectionServiceException
    */
   @Override
   public String getConnectionIdByNameWithResponse( String name ) {
@@ -97,8 +95,6 @@ public class ConnectionService implements ConnectionsApi {
       } else {
         throw new WebApplicationException( Response.Status.NOT_MODIFIED );
       }
-    } catch ( ConnectionServiceException ex ) {
-      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     } catch ( Exception ex ) {
       throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     }
@@ -214,8 +210,7 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param databaseConnection
    *          Database connection object to test
-   * @return Response based on the boolean value of the connection test
-   * @throws ConnectionServiceException
+   * @return String based on the boolean value of the connection test
    */
   @Override
   public String testConnection( IDatabaseConnection databaseConnection ) {
@@ -236,13 +231,11 @@ public class ConnectionService implements ConnectionsApi {
   }
 
   /**
-   * Update an existing database connection
+   * Update an existing database connection. Throws a WebApplicationException to trigger the proper response code based on success or failure. 
    *
    * @param databaseConnection
    *          Database connection object to update
-   * @return Response indicating the success of this operation
    *
-   * @throws ConnectionServiceException
    */
   @Override
   public void updateConnection( IDatabaseConnection databaseConnection ) {
@@ -292,9 +285,8 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param databaseConnection
    *          Database connection object to delete
-   * @return Response indicating the success of this operation
+   * @return String indicating the success of this operation
    *
-   * @throws ConnectionServiceException
    */
   @Override
   public String deleteConnection( IDatabaseConnection databaseConnection ) {
@@ -316,9 +308,8 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param name
    *          String representing the name of the database connection to delete
-   * @return Response indicating the success of this operation
+   * @return String indicating the success of this operation
    *
-   * @throws ConnectionServiceException
    */
   @Override
   public String deleteConnectionByName( String name ) {
@@ -334,6 +325,8 @@ public class ConnectionService implements ConnectionsApi {
       return "";
     } catch ( WebApplicationException we ) {
       throw we;
+    } catch ( ConnectionServiceException cse ) {
+      throw new WebApplicationException( Response.status( cse.getStatusCode() ).build() );
     } catch ( Throwable t ) {
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
@@ -344,9 +337,8 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param databaseConnection
    *          A database connection object to add
-   * @return Response indicating the success of this operation
+   * @return String indicating the success of this operation
    *
-   * @throws ConnectionServiceException
    */
   @Override
   public String addConnection( IDatabaseConnection databaseConnection ) {
@@ -386,7 +378,6 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @return List of database connections
    *
-   * @throws ConnectionServiceException
    */
   @Override
   public IDatabaseConnectionList getConnections() {
@@ -405,10 +396,14 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param name
    *          String representing the name of the database to return
+   * @param mask
+   *          Whether to mask the password
+   * @param projectDir
+   *          Optional project directory (used by subclasses)
    * @return Database connection by name
    */
   @Override
-  public IDatabaseConnection getConnectionByName( String name, Boolean mask ) {
+  public IDatabaseConnection getConnectionByName( String name, Boolean mask, String projectDir ) {
     try {
       if ( StringUtils.isBlank( name ) ) {
         throw new WebApplicationException( 
@@ -425,6 +420,19 @@ public class ConnectionService implements ConnectionsApi {
     } catch ( ConnectionServiceException ex ) {
       throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     }
+  }
+
+  /**
+   * Convenience method for backwards compatibility - delegates to three-parameter version without a projectDir
+   *
+   * @param name
+   *          String representing the name of the database to return
+   * @param mask
+   *          Whether to mask the password
+   * @return Database connection by name
+   */
+  public IDatabaseConnection getConnectionByName( String name, Boolean mask ) {
+    return getConnectionByName( name, mask, null );
   }
 
   /**
@@ -454,9 +462,8 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param name
    *          String representing the name of the database to check
-   * @return Response based on the boolean value of the connection existing
+   * @return String based on the boolean value of the connection existing
    *
-   * @throws ConnectionServiceException
    */
   @Override
   public String isConnectionExist( String name ) {
