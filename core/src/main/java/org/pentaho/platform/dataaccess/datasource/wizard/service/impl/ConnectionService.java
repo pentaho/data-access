@@ -13,29 +13,16 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN;
-
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.DefaultValue;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.enunciate.Facet;
 import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.model.DatabaseConnection;
@@ -48,6 +35,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.api.ConnectionsApi;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -60,8 +48,7 @@ import org.pentaho.ui.database.event.DefaultDatabaseConnectionPoolParameterList;
 import org.pentaho.ui.database.event.IDatabaseConnectionList;
 import org.pentaho.ui.database.event.IDatabaseConnectionPoolParameterList;
 
-@Path( "/data-access/api/connection" )
-public class ConnectionService {
+public class ConnectionService implements ConnectionsApi {
 
   private ConnectionServiceImpl connectionService;
   private DatabaseDialectService dialectService;
@@ -70,9 +57,26 @@ public class ConnectionService {
   private UtilHtmlSanitizer sanitizer;
 
   public ConnectionService() {
-    connectionService = new ConnectionServiceImpl();
-    this.dialectService = new DatabaseDialectService( true );
-    sanitizer = UtilHtmlSanitizer.getInstance();
+    this( null, null, null );
+  }
+
+  public ConnectionService( ConnectionServiceImpl connectionService, DatabaseDialectService dialectService, UtilHtmlSanitizer sanitizer ) {
+    this.connectionService = connectionService != null ? connectionService : new ConnectionServiceImpl();
+    this.dialectService = dialectService != null ? dialectService : new DatabaseDialectService( true );
+    this.sanitizer = sanitizer != null ? sanitizer : UtilHtmlSanitizer.getInstance();
+  }
+
+  // Setters for test injection
+  public void setConnectionService( ConnectionServiceImpl connectionService ) {
+    this.connectionService = connectionService;
+  }
+
+  public void setDialectService( DatabaseDialectService dialectService ) {
+    this.dialectService = dialectService;
+  }
+
+  public void setSanitizer( UtilHtmlSanitizer sanitizer ) {
+    this.sanitizer = sanitizer;
   }
 
   /**
@@ -84,43 +88,34 @@ public class ConnectionService {
    *
    * @throws ConnectionServiceException
    */
-  @GET
-  @Path( "/getid" )
-  @Produces( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public Response getConnectionIdByNameWithResponse( @QueryParam( "name" ) String name )
-      throws ConnectionServiceException {
-    IDatabaseConnection conn = null;
-    Response response;
+  @Override
+  public String getConnectionIdByNameWithResponse( String name ) {
     try {
-      conn = connectionService.getConnectionByName( name );
+      IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
       if ( conn != null ) {
-        response = Response.ok().entity( conn.getId() ).build();
+        return conn.getId();
       } else {
-        response = Response.notModified().build();
+        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
       }
+    } catch ( ConnectionServiceException ex ) {
+      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     } catch ( Exception ex ) {
-      response = Response.serverError().entity( ex.getMessage() ).build();
+      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     }
-    return response;
   }
 
   /**
    * Returns the database meta for the given connection.
    *
-   * @param connection
+   * @param databaseConnection
    *          DatabaseConnection to retrieve meta from
    *
    * @return array containing the database connection metadata
    */
-  @POST
-  @Path( "/checkParams" )
-  @Consumes( { APPLICATION_JSON } )
-  @Produces( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public StringArrayWrapper checkParameters( DatabaseConnection connection ) {
+  @Override
+  public StringArrayWrapper checkParameters( IDatabaseConnection databaseConnection ) {
     StringArrayWrapper array = null;
-    String[] rawValues = DatabaseUtil.convertToDatabaseMeta( connection ).checkParameters();
+    String[] rawValues = DatabaseUtil.convertToDatabaseMeta( databaseConnection ).checkParameters();
     if ( rawValues.length > 0 ) {
       array = new StringArrayWrapper();
       array.setArray( rawValues );
@@ -138,12 +133,8 @@ public class ConnectionService {
    *
    * @return IDatabaseConnection for the given parameters
    */
-  @GET
-  @Path( "/createDatabaseConnection" )
-  @Produces( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public IDatabaseConnection createDatabaseConnection( @QueryParam( "driver" ) String driver,
-      @QueryParam( "url" ) String url ) {
+  @Override
+  public IDatabaseConnection createDatabaseConnection( String driver, String url ) {
     for ( IDatabaseDialect dialect : dialectService.getDatabaseDialects() ) {
       if ( dialect.getNativeDriver() != null && dialect.getNativeDriver().equals( driver ) ) {
         if ( dialect.getNativeJdbcPre() != null && url.startsWith( dialect.getNativeJdbcPre() ) ) {
@@ -165,10 +156,7 @@ public class ConnectionService {
    *
    * @return IDatabaseConnectionPoolParameterList a list of the pooling parameters
    */
-  @GET
-  @Path( "/poolingParameters" )
-  @Produces( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
+  @Override
   public IDatabaseConnectionPoolParameterList getPoolingParameters() {
     IDatabaseConnectionPoolParameterList value = new DefaultDatabaseConnectionPoolParameterList();
     List<IDatabaseConnectionPoolParameter> paramList = new ArrayList<IDatabaseConnectionPoolParameter>();
@@ -224,57 +212,53 @@ public class ConnectionService {
   /**
    * Tests the database connection
    *
-   * @param connection
+   * @param databaseConnection
    *          Database connection object to test
    * @return Response based on the boolean value of the connection test
    * @throws ConnectionServiceException
    */
-  @PUT
-  @Path( "/test" )
-  @Consumes( { APPLICATION_JSON } )
-  @Produces( { TEXT_PLAIN } )
-  @Facet( name = "Unsupported" )
-  public Response testConnection( DatabaseConnection connection ) throws ConnectionServiceException {
-    boolean success = false;
-    applySavedPassword( connection );
-    success = connectionService.testConnection( connection );
-    if ( success ) {
-      return Response.ok(
-          Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED", connection.getDatabaseName() ) )
-          .build();
-    } else {
-      return Response.serverError()
-          .entity( Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED",
-                  connection.getDatabaseName() ) ).build();
+  @Override
+  public String testConnection( IDatabaseConnection databaseConnection ) {
+    try {
+      applySavedPassword( databaseConnection );
+      boolean success = connectionService.testConnection( databaseConnection );
+      if ( success ) {
+        return Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED", databaseConnection.getDatabaseName() );
+      } else {
+        throw new WebApplicationException(
+            Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED",
+                databaseConnection.getDatabaseName() ),
+            Response.Status.INTERNAL_SERVER_ERROR );
+      }
+    } catch ( ConnectionServiceException ex ) {
+      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
   /**
    * Update an existing database connection
    *
-   * @param connection
+   * @param databaseConnection
    *          Database connection object to update
    * @return Response indicating the success of this operation
    *
    * @throws ConnectionServiceException
    */
-  @POST
-  @Path( "/update" )
-  @Consumes( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public Response updateConnection( DatabaseConnection connection ) throws ConnectionServiceException {
-    sanitizer.sanitizeConnectionParameters( connection );
+  @Override
+  public void updateConnection( IDatabaseConnection databaseConnection ) {
+    sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
-      applySavedPassword( connection );
-      boolean success = connectionService.updateConnection( connection );
-      if ( success ) {
-        return Response.ok().build();
-      } else {
-        return Response.notModified().build();
+      applySavedPassword( databaseConnection );
+      boolean success = connectionService.updateConnection( databaseConnection );
+      if ( !success ) {
+        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
       }
+      // Explicitly return 200 OK instead of default 204 No Content
+      throw new WebApplicationException( Response.ok().build() );
+    } catch ( WebApplicationException e ) {
+      throw e;
     } catch ( Throwable t ) {
-      t.printStackTrace();
-      return Response.serverError().build();
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
@@ -306,27 +290,24 @@ public class ConnectionService {
   /**
    * Delete an existing database connection
    *
-   * @param connection
+   * @param databaseConnection
    *          Database connection object to delete
    * @return Response indicating the success of this operation
    *
    * @throws ConnectionServiceException
    */
-  @DELETE
-  @Path( "/delete" )
-  @Consumes( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public Response deleteConnection( DatabaseConnection connection ) throws ConnectionServiceException {
+  @Override
+  public String deleteConnection( IDatabaseConnection databaseConnection ) {
     try {
-      boolean success = connectionService.deleteConnection( connection );
-      if ( success ) {
-        return Response.ok().build();
-      } else {
-        return Response.notModified().build();
+      boolean success = connectionService.deleteConnection( databaseConnection );
+      if ( !success ) {
+        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
       }
+      return "";
+    } catch ( WebApplicationException we ) {
+      throw we;
     } catch ( Throwable t ) {
-      t.printStackTrace();
-      return Response.serverError().build();
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
@@ -339,52 +320,49 @@ public class ConnectionService {
    *
    * @throws ConnectionServiceException
    */
-  @DELETE
-  @Path( "/deletebyname" )
-  public Response deleteConnectionByName( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
+  @Override
+  public String deleteConnectionByName( String name ) {
     try {
       if ( StringUtils.isBlank( name ) ) {
         throw new ConnectionServiceException( com.google.gwt.http.client.Response.SC_BAD_REQUEST, Messages.getErrorString(
                 "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", String.valueOf( name ) ) ); //$NON-NLS-1$
       }
       boolean success = connectionService.deleteConnection( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
-      if ( success ) {
-        return Response.ok().build();
-      } else {
-        return Response.notModified().build();
+      if ( !success ) {
+        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
       }
+      return "";
+    } catch ( WebApplicationException we ) {
+      throw we;
     } catch ( Throwable t ) {
-      return Response.serverError().build();
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
   /**
    * Add a database connection
    *
-   * @param connection
+   * @param databaseConnection
    *          A database connection object to add
    * @return Response indicating the success of this operation
    *
    * @throws ConnectionServiceException
    */
-  @POST
-  @Path( "/add" )
-  @Consumes( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public Response addConnection( DatabaseConnection connection ) throws ConnectionServiceException {
-    sanitizer.sanitizeConnectionParameters( connection );
+  @Override
+  public String addConnection( IDatabaseConnection databaseConnection ) {
+    sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
-      boolean success = connectionService.addConnection( connection );
-      if ( success ) {
-        return Response.ok().build();
-      } else {
-        return Response.notModified().build();
+      boolean success = connectionService.addConnection( databaseConnection );
+      if ( !success ) {
+        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
       }
+      return "";
+    } catch ( WebApplicationException we ) {
+      throw we;
     } catch ( ConnectionServiceException cse ) {
-      return Response.status( cse.getStatusCode() ).build();
+      throw new WebApplicationException( Response.status( cse.getStatusCode() ).build() );
     } catch ( Throwable t ) {
-      t.printStackTrace();
-      return Response.serverError().build();
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
@@ -410,15 +388,16 @@ public class ConnectionService {
    *
    * @throws ConnectionServiceException
    */
-  @GET
-  @Path( "/list" )
-  @Produces( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public IDatabaseConnectionList getConnections() throws ConnectionServiceException {
-    IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
-    List<IDatabaseConnection> conns = connectionService.getConnections( true );
-    databaseConnections.setDatabaseConnections( conns );
-    return databaseConnections;
+  @Override
+  public IDatabaseConnectionList getConnections() {
+    try {
+      IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
+      List<IDatabaseConnection> conns = connectionService.getConnections( true );
+      databaseConnections.setDatabaseConnections( conns );
+      return databaseConnections;
+    } catch ( ConnectionServiceException ex ) {
+      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+    }
   }
 
   /**
@@ -427,27 +406,25 @@ public class ConnectionService {
    * @param name
    *          String representing the name of the database to return
    * @return Database connection by name
-   *
-   * @throws ConnectionServiceException
    */
-  @GET
-  @Path( "/get" )
-  @Produces( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public IDatabaseConnection getConnectionByName( @QueryParam( "name" ) String name,
-                                                  @DefaultValue( "false" ) @QueryParam( "mask" ) Boolean mask )
-    throws ConnectionServiceException {
-    if ( StringUtils.isBlank( name ) ) {
-      throw new ConnectionServiceException( com.google.gwt.http.client.Response.SC_BAD_REQUEST, Messages.getErrorString(
-              "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", String.valueOf( name ) ) ); //$NON-NLS-1$
+  @Override
+  public IDatabaseConnection getConnectionByName( String name, Boolean mask ) {
+    try {
+      if ( StringUtils.isBlank( name ) ) {
+        throw new WebApplicationException( 
+            Messages.getErrorString( "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", String.valueOf( name ) ),
+            Response.Status.BAD_REQUEST );
+      }
+      IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
+      if ( mask ) {
+        encryptPassword( conn );
+      } else {
+        hidePassword( conn );
+      }
+      return conn;
+    } catch ( ConnectionServiceException ex ) {
+      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     }
-    IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
-    if ( mask ) {
-      encryptPassword( conn );
-    } else {
-      hidePassword( conn );
-    }
-    return conn;
   }
 
   /**
@@ -456,23 +433,20 @@ public class ConnectionService {
    * @param id
    *          String representing the name of the database to return
    * @return Database connection by name
-   *
-   * @throws ConnectionServiceException
    */
-  @GET
-  @Path( "/get-by-id" )
-  @Produces( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public IDatabaseConnection getConnectionById( @QueryParam( "id" ) String id,
-                                                  @DefaultValue( "false" ) @QueryParam( "mask" ) Boolean mask )
-      throws ConnectionServiceException {
-    IDatabaseConnection conn = connectionService.getConnectionById( id );
-    if ( mask ) {
-      encryptPassword( conn );
-    } else {
-      hidePassword( conn );
+  @Override
+  public IDatabaseConnection getConnectionById( String id, Boolean mask ) {
+    try {
+      IDatabaseConnection conn = connectionService.getConnectionById( id );
+      if ( mask ) {
+        encryptPassword( conn );
+      } else {
+        hidePassword( conn );
+      }
+      return conn;
+    } catch ( ConnectionServiceException ex ) {
+      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     }
-    return conn;
   }
 
   /**
@@ -484,21 +458,20 @@ public class ConnectionService {
    *
    * @throws ConnectionServiceException
    */
-  @GET
-  @Path( "/checkexists" )
-  @Produces( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public Response isConnectionExist( @QueryParam( "name" ) String name ) throws ConnectionServiceException {
-    boolean exists = connectionService.isConnectionExist( name );
+  @Override
+  public String isConnectionExist( String name ) {
     try {
-      if ( exists ) {
-        return Response.ok().build();
-      } else {
-        return Response.notModified().build();
+      boolean exists = connectionService.isConnectionExist( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
+      if ( !exists ) {
+        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
       }
+      return "";
+    } catch ( WebApplicationException we ) {
+      throw we;
+    } catch ( ConnectionServiceException ex ) {
+      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     } catch ( Throwable t ) {
-      t.printStackTrace();
-      return Response.serverError().build();
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
@@ -506,23 +479,16 @@ public class ConnectionService {
    * this is a method to return a response object with an error message use getEntity(Connection.class) and getStatus()
    * to determine success
    */
-  @GET
-  @Path( "/getresponse" )
-  @Produces( { APPLICATION_JSON } )
-  @Facet( name = "Unsupported" )
-  public Response getConnectionByNameWithResponse( @QueryParam( "name" ) String name )
-      throws ConnectionServiceException {
-    IDatabaseConnection conn = null;
-    Response response;
+  @Override
+  public IDatabaseConnection getConnectionByNameWithResponse( String name ) {
     try {
-      conn = connectionService.getConnectionByName( name );
+      IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
       sanitizer.unsanitizeConnectionParameters( conn );
       hidePassword( conn );
-      response = Response.ok().entity( conn ).build();
+      return conn;
     } catch ( Exception ex ) {
-      response = Response.serverError().entity( ex.getMessage() ).build();
+      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     }
-    return response;
   }
 
   /**
