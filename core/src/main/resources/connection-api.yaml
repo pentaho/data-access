@@ -286,6 +286,12 @@ paths:
           schema:
             type: boolean
             default: false
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory for enterprise connections
+          schema:
+            type: string
       responses:
         '200':
           description: Successfully retrieved connection
