@@ -26,7 +26,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Successfully retrieved the connection ID
+          description: Successfully retrieved the connection ID. The body will contain the connection ID as a string.
           content:
             application/json:
               schema:
@@ -87,7 +87,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Successfully created database connection
+          description: Successfully created database connection. The body will be empty. 
           content:
             application/json:
               schema:
@@ -141,6 +141,13 @@ paths:
       tags:
         - connections
       description: Update an existing database connection
+      parameters:
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project. 
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -149,7 +156,7 @@ paths:
               $ref: '#/components/schemas/IDatabaseConnection'
       responses:
         '200':
-          description: Successfully updated connection
+          description: Successfully updated connection. The body will be empty.
         '304':
           description: Connection not modified
         '500':
@@ -165,6 +172,13 @@ paths:
       tags:
         - connections
       description: Delete an existing database connection
+      parameters:
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project. 
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -173,7 +187,7 @@ paths:
               $ref: '#/components/schemas/IDatabaseConnection'
       responses:
         '200':
-          description: Successfully deleted connection
+          description: Successfully deleted connection. The body will be empty.
           content:
             text/plain:
               schema:
@@ -202,7 +216,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Successfully deleted connection
+          description: Successfully deleted connection. The body will be empty.
           content:
             text/plain:
               schema:
@@ -224,6 +238,13 @@ paths:
       tags:
         - connections
       description: Add a database connection
+      parameters:
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project. 
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -232,7 +253,7 @@ paths:
               $ref: '#/components/schemas/IDatabaseConnection'
       responses:
         '200':
-          description: Successfully added connection
+          description: Successfully added connection. The body will be empty. 
           content:
             text/plain:
               schema:
@@ -289,7 +310,7 @@ paths:
         - name: projectDir
           in: query
           required: false
-          description: Optional project directory for enterprise connections
+          description: Optional project directory. If provided, the operation will be performed in the context of the project. 
           schema:
             type: string
       responses:

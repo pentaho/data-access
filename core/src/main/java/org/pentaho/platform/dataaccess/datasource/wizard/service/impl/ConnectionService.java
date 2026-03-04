@@ -53,7 +53,7 @@ public class ConnectionService implements ConnectionsApi {
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
   private static final Log logger = LogFactory.getLog( ConnectionService.class );
-  private UtilHtmlSanitizer sanitizer;
+  protected UtilHtmlSanitizer sanitizer;
 
   public ConnectionService() {
     this( null, null, null );
@@ -83,7 +83,7 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param name
    *          String representing the name of the database to search
-   * @return String based on the string value of the connection id
+   * @return String containing the id of the database connection if found, otherwise a 304 Not Modified response
    *
    */
   @Override
@@ -225,8 +225,8 @@ public class ConnectionService implements ConnectionsApi {
                 databaseConnection.getDatabaseName() ),
             Response.Status.INTERNAL_SERVER_ERROR );
       }
-    } catch ( ConnectionServiceException ex ) {
-      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+    } catch ( ConnectionServiceException cse ) {
+      throw handleConnectionServiceException( cse );
     }
   }
 
@@ -235,10 +235,12 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param databaseConnection
    *          Database connection object to update
+   * @param projectDir
+   *          Optional project directory (used by subclasses)
    *
    */
   @Override
-  public void updateConnection( IDatabaseConnection databaseConnection ) {
+  public void updateConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
       applySavedPassword( databaseConnection );
@@ -250,9 +252,21 @@ public class ConnectionService implements ConnectionsApi {
       throw new WebApplicationException( Response.ok().build() );
     } catch ( WebApplicationException e ) {
       throw e;
+    } catch ( ConnectionServiceException cse ) {
+      throw handleConnectionServiceException( cse );
     } catch ( Throwable t ) {
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
+  }
+
+  /**
+   * Convenience method for backwards compatibility - delegates to two-parameter version with a null projectDir
+   *
+   * @param databaseConnection
+   *          Database connection object to update
+   */
+  public void updateConnection( IDatabaseConnection databaseConnection ) {
+    updateConnection( databaseConnection, null );
   }
 
   /**
@@ -285,11 +299,13 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param databaseConnection
    *          Database connection object to delete
-   * @return String indicating the success of this operation
+   * @param projectDir
+   *          Optional project directory (used by subclasses)
+   * @return String Empty string to generate a 200 OK response on successful deletion
    *
    */
   @Override
-  public String deleteConnection( IDatabaseConnection databaseConnection ) {
+  public String deleteConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     try {
       boolean success = connectionService.deleteConnection( databaseConnection );
       if ( !success ) {
@@ -298,9 +314,22 @@ public class ConnectionService implements ConnectionsApi {
       return "";
     } catch ( WebApplicationException we ) {
       throw we;
+    } catch ( ConnectionServiceException cse ) {
+      throw handleConnectionServiceException( cse );
     } catch ( Throwable t ) {
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
+  }
+
+  /**
+   * Convenience method for backwards compatibility - delegates to three-parameter version without a projectDir
+   *
+   * @param databaseConnection
+   *          Database connection object to delete
+   * @return String Empty string to generate a 200 OK response on successful deletion
+   */
+  public String deleteConnection( IDatabaseConnection databaseConnection ) {
+    return deleteConnection( databaseConnection, null );
   }
 
   /**
@@ -308,7 +337,7 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param name
    *          String representing the name of the database connection to delete
-   * @return String indicating the success of this operation
+   * @return String Empty string to generate a 200 OK response on successful deletion
    *
    */
   @Override
@@ -326,7 +355,7 @@ public class ConnectionService implements ConnectionsApi {
     } catch ( WebApplicationException we ) {
       throw we;
     } catch ( ConnectionServiceException cse ) {
-      throw new WebApplicationException( Response.status( cse.getStatusCode() ).build() );
+      throw handleConnectionServiceException( cse );
     } catch ( Throwable t ) {
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
@@ -337,11 +366,13 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param databaseConnection
    *          A database connection object to add
-   * @return String indicating the success of this operation
+   * @param projectDir
+   *          Optional project directory (used by subclasses)
+   * @return String Empty string to generate a 200 OK response on successful addition
    *
    */
   @Override
-  public String addConnection( IDatabaseConnection databaseConnection ) {
+  public String addConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
       boolean success = connectionService.addConnection( databaseConnection );
@@ -352,10 +383,21 @@ public class ConnectionService implements ConnectionsApi {
     } catch ( WebApplicationException we ) {
       throw we;
     } catch ( ConnectionServiceException cse ) {
-      throw new WebApplicationException( Response.status( cse.getStatusCode() ).build() );
+      throw handleConnectionServiceException( cse );
     } catch ( Throwable t ) {
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
+  }
+
+  /**
+   * Convenience method for backwards compatibility - delegates to three-parameter version without a projectDir
+   *
+   * @param databaseConnection
+   *          A database connection object to add
+   * @return String Empty string to generate a 200 OK response on successful addition
+   */
+  public String addConnection( IDatabaseConnection databaseConnection ) {
+    return addConnection( databaseConnection, null );
   }
 
   /**
@@ -386,8 +428,8 @@ public class ConnectionService implements ConnectionsApi {
       List<IDatabaseConnection> conns = connectionService.getConnections( true );
       databaseConnections.setDatabaseConnections( conns );
       return databaseConnections;
-    } catch ( ConnectionServiceException ex ) {
-      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+    } catch ( ConnectionServiceException cse ) {
+      throw handleConnectionServiceException( cse );
     }
   }
 
@@ -417,8 +459,8 @@ public class ConnectionService implements ConnectionsApi {
         hidePassword( conn );
       }
       return conn;
-    } catch ( ConnectionServiceException ex ) {
-      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+    } catch ( ConnectionServiceException cse ) {
+      throw handleConnectionServiceException( cse );
     }
   }
 
@@ -452,8 +494,8 @@ public class ConnectionService implements ConnectionsApi {
         hidePassword( conn );
       }
       return conn;
-    } catch ( ConnectionServiceException ex ) {
-      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+    } catch ( ConnectionServiceException cse ) {
+      throw handleConnectionServiceException( cse );
     }
   }
 
@@ -462,7 +504,7 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param name
    *          String representing the name of the database to check
-   * @return String based on the boolean value of the connection existing
+   * @return String Empty string to generate a 200 OK response if the connection exists, otherwise a 304 Not Modified response
    *
    */
   @Override
@@ -475,8 +517,8 @@ public class ConnectionService implements ConnectionsApi {
       return "";
     } catch ( WebApplicationException we ) {
       throw we;
-    } catch ( ConnectionServiceException ex ) {
-      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+    } catch ( ConnectionServiceException cse ) {
+      throw handleConnectionServiceException( cse );
     } catch ( Throwable t ) {
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
@@ -501,11 +543,16 @@ public class ConnectionService implements ConnectionsApi {
   /**
    * Hides password for connections for return to user.
    */
-  private void hidePassword( IDatabaseConnection conn ) {
+  protected void hidePassword( IDatabaseConnection conn ) {
     conn.setPassword( null );
   }
 
-  private void encryptPassword( IDatabaseConnection conn ) {
+  protected void encryptPassword( IDatabaseConnection conn ) {
     conn.setPassword( Encr.encryptPasswordIfNotUsingVariables( conn.getPassword() ) );
+  }
+
+  private WebApplicationException handleConnectionServiceException( ConnectionServiceException cse ) {
+    return new WebApplicationException(
+      Response.status( cse.getStatusCode() ).entity( cse.getMessage() ).build() );
   }
 }
