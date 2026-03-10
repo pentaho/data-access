@@ -1,4 +1,5 @@
-/*! ******************************************************************************
+/*
+ * ! ******************************************************************************
  *
  * Pentaho
  *
@@ -13,16 +14,6 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.model.DatabaseConnectionPoolParameter;
@@ -37,7 +28,9 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServi
 import org.pentaho.platform.dataaccess.datasource.wizard.service.api.ConnectionsApi;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.model.CheckParameters200Response;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.security.authorization.core.exceptions.AuthorizationRuleException;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
@@ -47,19 +40,39 @@ import org.pentaho.ui.database.event.DefaultDatabaseConnectionPoolParameterList;
 import org.pentaho.ui.database.event.IDatabaseConnectionList;
 import org.pentaho.ui.database.event.IDatabaseConnectionPoolParameterList;
 
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class ConnectionService implements ConnectionsApi {
+  // IMPLEMENTATION NOTE: The exceptions thrown by the methods in this class 
+  // are intentionally compatible with the legacy API, and are intentionally 
+  // inconsistent to reach that goal. Be wary of changing the entity, 
+  // content-type, or response code from the current behavior to something 
+  // that looks more correct, as it may break compatibility with the legacy API.
+
+  private static final Log logger = LogFactory.getLog( ConnectionService.class );
+  private static final String MEDIA_TYPE_JSON = "application/json";
+  private static final String MEDIA_TYPE_TEXT_PLAIN = "text/plain";
 
   private ConnectionServiceImpl connectionService;
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
-  private static final Log logger = LogFactory.getLog( ConnectionService.class );
   private UtilHtmlSanitizer sanitizer;
 
   public ConnectionService() {
     this( null, null, null );
   }
 
-  public ConnectionService( ConnectionServiceImpl connectionService, DatabaseDialectService dialectService, UtilHtmlSanitizer sanitizer ) {
+  public ConnectionService( ConnectionServiceImpl connectionService, DatabaseDialectService dialectService,
+                            UtilHtmlSanitizer sanitizer ) {
     this.connectionService = connectionService != null ? connectionService : new ConnectionServiceImpl();
     this.dialectService = dialectService != null ? dialectService : new DatabaseDialectService( true );
     this.sanitizer = sanitizer != null ? sanitizer : UtilHtmlSanitizer.getInstance();
@@ -79,53 +92,100 @@ public class ConnectionService implements ConnectionsApi {
   }
 
   /**
+   * Helper method to handle exceptions thrown during REST API operations.
+   * If the exception is an AuthorizationRuleException, throws a 403 Forbidden response.
+   * For all other exceptions, throws a 500 Internal Server Error response.
+   *
+   * @param methodName The name of the method where the exception occurred
+   * @param ex         The exception to handle
+   * @throws WebApplicationException always throws with appropriate status code
+   */
+  private void handleException( String methodName, Exception ex ) {
+    if ( ex instanceof AuthorizationRuleException ) {
+      throw new WebApplicationException( Response.status( Response.Status.FORBIDDEN ).build() );
+    } else {
+      logger.error( "Unexpected error in " + methodName + ": " + ex.getMessage(), ex );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
+    }
+  }
+
+  /**
    * Returns a response with id of a database connection
    *
    * @param name
-   *          String representing the name of the database to search
+   *             String representing the name of the database to search
    * @return String based on the string value of the connection id
    *
    */
   @Override
   public String getConnectionIdByNameWithResponse( String name ) {
     try {
-      IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
+      IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name,
+        StandardCharsets.UTF_8 ) );
       if ( conn != null ) {
         return conn.getId();
       } else {
-        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
+        throw new ConnectionServiceException( Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+          Messages.getErrorString( "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", String.valueOf(
+            name ) ) );
       }
+    } catch ( ConnectionServiceException ex ) {
+      int status = ex.getStatusCode();
+      if ( status == Response.Status.NOT_FOUND.getStatusCode() || status == Response.Status.FORBIDDEN
+        .getStatusCode() ) {
+        status = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+      }
+      throw new WebApplicationException(
+        Response.status( status )
+          .entity( ex.getMessage() )
+          .type( MEDIA_TYPE_JSON )
+          .build() );
     } catch ( Exception ex ) {
-      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+      // no auth errors allowed, don't use handleException. 
+      logger.error( "Unexpected error in getConnectionIdByNameWithResponse: " + ex.getMessage(), ex );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
   /**
-   * Returns the database meta for the given connection.
+   * Returns validation messages for the given connection.
+   * Performs parameter validation and returns validation messages wrapped in response object.
+   * 
+   * Throws WebApplicationException with 200 if connection has validation errors/warnings.
+   * Throws WebApplicationException with 204 if connection is valid (no validation messages).
    *
    * @param databaseConnection
-   *          DatabaseConnection to retrieve meta from
-   *
-   * @return array containing the database connection metadata
+   *                           DatabaseConnection to validate
+   * @return CheckParameters200Response with validation messages (never actually returns - always throws)
+   * @throws WebApplicationException with status 200 if validation messages exist, 204 if valid
    */
   @Override
-  public StringArrayWrapper checkParameters( IDatabaseConnection databaseConnection ) {
-    StringArrayWrapper array = null;
-    String[] rawValues = DatabaseUtil.convertToDatabaseMeta( databaseConnection ).checkParameters();
-    if ( rawValues.length > 0 ) {
-      array = new StringArrayWrapper();
-      array.setArray( rawValues );
+  public CheckParameters200Response checkParameters( IDatabaseConnection databaseConnection ) {
+    String[] validationMessages = DatabaseUtil.convertToDatabaseMeta( databaseConnection ).checkParameters();
+
+    if ( validationMessages != null && validationMessages.length > 0 ) {
+      // Connection has validation errors/warnings - return 200 with wrapped messages
+      CheckParameters200Response response = new CheckParameters200Response();
+      response.setItems( Arrays.asList( validationMessages ) );
+
+      throw new WebApplicationException(
+        Response.status( Response.Status.OK )
+          .entity( response )
+          .type( MEDIA_TYPE_JSON )
+          .build() );
+    } else {
+      // Connection is valid - return 204 No Content
+      throw new WebApplicationException( Response.noContent().build() );
     }
-    return array;
   }
 
   /**
    * Create a database connection
    *
    * @param driver
-   *          String name of the driver to use
+   *               String name of the driver to use
    * @param url
-   *          String name of the url used to create the connection.
+   *               String name of the url used to create the connection.
    *
    * @return IDatabaseConnection for the given parameters
    */
@@ -209,7 +269,7 @@ public class ConnectionService implements ConnectionsApi {
    * Tests the database connection
    *
    * @param databaseConnection
-   *          Database connection object to test
+   *                           Database connection object to test
    * @return String based on the boolean value of the connection test
    */
   @Override
@@ -218,39 +278,57 @@ public class ConnectionService implements ConnectionsApi {
       applySavedPassword( databaseConnection );
       boolean success = connectionService.testConnection( databaseConnection );
       if ( success ) {
-        return Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED", databaseConnection.getDatabaseName() );
+        return Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED", databaseConnection
+          .getDatabaseName() );
       } else {
-        throw new WebApplicationException(
-            Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED",
-                databaseConnection.getDatabaseName() ),
-            Response.Status.INTERNAL_SERVER_ERROR );
+        String errorMsg = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED",
+          databaseConnection.getDatabaseName() );
+        throw new WebApplicationException( Response.status( Response.Status.INTERNAL_SERVER_ERROR )
+          .entity( errorMsg ).type( MEDIA_TYPE_TEXT_PLAIN ).build() );
       }
+    } catch ( WebApplicationException e ) {
+      throw e;
     } catch ( ConnectionServiceException ex ) {
-      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+      // for some reason this must be a plain 500 with no specific message. 
+      throw new WebApplicationException( Response.status( Response.Status.INTERNAL_SERVER_ERROR ).build() );
+    } catch ( Exception ex ) {
+      logger.error( "Unexpected error in testConnection: " + ex.getMessage(), ex );
+      throw new WebApplicationException( Response.status( Response.Status.INTERNAL_SERVER_ERROR ).build() );
     }
   }
 
   /**
-   * Update an existing database connection. Throws a WebApplicationException to trigger the proper response code based on success or failure. 
+   * Update an existing database connection. Throws WebApplicationException with OK status on success.
    *
    * @param databaseConnection
-   *          Database connection object to update
-   *
+   *                           Database connection object to update
    */
   @Override
   public void updateConnection( IDatabaseConnection databaseConnection ) {
     sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
       applySavedPassword( databaseConnection );
-      boolean success = connectionService.updateConnection( databaseConnection );
-      if ( !success ) {
-        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
-      }
-      // Explicitly return 200 OK instead of default 204 No Content
+      connectionService.updateConnection( databaseConnection );
+      // explicitly return a 200 instead of 204 No Content
       throw new WebApplicationException( Response.ok().build() );
     } catch ( WebApplicationException e ) {
       throw e;
-    } catch ( Throwable t ) {
+    } catch ( ConnectionServiceException cse ) {
+      if ( cse.getStatusCode() == Response.Status.NOT_FOUND.getStatusCode() || cse.getStatusCode()
+        == Response.Status.FORBIDDEN.getStatusCode() ) {
+        throw new WebApplicationException(
+          Response.status( Response.Status.INTERNAL_SERVER_ERROR )
+            .build() );
+      }
+      // Preserve the exact status code from the exception (e.g., 403 for forbidden, 500 for server error)
+      throw new WebApplicationException(
+        Response.status( cse.getStatusCode() )
+          .entity( cse.getMessage() )
+          .type( MEDIA_TYPE_TEXT_PLAIN )
+          .build() );
+    } catch ( Exception ex ) {
+      // no auth errors allowed, don't use handleException. 
+      logger.error( "Unexpected error in updateConnection: " + ex.getMessage(), ex );
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
@@ -281,80 +359,85 @@ public class ConnectionService implements ConnectionsApi {
   }
 
   /**
-   * Delete an existing database connection
+   * Delete an existing database connection. Throws WebApplicationException with OK status on success.
    *
    * @param databaseConnection
-   *          Database connection object to delete
-   * @return String indicating the success of this operation
-   *
+   *                           Database connection object to delete
    */
   @Override
-  public String deleteConnection( IDatabaseConnection databaseConnection ) {
+  public void deleteConnection( IDatabaseConnection databaseConnection ) {
     try {
-      boolean success = connectionService.deleteConnection( databaseConnection );
-      if ( !success ) {
-        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
-      }
-      return "";
-    } catch ( WebApplicationException we ) {
-      throw we;
-    } catch ( Throwable t ) {
+      connectionService.deleteConnection( databaseConnection );
+      // explicitly return a 200 instead of 204 No Content
+      throw new WebApplicationException( Response.ok().build() );
+    } catch ( WebApplicationException e ) {
+      throw e;
+    } catch ( ConnectionServiceException cse ) {
+      throw new WebApplicationException(
+        Response.status( Response.Status.INTERNAL_SERVER_ERROR ).build() );
+    } catch ( Exception ex ) {
+      // no auth errors allowed, don't use handleException. 
+      logger.error( "Unexpected error in deleteConnection: " + ex.getMessage(), ex );
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
   /**
-   * Delete an existing database connection by name
+   * Delete an existing database connection by name. Throws WebApplicationException with OK status on success.
    *
    * @param name
-   *          String representing the name of the database connection to delete
-   * @return String indicating the success of this operation
-   *
+   *             String representing the name of the database connection to delete
    */
   @Override
-  public String deleteConnectionByName( String name ) {
+  public void deleteConnectionByName( String name ) {
     try {
-      if ( StringUtils.isBlank( name ) ) {
-        throw new ConnectionServiceException( com.google.gwt.http.client.Response.SC_BAD_REQUEST, Messages.getErrorString(
-                "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", String.valueOf( name ) ) ); //$NON-NLS-1$
+      String decodedName = URLDecoder.decode( name, StandardCharsets.UTF_8 );
+      if ( StringUtils.isBlank( decodedName ) ) {
+        // yes, 500. For consistency with the legacy API. 
+        throw new WebApplicationException( Response.status( Response.Status.INTERNAL_SERVER_ERROR ).build() );
       }
-      boolean success = connectionService.deleteConnection( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
-      if ( !success ) {
-        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
-      }
-      return "";
+      connectionService.deleteConnection( decodedName );
+      // explicitly return a 200 instead of 204 No Content
+      throw new WebApplicationException( Response.ok().build() );
     } catch ( WebApplicationException we ) {
       throw we;
     } catch ( ConnectionServiceException cse ) {
-      throw new WebApplicationException( Response.status( cse.getStatusCode() ).build() );
-    } catch ( Throwable t ) {
-      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
+      if ( cse.getStatusCode() == Response.Status.FORBIDDEN.getStatusCode() ) {
+        throw new WebApplicationException(
+          Response.status( Response.Status.INTERNAL_SERVER_ERROR )
+            .build() );
+      }
+      // Preserve the exact status code from the exception (e.g., 403 for forbidden, 500 for server error)
+      throw new WebApplicationException(
+        Response.status( cse.getStatusCode() )
+          .build() );
+    } catch ( Exception t ) {
+      logger.error( "Unexpected error in deleteConnectionByName: " + t.getMessage(), t );
+      // doesn't throw 403
+      throw new WebApplicationException( Response.status( Response.Status.INTERNAL_SERVER_ERROR ).build() );
     }
   }
 
   /**
-   * Add a database connection
+   * Add a database connection. Throws WebApplicationException with OK status on success.
    *
    * @param databaseConnection
-   *          A database connection object to add
-   * @return String indicating the success of this operation
-   *
+   *                           A database connection object to add
    */
   @Override
-  public String addConnection( IDatabaseConnection databaseConnection ) {
+  public void addConnection( IDatabaseConnection databaseConnection ) {
     sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
-      boolean success = connectionService.addConnection( databaseConnection );
-      if ( !success ) {
-        throw new WebApplicationException( Response.Status.NOT_MODIFIED );
-      }
-      return "";
+      connectionService.addConnection( databaseConnection );
+      // explicitly return a 200 instead of 204 No Content
+      throw new WebApplicationException( Response.ok().build() );
     } catch ( WebApplicationException we ) {
       throw we;
     } catch ( ConnectionServiceException cse ) {
+      // Preserve the exact status code from the exception (e.g., 403 for forbidden, 500 for server error)
       throw new WebApplicationException( Response.status( cse.getStatusCode() ).build() );
-    } catch ( Throwable t ) {
-      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
+    } catch ( Exception t ) {
+      handleException( "addConnection", t );
     }
   }
 
@@ -366,8 +449,8 @@ public class ConnectionService implements ConnectionsApi {
   private void validateAccess() throws PentahoAccessControlException {
     IAuthorizationPolicy policy = PentahoSystem.get( IAuthorizationPolicy.class );
     boolean isAdmin =
-        policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
-            && ( policy.isAllowed( AdministerSecurityAction.NAME ) || policy.isAllowed( PublishAction.NAME ) );
+      policy.isAllowed( RepositoryReadAction.NAME ) && policy.isAllowed( RepositoryCreateAction.NAME )
+        && ( policy.isAllowed( AdministerSecurityAction.NAME ) || policy.isAllowed( PublishAction.NAME ) );
     if ( !isAdmin ) {
       throw new PentahoAccessControlException( "Access Denied" );
     }
@@ -395,22 +478,22 @@ public class ConnectionService implements ConnectionsApi {
    * Returns the list of database connections
    *
    * @param name
-   *          String representing the name of the database to return
+   *                   String representing the name of the database to return
    * @param mask
-   *          Whether to mask the password
+   *                   Whether to mask the password
    * @param projectDir
-   *          Optional project directory (used by subclasses)
+   *                   Optional project directory (used by subclasses)
    * @return Database connection by name
    */
   @Override
   public IDatabaseConnection getConnectionByName( String name, Boolean mask, String projectDir ) {
+    if ( StringUtils.isBlank( name ) ) {
+      // yes, 500. For consistency with the legacy API. 
+      throw new WebApplicationException( Response.status( Response.Status.INTERNAL_SERVER_ERROR ).build() );
+    }
     try {
-      if ( StringUtils.isBlank( name ) ) {
-        throw new WebApplicationException( 
-            Messages.getErrorString( "ConnectionServiceImpl.ERROR_0003_UNABLE_TO_GET_CONNECTION", String.valueOf( name ) ),
-            Response.Status.BAD_REQUEST );
-      }
-      IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
+      IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name,
+        StandardCharsets.UTF_8 ) );
       if ( mask ) {
         encryptPassword( conn );
       } else {
@@ -419,6 +502,9 @@ public class ConnectionService implements ConnectionsApi {
       return conn;
     } catch ( ConnectionServiceException ex ) {
       throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+    } catch ( Exception ex ) {
+      logger.error( "Error getting connection by name: " + ex.getMessage(), ex );
+      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
@@ -426,9 +512,9 @@ public class ConnectionService implements ConnectionsApi {
    * Convenience method for backwards compatibility - delegates to three-parameter version without a projectDir
    *
    * @param name
-   *          String representing the name of the database to return
+   *             String representing the name of the database to return
    * @param mask
-   *          Whether to mask the password
+   *             Whether to mask the password
    * @return Database connection by name
    */
   public IDatabaseConnection getConnectionByName( String name, Boolean mask ) {
@@ -439,7 +525,7 @@ public class ConnectionService implements ConnectionsApi {
    * Returns the database connection details
    *
    * @param id
-   *          String representing the name of the database to return
+   *           String representing the name of the database to return
    * @return Database connection by name
    */
   @Override
@@ -458,26 +544,29 @@ public class ConnectionService implements ConnectionsApi {
   }
 
   /**
-   * Returns a response based on the existence of a database connection
+   * Returns a response based on the existence of a database connection. Throws WebApplicationException with OK status
+   * on success.
    *
    * @param name
-   *          String representing the name of the database to check
-   * @return String based on the boolean value of the connection existing
-   *
+   *             String representing the name of the database to check
    */
   @Override
-  public String isConnectionExist( String name ) {
+  public void isConnectionExist( String name ) {
     try {
-      boolean exists = connectionService.isConnectionExist( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
-      if ( !exists ) {
+      boolean isExist = connectionService.isConnectionExist( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
+      if ( isExist ) {
+      // explicitly return a 200 instead of 204 No Content
+        throw new WebApplicationException( Response.ok().build() );
+      } else {
         throw new WebApplicationException( Response.Status.NOT_MODIFIED );
       }
-      return "";
     } catch ( WebApplicationException we ) {
       throw we;
     } catch ( ConnectionServiceException ex ) {
       throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
-    } catch ( Throwable t ) {
+    } catch ( Exception ex ) {
+      // no auth errors allowed, don't use handleException. 
+      logger.error( "Unexpected error in isConnectionExist: " + ex.getMessage(), ex );
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
@@ -489,12 +578,34 @@ public class ConnectionService implements ConnectionsApi {
   @Override
   public IDatabaseConnection getConnectionByNameWithResponse( String name ) {
     try {
-      IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
+      IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name,
+        StandardCharsets.UTF_8 ) );
       sanitizer.unsanitizeConnectionParameters( conn );
       hidePassword( conn );
       return conn;
+    } catch ( ConnectionServiceException ex ) {
+      int status = ex.getStatusCode();
+      String entity = null;
+      if ( status == Response.Status.FORBIDDEN.getStatusCode() || status == Response.Status.NOT_FOUND
+        .getStatusCode() ) {
+        entity = ex.getMessage();
+      }
+      status = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+      if ( entity != null ) {
+        throw new WebApplicationException(
+          Response.status( status )
+            .entity( entity )
+            .type( MEDIA_TYPE_JSON )
+            .build() );
+      } else {
+        throw new WebApplicationException(
+          Response.status( status )
+            .build() );
+      }
     } catch ( Exception ex ) {
-      throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
+      // no auth errors allowed, don't use handleException. 
+      logger.error( "Unexpected error in getConnectionByNameWithResponse: " + ex.getMessage(), ex );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
