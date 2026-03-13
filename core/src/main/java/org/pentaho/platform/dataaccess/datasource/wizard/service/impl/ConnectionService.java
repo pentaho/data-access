@@ -65,7 +65,7 @@ public class ConnectionService implements ConnectionsApi {
   private ConnectionServiceImpl connectionService;
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
-  private UtilHtmlSanitizer sanitizer;
+  protected UtilHtmlSanitizer sanitizer;
 
   public ConnectionService() {
     this( null, null, null );
@@ -113,8 +113,8 @@ public class ConnectionService implements ConnectionsApi {
    * Returns a response with id of a database connection
    *
    * @param name
-   *             String representing the name of the database to search
-   * @return String based on the string value of the connection id
+   *          String representing the name of the database to search
+   * @return String containing the id of the database connection if found, otherwise a 304 Not Modified response
    *
    */
   @Override
@@ -301,10 +301,13 @@ public class ConnectionService implements ConnectionsApi {
    * Update an existing database connection. Throws WebApplicationException with OK status on success.
    *
    * @param databaseConnection
-   *                           Database connection object to update
+   *          Database connection object to update
+   * @param projectDir
+   *          Optional project directory (used by subclasses)
+   *
    */
   @Override
-  public void updateConnection( IDatabaseConnection databaseConnection ) {
+  public void updateConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
       applySavedPassword( databaseConnection );
@@ -331,6 +334,16 @@ public class ConnectionService implements ConnectionsApi {
       logger.error( "Unexpected error in updateConnection: " + ex.getMessage(), ex );
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
+  }
+
+  /**
+   * Convenience method for backwards compatibility - delegates to two-parameter version with a null projectDir
+   *
+   * @param databaseConnection
+   *          Database connection object to update
+   */
+  public void updateConnection( IDatabaseConnection databaseConnection ) {
+    updateConnection( databaseConnection, null );
   }
 
   /**
@@ -363,9 +376,11 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param databaseConnection
    *                           Database connection object to delete
+   * @param projectDir
+   *                           Optional project directory (used by subclasses)
    */
   @Override
-  public void deleteConnection( IDatabaseConnection databaseConnection ) {
+  public void deleteConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     try {
       connectionService.deleteConnection( databaseConnection );
       // explicitly return a 200 instead of 204 No Content
@@ -383,10 +398,23 @@ public class ConnectionService implements ConnectionsApi {
   }
 
   /**
-   * Delete an existing database connection by name. Throws WebApplicationException with OK status on success.
+   * Convenience method for backwards compatibility - delegates to three-parameter version without a projectDir
+   *
+   * @param databaseConnection
+   *          Database connection object to delete
+   * @return String Empty string to generate a 200 OK response on successful deletion
+   */
+  public void deleteConnection( IDatabaseConnection databaseConnection ) {
+    deleteConnection( databaseConnection, null );
+  }
+
+  /**
+   * Delete an existing database connection by name
    *
    * @param name
-   *             String representing the name of the database connection to delete
+   *          String representing the name of the database connection to delete
+   * @return String Empty string to generate a 200 OK response on successful deletion
+   *
    */
   @Override
   public void deleteConnectionByName( String name ) {
@@ -422,10 +450,14 @@ public class ConnectionService implements ConnectionsApi {
    * Add a database connection. Throws WebApplicationException with OK status on success.
    *
    * @param databaseConnection
-   *                           A database connection object to add
+   *          A database connection object to add
+   * @param projectDir
+   *          Optional project directory (used by subclasses)
+   * @return String Empty string to generate a 200 OK response on successful addition
+   *
    */
   @Override
-  public void addConnection( IDatabaseConnection databaseConnection ) {
+  public void addConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
       connectionService.addConnection( databaseConnection );
@@ -439,6 +471,17 @@ public class ConnectionService implements ConnectionsApi {
     } catch ( Exception t ) {
       handleException( "addConnection", t );
     }
+  }
+
+  /**
+   * Convenience method for backwards compatibility - delegates to three-parameter version without a projectDir
+   *
+   * @param databaseConnection
+   *          A database connection object to add
+   * @return String Empty string to generate a 200 OK response on successful addition
+   */
+  public void addConnection( IDatabaseConnection databaseConnection ) {
+    addConnection( databaseConnection, null );
   }
 
   /**
@@ -612,11 +655,12 @@ public class ConnectionService implements ConnectionsApi {
   /**
    * Hides password for connections for return to user.
    */
-  private void hidePassword( IDatabaseConnection conn ) {
+  protected void hidePassword( IDatabaseConnection conn ) {
     conn.setPassword( null );
   }
 
-  private void encryptPassword( IDatabaseConnection conn ) {
+  protected void encryptPassword( IDatabaseConnection conn ) {
     conn.setPassword( Encr.encryptPasswordIfNotUsingVariables( conn.getPassword() ) );
   }
+
 }
