@@ -15,7 +15,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Properties;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,6 +25,7 @@ import org.pentaho.database.IDatabaseDialect;
 import org.pentaho.database.dialect.GenericDatabaseDialect;
 import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.IDatabaseConnection;
+import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.platform.api.data.IDBDatasourceService;
 import org.pentaho.platform.api.engine.IPentahoObjectFactory;
@@ -42,6 +43,7 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messag
 import org.pentaho.platform.engine.core.system.PentahoBase;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.security.authorization.core.exceptions.AuthorizationRuleException;
 import org.pentaho.platform.engine.services.connection.PentahoConnectionFactory;
 import org.pentaho.platform.plugin.services.connections.sql.SQLConnection;
 
@@ -103,10 +105,16 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
   }
 
   public void ensureDataAccessPermission() throws ConnectionServiceException {
-    if ( !hasDataAccessPermission() ) {
-      String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED" ); //$NON-NLS-1$
-      logger.error( message );
-      throw new ConnectionServiceException( Response.SC_FORBIDDEN, message ); //$NON-NLS-1$
+    try {
+      if ( !hasDataAccessPermission() ) {
+        String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED" ); //$NON-NLS-1$
+        logger.error( message );
+        throw new ConnectionServiceException( Response.SC_FORBIDDEN, message ); //$NON-NLS-1$
+      }
+    } catch ( AuthorizationRuleException ex ) {
+        String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0001_PERMISSION_DENIED" ); //$NON-NLS-1$
+        logger.error( message );
+        throw new ConnectionServiceException( Response.SC_FORBIDDEN, message ); //$NON-NLS-1$
     }
   }
 
@@ -298,12 +306,20 @@ public class ConnectionServiceImpl extends PentahoBase implements IConnectionSer
       if ( connection.getPassword() == null ) { // Can have an empty password but not a null one
         connection.setPassword( "" ); //$NON-NLS-1$
       }
+      IDatabaseType type = connection.getDatabaseType();
+      if ( type == null || StringUtils.isBlank( type.getShortName() ) ) {
+        String message = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0010_UNABLE_TO_TEST_INVALID_CONNECTION" ); //$NON-NLS-1$
+        throw new ConnectionServiceException( message ); //$NON-NLS-1$
+      }
       IDatabaseDialect dialect = dialectService.getDialect( connection );
       String driverClass = null;
 
       if ( connection.getDatabaseType().getShortName().equals( "GENERIC" ) ) {
         driverClass = connection.getAttributes().get( GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS );
       } else {
+        if ( dialect == null ) {
+          throw new ConnectionServiceException();
+        }
         driverClass = dialect.getNativeDriver();
       }
       IPentahoConnection pentahoConnection = null;
