@@ -59,13 +59,13 @@ public class ConnectionService implements ConnectionsApi {
   // that looks more correct, as it may break compatibility with the legacy API.
 
   private static final Log logger = LogFactory.getLog( ConnectionService.class );
-  private static final String MEDIA_TYPE_JSON = "application/json";
-  private static final String MEDIA_TYPE_TEXT_PLAIN = "text/plain";
+  protected static final String MEDIA_TYPE_JSON = "application/json";
+  protected static final String MEDIA_TYPE_TEXT_PLAIN = "text/plain";
 
   private ConnectionServiceImpl connectionService;
   private DatabaseDialectService dialectService;
   GenericDatabaseDialect genericDialect = new GenericDatabaseDialect();
-  private UtilHtmlSanitizer sanitizer;
+  protected UtilHtmlSanitizer sanitizer;
 
   public ConnectionService() {
     this( null, null, null );
@@ -113,12 +113,12 @@ public class ConnectionService implements ConnectionsApi {
    * Returns a response with id of a database connection
    *
    * @param name
-   *             String representing the name of the database to search
-   * @return String based on the string value of the connection id
+   *          String representing the name of the database to search
+   * @return String containing the id of the database connection if found, otherwise a 500 error
    *
    */
   @Override
-  public String getConnectionIdByNameWithResponse( String name ) {
+  public String getConnectionIdByNameWithResponse( String name, String projectDir ) {
     try {
       IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name,
         StandardCharsets.UTF_8 ) );
@@ -145,6 +145,10 @@ public class ConnectionService implements ConnectionsApi {
       logger.error( "Unexpected error in getConnectionIdByNameWithResponse: " + ex.getMessage(), ex );
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
+  }
+
+  public String getConnectionIdByNameWithResponse( String name ) {
+    return getConnectionIdByNameWithResponse( name, null );
   }
 
   /**
@@ -190,7 +194,7 @@ public class ConnectionService implements ConnectionsApi {
    * @return IDatabaseConnection for the given parameters
    */
   @Override
-  public IDatabaseConnection createDatabaseConnection( String driver, String url ) {
+  public IDatabaseConnection createDatabaseConnection( String driver, String url, String projectDir ) {
     for ( IDatabaseDialect dialect : dialectService.getDatabaseDialects() ) {
       if ( dialect.getNativeDriver() != null && dialect.getNativeDriver().equals( driver ) ) {
         if ( dialect.getNativeJdbcPre() != null && url.startsWith( dialect.getNativeJdbcPre() ) ) {
@@ -205,6 +209,10 @@ public class ConnectionService implements ConnectionsApi {
     conn.getAttributes().put( GenericDatabaseDialect.ATTRIBUTE_CUSTOM_DRIVER_CLASS, driver );
 
     return conn;
+  }
+
+  public IDatabaseConnection createDatabaseConnection( String driver, String url ) {
+    return createDatabaseConnection( driver, url, null );
   }
 
   /**
@@ -273,9 +281,9 @@ public class ConnectionService implements ConnectionsApi {
    * @return String based on the boolean value of the connection test
    */
   @Override
-  public String testConnection( IDatabaseConnection databaseConnection ) {
+  public String testConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     try {
-      applySavedPassword( databaseConnection );
+      applySavedPassword( databaseConnection, projectDir );
       boolean success = connectionService.testConnection( databaseConnection );
       if ( success ) {
         return Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED", databaseConnection
@@ -297,14 +305,21 @@ public class ConnectionService implements ConnectionsApi {
     }
   }
 
+  public String testConnection( IDatabaseConnection databaseConnection ) {
+    return testConnection( databaseConnection, null );
+  }
+
   /**
    * Update an existing database connection. Throws WebApplicationException with OK status on success.
    *
    * @param databaseConnection
-   *                           Database connection object to update
+   *          Database connection object to update
+   * @param projectDir
+   *          Optional project directory (used by subclasses)
+   *
    */
   @Override
-  public void updateConnection( IDatabaseConnection databaseConnection ) {
+  public void updateConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
       applySavedPassword( databaseConnection );
@@ -334,9 +349,23 @@ public class ConnectionService implements ConnectionsApi {
   }
 
   /**
+   * Convenience method for backwards compatibility - delegates to two-parameter version with a null projectDir
+   *
+   * @param databaseConnection
+   *          Database connection object to update
+   */
+  public void updateConnection( IDatabaseConnection databaseConnection ) {
+    updateConnection( databaseConnection, null );
+  }
+
+  /**
    * If password is empty, that means connection sent from UI and user didn't change password. Since we cleaned password
    * during sending to UI, we need to use stored password.
    */
+  protected void applySavedPassword( IDatabaseConnection conn, String projectDir ) throws ConnectionServiceException {
+    applySavedPassword( conn );
+  }
+
   private void applySavedPassword( IDatabaseConnection conn ) throws ConnectionServiceException {
     if ( StringUtils.isBlank( conn.getPassword() ) ) {
       IDatabaseConnection savedConn;
@@ -363,9 +392,11 @@ public class ConnectionService implements ConnectionsApi {
    *
    * @param databaseConnection
    *                           Database connection object to delete
+   * @param projectDir
+   *                           Optional project directory (used by subclasses)
    */
   @Override
-  public void deleteConnection( IDatabaseConnection databaseConnection ) {
+  public void deleteConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     try {
       connectionService.deleteConnection( databaseConnection );
       // explicitly return a 200 instead of 204 No Content
@@ -383,13 +414,24 @@ public class ConnectionService implements ConnectionsApi {
   }
 
   /**
-   * Delete an existing database connection by name. Throws WebApplicationException with OK status on success.
+   * Convenience method for backwards compatibility - delegates to two-parameter version with a null projectDir
+   *
+   * @param databaseConnection
+   *          Database connection object to delete
+   */
+  public void deleteConnection( IDatabaseConnection databaseConnection ) {
+    deleteConnection( databaseConnection, null );
+  }
+
+  /**
+   * Delete an existing database connection by name
    *
    * @param name
-   *             String representing the name of the database connection to delete
+   *          String representing the name of the database connection to delete
+   *
    */
   @Override
-  public void deleteConnectionByName( String name ) {
+  public void deleteConnectionByName( String name, String projectDir ) {
     try {
       String decodedName = URLDecoder.decode( name, StandardCharsets.UTF_8 );
       if ( StringUtils.isBlank( decodedName ) ) {
@@ -418,14 +460,21 @@ public class ConnectionService implements ConnectionsApi {
     }
   }
 
+  public void deleteConnectionByName( String name ) {
+    deleteConnectionByName( name, null );
+  }
+
   /**
    * Add a database connection. Throws WebApplicationException with OK status on success.
    *
    * @param databaseConnection
-   *                           A database connection object to add
+   *          A database connection object to add
+   * @param projectDir
+   *          Optional project directory (used by subclasses)
+   *
    */
   @Override
-  public void addConnection( IDatabaseConnection databaseConnection ) {
+  public void addConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
       connectionService.addConnection( databaseConnection );
@@ -439,6 +488,16 @@ public class ConnectionService implements ConnectionsApi {
     } catch ( Exception t ) {
       handleException( "addConnection", t );
     }
+  }
+
+  /**
+   * Convenience method for backwards compatibility - delegates to two-parameter version with a null projectDir
+   *
+   * @param databaseConnection
+   *          A database connection object to add
+   */
+  public void addConnection( IDatabaseConnection databaseConnection ) {
+    addConnection( databaseConnection, null );
   }
 
   /**
@@ -463,7 +522,7 @@ public class ConnectionService implements ConnectionsApi {
    *
    */
   @Override
-  public IDatabaseConnectionList getConnections() {
+  public IDatabaseConnectionList getConnections( String projectDir ) {
     try {
       IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
       List<IDatabaseConnection> conns = connectionService.getConnections( true );
@@ -472,6 +531,10 @@ public class ConnectionService implements ConnectionsApi {
     } catch ( ConnectionServiceException ex ) {
       throw new WebApplicationException( ex.getMessage(), Response.Status.INTERNAL_SERVER_ERROR );
     }
+  }
+
+  public IDatabaseConnectionList getConnections() {
+    return getConnections( null );
   }
 
   /**
@@ -529,7 +592,7 @@ public class ConnectionService implements ConnectionsApi {
    * @return Database connection by name
    */
   @Override
-  public IDatabaseConnection getConnectionById( String id, Boolean mask ) {
+  public IDatabaseConnection getConnectionById( String id, Boolean mask, String projectDir ) {
     try {
       IDatabaseConnection conn = connectionService.getConnectionById( id );
       if ( mask ) {
@@ -543,6 +606,10 @@ public class ConnectionService implements ConnectionsApi {
     }
   }
 
+  public IDatabaseConnection getConnectionById( String id, Boolean mask ) {
+    return getConnectionById( id, mask, null );
+  }
+
   /**
    * Returns a response based on the existence of a database connection. Throws WebApplicationException with OK status
    * on success.
@@ -551,7 +618,7 @@ public class ConnectionService implements ConnectionsApi {
    *             String representing the name of the database to check
    */
   @Override
-  public void isConnectionExist( String name ) {
+  public void isConnectionExist( String name, String projectDir ) {
     try {
       boolean isExist = connectionService.isConnectionExist( URLDecoder.decode( name, StandardCharsets.UTF_8 ) );
       if ( isExist ) {
@@ -571,12 +638,16 @@ public class ConnectionService implements ConnectionsApi {
     }
   }
 
+  public void isConnectionExist( String name ) {
+    isConnectionExist( name, null );
+  }
+
   /**
    * this is a method to return a response object with an error message use getEntity(Connection.class) and getStatus()
    * to determine success
    */
   @Override
-  public IDatabaseConnection getConnectionByNameWithResponse( String name ) {
+  public IDatabaseConnection getConnectionByNameWithResponse( String name, String projectDir ) {
     try {
       IDatabaseConnection conn = connectionService.getConnectionByName( URLDecoder.decode( name,
         StandardCharsets.UTF_8 ) );
@@ -609,14 +680,19 @@ public class ConnectionService implements ConnectionsApi {
     }
   }
 
+  public IDatabaseConnection getConnectionByNameWithResponse( String name ) {
+    return getConnectionByNameWithResponse( name, null );
+  }
+
   /**
    * Hides password for connections for return to user.
    */
-  private void hidePassword( IDatabaseConnection conn ) {
+  protected void hidePassword( IDatabaseConnection conn ) {
     conn.setPassword( null );
   }
 
-  private void encryptPassword( IDatabaseConnection conn ) {
+  protected void encryptPassword( IDatabaseConnection conn ) {
     conn.setPassword( Encr.encryptPasswordIfNotUsingVariables( conn.getPassword() ) );
   }
+
 }

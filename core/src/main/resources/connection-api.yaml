@@ -24,9 +24,15 @@ paths:
           description: String representing the name of the database to search
           schema:
             type: string
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project.
+          schema:
+            type: string
       responses:
         '200':
-          description: Successfully retrieved the connection ID
+          description: Successfully retrieved the connection ID. The body will contain the connection ID as a string.
           content:
             application/json:
               schema:
@@ -85,9 +91,15 @@ paths:
           description: String name of the url used to create the connection
           schema:
             type: string
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project.
+          schema:
+            type: string
       responses:
         '200':
-          description: Successfully created database connection
+          description: Successfully created database connection. The body will be empty. 
           content:
             application/json:
               schema:
@@ -113,6 +125,13 @@ paths:
       tags:
         - connections
       description: Tests the database connection
+      parameters:
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project.
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -140,6 +159,13 @@ paths:
       tags:
         - connections
       description: Update an existing database connection
+      parameters:
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project. 
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -165,6 +191,13 @@ paths:
       tags:
         - connections
       description: Delete an existing database connection
+      parameters:
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project. 
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -190,6 +223,12 @@ paths:
           description: String representing the name of the database connection to delete
           schema:
             type: string
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project.
+          schema:
+            type: string
       responses:
         '200':
           description: Successfully deleted connection. The body will be empty.
@@ -206,6 +245,13 @@ paths:
       tags:
         - connections
       description: Add a database connection
+      parameters:
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project. 
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -240,6 +286,13 @@ paths:
       tags:
         - connections
       description: Returns the list of database connections
+      parameters:
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project.
+          schema:
+            type: string
       responses:
         '200':
           description: Successfully retrieved connections
@@ -277,7 +330,7 @@ paths:
         - name: projectDir
           in: query
           required: false
-          description: Optional project directory for enterprise connections
+          description: Optional project directory. If provided, the operation will be performed in the context of the project. 
           schema:
             type: string
       responses:
@@ -316,6 +369,12 @@ paths:
           schema:
             type: boolean
             default: false
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project.
+          schema:
+            type: string
       responses:
         '200':
           description: Successfully retrieved connection
@@ -343,6 +402,12 @@ paths:
           description: String representing the name of the database to check
           schema:
             type: string
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project.
+          schema:
+            type: string
       responses:
         '200':
           description: Connection exists
@@ -366,6 +431,12 @@ paths:
           in: query
           required: true
           description: String representing the name of the database connection
+          schema:
+            type: string
+        - name: projectDir
+          in: query
+          required: false
+          description: Optional project directory. If provided, the operation will be performed in the context of the project.
           schema:
             type: string
       responses:
