@@ -660,7 +660,7 @@
             <phase>generate-sources</phase>
             <configuration>
               <generatorName>jaxrs-spec</generatorName>
-              <inputSpec>${project.basedir}/src/main/resources/connection-api.yaml</inputSpec>
+              <inputSpec>${project.parent.basedir}/api/src/main/resources/connection-api.yaml</inputSpec>
               <apiPackage>org.pentaho.platform.dataaccess.datasource.wizard.service.api</apiPackage>
               <modelPackage>org.pentaho.platform.dataaccess.datasource.wizard.service.model</modelPackage>
               <importMappings>

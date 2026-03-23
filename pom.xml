@@ -20,6 +20,7 @@
     </license>
   </licenses>
   <modules>
+    <module>api</module>
     <module>core</module>
     <module>gwt</module>
     <module>assemblies</module>
