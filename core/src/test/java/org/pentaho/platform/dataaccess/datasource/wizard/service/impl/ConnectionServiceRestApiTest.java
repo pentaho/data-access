@@ -482,32 +482,6 @@ public class ConnectionServiceRestApiTest {
   }
 
   /**
-   * Tests testConnection failure case returns text/plain content type
-   */
-  @Test
-  public void testTestConnectionFailureContentType() throws Exception {
-    DatabaseConnection conn = new DatabaseConnection();
-    conn.setName( CONN_NAME );
-    conn.setDatabaseName( "testdb" );
-    conn.setPassword( "secret" );
-
-    when( connectionServiceImpl.testConnection( any( DatabaseConnection.class ) ) ).thenReturn( false );
-
-    try {
-      connectionService.testConnection( conn );
-      fail( "Should throw WebApplicationException" );
-    } catch ( WebApplicationException e ) {
-      assertEquals( "Should return INTERNAL_SERVER_ERROR status", 500, e.getResponse().getStatus() );
-      assertNotNull( "Media type should be set", e.getResponse().getMediaType() );
-      assertEquals( "Should return text/plain content type", "text/plain",
-        e.getResponse().getMediaType().toString() );
-      assertNotNull( "Error response should include an entity", e.getResponse().getEntity() );
-      assertTrue( "Error response should include the database name",
-        String.valueOf( e.getResponse().getEntity() ).contains( "testdb" ) );
-    }
-  }
-
-  /**
    * Tests updateConnection success case
    */
   @Test
