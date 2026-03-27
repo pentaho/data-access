@@ -289,10 +289,7 @@ public class ConnectionService implements ConnectionsApi {
         return Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED", databaseConnection
           .getDatabaseName() );
       } else {
-        String errorMsg = Messages.getErrorString( "ConnectionServiceImpl.ERROR_0009_CONNECTION_FAILED",
-          databaseConnection.getDatabaseName() );
-        throw new WebApplicationException( Response.status( Response.Status.INTERNAL_SERVER_ERROR )
-          .entity( errorMsg ).type( MEDIA_TYPE_TEXT_PLAIN ).build() );
+        throw new WebApplicationException( Response.status( Response.Status.INTERNAL_SERVER_ERROR ).build() );
       }
     } catch ( WebApplicationException e ) {
       throw e;

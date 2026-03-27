@@ -148,10 +148,6 @@ paths:
               example: "Connection succeeded to mydb"
         '500':
           description: Connection test failed
-          content:
-            text/plain:
-              schema:
-                type: string
   /data-access/api/connection/update:
     post:
       summary: Update database connection
