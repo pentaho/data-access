@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.WebApplicationException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -49,6 +50,7 @@ public class ConnectionServiceRestApiTest {
 
   private static final String CONN_NAME = "test_connection";
   private static final String CONN_ID = "test-id-123";
+  private static final String LEVEL_FIELD = "level";
 
   @Mock
   private ConnectionServiceImpl connectionServiceImpl;
@@ -482,6 +484,42 @@ public class ConnectionServiceRestApiTest {
   }
 
   /**
+   * Verifies that testConnection applies variable replacement before invoking the backend service.
+   */
+  @Test
+  public void testTestConnectionResolvesVariablesBeforeBackendCall() throws Exception {
+    String varName = "PDI_CONN_HOST_" + UUID.randomUUID().toString().replace( '-', '_' );
+    String varValue = "resolved-host.example.com";
+    String original = System.getProperty( varName );
+    try {
+      System.setProperty( varName, varValue );
+
+      DatabaseConnection conn = new DatabaseConnection();
+      conn.setName( CONN_NAME );
+      conn.setDatabaseName( "testdb" );
+      conn.setHostname( "${" + varName + "}" );
+      // Non-blank password bypasses saved-password lookup so the test is focused on substitution.
+      conn.setPassword( "set" );
+
+      when( connectionServiceImpl.testConnection( any( IDatabaseConnection.class ) ) ).thenAnswer( invocation -> {
+        IDatabaseConnection passed = invocation.getArgument( 0 );
+        assertEquals( varValue, passed.getHostname() );
+        return true;
+      } );
+
+      String result = connectionService.testConnection( conn, null );
+      assertNotNull( result );
+      assertTrue( result.toLowerCase().contains( "succeed" ) );
+    } finally {
+      if ( original == null ) {
+        System.clearProperty( varName );
+      } else {
+        System.setProperty( varName, original );
+      }
+    }
+  }
+
+  /**
    * Tests updateConnection success case
    */
   @Test
@@ -565,6 +603,47 @@ public class ConnectionServiceRestApiTest {
     assertNotNull( "Result should not be null", result );
     assertNotNull( "Connections list should not be null", result.getDatabaseConnections() );
     assertEquals( "Should have one connection", 1, result.getDatabaseConnections().size() );
+  }
+
+  /**
+   * Tests getConnections always marks returned repository connections with level.
+   */
+  @Test
+  public void testGetConnectionsAlwaysSetsRepositoryLevel() throws Exception {
+    IDatabaseConnection conn = createTestConnection();
+    List<IDatabaseConnection> connections = Arrays.asList( conn );
+
+    when( connectionServiceImpl.getConnections( true ) ).thenReturn( connections );
+
+    IDatabaseConnectionList result = connectionService.getConnections( null, true );
+
+    assertNotNull( "Result should not be null", result );
+    assertEquals( "Should have one connection", 1, result.getDatabaseConnections().size() );
+    assertEquals( "Repository level should always be set",
+      "Repository", result.getDatabaseConnections().get( 0 ).getLevel() );
+
+    String json = objectMapper.writeValueAsString( result.getDatabaseConnections().get( 0 ) );
+    com.fasterxml.jackson.databind.JsonNode node = objectMapper.readTree( json );
+    assertTrue( "JSON should contain top-level level field", node.has( LEVEL_FIELD ) );
+    assertEquals( "Repository", node.get( LEVEL_FIELD ).asText() );
+  }
+
+  /**
+   * Tests getConnections always includes level field, even when allLevels is not set.
+   */
+  @Test
+  public void testGetConnectionsWithoutAllLevelsStillSetsRepositoryLevel() throws Exception {
+    IDatabaseConnection conn = createTestConnection();
+    List<IDatabaseConnection> connections = Arrays.asList( conn );
+
+    when( connectionServiceImpl.getConnections( true ) ).thenReturn( connections );
+
+    IDatabaseConnectionList result = connectionService.getConnections( null, false );
+
+    assertNotNull( "Result should not be null", result );
+    assertEquals( "Should have one connection", 1, result.getDatabaseConnections().size() );
+    assertEquals( "Level should always be set to Repository",
+      "Repository", result.getDatabaseConnections().get( 0 ).getLevel() );
   }
 
   /**
