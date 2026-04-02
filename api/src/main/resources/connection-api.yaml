@@ -289,6 +289,12 @@ paths:
           description: Optional project directory. If provided, the operation will be performed in the context of the project.
           schema:
             type: string
+        - name: allLevels
+          in: query
+          required: false
+          description: Optional flag to include connections from all supported levels for the request context.
+          schema:
+            type: boolean
       responses:
         '200':
           description: Successfully retrieved connections
@@ -568,6 +574,10 @@ components:
           description: Partitioning information
           items:
             type: object
+        level:
+          type: string
+          description: Connection level for list results
+          example: "Repository"
     IDatabaseConnectionList:
       type: object
       description: List of database connections (maps to org.pentaho.ui.database.event.IDatabaseConnectionList)

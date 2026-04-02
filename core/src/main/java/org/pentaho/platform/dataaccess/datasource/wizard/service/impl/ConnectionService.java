@@ -22,8 +22,11 @@ import org.pentaho.database.model.IDatabaseConnectionPoolParameter;
 import org.pentaho.database.service.DatabaseDialectService;
 import org.pentaho.database.util.DatabaseUtil;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.engine.PentahoAccessControlException;
+import org.pentaho.platform.dataaccess.datasource.utils.DatabaseConnectionUtils;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.api.ConnectionsApi;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
@@ -61,6 +64,7 @@ public class ConnectionService implements ConnectionsApi {
   private static final Log logger = LogFactory.getLog( ConnectionService.class );
   protected static final String MEDIA_TYPE_JSON = "application/json";
   protected static final String MEDIA_TYPE_TEXT_PLAIN = "text/plain";
+  protected static final String CONNECTION_LEVEL_REPOSITORY = "Repository";
 
   private ConnectionServiceImpl connectionService;
   private DatabaseDialectService dialectService;
@@ -283,7 +287,7 @@ public class ConnectionService implements ConnectionsApi {
   @Override
   public String testConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     try {
-      applySavedPassword( databaseConnection, projectDir );
+      applySavedPassword( databaseConnection, projectDir, true );
       boolean success = connectionService.testConnection( databaseConnection );
       if ( success ) {
         return Messages.getString( "ConnectionServiceImpl.INFO_0001_CONNECTION_SUCCEED", databaseConnection
@@ -319,7 +323,7 @@ public class ConnectionService implements ConnectionsApi {
   public void updateConnection( IDatabaseConnection databaseConnection, String projectDir ) {
     sanitizer.sanitizeConnectionParameters( databaseConnection );
     try {
-      applySavedPassword( databaseConnection );
+      applySavedPassword( databaseConnection, false );
       connectionService.updateConnection( databaseConnection );
       // explicitly return a 200 instead of 204 No Content
       throw new WebApplicationException( Response.ok().build() );
@@ -358,12 +362,22 @@ public class ConnectionService implements ConnectionsApi {
   /**
    * If password is empty, that means connection sent from UI and user didn't change password. Since we cleaned password
    * during sending to UI, we need to use stored password.
+   * 
+   * @param conn the connection to update 
+   * @param projectDir Optional project directory (used by subclasses)
+   * @param resolveVariables whether to resolve variables in the connection
    */
-  protected void applySavedPassword( IDatabaseConnection conn, String projectDir ) throws ConnectionServiceException {
-    applySavedPassword( conn );
+  protected void applySavedPassword( IDatabaseConnection conn, String projectDir, boolean resolveVariables ) throws ConnectionServiceException {
+    applySavedPassword( conn, resolveVariables );
   }
 
-  private void applySavedPassword( IDatabaseConnection conn ) throws ConnectionServiceException {
+  private void applySavedPassword( IDatabaseConnection conn, boolean resolveVariables ) throws ConnectionServiceException {
+
+    if ( resolveVariables ) {
+      VariableSpace variables = Variables.getADefaultVariableSpace();
+      DatabaseConnectionUtils.applyEnvironmentSubstitution( conn, variables );
+    }
+    
     if ( StringUtils.isBlank( conn.getPassword() ) ) {
       IDatabaseConnection savedConn;
       if ( conn.getId() != null ) {
@@ -519,10 +533,13 @@ public class ConnectionService implements ConnectionsApi {
    *
    */
   @Override
-  public IDatabaseConnectionList getConnections( String projectDir ) {
+  public IDatabaseConnectionList getConnections( String projectDir, Boolean allLevels ) {
     try {
       IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
       List<IDatabaseConnection> conns = connectionService.getConnections( true );
+      for ( IDatabaseConnection conn : conns ) {
+        setConnectionLevel( conn, CONNECTION_LEVEL_REPOSITORY );
+      }
       databaseConnections.setDatabaseConnections( conns );
       return databaseConnections;
     } catch ( ConnectionServiceException ex ) {
@@ -530,8 +547,16 @@ public class ConnectionService implements ConnectionsApi {
     }
   }
 
+  public IDatabaseConnectionList getConnections( String projectDir ) {
+    return getConnections( projectDir, Boolean.FALSE );
+  }
+
   public IDatabaseConnectionList getConnections() {
-    return getConnections( null );
+    return getConnections( null, Boolean.FALSE );
+  }
+
+  protected void setConnectionLevel( IDatabaseConnection connection, String level ) {
+    connection.setLevel( level );
   }
 
   /**
