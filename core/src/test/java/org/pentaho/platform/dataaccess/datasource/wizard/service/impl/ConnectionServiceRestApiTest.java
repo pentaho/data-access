@@ -17,9 +17,10 @@ import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.ConnectionServiceException;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.model.LevelAwareDatabaseConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.model.LevelAwareDatabaseConnectionList;
 import org.pentaho.platform.engine.security.authorization.core.exceptions.AuthorizationRuleException;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
-import org.pentaho.ui.database.event.IDatabaseConnectionList;
 import org.pentaho.ui.database.event.IDatabaseConnectionPoolParameterList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,6 +89,10 @@ public class ConnectionServiceRestApiTest {
     conn.setInformixServername( null );
 
     return conn;
+  }
+
+  private String getResponseLevel( LevelAwareDatabaseConnection connection ) {
+    return connection.getLevel();
   }
 
   /**
@@ -598,7 +603,7 @@ public class ConnectionServiceRestApiTest {
 
     when( connectionServiceImpl.getConnections( true ) ).thenReturn( connections );
 
-    IDatabaseConnectionList result = connectionService.getConnections();
+    LevelAwareDatabaseConnectionList result = connectionService.getConnections();
 
     assertNotNull( "Result should not be null", result );
     assertNotNull( "Connections list should not be null", result.getDatabaseConnections() );
@@ -615,12 +620,12 @@ public class ConnectionServiceRestApiTest {
 
     when( connectionServiceImpl.getConnections( true ) ).thenReturn( connections );
 
-    IDatabaseConnectionList result = connectionService.getConnections( null, true );
+    LevelAwareDatabaseConnectionList result = connectionService.getConnections( null, true );
 
     assertNotNull( "Result should not be null", result );
     assertEquals( "Should have one connection", 1, result.getDatabaseConnections().size() );
     assertEquals( "Repository level should always be set",
-      "Repository", result.getDatabaseConnections().get( 0 ).getLevel() );
+      "Repository", getResponseLevel( result.getDatabaseConnections().get( 0 ) ) );
 
     String json = objectMapper.writeValueAsString( result.getDatabaseConnections().get( 0 ) );
     com.fasterxml.jackson.databind.JsonNode node = objectMapper.readTree( json );
@@ -638,12 +643,12 @@ public class ConnectionServiceRestApiTest {
 
     when( connectionServiceImpl.getConnections( true ) ).thenReturn( connections );
 
-    IDatabaseConnectionList result = connectionService.getConnections( null, false );
+    LevelAwareDatabaseConnectionList result = connectionService.getConnections( null, false );
 
     assertNotNull( "Result should not be null", result );
     assertEquals( "Should have one connection", 1, result.getDatabaseConnections().size() );
     assertEquals( "Level should always be set to Repository",
-      "Repository", result.getDatabaseConnections().get( 0 ).getLevel() );
+      "Repository", getResponseLevel( result.getDatabaseConnections().get( 0 ) ) );
   }
 
   /**

@@ -281,7 +281,7 @@ paths:
       operationId: getConnections
       tags:
         - connections
-      description: Returns the list of database connections
+      description: Returns the list of database connections. List results may include a response-only level property indicating the source scope of each connection.
       parameters:
         - name: projectDir
           in: query
@@ -301,7 +301,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IDatabaseConnectionList'
+                $ref: '#/components/schemas/LevelAwareDatabaseConnectionList'
         '500':
           description: Internal server error
           content:
@@ -574,10 +574,6 @@ components:
           description: Partitioning information
           items:
             type: object
-        level:
-          type: string
-          description: Connection level for list results
-          example: "Repository"
     IDatabaseConnectionList:
       type: object
       description: List of database connections (maps to org.pentaho.ui.database.event.IDatabaseConnectionList)
@@ -587,6 +583,25 @@ components:
           description: Array of database connections
           items:
             $ref: '#/components/schemas/IDatabaseConnection'
+    LevelAwareDatabaseConnection:
+      allOf:
+        - $ref: '#/components/schemas/IDatabaseConnection'
+        - type: object
+          description: Database connection returned by the list endpoint, including response-only source scope metadata.
+          properties:
+            level:
+              type: string
+              description: Connection level populated only in list results.
+              example: "Repository"
+    LevelAwareDatabaseConnectionList:
+      type: object
+      description: List of database connections returned by the list endpoint, where each item may include response-only level metadata.
+      properties:
+        databaseConnections:
+          type: array
+          description: Array of database connections
+          items:
+            $ref: '#/components/schemas/LevelAwareDatabaseConnection'
     IDatabaseConnectionPoolParameter:
       type: object
       description: Database connection pool parameter

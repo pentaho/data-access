@@ -32,15 +32,15 @@ import org.pentaho.platform.dataaccess.datasource.wizard.service.api.Connections
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.utils.UtilHtmlSanitizer;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.messages.Messages;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.model.CheckParameters200Response;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.model.LevelAwareDatabaseConnection;
+import org.pentaho.platform.dataaccess.datasource.wizard.service.model.LevelAwareDatabaseConnectionList;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.engine.security.authorization.core.exceptions.AuthorizationRuleException;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.security.policy.rolebased.actions.PublishAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryCreateAction;
 import org.pentaho.platform.security.policy.rolebased.actions.RepositoryReadAction;
-import org.pentaho.ui.database.event.DefaultDatabaseConnectionList;
 import org.pentaho.ui.database.event.DefaultDatabaseConnectionPoolParameterList;
-import org.pentaho.ui.database.event.IDatabaseConnectionList;
 import org.pentaho.ui.database.event.IDatabaseConnectionPoolParameterList;
 
 import jakarta.ws.rs.WebApplicationException;
@@ -533,12 +533,12 @@ public class ConnectionService implements ConnectionsApi {
    *
    */
   @Override
-  public IDatabaseConnectionList getConnections( String projectDir, Boolean allLevels ) {
+  public LevelAwareDatabaseConnectionList getConnections( String projectDir, Boolean allLevels ) {
     try {
-      IDatabaseConnectionList databaseConnections = new DefaultDatabaseConnectionList();
-      List<IDatabaseConnection> conns = connectionService.getConnections( true );
-      for ( IDatabaseConnection conn : conns ) {
-        setConnectionLevel( conn, CONNECTION_LEVEL_REPOSITORY );
+      LevelAwareDatabaseConnectionList databaseConnections = new LevelAwareDatabaseConnectionList();
+      List<LevelAwareDatabaseConnection> conns = new ArrayList<>();
+      for ( IDatabaseConnection conn : connectionService.getConnections( true ) ) {
+        conns.add( withConnectionLevel( conn, CONNECTION_LEVEL_REPOSITORY ) );
       }
       databaseConnections.setDatabaseConnections( conns );
       return databaseConnections;
@@ -547,16 +547,64 @@ public class ConnectionService implements ConnectionsApi {
     }
   }
 
-  public IDatabaseConnectionList getConnections( String projectDir ) {
+  public LevelAwareDatabaseConnectionList getConnections( String projectDir ) {
     return getConnections( projectDir, Boolean.FALSE );
   }
 
-  public IDatabaseConnectionList getConnections() {
+  public LevelAwareDatabaseConnectionList getConnections() {
     return getConnections( null, Boolean.FALSE );
   }
 
-  protected void setConnectionLevel( IDatabaseConnection connection, String level ) {
-    connection.setLevel( level );
+  protected LevelAwareDatabaseConnection withConnectionLevel( IDatabaseConnection connection, String level ) {
+    LevelAwareDatabaseConnection responseConnection = toApiConnection( connection );
+    responseConnection.setLevel( level );
+    return responseConnection;
+  }
+
+  protected LevelAwareDatabaseConnection toApiConnection( IDatabaseConnection connection ) {
+    LevelAwareDatabaseConnection responseConnection = new LevelAwareDatabaseConnection();
+
+    responseConnection.setId( connection.getId() );
+    responseConnection.setName( connection.getName() );
+    responseConnection.setHostname( connection.getHostname() );
+    responseConnection.setDatabaseName( connection.getDatabaseName() );
+    responseConnection.setDatabasePort( connection.getDatabasePort() );
+    responseConnection.setUsername( connection.getUsername() );
+    responseConnection.setPassword( connection.getPassword() );
+    responseConnection.setDataTablespace( connection.getDataTablespace() );
+    responseConnection.setIndexTablespace( connection.getIndexTablespace() );
+    responseConnection.setSqlServerInstance( connection.getSQLServerInstance() );
+    responseConnection.setStreamingResults( connection.isStreamingResults() );
+    responseConnection.setQuoteAllFields( connection.isQuoteAllFields() );
+    responseConnection.setChanged( connection.getChanged() );
+    responseConnection.setUsingDoubleDecimalAsSchemaTableSeparator(
+      connection.isUsingDoubleDecimalAsSchemaTableSeparator() );
+    responseConnection.setInformixServername( connection.getInformixServername() );
+    responseConnection.setForcingIdentifiersToLowerCase( connection.isForcingIdentifiersToLowerCase() );
+    responseConnection.setForcingIdentifiersToUpperCase( connection.isForcingIdentifiersToUpperCase() );
+    responseConnection.setConnectSql( connection.getConnectSql() );
+    responseConnection.setUsingConnectionPool( connection.isUsingConnectionPool() );
+    responseConnection.setInitialPoolSize( connection.getInitialPoolSize() );
+    responseConnection.setMaximumPoolSize( connection.getMaximumPoolSize() );
+    responseConnection.setPartitioned( connection.isPartitioned() );
+    responseConnection.setAccessType( connection.getAccessType() == null ? null : connection.getAccessType().name() );
+    responseConnection.setDatabaseType( connection.getDatabaseType() );
+    if ( connection.getExtraOptions() != null ) {
+      responseConnection.setExtraOptions( connection.getExtraOptions() );
+    }
+    if ( connection.getExtraOptionsOrder() != null ) {
+      responseConnection.setExtraOptionsOrder( connection.getExtraOptionsOrder() );
+    }
+    if ( connection.getAttributes() != null ) {
+      responseConnection.setAttributes( connection.getAttributes() );
+    }
+    if ( connection.getConnectionPoolingProperties() != null ) {
+      responseConnection.setConnectionPoolingProperties( connection.getConnectionPoolingProperties() );
+    }
+    if ( connection.getPartitioningInformation() != null ) {
+      responseConnection.setPartitioningInformation( new ArrayList<>( connection.getPartitioningInformation() ) );
+    }
+    return responseConnection;
   }
 
   /**
