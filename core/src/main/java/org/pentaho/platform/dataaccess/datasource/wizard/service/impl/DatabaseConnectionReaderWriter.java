@@ -15,6 +15,10 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,18 +38,28 @@ import jakarta.ws.rs.ext.Provider;
 import org.pentaho.database.model.DatabaseConnection;
 import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
-
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
+import org.pentaho.database.model.IDatabaseType;
 
 /**
- * Reads and writes Database Connection objects using flexjson so that they won't lose map values when converting
+ * Reads and writes Database Connection objects using Jackson so that they won't lose map values when converting
  * to/from autobeans
  */
 @Provider
 @Produces( APPLICATION_JSON )
 public class DatabaseConnectionReaderWriter
   implements MessageBodyReader<DatabaseConnection>, MessageBodyWriter<DatabaseConnection> {
+
+  private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
+
+  private static ObjectMapper createObjectMapper() {
+    ObjectMapper mapper = JacksonObjectMapperUtil.createObjectMapper();
+    SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
+    resolver.addMapping( IDatabaseType.class, DatabaseType.class );
+    SimpleModule module = new SimpleModule();
+    module.setAbstractTypes( resolver );
+    mapper.registerModule( module );
+    return mapper;
+  }
 
   @Override
   public long getSize( DatabaseConnection t, Class<?> type, Type genericType, Annotation[] annotations,
@@ -65,7 +79,7 @@ public class DatabaseConnectionReaderWriter
     throws IOException, WebApplicationException {
     OutputStreamWriter outputStreamWriter = new OutputStreamWriter( entityStream );
     try {
-      new JSONSerializer().exclude( "*.class" ).serialize( t, outputStreamWriter );
+      OBJECT_MAPPER.writeValue( outputStreamWriter, t );
     } finally {
       outputStreamWriter.close();
     }
@@ -81,9 +95,7 @@ public class DatabaseConnectionReaderWriter
                                       MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
                                       InputStream entityStream ) throws IOException,
     WebApplicationException {
-    JSONDeserializer<DatabaseConnection> jsonD = new JSONDeserializer<DatabaseConnection>();
-    jsonD.use( "databaseType", DatabaseType.class );
-    return jsonD.deserialize( new InputStreamReader( entityStream ), DatabaseConnection.class );
+    return OBJECT_MAPPER.readValue( new InputStreamReader( entityStream ), DatabaseConnection.class );
   }
 
 }
