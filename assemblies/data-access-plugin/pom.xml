@@ -13,11 +13,6 @@
   <packaging>pom</packaging>
   <dependencies>
     <dependency>
-      <groupId>net.sf.flexjson</groupId>
-      <artifactId>flexjson</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>commons-database-gwt</artifactId>
       <scope>runtime</scope>

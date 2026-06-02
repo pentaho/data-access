@@ -182,11 +182,10 @@ public class MetadataServiceTest {
   @Test
   public void testListBusinessModelsJson() {
 
-    final String expectedBusinessModelsJson = "[{\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl"
-      + ".ModelInfo\",\"domainId\":\"" + DOMAIN_ID + "\",\"modelDescription\":null,\"modelId\":\"" + LOGICAL_MODEL_ID + "\","
-      + "\"modelName\":\"" + LOGICAL_MODEL_NAME + "\"},{\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl"
-      + ".ModelInfo\",\"domainId\":\"" + DOMAIN_ID + "\",\"modelDescription\":null,\"modelId\":\"" + LOGICAL_MODEL_2_ID + "\","
-      + "\"modelName\":\"" + LOGICAL_MODEL_2_NAME + "\"}]";
+    final String expectedBusinessModelsJson = "[{\"domainId\":\"" + DOMAIN_ID + "\",\"modelId\":\""
+      + LOGICAL_MODEL_ID + "\",\"modelName\":\"" + LOGICAL_MODEL_NAME + "\",\"modelDescription\":null},"
+      + "{\"domainId\":\"" + DOMAIN_ID + "\",\"modelId\":\"" + LOGICAL_MODEL_2_ID + "\",\"modelName\":\""
+      + LOGICAL_MODEL_2_NAME + "\",\"modelDescription\":null}]";
 
     try {
       when( metadataService.listBusinessModels( anyString(), nullable( String.class ) ) ).thenCallRealMethod();
@@ -194,7 +193,8 @@ public class MetadataServiceTest {
 
       String businessModelsJson = metadataService.listBusinessModelsJson( DOMAIN_ID, "" );
 
-      Assert.assertEquals( expectedBusinessModelsJson, businessModelsJson );
+      com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+      Assert.assertEquals( objectMapper.readTree( expectedBusinessModelsJson ), objectMapper.readTree( businessModelsJson ) );
 
     } catch ( Exception ex ) {
       fail();
@@ -214,17 +214,17 @@ public class MetadataServiceTest {
   @Test
   public void testLoadModelJson() {
 
-    final String expectedModelJson = "{\"categories\":[{\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl"
-      + ".Category\",\"columns\":[],\"description\":null,\"id\":\"" + CATEGORY_ID + "\",\"name\":null}],\"class\":\"org.pentaho.platform"
-      + ".dataaccess.metadata.model.impl.Model\",\"description\":null,\"domainId\":\"" + DOMAIN_ID + "\",\"id\":\"" + LOGICAL_MODEL_ID
-      + "\",\"name\":\"" + LOGICAL_MODEL_NAME + "\"}";
+    final String expectedModelJson = "{\"categories\":[{\"id\":\"" + CATEGORY_ID
+      + "\",\"name\":null,\"description\":null,\"columns\":[]}],\"id\":\"" + LOGICAL_MODEL_ID
+      + "\",\"name\":\"" + LOGICAL_MODEL_NAME + "\",\"domainId\":\"" + DOMAIN_ID + "\",\"description\":null}";
 
     when( metadataService.loadModel( anyString(), anyString() ) ).thenCallRealMethod();
     when( metadataService.loadModelJson( anyString(), anyString() ) ).thenCallRealMethod();
 
     String modelJson = metadataService.loadModelJson( DOMAIN_ID, LOGICAL_MODEL_ID );
 
-    Assert.assertEquals( expectedModelJson, modelJson );
+    com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    Assert.assertEquals( objectMapper.readTree( expectedModelJson ), objectMapper.readTree( modelJson ) );
   }
 
   @Test
