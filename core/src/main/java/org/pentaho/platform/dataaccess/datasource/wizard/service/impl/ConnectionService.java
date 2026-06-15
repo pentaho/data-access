@@ -566,6 +566,7 @@ public class ConnectionService implements ConnectionsApi {
 
     responseConnection.setId( connection.getId() );
     responseConnection.setName( connection.getName() );
+    responseConnection.setConnectionId( connection.getConnectionId() );
     responseConnection.setHostname( connection.getHostname() );
     responseConnection.setDatabaseName( connection.getDatabaseName() );
     responseConnection.setDatabasePort( connection.getDatabasePort() );

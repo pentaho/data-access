@@ -480,6 +480,10 @@ components:
           type: string
           description: Connection name
           example: "Production Database"
+        connectionId:
+          type: string
+          description: Connection Id from the connection-management-service
+          example: "2d3ccecc-93a4-4fa8-957e-925dca9b4a81"
         accessType:
           type: string
           description: Database access type (e.g., NATIVE, ODBC, OCI, POOL)
