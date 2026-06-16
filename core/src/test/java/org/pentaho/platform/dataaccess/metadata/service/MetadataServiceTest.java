@@ -14,7 +14,6 @@
 package org.pentaho.platform.dataaccess.metadata.service;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -49,6 +48,8 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
@@ -83,7 +84,7 @@ public class MetadataServiceTest {
   @Before
   public void initialize() {
 
-    List<Category> categoryList = new ArrayList();
+    List<Category> categoryList = new ArrayList<>();
     Category category = mock( Category.class );
     when( category.getId() ).thenReturn( CATEGORY_ID );
     categoryList.add( category );
@@ -141,16 +142,16 @@ public class MetadataServiceTest {
 
     //Test view permissions
     when( metadataService.hasViewAccess() ).thenReturn( true );
-    Assert.assertThat( metadataService.getDatasourcePermissions(), is( "VIEW" ) );
+    assertEquals( "VIEW", metadataService.getDatasourcePermissions() );
 
     //Test edit permissions
     when( metadataService.hasManageAccess() ).thenReturn( true );
-    Assert.assertThat( metadataService.getDatasourcePermissions(), is( "EDIT" ) );
+    assertEquals( "EDIT", metadataService.getDatasourcePermissions() );
 
     //No permissions test
     when( metadataService.hasViewAccess() ).thenReturn( false );
     when( metadataService.hasManageAccess() ).thenReturn( false );
-    Assert.assertThat( metadataService.getDatasourcePermissions(), is( "NONE" ) );
+    assertEquals( "NONE", metadataService.getDatasourcePermissions() );
 
   }
 
@@ -162,17 +163,17 @@ public class MetadataServiceTest {
 
       ModelInfo[] businessModels = metadataService.listBusinessModels( DOMAIN_ID, "" );
       //Test business models array length
-      Assert.assertTrue( businessModels.length == 2 );
+      assertEquals( 2, businessModels.length );
       //Test business models array sort
-      Assert.assertTrue( businessModels[0].getModelName() == LOGICAL_MODEL_NAME );
-      Assert.assertTrue( businessModels[1].getModelName() == LOGICAL_MODEL_2_NAME );
+      assertEquals( LOGICAL_MODEL_NAME, businessModels[0].getModelName() );
+      assertEquals( LOGICAL_MODEL_2_NAME, businessModels[1].getModelName() );
 
       businessModels = metadataService.listBusinessModels( null, null );
       //Test business models array length
-      Assert.assertTrue( businessModels.length == 2 );
+      assertEquals( 2, businessModels.length );
       //Test business models array sort
-      Assert.assertTrue( businessModels[0].getModelName() == LOGICAL_MODEL_NAME );
-      Assert.assertTrue( businessModels[1].getModelName() == LOGICAL_MODEL_2_NAME );
+      assertEquals( LOGICAL_MODEL_NAME, businessModels[0].getModelName() );
+      assertEquals( LOGICAL_MODEL_2_NAME, businessModels[1].getModelName() );
 
     } catch ( Exception ex ) {
       fail();
@@ -182,11 +183,10 @@ public class MetadataServiceTest {
   @Test
   public void testListBusinessModelsJson() {
 
-    final String expectedBusinessModelsJson = "[{\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl"
-      + ".ModelInfo\",\"domainId\":\"" + DOMAIN_ID + "\",\"modelDescription\":null,\"modelId\":\"" + LOGICAL_MODEL_ID + "\","
-      + "\"modelName\":\"" + LOGICAL_MODEL_NAME + "\"},{\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl"
-      + ".ModelInfo\",\"domainId\":\"" + DOMAIN_ID + "\",\"modelDescription\":null,\"modelId\":\"" + LOGICAL_MODEL_2_ID + "\","
-      + "\"modelName\":\"" + LOGICAL_MODEL_2_NAME + "\"}]";
+    final String expectedBusinessModelsJson = "[{\"domainId\":\"" + DOMAIN_ID + "\",\"modelId\":\""
+      + LOGICAL_MODEL_ID + "\",\"modelName\":\"" + LOGICAL_MODEL_NAME + "\",\"modelDescription\":null},"
+      + "{\"domainId\":\"" + DOMAIN_ID + "\",\"modelId\":\"" + LOGICAL_MODEL_2_ID + "\",\"modelName\":\""
+      + LOGICAL_MODEL_2_NAME + "\",\"modelDescription\":null}]";
 
     try {
       when( metadataService.listBusinessModels( anyString(), nullable( String.class ) ) ).thenCallRealMethod();
@@ -194,7 +194,8 @@ public class MetadataServiceTest {
 
       String businessModelsJson = metadataService.listBusinessModelsJson( DOMAIN_ID, "" );
 
-      Assert.assertEquals( expectedBusinessModelsJson, businessModelsJson );
+      com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+      assertEquals( objectMapper.readTree( expectedBusinessModelsJson ), objectMapper.readTree( businessModelsJson ) );
 
     } catch ( Exception ex ) {
       fail();
@@ -208,23 +209,23 @@ public class MetadataServiceTest {
 
     Model model = metadataService.loadModel( DOMAIN_ID, LOGICAL_MODEL_ID );
     //Test if the name of the model returned is correct
-    Assert.assertTrue( model.getName() == LOGICAL_MODEL_NAME );
+    assertEquals( LOGICAL_MODEL_NAME, model.getName() );
   }
 
   @Test
-  public void testLoadModelJson() {
+  public void testLoadModelJson() throws Exception {
 
-    final String expectedModelJson = "{\"categories\":[{\"class\":\"org.pentaho.platform.dataaccess.metadata.model.impl"
-      + ".Category\",\"columns\":[],\"description\":null,\"id\":\"" + CATEGORY_ID + "\",\"name\":null}],\"class\":\"org.pentaho.platform"
-      + ".dataaccess.metadata.model.impl.Model\",\"description\":null,\"domainId\":\"" + DOMAIN_ID + "\",\"id\":\"" + LOGICAL_MODEL_ID
-      + "\",\"name\":\"" + LOGICAL_MODEL_NAME + "\"}";
+    final String expectedModelJson = "{\"categories\":[{\"id\":\"" + CATEGORY_ID
+      + "\",\"name\":null,\"description\":null,\"columns\":[]}],\"id\":\"" + LOGICAL_MODEL_ID
+      + "\",\"name\":\"" + LOGICAL_MODEL_NAME + "\",\"domainId\":\"" + DOMAIN_ID + "\",\"description\":null}";
 
     when( metadataService.loadModel( anyString(), anyString() ) ).thenCallRealMethod();
     when( metadataService.loadModelJson( anyString(), anyString() ) ).thenCallRealMethod();
 
     String modelJson = metadataService.loadModelJson( DOMAIN_ID, LOGICAL_MODEL_ID );
 
-    Assert.assertEquals( expectedModelJson, modelJson );
+    com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    assertEquals( objectMapper.readTree( expectedModelJson ), objectMapper.readTree( modelJson ) );
   }
 
   @Test
@@ -247,13 +248,13 @@ public class MetadataServiceTest {
     String[] columnName = columnNames.getColumnName();
 
     // Check the result rows lenght
-    Assert.assertTrue( rows.length <= ROWS );
+    assertTrue( rows.length <= ROWS );
 
     // Check the result row value
-    Assert.assertTrue( cell[0].equals( RESULT ) );
+    assertEquals( RESULT, cell[0] );
 
     // Check the result column name
-    Assert.assertTrue( columnName[0].equals( COLUMN_NAME ) );
+    assertEquals( COLUMN_NAME, columnName[0] );
 
 
   }
@@ -281,13 +282,13 @@ public class MetadataServiceTest {
     String[] columnName = columnNames.getColumnName();
 
     // Check the result rows lenght
-    Assert.assertTrue( rows.length <= ROWS );
+    assertTrue( rows.length <= ROWS );
 
     // Check the result row value
-    Assert.assertTrue( cell[0].equals( RESULT ) );
+    assertEquals( RESULT, cell[0] );
 
     // Check the result column name
-    Assert.assertTrue( columnName[0].equals( COLUMN_NAME ) );
+    assertEquals( COLUMN_NAME, columnName[0] );
 
 
   }
@@ -317,7 +318,7 @@ public class MetadataServiceTest {
 
       String queryJson = metadataService.doXmlQueryToCdaJson( xmlQuery, ROWS );
 
-      Assert.assertEquals( expectedQueryJson, queryJson );
+      assertEquals( expectedQueryJson, queryJson );
     } catch ( Exception ex ) {
       fail();
     }

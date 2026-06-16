@@ -342,6 +342,27 @@ public class ConnectionServiceRestApiTest {
   }
 
   /**
+   * Verifies deserialization preserves databaseType mapping when using the runtime reader.
+   */
+  @Test
+  public void testJsonDeserializationMapsDatabaseType() throws Exception {
+    String json = "{\"name\":\"conn\",\"databaseType\":{\"shortName\":\"GENERIC\",\"name\":\"Generic\"}}";
+
+    DatabaseConnectionReaderWriter reader = new DatabaseConnectionReaderWriter();
+    DatabaseConnection connection = reader.readFrom(
+      DatabaseConnection.class,
+      null,
+      null,
+      jakarta.ws.rs.core.MediaType.APPLICATION_JSON_TYPE,
+      null,
+      new java.io.ByteArrayInputStream( json.getBytes( java.nio.charset.StandardCharsets.UTF_8 ) )
+    );
+
+    assertNotNull( "Connection should be deserialized", connection );
+    assertNotNull( "DatabaseType should be deserialized", connection.getDatabaseType() );
+  }
+
+  /**
    * Tests getConnectionByName with mask=false (password should be hidden)
    */
   @Test

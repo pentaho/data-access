@@ -68,7 +68,6 @@
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <jcommon.version>1.0.14</jcommon.version>
     <stax.version>1.2.0</stax.version>
-    <flexjson.version>2.1</flexjson.version>
     <ognl.version>2.6.9</ognl.version>
     <encoder.version>1.2</encoder.version>
     <pentaho-cwm.version>1.5.4</pentaho-cwm.version>
@@ -275,17 +274,6 @@
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j-charsets</artifactId>
         <version>${icu4j-charsets.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.flexjson</groupId>
-        <artifactId>flexjson</artifactId>
-        <version>${flexjson.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.json</groupId>
