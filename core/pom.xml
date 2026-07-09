@@ -17,6 +17,7 @@
     <wadl.output.directory>${project.build.outputDirectory}/META-INF/wadl</wadl.output.directory>
     <wadl.file.name>wadlExtension.xml</wadl.file.name>
     <swagger-annotations.version>1.6.16</swagger-annotations.version>
+    <parsson.version>1.1.8</parsson.version>
   </properties>
 
   <dependencies>
@@ -216,6 +217,26 @@
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-json-processing</artifactId>
       <version>${jersey.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.parsson</groupId>
+          <artifactId>parsson</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.parsson</groupId>
+          <artifactId>parsson-media</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.parsson</groupId>
+      <artifactId>parsson</artifactId>
+      <version>${parsson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.parsson</groupId>
+      <artifactId>parsson-media</artifactId>
+      <version>${parsson.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
