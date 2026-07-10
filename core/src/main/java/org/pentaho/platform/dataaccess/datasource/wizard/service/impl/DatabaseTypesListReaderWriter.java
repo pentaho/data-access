@@ -14,8 +14,6 @@
 package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.ui.database.event.DefaultDatabaseTypesList;
@@ -46,17 +44,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 @Produces( APPLICATION_JSON )
 public class DatabaseTypesListReaderWriter implements MessageBodyReader<IDatabaseTypesList>, MessageBodyWriter<IDatabaseTypesList> {
 
-  private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
-
-  private static ObjectMapper createObjectMapper() {
-    ObjectMapper mapper = JacksonObjectMapperUtil.createObjectMapper();
-    SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
-    resolver.addMapping( IDatabaseType.class, DatabaseType.class );
-    SimpleModule module = new SimpleModule();
-    module.setAbstractTypes( resolver );
-    mapper.registerModule( module );
-    return mapper;
-  }
+  private static final ObjectMapper OBJECT_MAPPER = JacksonObjectMapperUtil.createDatabaseTypeObjectMapper();
 
   @Override
   public long getSize( IDatabaseTypesList t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType ) {
