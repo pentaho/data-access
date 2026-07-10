@@ -16,8 +16,6 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,9 +34,7 @@ import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Provider;
 
 import org.pentaho.database.model.DatabaseConnection;
-import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
-import org.pentaho.database.model.IDatabaseType;
 
 /**
  * Reads and writes Database Connection objects using Jackson so that they won't lose map values when converting
@@ -49,17 +45,7 @@ import org.pentaho.database.model.IDatabaseType;
 public class DatabaseConnectionReaderWriter
   implements MessageBodyReader<DatabaseConnection>, MessageBodyWriter<DatabaseConnection> {
 
-  private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
-
-  private static ObjectMapper createObjectMapper() {
-    ObjectMapper mapper = JacksonObjectMapperUtil.createObjectMapper();
-    SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
-    resolver.addMapping( IDatabaseType.class, DatabaseType.class );
-    SimpleModule module = new SimpleModule();
-    module.setAbstractTypes( resolver );
-    mapper.registerModule( module );
-    return mapper;
-  }
+  private static final ObjectMapper OBJECT_MAPPER = JacksonObjectMapperUtil.createDatabaseTypeObjectMapper();
 
   @Override
   public long getSize( DatabaseConnection t, Class<?> type, Type genericType, Annotation[] annotations,

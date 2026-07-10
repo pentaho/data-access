@@ -42,7 +42,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 @Produces( APPLICATION_JSON )
 public class DatabaseTypesListReaderWriter implements MessageBodyReader<IDatabaseTypesList>, MessageBodyWriter<IDatabaseTypesList> {
 
-  private static final ObjectMapper OBJECT_MAPPER = JacksonObjectMapperUtil.createObjectMapper();
+  private static final ObjectMapper OBJECT_MAPPER = JacksonObjectMapperUtil.createDatabaseTypeObjectMapper();
 
   @Override
   public long getSize( IDatabaseTypesList t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType ) {
