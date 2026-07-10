@@ -28,21 +28,22 @@ import org.pentaho.ui.database.event.DefaultDatabaseTypesList;
 import org.pentaho.ui.database.event.IDatabaseTypesList;
 
 /**
- * PPP-6483 at-risk validation for {@link DatabaseTypesListReaderWriter}.
+ * BACKLOG-50609 regression coverage for {@link DatabaseTypesListReaderWriter} (root cause: the
+ * PPP-6483 flexjson &rarr; Jackson migration).
  *
  * <p>The reader deserializes into {@link DefaultDatabaseTypesList}, whose {@code types} field is
- * declared as {@code List<IDatabaseType>} (an interface). The Jackson mapper created by
- * {@code JacksonObjectMapperUtil.createObjectMapper()} registers <em>no</em> abstract-type
- * resolver, unlike the sibling connection reader/writers.</p>
+ * declared as {@code List<IDatabaseType>} (an interface). {@link DatabaseTypesListReaderWriter} now
+ * registers an {@code IDatabaseType -> DatabaseType} abstract-type mapping on its {@code ObjectMapper},
+ * matching the sibling connection reader/writers.</p>
  *
  * <p>Given a {@code DefaultDatabaseTypesList} that contains a concrete {@link DatabaseType},<br>
  * When it is written and then read back through {@link DatabaseTypesListReaderWriter},<br>
- * Then the type should survive the round trip.</p>
+ * Then the type survives the round trip.</p>
  *
- * <p>Expected result: FAIL &mdash; deserializing a populated {@code List<IDatabaseType>} without a
- * resolver throws {@code InvalidDefinitionException} (same root cause as BACKLOG-50609). This is a
- * latent defect: today the read path is only exercised server&rarr;client, but the code is
- * reachable and incorrect.</p>
+ * <p>Before the fix this failed: deserializing a populated {@code List<IDatabaseType>} without a
+ * resolver threw {@code InvalidDefinitionException} (same root cause as the interactive-reporting
+ * {@code ThinDataSource} regression). It was a latent defect &mdash; the read path is only exercised
+ * server&rarr;client &mdash; but the code was reachable and incorrect.</p>
  */
 public class DatabaseTypesListReaderWriterTest {
 
