@@ -53,7 +53,6 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.messages.LocaleHelper;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -397,9 +396,7 @@ public class MetadataServiceUtil extends PentahoBase {
   }
 
   private static ObjectMapper createObjectMapper() {
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
-    return objectMapper;
+    return new ObjectMapper();
   }
 
   @Override

@@ -15,6 +15,7 @@ package org.pentaho.platform.dataaccess.metadata.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -66,5 +67,13 @@ public class MetadataServiceUtilQueryDeserializationTest {
     assertEquals( 1, result.getColumns().length );
     assertEquals( "col1", result.getColumns()[ 0 ].getId() );
     assertEquals( "Column One", result.getColumns()[ 0 ].getName() );
+  }
+
+  @Test
+  public void deserializeJsonQueryRejectsUnknownProperties() {
+    Query result = new MetadataServiceUtil().deserializeJsonQuery(
+      "{\"domainName\":\"domain1\",\"unexpected\":true}" );
+
+    assertNull( result );
   }
 }
