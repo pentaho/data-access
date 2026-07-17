@@ -21,7 +21,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.enunciate.Facet;
@@ -72,7 +72,7 @@ public class DatasourceResource {
     StringBuilder sb = new StringBuilder();
     Map<String, String> parameters = DataSourceInfoUtil.parseDataSourceInfo( dataSourceInfo );
     parameters.forEach( ( key, value ) -> {
-      String unescapedValue = StringEscapeUtils.unescapeXml( value );
+      String unescapedValue = unescapeXml( value );
       String valueWithEscapedQuotes = DataSourceInfoUtil.escapeQuotes( unescapedValue );
       sb.append( key );
       sb.append( "=\"" );
@@ -81,6 +81,14 @@ public class DatasourceResource {
       sb.append( ";" );
     } );
     return sb.toString();
+  }
+
+  private static String unescapeXml( String value ) {
+    if ( value == null ) {
+      return null;
+    }
+
+    return StringEscapeUtils.unescapeXml( value ).replace( "&apos;", "'" );
   }
 
   /**

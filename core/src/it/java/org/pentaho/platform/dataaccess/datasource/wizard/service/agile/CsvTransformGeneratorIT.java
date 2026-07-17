@@ -13,7 +13,7 @@
 
 package org.pentaho.platform.dataaccess.datasource.wizard.service.agile;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.mockito.Mockito;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;

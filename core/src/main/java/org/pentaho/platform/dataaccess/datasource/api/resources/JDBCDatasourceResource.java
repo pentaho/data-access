@@ -14,7 +14,7 @@
 package org.pentaho.platform.dataaccess.datasource.api.resources;
 
 import com.google.gwt.thirdparty.guava.common.annotations.VisibleForTesting;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.enunciate.jaxrs.ResponseCode;
