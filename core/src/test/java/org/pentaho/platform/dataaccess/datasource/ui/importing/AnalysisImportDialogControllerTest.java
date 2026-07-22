@@ -16,7 +16,7 @@
 package org.pentaho.platform.dataaccess.datasource.ui.importing;
 
 import org.junit.Test;
-import org.apache.commons.lang.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
