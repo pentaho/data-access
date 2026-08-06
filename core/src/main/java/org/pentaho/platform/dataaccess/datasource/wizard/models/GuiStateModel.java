@@ -16,6 +16,7 @@ package org.pentaho.platform.dataaccess.datasource.wizard.models;
 
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.platform.dataaccess.datasource.beans.AutobeanUtilities;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -63,11 +64,12 @@ public class GuiStateModel extends XulEventSourceAdapter {
     String newName = connection.getName();
     conn.setName( newName );
     conn.setAccessType( connection.getAccessType() );
-    conn.setConnectionPoolingProperties( connection.getConnectionPoolingProperties() );
+    conn.setConnectionPoolingProperties(
+      AutobeanUtilities.mapBeanToImpl( connection.getConnectionPoolingProperties() ) );
     conn.setConnectSql( connection.getConnectSql() );
     conn.setDatabaseName( connection.getDatabaseName() );
     conn.setDatabasePort( connection.getDatabasePort() );
-    conn.setDatabaseType( connection.getDatabaseType() );
+    conn.setDatabaseType( AutobeanUtilities.dbTypeBeanToImpl( connection.getDatabaseType() ) );
     conn.setDataTablespace( connection.getDataTablespace() );
     conn.setForcingIdentifiersToLowerCase( connection.isForcingIdentifiersToLowerCase() );
     conn.setForcingIdentifiersToUpperCase( connection.isForcingIdentifiersToUpperCase() );
@@ -77,11 +79,11 @@ public class GuiStateModel extends XulEventSourceAdapter {
     conn.setInitialPoolSize( connection.getInitialPoolSize() );
     conn.setMaximumPoolSize( connection.getMaximumPoolSize() );
     conn.setPartitioned( connection.isPartitioned() );
-    conn.setPartitioningInformation( connection.getPartitioningInformation() );
+    conn.setPartitioningInformation( AutobeanUtilities.listToImpl( connection.getPartitioningInformation() ) );
     conn.setPassword( connection.getPassword() );
     conn.setQuoteAllFields( connection.isQuoteAllFields() );
-    conn.setExtraOptions( connection.getExtraOptions() );
-    conn.setExtraOptionsOrder( connection.getExtraOptionsOrder() );
+    conn.setExtraOptions( AutobeanUtilities.mapBeanToImpl( connection.getExtraOptions() ) );
+    conn.setExtraOptionsOrder( AutobeanUtilities.mapBeanToImpl( connection.getExtraOptionsOrder() ) );
     conn.setStreamingResults( connection.isStreamingResults() );
     conn.setUsername( connection.getUsername() );
     conn.setUsingConnectionPool( connection.isUsingConnectionPool() );

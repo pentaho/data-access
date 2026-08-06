@@ -696,6 +696,13 @@
                 <delegatePattern>false</delegatePattern>
                 <skipDefaultInterface>true</skipDefaultInterface>
                 <openApiNullable>false</openApiNullable>
+                <!--
+                  Generate container properties as null rather than pre-initialised empty collections. An eagerly
+                  initialised list serialises as "[]" instead of being omitted, and on the GWT client
+                  AutoBeanCodex.decode wraps any non-null list in emul.java.util.ListAutoBean, which no GWT-RPC
+                  serialization policy recognises. See BACKLOG-50628.
+                -->
+                <containerDefaultToNull>true</containerDefaultToNull>
               </configOptions>
             </configuration>
           </execution>
