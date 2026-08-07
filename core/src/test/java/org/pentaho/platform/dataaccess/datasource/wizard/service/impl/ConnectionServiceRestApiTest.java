@@ -632,6 +632,54 @@ public class ConnectionServiceRestApiTest {
   }
 
   /**
+   * Tests that unset collection properties are serialised as null rather than as empty containers.
+   * <p/>
+   * An eagerly initialised container serialises as "[]"/"{}", and on the GWT client AutoBeanCodex.decode wraps any
+   * non-null collection in emul.java.util.ListAutoBean, whose anonymous subtype is absent from every GWT-RPC
+   * serialization policy. That produced "could not get type signature for class emul.java.util.ListAutoBean$1" in
+   * the Data Source Wizard. See BACKLOG-50628.
+   */
+  @Test
+  public void testGetConnectionsSerialisesUnsetCollectionsAsNullRatherThanEmpty() throws Exception {
+    IDatabaseConnection conn = createTestConnection();
+    conn.setPartitioningInformation( null );
+
+    when( connectionServiceImpl.getConnections( true ) ).thenReturn( Arrays.asList( conn ) );
+
+    LevelAwareDatabaseConnectionList result = connectionService.getConnections();
+    LevelAwareDatabaseConnection responseConnection = result.getDatabaseConnections().get( 0 );
+
+    assertNull( "partitioningInformation should stay null", responseConnection.getPartitioningInformation() );
+
+    com.fasterxml.jackson.databind.JsonNode node =
+      objectMapper.readTree( objectMapper.writeValueAsString( responseConnection ) );
+    assertFieldAbsentOrNull( node, "partitioningInformation" );
+  }
+
+  /**
+   * A freshly generated response model must not pre-initialise its containers, otherwise every connection is
+   * serialised with empty collections regardless of what the underlying connection holds.
+   */
+  @Test
+  public void testResponseModelDoesNotPreInitialiseContainers() {
+    LevelAwareDatabaseConnection responseConnection = new LevelAwareDatabaseConnection();
+
+    assertNull( "partitioningInformation must default to null", responseConnection.getPartitioningInformation() );
+    assertNull( "extraOptions must default to null", responseConnection.getExtraOptions() );
+    assertNull( "extraOptionsOrder must default to null", responseConnection.getExtraOptionsOrder() );
+    assertNull( "attributes must default to null", responseConnection.getAttributes() );
+    assertNull( "connectionPoolingProperties must default to null",
+      responseConnection.getConnectionPoolingProperties() );
+    assertNull( "list container must default to null",
+      new LevelAwareDatabaseConnectionList().getDatabaseConnections() );
+  }
+
+  private void assertFieldAbsentOrNull( com.fasterxml.jackson.databind.JsonNode node, String field ) {
+    assertTrue( field + " must be absent or null, never an empty container",
+      !node.has( field ) || node.get( field ).isNull() );
+  }
+
+  /**
    * Tests getConnections always marks returned repository connections with level.
    */
   @Test

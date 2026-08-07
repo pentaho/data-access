@@ -100,36 +100,7 @@ public class WizardConnectionController extends AbstractXulEventHandler {
   }
 
   protected void copyDatabaseConnectionProperties( IDatabaseConnection source, IDatabaseConnection target ) {
-    target.setId( source.getId() );
-    target.setAccessType( source.getAccessType() );
-    target.setDatabaseType( source.getDatabaseType() );
-    target.setExtraOptions( source.getExtraOptions() );
-    target.setExtraOptionsOrder( source.getExtraOptionsOrder() );
-    target.setName( source.getName() );
-    target.setHostname( source.getHostname() );
-    target.setDatabaseName( source.getDatabaseName() );
-    target.setDatabasePort( source.getDatabasePort() );
-    target.setUsername( source.getUsername() );
-    target.setPassword( source.getPassword() );
-    target.setStreamingResults( source.isStreamingResults() );
-    target.setDataTablespace( source.getDataTablespace() );
-    target.setIndexTablespace( source.getIndexTablespace() );
-    target.setUsingDoubleDecimalAsSchemaTableSeparator( source.isUsingDoubleDecimalAsSchemaTableSeparator() );
-    target.setInformixServername( source.getInformixServername() );
-    //target.addExtraOption(String databaseTypeCode, String option, String value);
-    target.setAttributes( source.getAttributes() );
-    target.setChanged( source.getChanged() );
-    target.setQuoteAllFields( source.isQuoteAllFields() );
-    // advanced option (convert to enum with upper, lower, none?)
-    target.setForcingIdentifiersToLowerCase( source.isForcingIdentifiersToLowerCase() );
-    target.setForcingIdentifiersToUpperCase( source.isForcingIdentifiersToUpperCase() );
-    target.setConnectSql( source.getConnectSql() );
-    target.setUsingConnectionPool( source.isUsingConnectionPool() );
-    target.setInitialPoolSize( source.getInitialPoolSize() );
-    target.setMaximumPoolSize( source.getMaximumPoolSize() );
-    target.setPartitioned( source.isPartitioned() );
-    target.setConnectionPoolingProperties( source.getConnectionPoolingProperties() );
-    target.setPartitioningInformation( source.getPartitioningInformation() );
+    AutobeanUtilities.copyDatabaseConnectionProperties( source, target );
   }
 
   protected AutoBean<IDatabaseConnection> createIDatabaseConnectionBean( IDatabaseConnection connection ) {
