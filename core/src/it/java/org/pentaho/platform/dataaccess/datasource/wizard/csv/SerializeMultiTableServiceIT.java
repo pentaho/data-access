@@ -48,6 +48,7 @@ import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceExcep
 import org.pentaho.platform.api.repository2.unified.IBackingRepositoryLifecycleManager;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
+import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
 import org.pentaho.platform.api.util.IPasswordService;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.agile.AgileHelper;
 import org.pentaho.platform.dataaccess.datasource.wizard.service.impl.ModelerService;
@@ -58,6 +59,7 @@ import org.pentaho.platform.engine.core.system.SystemSettings;
 import org.pentaho.platform.engine.services.connection.datasource.dbcp.JndiDatasourceService;
 import org.pentaho.platform.engine.services.solution.SolutionEngine;
 import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
+import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalogHelper;
 import org.pentaho.platform.plugin.action.mondrian.mapper.MondrianOneToOneUserRoleListMapper;
 import org.pentaho.platform.plugin.services.connections.mondrian.MDXConnection;
@@ -85,16 +87,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.io.File;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -124,6 +130,8 @@ public class SerializeMultiTableServiceIT {
   private IBackingRepositoryLifecycleManager manager;
   
   private MicroPlatform booter;
+
+  private IMondrianCatalogService mondrianCatalogService;
   
   @Before
   public void setUp() throws Exception {
@@ -142,7 +150,8 @@ public class SerializeMultiTableServiceIT {
     
     booter.define(ISolutionEngine.class, SolutionEngine.class, Scope.GLOBAL);
     booter.define(IUnifiedRepository.class, TestFileSystemBackedUnifiedRepository.class, Scope.GLOBAL);
-    booter.define(IMondrianCatalogService.class, MondrianCatalogHelper.class, Scope.GLOBAL);
+    mondrianCatalogService = mock( IMondrianCatalogService.class );
+    booter.defineInstance( IMondrianCatalogService.class, mondrianCatalogService );
     booter.define("connection-SQL", SQLConnection.class);
     booter.define("connection-MDX", MDXConnection.class);
     booter.define("connection-MDXOlap4j", MDXOlap4jConnection.class);
@@ -223,6 +232,7 @@ public class SerializeMultiTableServiceIT {
     service.serializeModels(domain, "test_file");
 
     assertEquals( "SampleData", domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef") );
+    verify( mondrianCatalogService ).addCatalog( any( MondrianCatalog.class ), any( Boolean.class ), any( IPentahoSession.class ) );
   }
 
   private SchemaModel getSchema() {
@@ -370,6 +380,20 @@ public class SerializeMultiTableServiceIT {
     public TestFileSystemBackedUnifiedRepository() {
       super("bin/test-solutions/solution");
     }
+
+    public TestFileSystemBackedUnifiedRepository( String baseDir ) {
+      super( baseDir );
+    }
+
+    @Override
+    public List<RepositoryFile> getReferrers( Serializable fileId ) {
+      return new ArrayList<>();
+    }
+
+    @Override
+    public boolean hasAccess( String path, EnumSet<RepositoryFilePermission> permissions ) {
+      return true;
+    }
   }
 
   public static class MockDatasourceMgmtService implements IDatasourceMgmtService{
@@ -478,7 +502,7 @@ public class SerializeMultiTableServiceIT {
   }
 
   public PentahoMetadataDomainRepository createMetadataDomainRepository() {
-    IUnifiedRepository repository = new FileSystemBackedUnifiedRepository("target/test-classes/solution1");
+    IUnifiedRepository repository = new TestFileSystemBackedUnifiedRepository( "target/test-classes/solution1" );
     booter.defineInstance(IUnifiedRepository.class, repository);
     assertNotNull(new RepositoryUtils(repository).getFolder("/etc/metadata", true, true, null));
     assertNotNull(new RepositoryUtils(repository).getFolder("/etc/mondrian", true, true, null));
