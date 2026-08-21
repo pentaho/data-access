@@ -44,6 +44,24 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-service-coordinator</artifactId>
+      <version>${platform.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-scheduler-core</artifactId>
+      <version>${platform.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.glassfish.jersey.test-framework</groupId>
       <artifactId>jersey-test-framework-core</artifactId>
       <version>${jersey.version}</version>
@@ -316,6 +334,11 @@
       <artifactId>spring-security-config</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
     </dependency>
@@ -330,6 +353,10 @@
         <exclusion>
           <artifactId>*</artifactId>
           <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring</artifactId>
+          <groupId>org.springframework</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -582,6 +609,23 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>1.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -53,13 +53,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       <ref bean="unifiedRepository"/>
     </constructor-arg>
   </bean>
-  <!-- Wrap the concrete IMetadataDomainRepository implementation with one that caches domains per session -->
-  <bean id="IMetadataDomainRepository"
-        class="org.pentaho.platform.plugin.services.metadata.SessionCachingMetadataDomainRepository" scope="singleton">
-    <constructor-arg>
-      <ref bean="IMetadataDomainRepositoryImpl"/>
-    </constructor-arg>
-  </bean>
+  <alias name="IMetadataDomainRepositoryImpl" alias="IMetadataDomainRepository"/>
   <!--  Use this schema factory to disable PMD security -->
   <!--  <bean id="IMetadataDomainRepository" class="org.pentaho.platform.plugin.services.metadata.CachingPentahoMetadataDomainRepository" scope="singleton"/>-->
   <bean id="IUserSettingService" class="org.pentaho.platform.repository.usersettings.UserSettingService"
@@ -117,14 +111,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     <property name="serviceTypeManagers">
       <list>
         <ref bean="gwtServiceManager"/>
-        <ref bean="axisServiceManager"/>
       </list>
     </property>
   </bean>
   <bean id="ITempFileDeleter" class="org.pentaho.platform.web.http.session.SessionTempFileDeleter" scope="prototype"/>
   <bean id="gwtServiceManager" class="org.pentaho.platform.plugin.services.pluginmgr.servicemgr.GwtRpcServiceManager"
-        scope="singleton"/>
-  <bean id="axisServiceManager" class="org.pentaho.platform.plugin.services.pluginmgr.servicemgr.AxisWebServiceManager"
         scope="singleton"/>
 
   <bean id="IChartBeansGenerator" class="org.pentaho.platform.plugin.action.chartbeans.DefaultChartBeansGenerator"
@@ -211,18 +202,7 @@ not directly from the PentahoObjectFactory. -->
     </constructor-arg>
   </bean>
 
-  <bean id="ehCacheUserCache" class="org.springframework.security.core.userdetails.cache.EhCacheBasedUserCache">
-    <property name="cache">
-      <bean class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager">
-          <bean class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-      <property name="shared" value="true"/>
-  </bean>
-        </property>
-        <property name="cacheName" value="userCache"/>
-      </bean>
-    </property>
-  </bean>
+  <bean id="ehCacheUserCache" class="org.springframework.security.core.userdetails.cache.NullUserCache"/>
 
   <bean id="cachingUserDetailsService" class="org.pentaho.platform.plugin.services.security.userrole.PentahoCachingUserDetailsService">
     <constructor-arg>
