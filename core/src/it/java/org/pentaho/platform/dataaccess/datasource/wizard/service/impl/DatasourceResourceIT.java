@@ -49,6 +49,7 @@ import org.pentaho.platform.api.repository.datasource.DuplicateDatasourceExcepti
 import org.pentaho.platform.api.repository.datasource.IDatasourceMgmtService;
 import org.pentaho.platform.api.repository.datasource.NonExistingDatasourceException;
 import org.pentaho.platform.api.repository2.unified.IPlatformImportBundle;
+import org.pentaho.platform.api.repository2.unified.IRepositoryFileData;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.util.IPasswordService;
@@ -79,6 +80,7 @@ import org.pentaho.platform.plugin.services.pluginmgr.PluginClassLoader;
 import org.pentaho.platform.plugin.services.pluginmgr.PluginResourceLoader;
 import org.pentaho.platform.repository2.unified.RepositoryUtils;
 import org.pentaho.platform.repository2.unified.fs.FileSystemBackedUnifiedRepository;
+import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.test.platform.engine.core.MicroPlatform;
 import org.pentaho.test.platform.engine.security.MockSecurityHelper;
 import org.springframework.dao.DataAccessException;
@@ -100,10 +102,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -434,7 +439,7 @@ public class DatasourceResourceIT {
   }
 
   private static PentahoMetadataDomainRepository createMetadataDomainRepository() {
-    IUnifiedRepository repository = new FileSystemBackedUnifiedRepository( "target/test-classes/dsw" );
+    IUnifiedRepository repository = new TestFileSystemBackedUnifiedRepository( "target/test-classes/dsw" );
     mp.defineInstance( IUnifiedRepository.class, repository );
     assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/metadata", true, true, null ) );
     assertNotNull( new RepositoryUtils( repository ).getFolder( "/etc/mondrian", true, true, null ) );
@@ -538,8 +543,48 @@ public class DatasourceResourceIT {
   }
 
   public static class TestFileSystemBackedUnifiedRepository extends FileSystemBackedUnifiedRepository {
+    private final Map<Serializable, NodeRepositoryFileData> nodeDataByFileId = new HashMap<>();
+
     public TestFileSystemBackedUnifiedRepository() {
       super( "bin/test-solutions/solution" );
+    }
+
+    public TestFileSystemBackedUnifiedRepository( String baseDir ) {
+      super( baseDir );
+    }
+
+    @Override
+    public List<RepositoryFile> getReferrers( Serializable fileId ) {
+      return new ArrayList<>();
+    }
+
+    @Override
+    public RepositoryFile createFile( Serializable parentFolderId, RepositoryFile file, IRepositoryFileData data,
+                                      String versionMessage ) {
+      RepositoryFile createdFile = super.createFile( parentFolderId, file, data, versionMessage );
+      storeNodeData( createdFile, data );
+      return createdFile;
+    }
+
+    @Override
+    public RepositoryFile updateFile( RepositoryFile file, IRepositoryFileData data, String versionMessage ) {
+      RepositoryFile updatedFile = super.updateFile( file, data, versionMessage );
+      storeNodeData( updatedFile, data );
+      return updatedFile;
+    }
+
+    @Override
+    public <T extends IRepositoryFileData> T getDataForRead( Serializable fileId, Class<T> dataClass ) {
+      if ( NodeRepositoryFileData.class.equals( dataClass ) ) {
+        return dataClass.cast( nodeDataByFileId.get( fileId ) );
+      }
+      return super.getDataForRead( fileId, dataClass );
+    }
+
+    private void storeNodeData( RepositoryFile file, IRepositoryFileData data ) {
+      if ( data instanceof NodeRepositoryFileData ) {
+        nodeDataByFileId.put( file.getId(), (NodeRepositoryFileData) data );
+      }
     }
   }
 
