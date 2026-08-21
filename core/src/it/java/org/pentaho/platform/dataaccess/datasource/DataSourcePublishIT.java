@@ -119,7 +119,7 @@ import static org.mockito.ArgumentMatchers.anyString;
     "classpath:/jackrabbit-test-repo.xml",
     "classpath:/solutionACL/system/repository-test-override.spring.xml",
     "classpath:/solutionACL/system/importExport.xml", "classpath:/solutionACL/system/pentahoObjects.spring.xml" } )
-public class iden DataSourcePublishIT extends JerseyTest implements ApplicationContextAware {
+public class DataSourcePublishIT extends JerseyTest implements ApplicationContextAware {
 
   private static final String USERNAME_SUZY = "suzy";
   private static final String USERNAME_TIFFANY = "tiffany";
