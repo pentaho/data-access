@@ -27,6 +27,7 @@ import org.pentaho.platform.plugin.action.mondrian.catalog.MondrianCatalog;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -56,6 +57,8 @@ public class ModelerServiceIT extends DataAccessServiceTestBase {
     ModelInfo modelInfo = new ModelInfo();
     ColumnInfo[] columnInfos = new ColumnInfo[] { createColumnInfo( "id", "title" ) };
     modelInfo.setColumns( columnInfos );
+    modelInfo.setStageTableName( "csv_stage" );
+    modelInfo.setDatasourceName( "csv_datasource" );
 
     modelerService = spy( modelerService );
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
@@ -63,7 +66,7 @@ public class ModelerServiceIT extends DataAccessServiceTestBase {
 
     TableModelerSource source = mock( TableModelerSource.class );
     doReturn( source ).when( modelerService )
-      .createTableModelerSource( any( DatabaseMeta.class ), anyString(), anyString(), anyString() );
+      .createTableModelerSource( any( DatabaseMeta.class ), anyString(), isNull(), anyString() );
 
     modelerService.generateCSVDomain( modelInfo );
 

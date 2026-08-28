@@ -12,13 +12,12 @@
   <sec:authentication-manager alias="authenticationManager">
     <sec:authentication-provider>
      <sec:user-service>
-      <sec:user password="password" name="admin" authorities="Authenticated, Administrator"/>
-      <sec:user password="password" name="suzy" authorities="Authenticated"/>
+      <sec:user password="{noop}password" name="admin" authorities="Authenticated, Administrator"/>
+      <sec:user password="{noop}password" name="suzy" authorities="Authenticated"/>
+      <sec:user password="{noop}password" name="tiffany" authorities="Authenticated"/>
     </sec:user-service>
    </sec:authentication-provider>
   </sec:authentication-manager>
-
-  <sec:authentication-manager alias="authenticationManager"/>
 
   <bean id="jcrRepository" class="org.springframework.extensions.jcr.jackrabbit.RepositoryFactoryBean">
     <property name="configuration" value="classpath:/jackrabbit-test-repo.xml"/>
