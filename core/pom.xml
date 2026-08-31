@@ -194,6 +194,10 @@
       <version>${commons-fileupload.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.safehaus.jug</groupId>
       <artifactId>jug-lgpl</artifactId>
     </dependency>
@@ -621,11 +625,6 @@
       <groupId>commons-pool</groupId>
       <artifactId>commons-pool</artifactId>
       <version>1.6</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-text</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
