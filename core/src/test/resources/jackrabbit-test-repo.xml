@@ -103,8 +103,8 @@ Jackrabbit configuration suitable for integration tests.
         persistence manager of the workspace:
         class: FQN of class implementing the PersistenceManager interface
     -->
-    <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.DerbyPersistenceManager">
-      <param name="url" value="jdbc:derby:${wsp.home}/db;create=true"/>
+    <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.H2PersistenceManager">
+      <param name="url" value="jdbc:h2:${wsp.home}/db"/>
       <param name="schemaObjectPrefix" value="${wsp.name}_"/>
     </PersistenceManager>
     <!--
@@ -141,8 +141,8 @@ Jackrabbit configuration suitable for integration tests.
         a 'normal' persistence manager, but this could change in future
         implementations.
     -->
-    <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.DerbyPersistenceManager">
-      <param name="url" value="jdbc:derby:${rep.home}/version/db;create=true"/>
+    <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.H2PersistenceManager">
+      <param name="url" value="jdbc:h2:${rep.home}/version/db"/>
       <param name="schemaObjectPrefix" value="version_"/>
     </PersistenceManager>
   </Versioning>
