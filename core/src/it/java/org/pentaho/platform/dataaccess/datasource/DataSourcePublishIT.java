@@ -18,7 +18,6 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -92,14 +91,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.test.JerseyTest;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -359,13 +353,13 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     assertAnalysisAclStatus( Response.Status.UNAUTHORIZED.getStatusCode(), analysisResource, catalogID + "_not_exist" );
   }
 
-    private void assertAnalysisAclStatus( int expectedStatus, AnalysisResource analysisResource, String catalogId ) {
+  private void assertAnalysisAclStatus( int expectedStatus, AnalysisResource analysisResource, String catalogId ) {
     try {
       analysisResource.doGetAnalysisDatasourceAcl( catalogId );
     } catch ( WebApplicationException e ) {
       assertEquals( expectedStatus, e.getResponse().getStatus() );
       return;
-    }
+  }
     throw new AssertionError( "Expected analysis ACL lookup to fail with status " + expectedStatus );
     }
 
@@ -566,13 +560,13 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     assertDswAclStatus( Response.Status.UNAUTHORIZED.getStatusCode(), dswResource, domainID + "_not_exist" );
   }
 
-    private void assertDswAclStatus( int expectedStatus, DataSourceWizardResource dswResource, String domainId ) {
+  private void assertDswAclStatus( int expectedStatus, DataSourceWizardResource dswResource, String domainId ) {
     try {
       dswResource.doGetDSWAcl( domainId );
     } catch ( WebApplicationException e ) {
       assertEquals( expectedStatus, e.getResponse().getStatus() );
       return;
-    }
+  }
     throw new AssertionError( "Expected DSW ACL lookup to fail with status " + expectedStatus );
     }
 
@@ -617,19 +611,6 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
 
     aclDto.setAces( aces );
     return aclDto;
-  }
-
-  private static String marshalACL( RepositoryFileAclDto acl ) throws JAXBException {
-    JAXBContext context = JAXBContext.newInstance( RepositoryFileAclDto.class );
-    Marshaller marshaller = context.createMarshaller();
-    StringWriter sw = new StringWriter();
-    marshaller.marshal( acl, sw );
-
-    return sw.toString();
-  }
-
-  private static String serializeAclAsJson( RepositoryFileAclDto acl ) throws Exception {
-    return new ObjectMapper().writeValueAsString( acl );
   }
 
   @Override
