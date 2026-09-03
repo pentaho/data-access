@@ -359,9 +359,9 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     } catch ( WebApplicationException e ) {
       assertEquals( expectedStatus, e.getResponse().getStatus() );
       return;
-  }
-    throw new AssertionError( "Expected analysis ACL lookup to fail with status " + expectedStatus );
     }
+    throw new AssertionError( "Expected analysis ACL lookup to fail with status " + expectedStatus );
+  }
 
   private void checkAnalysis( WebTarget webTarget, String catalogID, boolean hasAccess ) {
     final JaxbList analysisDatasourceIds = webTarget
@@ -566,9 +566,9 @@ public class DataSourcePublishIT extends JerseyTest implements ApplicationContex
     } catch ( WebApplicationException e ) {
       assertEquals( expectedStatus, e.getResponse().getStatus() );
       return;
-  }
-    throw new AssertionError( "Expected DSW ACL lookup to fail with status " + expectedStatus );
     }
+    throw new AssertionError( "Expected DSW ACL lookup to fail with status " + expectedStatus );
+  }
 
   private void checkDSW( WebTarget webTarget, String domainID, boolean hasAccess ) {
     final JaxbList dswIds = webTarget
