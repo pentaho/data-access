@@ -24,6 +24,12 @@
   <packaging>pom</packaging>
   <dependencies>
     <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-data-access-gwt</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>commons-database-gwt</artifactId>
       <scope>runtime</scope>
