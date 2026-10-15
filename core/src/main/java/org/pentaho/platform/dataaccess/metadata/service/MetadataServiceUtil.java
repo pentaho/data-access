@@ -53,7 +53,8 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.messages.LocaleHelper;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 
-import flexjson.JSONDeserializer;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class provides utility functions used by the MetadataService
@@ -65,6 +66,7 @@ import flexjson.JSONDeserializer;
 public class MetadataServiceUtil extends PentahoBase {
 
   private static final long serialVersionUID = -123835493828427853L;
+  private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
 
   private Log logger = LogFactory.getLog( MetadataServiceUtil.class );
 
@@ -380,11 +382,11 @@ public class MetadataServiceUtil extends PentahoBase {
    */
   public Query deserializeJsonQuery( String json ) {
     try {
-      // convert the json query into a thin query model
+      // Convert the JSON query into a thin query model.
       ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
       try {
         Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-        return new JSONDeserializer<Query>().deserialize( json );
+        return OBJECT_MAPPER.readValue( json, Query.class );
       } finally {
         Thread.currentThread().setContextClassLoader( oldLoader );
       }
@@ -392,6 +394,12 @@ public class MetadataServiceUtil extends PentahoBase {
       error( Messages.getErrorString( "MetadataService.ERROR_0007_BAD_JSON", json ), e ); //$NON-NLS-1$
       return null;
     }
+  }
+
+  private static ObjectMapper createObjectMapper() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
+    return objectMapper;
   }
 
   @Override
