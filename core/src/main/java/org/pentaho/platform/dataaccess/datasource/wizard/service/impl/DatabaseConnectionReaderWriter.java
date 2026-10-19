@@ -15,6 +15,8 @@ package org.pentaho.platform.dataaccess.datasource.wizard.service.impl;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,20 +34,18 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.pentaho.database.model.DatabaseConnection;
-import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
-
 /**
- * Reads and writes Database Connection objects using flexjson so that they won't lose map values when converting
+ * Reads and writes Database Connection objects using Jackson so that they won't lose map values when converting
  * to/from autobeans
  */
 @Provider
 @Produces( APPLICATION_JSON )
 public class DatabaseConnectionReaderWriter
   implements MessageBodyReader<DatabaseConnection>, MessageBodyWriter<DatabaseConnection> {
+
+  private static final ObjectMapper OBJECT_MAPPER = JacksonObjectMapperUtil.createDatabaseTypeObjectMapper();
 
   @Override
   public long getSize( DatabaseConnection t, Class<?> type, Type genericType, Annotation[] annotations,
@@ -65,7 +65,7 @@ public class DatabaseConnectionReaderWriter
     throws IOException, WebApplicationException {
     OutputStreamWriter outputStreamWriter = new OutputStreamWriter( entityStream );
     try {
-      new JSONSerializer().exclude( "*.class" ).serialize( t, outputStreamWriter );
+      OBJECT_MAPPER.writeValue( outputStreamWriter, t );
     } finally {
       outputStreamWriter.close();
     }
@@ -81,9 +81,7 @@ public class DatabaseConnectionReaderWriter
                                       MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
                                       InputStream entityStream ) throws IOException,
     WebApplicationException {
-    JSONDeserializer<DatabaseConnection> jsonD = new JSONDeserializer<DatabaseConnection>();
-    jsonD.use( "databaseType", DatabaseType.class );
-    return jsonD.deserialize( new InputStreamReader( entityStream ), DatabaseConnection.class );
+    return OBJECT_MAPPER.readValue( new InputStreamReader( entityStream ), DatabaseConnection.class );
   }
 
 }

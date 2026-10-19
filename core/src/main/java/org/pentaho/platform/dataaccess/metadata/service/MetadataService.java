@@ -13,7 +13,19 @@
 
 package org.pentaho.platform.dataaccess.metadata.service;
 
-import flexjson.JSONSerializer;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,17 +50,8 @@ import org.pentaho.platform.plugin.action.pentahometadata.MetadataQueryComponent
 import org.pentaho.platform.util.messages.LocaleHelper;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * An object that makes lightweight, serializable metadata models available to callers, and allow queries to be
@@ -60,6 +63,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 public class MetadataService extends PentahoBase {
 
   private static final long serialVersionUID = 8481450224870463494L;
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private Log logger = LogFactory.getLog( MetadataService.class );
 
@@ -145,9 +149,7 @@ public class MetadataService extends PentahoBase {
   public String listBusinessModelsJson( String domainName, String context ) throws IOException {
 
     ModelInfo[] models = listBusinessModels( domainName, context );
-    JSONSerializer serializer = new JSONSerializer();
-    String json = serializer.deepSerialize( models );
-    return json;
+    return writeAsJson( models );
   }
 
   /**
@@ -262,9 +264,7 @@ public class MetadataService extends PentahoBase {
   public String loadModelJson( String domainId, String modelId ) {
 
     Model model = loadModel( domainId, modelId );
-    JSONSerializer serializer = new JSONSerializer();
-    String json = serializer.deepSerialize( model );
-    return json;
+    return writeAsJson( model );
   }
 
   /**
@@ -310,9 +310,7 @@ public class MetadataService extends PentahoBase {
     if ( resultSet == null ) {
       return null;
     }
-    JSONSerializer serializer = new JSONSerializer();
-    String json = serializer.deepSerialize( resultSet );
-    return json;
+    return writeAsJson( resultSet );
   }
 
   /**
@@ -428,6 +426,15 @@ public class MetadataService extends PentahoBase {
       error( Messages.getErrorString( "MetadataService.ERROR_0008_BAD_QUERY" ), e ); //$NON-NLS-1$
     }
     return null;
+  }
+
+  private String writeAsJson( Object value ) {
+    try {
+      return OBJECT_MAPPER.writeValueAsString( value );
+    } catch ( JsonProcessingException e ) {
+      error( Messages.getErrorString( "MetadataService.ERROR_0007_JSON_ERROR" ), e ); //$NON-NLS-1$
+      return null;
+    }
   }
 
   /**
